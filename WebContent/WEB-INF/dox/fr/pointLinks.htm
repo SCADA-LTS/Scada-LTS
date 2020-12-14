@@ -1,74 +1,41 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
 <h1>Vue d'ensemble</h1>
-<p>
-  Les liaisons de point sont utilis&eacute;es pour mettre &agrave; jour des points cibles &agrave; partir de valeurs de points sources. Les points seront synchronis&eacute;s
-  selon des r&egrave;gles d&eacute;finies par l'utilisateur. En pratique une liaison de point peut-&ecirc;tre utilis&eacute;e pour lire les valeurs d'un syst&egrave;me (d'une ou plusieurs source de donn&eacute;es)
-  et les affecter immediatement &agrave; un autre syst&egrave;me (&agrave; une ou plusieurs source de donn&eacute;es)
-  
-</p>
-<p>
-  On peut obtenir le m&ecirc;me r&eacute;sultat en cr&eacute;ant un d&eacute;tecteur qui observer les modifications ou mise &agrave; jour d'un point source, puis en cr&eacute;ant 
-  un gestionnaire d'&eacute;v&egrave;nement de la "consigne" pour chaque point de destination d&eacute;finis. Cependant il est p&eacute;f&eacute;rable d'utiliser les liaisons de point
-  pour pluseurs raisons:
-</p>
+<p>Les liaisons de point sont utilisées pour mettre à jour des points cibles à partir de valeurs de points sources. Les points seront synchronisés selon des règles définies par l'utilisateur. En pratique une liaison de point peut-être utilisée pour lire les valeurs d'un système (d'une ou plusieurs source de données) et les affecter immediatement à un autre système (à une ou plusieurs source de données).</p>
+<p>On peut obtenir le même résultat en créant un détecteur qui observer les modifications ou mise à jour d'un point source, puis en créant un gestionnaire d'évènement de la "consigne" pour chaque point de destination définis. Cependant il est péférable d'utiliser les liaisons de point pour pluseurs raisons:</p>
 <ul>
-  <li>Une liaison de point ne cr&eacute;e pas d'&eacute;v&egrave;nement,ce qui pr&eacute;serve les ressources syst&egrave;mes et am&eacute;liore donc les performances</li>
-  <li>Les liaisons de point permettent d&eacute;finir des scripts, laissant &agrave; l'utilisateur une plus grande libert&eacute;</li>
-  <li>L'interface de cette fonction est contenue sur une seule page, ce qui la rend plus facile &agrave; utiliser</li>
+  <li>Une liaison de point ne crée pas d'évènement,ce qui préserve les ressources systèmes et améliore donc les performances</li>
+  <li>Les liaisons de point permettent définir des scripts, laissant à l'utilisateur une plus grande liberté</li>
+  <li>L'interface de cette fonction est contenue sur une seule page, ce qui la rend plus facile à utiliser</li>
 </ul>
-<p>
-  <b>Note:</b> Une liaison de point peut &ecirc;tre confiqur&eacute;e de telle sorte que des boucles infinies peuvent appara&icirc;tre. ScadaBR d&eacute;tectera le probl&egrave;me,le terminera et 
-  informera l'utilisateur.
-</p>
+<p><b>Note:</b> Une liaison de point peut être confiqurée de telle sorte que des boucles infinies peuvent apparaître. ScadaBR détectera le problème,le terminera et informera l'utilisateur.</p>
 
 <h1>Liste des liaisons de point</h1>
-<p>
-  Pour ajouter une liaison de point, cliquez sur l'ic&ocirc;ne <img src="images/link_add.png"/>.Pour modifier une liaison, cliquez sur le lien dans la liste 
-  </p>
+<p>Pour ajouter une liaison de point, cliquez sur l'icône <img src="images/link_add.png"/>.Pour modifier une liaison, cliquez sur le lien dans la liste.</p>
 
 <h1>Configurer une liaison de point</h1>
-<p>
-  L'<b>Export ID</b> est la valeur utilis&eacute;e pour identifier une liaison dans les diff&eacute;rentes instances de ScadaBR. Il est utilis&eacute; dans le menu
-  Import/Export. Cette valeur, unique est g&eacute;n&eacute;r&eacute;e al&eacute;atoirement, mais elle peut &ecirc;tre d&eacute;finie par l'utilisateur pour &ecirc;tre plus explicite.
+<p>L'<b>Export ID</b> est la valeur utilisée pour identifier une liaison dans les différentes instances de ScadaBR. Il est utilisé dans le menu Import/Export. Cette valeur, unique est générée aléatoirement, mais elle peut être définie par l'utilisateur pour être plus explicite.</p>
+<p>Le  <b>point source</b> est le point dont la valeur sera suivie. C'est le point qui définira les valeurs cibles.</p>
+<p>Le <b>point cible </b> est le point dont la valeur sera affectée.</p>
+<p>Le <b>Script</b> est facultatif il transformera les valeurs sources si nécessaire. Des informations supplémentaires sur les scripts sont disponibles dans l'aide des propriétés des points Meta. Le nom de la variable dans le contexte est "source". un script tel que, "return source.value / 2;" attribuera a la valeur cible, la moitié de la valeur source. Notez que l'on peut aussi transformer le type de donnée
+ ,exemple  "if (source.value &gt; 0) return true; return false;", ce qui convertira une valeur source numérique en une valeur cible binaire, Cliquez sur l'icône <img src="images/accept.png"/> pour valider votre script (le point source doit être disponible).</p>
+<p> <b>Evènement</b> va définir le type de mise à jour du point cible, à chaque mise à jour du point source (i.e. un nouveau timestamp n'engendre pas forcément une nouvelle valeur), ou seulement au changement de valeur(i.e. nouveau timestamp et nouvelle valeur).</p>
+<p>Une liaison de point peut être <b>Désactivée</b>. Utile si vous ne voulez pas la supprimer et ne pas l'utiliser temporairement.</p>
 
-</p>
-<p>
- Le  <b>point source</b> est le point dont la valeur sera suivie. C'est le point qui d&eacute;finira les valeurs cibles.
-</p>
-<p>Le <b>point cible </b> est le point dont la valeur sera affect&eacute;e.</p>
-<p>
-  Le <b>Script</b> est facultatif il transformera les valeurs sources si n&eacute;cessaire. Des informations suppl&eacute;mentaires 
-  sur les scripts sont disponibles dans l'aide des propri&eacute;t&eacute;s des points Meta. Le nom de la variable dans le contexte est "source". un script tel que, 
-   "return source.value / 2;" attribuera a la valeur cible, la moiti&eacute; de la valeur source. Notez que l'on peut aussi transformer le type de donn&eacute;e
- ,exemple  "if (source.value &gt; 0) return true; return false;", ce qui convertira une valeur source num&eacute;rique en une valeur cible binaire
-  Cliquez sur l'ic&ocirc;ne <img src="images/accept.png"/> pour valider votre script (le point source doit &ecirc;tre disponible).
-</p>
-<p>
-  <b>Ev&egrave;nement</b> va d&eacute;finir le type de mise &agrave; jour du point cible, &agrave; chaque mise &agrave; jour du point source (i.e. un nouveau timestamp 
-  n'engendre pas forc&eacute;ment une nouvelle valeur), ou seulement au changement de valeur(i.e. nouveau timestamp et nouvelle valeur).
-</p>
-<p>
-  Une liaison de point peut &ecirc;tre <b>D&eacute;sactiv&eacute;e</b>. Utile si vous ne voulez pas la supprimer et ne pas l'utiliser temporairement 
-  </p>
-
-<p>                                    
-  Pour enregistrer une liaison de point, cliquez sur l'ic&ocirc;ne <img src="images/save.png"/> en haut &agrave; droite. Pour supprimer une liaison de point, 
-  cliquez sur l'ic&ocirc;ne <img src="images/delete.png"/>.
-</p>
+<p>Pour enregistrer une liaison de point, cliquez sur l'icône <img src="images/save.png"/> en haut à droite. Pour supprimer une liaison de point, cliquez sur l'icône <img src="images/delete.png"/>.</p>

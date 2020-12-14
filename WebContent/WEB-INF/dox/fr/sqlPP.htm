@@ -1,26 +1,26 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<p>The attributes used to configure SQL data source points differ slightly depending upon whether the query is row-based or column-based. In both cases the <b>Data type</b> determines the data type of the ScadaBR data point. Values from the result set are automatically converted to this type. </p>
+<p>Les attributs utilisés pour configurer les points de source de données SQL diffèrent légèrement selon que la requête est basée sur des lignes ou des colonnes. Dans les deux cas, le type de données <b>Data type</b> détermine le type de données du point de données Scada-LTS. Les valeurs de l'ensemble des résultats sont automatiquement converties dans ce type. </p>
 
-<p>For row-based queries, the <b>Row identifier</b> is matched against the first column of the result set to find the row or rows that contain values (the second column) for this point. Time overrides are taken from the third column if it exists.</p>
+<p>Pour les requêtes basées sur les lignes, l'identificateur de ligne <b>Row identifier</b> est comparé à la première colonne du jeu de résultats pour trouver la ou les lignes qui contiennent des valeurs (la deuxième colonne) pour ce point. Les dépassements de temps sont pris dans la troisième colonne si elle existe.</p>
 
-<p>For column-based queries, the <b>Column name</b> corresponds to the column name in the result set from which the point's value is extracted. The <b>Time override column</b> (optional) specifies the column to use as the point's time override. Note that multiple points can use the same time override if appropriate.</p>
+<p>Pour les requêtes basées sur des colonnes, le <b>Nom de la colonne</b> correspond au nom de la colonne dans l'ensemble de résultats dont la valeur du point est extraite. La colonne <b>Colonne d'annulation du temps</b> (facultatif) spécifie la colonne à utiliser comme annulation du temps du point. Notez que plusieurs points peuvent utiliser la même dérogation temporelle le cas échéant.</p>
 
-<h1>Update statements</h1>
-<p>An <b>Update statement</b> can optionally be defined for a point, which determines how the point's value can be set in the database. This is a standard SQL statement using "update" or "insert". If this statement is not defined the point will be considered non-settable.</p>
+<h1>Mise à jour des déclarations</h1>
+<p>Une <b>Déclaration de mise à jour</b> peut éventuellement être définie pour un point, ce qui détermine comment la valeur du point peut être fixée dans la base de données. Il s'agit d'une instruction SQL standard utilisant "update" ou "insert". Si cette instruction n'est pas définie, le point sera considéré comme non paramétrable.</p>

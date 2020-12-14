@@ -1,45 +1,36 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>
-  Scheduled events are used to raise events at specified moments in time. The are similar to event detectors (in that 
-  they raise events), but are time-based rather than point-based.
-</p>
+<h1>Vue d'ensemble</h1>
+<p>Les événements programmés sont utilisés pour soulever des événements à des moments précis dans le temps. Ils sont similaires aux détecteurs d'événements (en ce sens qu'ils déclenchent des événements), mais sont basés sur le temps plutôt que sur des points.</p>
 
-<h1>Scheduled events list</h1>
-<p>
-  To add a new scheduled event, click the <img src="images/clock_add.png"/> icon. To edit an existing scheduled event, 
-  click the event's description in the "Scheduled events" list.
-</p>
+<h1>Liste des événements programmés</h1>
+<p> Pour ajouter un nouvel événement programmé, cliquez sur l'icône <img src="images/clock_add.png"/>. Pour modifier un événement programmé existant, cliquez sur la description de l'événement dans la liste "Événements programmés".</p>
 
-<h1>Editing scheduled event details</h1>
-<p>
-  The <b>Alias</b> is an optional value that will be used as the description for the event throughout the system if it 
-  is provided. Otherwise, the automatically generated description will be used.
-</p>
-<p>The <b>Alarm level</b> determines whether the scheduled event raises an alarm when active, and if so the severity of the alarm. See the general help page for information on Alarms.</p>
-<p>The <b>Schedule type</b> determines the basis period of the event. These types include hourly, daily, etc. For example, a schedule type of hourly will run once every hour. If a schedule that runs, say, twice a day is needed, it is necessary to define two daily scheduled events, one for each time. It is however possible to define a cron pattern that runs multiple times within a period. (See the "cron pattern" documentation for more information.)</p>
-<p>Selecting <b>Return to normal</b> determines if the alarm raised when the event is active is automatically returned to normal when the event becomes inactive. If Return to normal is selected, it is necessary to define the time at which the event becomes inactive.</p>
-<p>A scheduled event can be <b>Disabled</b> so that it does not run. This can be useful if you do not wish to delete the event, but also do not currently want it enabled.</p>
+<h1>Modification des détails d'un événement prévu</h1>
+<p>Le <b>Alias</b> est une valeur optionnelle qui sera utilisée comme description de l'événement dans tout le système si elle est fournie. Sinon, la description générée automatiquement sera utilisée.</p>
+<p>Le <b>Niveau d'alarme</b> détermine si l'événement programmé déclenche une alarme lorsqu'il est actif, et si oui, la gravité de l'alarme. Consultez la page d'aide générale pour obtenir des informations sur les alarmes.</p>
+<p>Le <b>Type de calendrier</b> détermine la période de base de l'événement. Ces types comprennent les horaires, les jours, etc. Par exemple, un type d'horaire de type horaire se déroulera une fois par heure. Si un horaire qui fonctionne, par exemple, deux fois par jour est nécessaire, il est nécessaire de définir deux événements quotidiens programmés, un pour chaque heure. Il est toutefois possible de définir un modèle de cron qui fonctionne plusieurs fois au cours d'une période. (Voir la documentation "cron pattern" pour plus d'informations.)</p>
+<p>Sélectionner <b>Retour à la normale</b> détermine si l'alarme déclenchée lorsque l'événement est actif est automatiquement retournée à la normale lorsque l'événement devient inactif. Si l'option Retour à la normale est sélectionnée, il est nécessaire de définir le moment où l'événement devient inactif.</p>
+<p>Un événement programmé peut être <b>Désactivé</b> afin qu'il ne se déroule pas. Cela peut être utile si vous ne souhaitez pas supprimer l'événement, mais aussi si vous ne voulez pas qu'il soit activé actuellement.</p>
 
-<h1>Active/Inactive times</h1>
-<p>The fields available for editing active and inactive times depend upon the schedule type chosen. Most fields should require no explanation beyond that they are exclusively based upon the Gregorian calendar. For more information on cron patterns, see the "Cron pattern" documentation.</p>
-<p>Active/inactive times can straddle the given time period. For example, an hourly schedule can become active at 55:00 and inactive at 05:00 (thus active for 10 minutes). Note that it is possible, though not very useful, to define cron patterns that do not neatly activate and inactivate (i.e. they may activate multiple times before inactivating and vice versa).</p>
+<h1> Temps actifs/inactifs</h1>
+<p>Les champs disponibles pour la modification des heures actives et inactives dépendent du type d'horaire choisi. La plupart des champs ne doivent pas nécessiter d'autre explication que le fait qu'ils sont exclusivement basés sur le calendrier grégorien. Pour plus d'informations sur les modèles de cron, voir la documentation "Modèle de cron".</p>
+<p> Les temps actifs/inactifs peuvent chevaucher la période donnée. Par exemple, un horaire peut devenir actif à 55 heures et inactif à 5 heures (donc actif pendant 10 minutes). Notez qu'il est possible, bien que peu utile, de définir des schémas de cron qui ne s'activent et ne s'inactivent pas proprement (c'est-à-dire qu'ils peuvent s'activer plusieurs fois avant d'être inactifs et vice versa).</p>
 
-<p>To save a scheduled event, click the <img src="images/save.png"/> icon at the top right. To delete an existing event, click the <img src="images/delete.png"/> icon.</p>
+<p> Pour enregistrer un événement programmé, cliquez sur l'icône <img src="images/save.png"/> en haut à droite. Pour supprimer un événement existant, cliquez sur l'icône <img src="images/delete.png"/>.</p>

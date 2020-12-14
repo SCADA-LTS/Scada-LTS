@@ -1,30 +1,23 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>
-  The VMStat data source is used to monitor various performance aspects of a *nix host. When the data source starts a
-  process is initiated that runs the vmstat program, and the output from that process is monitored.
-</p>
+<h1>Vue d'ensemble</h1>
+<p>La source de données VMStat est utilisée pour surveiller divers aspects des performances d'un hôte *nix. Lorsque la source de données démarre, un processus est lancé qui exécute le programme vmstat, et la sortie de ce processus est surveillée.</p>
 
 <h1>Configuration</h1>
-<p>
-  Every data source requires a <b>Name</b>, which can be any description. The <b>Poll seconds</b> setting determines 
-  how often the vmstat process will report data back to ScadaBR. The <b>Output scale</b> can be set to automatically 
-  adjust byte values to different scales, including bytes, k, KB, m, and MB.
-</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. Le paramètre <b>Les secondes du sondage</b> détermine la fréquence à laquelle le processus vmstat rapportera les données à Scada-LTS. Le paramètre <b>Échelle de sortie</b> peut être réglé pour ajuster automatiquement les valeurs d'octets à différentes échelles, y compris les octets, k, KB, m et MB.</p>

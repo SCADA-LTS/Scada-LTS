@@ -1,59 +1,58 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Scada-LTS - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<p>ScadaBR provides the ability to directly access the system's database for both querying and updating. This facility is provided primarily for troubleshooting or system repair. It is not appropriate for regular use due to the risk of data corruption.</p>
-<p>Only valid individual SQL statements may be submitted. Do not end your statements with ';' characters.</p>
+<p>Scada-LTS offre la possibilité d'accéder directement à la base de données du système, tant pour l'interroger que pour la mettre à jour. Cette fonction est principalement destinée au dépannage ou à la réparation du système. Elle n'est pas appropriée pour une utilisation régulière en raison du risque de corruption des données.</p>
+<p>Seules les déclarations SQL individuelles valides peuvent être soumises. Ne terminez pas vos déclarations par des caractères " ;".</p>
 
-<h1>Available tables</h1>
-<p>The following is a list of all tables in the ScadaBR database:</p>
+<h1>Tableaux disponibles</h1>
+<p>Voici une liste de toutes les tables de la base de données Scada-LTS:</p>
 <ul>
-  <li>compoundEventDetectors</li>
-  <li>dataPoints</li>
-  <li>dataPointUsers</li>
-  <li>dataSources</li>
-  <li>dataSourceUsers</li>
-  <li>eventHandlers</li>
-  <li>events</li>
-  <li>mailingListInactive</li>
-  <li>mailingListMembers</li>
-  <li>mailingLists</li>
-  <li>maintenanceEvents</li>
-  <li>mangoViews</li>
-  <li>mangoViewUsers</li>
-  <li>pointEventDetectors</li>
-  <li>pointHierarchy</li>
-  <li>pointLinks</li>
-  <li>pointValueAnnotations</li>
-  <li>pointValues</li>
-  <li>publishers</li>
-  <li>reportInstanceData</li>
-  <li>reportInstanceDataAnnotations</li>
-  <li>reportInstanceEvents</li>
-  <li>reportInstancePoints</li>
-  <li>reportInstanceUserComments</li>
-  <li>reportInstances</li>
-  <li>reports</li>
-  <li>silencedEvents</li>
-  <li>scheduledEvents</li>
-  <li>systemSettings</li>
-  <li>users</li>
-  <li>userComments</li>
-  <li>watchListPoints</li>
-  <li>watchLists</li>
+  <li>Détecteursd'événementscomposés</li>
+  <li>Points de données</li>
+  <li>Utilisateurs des points de données</li>
+  <li>Sources des données</li>
+  <li>Source des données Utilisateurs</li>
+  <li>Gestionnaires d'événements</li>
+  <li>événements</li>
+  <li>Liste de diffusion inactive</li>
+  <li>Membres de la liste de diffusion</li>
+  <li>Listes de diffusion</li>
+  <li>maintenance Événements</li>
+  <li>Points de vue Scada−LTS</li>
+  <li>Points de vue des utilisateurs Scada-LTS</li>
+  <li>point Détecteurs d'événements</li>
+  <li>point Hiérarchie</li>
+  <li>point Liens</li>
+  <li>point Valeur Annotations</li>
+  <li>point valeurs</li>
+  <li>éditeurs</li>
+  <li>rapport Données de l'Instance</li>
+  <li>rapport Annotations des données de l'Instance</li>
+  <li>rapport Événements de l'Instance</li>
+  <li>rapport Points d'Instance</li>
+  <li>rapport Commentaires des utilisateurs de l'Instance</li>
+  <li>rapport l'Instance</li>
+  <li>rapports</li>
+  <li>rapport Commentaires des utilisateurs de l'Instance</li>
+  <li>Événements prévus</li>
+  <li>Paramètres du système</li>
+  <li>utilisateurs</li>
+  <li>Commentaires des utilisateurs</li>
+  <li>voir la liste des points</li>
+  <li>Liste de suveillance</li>
 </ul>
-

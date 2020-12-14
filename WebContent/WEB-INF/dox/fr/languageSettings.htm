@@ -1,55 +1,42 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
 <p>
-  Use the <b>System language</b> setting to change the language the system will use in cases where the language is
-  otherwise unknown. For example, reports and emails are either not associated with a specific user, or are associated
-  with multiple users. The system language will be used in these situations.
+  Utilisez le paramètre <b>Langue du système</b> pour changer la langue que le système utilisera dans les cas où la langue est autrement inconnue. Par exemple, les rapports et les courriels ne sont pas associés à un utilisateur spécifique ou sont associés à plusieurs utilisateurs. La langue du système sera utilisée dans ces situations.
 </p>
 
 <p>
-  Note that ScadaBR uses many toolkits and such that are not i18n, and so you may still receive rare messages that appear
-  in English only.
+  Notez que Scada-LTS utilise de nombreuses boîtes à outils et autres qui ne sont pas i18n, et vous pouvez donc encore recevoir de rares messages qui n'apparaissent qu'en anglais.
 </p>
 
-<h1>Creating a new translation</h1>
+<h1>Créer une nouvelle traduction</h1>
 <p>
-  ScadaBR is a fully multilingual-capable system. If ScadaBR does not ship with a desired language, it is easy to make a
-  translation file so that at least your instance "speaks" the language you need. To add a language, first edit the 
-  "WEB-INF/classes/i18n.properties" file by adding the information about the language you wish to add. The format for 
-  data is "&lt;language code&gt;=&lt;language name&gt;", where "language code" is the ISO 639-1 code for the language,
-  and "language name" is the name of the language as it is known in its own language. This will add the language to the
-  list of known languages within the system 
+  Scada-LTS est un système entièrement multilingue. Si ScadaBR n'est pas livré dans la langue souhaitée, il est facile de créer un fichier de traduction afin qu'au moins votre instance "parle" la langue dont vous avez besoin. Pour ajouter une langue, il faut d'abord éditer le fichier "WEB-INF/classes/i18n.properties" en ajoutant les informations sur la langue que vous souhaitez ajouter. Le format des données est "&lt;code de la langue&gt;=&lt;nom de la langue&gt;", où "code de la langue" est le code ISO 639-1 de la langue, et "nom de la langue" est le nom de la langue tel qu'il est connu dans sa propre langue. La langue sera ainsi ajoutée à la liste des langues connues dans le système.
 </p>
 
 <p>
-  Now, a list of literal translations must be prepared. Create a new file in the "WEB-INF/classes/" directory called
-  "messages_&lt;language code&gt;.properties". To simplify the process it is helpful to copy the contents of the English
-  literals file, and make translations as necessary.
+  Maintenant, il faut préparer une liste de traductions littérales. Créez un nouveau fichier dans le répertoire "WEB-INF/classes/" appelé "messages_&lt;code langue&gt;.properties". Pour simplifier le processus, il est utile de copier le contenu du fichier des littéraux anglais et de faire les traductions nécessaires.
 </p>
 
 <p>
-  Finally, you should translate the contextual documentation (such as the document that you are viewing right now). To
-  do so, create a new directory under "WEB-INF/dox/" named after the language code, and make a translated version of 
-  all of the documents that are under the English ("en") directory.
+  Enfin, vous devez traduire la documentation contextuelle (comme le document que vous consultez en ce moment). Pour ce faire, créez un nouveau répertoire sous "WEB-INF/dox/" nommé d'après le code de langue, et faites une version traduite de tous les documents qui se trouvent sous le répertoire anglais ("en").
 </p>
 
 <p>
-  To ensure that your translation file persists across new versions of ScadaBR, please contribute it back to Serotonin
-  Software where it will be merged into the main source pool.
+  Pour vous assurer que votre fichier de traduction persiste dans les nouvelles versions de Scada-LTS, veuillez le renvoyer à Serotonin Software où il sera fusionné dans le pool de sources principal.
 </p>
