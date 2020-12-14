@@ -131,13 +131,18 @@ public class EventHandlerAPI {
     }
 
     @PutMapping(value = "/update/{typeId}/{typeRef1}/{typeRef2}", consumes = "application/json")
-    public ResponseEntity<EventHandlerVO> updateEventHandler(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerVO handler, HttpServletRequest request) {
+    public ResponseEntity<String> updateEventHandler(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerVO handler, HttpServletRequest request) {
         LOG.info("/api/eventHandler/update/...");
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                EventTypeVO typeVO = new EventTypeVO(typeId, typeRef1, typeRef2);
-                return new ResponseEntity<>(eventHandlerService.saveEventHandler(typeVO, handler), HttpStatus.OK);
+                try {
+                    EventTypeVO typeVO = new EventTypeVO(typeId, typeRef1, typeRef2);
+                    eventHandlerService.saveEventHandler(typeVO, handler);
+                    return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
+                } catch (NullPointerException ex) {
+                    return new ResponseEntity<>("{\"status\":\"warning\"}", HttpStatus.OK);
+                }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

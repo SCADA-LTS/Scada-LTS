@@ -28,15 +28,14 @@
     <v-treeview dense :items="items" activatable :load-children="fetchUsers">
       <template v-slot:append="{ item, open }">
         <v-row align="center" class="d-flex" v-if="!item.children">
-          <input type="text" v-model="eventDetectorId"/>
           <v-checkbox 
-            v-model="item.email" 
+            v-model="item.mail.active" 
             on-icon="mdi-email"
             off-icon="mdi-email-outline"
             @click="watchPointChange(item)"></v-checkbox>
             <!-- mdi-Android-messages as alternative -->
           <v-checkbox 
-            v-model="item.sms" 
+            v-model="item.sms.active" 
             on-icon="mdi-cellphone"
             off-icon="mdi-cellphone-off"
             @click="watchPointChange(item)" disabled></v-checkbox>
@@ -54,7 +53,6 @@ export default {
   data() {
     return {
       items: [ ],
-      eventDetectorId: 5,
       activeMailingList: undefined,
       mailingLists: undefined,
       eventHandlers: undefined,
@@ -89,22 +87,23 @@ export default {
       console.log(item);
       let dp = await this.$store.dispatch("getPlcDataPoints", item.id);
       dp.forEach(e => {
-        let i = { id: e.id, name: e.name, email: this.checkEmailCheckbox(e.id), semail:false, sms: false, ssms:false};
-        i.semail = i.email;
+        let i = { id: e.id, name: e.name, mail: {active: false, config: false, handler: null}, sms: {active:false, config: false, handler: null}};
+        i.mail.handler = this.checkEmailCheckbox(e.id);
+        i.mail.active = i.mail.config = i.mail.handler !== -1;
+        
         console.log(i);
         item.children.push(i);
       })
     },
 
     checkEmailCheckbox(itemId) {
-      let find = false;
+      let find = -1;
       this.eventHandlers.forEach(eh => {
         if(eh.eventTypeRef1 == itemId) {
           if(!!eh.recipients) {
             eh.recipients.forEach(r => {
               if(r.referenceId == this.activeMailingList) {
-                find = true;
-                return true;
+                find = { ehId: eh.id, edId: eh.eventTypeRef2 };
               }
             })
           }
@@ -123,28 +122,39 @@ export default {
 
     watchPointChange(item) {
       this.changes = this.changes.filter(element => {return element.id !== item.id});
-      if(item.semail !== item.email) {
+      if(item.mail.active !== item.mail.config) {
         this.changes.push(item);
       }
-
-      console.log(this.changes)
     },
 
     save() {
       if(this.changes.length > 0) {
         this.changes.forEach(change => {
-          if (change.semail) {
-            //TODO: Methods for deleting active mailing list from specific EH
-            console.log("delete from exisitng EH")
+          if (change.mail.handler !== -1) {
+            this.$store.dispatch("updateEventHandler", {
+                ehId: change.mail.handler.ehId,
+                activeMailingList: this.activeMailingList,
+                typeRef1: change.id,
+                typeRef2: change.mail.handler.edId,
+                method:"delete"
+              }).then(() => {this.initEventHandlers(); this.changes = []})
           } else {
             let data = this.checkEhDefinedForDp(change.id);
             if(!!data) {
               console.log(data);
-              //TODO: Methods to add active mailing list to specific EH
-              console.log("Append a new ML to existing EH")
+              this.$store.dispatch("updateEventHandler", {
+                ehId: data.ehId,
+                activeMailingList: this.activeMailingList,
+                typeRef1: change.id,
+                typeRef2: data.edId,
+                method:"add"
+              }).then(() => {this.initEventHandlers(); this.changes = []})
             } else {
-              //TODO: Create a new EH. If PED exist try to append EH for this if not create a new one.
-              console.log("Create a new EH")
+              let payload = {
+                datapointId: change.id,
+                mailingListId: this.activeMailingList
+              }
+              this.$store.dispatch("createEmailEventHandler", payload).then(() => {this.initEventHandlers(); this.changes = []});
             }
           }
         })
@@ -160,17 +170,6 @@ export default {
       })
       return result;
     },
-
-
-    send(item) {
-      let payload = {
-        datapointId: item.id,
-        eventDetectorId: this.eventDetectorId,
-        mailingListId: this.activeMailingList
-      }
-      this.$store.dispatch("createEmailEventHandler", payload);
-    },
-
 
   },
 };

@@ -314,7 +314,7 @@ public class EventService implements MangoEvent {
 	}
 	
 	@Override
-	public EventHandlerVO saveEventHandler(final EventTypeVO type, final EventHandlerVO handler) {
+	public EventHandlerVO saveEventHandler(EventTypeVO type, EventHandlerVO handler) {
 		if (type == null) {
 			return eventDAO.saveEventHandler(0, 0, 0, handler);
 		} else {

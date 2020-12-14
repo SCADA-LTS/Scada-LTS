@@ -959,7 +959,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	//TODO rewrite because insert does not requires select
-	public EventHandlerVO saveEventHandler(final int typeId,final int typeRef1, final int typeRef2, final EventHandlerVO handler) {
+	public EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
 			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
 			return getEventHandler(id);
