@@ -1,68 +1,42 @@
-import Axios from "axios"
-
+/**
+ * PLC Sms and Email Notification Vuex Store
+ * 
+ * Vue bussines logic for SMS and Email notification page.
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @since 2.5.0
+ * 
+ */
 const storeAlarmsNotifications = {
-    state: {
-        apiUrl: './api',
-        eventHandlers: [],
+    state: { },
 
-    },
-
-    mutations: {
-        SET_EVENT_HANDLERS(state, eventHandlers) {
-            state.eventHandlers = eventHandlers;
-        }
-
-    },
+    mutations: { },
 
     actions: {
-        getPlcDataPoints(context, datasourceId) {
-            return new Promise((resolve, reject) => {
-                Axios.get(`${context.state.apiUrl}/datapoint/${datasourceId}/getAllPlc`).then(response => {
-                    if(response.status === 200) {
-                        resolve(response.data)
-                    } else {
-                        reject(false)
-                    }
-                }).catch(error => {
-                    console.error(error)
-                    reject(false)
-                })
-            })
+        getPlcDataPoints({dispatch}, datasourceId) {
+            return dispatch("requestGet", `/datapoint/${datasourceId}/getAllPlc`)
         },
 
-        getPlcEventHandlers(context) {
-            return new Promise((resolve, reject) => {
-                Axios.get(`${context.state.apiUrl}/eventHandler/getAllPlc`).then(response => {
-                    if(response.status === 200) {
-                        context.commit("SET_EVENT_HANDLERS", response.data);
-                        resolve(response.data) 
-                    } else {
-                        reject(false)
-                    }
-                }).catch(error => {
-                    console.error(error)
-                    reject(false)
-                })
-            })
+        //Event Handlers
+        getPlcEventHandlers({dispatch}) {
+            return dispatch("requestGet", "/eventHandler/getAllPlc");
         },
 
-
-        getAllMailingLists(context) {
-            return new Promise((resolve, reject) => {
-                Axios.get(`${context.state.apiUrl}/mailingList/getAll`).then(response => {
-                    if(response.status === 200) {
-                        resolve(response.data)
-                    } else {
-                        reject(false)
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    reject(false);
-                })
-            })
+        getPlcEventHandlerById({dispatch}, eventHandlerId) {
+            return dispatch("requestGet", `/eventHandler/get/id/${eventHandlerId}`);
         },
 
-        createPointEventDetector(context, datapointId) {
+        deleteEventHandler({dispatch}, eventHandlerId) {
+            return dispatch("requestDelete", `/eventHandler/delete/id/${eventHandlerId}`);
+        },
+
+        //Mailing Lists
+        getAllMailingLists({dispatch}) {
+            return dispatch("requestGet", "/mailingList/getAll");
+        },
+
+        //Event detectors
+        createPointEventDetector({dispatch}, datapointId) {
             let body = {
                 xid: `PEDPLC_${datapointId}`,
                 alias: `PlcDetector_${datapointId}`,
@@ -71,34 +45,15 @@ const storeAlarmsNotifications = {
                 durationType: 2,
                 binartState: true
             };
-            return new Promise((resolve, reject) => {
-                Axios.post(`${context.state.apiUrl}/eventDetector/set/binary/state/${datapointId}`, body).then(response => {
-                    if(response.status === 200) {
-                        resolve(response.data)
-                    } else {
-                        reject(false)
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    reject(false);
-                })
+
+            return dispatch("requestPost", { 
+                url: `/eventDetector/set/binary/state/${datapointId}`,
+                data: body,
             })
         },
 
-
-        getEventHandlerById(context, eventHandlerId) {
-            return new Promise((resolve, reject) => {
-                Axios.get(`${context.state.apiUrl}/eventHandler/get/id/${eventHandlerId}`).then(response => {
-                    if(response.status === 200) {
-                        resolve(response.data);
-                    } else {
-                        reject(false);
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    reject(false);
-                })
-            })
+        deleteEventDetector({dispatch}, payload) {
+            return dispatch("requestDelete", `/eventDetector/delete/${payload.dpId}/${payload.edId}`);
         },
 
         deleteMailingListFromEventHandler(context, payload) {
@@ -122,76 +77,34 @@ const storeAlarmsNotifications = {
             return payload.eventHandler;
         },
 
-        async updateEventHandler(context, payload) {
-            let eventHandler = await context.dispatch("getEventHandlerById", payload.ehId);
-            console.log(eventHandler);
+        async updateEventHandler({dispatch}, payload) {
+            let eventHandler = await dispatch("getPlcEventHandlerById", payload.ehId);
+
             if(payload.method === "add") {
-                eventHandler = await context.dispatch("addMailingListToEventHandler", {
+                eventHandler = await dispatch("addMailingListToEventHandler", {
                     eventHandler: eventHandler, activeMailingList: payload.activeMailingList
                 });
             } else if (payload.method === "delete") {
-                eventHandler = await context.dispatch("deleteMailingListFromEventHandler", {
+                eventHandler = await dispatch("deleteMailingListFromEventHandler", {
                     eventHandler: eventHandler, activeMailingList: payload.activeMailingList
                 });
             }
-            console.log(eventHandler);
 
             if(eventHandler.activeRecipients.length === 0 ) {
-                let ehStatus = await context.dispatch("deleteEventHandler", eventHandler.id);
-                let edStatus = await context.dispatch("deleteEventDetector", {dpId: payload.typeRef1,edId:payload.typeRef2});
+                let ehStatus = await dispatch("deleteEventHandler", eventHandler.id);
+                let edStatus = await dispatch("deleteEventDetector", {dpId: payload.typeRef1,edId:payload.typeRef2});
                 return ehStatus && edStatus;
             } else {
-                return new Promise((resolve, reject) => {
-                    Axios.put(`${context.state.apiUrl}/eventHandler/update/1/${payload.typeRef1}/${payload.typeRef2}`, eventHandler).then(response => {
-                        console.log(response)
-                        if(response.status === 200) {
-                            resolve(true);
-                        } else {
-                            reject(false);
-                        }
-                    }).catch(error => {
-                        console.error(error);
-                        reject(false);
-                    })
-                })
-            }        
+                return dispatch("requestPut", {
+                    url: `/eventHandler/update/1/${payload.typeRef1}/${payload.typeRef2}`, 
+                    data: eventHandler
+                });
+            }  
         },
 
-        deleteEventHandler(context, eventHandlerId) {
-            return new Promise((resolve, reject) => {
-                Axios.delete(`${context.state.apiUrl}/eventHandler/delete/id/${eventHandlerId}`).then(response => {
-                    if(response.status === 200) {
-                        resolve(true);
-                    } else {
-                        reject(false);
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    reject(false);
-                })
-            })
-        },
+        async createEmailEventHandler({dispatch}, payload) {
 
-        deleteEventDetector(context, payload) {
-            return new Promise((resolve, reject) => {
-                Axios.delete(`${context.state.apiUrl}/eventDetector/delete/${payload.dpId}/${payload.edId}`).then(response => {
-                    if(response.status === 200) {
-                        resolve(true);
-                    } else {
-                        reject(false);
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    reject(false);
-                })
-            })
-        },
-
-
-
-        async createEmailEventHandler(context, payload) {
-
-            let pedId = await context.dispatch("createPointEventDetector", payload.datapointId);
+            let pedId = await dispatch("createPointEventDetector", payload.datapointId);
             let edId = pedId.id;
 
             let dpId = payload.datapointId;
@@ -216,21 +129,11 @@ const storeAlarmsNotifications = {
                 inactiveRecipients: null
             }
 
-            return new Promise((resolve, reject) => {
-                Axios.post(`${context.state.apiUrl}/eventHandler/set/1/${dpId}/${edId}/2`, body).then(response => {
-                    if(response.status === 200) {
-                        resolve(true)
-                    } else {
-                        reject(false)
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    reject(false);
-                })
-            })
-
+            return dispatch("requestPost", {
+                url: `/eventHandler/set/1/${dpId}/${edId}/2`,
+                data: body,
+            });
         }
-
     },
 
     getters: {

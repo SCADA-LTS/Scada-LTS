@@ -9,6 +9,8 @@
   "plcalarms.alarm.inactive":"Alarm is gone",
   "plcalarms.alarm.active":"Alarm triggered",
   "plcalarms.alarm.acknowledge": "Alarm acknowledge",
+  "plcalarms.notification.title": "PLC Alarms Notification List",
+  "plcalarms.notification.select.mailinglist": "Select mailing list",
   "modernwatchlist.chart.panel.live": "Live",
   "modernwatchlist.chart.panel.live.tooltip": "Display chart with live update for each Data Point",
   "modernwatchlist.chart.panel.static": "Static",
