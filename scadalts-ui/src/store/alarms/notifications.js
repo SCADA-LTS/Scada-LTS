@@ -45,6 +45,7 @@ const storeAlarmsNotifications = {
                 durationType: 2,
                 binartState: true
             };
+            //TODO: Prepare configuration box for that field. 
 
             return dispatch("requestPost", { 
                 url: `/eventDetector/set/binary/state/${datapointId}`,
