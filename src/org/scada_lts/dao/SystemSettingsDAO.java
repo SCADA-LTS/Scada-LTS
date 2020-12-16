@@ -20,6 +20,7 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.utils.ColorUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
@@ -339,6 +340,8 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+
+		DEFAULT_VALUES.put(DEFAULT_LOGGING_TYPE, DataPointVO.LoggingTypes.ON_CHANGE);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

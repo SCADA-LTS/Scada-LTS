@@ -4,7 +4,7 @@
 import Vuex from 'vuex'
 import { expect } from 'chai'
 import { createLocalVue, mount } from '@vue/test-utils'
-import DefaultLoggingTypeSettingsComponent from '@/views/SystemSettings/DefaultLoggTypeComponent'
+import DefaultLoggingTypeSettingsComponent from '@/views/SystemSettings/DefaultLoggingTypeComponent'
 import i18n from '@/i18n'
 
 const localVue = createLocalVue();

@@ -275,7 +275,7 @@ import SystemEventTypesComponent from "./SystemEventTypesComponent";
 import EmailSettingsComponent from "./EmailSettingsComponent";
 import HttpSettingsComponent from "./HttpSettingsComponent";
 import MiscSettingsComponent from "./MiscSettingsComponent";
-import DefaultLoggingTypeSettingsComponent from "./DefaultLoggTypeComponent";
+import DefaultLoggingTypeSettingsComponent from "./DefaultLoggingTypeComponent";
 import ScadaConfigurationComponent from "./ScadaConfigurationComponent";
 import { keys } from "@amcharts/amcharts4/.internal/core/utils/Object";
 

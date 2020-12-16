@@ -58,7 +58,7 @@ public class SystemSettingsService {
 
     public Map<String, Object> getDefaultLoggingType() {
         Map<String, Object> response = new HashMap<>();
-        response.put("defaultLoggingType", SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE, DataPointVO.LoggingTypes.ON_CHANGE));
+        response.put("defaultLoggingType", SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
         return response;
     }
 

@@ -98,8 +98,8 @@ export default {
     sumarizeDataChanges() {
       let data = [{
         label: `systemsettings.loggingtype.value`,
-        originalData: this.defaultLoggingTypeStore,
-        changedData: this.defaultLoggingType
+        originalData: this.loggingTypeList[this.defaultLoggingTypeStore-1].label,
+        changedData: this.loggingTypeList[this.defaultLoggingType-1].label
       }];
       return data;
     },
