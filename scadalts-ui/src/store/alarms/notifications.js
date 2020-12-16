@@ -8,7 +8,30 @@
  * 
  */
 const storeAlarmsNotifications = {
-    state: { },
+    state: { 
+        pedTemplate: {
+            xid: "PED-PLC",
+            alias: "PlcEventDetector",
+            alarmLevel: 0,
+            duration: 0,
+            durationType: 1,
+            binartState: true
+        },
+        ehTemplate: {
+            id: -1,
+            xid: `PLC_0001`,
+            alias: `PLC-EventHandler`,
+            disabled: false,
+            activeRecipients: null,
+            sendEscalation: false,
+            escalationDelayType: 1,
+            escalationDelay: 0,
+            escalationRecipients: null,
+            sendInactive: false,
+            inactiveOverride: false,
+            inactiveRecipients: null
+        },
+    },
 
     mutations: { },
 
@@ -36,20 +59,13 @@ const storeAlarmsNotifications = {
         },
 
         //Event detectors
-        createPointEventDetector({dispatch}, datapointId) {
-            let body = {
-                xid: `PEDPLC_${datapointId}`,
-                alias: `PlcDetector_${datapointId}`,
-                alarmLevel: 2,
-                duration: 10,
-                durationType: 2,
-                binartState: true
-            };
-            //TODO: Prepare configuration box for that field. 
-
+        createPointEventDetector({state, dispatch}, datapointId) {
+            state.pedTemplate.xid = state.pedTemplate.xid + `_${datapointId}`
+            state.pedTemplate.alias = state.pedTemplate.alias + `_${datapointId}`
+            
             return dispatch("requestPost", { 
                 url: `/eventDetector/set/binary/state/${datapointId}`,
-                data: body,
+                data: state.pedTemplate,
             })
         },
 
@@ -103,36 +119,27 @@ const storeAlarmsNotifications = {
             }  
         },
 
-        async createEmailEventHandler({dispatch}, payload) {
+        async createEmailEventHandler({state, dispatch}, payload) {
 
             let pedId = await dispatch("createPointEventDetector", payload.datapointId);
             let edId = pedId.id;
-
             let dpId = payload.datapointId;
             let mlId = payload.mailingListId;
 
-            let body = {
-                id: -1,
-                xid: `EEH_${dpId}_${edId}_${mlId}`,
-                alias: `EEH_${dpId}_${edId}_${mlId}`,
-                disabled: false,
-                activeRecipients: [{
-                    recipientType: 1,
-                    referenceId: mlId,
-                    referenceAddress: null
-                }],
-                sendEscalation: false,
-                escalationDelayType: 1,
-                escalationDelay: 0,
-                escalationRecipients: null,
-                sendInactive: false,
-                inactiveOverride: false,
-                inactiveRecipients: null
-            }
+            state.ehTemplate.xid = "EH_" + state.ehTemplate.xid + `_${dpId}_${edId}_${mlId}`;
+            state.ehTemplate.alias = state.ehTemplate.alias + `_${dpId}_${edId}_${mlId}`;
+
+            let recipientList = [{
+                recipientType: 1,
+                referenceId: mlId,
+                referenceAddress: null
+            }]
+
+            state.ehTemplate.activeRecipients = recipientList;
 
             return dispatch("requestPost", {
                 url: `/eventHandler/set/1/${dpId}/${edId}/2`,
-                data: body,
+                data: state.ehTemplate,
             });
         }
     },

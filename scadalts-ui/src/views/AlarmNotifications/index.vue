@@ -2,34 +2,40 @@
   <div>
     <v-container fluid>
       <v-row align="center">
-        <v-col cols="7" xs="12">
+        <v-col cols="6" xs="12">
           <h1>{{$t("plcalarms.notification.title")}}</h1>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="2" xs="12" class="row justify-end">
           <v-btn elevation="2" fab dark color="primary" v-if="modified.length !== 0" @click="saveConfiguration">
             <v-icon>mdi-content-save</v-icon>
           </v-btn>
+          <CreationSettingsDialog></CreationSettingsDialog>
         </v-col>
         <v-col cols="2" xs="12">
           <v-select
-          @change="changeMailingList"
-          v-model="activeMailingList"
-          :items="mailingLists"
-          item-value="id"
-          item-text="name"
-          :label="$t('plcalarms.notification.select.mailinglist')"
-          solo dense></v-select>
+            @change="changeMailingList"
+            v-model="activeMailingList"
+            :items="mailingLists"
+            item-value="id"
+            item-text="name"
+            :label="$t('plcalarms.notification.select.mailinglist')"
+            :hint="$t('plcalarms.notification.select.mailinglist.hint.1')"
+            persistent-hint solo dense>
+          </v-select>
         </v-col>
         <v-col cols="2" xs="12">
           <v-select
-          @change="changeMailingList"
-          v-model="activeMailingList2"
-          :items="mailingLists"
-          item-value="id"
-          item-text="name"
-          :label="$t('plcalarms.notification.select.mailinglist')"
-          solo dense></v-select>
+            @change="changeMailingList"
+            v-model="activeMailingList2"
+            :items="mailingLists"
+            item-value="id"
+            item-text="name"
+            :label="$t('plcalarms.notification.select.mailinglist')"
+            :hint="$t('plcalarms.notification.select.mailinglist.hint.2')"
+            persistent-hint solo dense>
+          </v-select>
         </v-col>
+        
       </v-row>      
     </v-container>
 
@@ -67,8 +73,14 @@
   </div>
 </template>
 <script>
+import CreationSettingsDialog from './CreationSettings';
+
 export default {
   name: "AlarmNotifications",
+
+  components: {
+    CreationSettingsDialog,
+  },
 
   data() {
     return {
