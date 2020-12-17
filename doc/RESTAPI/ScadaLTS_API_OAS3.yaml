@@ -4,11 +4,13 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.4.0
+  version: 2.5.0
   title: Scada-LTS API
-  description: 'Scada-LTS OpenAPI Specification. All provided REST methods. Complete documentation can be found on the Confluence. https://scada-lts.atlassian.net/wiki/spaces/APIDOC/pages/178716812/REST+API+Documentation'
+  description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
-  contact: {}
+  contact:
+    name: 'Radek - SoftQ Developer'
+    email: 'rjajko@softq.pl'
   license:
     name: 'GPL-2.0'
 paths:
@@ -20,16 +22,16 @@ paths:
       description: 'Login user to the ScadaLTS'
       operationId: 'loginUser'
       parameters:
-      - name: "username"
-        in: 'path'
-        required: true
-        schema: 
-          type: 'string'
-      - name: 'password'
-        in: 'path'
-        required: true
-        schema: 
-          type: 'string'
+        - name: "username"
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'password'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
       responses:
         '200':
           description: 'Logged successful'
@@ -42,11 +44,11 @@ paths:
       description: 'Logout user from Scada-LTS'
       operationId: 'logoutUser'
       parameters:
-      - name: 'username'
-        in: 'path'
-        required: true
-        schema:
-          type: 'string'
+        - name: 'username'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
       responses:
         '200':
           description: 'Logged out succesful'
@@ -58,12 +60,12 @@ paths:
       summary: 'Check if user is logged in'
       description: 'Check if user is logged in'
       operationId: 'http://localhost:8080/ScadaBR/api/auth/isLogged/admin'
-      parameters: 
-      - name: 'username'
-        in: 'path'
-        required: true
-        schema:
-          type: 'string'
+      parameters:
+        - name: 'username'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
       responses:
         '200':
           description: ''
@@ -90,8 +92,1054 @@ paths:
         '200':
           description: ''
           headers: {}
+  /config/replacealert:
+    get:
+      tags:
+        - ConfigAPI
+      responses:
+        '200':
+          description: ''
+  /datapoint/getAll:
+    get:
+      tags:
+        - DataPointAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    xid:
+                      type: string
+  /datasource/getAll:
+    get:
+      tags:
+        - DataSourceAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    xid:
+                      type: string
+  /view/getAll:
+    get:
+      tags:
+        - ViewAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    xid:
+                      type: string
+  /view/getByXid/{xid}:
+    get:
+      tags:
+        - ViewAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    xid:
+                      type: string
+  /view/createView:
+    post:
+      tags:
+        - ViewAPI
+      requestBody:
+        description: Event Handler with Point properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                xid:
+                  type: string
+                imagePath:
+                  type: string
+                size:
+                  type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  xid:
+                    type: string
+                  userId:
+                    type: string
+                  resolution:
+                    type: number
+                  filename:
+                    type: string
+  /pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}:
+    put:
+      tags:
+        - PointHierarchyAPI
+      parameters:
+        - name: 'xid_point'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'xid_folder'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: ''
+  /pointHierarchy/folderMoveTo/{xid_folder}/{new_parent_xid_folder}:
+    put:
+      tags:
+        - PointHierarchyAPI
+      parameters:
+        - name: 'xid_folder'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'new_parent_xid_folder'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: ''
+  /pointHierarchy/changeName/{xid_folder}/{new_name}:
+    put:
+      tags:
+        - PointHierarchyAPI
+      parameters:
+        - name: 'xid_folder'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'new_name'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: ''
+  /pointHierarchy/folderAdd:
+    post:
+      tags:
+        - PointHierarchyAPI
+      requestBody:
+        description: Folder structure
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                xid:
+                  type: string
+                name:
+                  type: string
+                parentId:
+                  type: number
+                parentXid:
+                  type: string
+                pointXids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: ''
+  /pointHierarchy/folderCheckExist/{xid_folder}:
+    get:
+      tags:
+        - PointHierarchyAPI
+      parameters:
+        - name: 'xid_folder'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  xid:
+                    type: string
+                  name:
+                    type: string
+                  parentId:
+                    type: number
+                  parentXid:
+                    type: string
+                  pointXids:
+                    type: array
+                    items:
+                      type: string
+  /pointHierarchy/export:
+    get:
+      tags:
+        - PointHierarchyAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    xidFolder:
+                      type: string
+                    parentXid:
+                      type: string
+                    pointXids:
+                      type: array
+                      items:
+                        type: string
+  /pointHierarchy/deleteFolder/{xid_folder}:
+    post:
+      tags:
+        - PointHierarchyAPI
+      parameters:
+        - name: 'xid_folder'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: ''
+  /pointHierarchy/cacheRefresh:
+    post:
+      tags:
+        - PointHierarchyAPI
+      responses:
+        '200':
+          description: ''
+  /pointHierarchy/checkConsitencyPointHierarchy:
+    get:
+      tags:
+        - PointHierarchyAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    xidPoint:
+                      type: string
+                    xidFolder:
+                      type: string
+                    idFolder:
+                      type: number
+                    folderExist:
+                      type: boolean
+  /point_value/getValue/{xid}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  xid:
+                    type: string
+                  value:
+                    type: string
+                  formattedValue:
+                    type: string
+                  ts:
+                    type: number
+                  type:
+                    type: string
+                  textRenderer:
+                    type: object
+                  chartColour:
+                    type: string
+  /point_value/getValue/id/{id}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  xid:
+                    type: string
+                  value:
+                    type: string
+                  formattedValue:
+                    type: string
+                  ts:
+                    type: number
+                  type:
+                    type: string
+                  textRenderer:
+                    type: object
+                  chartColour:
+                    type: string
+  /point_value/setValue/{xid}/{type}/{value}:
+    post:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'type'
+          description: 'Type 0 -> binary, 1 -> Multistate, 2 -> Double, 3 -> String'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'value'
+          description: 'For binary data acceptable only 0 or 1 value'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /point_value/getValuesFromTime/{ts}/{xid}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'ts'
+          description: 'Time value in Timestamp'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointValuesJSON'
+  /point_value/getValuesFromTime/id/{ts}/{id}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'ts'
+          description: 'Time value in Timestamp'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointValuesJSON'
+  /point_value/getValuesFromTimePeriod/xid/{xid}/{sts}/{ets}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'sts'
+          in: 'path'
+          description: 'Start TimeStamp (sts)'
+          required: true
+          schema:
+            type: number
+        - name: 'ets'
+          in: 'path'
+          description: 'End TimeStamp (ets)'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointValuesJSON'
+  /point_value/getValuesFromTimePeriod/{id}/{sts}/{ets}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'sts'
+          in: 'path'
+          description: 'Start TimeStamp (sts)'
+          required: true
+          schema:
+            type: number
+        - name: 'ets'
+          in: 'path'
+          description: 'End TimeStamp (ets)'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointValuesJSON'
+  /point_value/updateMetaDataPointByScript/{xid}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /point_value/updateMetaDataPointsByScript/{xid}:
+    get:
+      tags:
+        - PointValueAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /point_value/updateAllMetaDataPointsByScript:
+    get:
+      tags:
+        - PointValueAPI
+      responses:
+        '200':
+          description: ''
+  /user/getAll:
+    get:
+      tags:
+        - UserAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    password:
+                      type: string
+                    email:
+                      type: string
+                    admin:
+                      type: boolean
+  /watchlist/getAll:
+    get:
+      tags:
+        - WatchListAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    xid:
+                      type: string
+                    name:
+                      type: string
+  /watchlist/getNames:
+    get:
+      tags:
+        - WatchListAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+  /watchlist/getPoints/{xid}:
+    get:
+      tags:
+        - WatchListAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+  /watchlist/getChartData/{xid}/{fromData}/{toData}:
+    get:
+      tags:
+        - WatchListAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'fromData'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'toData'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  xid:
+                    type: string
+                  values:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        xid:
+                          type: string
+                        type:
+                          type: string
+                        formatedValue:
+                          type: string
+                        value:
+                          type: string
+                        textRenderer:
+                          type: object
+                        chartColour:
+                          type: string
+  /api/point_properties/getProperties/{xid}:
+    get:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointPropertiesJSON'
+  /api/point_properties/getPropertiesBaseOnId/{id}:
+    get:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointPropertiesJSON'
+
+  /check-time-reactivation/{idDs}:
+    get:
+      tags:
+        - ReactivationDsAPI
+      parameters:
+        - name: 'idDs'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+  /check-enable-reactivation/{idDs}:
+    get:
+      tags:
+        - ReactivationDsAPI
+      parameters:
+        - name: 'idDs'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+  /disable-reactivation/{idDs}:
+    get:
+      tags:
+        - ReactivationDsAPI
+      parameters:
+        - name: 'idDs'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+  /enable-reactivation/{idDs}:
+    get:
+      tags:
+        - ReactivationDsAPI
+      parameters:
+        - name: 'idDs'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+
 
 components:
+  schemas:
+    PointValuesJSON:
+      type: object
+      properties:
+        name:
+          type: string
+        xid:
+          type: string
+        type:
+          type: string
+        fromTs:
+          type: number
+        toTs:
+          type: number
+        textRenderer:
+          type: object
+        chartColour:
+          type: string
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              ts:
+                type: number
+    PointPropertiesJSON:
+      type: object
+      properties:
+        name:
+          type: string
+        extendedName:
+          type: string
+        deviceName:
+          type: string
+        intervalLoggingType:
+          type: number
+        intervalLoggingPeriod:
+          type: number
+        intervalLoggingPeriodType:
+          type: number
+        purgeType:
+          type: number
+        purgePeriod:
+          type: string
+        descConfiguration:
+          type: string
+        dataSourceName:
+          type: string
+        dataSourceXId:
+          type: string
+        dataTypeMessage:
+          type: string
+        chartColour:
+          type: string
+        chartRenderer:
+          type: object
+        discardLowLimit:
+          type: number
+        discardHighLimit:
+          type: number
+        textRenderer:
+          type: string
+        tolerance:
+          type: number
+        typeKey:
+          type: string
+        engineeringUnits:
+          type: number
+
+    EventHandlerPlcDTO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        eventTypeId:
+          type: number
+        eventTypeRef1:
+          type: number
+        eventTypeRef2:
+          type: number
+        recipients:
+          type: array
+          items:
+            type: object
+            properties:
+              recipientType:
+                type: number
+              referenceId:
+                type: number
+              referenceAddress:
+                type: string
+    EventHandlerVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        handlerType:
+          type: number
+        disabled:
+          type: boolean
+        targetPointId:
+          type: number
+        activeAction:
+          type: number
+        activeValueToSet:
+          type: string
+        activePointId:
+          type:  number
+        inactiveAction:
+          type: number
+        inactiveValueToSet:
+          type: string
+        inactivePointId:
+          type: number
+        activeRecipients:
+          type: array
+          items:
+            type: object
+            properties:
+              recipientType:
+                type: number
+              referenceId:
+                type: number
+              referenceAddress:
+                type: string
+        sendEscalation:
+          type: boolean
+        escalationDelayType:
+          type: number
+        escalationDelay:
+          type: number
+        escalationRecipients:
+          type: array
+          items:
+            type: string
+        sendInactive:
+          type: boolean
+        inactiveOverride:
+          type: boolean
+        inactiveRecipients:
+          type: array
+          items:
+            type: string
+        activeProcessCommand:
+          type: string
+        inactiveProcessCommand:
+          type: string
+        activeScriptCommand:
+          type: number
+        inactiveScriptCommand:
+          type: number
+        typeKey:
+          type: string
+        message:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: string
+    PointEventDetectorVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        detectorType:
+          type: number
+        alarmLevel:
+          type: number
+        limit:
+          type: number
+        duration:
+          type: number
+        durationType:
+          type: number
+        binaryState:
+          type: boolean
+        multistateState:
+          type: number
+        changeCount:
+          type: number
+        alphanumericState:
+          type: number
+        weight:
+          type: number
+        description:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: string
+        eventType:
+          type: object
+          properties:
+            typeId:
+              type: number
+            typeRef1:
+              type: number
+            typeRef2:
+              type: number
+            description:
+              type: object
+              properties:
+                key:
+                  type: string
+                args:
+                  type: array
+                  items:
+                    type: string
+            handlers:
+              type: object
+            alarmLevel:
+              type: number
+            eventDetectorKey:
+              type: string
+        rtnApplicable:
+          type: boolean
+        eventDetectorKey:
+          type: string
+        def:
+          type: object
+          properties:
+            id:
+              type: number
+            name:
+              type: string
+            exportName:
+              type: string
+            nameKey:
+              type: string
+            supportedDataTypes:
+              type: array
+              items:
+                type: number
+        typeKey:
+          type: string
+        durationDescription:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: object
+    MailingList:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        entries:
+          type: array
+          items:
+            type: object
+        inactiveIntervals:
+          type: array
+          items:
+            type: object
+        recipientType:
+          type: number
+        referenceId:
+          type: number
+        referenceAddress:
+          type: string
   parameters:
     Authorization:
       name: Authorization
