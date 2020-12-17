@@ -22,7 +22,7 @@ paths:
       description: 'Login user to the ScadaLTS'
       operationId: 'loginUser'
       parameters:
-        - name: "username"
+        - name: username
           in: 'path'
           required: true
           schema:
@@ -1255,6 +1255,315 @@ paths:
       responses:
         '200':
           description: ''
+  /systemSettings/getSettings:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  databaseType:
+                    type: object
+                  systemEventTypes:
+                    type: array
+                    items:
+                      type: object
+                  auditEventTypes:
+                    type: array
+                    items:
+                      type: object
+                  emailSettings:
+                    type: object
+                  scadaConfig:
+                    type: object
+                  systemInfoSettings:
+                    type: object
+                  httpSettings:
+                    type: object
+                  miscSettings:
+                    type: object
+  /systemSettings/getEmail:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsEmailJSON'
+  /systemSettings/saveEmail:
+    post:
+      tags:
+        - SystemSettingsAPI
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsEmailJSON'
+      responses:
+        '200':
+          description: ''
+  /systemSettings/sendTestEmail:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+  /systemSettings/getHttp:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsHttpJSON'
+  /systemSettings/saveHttp:
+    post:
+      tags:
+        - SystemSettingsAPI
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsHttpJSON'
+      responses:
+        '200':
+          description: ''
+  /systemSettings/getMisc:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsMiscJSON'
+  /systemSettings/saveMisc:
+    post:
+      tags:
+        - SystemSettingsAPI
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsMiscJSON'
+      responses:
+        '200':
+          description: ''
+  /systemSettings/getAuditEventAlarmLevels:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettingsDualJSON'
+  /systemSettings/saveAuditEventAlarmLevels:
+    post:
+      tags:
+        - SystemSettingsAPI
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SettingsEmailJSON'
+      responses:
+        '200':
+          description: ''
+  /systemSettings/getSystemEventAlarmLevels:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettingsDualJSON'
+  /systemSettings/saveSystemEventAlarmLevels:
+    post:
+      tags:
+        - SystemSettingsAPI
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SettingsEmailJSON'
+      responses:
+        '200':
+          description: ''
+  /systemSettings/getSystemInfo:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsSystemInfoJSON'
+  /systemSettings/saveSystemInfo:
+    post:
+      tags:
+        - SystemSettingsAPI
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsSystemInfoJSON'
+      responses:
+        '200':
+          description: ''
+  /systemSettings/getDatabaseType:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  databaseType:
+                    type: string
+  /systemSettings/saveDatabaseType/{databaseType}:
+    get:
+      tags:
+        - SystemSettingsAPI
+      parameters:
+        - name: 'databaseType'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+  /systemSettings/getDatabaseSize:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalSize:
+                    type: string
+                  filedataSize:
+                    type: number
+                  topPoints:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        pointId:
+                          type: number
+                        pointName: 
+                          type: string
+                        count: 
+                          type: number
+  /systemSettings/purgeData:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /systemSettings/getStartupTime:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  startupTime:
+                    type: string
+  /systemSettings/getSchemaVersion:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schemaVersion:
+                    type: string
+  /systemSettings/getScadaConfig:
+    get:
+      tags:
+        - SystemSettingsAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemScadaConfigJSON'
+                
 
 components:
   schemas:
@@ -1327,6 +1636,112 @@ components:
           type: string
         engineeringUnits:
           type: number
+    SettingsEmailJSON:
+      type: object
+      properties:
+        auth:
+          type: boolean
+        tls:
+          type: boolean
+        contentType:
+          type: number
+        port:
+          type: number
+        from:
+          type: string
+        host:
+          type: string
+        name:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    SettingsHttpJSON:
+      type: object
+      properties:
+        useProxy:
+          type: boolean
+        port:
+          type: number
+        host:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    SettingsMiscJSON:
+      type: object
+      properties:
+        groveLogging: 
+          type: boolean
+        eventPurgePeriodType:
+          type: number
+        eventPurgePeriods:
+          type: number
+        reportPurgePeriodType:
+          type: number
+        reportPurgePeriods:
+          type: number
+        uiPerformance:
+          type: number
+        futureDateLimitPeriodType:
+          type: number
+        futureDateLimitPeriods:
+          type: number
+    SettingsDualJSON:
+      type: object
+      properties:
+        i1:
+          type: number
+        i2:
+          type: number
+        translation:
+          type: string
+    SettingsSystemInfoJSON:
+      type: object
+      properties:
+        newVersionNotficationLevel: 
+          type: string
+        instanceDescription:
+          type: string
+        language:
+          type: string
+    SystemScadaConfigJSON:
+      type: object
+      properties:
+        apiReplaceAlertOnView:
+          type: boolean
+        cacheEnable:
+          type: boolean
+        startUpdateUnsilencedAlarmLevel:
+          type: number
+        startUpdateEventDetectors:
+          type: number
+        startUpdatePendingEvents:
+          type: number
+        millisSecondsPeriodUpdateUnsilencedAlarmLevel:
+          type: number
+        millisSecondsPeriodUpdateEventDetectors:
+          type: number
+        millisSecondsPeriodUpdatePendingEvents:
+          type: number
+        croneUpdateCachePointHierarchy:
+          type: string
+        croneUpdateDataSourcesPoints:
+          type: string
+        useCacheDataSourcePointsWhenSystemIsReady:
+          type: boolean
+        useAcl:
+          type: boolean
+        aclServer:
+          type: string
+        doNotCreateEventsForEmailError:
+          type: boolean
+        httpRetriverSleepCheckToReactivationWhenStart:
+          type: boolean
+        httpRetriverDoNotAllowEnableReactivation:
+          type: boolean
 
     EventHandlerPlcDTO:
       type: object
