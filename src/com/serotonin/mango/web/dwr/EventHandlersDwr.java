@@ -274,6 +274,29 @@ public class EventHandlersDwr extends BaseDwr {
 				handlerId, xid, alias, disabled);
 	}
 
+	public DwrResponseI18n saveSmsEventHandler(int eventSourceId,
+			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
+			String alias, boolean disabled,
+			List<RecipientListEntryBean> activeRecipients,
+			boolean sendEscalation, int escalationDelayType,
+			int escalationDelay,
+			List<RecipientListEntryBean> escalationRecipients,
+			boolean sendInactive, boolean inactiveOverride,
+			List<RecipientListEntryBean> inactiveRecipients) {
+		EventHandlerVO handler = new EventHandlerVO();
+		handler.setHandlerType(EventHandlerVO.TYPE_SMS);
+		handler.setActiveRecipients(activeRecipients);
+		handler.setSendEscalation(sendEscalation);
+		handler.setEscalationDelayType(escalationDelayType);
+		handler.setEscalationDelay(escalationDelay);
+		handler.setEscalationRecipients(escalationRecipients);
+		handler.setSendInactive(sendInactive);
+		handler.setInactiveOverride(inactiveOverride);
+		handler.setInactiveRecipients(inactiveRecipients);
+		return save(eventSourceId, eventTypeRef1, eventTypeRef2, handler,
+				handlerId, xid, alias, disabled);
+	}
+
 	public DwrResponseI18n saveProcessEventHandler(int eventSourceId,
 			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
 			String alias, boolean disabled, String activeProcessCommand,
