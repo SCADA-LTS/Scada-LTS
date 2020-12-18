@@ -12,10 +12,10 @@ public class V2_5__ScheduledExecuteInactiveEvent extends BaseJavaMigration {
 
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
-        jdbcTmp.execute("ALTER TABLE mailinglists ADD cronPattern VARCHAR(100) COMMENT 'cron pattern';");
-        jdbcTmp.execute("ALTER TABLE mailinglists ADD collectInactiveEmails BINARY DEFAULT false COMMENT 'Collect inactive emails and send when activated';");
-        jdbcTmp.execute("ALTER TABLE mailinglists ADD dailyLimitSentEmails BINARY DEFAULT false COMMENT 'Daily limit sent emails';");
-        jdbcTmp.execute("ALTER TABLE mailinglists ADD dailyLimitSentEmailsNumber INT DEFAULT 0 COMMENT 'Daily limit sent emails number';");
+        jdbcTmp.execute("ALTER TABLE mailingLists ADD cronPattern VARCHAR(100) COMMENT 'cron pattern';");
+        jdbcTmp.execute("ALTER TABLE mailingLists ADD collectInactiveEmails BINARY DEFAULT false COMMENT 'Collect inactive emails and send when activated';");
+        jdbcTmp.execute("ALTER TABLE mailingLists ADD dailyLimitSentEmails BINARY DEFAULT false COMMENT 'Daily limit sent emails';");
+        jdbcTmp.execute("ALTER TABLE mailingLists ADD dailyLimitSentEmailsNumber INT DEFAULT 0 COMMENT 'Daily limit sent emails number';");
         jdbcTmp.execute("CREATE TABLE scheduledExecuteInactiveEvent (\n" +
                 "  id INT NOT NULL AUTO_INCREMENT,\n" +
                 "  mailingListId INT NOT NULL,\n" +
