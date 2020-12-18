@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.type.ScheduledInactiveEventType;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +46,10 @@ import com.serotonin.timer.TimerTask;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 
 public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient<EventInstance> {
     private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);
@@ -51,6 +57,8 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     private TimerTask escalationTask;
 
     private Set<String> activeRecipients;
+    private ScheduledExecuteInactiveEventService service;
+    private MailingListService mailingListService;
 
     private enum NotificationType {
         ACTIVE("active", "ftl.subject.active"), //
@@ -81,17 +89,52 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
     public EmailHandlerRT(EventHandlerVO vo) {
         this.vo = vo;
+        this.service = ScheduledExecuteInactiveEventService.getInstance();
+        this.mailingListService = new MailingListService();
+    }
+
+    public EmailHandlerRT(EventHandlerVO vo,
+                          ScheduledExecuteInactiveEventService service,
+                          MailingListService mailingListService) {
+        this.vo = vo;
+        this.service = service;
+        this.mailingListService = mailingListService;
     }
 
     public Set<String> getActiveRecipients() {
         return activeRecipients;
     }
 
+    protected Set<String> getActiveRecipients(EventInstance evt) {
+        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
+    }
+
+    protected Set<String> getInactiveRecipients(EventInstance evt) {
+        return mailingListService.getRecipientAddresses(vo.getInactiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
+    }
+
+    protected Set<String> getActiveRecipients(EventInstance evt, CommunicationChannel channel) {
+        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), channel);
+    }
+
     @Override
     public void eventRaised(EventInstance evt) {
+        if(service.isScheduledInactiveEventType(evt)) {
+            eventScheduledRaised(evt, (ScheduledInactiveEventType)evt.getEventType());
+        } else {
+            raised(evt);
+        }
+    }
+
+    private void raised(EventInstance evt) {
+
         // Get the email addresses to send to
-        activeRecipients = new MailingListDao().getRecipientAddresses(vo.getActiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()));
+        activeRecipients = getActiveRecipients(evt);
+
+        service.scheduleEvent(vo, evt);
 
         // Send an email to the active recipients.
         sendEmail(evt, NotificationType.ACTIVE, activeRecipients);
@@ -99,8 +142,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         // If an inactive notification is to be sent, save the active recipients.
         if (vo.isSendInactive()) {
             if (vo.isInactiveOverride())
-                inactiveRecipients = new MailingListDao().getRecipientAddresses(vo.getInactiveRecipients(),
-                        new DateTime(evt.getActiveTimestamp()));
+                inactiveRecipients = getInactiveRecipients(evt);
             else
                 inactiveRecipients = activeRecipients;
         }
@@ -110,6 +152,13 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             long delayMS = Common.getMillis(vo.getEscalationDelayType(), vo.getEscalationDelay());
             escalationTask = new ModelTimeoutTask<EventInstance>(delayMS, this, evt);
         }
+    }
+
+    private void eventScheduledRaised(EventInstance evt, ScheduledInactiveEventType eventType) {
+        activeRecipients = getActiveRecipients(evt, eventType.getCommunicationChannel());
+
+        // Send an email to the active recipients.
+        sendEmail(evt, NotificationType.ACTIVE, activeRecipients);
     }
 
     //

@@ -258,7 +258,7 @@
       
       import com.serotonin.mango.web.dwr.MailingListsDwr;
       import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-      MailingListsDwr.saveMailingList(int, String, String, List<RecipientListEntryBean>, List<Integer>);
+      MailingListsDwr.saveMailingList(int, String, String, List<RecipientListEntryBean>, List<Integer>, boolean, String, boolean, int);
       MailingListsDwr.sendTestEmail(int, String, List<RecipientListEntryBean>);
       
       import com.serotonin.mango.web.dwr.MiscDwr;

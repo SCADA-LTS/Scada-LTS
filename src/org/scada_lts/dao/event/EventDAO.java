@@ -26,6 +26,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.utils.QueryUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -142,6 +145,37 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "from "
 				+ "events e " 
 			    + "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id ";
+
+	private static final String BASIC_EVENT_SELECT_WHERE_ID_IN = ""
+			+"select "
+			+ "e."+COLUMN_NAME_ID+", "
+			+ "e."+COLUMN_NAME_TYPE_ID+", "
+			+ "e."+COLUMN_NAME_TYPE_REF_1+", "
+			+ "e."+COLUMN_NAME_TYPE_REF_2+","
+			+ "e."+COLUMN_NAME_ACTIVE_TS+","
+			+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
+			+ "e."+COLUMN_NAME_RTN_TS+","
+			+ "e."+COLUMN_NAME_RTN_CAUSE+", "
+			+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
+			+ "e."+COLUMN_NAME_MESSAGE+", "
+			+ "e."+COLUMN_NAME_ACT_TS+", "
+			+ "e."+COLUMN_NAME_ACT_USER_ID+", "
+			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+" "
+			+ "from "
+			+ "events e where "
+			+ COLUMN_NAME_ID + " "
+			+ "in (?)";
+
+    private static final String EVENT_HANDLER_SELECT_ID_IN= ""
+            +"select "
+            + COLUMN_NAME_EVENT_HANDLER_ID+", "
+            + COLUMN_NAME_EVENT_HANDLER_XID+", "
+            + COLUMN_NAME_EVENT_HANDLER_ALIAS+", "
+            + COLUMN_NAME_EVENT_HANDLER_DATA+" "
+            + "from "
+            + "eventHandlers where "
+            + COLUMN_NAME_EVENT_HANDLER_ID + " "
+            + "in (?)";
 	
 	private static final String EVENT_INSERT = ""
 			+ "insert events ("
@@ -968,4 +1002,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		DAO.getInstance().getJdbcTemp().update(EVENT_UPDATE_WHERE_ACK_USER_ID, new Object[]{userId});
 	}
+
+	@Transactional(readOnly = true)
+	public List<EventInstance> getAllStatusEvents(Set<Integer> ids) {
+		if(ids.isEmpty())
+			return Collections.emptyList();
+		String args = QueryUtils.getArgsIn(ids.size());
+		String query = BASIC_EVENT_SELECT_WHERE_ID_IN.replace("?", args);
+		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventRowMapper());
+	}
+
 }

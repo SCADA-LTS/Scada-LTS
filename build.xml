@@ -523,6 +523,18 @@
             <test name="com.serotonin.mango.rt.scripting.ContextualizedScriptRTTestsSuite"
                   haltonfailure="yes">
             </test>
+
+			<test name="org.scada_lts.service.ScheduledExecuteInactiveEventServiceTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

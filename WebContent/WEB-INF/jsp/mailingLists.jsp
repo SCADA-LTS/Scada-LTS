@@ -48,7 +48,11 @@
             
             $set("xid", ml.xid);
             $set("name", ml.name);
-            
+            $set("dailyLimitSentEmailsNumber", ml.dailyLimitSentEmailsNumber);
+            $set("cronPattern", ml.cronPattern);
+            $set("collectInactiveEmails", ml.collectInactiveEmails);
+            $set("dailyLimitSentEmails", ml.dailyLimitSentEmails);
+
             dwr.util.removeAllRows("mailingListEntriesTable");
             var entry;
             for (var i=0; i<ml.entries.length; i++) {
@@ -60,22 +64,23 @@
                     appendAddressEntry(entry);
                 }
             }
-            
+
             updateEmptyListMessage();
             updateUserList();
-            
+
             setInactiveIntervals(ml.inactiveIntervals);
-            
+
             setUserMessage();
+            collectInactiveEmails(ml.collectInactiveEmails);
         });
         startImageFader("ml"+ mlId +"Img");
-        
+
         if (mlId == ${NEW_ID})
             hide("deleteMailingListImg");
         else
             show("deleteMailingListImg");
     }
-    
+
     function updateUserList() {
         dwr.util.removeAllOptions($("userList"));
         var availUsers = new Array();
@@ -89,20 +94,21 @@
                     break;
                 }
             }
-            
+
             if (!found)
                 availUsers[availUsers.length] = user;
         }
         dwr.util.addOptions($("userList"), availUsers, "id", "username");
     }
-    
+
     function saveMailingList() {
         setUserMessage();
         hideContextualMessages("mailingListDetails")
         hideGenericMessages("genericMessages");
-        
+
         MailingListsDwr.saveMailingList(editingMailingList.id, $get("xid"), $get("name"), createRecipList(),
-                getInactiveIntervals(), function(response) {
+                getInactiveIntervals(), $get("dailyLimitSentEmails"), $get("cronPattern"),
+                $get("collectInactiveEmails"), $get("dailyLimitSentEmailsNumber"), function(response) {
             if (response.hasMessages)
                 showDwrMessages(response.messages, $("genericMessages"));
             else {
@@ -120,7 +126,7 @@
             }
         });
     }
-    
+
     function sendTestEmail() {
         MailingListsDwr.sendTestEmail(editingMailingList.id, $get("name"), createRecipList(), function(response) {
             stopImageFader("sendTestEmailImg");
@@ -131,7 +137,7 @@
         });
         startImageFader("sendTestEmailImg");
     }
-    
+
     function createRecipList() {
         var recipList = new Array();
         for (var i=0; i<editingMailingList.entries.length; i++) {
@@ -143,7 +149,7 @@
         }
         return recipList;
     }
-    
+
     function setUserMessage(message) {
         if (message) {
             show("userMessage");
@@ -152,15 +158,15 @@
         else
             hide("userMessage");
     }
-    
+
     function appendMailingList(mailingListId) {
         createFromTemplate("ml_TEMPLATE_", mailingListId, "mailingListsTable");
     }
-    
+
     function updateMailingList(ml) {
         $set("ml"+ ml.id +"Name", ml.name);
     }
-    
+
     function createUserEntry() {
         var userId = $get("userList");
         var user = null;
@@ -170,7 +176,7 @@
                 break;
             }
         }
-        
+
         if (user == null)
             alert("<fmt:message key="mailingLists.noUser"/>");
         else {
@@ -185,17 +191,17 @@
         updateUserList();
         updateEmptyListMessage();
     }
-    
+
     function appendUserEntry(userEntry) {
         var content = createFromTemplate("mleUser_TEMPLATE_", userEntry.referenceId, "mailingListEntriesTable");
         setUserImg(userEntry.user.admin, userEntry.user.disabled, $("mle"+ userEntry.referenceId +"Img"));
         $("mle"+ userEntry.referenceId +"Username").innerHTML = userEntry.user.username;
     }
-    
+
     function deleteUserEntry(entryId) {
         // Delete the visual entry.
         $("mailingListEntriesTable").removeChild($("mleUser"+ entryId));
-        
+
         // Delete the list entry.
         for (var i=0; i<editingMailingList.entries.length; i++) {
             if (editingMailingList.entries[i].referenceId == entryId) {
@@ -203,11 +209,11 @@
                 break;
             }
         }
-        
+
         updateUserList();
         updateEmptyListMessage();
     }
-    
+
     function createAddressEntry() {
         var addr = $get("address");
         if (addr == "") {
@@ -223,16 +229,16 @@
         appendAddressEntry(addressEntry);
         updateEmptyListMessage();
     }
-    
+
     function appendAddressEntry(addressEntry) {
         var content = createFromTemplate("mleAddress_TEMPLATE_", addressEntry.referenceId, "mailingListEntriesTable");
         $("mle"+ addressEntry.referenceId +"Address").innerHTML = addressEntry.referenceAddress;
     }
-    
+
     function deleteAddressEntry(entryId) {
         // Delete the visual entry.
         $("mailingListEntriesTable").removeChild($("mleAddress"+ entryId));
-        
+
         // Delete the list entry.
         for (var i=0; i<editingMailingList.entries.length; i++) {
             if (editingMailingList.entries[i].referenceId == entryId) {
@@ -243,11 +249,11 @@
 
         updateEmptyListMessage();
     }
-    
+
     function updateEmptyListMessage() {
         display("emptyEntryListMessage", editingMailingList.entries.length == 0);
     }
-    
+
     function deleteMailingList() {
         MailingListsDwr.deleteMailingList(editingMailingList.id, function() {
             stopImageFader($("ml"+ editingMailingList.id +"Img"));
@@ -256,12 +262,12 @@
             editingMailingList = null;
         });
     }
-    
+
     //
     // Schedule editing.
     var mouseDown = false;
     var setOn = false;
-    
+
     function scheduleInit() {
         var tbody = $("scheduleRows");
         var i, tr, td, hour, j, tbl2, tr2, td2, k, content, title, intId;
@@ -271,7 +277,7 @@
             hour = ""+ i;
             hour = ("00"+ hour).substring(hour.length);
             td.innerHTML = hour +":00 - "+ hour +":59";
-            
+
             for (j=0; j<7; j++) {
                 td = appendNewElement("td", tr);
                 td.className = "ptr hreg";
@@ -279,7 +285,7 @@
                 td.onmouseover = function() { hourOver(this); };
                 td.onmouseout = function() { hourOut(this); };
                 td.onmousedown = function() { return hourDown(this) };
-                
+
                 content = '<table cellspacing="1" cellpadding="0"><tr>';
                 for (k=0; k<4; k++) {
                     if (k == 0) title = hour +":00";
@@ -295,36 +301,36 @@
                 td.innerHTML = content;
             }
         }
-        
+
         document.onmousedown = function() { return false; };
         document.onmouseup = function() { mouseDown = false; return false; };
         document.onselectstart = function() { return false; };
     }
-    
+
     function getIntervalId(day, hour, quarter) {
         var interval = quarter;
         interval += hour * 4;
         interval += day * 96;
         return interval;
     }
-    
+
     function quarterOver(node) {
         dojo.html.replaceClass(node, "qhlt", "qreg");
         if (mouseDown)
             setCell(node);
     }
-    
+
     function quarterOut(node) {
         dojo.html.replaceClass(node, "qreg", "qhlt");
     }
-    
+
     function quarterDown(node) {
         mouseDown = true;
         setOn = !isOn(node);
         setCell(node);
         return false;
     }
-    
+
     function setCell(node, on) {
         if (!on && on != false) on = setOn;
         if (on)
@@ -332,27 +338,27 @@
         else
             dojo.html.replaceClass(node, "qoff", "qon");
     }
-    
-    function isOn(node) { 
+
+    function isOn(node) {
         return dojo.html.hasClass(node, "qon");
     }
-    
+
     function hourOver(node) {
         dojo.html.replaceClass(node, "hhlt", "hreg");
         if (mouseDown)
             setHourCells(node);
     }
-    
+
     function hourOut(node) {
         dojo.html.replaceClass(node, "hreg", "hhlt");
         if (mouseDown)
             setHourCells(node);
     }
-    
+
     function hourDown(node) {
         if (mouseDown)
             return;
-    
+
         var tds = node.getElementsByTagName("td");
         mouseDown = true;
         var allOn = true;
@@ -365,13 +371,13 @@
         setOn = !allOn;
         return false;
     }
-    
+
     function setHourCells(node) {
         var tds = node.getElementsByTagName("td");
         for (var i=0; i<tds.length; i++)
             setCell(tds[i]);
     }
-    
+
     function setInactiveIntervals(inactive) {
         var d, h, m, iindex = 0, aindex = 0, node;
         for (d=0; d<7; d++) {
@@ -389,7 +395,7 @@
             }
         }
     }
-    
+
     function getInactiveIntervals() {
         var arr = new Array();
         var d, h, m, iindex = 0, node;
@@ -405,8 +411,31 @@
         }
         return arr;
     }
+
+    function collectInactiveEmails(collectInactiveEmails) {
+        var collecting = collectInactiveEmails || document.getElementById("collectInactiveEmails").checked;
+        if(collecting) {
+            show("cronPatternTr");
+            show("dailyLimitSentEmailsTr");
+        } else {
+            document.getElementById('cronPattern').value = '';
+            document.getElementById('dailyLimitSentEmails').checked = false;
+            hide("cronPatternTr");
+            hide("dailyLimitSentEmailsTr");
+        }
+        dailyLimitSentEmails(collecting);
+    }
+
+    function dailyLimitSentEmails(collectInactiveEmails) {
+        if(collectInactiveEmails && document.getElementById("dailyLimitSentEmails").checked) {
+            show("dailyLimitSentEmailsNumberTr");
+        } else {
+            document.getElementById('dailyLimitSentEmailsNumber').value = 1;
+            hide("dailyLimitSentEmailsNumberTr");
+        }
+    }
   </script>
-  
+
   <table class="subPageHeader">
     <tr>
       <td valign="top">
@@ -429,7 +458,7 @@
           </table>
         </div>
       </td>
-      
+
       <td valign="top" style="display:none;" id="mailingListDetails">
         <div class="borderDiv">
           <table width="100%">
@@ -442,19 +471,40 @@
               </td>
             </tr>
           </table>
-          
+
           <table><tr><td colspan="2" id="userMessage" class="formError" style="display:none;"></td></tr></table>
-          
+
           <table width="100%">
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="mailingLists.name"/></td>
               <td class="formField"><input id="name" type="text" onmousedown="this.focus()"/></td>
             </tr>
+
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="mailingLists.collectInactiveEmails"/><tag:help id="collectInactiveMsg"/></td>
+              <td class="formField"><input id="collectInactiveEmails" type="checkbox" onmousedown="this.focus()" onclick="collectInactiveEmails(false)"/></td>
+            </tr>
+
+            <tr id="cronPatternTr" style="display: none;">
+              <td class="formLabelRequired"><fmt:message key="mailingLists.cronPattern"/><tag:help id="cronPatterns"/></td>
+              <td class="formField"><input id="cronPattern" type="text" onmousedown="this.focus()"/></td>
+            </tr>
+
+            <tr id="dailyLimitSentEmailsTr" style="display: none;">
+              <td class="formLabelRequired"><fmt:message key="mailingLists.dailyLimitSentEmails"/></td>
+              <td class="formField"><input id="dailyLimitSentEmails" type="checkbox" onmousedown="this.focus()" onclick="dailyLimitSentEmails(true)"/></td>
+            </tr>
+
+            <tr id="dailyLimitSentEmailsNumberTr" style="display: none;">
+              <td class="formLabelRequired"><fmt:message key="mailingLists.dailyLimitSentEmailsNumber"/></td>
+              <td class="formField"><input id="dailyLimitSentEmailsNumber" type="text" onmousedown="this.focus()"/></td>
+            </tr>
+
             <tr><td class="horzSeparator" colspan="2"></td></tr>
             <tr>
               <td class="formLabel"><fmt:message key="mailingLists.addUser"/></td>

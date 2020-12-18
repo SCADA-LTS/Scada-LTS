@@ -30,11 +30,20 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
 public class UserEntry extends EmailRecipient {
     private int userId;
     private User user;
+
+    public UserEntry() {
+    }
+
+    public UserEntry(int userId, User user) {
+        this.userId = userId;
+        this.user = user;
+    }
 
     @Override
     public int getRecipientType() {
@@ -73,11 +82,30 @@ public class UserEntry extends EmailRecipient {
     }
 
     @Override
+    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelType type) {
+        appendAllAddresses(addresses, type);
+    }
+
+    @Override
     public void appendAllAddresses(Set<String> addresses) {
         if (user == null)
             return;
         if (!user.isDisabled())
             addresses.add(user.getEmail());
+    }
+
+    @Override
+    public void appendAllAddresses(Set<String> addresses, CommunicationChannelType type) {
+        if (user == null)
+            return;
+        if (!user.isDisabled()) {
+            if(type == CommunicationChannelType.EMAIL
+                    && type.validateAddress(user.getEmail()))
+                addresses.add(user.getEmail());
+            if(type == CommunicationChannelType.SMS
+                    && type.validateAddress(user.getPhone()))
+                addresses.add(user.getPhone());
+        }
     }
 
     @Override

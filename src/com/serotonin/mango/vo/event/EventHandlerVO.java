@@ -66,6 +66,7 @@ public class EventHandlerVO implements Serializable,
 	public static final int TYPE_EMAIL = 2;
 	public static final int TYPE_PROCESS = 3;
 	public static final int TYPE_SCRIPT = 4;
+	public static final int TYPE_SMS = 5;
 
 	public static ExportCodes TYPE_CODES = new ExportCodes();
 	static {

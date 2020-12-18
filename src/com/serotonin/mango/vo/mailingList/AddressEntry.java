@@ -29,6 +29,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.util.StringUtils;
+import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
 public class AddressEntry extends EmailRecipient {
@@ -50,6 +51,17 @@ public class AddressEntry extends EmailRecipient {
     @Override
     public void appendAllAddresses(Set<String> addresses) {
         addresses.add(address);
+    }
+
+    @Override
+    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelType type) {
+        appendAllAddresses(addresses, type);
+    }
+
+    @Override
+    public void appendAllAddresses(Set<String> addresses, CommunicationChannelType type) {
+        if(type.validateAddress(address))
+            addresses.add(address);
     }
 
     @Override
