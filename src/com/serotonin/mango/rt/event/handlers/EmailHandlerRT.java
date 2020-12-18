@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Collections;
 
-import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.ScheduledInactiveEventType;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -93,6 +93,12 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         this.mailingListService = new MailingListService();
     }
 
+    public EmailHandlerRT(EventHandlerVO vo, MailingListService mailingListService) {
+        this.vo = vo;
+        this.service = ScheduledExecuteInactiveEventService.getInstance();
+        this.mailingListService = mailingListService;
+    }
+
     public EmailHandlerRT(EventHandlerVO vo,
                           ScheduledExecuteInactiveEventService service,
                           MailingListService mailingListService) {
@@ -116,8 +122,12 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     protected Set<String> getActiveRecipients(EventInstance evt, CommunicationChannel channel) {
-        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()), channel);
+        if(channel.getType() == CommunicationChannelType.EMAIL) {
+            return mailingListService.getRecipientAddresses(getVo().getActiveRecipients(),
+                    new DateTime(evt.getActiveTimestamp()), channel);
+        }
+        LOG.warn("Event id: " + evt.getId() + " and emailList id: " + channel.getChannelId()+ " it is not related to EMAIL communication!");
+        return Collections.emptySet();
     }
 
     @Override

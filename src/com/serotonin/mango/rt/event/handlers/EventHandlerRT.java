@@ -40,4 +40,8 @@ abstract public class EventHandlerRT {
      * @param evt
      */
     abstract public void eventInactive(EventInstance evt);
+
+    protected EventHandlerVO getVo() {
+        return vo;
+    }
 }
