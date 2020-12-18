@@ -24,7 +24,7 @@ public class V2_5__ScheduledExecuteInactiveEvent extends BaseJavaMigration {
                 "  PRIMARY KEY (id), \n" +
                 "  UNIQUE (mailingListId, sourceEventId), \n" +
                 "  FOREIGN KEY (sourceEventId) REFERENCES events(id) ON DELETE CASCADE,\n" +
-                "  FOREIGN KEY (mailingListId) REFERENCES mailinglists(id) ON DELETE CASCADE\n" +
+                "  FOREIGN KEY (mailingListId) REFERENCES mailingLists(id) ON DELETE CASCADE\n" +
                 ") ENGINE=InnoDB;");
 
     }

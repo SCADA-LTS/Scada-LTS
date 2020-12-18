@@ -276,19 +276,19 @@
 
 	<!-- Instead of bower package manager -->
 	<target name="static-web-dependency" description="Download web resources from the NPM, required for PointHierarchySLTS">
-		<exec dir="./WebContent/resources" executable="npm">
+		<exec dir="./WebContent/resources" executable="npm.cmd">
 			<arg value="install"/>
 		</exec>
 	</target>
 
 	<target name="new-ui-dependency">
-		<exec dir="./scadalts-ui" executable="npm">
+		<exec dir="./scadalts-ui" executable="npm.cmd">
 			<arg value="install"/>
 		</exec>
 	</target>
 
 	<target name="new-ui" depends="new-ui-dependency, static-web-dependency">
-		<exec dir="./scadalts-ui" executable="npm">
+		<exec dir="./scadalts-ui" executable="npm.cmd">
 			<arg value="run"/>
 			<arg value="build"/>
 		</exec>
