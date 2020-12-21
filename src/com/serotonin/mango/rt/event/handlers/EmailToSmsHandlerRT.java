@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
-    private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);
+    private static final Log LOG = LogFactory.getLog(EmailToSmsHandlerRT.class);
 
     private final SystemSettingsService systemSettingsService;
     private final MailingListService mailingListService;
@@ -40,35 +40,28 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
     protected Set<String> getActiveRecipients(EventInstance evt) {
         Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getActiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.SMS);
-        String domain = systemSettingsService.getSMSDomain();
-        return addresses.stream()
-                .map(a -> a + "@" + domain)
-                .collect(Collectors.toSet());
+        return addedAtDomain(addresses);
     }
 
     @Override
     protected Set<String> getInactiveRecipients(EventInstance evt) {
         Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getInactiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.SMS);
-        String domain = systemSettingsService.getSMSDomain();
-        return addresses.stream()
-                .map(a -> a + "@" + domain)
-                .collect(Collectors.toSet());
+        return addedAtDomain(addresses);
     }
 
     @Override
     protected Set<String> getActiveRecipients(EventInstance evt, CommunicationChannel channel) {
         if(channel.getType() == CommunicationChannelType.SMS) {
-            Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getActiveRecipients(),
-                    new DateTime(evt.getActiveTimestamp()), channel);
-            String domain = systemSettingsService.getSMSDomain();
-            return addedAtDomain(addresses, domain);
+            Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getActiveRecipients(), channel);
+            return addedAtDomain(addresses);
         }
         LOG.warn("Event id: " + evt.getId() + " and emailList id: " + channel.getChannelId()+ " it is not related to SMS communication!");
         return Collections.emptySet();
     }
 
-    private Set<String> addedAtDomain(Set<String> addresses, String domain) {
+    private Set<String> addedAtDomain(Set<String> addresses) {
+        String domain = systemSettingsService.getSMSDomain();
         return addresses.stream()
                 .map(a -> a + "@" + domain)
                 .collect(Collectors.toSet());

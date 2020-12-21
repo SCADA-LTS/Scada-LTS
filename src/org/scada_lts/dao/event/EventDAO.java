@@ -1050,4 +1050,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventRowMapper());
 	}
 
+	@Transactional(readOnly = true)
+	public List<EventHandlerVO> getEventHandlers(Set<Integer> ids) {
+		if(ids.isEmpty())
+			return Collections.emptyList();
+		String args = QueryUtils.getArgsIn(ids.size());
+		String query = EVENT_HANDLER_SELECT_ID_IN.replace("?", args);
+		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventHandlerRowMapper());
+	}
+
 }

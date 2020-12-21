@@ -54,7 +54,7 @@ public class EmailToSmsHandlerRtTest {
         when(service.getRecipientAddresses(any(),any(),eq(CommunicationChannelType.SMS)))
                 .thenReturn(addresses);
 
-        when(service.getRecipientAddresses(any(),any(),eq(channelSms)))
+        when(service.getRecipientAddresses(any(),eq(channelSms)))
                 .thenReturn(addresses);
 
 

@@ -3,8 +3,10 @@ package org.scada_lts.service;
 
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntervalUtil;
+import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.joda.time.DateTime;
+import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -16,9 +18,11 @@ class CommunicationChannelImpl implements CommunicationChannel {
     private final MailingList mailingList;
     private final CommunicationChannelType type;
 
+
     public CommunicationChannelImpl(MailingList mailingList, CommunicationChannelType type) {
         this.mailingList = mailingList;
         this.type = type;
+
     }
 
     @Override
