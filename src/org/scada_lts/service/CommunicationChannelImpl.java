@@ -81,6 +81,11 @@ class CommunicationChannelImpl implements CommunicationChannel {
     }
 
     @Override
+    public MailingList getData() {
+        return mailingList;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CommunicationChannelImpl)) return false;

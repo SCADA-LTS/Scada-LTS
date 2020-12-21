@@ -74,18 +74,15 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
                         eventHandlers.get(a.getEventHandlerId()),
                         events.get(a.getSourceEventId()),
                         mailingLists.get(a.getMailingListId())))
-                /*.collect(() -> new TreeMap<>(Comparator.comparingInt(ScheduledExecuteInactiveEvent::getSourceEventId)
-                                    .thenComparing(ScheduledExecuteInactiveEvent::getMailingListId)
-                                    .thenComparing(ScheduledExecuteInactiveEvent::getEventHandlerId)),
-                        (a,b) -> a.put(b.getKey(), b), TreeMap::putAll);*/
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public List<ScheduledEvent> getScheduledEvents(MailingList mailingList) {
+    public List<ScheduledEvent> getScheduledEvents(CommunicationChannel communicationChannel) {
         synchronized (mutex) {
             return relations.stream()
-                    .filter(a -> a.getMailingList().getId() == mailingList.getId())
+                    .filter(a -> CommunicationChannelType.getType(a.getEventHandler().getHandlerType()) == communicationChannel.getType())
+                    .filter(a -> a.getMailingList().getId() == communicationChannel.getChannelId())
                     .map(ScheduledExecuteInactiveEventInstance::toScheduledEvent)
                     .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
                     .collect(Collectors.toList());
@@ -95,15 +92,17 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     @Override
     public void unscheduleEvent(EventHandlerVO eventHandler,
                                 EventInstance event,
-                                MailingList mailingList) {
-        ScheduledExecuteInactiveEventInstance inactiveEventInstance =
-                new ScheduledExecuteInactiveEventInstance(eventHandler, event, mailingList);
-        synchronized (mutex) {
-            if (relations.contains(inactiveEventInstance)) {
-                scheduledEventDAO.delete(inactiveEventInstance.getKey());
-                relations.remove(inactiveEventInstance);
-            } else {
-                LOG.warn("Event is not scheduled!: " + inactiveEventInstance);
+                                CommunicationChannel communicationChannel) {
+        if(communicationChannel.getType().getEventHandlerType() == eventHandler.getHandlerType()) {
+            ScheduledExecuteInactiveEventInstance inactiveEventInstance =
+                    new ScheduledExecuteInactiveEventInstance(eventHandler, event, communicationChannel.getData());
+            synchronized (mutex) {
+                if (relations.contains(inactiveEventInstance)) {
+                    scheduledEventDAO.delete(inactiveEventInstance.getKey());
+                    relations.remove(inactiveEventInstance);
+                } else {
+                    LOG.warn("Event is not scheduled!: " + inactiveEventInstance);
+                }
             }
         }
     }
@@ -144,7 +143,7 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     }
 
     @Override
-    public void unscheduleEvent(ScheduledEvent event, MailingList mailingList) {
-        unscheduleEvent(event.getEventHandler(), event.getEvent(), mailingList);
+    public void unscheduleEvent(ScheduledEvent event, CommunicationChannel communicationChannel) {
+        unscheduleEvent(event.getEventHandler(), event.getEvent(), communicationChannel);
     }
 }

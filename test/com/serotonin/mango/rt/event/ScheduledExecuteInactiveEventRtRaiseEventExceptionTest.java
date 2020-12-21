@@ -114,7 +114,7 @@ public class ScheduledExecuteInactiveEventRtRaiseEventExceptionTest {
         events.add(scheduledEvent2);
 
         service = mock(ScheduledExecuteInactiveEventService.class);
-        when(service.getScheduledEvents(mailingList)).thenReturn(events);
+        when(service.getScheduledEvents(channel)).thenReturn(events);
 
         eventManager = mock(EventManager.class);
 
@@ -126,7 +126,7 @@ public class ScheduledExecuteInactiveEventRtRaiseEventExceptionTest {
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceService.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        testSubject = new ScheduledExecuteInactiveEventRT(mailingList,service,eventManager,
+        testSubject = new ScheduledExecuteInactiveEventRT(channel,service,eventManager,
                 dataPointService, dataSourceService);
     }
 
@@ -140,7 +140,7 @@ public class ScheduledExecuteInactiveEventRtRaiseEventExceptionTest {
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(service, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(mailingList));
+        verify(service, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class ScheduledExecuteInactiveEventRtRaiseEventExceptionTest {
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(service, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(mailingList));
+        verify(service, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
     }
 
     @Test
@@ -168,6 +168,6 @@ public class ScheduledExecuteInactiveEventRtRaiseEventExceptionTest {
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(service, times(0)).unscheduleEvent(any(ScheduledEvent.class), eq(mailingList));
+        verify(service, times(0)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
     }
 }

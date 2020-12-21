@@ -33,7 +33,8 @@ public class ScheduledExecuteInactiveEventServiceTest {
     private DateTime inactiveIntervalTime;
     private EventHandlerVO eventHandler;
     private LocalizableMessage message;
-
+    private CommunicationChannel channelSms;
+    private CommunicationChannel channelEmail;
 
     @Before
     public void config() {
@@ -70,6 +71,10 @@ public class ScheduledExecuteInactiveEventServiceTest {
 
         testSubject = ScheduledExecuteInactiveEventService.newInstance(eventDAO, dao, mailingListService);
         message = new LocalizableMessage("com.test");
+
+        channelEmail = CommunicationChannel.newChannel(mailingListWithInactiveInterval1,CommunicationChannelType.EMAIL);
+        channelSms = CommunicationChannel.newChannel(mailingListWithInactiveInterval2, CommunicationChannelType.SMS);
+
 
     }
 
@@ -113,10 +118,9 @@ public class ScheduledExecuteInactiveEventServiceTest {
         testSubject.scheduleEvent(scheduledEvent3);
 
         //and:
-        List<ScheduledEvent> events = testSubject.getScheduledEvents(mailingListWithInactiveInterval1);
+        List<ScheduledEvent> events = testSubject.getScheduledEvents(channelSms);
 
         //then:
-        assertTrue(events.contains(scheduledEvent1));
         assertTrue(events.contains(scheduledEvent2));
         assertTrue(events.contains(scheduledEvent3));
     }

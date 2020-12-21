@@ -109,7 +109,7 @@ public class ScheduledExecuteInactiveEventRtTest {
         events.add(scheduledEvent2);
 
         service = mock(ScheduledExecuteInactiveEventService.class);
-        when(service.getScheduledEvents(mailingList)).thenReturn(events);
+        when(service.getScheduledEvents(channel)).thenReturn(events);
 
         eventManager = mock(EventManager.class);
 
@@ -121,7 +121,7 @@ public class ScheduledExecuteInactiveEventRtTest {
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceService.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        testSubject = new ScheduledExecuteInactiveEventRT(mailingList,service,eventManager,
+        testSubject = new ScheduledExecuteInactiveEventRT(channel,service,eventManager,
                 dataPointService, dataSourceService);
     }
 
@@ -144,6 +144,6 @@ public class ScheduledExecuteInactiveEventRtTest {
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(service, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(mailingList));
+        verify(service, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
     }
 }

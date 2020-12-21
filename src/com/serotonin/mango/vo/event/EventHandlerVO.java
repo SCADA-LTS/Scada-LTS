@@ -462,7 +462,7 @@ public class EventHandlerVO implements Serializable,
 								.addGenericMessage("eventHandlers.invalidInactiveSourceType");
 				}
 			}
-		} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+		} else if (handlerType == TYPE_EMAIL) {
 			if (activeRecipients.isEmpty())
 				response.addGenericMessage("eventHandlers.noEmailRecips");
 
@@ -486,6 +486,9 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			if (activeScriptCommand < 1 && inactiveScriptCommand < 1)
 				response.addGenericMessage("eventHandlers.invalidScripts");
+		} else if (handlerType == TYPE_SMS) {
+			if (activeRecipients.isEmpty())
+				response.addGenericMessage("eventHandlers.noEmailRecips");
 		}
 	}
 
@@ -521,7 +524,7 @@ public class EventHandlerVO implements Serializable,
 			else if (inactiveAction == SET_ACTION_STATIC_VALUE)
 				AuditEventType.addPropertyMessage(list,
 						"eventHandlers.action.static", inactiveValueToSet);
-		} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+		} else if (handlerType == TYPE_EMAIL) {
 			AuditEventType.addPropertyMessage(list,
 					"eventHandlers.emailRecipients",
 					createRecipientMessage(activeRecipients));
@@ -555,6 +558,10 @@ public class EventHandlerVO implements Serializable,
 					"eventHandlers.activeCommand", activeScriptCommand);
 			AuditEventType.addPropertyMessage(list,
 					"eventHandlers.inactiveCommand", inactiveScriptCommand);
+		} else if (handlerType == TYPE_SMS) {
+			AuditEventType.addPropertyMessage(list,
+					"eventHandlers.emailRecipients",
+					createRecipientMessage(activeRecipients));
 		}
 	}
 
@@ -596,7 +603,7 @@ public class EventHandlerVO implements Serializable,
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.action.static", from.inactiveValueToSet,
 					inactiveValueToSet);
-		} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+		} else if (handlerType == TYPE_EMAIL) {
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.emailRecipients",
 					createRecipientMessage(from.activeRecipients),
@@ -634,6 +641,11 @@ public class EventHandlerVO implements Serializable,
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.inactiveCommand",
 					from.inactiveScriptCommand, inactiveScriptCommand);
+		} else if (handlerType == TYPE_SMS) {
+			AuditEventType.maybeAddPropertyChangeMessage(list,
+					"eventHandlers.emailRecipients",
+					createRecipientMessage(from.activeRecipients),
+					createRecipientMessage(activeRecipients));
 		}
 	}
 
@@ -681,7 +693,7 @@ public class EventHandlerVO implements Serializable,
 			out.writeInt(inactiveAction);
 			SerializationHelper.writeSafeUTF(out, inactiveValueToSet);
 			out.writeInt(inactivePointId);
-		} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+		} else if (handlerType == TYPE_EMAIL) {
 			out.writeObject(activeRecipients);
 			out.writeBoolean(sendEscalation);
 			out.writeInt(escalationDelayType);
@@ -696,6 +708,8 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			out.writeInt(activeScriptCommand);
 			out.writeInt(inactiveScriptCommand);
+		} else if(handlerType == TYPE_SMS) {
+			out.writeObject(activeRecipients);
 		}
 	}
 
@@ -717,7 +731,7 @@ public class EventHandlerVO implements Serializable,
 				inactiveAction = in.readInt();
 				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
 				inactivePointId = in.readInt();
-			} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+			} else if (handlerType == TYPE_EMAIL) {
 				activeRecipients = (List<RecipientListEntryBean>) in
 						.readObject();
 				sendEscalation = in.readBoolean();
@@ -731,6 +745,9 @@ public class EventHandlerVO implements Serializable,
 			} else if (handlerType == TYPE_PROCESS) {
 				activeProcessCommand = SerializationHelper.readSafeUTF(in);
 				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
+			} else if(handlerType == TYPE_SMS) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
 			}
 		} else if (ver == 2) {
 			handlerType = in.readInt();
@@ -743,7 +760,7 @@ public class EventHandlerVO implements Serializable,
 				inactiveAction = in.readInt();
 				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
 				inactivePointId = in.readInt();
-			} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+			} else if (handlerType == TYPE_EMAIL) {
 				activeRecipients = (List<RecipientListEntryBean>) in
 						.readObject();
 				sendEscalation = in.readBoolean();
@@ -758,6 +775,9 @@ public class EventHandlerVO implements Serializable,
 			} else if (handlerType == TYPE_PROCESS) {
 				activeProcessCommand = SerializationHelper.readSafeUTF(in);
 				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
+			} else if (handlerType == TYPE_SMS) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
 			}
 		} else if (ver == 3) {
 			handlerType = in.readInt();
@@ -770,7 +790,7 @@ public class EventHandlerVO implements Serializable,
 				inactiveAction = in.readInt();
 				inactiveValueToSet = SerializationHelper.readSafeUTF(in);
 				inactivePointId = in.readInt();
-			} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+			} else if (handlerType == TYPE_EMAIL) {
 				activeRecipients = (List<RecipientListEntryBean>) in
 						.readObject();
 				sendEscalation = in.readBoolean();
@@ -788,6 +808,9 @@ public class EventHandlerVO implements Serializable,
 			} else if (handlerType == TYPE_SCRIPT) {
 				activeScriptCommand = in.readInt();
 				inactiveScriptCommand = in.readInt();
+			} else if (handlerType == TYPE_SMS) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
 			}
 		}
 	}
@@ -821,7 +844,7 @@ public class EventHandlerVO implements Serializable,
 					map.put("inactivePointId", dp.getXid());
 			} else if (inactiveAction == SET_ACTION_STATIC_VALUE)
 				map.put("inactiveValueToSet", inactiveValueToSet);
-		} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+		} else if (handlerType == TYPE_EMAIL) {
 			map.put("activeRecipients", activeRecipients);
 			map.put("sendEscalation", sendEscalation);
 			if (sendEscalation) {
@@ -842,6 +865,8 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			map.put("activeScriptCommand", activeScriptCommand);
 			map.put("inactiveScriptCommand", inactiveScriptCommand);
+		} else if (handlerType == TYPE_SMS) {
+			map.put("activeRecipients", activeRecipients);
 		}
 	}
 
@@ -920,7 +945,7 @@ public class EventHandlerVO implements Serializable,
 				if (text != null)
 					inactiveValueToSet = text;
 			}
-		} else if (handlerType == TYPE_EMAIL || handlerType == TYPE_SMS) {
+		} else if (handlerType == TYPE_EMAIL) {
 			JsonArray jsonActiveRecipients = json
 					.getJsonArray("activeRecipients");
 			if (jsonActiveRecipients != null)
@@ -988,6 +1013,13 @@ public class EventHandlerVO implements Serializable,
 			script = json.getInt("inactiveScriptCommand");
 			if (text != null)
 				inactiveScriptCommand = script;
+		} else if (handlerType == TYPE_SMS) {
+			JsonArray jsonActiveRecipients = json
+					.getJsonArray("activeRecipients");
+			if (jsonActiveRecipients != null)
+				activeRecipients = reader.readPropertyValue(
+						jsonActiveRecipients, List.class,
+						RecipientListEntryBean.class);
 		}
 	}
 

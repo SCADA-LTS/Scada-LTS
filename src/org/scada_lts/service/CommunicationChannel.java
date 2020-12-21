@@ -4,7 +4,6 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 
 import java.util.Set;
 
@@ -21,9 +20,18 @@ public interface CommunicationChannel {
     Set<String> getActiveAdresses(DateTime fireTime);
     Set<String> getActiveAdresses(EventInstance event);
     boolean isCollectInactiveEvents();
+    MailingList getData();
 
     static CommunicationChannel newChannel(MailingList mailingList, CommunicationChannelType type) {
         return new CommunicationChannelImpl(mailingList, type);
+    }
+
+    static CommunicationChannel newSmsChannel(MailingList mailingList) {
+        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.SMS);
+    }
+
+    static CommunicationChannel newEmailChannel(MailingList mailingList) {
+        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.EMAIL);
     }
 
     static CommunicationChannel newChannel(MailingList mailingList, EventHandlerVO eventHandler) {

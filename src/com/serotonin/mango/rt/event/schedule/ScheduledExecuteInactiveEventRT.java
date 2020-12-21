@@ -10,7 +10,6 @@ import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -32,20 +31,20 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     private final Log log = LogFactory.getLog(ScheduledExecuteInactiveEventRT.class);
 
     private TimerTask task;
-    private final MailingList mailingList;
+    private final CommunicationChannel communicationChannel;
     private final ScheduledExecuteInactiveEventService service;
     private final EventManager eventManager;
     private final AtomicInteger limit;
     private final DataPointService dataPointService;
     private final DataSourceService dataSourceService;
 
-    public ScheduledExecuteInactiveEventRT(MailingList mailingList,
+    public ScheduledExecuteInactiveEventRT(CommunicationChannel communicationChannel,
                                            ScheduledExecuteInactiveEventService service,
                                            EventManager eventManager,
                                            DataPointService dataPointService,
                                            DataSourceService dataSourceService) {
-        this.mailingList = mailingList;
-        this.limit = new AtomicInteger(mailingList.getDailyLimitSentEmailsNumber());
+        this.communicationChannel = communicationChannel;
+        this.limit = new AtomicInteger(communicationChannel.getDailyLimitSentNumber());
         this.service = service;
         this.eventManager = eventManager;
         this.dataPointService = dataPointService;
@@ -54,7 +53,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
     public void initialize() {
         try {
-            CronTimerTrigger activeTrigger = new CronTimerTrigger(mailingList.getCronPattern());
+            CronTimerTrigger activeTrigger = new CronTimerTrigger(communicationChannel.getSendingActivationCron());
             task = new ModelTimeoutTask<>(activeTrigger, this, true);
         } catch (ParseException e) {
             log.error(e);
@@ -69,9 +68,9 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     @Override
     public synchronized void scheduleTimeout(Boolean model, long fireTime) {
         DateTime dateTime = new DateTime(fireTime);
-        if(mailingList.isActive(dateTime)) {
-            List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(mailingList);
-            boolean dailyLimitSent = mailingList.isDailyLimitSentEmails();
+        if(communicationChannel.isActiveFor(dateTime)) {
+            List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(communicationChannel);
+            boolean dailyLimitSent = communicationChannel.isDailyLimitSent();
             for (ScheduledEvent scheduledEvent : scheduledEvents) {
                 if(dailyLimitSent)
                     executeWithLimit(scheduledEvent, dateTime);
@@ -102,8 +101,6 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
         EventInstance event = scheduledEvent.getEvent();
         EventType eventType = event.getEventType();
-        CommunicationChannel communicationChannel = CommunicationChannel
-                .newChannel(mailingList, scheduledEvent.getEventHandler());
         ScheduledInactiveEventType type = new ScheduledInactiveEventType(eventType, communicationChannel);
         sleep();
         try {
@@ -113,7 +110,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             log.warn(ex.getMessage(), ex);
             return false;
         }
-        log.info("Last message sent today for a list of addresses:: " + mailingList.getId() + ", eventId: " + event.getId() + ", type: " + type);
+        log.info("Last message sent today for a list of addresses id: " + communicationChannel.getChannelId() + ", eventId: " + event.getId() + ", type: " + type);
         return true;
     }
 
@@ -123,8 +120,6 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         EventType eventType = event.getEventType();
 
         if (isDataSourceExists(eventType) && isDataPointExists(eventType)) {
-            CommunicationChannel communicationChannel = CommunicationChannel
-                    .newChannel(mailingList, scheduledEvent.getEventHandler());
             ScheduledInactiveEventType type = new ScheduledInactiveEventType(eventType, communicationChannel);
             sleep();
             try {
@@ -134,10 +129,10 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 log.warn(ex.getMessage(), ex);
                 return false;
             }
-            service.unscheduleEvent(scheduledEvent, mailingList);
+            service.unscheduleEvent(scheduledEvent, communicationChannel);
             return true;
         }
-        service.unscheduleEvent(scheduledEvent, mailingList);
+        service.unscheduleEvent(scheduledEvent, communicationChannel);
         return false;
     }
 
