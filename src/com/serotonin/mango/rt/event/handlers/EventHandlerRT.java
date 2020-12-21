@@ -41,7 +41,4 @@ abstract public class EventHandlerRT {
      */
     abstract public void eventInactive(EventInstance evt);
 
-    protected EventHandlerVO getVo() {
-        return vo;
-    }
 }

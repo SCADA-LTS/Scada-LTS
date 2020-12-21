@@ -17,14 +17,13 @@ public class V2_5__ScheduledExecuteInactiveEvent extends BaseJavaMigration {
         jdbcTmp.execute("ALTER TABLE mailingLists ADD dailyLimitSentEmails BINARY DEFAULT false COMMENT 'Daily limit sent emails';");
         jdbcTmp.execute("ALTER TABLE mailingLists ADD dailyLimitSentEmailsNumber INT DEFAULT 0 COMMENT 'Daily limit sent emails number';");
         jdbcTmp.execute("CREATE TABLE scheduledExecuteInactiveEvent (\n" +
-                "  id INT NOT NULL AUTO_INCREMENT,\n" +
                 "  mailingListId INT NOT NULL,\n" +
                 "  sourceEventId INT NOT NULL,\n" +
-                "  eventHandlerType INT NOT NULL,\n" +
-                "  PRIMARY KEY (id), \n" +
-                "  UNIQUE (mailingListId, sourceEventId), \n" +
+                "  eventHandlerId INT NOT NULL,\n" +
+                "  UNIQUE (mailingListId, sourceEventId, eventHandlerId), \n" +
                 "  FOREIGN KEY (sourceEventId) REFERENCES events(id) ON DELETE CASCADE,\n" +
-                "  FOREIGN KEY (mailingListId) REFERENCES mailingLists(id) ON DELETE CASCADE\n" +
+                "  FOREIGN KEY (mailingListId) REFERENCES mailingLists(id) ON DELETE CASCADE,\n" +
+                "  FOREIGN KEY (eventHandlerId) REFERENCES eventHandlers(id) ON DELETE CASCADE\n" +
                 ") ENGINE=InnoDB;");
 
     }

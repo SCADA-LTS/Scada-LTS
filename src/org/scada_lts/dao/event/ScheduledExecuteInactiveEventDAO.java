@@ -8,9 +8,8 @@ public interface ScheduledExecuteInactiveEventDAO {
 
     List<ScheduledExecuteInactiveEvent> select();
     List<ScheduledExecuteInactiveEvent> select(int mailingListId);
-    int insert(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent);
+    ScheduledExecuteInactiveEvent insert(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent);
     void delete(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent);
-    void deleteLast(int mailingListId);
 
     static ScheduledExecuteInactiveEventDAO getInstance() {
         return ScheduledExecuteInactiveEventDAOimpl.getInstance();

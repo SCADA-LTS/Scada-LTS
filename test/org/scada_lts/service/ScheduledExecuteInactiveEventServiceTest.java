@@ -1,9 +1,7 @@
 package org.scada_lts.service;
 
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.DataPointEventType;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.rt.event.type.ScheduledInactiveEventType;
+import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
@@ -28,7 +26,9 @@ import static utils.MailingListTestUtils.createUserEntry;
 public class ScheduledExecuteInactiveEventServiceTest {
 
     private ScheduledExecuteInactiveEventService testSubject;
-    private MailingList mailingListWithInactiveInterval;
+    private MailingList mailingListWithInactiveInterval1;
+
+    private MailingList mailingListWithInactiveInterval2;
     private ScheduledExecuteInactiveEventDAO dao;
     private DateTime inactiveIntervalTime;
     private EventHandlerVO eventHandler;
@@ -39,19 +39,28 @@ public class ScheduledExecuteInactiveEventServiceTest {
     public void config() {
 
         eventHandler = new EventHandlerVO();
-        eventHandler.setId(123);
+        eventHandler.setId(1);
 
-        String tel = "111111111";
-        String email = "test1@test.com";
-        UserEntry user = createUserEntry("Ada", tel, email);
+        String tel1 = "111111111";
+        String email1 = "test1@test.com";
+        UserEntry user1 = createUserEntry("Ada", tel1, email1);
+
+        String tel2 = "111111112";
+        String email2 = "test2@test.com";
+        UserEntry user2 = createUserEntry("Ewa", tel2, email2);
 
         inactiveIntervalTime = MailingListTestUtils.newDateTime("2020-12-13 20:30:00");
-        mailingListWithInactiveInterval = MailingListTestUtils
-                .createMailingListWithInactiveInterval(inactiveIntervalTime, true, user);
+        mailingListWithInactiveInterval1 = MailingListTestUtils
+                .createMailingListWithInactiveInterval(inactiveIntervalTime, true, user1);
+
+        mailingListWithInactiveInterval2 = MailingListTestUtils
+                .createMailingListWithInactiveInterval(inactiveIntervalTime, true, user2);
+
 
         MailingListService mailingListService = mock(MailingListService.class);
         when(mailingListService.getMailingLists(any())).thenReturn(Collections.emptyList());
-        when(mailingListService.convertToMailingLists(any())).thenReturn(Arrays.asList(mailingListWithInactiveInterval));
+        when(mailingListService.convertToMailingLists(any())).thenReturn(Arrays.asList(mailingListWithInactiveInterval1,
+                mailingListWithInactiveInterval2));
 
         EventDAO eventDAO = mock(EventDAO.class);
         when(eventDAO.getAllStatusEvents(any())).thenReturn(Collections.emptyList());
@@ -78,351 +87,38 @@ public class ScheduledExecuteInactiveEventServiceTest {
     }
 
     @Test
-    public void test_scheduleEvent_with_eventHandlerType_email_and_invoke_getScheduledEvents_then_contains_email() {
+    public void test_scheduleEvent() {
 
         //given:
-        CommunicationChannel communicationChannelEmail = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.EMAIL);
+        EventHandlerVO eventHandler2 = new EventHandlerVO();
+        eventHandler2.setId(2);
+        eventHandler2.setHandlerType(EventHandlerVO.TYPE_SMS);
+
+        EventHandlerVO eventHandler3 = new EventHandlerVO();
+        eventHandler3.setId(3);
+        eventHandler3.setHandlerType(EventHandlerVO.TYPE_SMS);
 
         EventInstance eventAsEmail1 = EventTestUtils.createEventWithActiveTime(1, inactiveIntervalTime, message);
-        EventInstance eventAsEmail2 = EventTestUtils.createEventWithActiveTime(2, inactiveIntervalTime, message);
-        EventInstance eventAsSms = EventTestUtils.createEventWithActiveTime(3, inactiveIntervalTime, message);
-
-        //when:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail1);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail2);
-
-        //and:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-        testSubject.scheduleEvent(eventHandler, eventAsSms);
-
-        //and:
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelEmail);
-
-        //then:
-        assertTrue(events.contains(eventAsEmail1));
-        assertTrue(events.contains(eventAsEmail2));
-    }
-
-    @Test
-    public void test_scheduleEvent_with_eventHandlerType_email_and_invoke_getScheduledEvents_then_size() {
-
-        //given:
-        CommunicationChannel communicationChannelEmail = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.EMAIL);
-
-        EventInstance eventAsEmail1 = EventTestUtils.createEventWithActiveTime(1, inactiveIntervalTime, message);
-        EventInstance eventAsEmail2 = EventTestUtils.createEventWithActiveTime(2, inactiveIntervalTime, message);
-        EventInstance eventAsSms = EventTestUtils.createEventWithActiveTime(3, inactiveIntervalTime, message);
-
-        //when:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail1);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail2);
-
-        //and:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-        testSubject.scheduleEvent(eventHandler, eventAsSms);
-
-        //and:
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelEmail);
-
-        //then:
-        assertEquals(2, events.size());
-    }
-
-    @Test
-    public void test_scheduleEvent_with_eventHandlerType_sms_and_invoke_getScheduledEvents_then_contains_sms() {
-
-        //given:
-        CommunicationChannel communicationChannelSms = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.SMS);
-
-        EventInstance eventAsEmail1 = EventTestUtils.createEventWithActiveTime(1, inactiveIntervalTime, message);
-        EventInstance eventAsEmail2 = EventTestUtils.createEventWithActiveTime(2, inactiveIntervalTime, message);
-        EventInstance eventAsSms = EventTestUtils.createEventWithActiveTime(3, inactiveIntervalTime, message);
-
-        //when:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail1);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail2);
-
-        //and:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-        testSubject.scheduleEvent(eventHandler, eventAsSms);
-
-        //and:
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelSms);
-
-        //then:
-        assertTrue(events.contains(eventAsSms));
-    }
-
-
-    @Test
-    public void test_scheduleEvent_with_eventHandlerType_sms_and_invoke_getScheduledEvents_then_size_one() {
-
-        //given:
-        CommunicationChannel communicationChannelSms = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.SMS);
-
-        EventInstance eventAsEmail1 = EventTestUtils.createEventWithActiveTime(1, inactiveIntervalTime, message);
-        EventInstance eventAsEmail2 = EventTestUtils.createEventWithActiveTime(2, inactiveIntervalTime, message);
-        EventInstance eventAsSms = EventTestUtils.createEventWithActiveTime(3, inactiveIntervalTime, message);
-
-        //when:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail1);
-        testSubject.scheduleEvent(eventHandler, eventAsEmail2);
-
-        //and:
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-        testSubject.scheduleEvent(eventHandler, eventAsSms);
-
-        //and:
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelSms);
-
-        //then:
-        assertEquals(1, events.size());
-    }
-
-    @Test
-    public void test_unscheduleEvent_with_communicationChannelType_email_and_invoke_getScheduledEvents_then_size_zero() {
-
-        //given:
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,message);
-        CommunicationChannel communicationChannelEmail = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.EMAIL);
 
         eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
+        ScheduledEvent scheduledEvent1 = new ScheduledEvent(eventAsEmail1,eventHandler);
+        ScheduledEvent scheduledEvent2 = new ScheduledEvent(eventAsEmail1,eventHandler2);
+        ScheduledEvent scheduledEvent3 = new ScheduledEvent(eventAsEmail1,eventHandler3);
 
         //when:
-        testSubject.scheduleEvent(eventHandler, event);
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelEmail);
-
-        //then:
-        assertEquals(1, events.size());
-        assertTrue(events.contains(event));
-
-        //and when:
-        testSubject.unscheduleEvent(communicationChannelEmail, event);
-        events = testSubject.getScheduledEvents(communicationChannelEmail);
-
-        //then:
-        assertEquals(0, events.size());
-    }
-
-    @Test
-    public void test_unscheduleEvent_with_communicationChannelType_sms_and_invoke_getScheduledEvents_then_size_zero() {
-
-        //given:
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,message);
-        CommunicationChannel communicationChannelSms = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.SMS);
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-
-        //when:
-        testSubject.scheduleEvent(eventHandler, event);
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelSms);
-
-        //then:
-        assertEquals(1, events.size());
-        assertTrue(events.contains(event));
-
-        //and when:
-        testSubject.unscheduleEvent(communicationChannelSms, event);
-        events = testSubject.getScheduledEvents(communicationChannelSms);
-
-        //then:
-        assertEquals(0, events.size());
-    }
-
-
-    @Test
-    public void test_isScheduledInactiveEventType_for_email_then_true() {
-
-        //given:
-        CommunicationChannel communicationChannelEmail = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.EMAIL);
-
-        EventType eventType = new ScheduledInactiveEventType(new DataPointEventType(), communicationChannelEmail);
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,eventType);
-
-        //when:
-        boolean result = testSubject.isScheduledInactiveEventType(event);
-
-        //then:
-        assertTrue(result);
-    }
-
-    @Test
-    public void test_isScheduledInactiveEventType_for_sms_then_true() {
-
-        //given:
-        CommunicationChannel communicationChannelSms = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.SMS);
-
-        EventType eventType = new ScheduledInactiveEventType(new DataPointEventType(), communicationChannelSms);
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,eventType);
-
-        //when:
-        boolean result = testSubject.isScheduledInactiveEventType(event);
-
-        //then:
-        assertTrue(result);
-    }
-
-    @Test
-    public void test_isScheduledInactiveEventType_then_false() {
-
-        //given:
-        EventType eventType = new DataPointEventType();
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,eventType);
-
-        //when:
-        boolean result = testSubject.isScheduledInactiveEventType(event);
-
-        //then:
-        assertFalse(result);
-    }
-
-    @Test
-    public void test_unscheduleEvent_for_sms_then_verify_times_method_dao() {
-
-        //given:
-        CommunicationChannel communicationChannelSms = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.SMS);
-
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,message);
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-        testSubject.scheduleEvent(eventHandler, event);
-
-        //when:
-        testSubject.unscheduleEvent(communicationChannelSms, event);
-
-        //then:
-        verify(dao, times(1)).delete(any());
-    }
-
-    @Test
-    public void test_unscheduleEvent_for_email_then_verify_times_method_dao() {
-
-        //given:
-        CommunicationChannel communicationChannelEmail = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.EMAIL);
-
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,message);
-
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-        testSubject.scheduleEvent(eventHandler, event);
-
-        //when:
-        testSubject.unscheduleEvent(communicationChannelEmail, event);
-
-        //then:
-        verify(dao, times(1)).delete(any());
-    }
-
-    @Test
-    public void test_scheduleEvent_for_sms_then_verify_times_method_dao() {
-
-        //given:
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,message);
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-
-        //when:
-        testSubject.scheduleEvent(eventHandler, event);
-
-        //then:
-        verify(dao, times(1)).insert(any());
-    }
-
-    @Test
-    public void test_scheduleEvent_for_email_then_verify_times_method_dao() {
-
-        //given:
-        EventInstance event = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime,message);
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-
-        //when:
-        testSubject.scheduleEvent(eventHandler, event);
-
-        //then:
-        verify(dao, times(1)).insert(any());
-    }
-
-    @Test
-    public void test_getScheduledEvents_for_sms_order_by_eventId_desc() {
-
-        //given:
-        CommunicationChannel communicationChannelSms = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.SMS);
-
-        EventInstance event1 = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime, message);
-        EventInstance event2 = EventTestUtils.createEventWithActiveTime(2,inactiveIntervalTime, message);
-        EventInstance event3 = EventTestUtils.createEventWithActiveTime(3,inactiveIntervalTime, message);
-        EventInstance event4 = EventTestUtils.createEventWithActiveTime(4,inactiveIntervalTime, message);
-
-        List<EventInstance> eventsExpected = new ArrayList<>();
-        eventsExpected.add(event4);
-        eventsExpected.add(event3);
-        eventsExpected.add(event2);
-        eventsExpected.add(event1);
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_SMS);
-
-        //when:
-        testSubject.scheduleEvent(eventHandler, event1);
-        testSubject.scheduleEvent(eventHandler, event2);
-        testSubject.scheduleEvent(eventHandler, event4);
-        testSubject.scheduleEvent(eventHandler, event3);
-        
-        //and:
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelSms);
-
-        //then:
-        assertEquals(eventsExpected, events);
-    }
-
-
-    @Test
-    public void test_getScheduledEvents_for_email_order_by_eventId_desc() {
-
-        //given:
-        CommunicationChannel communicationChannelEmail = CommunicationChannel
-                .newChannel(mailingListWithInactiveInterval, CommunicationChannelType.EMAIL);
-
-        EventInstance event1 = EventTestUtils.createEventWithActiveTime(1,inactiveIntervalTime, message);
-        EventInstance event2 = EventTestUtils.createEventWithActiveTime(2,inactiveIntervalTime, message);
-        EventInstance event3 = EventTestUtils.createEventWithActiveTime(3,inactiveIntervalTime, message);
-        EventInstance event4 = EventTestUtils.createEventWithActiveTime(4,inactiveIntervalTime, message);
-
-
-        List<EventInstance> eventsExpected = new ArrayList<>();
-        eventsExpected.add(event4);
-        eventsExpected.add(event3);
-        eventsExpected.add(event2);
-        eventsExpected.add(event1);
-
-        eventHandler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
-
-        //when:
-        testSubject.scheduleEvent(eventHandler, event1);
-        testSubject.scheduleEvent(eventHandler, event2);
-        testSubject.scheduleEvent(eventHandler, event4);
-        testSubject.scheduleEvent(eventHandler, event3);
+        testSubject.scheduleEvent(scheduledEvent1);
+        testSubject.scheduleEvent(scheduledEvent2);
 
         //and:
-        List<EventInstance> events = testSubject.getScheduledEvents(communicationChannelEmail);
+        testSubject.scheduleEvent(scheduledEvent3);
+
+        //and:
+        List<ScheduledEvent> events = testSubject.getScheduledEvents(mailingListWithInactiveInterval1);
 
         //then:
-        assertEquals(eventsExpected, events);
+        assertTrue(events.contains(scheduledEvent1));
+        assertTrue(events.contains(scheduledEvent2));
+        assertTrue(events.contains(scheduledEvent3));
     }
 
 }

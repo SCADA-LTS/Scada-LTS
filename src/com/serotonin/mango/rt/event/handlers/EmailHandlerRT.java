@@ -123,8 +123,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
     protected Set<String> getActiveRecipients(EventInstance evt, CommunicationChannel channel) {
         if(channel.getType() == CommunicationChannelType.EMAIL) {
-            return mailingListService.getRecipientAddresses(getVo().getActiveRecipients(),
-                    new DateTime(evt.getActiveTimestamp()), channel);
+            return mailingListService.getRecipientAddresses(vo.getActiveRecipients(), channel);
         }
         LOG.warn("Event id: " + evt.getId() + " and emailList id: " + channel.getChannelId()+ " it is not related to EMAIL communication!");
         return Collections.emptySet();
@@ -324,5 +323,9 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
                                     ExceptionUtils.getStackTrace(e)}
             ));
         }
+    }
+
+    protected EventHandlerVO getVo() {
+        return this.vo;
     }
 }

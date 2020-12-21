@@ -19,18 +19,16 @@ import java.util.List;
 
 class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEventDAO {
 
-    private static final String COLUMN_NAME_ID = "id";
     private static final String COLUMN_NAME_MAILING_LIST_ID = "mailingListId";
     private static final String COLUMN_NAME_SOURCE_EVENT_ID = "sourceEventId";
-    private static final String COLUMN_NAME_EVENT_HANDLER_TYPE = "eventHandlerType";
+    private static final String COLUMN_NAME_EVENT_HANDLER_ID = "eventHandlerId";
     private static final String TABLE_NAME = "scheduledExecuteInactiveEvent";
 
     private static final String SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE = ""
             + "select "
-            + COLUMN_NAME_ID + ", "
             + COLUMN_NAME_MAILING_LIST_ID + ", "
             + COLUMN_NAME_SOURCE_EVENT_ID + ", "
-            + COLUMN_NAME_EVENT_HANDLER_TYPE + " "
+            + COLUMN_NAME_EVENT_HANDLER_ID + " "
             + "from "
             + TABLE_NAME
             + "where "
@@ -38,10 +36,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
 
     private static final String SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT = ""
             + "select "
-            + COLUMN_NAME_ID + ", "
             + COLUMN_NAME_MAILING_LIST_ID + ", "
             + COLUMN_NAME_SOURCE_EVENT_ID + ", "
-            + COLUMN_NAME_EVENT_HANDLER_TYPE + " "
+            + COLUMN_NAME_EVENT_HANDLER_ID + " "
             + "from "
             + TABLE_NAME ;
 
@@ -50,7 +47,7 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             + TABLE_NAME + " ("
             + COLUMN_NAME_MAILING_LIST_ID + ", "
             + COLUMN_NAME_SOURCE_EVENT_ID + ", "
-            + COLUMN_NAME_EVENT_HANDLER_TYPE + ") "
+            + COLUMN_NAME_EVENT_HANDLER_ID + ") "
             + "values (?,?,?)";
 
     private static final String SCHEDULED_INACTIVE_COMMUNICATION_EVENT_DELETE = ""
@@ -59,15 +56,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             + "where "
             + COLUMN_NAME_MAILING_LIST_ID + "=? "
             + "and "
-            + COLUMN_NAME_SOURCE_EVENT_ID + "=? ";
-
-    private static final String SCHEDULED_INACTIVE_COMMUNICATION_EVENT_DELETE_LAST = ""
-            + "delete from "
-            + TABLE_NAME + " "
-            + "where id=min("
-            + COLUMN_NAME_ID + ") "
+            + COLUMN_NAME_SOURCE_EVENT_ID + "=? "
             + "and "
-            + COLUMN_NAME_MAILING_LIST_ID + "=?";
+            + COLUMN_NAME_EVENT_HANDLER_ID + "=? ";
 
     private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventDAOimpl.class);
 
@@ -112,7 +103,7 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
     }
 
     @Override
-    public int insert(ScheduledExecuteInactiveEvent scheduledExecuteInactiveEvent) {
+    public ScheduledExecuteInactiveEvent insert(ScheduledExecuteInactiveEvent scheduledExecuteInactiveEvent) {
 
         if (LOG.isTraceEnabled()) {
             LOG.trace("insert(ScheduledExecuteInactiveEvent scheduledExecuteInactiveEvent): " + scheduledExecuteInactiveEvent);
@@ -128,13 +119,13 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
                 new ArgumentPreparedStatementSetter(new Object[] {
                         scheduledExecuteInactiveEvent.getMailingListId(),
                         scheduledExecuteInactiveEvent.getSourceEventId(),
-                        scheduledExecuteInactiveEvent.getEventHandlerType()
+                        scheduledExecuteInactiveEvent.getEventHandlerId()
                 }).setValues(preparedStatement);
                 return preparedStatement;
             }
         }, keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return scheduledExecuteInactiveEvent;
     }
 
     @Override
@@ -144,29 +135,16 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             LOG.trace("delete(ScheduledInactiveCommunicationEvent getMailingListId) getMailingListId:" + event);
         }
 
-        jdbcTemplate.update(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_DELETE, event.getMailingListId(), event.getSourceEventId());
-    }
-
-    @Override
-    public void deleteLast(int mailingListId) {
-
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("delete(ScheduledInactiveCommunicationEvent getMailingListId) getMailingListId:" + mailingListId);
-        }
-
-        jdbcTemplate.update(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_DELETE_LAST, mailingListId);
+        jdbcTemplate.update(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_DELETE, event.getMailingListId(), event.getSourceEventId(), event.getEventHandlerId());
     }
 
     private static class ScheduledExecuteInactiveEventRowMapper implements RowMapper<ScheduledExecuteInactiveEvent> {
 
         @Override
         public ScheduledExecuteInactiveEvent mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ScheduledExecuteInactiveEvent mailingList = new ScheduledExecuteInactiveEvent();
-            mailingList.setId(rs.getInt(COLUMN_NAME_ID));
-            mailingList.setMailingListId(rs.getInt(COLUMN_NAME_MAILING_LIST_ID));
-            mailingList.setSourceEventId(rs.getInt(COLUMN_NAME_SOURCE_EVENT_ID));
-            mailingList.setEventHandlerType(rs.getInt(COLUMN_NAME_EVENT_HANDLER_TYPE));
-            return mailingList;
+            return new ScheduledExecuteInactiveEvent(rs.getInt(COLUMN_NAME_EVENT_HANDLER_ID),
+                    rs.getInt(COLUMN_NAME_SOURCE_EVENT_ID),
+                    rs.getInt(COLUMN_NAME_MAILING_LIST_ID));
         }
     }
 }
