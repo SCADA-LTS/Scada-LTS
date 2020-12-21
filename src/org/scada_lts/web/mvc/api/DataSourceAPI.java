@@ -19,14 +19,17 @@ package org.scada_lts.web.mvc.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -98,6 +101,65 @@ public class DataSourceAPI {
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/api/datasource/getAllPlc", produces = "application/json")
+    public ResponseEntity<List<DataSourceSimpleJSON>> getAllPlcDataSources(HttpServletRequest request) {
+        LOG.info("/api/datasource/getAllPlc");
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                List<DataSourceVO<?>> list;
+                list = dataSourceService.getDataSourcesPlc();
+                List<DataSourceSimpleJSON> result = new ArrayList<>();
+                for(DataSourceVO<?> ds: list) {
+                    DataSourceSimpleJSON d = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName());
+                    result.add(d);
+                }
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private class DataSourceSimpleJSON {
+        private long id;
+        private String xid;
+        private String name;
+
+        DataSourceSimpleJSON(long id, String xid, String name) {
+            this.setId(id);
+            this.setXid(xid);
+            this.setName(name);
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getXid() {
+            return xid;
+        }
+
+        public void setXid(String xid) {
+            this.xid = xid;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 
