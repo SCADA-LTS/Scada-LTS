@@ -119,7 +119,7 @@ const storeAlarmsNotifications = {
             }  
         },
 
-        async createEmailEventHandler({state, dispatch}, payload) {
+        async createEventHandler({state, dispatch}, payload) {
 
             let pedId = await dispatch("createPointEventDetector", payload.datapointId);
             let edId = pedId.id;
@@ -138,10 +138,10 @@ const storeAlarmsNotifications = {
             state.ehTemplate.activeRecipients = recipientList;
 
             return dispatch("requestPost", {
-                url: `/eventHandler/set/1/${dpId}/${edId}/2`,
+                url: `/eventHandler/set/1/${dpId}/${edId}/${payload.handlerType}`,
                 data: state.ehTemplate,
             });
-        }
+        },
     },
 
     getters: {

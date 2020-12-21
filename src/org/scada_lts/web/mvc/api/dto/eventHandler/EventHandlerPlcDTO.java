@@ -13,18 +13,20 @@ public class EventHandlerPlcDTO {
     private int eventTypeId;
     private int eventTypeRef1;
     private int eventTypeRef2;
+    private int handlerType;
     private List<RecipientListEntryBean> recipients;
 
     public EventHandlerPlcDTO() {
     }
 
-    public EventHandlerPlcDTO(int id, String xid, String alias, int eventTypeId, int eventTypeRef1, int eventTypeRef2, List<RecipientListEntryBean> recipients) {
+    public EventHandlerPlcDTO(int id, String xid, String alias, int eventTypeId, int eventTypeRef1, int eventTypeRef2, int handlerType, List<RecipientListEntryBean> recipients) {
         this.id = id;
         this.xid = xid;
         this.alias = alias;
         this.eventTypeId = eventTypeId;
         this.eventTypeRef1 = eventTypeRef1;
         this.eventTypeRef2 = eventTypeRef2;
+        this.handlerType = handlerType;
         this.recipients = recipients;
     }
 
@@ -82,5 +84,13 @@ public class EventHandlerPlcDTO {
 
     public void setRecipients(List<RecipientListEntryBean> recipients) {
         this.recipients = recipients;
+    }
+
+    public int getHandlerType() {
+        return handlerType;
+    }
+
+    public void setHandlerType(int handlerType) {
+        this.handlerType = handlerType;
     }
 }

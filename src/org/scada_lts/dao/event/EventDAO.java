@@ -530,6 +530,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			result.setEventTypeId(rs.getInt(4));
 			result.setEventTypeRef1(rs.getInt(5));
 			result.setEventTypeRef2(rs.getInt(6));
+			result.setHandlerType(h.getHandlerType());
 			result.setRecipients(h.getActiveRecipients());
 
 			return result;

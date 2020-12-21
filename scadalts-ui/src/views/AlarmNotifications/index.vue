@@ -53,7 +53,8 @@
             v-model="item.sms[0].active" 
             on-icon="mdi-cellphone"
             off-icon="mdi-cellphone-off"
-            @click="watchPointChange(item)" disabled></v-checkbox>
+            :disabled="!item.sms[0].handler"
+            @click="watchPointChange(item)"></v-checkbox>
           <v-spacer vertical class="space"></v-spacer>
           <v-checkbox 
             v-model="item.mail[1].active" 
@@ -66,7 +67,8 @@
             v-model="item.sms[1].active" 
             on-icon="mdi-cellphone"
             off-icon="mdi-cellphone-off"
-            @click="watchPointChange(item)" disabled></v-checkbox>
+            :disabled="!item.sms[1].handler"
+            @click="watchPointChange(item)"></v-checkbox>
         </v-row>
       </template>
     </v-treeview>
@@ -131,7 +133,7 @@ export default {
     bindEmailEventHandler(datapointId, mlId) {
       let find = -1;
       this.eventHandlers.forEach(eh => {
-        if(eh.eventTypeRef1 == datapointId) {
+        if(eh.eventTypeRef1 == datapointId && eh.handlerType === 2) {
           if(!!eh.recipients) {
             eh.recipients.forEach(r => {
               if(r.referenceId == mlId) {
@@ -144,9 +146,20 @@ export default {
       return find;
     },
 
-    bindSmsEventHandler(datapointId) {
-      /** @TODO When SmsEventHandler will be ready add this logic */
-      return -1;
+    bindSmsEventHandler(datapointId, mlId) {
+      let find = -1;
+      this.eventHandlers.forEach(eh => {
+        if(eh.eventTypeRef1 == datapointId && eh.handlerType === 5) {
+          if(!!eh.recipients) {
+            eh.recipients.forEach(r => {
+              if(r.referenceId == mlId) {
+                find = { ehId: eh.id, edId: eh.eventTypeRef2 };
+              }
+            })
+          }
+        }
+      })
+      return find;
     },
 
     addConfiguration(datapointId, mailingListId, type) {
@@ -193,11 +206,30 @@ export default {
               );
             } else if (change.mail[x].handler === -1 && change.mail[x].active !== change.mail[x].config){
               let mlId = x%change.mail.length === 0 ? this.activeMailingList : this.activeMailingList2;
-              let data = this.getExistingEventHandler(change.id);
+              let data = this.getExistingEventHandler(change.id, 2);
               if(!!data) {
                 this.updateEventHandler(data.ehId, mlId, change.id, data.edId, "add");
               } else {
-                this.createEmailEventHandler(mlId, change.id);
+                this.createEventHandler(mlId, change.id, 2);
+              }
+            }
+          }
+          for(let x = 0; x < change.sms.length; x++) {
+            if (change.sms[x].handler !== -1 && change.sms[x].active !== change.sms[x].config) {
+              this.updateEventHandler(
+                change.sms[x].handler.ehId,
+                change.sms[x].mlId,
+                change.id,
+                change.sms[x].handler.edId,
+                "delete"
+              );
+            } else if (change.sms[x].handler === -1 && change.sms[x].active !== change.sms[x].config){
+              let mlId = x%change.mail.length === 0 ? this.activeMailingList : this.activeMailingList2;
+              let data = this.getExistingEventHandler(change.id, 5);
+              if(!!data) {
+                this.updateEventHandler(data.ehId, mlId, change.id, data.edId, "add");
+              } else {
+                this.createEventHandler(mlId, change.id, 5);
               }
             }
           }
@@ -214,19 +246,19 @@ export default {
       this.modified = [];
     },
 
-    async createEmailEventHandler(mlId, dpId) {
+    async createEventHandler(mlId, dpId, handlerType) {
       let createData = {
-        datapointId: dpId, mailingListId: mlId
+        datapointId: dpId, mailingListId: mlId, handlerType: handlerType
       };
-      await this.$store.dispatch("createEmailEventHandler", createData);
+      await this.$store.dispatch("createEventHandler", createData);
       this.initEventHandlers();
       this.modified = [];
     },
 
-    getExistingEventHandler(datapointId) {
+    getExistingEventHandler(datapointId, handlerType) {
       let result = null;
       this.eventHandlers.forEach(eh => {
-        if(eh.eventTypeRef1 == datapointId) {
+        if(eh.eventTypeRef1 == datapointId && eh.handlerType === handlerType) {
           result = { ehId: eh.id, edId: eh.eventTypeRef2 }
         }
       })
