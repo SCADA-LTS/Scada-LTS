@@ -66,7 +66,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     }
 
     @Override
-    public synchronized void scheduleTimeout(Boolean model, long fireTime) {
+    public void scheduleTimeout(Boolean model, long fireTime) {
         DateTime dateTime = new DateTime(fireTime);
         if(communicationChannel.isActiveFor(dateTime)) {
             List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(communicationChannel);
