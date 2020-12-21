@@ -3,7 +3,15 @@
     <v-container fluid>
       <v-row align="center">
         <v-col cols="6" xs="12">
-          <h1>{{$t("plcalarms.notification.title")}}</h1>
+          <h1>{{$t("plcalarms.notification.title")}}
+            <v-tooltip bottom>
+            <template v-slot:activator="{on, attrs}">
+              <v-icon small v-bind="attrs" v-on="on">mdi-help</v-icon>
+            </template>
+            <span class="help-message">{{$t("plcalarms.notification.help")}}</span>
+          </v-tooltip>
+          </h1>
+          
         </v-col>
         <v-col cols="2" xs="12" class="row justify-end">
           <v-btn elevation="2" fab dark color="primary" v-if="modified.length !== 0" @click="saveConfiguration">
@@ -72,6 +80,7 @@
         </v-row>
       </template>
     </v-treeview>
+    <v-snackbar v-model="snackbar.visible">{{snackbar.text}}</v-snackbar>
   </div>
 </template>
 <script>
@@ -92,6 +101,10 @@ export default {
       mailingLists: undefined,
       eventHandlers: undefined,
       modified: [],
+      snackbar: {
+        visible: false,
+        text: ""
+      }
     };
   },
 
@@ -234,6 +247,8 @@ export default {
             }
           }
         })
+        this.snackbar.text = this.$t("plcalarms.notification.save");
+        this.snackbar.visible = true;
       }
     },
 
@@ -271,5 +286,8 @@ export default {
 <style>
 .space {
   margin: 0 6vw;
+}
+.v-tooltip__content {
+  max-width: 25vw;
 }
 </style>
