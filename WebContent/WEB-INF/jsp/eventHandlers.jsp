@@ -461,9 +461,7 @@
         else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
             var smsList = smsRecipients.createRecipientArray();
             EventHandlersDwr.saveSmsEventHandler(selectedEventTypeNode.object.typeId,
-                    selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
-                    disabled, smsList, false, <c:out value="<%= Common.TimePeriods.HOURS %>"/>, 1,
-                    null, false, false, null, saveEventHandlerCB);
+                    selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias, disabled, smsList, saveEventHandlerCB);
         }
         else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
             EventHandlersDwr.saveSetPointEventHandler(selectedEventTypeNode.object.typeId,
