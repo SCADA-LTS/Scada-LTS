@@ -277,7 +277,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
                 }
             }
             String[] toAddrs = addresses.toArray(new String[0]);
-            MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
+            MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
 
             // Send the email.
             EmailWorkItem.queueEmail(toAddrs, content);
