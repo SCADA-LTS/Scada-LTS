@@ -83,7 +83,7 @@ public class ScheduledExecuteInactiveEventRtRaiseEventExceptionTest {
         UserEntry user1 = createUserEntry("Ewa","111111111", "test1@test.com");
         List<AddressEntry> addressEntries1 = createAddressEntry("test2@test.com");
 
-        mailingList = MailingListTestUtils.createMailingList(addressEntries1, user1);
+        mailingList = MailingListTestUtils.createMailingList(1, addressEntries1, user1);
         mailingList.setDailyLimitSentEmails(dailyLimitSentEmails);
         mailingList.setDailyLimitSentEmailsNumber(dailyLimitSentEmailsNumber);
 

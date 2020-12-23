@@ -44,7 +44,7 @@ public class MailingListInactive15MinuteIntervalTest {
         List<AddressEntry> addressEntries = createAddressEntry(tel3, email4,
                 email3, tel4, badTel2, badTel3, badEmail2, badEmail3);
 
-        testSuject = createMailingList(addressEntries, user1, user2, user3, user4);
+        testSuject = createMailingList(1, addressEntries, user1, user2, user3, user4);
 
         addressesExpected = new HashSet<>();
         addressesExpected.add(email1);
