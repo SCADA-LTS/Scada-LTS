@@ -96,29 +96,14 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     @Override
     public void scheduleEvent(EventHandlerVO eventHandler, EventInstance event) {
         if(event.getAlarmLevel() == AlarmLevels.NONE) {
-            LOG.warn("Event with alarm level NONE: eventId:" + event.getId());
+            LOG.warn("Event with alarm level NONE: event type:" + event.getEventType());
             return;
         }
         if(isScheduledInactiveEventType(event)) {
-            LOG.warn("Event scheduled type: " + ScheduledInactiveEventType.class.getSimpleName() + ", eventId:" + event.getId());
+            LOG.warn("Event scheduled type, event type:" + event.getEventType());
             return;
         }
-        List<MailingList> mailingLists = mailingListService.convertToMailingLists(eventHandler.getActiveRecipients());
-
-        for (MailingList mailingList : mailingLists) {
-            if (mailingList.isCollectInactiveEmails()) {
-                ScheduledExecuteInactiveEventInstance inactiveEventInstance =
-                        new ScheduledExecuteInactiveEventInstance(eventHandler, event, mailingList);
-                if (!inactiveEventInstance.isActive()) {
-                    if (!contains(inactiveEventInstance)) {
-                        scheduledEventDAO.insert(inactiveEventInstance.getKey());
-                        add(inactiveEventInstance);
-                    } else {
-                        LOG.warn("Inactive event instance is duplicated!: " + inactiveEventInstance);
-                    }
-                }
-            }
-        }
+        schedule(eventHandler, event);
     }
 
     @Override
@@ -137,6 +122,25 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
                 remove(inactiveEventInstance);
             } else {
                 LOG.warn("Event is not scheduled!: " + inactiveEventInstance);
+            }
+        }
+    }
+
+    private void schedule(EventHandlerVO eventHandler, EventInstance event) {
+        List<MailingList> mailingLists = mailingListService.convertToMailingLists(eventHandler.getActiveRecipients());
+
+        for (MailingList mailingList : mailingLists) {
+            if (mailingList.isCollectInactiveEmails()) {
+                ScheduledExecuteInactiveEventInstance inactiveEventInstance =
+                        new ScheduledExecuteInactiveEventInstance(eventHandler, event, mailingList);
+                if (!inactiveEventInstance.isActive()) {
+                    if (!contains(inactiveEventInstance)) {
+                        scheduledEventDAO.insert(inactiveEventInstance.getKey());
+                        add(inactiveEventInstance);
+                    } else {
+                        LOG.warn("Inactive event instance is duplicated!: " + inactiveEventInstance);
+                    }
+                }
             }
         }
     }
