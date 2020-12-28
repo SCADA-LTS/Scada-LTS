@@ -1,27 +1,27 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
 <h1>Vue d'ensemble</h1>
-<p>Une source de donn&eacute;es 1-wire est utilis&eacute;e pour collecter les donn&eacute;es d'un r&eacute;seau local de communication 1-wire accessible via RS232 ou RS485 (n&eacute;cessite un adaptateur). C'est une source de donn&eacute;es de type polling.</p>
-<p>La source de donn&eacute;es supporte les changements physique de configuration du r&eacute;seau. Pour chaque modification topographique de r&eacute;seau d&eacute;tect&eacute;e, un nouveau scan est r&eacute;alis&eacute; . Si tous les points sont encore localisables apr&egrave;s le scan, aucun &eacute;v&egrave;nement n'est remont&eacute;.</p>
+<p>La source de données 1-wire est utilisée pour recueillir des données à partir d'un réseau local 1-wire, accessible via une communication RS232 ou RS485 (nécessite un adaptateur). Il s'agit d'une source de données d'interrogation.</p>
+<p>La source de données est capable de tolérer des reconfigurations physiques du réseau. Lorsque des modifications de la topographie d'un réseau sont détectées, un nouveau balayage automatique est effectué. Si tous les points sont toujours localisés après le balayage, aucun événement n'est soulevé.</p>
 
 <h1>Configuration</h1>
-<p>Chaque source de donn&eacute;es exige un <b>Nom</b>, librement choisi. La s&eacute;lection du <b>Port</b> fournit la liste de tous les ports s&eacute;rie disponibles du mat&eacute;riel H&ocirc;te. Cela correspond au port sur lequel le 1-wire est connect&eacute;. <b>Mise &agrave; jour</b> d&eacute;termine la fr&eacute;quence d'interrogation du r&eacute;seau.</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. La sélection <b>Port</b> fournit une liste de tous les ports série disponibles sur le matériel hôte. Cela correspond au port dans lequel le 1-wired est connecté. La sélection <b>Période de mise à jour</b> détermine la fréquence à laquelle le réseau est interrogé pour des données.</p>
 
-<h1>Scan du r&eacute;seau</h1>
-<p>Les r&eacute;seaux peuvent &ecirc;tre scann&eacute;es pour rechercher tous les p&eacute;riph&eacute;riques pr&eacute;sents (si le mat&eacute;riel le permet) . Cette fonction va localiser &agrave; travers les mailles coupl&eacute;es tous les &eacute;quipement du r&eacute;seau. Les r&eacute;sultats seront repr&eacute;sent&eacute;s dans un tableau comprenant l'adresse et la description de l'appareil, pour ajouter rapidement un dispositif en tant que point cliquez sur l'ic&ocirc;ne <img src="images/icon_comp_add.png"/>. Un nouveau point sera cr&eacute;e avec les attributs par d&eacute;faut de l'appareil.</p>
+<h1>Scan du réseau</h1>
+<p>Les réseaux peuvent être scannés pour détecter les appareils à l'aide de l'utilitaire de scan. Cette fonctionnalité permet de scanner les chemins connectés par des coupleurs pour localiser tous les équipements du réseau. Les résultats sont affichés dans un tableau fournissant l'adresse 1-wire et une description de l'appareil. Pour ajouter rapidement un appareil comme point, cliquez sur l'icône <img src="images/icon_comp_add.png"/> associée. Un nouveau point sera créé avec les attributs du périphérique par défaut.</p>
