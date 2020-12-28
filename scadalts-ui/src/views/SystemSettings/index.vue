@@ -18,6 +18,7 @@
                 <EmailSettingsComponent ref="emailSettingsComponent" @changed="componentChanged"></EmailSettingsComponent>
                 <MiscSettingsComponent ref="miscSettingsComponent" @changed="componentChanged"></MiscSettingsComponent>
                 <HttpSettingsComponent ref="httpSettingsComponent" @changed="componentChanged"></HttpSettingsComponent>
+                <DefaultLoggingTypeSettingsComponent ref="defaultLoggingTypeSettingsComponent" @changed="componentChanged"></DefaultLoggingTypeSettingsComponent>
                 <ScadaConfigurationComponent></ScadaConfigurationComponent>
               </v-row>
             </v-col>
@@ -160,7 +161,7 @@
                 <v-col cols="12">
                   <p>{{ $t("systemsettings.database.top") }}</p>
                 </v-col>
-                <v-col cols="12" 
+                <v-col cols="12"
                   v-for="point in databaseInfo.topPoints"
                   v-bind:key="point.pointId">
                   <p>
@@ -173,7 +174,7 @@
         </v-col>
       </v-row>
     </v-container>
-    
+
     <v-dialog v-model="openModal" max-width="750">
       <v-card>
         <v-card-title>
@@ -228,7 +229,7 @@
       <h2>Not allowed to see that page</h2>
       <v-spacer></v-spacer>
     </v-container>
-    
+
   </div>
 </template>
 <script>
@@ -240,6 +241,7 @@ import SystemEventTypesComponent from "./SystemEventTypesComponent";
 import EmailSettingsComponent from "./EmailSettingsComponent";
 import HttpSettingsComponent from "./HttpSettingsComponent";
 import MiscSettingsComponent from "./MiscSettingsComponent";
+import DefaultLoggingTypeSettingsComponent from "./DefaultLoggingTypeComponent";
 import ScadaConfigurationComponent from "./ScadaConfigurationComponent";
 import { keys } from "@amcharts/amcharts4/.internal/core/utils/Object";
 
@@ -253,6 +255,7 @@ export default {
     EmailSettingsComponent,
     HttpSettingsComponent,
     MiscSettingsComponent,
+    DefaultLoggingTypeSettingsComponent,
     ScadaConfigurationComponent
   },
   filters: {
@@ -445,7 +448,6 @@ body > .alert {
 .green {
   background-color: rgba(0, 255, 0, 0.3);
 }
-
 .floated-right {
   float: right;
   margin-top: 8px;

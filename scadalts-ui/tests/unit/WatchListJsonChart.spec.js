@@ -60,10 +60,4 @@ describe('WatchListJsonChart.vue Test', () => {
         expect(wrapper.vm.chartType).to.equal('compare');
     })
 
-    it('Open chart settings', () => {
-        expect(wrapper.html()).not.contain('modal-body')
-        wrapper.find('i[class="glyphicon glyphicon-cog"]').trigger('click')
-        expect(wrapper.html()).contain('modal-body')
-    })
-
 })

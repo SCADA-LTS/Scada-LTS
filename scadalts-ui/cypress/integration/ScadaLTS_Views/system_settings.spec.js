@@ -1,4 +1,5 @@
 const { Context } = require("ag-grid-community");
+import {createVirtualDataSource, addVirtualDataPoint} from '../../utils/utils';
 
 context('Test System Settings Vue.JS page', () => {
 
@@ -60,4 +61,59 @@ context('Test System Settings Vue.JS page', () => {
         })
     })
 
+})
+
+context('Test System Settings Components functionality', () => {
+
+    beforeEach(() => {
+        cy.clearCookies()
+        cy.visit('/login.htm')
+        cy.get('input#username').type("admin").should('have.value', 'admin')
+        cy.get('input#password').type("admin").should('have.value', 'admin')
+        cy.get('.login-button > input').click()
+        cy.location('pathname').should('include', 'watch_list')
+    })
+    
+    describe("Test Default Logging Type Setting", () => {
+
+        beforeEach(() => {
+            cy.visit('app.shtm#/system-settings')
+        })
+
+        it("Should be visible", () => {
+            cy.get('#default-logging-type-setting').should('be.visible');
+            cy.get('#default-logging-type-setting > .align-items-center > .col-xs-12').should('contain', 'Default Data Point logging type');
+        })
+
+        it("Save do not log value", () => {
+            let name = `Test_SystemSettings-${new Date().getTime()}`;
+            name = name.substring(0,30);
+            cy.get('.col-xs-12 > .form-control').select("Do not log");
+            cy.get('.floated-right').click();
+            cy.get('.btn-success').click();
+
+            createVirtualDataSource(name);
+            addVirtualDataPoint(`DP_${name}`, "Numeric")
+
+            cy.get(':nth-child(5) > img[src="images/icon_comp_edit.png"]').click();
+            cy.get('select#loggingType option[selected="selected"]').should('contain', 'Do not log');
+
+        })
+
+        it("Save do not log value", () => {
+            let name = `Test_SystemSettings2-${new Date().getTime()}`;
+            name = name.substring(0,30);
+            cy.get('.col-xs-12 > .form-control').select("When point value changes");
+            cy.get('.floated-right').click();
+            cy.get('.btn-success').click();
+
+            createVirtualDataSource(name);
+            addVirtualDataPoint(`DP_${name}`, "Numeric")
+
+            cy.get(':nth-child(5) > img[src="images/icon_comp_edit.png"]').click();
+            cy.get('select#loggingType option[selected="selected"]').should('contain', 'When point value changes');
+
+        })
+
+    })
 })

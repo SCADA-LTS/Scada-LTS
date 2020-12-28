@@ -29,7 +29,7 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1446.*$/"
+  - "/^release/2.4.0.*$/"
 notifications:
   email: false
 env:
