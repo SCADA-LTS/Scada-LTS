@@ -111,10 +111,5 @@ WebContent/resources/node_modules/
 WebContent/resources/package-lock.json
 build
 databases
-build.gradle
-docker-compose.yml
-Dockerfile
 gradlew
 gradlew.bat
-settings.gradle
-scadalts-ui/build.gradle
