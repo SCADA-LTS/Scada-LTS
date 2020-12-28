@@ -22,6 +22,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.utils.QueryUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -36,7 +37,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * DAO for MailingList
@@ -50,6 +53,11 @@ public class MailingListDAO {
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_NAME = "name";
+	private static final String COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS = "dailyLimitSentEmails";
+    private static final String COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS_NUMBER = "dailyLimitSentEmailsNumber";
+	private static final String COLUMN_NAME_COLLECT_INACTIVE_EMAILS = "collectInactiveEmails";
+	private static final String COLUMN_NAME_CRON_PATTERN = "cronPattern";
+
 
 	// @formatter:off
 
@@ -57,25 +65,52 @@ public class MailingListDAO {
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
 				+ COLUMN_NAME_XID + ", "
-				+ COLUMN_NAME_NAME + " "
+				+ COLUMN_NAME_NAME + ", "
+				+ COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS + ", "
+                + COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS_NUMBER + ", "
+				+ COLUMN_NAME_COLLECT_INACTIVE_EMAILS + ", "
+				+ COLUMN_NAME_CRON_PATTERN + " "
 			+ "from mailingLists ";
+
+	private static final String MAILING_LIST_SELECT_WHERE_ID_IN = ""
+			+ "select "
+			+ COLUMN_NAME_ID + ", "
+			+ COLUMN_NAME_XID + ", "
+			+ COLUMN_NAME_NAME + ", "
+			+ COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS + ", "
+            + COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS_NUMBER + ", "
+			+ COLUMN_NAME_COLLECT_INACTIVE_EMAILS + ", "
+			+ COLUMN_NAME_CRON_PATTERN + " "
+			+ "from mailingLists where "
+			+ COLUMN_NAME_ID + " "
+			+ "in (?) ";
 
 	private static final String MAILING_LIST_INSERT = ""
 			+ "insert into mailingLists ("
 				+ COLUMN_NAME_XID + ", "
-				+ COLUMN_NAME_NAME + ") "
-			+ "values (?,?) ";
+				+ COLUMN_NAME_NAME + ", "
+				+ COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS + ", "
+                + COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS_NUMBER + ", "
+				+ COLUMN_NAME_COLLECT_INACTIVE_EMAILS + ", "
+				+ COLUMN_NAME_CRON_PATTERN + ") "
+			+ "values (?,?,?,?,?,?) ";
 
 	private static final String MAILING_LIST_UPDATE = ""
 			+ "update mailingLists set "
 				+ COLUMN_NAME_XID + "=?, "
-				+ COLUMN_NAME_NAME + "=? "
+				+ COLUMN_NAME_NAME + "=?, "
+				+ COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS + "=?, "
+                + COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS_NUMBER + "=?, "
+				+ COLUMN_NAME_COLLECT_INACTIVE_EMAILS + "=?, "
+				+ COLUMN_NAME_CRON_PATTERN + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
 	private static final String MAILING_LIST_DELETE = ""
 			+ "delete from mailingLists where "
 				+ COLUMN_NAME_ID + "=? ";
+
+
 	// @formatter:on
 
 	private class MailingListRowMapper implements RowMapper<MailingList> {
@@ -86,6 +121,10 @@ public class MailingListDAO {
 			mailingList.setId(rs.getInt(COLUMN_NAME_ID));
 			mailingList.setXid(rs.getString(COLUMN_NAME_XID));
 			mailingList.setName(rs.getString((COLUMN_NAME_NAME)));
+			mailingList.setCollectInactiveEmails(rs.getBoolean(COLUMN_NAME_COLLECT_INACTIVE_EMAILS));
+			mailingList.setCronPattern(rs.getString(COLUMN_NAME_CRON_PATTERN));
+			mailingList.setDailyLimitSentEmails(rs.getBoolean(COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS));
+            mailingList.setDailyLimitSentEmailsNumber(rs.getInt(COLUMN_NAME_DAILY_LIMIT_SENT_EMAILS_NUMBER));
 			return mailingList;
 		}
 	}
@@ -143,7 +182,9 @@ public class MailingListDAO {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement preparedStatement = connection.prepareStatement(MAILING_LIST_INSERT, Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[] {mailingList.getXid(), mailingList.getName()}).setValues(preparedStatement);
+				new ArgumentPreparedStatementSetter(new Object[] {mailingList.getXid(), mailingList.getName(),
+						mailingList.isDailyLimitSentEmails(), mailingList.getDailyLimitSentEmailsNumber(),
+                        mailingList.isCollectInactiveEmails(), mailingList.getCronPattern()}).setValues(preparedStatement);
 				return preparedStatement;
 			}
 		}, keyHolder);
@@ -158,7 +199,9 @@ public class MailingListDAO {
 			LOG.trace("update(MailingList mailingList) mailingList:" + mailingList.toString());
 		}
 
-		DAO.getInstance().getJdbcTemp().update(MAILING_LIST_UPDATE, new Object[] {mailingList.getXid(), mailingList.getName(), mailingList.getId()});
+		DAO.getInstance().getJdbcTemp().update(MAILING_LIST_UPDATE, new Object[] {mailingList.getXid(), mailingList.getName(),
+				mailingList.isDailyLimitSentEmails(), mailingList.getDailyLimitSentEmailsNumber(),
+                mailingList.isCollectInactiveEmails(), mailingList.getCronPattern(), mailingList.getId()});
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -170,4 +213,14 @@ public class MailingListDAO {
 
 		DAO.getInstance().getJdbcTemp().update(MAILING_LIST_DELETE, new Object[] {id});
 	}
+
+	@Transactional(readOnly = true)
+	public List<MailingList> getMailingLists(Set<Integer> ids) {
+		if(ids.isEmpty())
+			return Collections.emptyList();
+		String args = QueryUtils.getArgsIn(ids.size());
+		String query = MAILING_LIST_SELECT_WHERE_ID_IN.replace("?", args);
+		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new MailingListRowMapper());
+	}
+
 }

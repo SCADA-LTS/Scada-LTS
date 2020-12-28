@@ -383,5 +383,10 @@
    <item id="radiuinoPP">
     <relation id="radiuinoDS"/>
    </item>
-  
+
+    <item id="collectInactiveMsg">
+        <relation id="emailSettings"/>
+        <relation id="eventHandlers"/>
+        <relation id="eventDetectors"/>
+    </item>
 </doxManifest>
