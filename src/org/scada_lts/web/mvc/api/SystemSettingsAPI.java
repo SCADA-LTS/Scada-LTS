@@ -7,6 +7,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +76,61 @@ public class SystemSettingsAPI {
     @PostMapping(value = "/saveEmail", consumes = "application/json")
     public ResponseEntity<String> saveEmail(HttpServletRequest request, @RequestBody JsonSettingsEmail jsonSettingsEmail) {
         LOG.info("/api/systemSettings/saveEmail");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                systemSettingsService.saveEmailSettings(jsonSettingsEmail);
+                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getSMSDomain", produces = "application/json")
+    public ResponseEntity<String> getSMSDomain(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getSMSDomain");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(systemSettingsService.getSMSDomain(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/saveSMSDomain/{domain}", method = RequestMethod.POST)
+    public ResponseEntity<String> saveSMSDomain(
+            @PathVariable("domain") String domain,
+            HttpServletRequest request)  {
+
+        LOG.info("/api/systemSettings/getSMSDomain:" + domain);
+        ResponseEntity<String> result = null;
+        try {
+            User user = Common.getUser(request);
+            if (user.isAdmin()) {
+                systemSettingsService.saveSMSDomain(domain);
+                result = new ResponseEntity<String>(HttpStatus.OK);
+            } else {
+                result = new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            result = new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/saveSMSDomain", consumes = "application/json")
+    public ResponseEntity<String> saveSMSMail(HttpServletRequest request, @RequestBody JsonSettingsEmail jsonSettingsEmail) {
+        LOG.info("/api/systemSettings/saveSMSDomain");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
