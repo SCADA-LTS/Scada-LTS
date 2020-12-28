@@ -105,6 +105,9 @@ public class SystemSettingsDAO {
 	// Database
 	public static final String DATABASE_INFO_SCHEMA_VERSION = "version";
 
+	// SMS domain
+	public static final String SMS_DOMAIN = "sms.domain";
+
 	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
 	private static final String DELETE_MANGO_VIEWS = "delete from mangoViews";
 	private static final String DELETE_POINT_EVENT_DETECTORS = "delete from pointEventDetectors";
@@ -336,6 +339,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+		DEFAULT_VALUES.put(SMS_DOMAIN, "localhost");
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
