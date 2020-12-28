@@ -1,26 +1,22 @@
 <template>
-  <div class="col-md-6" id="default-logging-type-setting">
-    <div class="row align-items-center">
-      <h2 class="col-xs-12">
-        {{ $t("systemsettings.loggingtype.title")
-        }}<span v-if="isLoggingTypeSettingsEdited">*</span>
-      </h2>
-    </div>
-    <div>
-      <div class="row no-gutters">
-        <div class="col-xs-12 no-gutters">
-            <select class="form-control"
-                v-model="defaultLoggingType"
-                @change="watchLoggingTypeChange()"
-                @input="watchLoggingTypeChange()">
-                <option v-for="opt in loggingTypeList" :key="opt.id" :value="opt.id">
-                    {{opt.label}}
-                </option>
-            </select>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-col cols="12" md="6">
+    <v-card>
+      <v-card-title>
+        {{ $t("systemsettings.loggingtype.title")}}
+        <span v-if="isLoggingTypeSettingsEdited">*</span>
+      </v-card-title>
+      <v-card-text>
+        <v-select
+          @change="watchLoggingTypeChange"
+          v-model="defaultLoggingType"
+          :items="loggingTypeList"
+          item-value="id"
+          item-text="label"
+          dense
+        ></v-select>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 <script>
 export default {
