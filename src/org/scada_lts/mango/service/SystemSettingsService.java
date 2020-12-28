@@ -92,6 +92,14 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_NAME, json.getName());
     }
 
+    public String getSMSDomain() {
+        return SystemSettingsDAO.getValue(SystemSettingsDAO.SMS_DOMAIN);
+    }
+
+    public void saveSMSDomain(String smsDomain) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.SMS_DOMAIN, smsDomain);
+    }
+
     public JsonSettingsHttp getHttpSettings() {
         JsonSettingsHttp json = new JsonSettingsHttp();
         json.setUseProxy(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.HTTP_CLIENT_USE_PROXY));

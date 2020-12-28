@@ -1,29 +1,29 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<p><b>Number formats</b> are used to determine how to display and parse numbers values, converting between internal floating point or integer representations and text. For example, the number 1234.5678 could be formatted as shown, but it may be preferred to be viewed as '1,234.6', or '1 234,567', or '1.2345678E3' depending upon the context and the value's semantics. The same patterns can be used to format a value for display as well as parsing text input into numeric values.</p>
+<p><b>Les formats de nombres</b> sont utilisés pour déterminer comment afficher et analyser les valeurs des nombres, en convertissant entre les représentations internes en virgule flottante ou en nombre entier et le texte. Par exemple, le nombre 1234.5678 peut être formaté comme indiqué, mais il est préférable de le voir comme "1,234.6", ou "1 234,567", ou "1.2345678E3" selon le contexte et la sémantique de la valeur. Les mêmes modèles peuvent être utilisés pour formater une valeur pour l'affichage ainsi que pour analyser le texte saisi en valeurs numériques.</p>
 
-<p>Number formatting in Mango is implemented by the DecimalFormat Java class, the details for which can be found <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/DecimalFormat.html" target="_blank">here</a>. Some common patterns are provided below for convenience.</p>
+<p>Le formatage des nombres dans Mango est implémenté par la classe Java Decimal Format, dont les détails se trouvent <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/DecimalFormat.html" target="_blank">ici</a>. Quelques modèles courants sont fournis ci-dessous par commodité.</p>
 
 <ul>
-  <li><b>#,##0.00</b> Comma separation at thousands. Always displays the first integer digit and two decimal places (rounded).</li>
-  <li><b>0.000</b> Always displays the first integer digit and three decimal places.</li>
-  <li><b>0.00;(0.00)</b> Always displays the first integer digit and two decimal places. Displays negative numbers in parentheses.</li>
+  <li><b>#,##0.00</b> Séparation des virgules en milliers. Affiche toujours le premier chiffre entier et deux décimales (arrondi).</li>
+  <li><b>0.000</b> Affiche toujours le premier chiffre entier et trois décimales.</li>
+  <li><b>0.00 ;(0.00)</b> Affiche toujours le premier chiffre entier et deux décimales. Affiche les nombres négatifs entre parenthèses.</li>
 </ul>
 
-<p>Formatting may be localized depending upon your Java VM defaults.</p>
+<p>Le formatage peut être localisé en fonction des paramètres par défaut de votre VM Java.</p>

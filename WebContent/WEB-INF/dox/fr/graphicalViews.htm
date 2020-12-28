@@ -1,55 +1,36 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>A Graphical view is similar to a watch list, but instead provides a graphical representation of selected points. Point values and value times update automatically&mdash;you do not need to refresh the page. (In fact, the system operates more efficiently if you don't.)</p>
-
-<h1>Selecting a graphical view</h1>
+<h1>Vue d'ensembles</h1>
+<p>Une vue graphique est similaire à une liste de surveillance, mais fournit à la place une représentation graphique des points sélectionnés. Les valeurs des points et les temps de valeur se mettent à jour automatiquement - vous n'avez pas besoin de rafraîchir la page. (En fait, le système fonctionne plus efficacement si vous ne le faites pas).</p>
+<h1>Sélection d'une vue graphique</h1>
 <p>
-  A user may have multiple graphical views, but may only view one at a time. Use the dropdown control to select the 
-  view that you wish to display. To create a new view, click the add icon (<img src="images/icon_view_new.png"/>) in 
-  the top right-hand corner of the watch list section. To edit an existing view, click the edit icon 
-  (<img src="images/icon_view_edit.png"/>). In either case, the <b>Graphical view edit</b> page will be displayed.
+  Un utilisateur peut avoir plusieurs vues graphiques, mais ne peut en visualiser qu'une à la fois. Utilisez le menu déroulant pour sélectionner la vue que vous souhaitez afficher. Pour créer une nouvelle vue, cliquez sur l'icône d'ajout (<img src="images/icon_view_new.png"/>) dans le coin supérieur droit de la section de la liste de surveillance. Pour modifier une vue existante, cliquez sur l'icône d'édition (<img src="images/icon_view_edit.png"/>). Dans les deux cas, la page <b>Vue graphique edit</b> s'affichera.
 </p>
-
 <p>
-  You may see graphical views in your list that you did not create. If so, these views were "shared" with you by the 
-  person who created them. You will be at least allowed to view them, but you may not be allowed to set values via the
-  view if you were not granted "set" permission. If you no longer wish to have the view in your list, use the delete 
-  icon (<img src="images/icon_view_delete.png"/>) to "unshare" the view. (Unsharing does not delete the view.)
-</p>
-
-<h1>Background images</h1>
-<p>Graphical views may optionally be presented upon background images. Backgrounds can be set in the graphical view editing page.</p>
-
-<h1>Points in graphical views</h1>
-<p>A point can belong to multiple graphical views, so you can create views that are as specific as you require.</p>
+  Vous pouvez voir dans votre liste des vues graphiques que vous n'avez pas créées. Si c'est le cas, ces vues ont été "partagées" avec vous par la personne qui les a créées. Vous serez au moins autorisé à les visualiser, mais vous ne pourrez peut-être pas définir de valeurs via la vue si vous n'avez pas reçu l'autorisation de les "définir". Si vous ne souhaitez plus avoir la vue dans votre liste, utilisez l'icône de suppression (<img src="images/icon_view_delete.png"/>) pour "défaire" la vue. (Le dépannage ne supprime pas la vue).</p>
+<h1>Images de fond</h1>
+<p>Les vues graphiques peuvent éventuellement être présentées sur des images de fond. Les arrière-plans peuvent être définis dans la page d'édition des vues graphiques.</p>
+<h1>Points dans les vues graphiques</h1>
+<p>Un point peut appartenir à plusieurs vues graphiques, ce qui vous permet de créer des vues aussi spécifiques que vous le souhaitez.</p>
 <p>
-  The representation of each point in your view depends upon that point's configuration. Points can be rendered as 
-  simply a current value, or an arbitrary icon set can be used that visually represents the point's value. When the 
-  user rolls over the point with the mouse, a set of controls will be displayed (unless they have been explicitly 
-  suppressed). The actual controls displayed will also depend upon the point's configuration. Hovering over the info 
-  icon (<img src="images/information.png"/>) will display the point's current value and last change time. Points that 
-  are settable (and for which you have permission to set) will show a set icon (<img src="images/icon_edit.png"/>). 
-  Hovering your mouse over this icon will present options for setting the point. Points that are configured for 
-  charting will show a chart icon (<img src="images/icon_chart.png"/>). Hovering over this icon will present the 
-  current chart. Charts are updated automatically, like values and times, so when new data is available the chart will 
-  update itself. If a warning icon (<img src="images/warn.png"/>) is displayed beside a point, it indicates that is 
-  inactive, either because it or its data source are disabled. A wait indicator (<img src="images/hourglass.png"/>) 
-  means that the point currently has no value, and is likely waiting for its value to be received.
+ La représentation de chaque point de votre point de vue dépend de la configuration de ce point. Les points peuvent être rendus comme une simple valeur courante, ou un ensemble d'icônes arbitraires peut être utilisé pour représenter visuellement la valeur du point. Lorsque l'utilisateur passe sur le point avec la souris, un ensemble de contrôles s'affiche (sauf s'ils ont été explicitement supprimés). Les contrôles réellement affichés dépendent également de la configuration du point. En passant la souris sur l'icône info (<img src="images/information.png"/>), la valeur actuelle du point et la dernière modification seront affichées. Les points qui sont paramétrables (et pour lesquels vous avez la permission de le faire) afficheront une icône de paramétrage (<img src="images/icon_edit.png"/>). Si vous passez votre souris sur cette icône, vous verrez des options pour définir le point. Les points qui sont configurés pour l'établissement de graphiques afficheront une icône de graphique (<img src="images/icon_chart.png"/>). Si vous passez la souris sur cette icône, le graphique actuel s'affiche. Les graphiques sont mis à jour automatiquement, comme les valeurs et les heures, de sorte que lorsque de nouvelles données sont disponibles, le graphique se mettre à jour. Si une icône d'avertissement (<img src="images/warn.png"/>) est affichée à côté d'un point, elle indique que celui-ci est inactif, soit parce que lui ou sa source de données sont désactivés. Un indicateur d'attente (<img src="images/hourglass.png"/>) signifie que le point n'a actuellement aucune valeur, et qu'il attend probablement que sa valeur soit reçue.
 </p>
+<h1>Plein écran</h1>
+<p>En mode plein écran, le contenu de la représentation graphique qui sera affichée à l'écran ne sera que les éléments présents dans la représentation. C'est-à-dire que le reste, comme l'en-tête, ne sera pas affiché.</p>
+<p>Pour quitter le mode plein écran, utilisez le raccourci suivant : "Ctrl + Shift + F".</p>

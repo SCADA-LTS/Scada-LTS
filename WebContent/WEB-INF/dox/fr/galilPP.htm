@@ -1,37 +1,37 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>Most points types within a Galil data source reflect values within the Galil equipment. The exception is the Command point type, which is more abstract. Details are provided below.</p>
+<h1>Vue d'ensembles</h1>
+<p>La plupart des types de points dans une source de données Galil reflètent les valeurs dans l'équipement Galil. L'exception est le type de point de commande, qui est plus abstrait. Les détails sont fournis ci-dessous.</p>
 
-<p>All point types require a name for display purposes, which can be any value.</p>
+<p>Tous les types de points nécessitent un nom pour l'affichage, qui peut être n'importe quelle valeur.</p>
 
-<h1>Command</h1>
-<p>The command point type allows the sending of arbitrary commands to the Galil equipment. Commands can be entered in the Watchlist, from graphical views, or via set point event handlers. The value of the command <i>and</i> the value of the response will be saved into the point history (one after the other), except if an error occurs, in which case the command will be saved and an event will be raised that describes the error.</p>
+<h1>Commandes</h1>
+<p>Le type de point de commande permet d'envoyer des commandes arbitraires à l'équipement Galil. Les commandes peuvent être entrées dans la liste de surveillance, à partir de vues graphiques ou via des gestionnaires d'événements de points de consigne. La valeur de la commande <i>et</i> la valeur de la réponse sera enregistrée dans l'historique des points (l'un après l'autre), sauf si une erreur se produit, auquel cas la commande sera enregistrée et un événement décrivant l'erreur sera déclenché.</p>
 
-<h1>Input</h1>
-<p>Input point types use the @IN and @AN commands to retrieve current values. These points are not settable. The <b>Data type</b>determines which command will be used to request the value. The <b>Input number</b> is the index of the value to be retrieved. For numeric points, linear value scaling can also be automatically done by setting the <b>Scale</b> values accordingly.</p>
+<h1>Entrée</h1>
+<p>Les types de points d'entrée utilisent les commandes @IN et @AN pour récupérer les valeurs actuelles. Ces points ne sont pas paramétrables. La commande <b>Type de données</b>détermine quelle commande sera utilisée pour demander la valeur. Le <b>Numéro d'entrée</b> est l'index de la valeur à récupérer. Pour les points numériques, une mise à l'échelle linéaire de la valeur peut également être effectuée automatiquement en définissant les valeurs <b>Echelle</b> en conséquence.</p>
 
-<h1>Output</h1>
-<p>Output point types use the CB, SB, and @OUT commands to retrieve and set binary output values. The <b>Output number</b> is the index of the value to be managed.</p>
+<h1>Sortie</h1>
+<p>Les types de points de sortie utilisent les commandes CB, SB et @OUT pour récupérer et définir des valeurs de sortie binaires. Le numéro de sortie <b>Output</b> est l'indice de la valeur à gérer.</p>
 
-<h1>Tell position</h1>
-<p>Tell position point types use the TP command to retrieve a particular axis position. These points are not settable. The <b>Axis</b> is the label of the required axis. Linear value scaling can be automatically done by setting the <b>Scale</b> values accordingly. Select <b>Round to integer</b> to round off decimal values from the retrieve (and scaled) value.</p>
+<h1>Indiquer la position</h1>
+<p>Les types de points de position Tell utilisent la commande TP pour récupérer la position d'un axe particulier. Ces points ne sont pas paramétrables. Le <b>Axe</b> est le label de l'axe requis. La mise à l'échelle des valeurs linéaires peut être effectuée automatiquement en définissant les valeurs <b>Echelle</b> en conséquence. Sélectionnez <b>Round to integer</b> pour arrondir les valeurs décimales de la valeur de récupération (et de mise à l'échelle).</p>
 
 <h1>Variable</h1>
-<p>Variable point types use the "Var=" command to set and retrieve variable values in the equipment. The <b>Variable name</b> is the name of the desired variable. Values to set and receive are automatically converted according to the given <b>Data type</b>.</p>
+<p>Les types de points variables utilisent la commande "Var=" pour définir et récupérer les valeurs des variables dans l'équipement. La commande <b>Nom de la variable</b> est le nom de la variable souhaitée. Les valeurs à définir et à recevoir sont automatiquement converties en fonction du type de données donné <b>Data type</b>.</p>
