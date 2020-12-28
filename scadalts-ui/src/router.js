@@ -4,6 +4,7 @@ import Alarms from './views/Alarms'
 import About from './views/About'
 import HistoricalAlarms from "./views/HistoricalAlarms"
 import SystemSettings from "./views/SystemSettings"
+import AlarmNotifications from "./views/AlarmNotifications"
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/system-settings',
       name: 'system-settings',
       component: SystemSettings
+    },
+    {
+      path: '/alarm-notifications',
+      name: 'alarm-notifications',
+      component: AlarmNotifications
     },
     {
       path: '/example-ph',

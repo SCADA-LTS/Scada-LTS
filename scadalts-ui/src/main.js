@@ -30,6 +30,9 @@ import i18n from './i18n'
 import LiveAlarms from './components/graphical_views/AlarmsComponent'
 import RefreshView from "@/components/graphical_views/RefreshView"
 import SMSDomain from "@/components/forms/SMSDomain"
+import vuetify from './plugins/vuetify';
+import 'roboto-fontface/css/roboto/roboto-fontface.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs)
 
@@ -63,6 +66,7 @@ new Vue({
   router,
   store,
   i18n,
+  vuetify,
   render: h => h(App)
 }).$mount('#app')
 
