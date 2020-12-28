@@ -1,44 +1,28 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
 <p>
-  The <b>URL</b> is the address of the image to be retrieved. Use the <img src="images/bullet_go.png"/> icon to test 
-  the URL. (Opens in a new window or browser tab.) The <b>Timeout</b> and <b>Retry</b> fields determine how long to 
-  wait for the web server to return the image, and how many times to retry the connection in the event of failures. If 
-  all of the retries are exhausted, a data point exception event is raised.
+  Le <b>URL</b> est l'adresse de l'image à récupérer. Utilisez l'icône <img src="images/bullet_go.png"/> pour tester l'URL. Les champs <b>Temps d'arrêt</b> et <b>réessayer</b> déterminent combien de temps il faut attendre que le serveur web renvoie l'image, et combien de fois il faut réessayer la connexion en cas d'échec. Si toutes les tentatives sont épuisées, un événement d'exception de point de données est déclenché.</p>
+<p>
+  Les images peuvent être automatiquement mises à l'échelle selon les besoins pour économiser de la mémoire ou de l'espace dans le système de fichiers. (Les images peuvent également être mises à l'échelle, mais comme cela n'augmente pas la résolution, ce n'est généralement pas pratique). Le type de mise à l'échelle en "pourcentage" est une méthode de mise à l'échelle "relative" qui donne une image qui est mise à l'échelle à la taille <b>Pourcentage d'échelle</b> de l'image originale. La méthode d'échelle "box" est une méthode d'échelle "absolue" qui met à l'échelle l'image originale de manière à ce qu'elle s'inscrive dans la "box" définie par les valeurs <b>Largeur d'échelle</b> et <b>Hauteur d'échelle</b> données.</p>
+<p>
+  La limite de lecture permet de fixer une taille maximale de réponse pouvant être reçue. Si la taille des données de l'image dépasse la valeur donnée, les données seront rejetées et un événement de récupération des données sera déclenché.
 </p>
 
 <p>
-  Images can be automatically scaled as required to save memory or file system space. (Images can be scaled up as well,
-  but since this does not increase resolution it is usually not practical to do.) The "percent" scaling type is a 
-  "relative" scaling method that results in an image that is scaled to the <b>Scale percentage</b> size of the original 
-  image. The "box" scaling method is an "absolute" scaling method that scales the original image so that it fits into 
-  the "box" defined by the given <b>Scale width</b> and <b>Scale height</b>.
-</p>
-
-<p>
-  The read limit allows the setting of a maximum response size that may be received. If the size of the image data 
-  exceeds the given value the data will be discarded and a data retrieval event will be raised.
-</p>
-
-<p>
-  If the image source is a web cam, you may enter live feed code into the provided text area. This code will be entered
-  verbatim into a new window or browser tab (surrounded by html and body tags). If the web cam live feed requires the 
-  use of an ActiveX component or Java applet you will need to install such components appropriately within the Mango
-  instance.
-</p>
+   Si la source de l'image est une webcam, vous pouvez entrer le code du flux en direct dans la zone de texte prévue à cet effet. Ce code sera saisi mot pour mot dans une nouvelle fenêtre ou un nouvel onglet du navigateur (entouré des balises html et body). Si le flux en direct de la webcam nécessite l'utilisation d'un composant ActiveX ou d'un applet Java, vous devrez installer ces composants de manière appropriée dans l'instance Mango.</p>

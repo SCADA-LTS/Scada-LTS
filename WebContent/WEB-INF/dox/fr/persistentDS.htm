@@ -1,38 +1,25 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>TODO
-  This data source is used to collect generic information from Pachube. Data is organized on Pachube in feeds, which 
-  are collections of data streams. Since a data stream maps to a Mango point, the definition of a Pachube point is made
-  by specifying both a feed and a stream id. This is a polling data source.
-</p>
+<h1>Vue d'ensemble</h1>
+<p>À faire
+  Cette source de données est utilisée pour collecter des informations génériques de Pachube. Les données sont organisées sur Pachube en flux, qui sont des collections de flux de données. Puisqu'un flux de données correspond à un point Mango, la définition d'un point Pachube est faite en spécifiant à la fois un flux et un identifiant de flux. Il s'agit d'une source de données de sondage.</p>
 
 <h1>Configuration</h1>
-<p>
-  Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often 
-  the HTTP request to Pachube is made. Note that - depending on your account with Pachube - API request restrictions 
-  may apply. See <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>
-  for details.
-</p>
-<p>
-  The <b>API key</b> is needed to access private data. You can find it in the "my settings" area when you log in to 
-  your Pachube account. The <b>Timeout</b> and <b>Retry</b> fields determine how long to wait for the web server to 
-  return the data, and how many times to retry the connection in the event of failures. If all of the retries are 
-  exhausted, a data source exception event is raised.
-</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. Le <b>Période de mise à jour</b> détermine la fréquence de la requête HTTP vers Pachube. Notez que - en fonction de votre compte chez Pachube - des restrictions de requête API peuvent s'appliquer. Voir <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a>pour plus de détails.</p>
+<p>La touche <b>API</b> est nécessaire pour accéder aux données privées. Vous pouvez la trouver dans la zone "mes paramètres" lorsque vous vous connectez à votre compte Pachube. Les champs <b>Temps mort</b> et <b>Réessaye</b> déterminent combien de temps il faut attendre que le serveur web renvoie les données, et combien de fois il faut réessayer la connexion en cas de défaillance. Si toutes les tentatives sont épuisées, un événement d'exception de source de données est déclenché.</p>
