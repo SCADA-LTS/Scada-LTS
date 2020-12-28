@@ -1,178 +1,95 @@
 <template>
-  <div class="col-md-6">
-    <div class="row align-items-center">
-      <h2 class="col-xs-11">
-        {{ $t("systemsettings.email.title")
-        }}<span v-if="isEmailSettingsEdited">*</span>
-      </h2>
-      <div class="col-xs-1">
-        <btn size="lg" type="link" @click="sendTestEmail()" id="btn-test-email">
-          <i class="glyphicon glyphicon-send"></i>
-        </btn>
-        <tooltip
-          :text="$t('systemsettings.tooltip.sendtestemail')"
-          target="#btn-test-email"
-        />
-      </div>
-    </div>
-
-    <div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.email.host") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="text"
-            v-model="emailSettings.host"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.email.port") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="number"
-            v-model="emailSettings.port"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.email.address") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="text"
-            v-model="emailSettings.from"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.email.name") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="text"
-            v-model="emailSettings.name"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.email.contentType") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <select
-            class="form-control"
-            v-model="emailSettings.contentType"
-            @input="watchDataChange()"
-          >
-            <option v-bind:value="0">
-              {{ $t("systemsettings.email.contenttype.htmltext") }}
-            </option>
-            <option v-bind:value="1">
-              {{ $t("systemsettings.email.contenttype.html") }}
-            </option>
-            <option v-bind:value="2">
-              {{ $t("systemsettings.email.contenttype.text") }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="row no-gutters">
-        <div class="col-xs-12">
-          <btn-group class="col-xs-12">
-            <btn
-              input-type="radio"
-              :input-value="true"
-              v-model="emailSettings.auth"
-              class="col-xs-6"
-              @click="watchRadioDataChagne(true, 'auth')"
-              >{{ $t("systemsettings.email.auth.enable") }}</btn
-            >
-            <btn
-              input-type="radio"
-              :input-value="false"
-              v-model="emailSettings.auth"
-              class="col-xs-6"
-              @click="watchRadioDataChagne(false, 'auth')"
-              >{{ $t("systemsettings.email.auth.disable") }}</btn
-            >
-          </btn-group>
-        </div>
-      </div>
-      <div v-if="emailSettings.auth">
-        <div class="row">
-          <div class="col-xs-6">
-            <p>{{ $t("systemsettings.email.username") }}</p>
-          </div>
-          <div class="col-xs-6">
-            <input
-              class="form-control"
-              type="text"
-              v-model="emailSettings.username"
+  <v-col cols="12" md="6">
+    <v-card>
+      <v-card-title>
+        {{ $t("systemsettings.email.title") }}
+        <span v-if="isEmailSettingsEdited">*</span>
+        <v-spacer></v-spacer>
+        <v-tooltip bottom>
+          <template v-slot:activator="{on, attrs}">
+            <v-btn fab icon @click="sendTestEmail()" v-bind="attrs" v-on="on">
+              <v-icon>mdi-send</v-icon>
+            </v-btn>
+          </template>
+          <span>{{$t('systemsettings.tooltip.sendtestemail')}}</span>
+        </v-tooltip>
+      </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="6">
+            <v-text-field
+              v-model="emailSettings.host"
+              :label="$t('systemsettings.email.host')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="emailSettings.port"
+              :label="$t('systemsettings.email.port')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="emailSettings.from"
+              :label="$t('systemsettings.email.address')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="emailSettings.name"
+              :label="$t('systemsettings.email.name')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-select
               @change="watchDataChange()"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <p>{{ $t("systemsettings.email.password") }}</p>
-          </div>
-          <div class="col-xs-6">
-            <div class="col-xs-2">
-              <btn @click="togglePassword('emailPasswordInput')">
-                <i class="glyphicon glyphicon-eye-open"></i>
-              </btn>
-            </div>
-            <div class="col-xs-10">
-              <input
-                id="emailPasswordInput"
-                class="form-control"
-                type="password"
-                v-model="emailSettings.password"
-                @change="watchDataChange()"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row no-gutters">
-        <div class="col-xs-12">
-          <btn-group class="col-xs-12">
-            <btn
-              input-type="radio"
-              :input-value="true"
+              v-model="emailSettings.contentType"
+              :items="contentTypeItems"
+              item-value="value"
+              item-text="text"
+              :label="$t('systemsettings.email.contentType')"
+              dense
+            ></v-select>
+          </v-col>
+          <v-col cols="12">
+            <v-switch
+              v-model="emailSettings.auth"
+              :label="$t('systemsettings.email.auth.enable')"
+              @click="watchRadioDataChagne(emailSettings.auth, 'auth')"
+            ></v-switch>
+          </v-col>
+          <v-col cols="6" v-if="emailSettings.auth">
+            <v-text-field
+              v-model="emailSettings.username"
+              :label="$t('systemsettings.email.username')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6" v-if="emailSettings.auth">
+            <v-text-field
+              v-model="emailSettings.password"
+              :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="show1 ? 'text' : 'password'"
+              :label="$t('systemsettings.email.password')"
+              @input="watchDataChange()"
+              @click:append="show1 = !show1" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-switch
               v-model="emailSettings.tls"
-              class="col-xs-6"
-              @click="watchRadioDataChagne(true, 'tls')"
-              >{{ $t("systemsettings.email.tls.enable") }}</btn
-            >
-            <btn
-              input-type="radio"
-              :input-value="false"
-              v-model="emailSettings.tls"
-              class="col-xs-6"
-              @click="watchRadioDataChagne(false, 'tls')"
-              >{{ $t("systemsettings.email.tls.disable") }}</btn
-            >
-          </btn-group>
-        </div>
-      </div>
-    </div>
-  </div>
+              :label="$t('systemsettings.email.tls.enable')"
+              @click="watchRadioDataChagne(emailSettings.tls, 'tls')"
+            ></v-switch>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 <script>
 import { object } from "@amcharts/amcharts4/core";
@@ -186,6 +103,12 @@ export default {
       emailSettings: undefined,
       emailSettingsStore: undefined,
       isEmailSettingsEdited: false,
+      show1: false,
+      contentTypeItems: [
+        {value: 0, text: this.$t("systemsettings.email.contenttype.htmltext") },
+        {value: 1, text: this.$t("systemsettings.email.contenttype.html") },
+        {value: 2, text: this.$t("systemsettings.email.contenttype.text") }
+      ]
     };
   },
 
@@ -225,7 +148,7 @@ export default {
     },
 
     restoreData() {
-      console.log("Restored Email!")
+      console.log("Restored Email!");
       this.fetchData();
       this.isEmailSettingsEdited = false;
     },
@@ -237,12 +160,12 @@ export default {
     },
 
     watchRadioDataChagne(value, parameter) {
-        if(parameter == "auth") {
-            this.emailSettings.auth = value;
-        } else if (parameter == "tls") {
-            this.emailSettings.tls = value;
-        }
-        this.watchDataChange();
+      if (parameter == "auth") {
+        this.emailSettings.auth = value;
+      } else if (parameter == "tls") {
+        this.emailSettings.tls = value;
+      }
+      this.watchDataChange();
     },
 
     async watchDataChange() {
@@ -252,9 +175,9 @@ export default {
 
     async isDataChanged() {
       return !(await this.$store.dispatch("configurationEqual", {
-          object1: this.emailSettings,
-          object2: this.emailSettingsStore,
-        })); 
+        object1: this.emailSettings,
+        object2: this.emailSettingsStore,
+      }));
     },
 
     emitData(changed) {
@@ -269,13 +192,13 @@ export default {
     sumarizeDataChanges() {
       let data = [];
       for (let key in this.emailSettings) {
-          if(this.emailSettings[key] !== this.emailSettingsStore[key]) {
-              data.push({
-                  label: `systemsettings.email.${key}`,
-                  originalData: this.emailSettingsStore[key],
-                  changedData: this.emailSettings[key]
-              });
-          }
+        if (this.emailSettings[key] !== this.emailSettingsStore[key]) {
+          data.push({
+            label: `systemsettings.email.${key}`,
+            originalData: this.emailSettingsStore[key],
+            changedData: this.emailSettings[key],
+          });
+        }
       }
       return data;
     },
@@ -290,22 +213,27 @@ export default {
     },
 
     sendTestEmail() {
-        this.$store.dispatch("sendTestEmail").then(resp => {
-            if(resp) {
-                this.$notify({
-                    placement: "top-right",
-                    type: "success",
-                    content: `${i18n.t("systemsettings.notification.send.email")} ${resp.recipient}`
-                });
-            }
-        }).catch(() => {
+      this.$store
+        .dispatch("sendTestEmail")
+        .then((resp) => {
+          if (resp) {
             this.$notify({
-                placement: "top-right",
-                type: "danger",
-                content: i18n.t("systemsettings.notification.fail")
+              placement: "top-right",
+              type: "success",
+              content: `${i18n.t("systemsettings.notification.send.email")} ${
+                resp.recipient
+              }`,
             });
+          }
         })
-    }
+        .catch(() => {
+          this.$notify({
+            placement: "top-right",
+            type: "danger",
+            content: i18n.t("systemsettings.notification.fail"),
+          });
+        });
+    },
   },
 };
 </script>

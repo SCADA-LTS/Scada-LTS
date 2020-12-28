@@ -42,21 +42,37 @@
     </v-navigation-drawer>
 
     <v-app-bar app dark color="primary">
-        <v-list-item>
+      <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="title">
-            Scada-LTS
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            version 2.5.0
-          </v-list-item-subtitle>
+          <v-list-item-title class="title"> Scada-LTS </v-list-item-title>
+          <v-list-item-subtitle> version 2.5.0 </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      
+
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-account</v-icon>
-      </v-btn>
+      <v-menu bottom rounded max-width="250" offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>mdi-account</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-list-item-content class="justify-center text-center">
+            <v-icon>mdi-account</v-icon>
+            <h3>Admin</h3>
+            <p>admin@user.com</p>
+            <v-divider></v-divider>
+            <v-btn block text link href="./users.shtm">
+              <span>Edit profile</span>
+              <v-icon>mdi-account-box</v-icon>
+            </v-btn>
+            <v-btn block text link href="./logout.htm">
+              <span>Logout</span>
+              <v-icon>mdi-logout</v-icon>
+            </v-btn>
+          </v-list-item-content>
+        </v-card>
+      </v-menu>
     </v-app-bar>
 
     <v-main>
@@ -93,7 +109,6 @@ export default {
 
 <style scoped>
 a:hover {
-    text-decoration-line: none;
+  text-decoration-line: none;
 }
-
 </style>
