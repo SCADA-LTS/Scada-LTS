@@ -1,73 +1,66 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>The SQL data source is used to retrieve and set values in a SQL database. This is a polling data source that will read values based upon a given update period.</p>
+<h1>Vue d'ensemble</h1>
+<p>La source de données SQL est utilisée pour récupérer et définir des valeurs dans une base de données SQL. Il s'agit d'une source de données d'interrogation qui lira les valeurs en fonction d'une période de mise à jour donnée.</p>
 
-<h1>Connectivity</h1>
-<p>Any database supported by JDBC can be accessed. A specific <a href="http://developers.sun.com/product/jdbc/drivers" target="_blank">JDBC driver</a> is required to connect to any particular database, but such drivers are readily available for most databases including MySQL, MS SQL Server, IBM DB2, Oracle, Sybase, and many others. The driver for MySQL is included with this product. See the documentation for your particular database for information on where to get the appropriate JDBC driver.</p>
+<h1>Connectivité</h1>
+<p>Toute base de données supportée par JDBC est accessible. Un pilote spécifique <a href="http://developers.sun.com/product/jdbc/drivers" target="_blank">JDBC </a>est nécessaire pour se connecter à une base de données particulière, mais de tels pilotes sont facilement disponibles pour la plupart des bases de données, notamment MySQL, MS SQL Server, IBM DB2, Oracle, Sybase, et bien d'autres. Le pilote pour MySQL est inclus avec ce produit. Consultez la documentation relative à votre base de données particulière pour savoir où obtenir le pilote JDBC approprié.</p>
 
 <h1>Configuration</h1>
-<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often the database will be read.</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. Le <b>Période de mise à jour</b> détermine la fréquence de lecture de la base de données.</p>
 <p>
-  The <b>Driver class name</b> specifies the Java class that implements the JDBC Driver interface within your JDBC 
-  driver. This value can be found in the documentation for your driver. The following is a list of driver class names 
-  for the given database, and is provided as convenience only. Note that connectivity typically requires the 
-  installation of driver software on the ScadaBR server. If you are having problems, please consult the documentation for 
-  your database.
+  Le <b>Nom de la classe de pilote</b> spécifie la classe Java qui implémente l'interface de pilote JDBC dans votre JDBC conducteur. Cette valeur se trouve dans la documentation de votre conducteur. Voici une liste des noms de classes de conducteurs pour la base de données donnée, et n'est fourni qu'à titre de commodité. Il est à noter que la connectivité nécessite généralement l'installation du logiciel pilote sur le serveur Scada-LTS. Si vous rencontrez des problèmes, veuillez consulter la documentation de votre base de données.
 </p>
 <ul>
-  <li><b>MySQL</b>: com.mysql.jdbc.Driver</li>
-  <li><b>Oracle thin driver</b>: oracle.jdbc.driver.OracleDriver</li>
+  <li><b>MySQL</b> : com.mysql.jdbc.Driver</li>
+  <li><b>Oracle thin driver</b> : oracle.jdbc.driver.OracleDriver</li>
 </ul>
-<p>The <b>Connection string</b> depends both upon the database you are using and the specifics of its installation. Your JDBC driver documentation will explain how to derive the value for your database. The <b>Username</b> and <b>Password</b> fields provide the necessary credentials for your database to accept connections from this application.</p>
-<p>Your <b>Select statement</b> must be a valid <a href="http://en.wikipedia.org/wiki/SQL" target="_blank">SQL</a> statement. SQL is intended to be a standardized data access language, but different databases often have subtle interpretive differences or provide language extensions, so you should use your database's documentation to help you construct the SQL statement for your purposes.</p>
+<p>La <b>Chaîne de connexion</b> dépend à la fois de la base de données que vous utilisez et des spécificités de son installation. La documentation de votre pilote JDBC vous expliquera comment calculer la valeur de votre base de données. Les champs <b>Nom d'utilisateur</b> et <b>Mot de passe</b> fournissent les informations d'identification nécessaires pour que votre base de données accepte les connexions de cette application.</p>
+<p>Votre <b>Sélectionner déclaration</b> doit être une déclaration <a href="http://en.wikipedia.org/wiki/SQL" target="_blank">SQL</a> valide. SQL est censé être un langage d'accès aux données standardisé, mais les différentes bases de données présentent souvent de subtiles différences d'interprétation ou fournissent des extensions de langage. Vous devez donc utiliser la documentation de votre base de données pour vous aider à construire l'instruction SQL à vos fins.</p>
 
-<p>Use the <b>Row-based query</b> checkbox to determine if the query is row-based or column-based. Because this affects the attributes in the data point configuration, this selection can only be changed when there are no points defined for the data source. See below for more information about row vs. column -based queries.</p>
+<p>Utilisez la case à cocher <b>Recherche par ligne</b> pour déterminer si la recherche est basée sur une ligne ou une colonne. Comme cela affecte les attributs dans la configuration des points de données, cette sélection ne peut être modifiée que lorsqu'il n'y a pas de points définis pour la source de données. Voir ci-dessous pour plus d'informations sur les requêtes basées sur des lignes ou des colonnes.</p>
 
-<h1>Row-based query handling</h1>
+<h1>Traitement des requêtes par ligne</h1>
 <p>
-  Row-based queries have specific expectations of the structure of the query's result set, but allow large amounts of 
-  similar data to be extracted more easily than with column-based queries. The result set must have the following 
-  structure.
+  Les requêtes basées sur des lignes ont des attentes spécifiques quant à la structure de l'ensemble des résultats de la requête, mais permettent de grandes quantités des données similaires à extraire plus facilement qu'avec des requêtes par colonne. L'ensemble des résultats doit avoir les caractéristiques suivantes de la structure.
 </p>
 <ul>
-  <li>First column: the row identifier used to matched with data source points. Row identifies are case-insensitive.</li>
-  <li>Second column: the point value</li>
-  <li>Third column (optional): the time override for the point value. If a third column is not included, the time defaults to the poll run time. If included, the field value cannot be null.</li>
+  <li>Première colonne : l'identificateur de ligne utilisé pour la correspondance avec les points de source de données. Les identificateurs de ligne sont insensibles à la casse. </li>
+  <li>Deuxième colonne : la valeur du point</li>
+  <li>Troisième colonne (optionnelle) : la dérogation de temps pour la valeur du point. Si une troisième colonne n'est pas incluse, le temps par défaut est le temps d'exécution du sondage. Si elle est incluse, la valeur du champ ne peut pas être nulle. </li>
 </ul>
 
-<h1>Column-based query handling</h1>
-<p>Column-based queries use the names of the result set columns to locate point values and time overrides. It is important to recognize that that only the <b>first row</b> of the result set is used in a column-based query.</p>
-<p>There may be cases where using a row-based query is desirable, but not possible because the data types are of the values are too disparate. In such cases may be possible to construct the SQL statement to transpose a row-based query into a column-based query. A typical statement for retrieving data in multiple rows may look like this:</p>
-<div><pre style="overflow: auto; width: 95%;">select status from relays
+<h1>Traitement des requêtes par colonnes</h1>
+<p>Les requêtes basées sur les colonnes utilisent les noms des colonnes de l'ensemble des résultats pour localiser les valeurs ponctuelles et les dépassements de temps. Il est important de reconnaître que seule la <b>première ligne</b> de l'ensemble de résultats est utilisée dans une requête basée sur des colonnes.</p>
+<p>Il peut y avoir des cas où l'utilisation d'une requête basée sur les lignes est souhaitable, mais pas possible parce que les types de données sont des valeurs trop disparates. Dans de tels cas, il peut être possible de construire l'instruction SQL pour transposer une requête basée sur des lignes en une requête basée sur des colonnes. Une instruction typique pour récupérer des données sur plusieurs lignes peut ressembler à ceci : </p>
+<div><pre style="overflow : auto ; width : 95% ;">sélectionner l'état des relais</pre></div>
+<p> Pour transposer un tel tableau afin de récupérer les valeurs sur une seule ligne, on pourrait procéder comme suit (en supposant 3 relais):</p>
+<div><pre style="overflow : auto ; width : 95% ;">select
+  r1.status comme r1status,
+  r2.status comme r2status,
+  r3.status comme r3status
+des relais r1, r2, r3
+où r1.relayId = 'relais1'.
+  et r2.relayId = "relay2".
+  et r3.relayId = "relay3".
 </pre></div>
-<p>To transpose such a table to retrieve values in a single row, the following could be done (assuming 3 relays):</p>
-<div><pre style="overflow: auto; width: 95%;">select
-  r1.status as r1status,
-  r2.status as r2status,
-  r3.status as r3status
-from relays r1, relays r2, relays r3
-where r1.relayId = 'relay1'
-  and r2.relayId = 'relay2'
-  and r3.relayId = 'relay3'
-</pre></div>
-<p>Please note that the above are simply examples provided for convenience and instruction. Your specific database may require very different solutions.</p>
+<p>Veuillez noter que les exemples ci-dessus sont simplement fournis à titre d'information et de commodité. Votre base de données spécifique peut nécessiter des solutions très différentes.</p>
 
-<h1>Select statement testing</h1>
-<p>The <b>Statement test</b> section may be used to test both your configuration values and your SQL select statement. Clicking the <b>Execute</b> button will cause a connection to be attempted with your database, and if successful, the SQL will be executed. Any errors that occur will be displayed. If the SQL statement runs successfully, the results will be displayed appropriately depending on whether the statement is row- or column-based. Column-based queries will list a line for every column, providing the column name, the column data type (in parentheses, using the JDBC type definition), and the value retrieved. Row-based queries will display the result set in a table with the column names and data types as headers, and a row of data for each row in the result set (up to a maximum of 50 rows).</p>
+<h1>Sélectionner le test de déclaration</h1>
+<p>La section <b>Statement test</b> peut être utilisée pour tester à la fois vos valeurs de configuration et votre instruction SQL select. En cliquant sur le bouton <b>Execute</b>, une connexion sera tentée avec votre base de données, et si elle réussit, le SQL sera exécuté. Toute erreur qui se produira sera affichée. Si l'instruction SQL s'exécute avec succès, les résultats seront affichés de manière appropriée selon que l'instruction est basée sur des lignes ou des colonnes. Les requêtes basées sur des colonnes afficheront une ligne pour chaque colonne, en fournissant le nom de la colonne, le type de données de la colonne (entre parenthèses, en utilisant la définition de type JDBC) et la valeur récupérée. Les requêtes basées sur les lignes afficheront le jeu de résultats dans un tableau avec les noms des colonnes et les types de données comme en-têtes, et une ligne de données pour chaque ligne du jeu de résultats (jusqu'à un maximum de 50 lignes).</p>
