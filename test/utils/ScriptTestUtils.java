@@ -11,6 +11,7 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
@@ -50,7 +51,7 @@ public class ScriptTestUtils {
         PointLocatorVO locatorFromContext = new VirtualPointLocatorVO();
         ((VirtualPointLocatorVO) locatorFromContext).setDataTypeId(mangoValue.getDataType());
 
-        DataPointVO pointFromContextVO = new DataPointVO();
+        DataPointVO pointFromContextVO = new DataPointVO(LoggingTypes.ON_CHANGE);
         pointFromContextVO.setPointLocator(locatorFromContext);
         pointFromContextVO.setEventDetectors(Collections.emptyList());
         pointFromContextVO.setId(pointFromContextId);
