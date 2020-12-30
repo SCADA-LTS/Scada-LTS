@@ -32,6 +32,7 @@ import RefreshView from "@/components/graphical_views/RefreshView"
 import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
+import SMSDomain from "@/components/forms/SMSDomain"
 
 library.add(faCoffee, faTimes, faBars, faBell, faFileMedicalAlt, faInfo, faListAlt, faCogs)
 
@@ -133,6 +134,13 @@ if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
     render: h => h(SleepAndReactivationDS)
   }).$mount('#sleep-reactivation-ds')
 }
+
+if (window.document.getElementById('sms-domain') != undefined) {
+  new Vue({
+    render: h => h(SMSDomain)
+  }).$mount('#sms-domain')
+}
+
 
 if (window.document.getElementById('export-import-ph') != undefined) {
   new Vue({

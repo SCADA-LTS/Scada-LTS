@@ -1,73 +1,48 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
+<h1>Vue d'ensemble</h1>
 <p>
-  The HTTP sender publisher sends each point update (or change, as appropriate) to a given destination URL.
+  L'éditeur expéditeur HTTP envoie chaque mise à jour de point (ou changement, selon le cas) à une URL de destination donnée.
 </p>
 
-<h1>HTTP sender properties</h1>
+<h1>HTTP propriétés de l'expéditeur</h1>
 <p>
-  The <b>Method</b> selection determines which HTTP method type will be used to deliver the data. The data sent is 
-  either case is identical; the difference is a matter of message structure. The <b>URL</b> defines the resource to 
-  which to send the data. Valid schemes include "http" and "https". The server can be a domain name or an IP address. 
-  Paths and query strings are also valid.
+  La sélection <b>Méthode</b> détermine le type de méthode HTTP qui sera utilisé pour fournir les données. Les données envoyées sont identiques dans les deux cas ; la différence est une question de structure du message. La sélection <b>URL</b> définit la ressource à laquelle envoyer les données. Les schémas valides sont "http" et "https". Le serveur peut être un nom de domaine ou une adresse IP. Les chemins d'accès et les chaînes de requête sont également valides.
 </p>
 <p>
-  A list of <b>Static headers</b> and <b>Static parameters</b> can also be added. These data are included with every 
-  request sent to the URL. As such, this is an appropriate place to include authorization credentials or other 
-  identifying artifacts. To add a static headers and parameter, enter its key and value, and click the 
-  <img src="images/add.png"/> icon. To delete any existing static header or parameter, click the 
-  <img src="images/bullet_delete.png"/> icon associated with the entry.
+  Une liste de <b>En-têtes statiques</b> et <b>Paramètres statiques</b> peut également être ajoutée. Ces données sont incluses avec chaque requête envoyée à l'URL. Il s'agit donc d'un endroit approprié pour inclure des références d'autorisation ou d'autres artefacts d'identification. Pour ajouter un en-tête et un paramètre statique, entrez sa clé et sa valeur, puis cliquez sur l'icône <img src="images/add.png"/>. Pour supprimer un en-tête ou un paramètre statique existant, cliquez sur l'icône <img src="images/bullet_delete.png"/> associée à l'entrée.
 </p>
 <p>
-  The <b>Date format</b> selection determines how the publisher will format timestamps associated with point values. The
-  "basic" format is of the form "yyyyMMddHHmmss". "Time zone" is similar, but includes more information regarding the 
-  locale of the timestamp. It is of the form "yyyy-MM-dd'T'HH:mm:ss'Z'". "UTC" uses a numeric value that represents the
-  number of milliseconds elapsed since midnight on Jan 1, 1970.  
+  La sélection <b>Date format</b> détermine comment l'éditeur formatera les horodatages associés à des valeurs ponctuelles. Le format "de base" est de la forme "yyyyMMddHHmmss". "Fuseau horaire" est similaire, mais comprend plus d'informations concernant la localisation de l'horodatage. Il est de la forme "yyyy-MM-dd'T'HH:mm:ss 'Z'". "UTC" utilise une valeur numérique qui représente le nombre de millisecondes écoulées depuis minuit le 1er janvier 1970.
 </p>
 
-<h1>HTTP response</h1>
+<h1>Réponse du HTTP</h1>
 <p>
-  Any other response code than a "200 OK" is considered an error, and an alarm will be raised. In addition, any response 
-  content included with an OK response is considered to be warning information. The <b>Raise result warning</b> setting 
-  controls whether the existence of any response content causes an information alarm to be raised including the content 
-  in the event message.
+  Tout autre code de réponse que "200 OK" est considéré comme une erreur et une alarme sera déclenchée. En outre, tout contenu de réponse inclus avec une réponse OK est considéré comme une information d'avertissement. Le réglage <b>Raise du résultat d'alerte</b> contrôle si l'existence d'un contenu de réponse provoque le déclenchement d'une alarme d'information incluant le contenu du message d'événement.
 </p>
 
-<h1>Configuration testing</h1>
+<h1>Tests de configuration</h1>
 <p>
-  A test request can be sent&mdash;using the given configuration but including only static parameters&mdash;by clicking 
-  the "Send static parameters" button. The result of the send attempt will be displayed below the buttons. To cancel a 
-  test before it times out on its own, click the "Cancel" button.
+  Une demande de test peut être envoyée - en utilisant la configuration donnée mais en incluant uniquement des paramètres statiques - en cliquant sur le bouton "Envoyer les paramètres statiques". Le résultat de la tentative d'envoi sera affiché sous les boutons. Pour annuler un test avant qu'il ne s'arrête de lui-même, cliquez sur le bouton "Annuler".
 </p>
 
-<h1>Published points</h1>
+<h1>Points publiés</h1>
 <p>
-  The <b>Points</b> section lists the points to be published. Point publishing can be enabled 
-  (<img src="images/brick_go.png"/>) or disabled (<img src="images/brick_stop.png"/>). Disabling a point allows it to 
-  not be used without having to explicitly delete it. The <b>Parameter name</b> is the key that will be used for the 
-  point in the request parameters. The value will be the present value of the point. Select <b>Include timestamp</b> to 
-  include a parameter in the request that contains the update time for the value. The key for the time will be "__time", 
-  and the date will be encoded according to the date format value. (See the "Date/time formats" documentation for 
-  more information.)
-</p>
-<p>
-  To add a point to the point list, select it in the points list and click the <img src="images/icon_comp_add.png"/> 
-  icon. To delete an existing point, click its associated <img src="images/bullet_delete.png"/> icon.
+  La section <b>Points</b> énumère les points à publier. La publication des points peut être activée (<img src="images/brick_go.png"/>) ou désactivée (<img src="images/brick_stop.png"/>). Désactiver un point permet de ne pas l'utiliser sans avoir à le supprimer explicitement. Le <b>nom du paramètre</b> est la clé qui sera utilisée pour le point dans les paramètres de la requête. La valeur sera la valeur actuelle du point. Sélectionnez <b>Inclure l'horodatage</b> pour inclure dans la demande un paramètre qui contient l'heure de mise à jour de la valeur. La clé pour l'heure sera "__time", et la date sera encodée selon la valeur du format de date. (Voir la documentation "Formats de date/heure" pour plus d'informations).
 </p>
