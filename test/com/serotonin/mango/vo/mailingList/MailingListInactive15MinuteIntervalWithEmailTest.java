@@ -53,6 +53,7 @@ public class MailingListInactive15MinuteIntervalWithEmailTest {
         addressesExpected.add(email2);
         addressesExpected.add(email3);
         addressesExpected.add(email4);
+        addressesExpected.add(badEmail1);
     }
 
     @Test

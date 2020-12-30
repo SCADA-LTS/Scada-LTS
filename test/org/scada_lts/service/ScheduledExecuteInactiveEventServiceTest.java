@@ -82,13 +82,8 @@ public class ScheduledExecuteInactiveEventServiceTest {
 
         //given:
         int sameEventHandlerType = EventHandlerVO.TYPE_EMAIL;
-        EventHandlerVO eventHandler1 = new EventHandlerVO();
-        eventHandler1.setId(2);
-        eventHandler1.setHandlerType(sameEventHandlerType);
-
-        EventHandlerVO eventHandler2 = new EventHandlerVO();
-        eventHandler2.setId(3);
-        eventHandler2.setHandlerType(sameEventHandlerType);
+        EventHandlerVO eventHandler1 = EventTestUtils.createEventHandler(2, sameEventHandlerType);
+        EventHandlerVO eventHandler2 = EventTestUtils.createEventHandler(3, sameEventHandlerType);
 
         EventInstance sameEvent = EventTestUtils.createEventWithActiveTime(1, inactiveIntervalTime, message);
         MailingList sameMailingList = MailingListTestUtils
@@ -116,13 +111,8 @@ public class ScheduledExecuteInactiveEventServiceTest {
 
         //given:
         int sameEventHandlerType = EventHandlerVO.TYPE_SMS;
-        EventHandlerVO eventHandler1 = new EventHandlerVO();
-        eventHandler1.setId(2);
-        eventHandler1.setHandlerType(sameEventHandlerType);
-
-        EventHandlerVO eventHandler2 = new EventHandlerVO();
-        eventHandler2.setId(3);
-        eventHandler2.setHandlerType(sameEventHandlerType);
+        EventHandlerVO eventHandler1 = EventTestUtils.createEventHandler(2, sameEventHandlerType);
+        EventHandlerVO eventHandler2 = EventTestUtils.createEventHandler(3, sameEventHandlerType);
 
         EventInstance sameEvent = EventTestUtils.createEventWithActiveTime(1, inactiveIntervalTime, message);
         MailingList sameMailingList = MailingListTestUtils
