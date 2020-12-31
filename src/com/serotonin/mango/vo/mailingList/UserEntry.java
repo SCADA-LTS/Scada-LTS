@@ -99,11 +99,9 @@ public class UserEntry extends EmailRecipient {
         if (user == null)
             return;
         if (!user.isDisabled()) {
-            if(type == CommunicationChannelType.EMAIL
-                    && type.validateAddress(user.getEmail()))
+            if(type == CommunicationChannelType.EMAIL)
                 addresses.add(user.getEmail());
-            if(type == CommunicationChannelType.SMS
-                    && type.validateAddress(user.getPhone()))
+            if(type == CommunicationChannelType.SMS)
                 addresses.add(user.getPhone());
         }
     }

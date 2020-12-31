@@ -140,8 +140,7 @@ public class MailingListService implements MangoMailingList {
 		return addresses;
 	}
 
-	public Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, DateTime sendTime,
-											 CommunicationChannel channel) {
+	public Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, CommunicationChannel channel) {
 		List<EmailRecipient> entries = new ArrayList<EmailRecipient>(beans.size());
 		for (RecipientListEntryBean bean : beans) {
 			if(bean.getReferenceId() == channel.getChannelId())
@@ -150,7 +149,7 @@ public class MailingListService implements MangoMailingList {
 		populateEntrySubclasses(entries);
 		Set<String> addresses = new HashSet<String>();
 		for (EmailRecipient entry : entries) {
-			entry.appendAddresses(addresses, sendTime, channel.getType());
+			entry.appendAllAddresses(addresses, channel.getType());
 		}
 		return addresses;
 	}

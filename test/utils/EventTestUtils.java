@@ -4,6 +4,7 @@ import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.joda.time.DateTime;
 
@@ -24,5 +25,12 @@ public class EventTestUtils {
                 new LocalizableMessage("com.test"), Collections.emptyMap());
         event.setId(id);
         return event;
+    }
+
+    public static EventHandlerVO createEventHandler(int id, int eventHandlerType) {
+        EventHandlerVO emailEventHandler = new EventHandlerVO();
+        emailEventHandler.setId(id);
+        emailEventHandler.setHandlerType(eventHandlerType);
+        return emailEventHandler;
     }
 }

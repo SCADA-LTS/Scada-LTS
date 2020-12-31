@@ -26,7 +26,7 @@ public class MailingListTestUtils {
         user.setId(random.nextInt());
         user.setPhone(tel1);
         user.setEmail(email1);
-        user.setUsername("user_test");
+        user.setUsername(userName);
 
         return new UserEntry(user.getId(), user);
     }
@@ -42,16 +42,18 @@ public class MailingListTestUtils {
         return result;
     }
 
-    public static MailingList createMailingList(EmailRecipient... emailRecipients) {
+    public static MailingList createMailingList(int id, EmailRecipient... emailRecipients) {
         MailingList mailingList = new MailingList();
-        mailingList.setId(new Random().nextInt());
+        mailingList.setId(id);
         mailingList.setEntries(Stream.of(emailRecipients).collect(Collectors.toList()));
         return mailingList;
     }
 
-    public static MailingList createMailingListWithInactiveInterval(DateTime inactiveIntervalTime, boolean collectInactiveEmails, EmailRecipient... emailRecipients) {
+    public static MailingList createMailingListWithInactiveInterval(int id, DateTime inactiveIntervalTime,
+                                                                    boolean collectInactiveEmails,
+                                                                    EmailRecipient... emailRecipients) {
         MailingList mailingList = new MailingList();
-        mailingList.setId(new Random().nextInt());
+        mailingList.setId(id);
         mailingList.setEntries(Stream.of(emailRecipients).collect(Collectors.toList()));
         mailingList.setCollectInactiveEmails(collectInactiveEmails);
         Integer inactiveInterval = IntervalUtil.getIntervalIdAt(inactiveIntervalTime);
@@ -61,9 +63,23 @@ public class MailingListTestUtils {
         return mailingList;
     }
 
-    public static MailingList createMailingList(List<AddressEntry> addressEntries, EmailRecipient... emailRecipients) {
+    public static MailingList createMailingListWithInactiveIntervalAndUser(int id, DateTime inactiveIntervalTime,
+                                                                    boolean collectInactiveEmails, String userName) {
+        UserEntry user = createUserEntry(userName, "123456789", "test@test.com");
         MailingList mailingList = new MailingList();
-        mailingList.setId(new Random().nextInt());
+        mailingList.setId(id);
+        mailingList.setEntries(Stream.of(user).collect(Collectors.toList()));
+        mailingList.setCollectInactiveEmails(collectInactiveEmails);
+        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(inactiveIntervalTime);
+        Set<Integer> inactiveIntervals = new HashSet<>();
+        inactiveIntervals.add(inactiveInterval);
+        mailingList.setInactiveIntervals(inactiveIntervals);
+        return mailingList;
+    }
+
+    public static MailingList createMailingList(int id, List<AddressEntry> addressEntries, EmailRecipient... emailRecipients) {
+        MailingList mailingList = new MailingList();
+        mailingList.setId(id);
         List<EmailRecipient> entries = Stream.of(emailRecipients).collect(Collectors.toList());
         entries.addAll(addressEntries);
         mailingList.setEntries(entries);

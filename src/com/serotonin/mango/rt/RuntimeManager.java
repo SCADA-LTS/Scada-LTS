@@ -34,8 +34,11 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 import org.springframework.util.Assert;
 
@@ -113,6 +116,7 @@ public class RuntimeManager {
 
 	private final Map<Integer, ScheduledExecuteInactiveEventRT> sendEmailForInactiveEvents = new ConcurrentHashMap<>();
 	private final Map<Integer, ScheduledExecuteInactiveEventRT> sendSmsForInactiveEvents = new ConcurrentHashMap<>();
+
 	private final Map<Integer, ResetDailyLimitSendingEventRT> resetDailyLimitSentEmails = new ConcurrentHashMap<>();
 
 
@@ -924,7 +928,8 @@ public class RuntimeManager {
 	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
 
 		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newEmailChannel(mailingList),
-				inactiveEmailsService, Common.ctx.getEventManager());
+				inactiveEmailsService, Common.ctx.getEventManager(), new DataPointService(),
+				new DataSourceService());
 		sendEmail.initialize();
 		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
 	}
@@ -932,7 +937,8 @@ public class RuntimeManager {
 	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
 
 		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newSmsChannel(mailingList),
-				inactiveEmailsService, Common.ctx.getEventManager());
+				inactiveEmailsService, Common.ctx.getEventManager(), new DataPointService(),
+				new DataSourceService());
 		sendSms.initialize();
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
 	}
@@ -964,6 +970,17 @@ public class RuntimeManager {
 		}
 	}
 
+	private void stopSendSmsForInactiveEvent(int mailingListId) {
+
+		ScheduledExecuteInactiveEventRT sendSms = sendSmsForInactiveEvents.get(mailingListId);
+
+		if (sendSms == null)
+			return;
+
+		sendSms.terminate();
+		sendSmsForInactiveEvents.remove(mailingListId);
+	}
+
 	private void stopSendEmailForInactiveEvent(int mailingListId) {
 
 		ScheduledExecuteInactiveEventRT sendEmail = sendEmailForInactiveEvents.get(mailingListId);
@@ -973,17 +990,6 @@ public class RuntimeManager {
 
 		sendEmail.terminate();
 		sendEmailForInactiveEvents.remove(mailingListId);
-	}
-
-	private void stopSendSmsForInactiveEvent(int mailingListId) {
-
-		ScheduledExecuteInactiveEventRT sendESms = sendSmsForInactiveEvents.get(mailingListId);
-
-		if (sendESms == null)
-			return;
-
-		sendESms.terminate();
-		sendSmsForInactiveEvents.remove(mailingListId);
 	}
 
 	private void stopResetDailyLimitSentEmails(int mailingListId) {

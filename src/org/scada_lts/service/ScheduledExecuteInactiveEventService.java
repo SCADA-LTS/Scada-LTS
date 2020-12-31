@@ -9,9 +9,10 @@ import org.scada_lts.mango.service.MailingListService;
 import java.util.List;
 
 public interface ScheduledExecuteInactiveEventService {
-    List<EventInstance> getScheduledEvents(CommunicationChannel channel);
-    void scheduleEvent(EventHandlerVO eventHandlerVO, EventInstance event);
-    void unscheduleEvent(CommunicationChannel channel, EventInstance event);
+    List<ScheduledEvent> getScheduledEvents(CommunicationChannel channel);
+    void scheduleEvent(EventHandlerVO eventHandler, EventInstance event);
+    void unscheduleEvent(ScheduledEvent event, CommunicationChannel channel);
+
     boolean isScheduledInactiveEventType(EventInstance eventInstance);
 
     static ScheduledExecuteInactiveEventService getInstance() {
