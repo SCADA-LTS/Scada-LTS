@@ -29,7 +29,6 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1468.*$/"
 notifications:
   email: false
 env:

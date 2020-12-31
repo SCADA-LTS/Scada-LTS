@@ -1,53 +1,30 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<p>
-  UI performance represents the responsiveness of the user interface. This includes all activities that are managed via
-  the long poll mechanism, such as the maximum alarm level indicator, watchlist updating, event list updates, etc. If
-  the Mango host has a limited-power CPU, you may want to set the UI performance to a lower level to prevent users 
-  browsers from consuming too much of the hosts CPU.
-</p>
+<p>La performance de l'interface utilisateur représente la réactivité de l'interface utilisateur. Cela comprend toutes les activités qui sont gérées par le mécanisme de sondage long, comme l'indicateur de niveau d'alarme maximum, la mise à jour de la liste de surveillance, la mise à jour de la liste des événements, etc. Si l'hôte Mango a un CPU à puissance limitée, vous pouvez régler les performances de l'interface utilisateur à un niveau inférieur pour éviter que les navigateurs des utilisateurs ne consomment trop de CPU de l'hôte.</p>
+
+<p>Si la case "Envoyer les erreurs à Serotonin" est cochée, les exceptions que cette instance de Mango observe seront envoyées au logiciel Serotonin pour examen. Si vous modifiez la source Mango pour vos propres besoins, veuillez régler cette valeur sur non coché. </p>
+
+<p>Utilisez les paramètres de "purge des événements" pour définir l'âge maximum d'un événement avant qu'il ne soit purgé de la base de données. La purge supprime définitivement l'événement ainsi que tout commentaire d'utilisateur qui lui est associé.</p>
+
+<p>Utilisez les paramètres "Purge report instances" pour définir l'âge maximum d'une instance de rapport avant qu'elle ne soit purgée de la base de données. La purge supprime définitivement l'instance de rapport. Il est préférable de définir cette valeur le plus bas possible, car les rapports peuvent potentiellement consommer beaucoup d'espace de stockage disponible. La purge peut être évitée en définissant l'attribut "prevent purge" sur l'instance de rapport.</p>
 
 <p>
-  If "Send errors to Serotonin" is checked, exceptions that this instance of Mango observes will be sent to Serotonin 
-  Software for review. If you are modifying the Mango source for your own purposes, please set this value to unchecked.
-</p>
+  Cliquez sur le bouton <b>Purger toutes les données</b> pour supprimer définitivement tous les échantillons ponctuels actuellement dans la base de données. Cela peut être utile pour donner un "nouveau départ" à une instance de Mango, en particulier si des données erronées existent dans la configuration et les activités de configuration.</p>
 
-<p>
-  Use the "purge events" settings to set the maximum age of an event before it is purged from the database. Purging 
-  permanently deletes the event as well as any user comments associated with it.
-</p>
-
-<p>
-  Use the "purge report instances" settings to set the maximum age of a report instance before it is purged from the 
-  database. Purging permanently deletes the report instance. It is best to set this value as low as possible since 
-  reports can potentially consume a great deal of available storage space. Purging can be prevented by setting the 
-  "prevent purge" attribute on the report instance.
-</p>
-
-<p>
-  Click the <b>Purge all data</b> button to permanently delete all point samples currently in the database. This can be
-  useful for giving a Mango instance a "fresh start", especially if spurious data exists from configuration and set up
-  activities. 
-</p>
-
-<p>
-  User the "Discard point values future dated" settings to set the maximum amount of time into the future for which 
-  data points will accept new values. Any values with timestamps that exceed this value will be discarded, and an error
-  message will be written to the log.
-</p>
+<p>Utilisez les paramètres "Valeurs des points de rejet à une date ultérieure" pour définir le temps maximum dans le futur pendant lequel les points de données accepteront de nouvelles valeurs. Toute valeur dont l'horodatage dépasse cette valeur sera rejetée, et un message d'erreur sera écrit dans le journal.</p>
