@@ -131,7 +131,6 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         if(channel.getType() == CommunicationChannelType.EMAIL) {
             return mailingListService.getRecipientAddresses(vo.getActiveRecipients(), channel);
         }
-        LOG.warn("Event id: " + evt.getId() + " and emailList id: " + channel.getChannelId()+ " it is not related to EMAIL communication!");
         return Collections.emptySet();
     }
 
@@ -147,7 +146,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         service.scheduleEvent(vo, evt);
 
         // Send an email to the active recipients.
-        sendEmail(evt, NotificationType.ACTIVE, activeRecipients);
+        sendEmail(evt, activeRecipients);
 
         // If an inactive notification is to be sent, save the active recipients.
         if (vo.isSendInactive()) {
@@ -168,7 +167,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         activeRecipients = getActiveRecipients(evt, eventType.getCommunicationChannel());
 
         // Send an email to the active recipients.
-        sendEmail(evt, NotificationType.ACTIVE, activeRecipients);
+        sendEmail(evt, activeRecipients);
     }
 
     //
@@ -203,8 +202,12 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         sendEmail(evt, NotificationType.ACTIVE, addresses, null);
     }
 
-    protected void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
+    private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
         sendEmail(evt, notificationType, addresses, vo.getAlias());
+    }
+
+    protected void sendEmail(EventInstance evt, Set<String> addresses) {
+        sendEmail(evt, NotificationType.ACTIVE, addresses, vo.getAlias());
     }
 
     protected static String getInfoEmail(EventInstance evt, NotificationType notificationType, String alias) {

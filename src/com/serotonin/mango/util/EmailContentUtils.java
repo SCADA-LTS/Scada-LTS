@@ -4,7 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.mango.web.email.MangoSmsContent;
+import com.serotonin.mango.web.email.MangoTextContent;
 import com.serotonin.mango.web.email.UsedImagesDirective;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.email.EmailInline;
@@ -17,14 +17,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class EmailContentUtils {
+public final class EmailContentUtils {
+
+    private EmailContentUtils(){}
 
     public static MangoEmailContent createSmsContent(EventInstance evt, EmailHandlerRT.NotificationType notificationType, String alias) throws TemplateException, IOException {
         ResourceBundle bundle = Common.getBundle();
         String subject = getSubject(evt, notificationType, alias, bundle);
         Map<String, Object> model = createSmsModel(evt);
-        return new MangoSmsContent(notificationType.getFile(), model, bundle, subject,
-                Common.UTF8);
+        return new MangoTextContent(notificationType.getFile(), model, bundle, subject, Common.UTF8);
     }
 
     public static MangoEmailContent createContent(EventInstance evt, EmailHandlerRT.NotificationType notificationType, String alias) throws TemplateException, IOException {

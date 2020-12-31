@@ -62,12 +62,11 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
             Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getActiveRecipients(), channel);
             return addedAtDomain(addresses);
         }
-        LOG.warn("Event id: " + evt.getId() + " and emailList id: " + channel.getChannelId()+ " it is not related to SMS communication!");
         return Collections.emptySet();
     }
 
     @Override
-    protected void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
+    protected void sendEmail(EventInstance evt, Set<String> addresses) {
         sendEmail(evt, NotificationType.ACTIVE_SMS, addresses, getVo().getAlias());
     }
 
