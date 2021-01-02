@@ -4,7 +4,9 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.joda.time.DateTime;
 
-public class IntervalUtil {
+public final class IntervalUtil {
+
+    private IntervalUtil() {}
 
     public static boolean isActiveByInterval(MailingList mailingList, EventInstance event) {
         DateTime dateTime = new DateTime(event.getActiveTimestamp());

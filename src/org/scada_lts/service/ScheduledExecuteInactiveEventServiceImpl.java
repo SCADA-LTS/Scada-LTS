@@ -1,8 +1,8 @@
 package org.scada_lts.service;
 
-import br.org.scadabr.api.constants.AlarmLevel;
-import com.serotonin.mango.rt.event.*;
-import com.serotonin.mango.rt.event.type.ScheduledInactiveEventType;
+import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
@@ -12,7 +12,11 @@ import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.mango.service.MailingListService;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -25,8 +29,9 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     private final MailingListService mailingListService;
     private final Set<ScheduledExecuteInactiveEventInstance> relations = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private static class LazyHolder {
-        public static final ScheduledExecuteInactiveEventService INSTANCE = new ScheduledExecuteInactiveEventServiceImpl(new EventDAO(),
-                ScheduledExecuteInactiveEventDAO.getInstance(), new MailingListService());
+        public static final ScheduledExecuteInactiveEventService INSTANCE =
+                new ScheduledExecuteInactiveEventServiceImpl(new EventDAO(),
+                        ScheduledExecuteInactiveEventDAO.getInstance(), new MailingListService());
     }
 
     static ScheduledExecuteInactiveEventService getInstance() {
@@ -78,19 +83,18 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     }
 
     @Override
-    public List<ScheduledEvent> getScheduledEvents(CommunicationChannel channel) {
+    public List<ScheduledEvent> getScheduledEvents(CommunicationChannel channel, int limit) {
+        if(limit <= 0) {
+            return Collections.emptyList();
+        }
         return relations.stream()
                     .filter(a -> CommunicationChannelType.getType(a.getEventHandler().getHandlerType()) == channel.getType())
                     .filter(a -> a.getMailingList().getId() == channel.getChannelId())
                     .map(ScheduledExecuteInactiveEventInstance::toScheduledEvent)
                     .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
+                    .limit(limit)
                     .collect(Collectors.toList());
 
-    }
-
-    @Override
-    public boolean isScheduledInactiveEventType(EventInstance event) {
-        return event.getEventType() instanceof ScheduledInactiveEventType;
     }
 
     @Override
@@ -99,8 +103,9 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
             LOG.warn("Event with alarm level NONE: event type:" + event.getEventType());
             return;
         }
-        if(isScheduledInactiveEventType(event)) {
-            LOG.warn("Event scheduled type, event type:" + event.getEventType());
+        if(eventHandler.getHandlerType() != EventHandlerVO.TYPE_SMS &&
+                eventHandler.getHandlerType() != EventHandlerVO.TYPE_EMAIL) {
+            LOG.warn("Event handler type not supported:" + eventHandler.getClass().getSimpleName());
             return;
         }
         schedule(eventHandler, event);

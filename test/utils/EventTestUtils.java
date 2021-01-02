@@ -10,9 +10,20 @@ import org.joda.time.DateTime;
 
 import java.util.Collections;
 
-public class EventTestUtils {
+public final class EventTestUtils {
 
-    public static EventInstance createEventWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage) {
+    private EventTestUtils() { }
+
+    public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage,
+                                                                  EventType eventType) {
+        EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
+                localizableMessage, Collections.emptyMap());
+        event.setId(id);
+        return event;
+    }
+
+
+    public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage) {
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL,
                 localizableMessage, Collections.emptyMap());
@@ -20,9 +31,16 @@ public class EventTestUtils {
         return event;
     }
 
-    public static EventInstance createEventWithActiveTime(int id, DateTime activeTime, EventType eventType) {
+    public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, EventType eventType) {
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
                 new LocalizableMessage("com.test"), Collections.emptyMap());
+        event.setId(id);
+        return event;
+    }
+
+    public static EventInstance createEventCriticalWithActiveTimeAndDataPointEventType(int id, DateTime activeTime) {
+        EventInstance event = new EventInstance(new DataPointEventType(1,3),
+                activeTime.getMillis(), false, AlarmLevels.CRITICAL, new LocalizableMessage("com.test"), Collections.emptyMap());
         event.setId(id);
         return event;
     }

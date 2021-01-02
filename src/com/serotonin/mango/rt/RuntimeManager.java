@@ -928,8 +928,7 @@ public class RuntimeManager {
 	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
 
 		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newEmailChannel(mailingList),
-				inactiveEmailsService, Common.ctx.getEventManager(), new DataPointService(),
-				new DataSourceService());
+				inactiveEmailsService, new DataPointService(), new DataSourceService());
 		sendEmail.initialize();
 		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
 	}
@@ -937,8 +936,7 @@ public class RuntimeManager {
 	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
 
 		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newSmsChannel(mailingList),
-				inactiveEmailsService, Common.ctx.getEventManager(), new DataPointService(),
-				new DataSourceService());
+				inactiveEmailsService, new DataPointService(), new DataSourceService());
 		sendSms.initialize();
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
 	}

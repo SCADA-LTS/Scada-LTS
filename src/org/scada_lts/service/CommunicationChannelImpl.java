@@ -16,10 +16,10 @@ import java.util.Set;
 class CommunicationChannelImpl implements CommunicationChannel {
 
     private final MailingList mailingList;
-    private final CommunicationChannelType type;
+    private final CommunicationChannelTypable type;
 
 
-    public CommunicationChannelImpl(MailingList mailingList, CommunicationChannelType type) {
+    public CommunicationChannelImpl(MailingList mailingList, CommunicationChannelTypable type) {
         this.mailingList = mailingList;
         this.type = type;
 
@@ -71,7 +71,14 @@ class CommunicationChannelImpl implements CommunicationChannel {
     }
 
     @Override
-    public CommunicationChannelType getType() {
+    public Set<String> getAllAdresses() {
+        Set<String> adresses = new HashSet<>();
+        mailingList.appendAllAddresses(adresses, type);
+        return adresses;
+    }
+
+    @Override
+    public CommunicationChannelTypable getType() {
         return type;
     }
 
