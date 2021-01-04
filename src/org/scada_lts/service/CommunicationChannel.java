@@ -10,7 +10,7 @@ import java.util.Set;
 public interface CommunicationChannel {
 
     int getChannelId();
-    CommunicationChannelType getType();
+    CommunicationChannelTypable getType();
 
     int getDailyLimitSentNumber();
     boolean isDailyLimitSent();
@@ -19,10 +19,11 @@ public interface CommunicationChannel {
     boolean isActiveFor(EventInstance event);
     Set<String> getActiveAdresses(DateTime fireTime);
     Set<String> getActiveAdresses(EventInstance event);
+    Set<String> getAllAdresses();
     boolean isCollectInactiveEvents();
     MailingList getData();
 
-    static CommunicationChannel newChannel(MailingList mailingList, CommunicationChannelType type) {
+    static CommunicationChannel newChannel(MailingList mailingList, CommunicationChannelTypable type) {
         return new CommunicationChannelImpl(mailingList, type);
     }
 

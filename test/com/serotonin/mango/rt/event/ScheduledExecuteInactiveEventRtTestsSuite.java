@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ScheduledExecuteInactiveEventRtRaiseEventExceptionTest.class,
+        ScheduledExecuteInactiveEventRtUnscheduleEventTest.class,
         ScheduledExecuteInactiveEventRtTest.class
 })
 public class ScheduledExecuteInactiveEventRtTestsSuite {

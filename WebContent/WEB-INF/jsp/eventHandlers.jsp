@@ -342,10 +342,17 @@
         if (currentHandlerEditor) {
         	hide(currentHandlerEditor);
         	hide($(currentHandlerEditor.id +"Img"));
+        	if(currentHandlerEditor.id === "handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>") {
+        	    hide($(currentHandlerEditor.id + "Help"));
+        	}
         }
         currentHandlerEditor = $("handler"+ handlerId);
         show(currentHandlerEditor);
         show($(currentHandlerEditor.id +"Img"));
+        if(currentHandlerEditor.id === "handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>") {
+            show($(currentHandlerEditor.id + "Help"));
+        }
+        console.log("handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>");
     }
 
     function targetPointSelectChanged() {
@@ -600,6 +607,9 @@
                 <tag:img id="handler3Img" png="cog_process" title="eventHandlers.type.processHandler" style="display:none;"/>
                 <tag:img id="handler4Img" png="report" title="eventHandlers.type.processHandler" style="display:none;"/>
                 <tag:img id="handler5Img" png="phone" title="eventHandlers.type.smsHandler" style="display:none;"/>
+                <span id="handler5Help" style="display:none;">
+                    <tag:help id="smsEventHandlers"/>
+                </span>
               </td>
             </tr>
 

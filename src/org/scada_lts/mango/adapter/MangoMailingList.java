@@ -22,6 +22,7 @@ import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import org.joda.time.DateTime;
+import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelType;
 
 import java.util.List;
