@@ -439,7 +439,7 @@ paths:
       tags:
         - EventDetector API
       summary: 'Create Point Event Detector'
-      description: 'Create a new Event Detector of type State for Binary Point'
+      description: 'Create a new Event Detector of type State for Binary Point by its ID'
       operationId: 'eventDetectorSetBinaryStateEventDetector'
       parameters:
         - name: 'datapointId'
@@ -447,6 +447,44 @@ paths:
           required: true
           schema:
             type: 'number'
+      requestBody:
+        description: Point Event Detector with Binary State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                binaryState:
+                  type: boolean
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/binary/state/xid/{datapointXid}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type State for Binary Point by its Export ID'
+      operationId: 'eventDetectorSetBinaryStateEventDetectorXid'
+      parameters:
+        - name: 'datapointXid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
       requestBody:
         description: Point Event Detector with Binary State properties
         required: true

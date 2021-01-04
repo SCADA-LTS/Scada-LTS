@@ -10,6 +10,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorBinaryStateDTO;
+import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorDTO;
+import org.scada_lts.web.mvc.api.json.JsonPointEventDetector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -66,43 +68,15 @@ public class EventDetectorAPI {
         }
     }
 
-    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json")
-    public ResponseEntity<String> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
+    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
         LOG.info("/api/eventDetector/set/binary/state/" + datapointId);
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                class PointEventDetectorJSON implements Serializable {
-                    private int id;
-                    private String xid;
-                    private String alias;
-
-                    PointEventDetectorJSON(int id, String xid, String alias) {
-                        this.setId(id);
-                        this.setXid(xid);
-                        this.setAlias(alias);
-                    }
-
-                    public int getId() { return id; }
-                    public void setId(int id) { this.id = id; }
-                    public String getAlias() { return alias; }
-                    public void setAlias(String alias) { this.alias = alias; }
-                    public String getXid() { return xid; }
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
-
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                PointEventDetectorVO pointEventDetectorVO = eventDetectorBinaryStateDTO.createPointEventDetectorVO(dataPointVO);
-                dataPointVO.getEventDetectors().add(pointEventDetectorVO);
-                dataPointService.saveEventDetectors(dataPointVO);
-                int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), datapointId);
-                PointEventDetectorJSON pointEventDetectorJSON = new PointEventDetectorJSON(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(pointEventDetectorJSON);
-                return new ResponseEntity<>(json, HttpStatus.OK);
+                JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, eventDetectorBinaryStateDTO);
+                return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -110,6 +84,33 @@ public class EventDetectorAPI {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+
+    @PostMapping(value = "/set/binary/state/xid/{datapointXid}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetectorXid(@PathVariable String datapointXid, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
+        LOG.info("/api/eventDetector/set/binary/state/xid/" + datapointXid);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointXid);
+                JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, eventDetectorBinaryStateDTO);
+                return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body){
+        PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
+        dataPointVO.getEventDetectors().add(pointEventDetectorVO);
+        dataPointService.saveEventDetectors(dataPointVO);
+        int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
+        return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }
 
     @PutMapping(value = "/update/binary/state/{datapointId}/{id}", consumes = "application/json")
