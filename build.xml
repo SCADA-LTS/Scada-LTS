@@ -409,7 +409,6 @@
 				<include name="Roboto-Thin.woff2"/>
 				<include name="Roboto-ThinItalic.woff"/>
 				<include name="Roboto-ThinItalic.woff2"/>
-
             </fileset>
         </copy>
 
