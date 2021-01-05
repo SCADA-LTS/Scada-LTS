@@ -25,6 +25,9 @@
 
 
 <tag:page dwr="SystemSettingsDwr" onload="init">
+<link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+<link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
+
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
@@ -379,7 +382,7 @@
     
     function dbBackup() {
     	alert("Not implemented !");
-    }
+    }+
 
     function refreshImages() {
 
@@ -405,7 +408,6 @@
         });
 
     }
-    
     
     
   </script>
@@ -779,9 +781,16 @@
           </tr>
        </table>
   </div>
+
+  <div class="borderDiv marB marR" style="float:left">
+    <div id="sms-domain"></div>
+  </div>
+
   <div class="" style="float:left; color:white">
   #branchName
   </div>
   
   
 </tag:page>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
