@@ -17,6 +17,7 @@ const storeSystemSettings = {
         emailSettings: undefined,
         httpSettings: undefined,
         miscSettings: undefined,
+        smsDomainSettings: undefined,
         systemStartupTime: undefined,
         schemaVersion: undefined,
         scadaConfig: undefined,
@@ -46,6 +47,9 @@ const storeSystemSettings = {
         },
         setMiscSettings(state, miscSettings) {
             state.miscSettings = miscSettings;
+        },
+        setSmsDomainSettings(state, smsDomainSettings) {
+            state.smsDomainSettings = smsDomainSettings;
         },
         setSystemStartupTime(state, startupTime) {
             state.systemStartupTime = new Date(Number(startupTime));
@@ -215,6 +219,20 @@ const storeSystemSettings = {
                 })
             })
         },
+        getSmsDomainSettings(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getSMSDomain`, context.state.requestOptions).then(response => {
+                    if (response.status == 200) {
+                        context.commit('setSmsDomainSettings', response.data)
+                        resolve(response.data)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
+            })
+        },
         getScadaConfiguration(context) {
             return new Promise((resolve, reject) => {
                 axios.get(`${context.state.systemSettingsApiUrl}/getScadaConfig`, context.state.requestOptions).then(response => {
@@ -259,6 +277,20 @@ const storeSystemSettings = {
         saveMiscSettings(context) {
             return new Promise((resolve, reject) => {
                 axios.post(`${context.state.systemSettingsApiUrl}/saveMisc`, context.state.miscSettings,
+                    { timeout: 5000, useCredentials: true, credentials: 'same-origin' }).then(response => {
+                        if (response.status == 200) {
+                            resolve(true)
+                        } else {
+                            reject(false)
+                        }
+                    }).catch(err => {
+                        reject(err)
+                    })
+            })
+        },
+        saveSmsDomainSettings(context) {
+            return new Promise((resolve, reject) => {
+                axios.post(`${context.state.systemSettingsApiUrl}/saveSMSDomain/${context.state.smsDomainSettings}`,
                     { timeout: 5000, useCredentials: true, credentials: 'same-origin' }).then(response => {
                         if (response.status == 200) {
                             resolve(true)

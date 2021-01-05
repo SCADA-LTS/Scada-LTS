@@ -19,6 +19,7 @@
                 <MiscSettingsComponent ref="miscSettingsComponent" @changed="componentChanged"></MiscSettingsComponent>
                 <HttpSettingsComponent ref="httpSettingsComponent" @changed="componentChanged"></HttpSettingsComponent>
                 <DefaultLoggingTypeSettingsComponent ref="defaultLoggingTypeSettingsComponent" @changed="componentChanged"></DefaultLoggingTypeSettingsComponent>
+                <SmsDomainSettingsComponent ref="smsDomainSettingsComponent" @changed="componentChanged"></SmsDomainSettingsComponent>
                 <ScadaConfigurationComponent></ScadaConfigurationComponent>
               </v-row>
             </v-col>
@@ -242,6 +243,7 @@ import EmailSettingsComponent from "./EmailSettingsComponent";
 import HttpSettingsComponent from "./HttpSettingsComponent";
 import MiscSettingsComponent from "./MiscSettingsComponent";
 import DefaultLoggingTypeSettingsComponent from "./DefaultLoggingTypeComponent";
+import SmsDomainSettingsComponent from "./SmsDomainSettingsComponent";
 import ScadaConfigurationComponent from "./ScadaConfigurationComponent";
 import { keys } from "@amcharts/amcharts4/.internal/core/utils/Object";
 
@@ -256,6 +258,7 @@ export default {
     HttpSettingsComponent,
     MiscSettingsComponent,
     DefaultLoggingTypeSettingsComponent,
+    SmsDomainSettingsComponent,
     ScadaConfigurationComponent
   },
   filters: {
@@ -448,6 +451,7 @@ body > .alert {
 .green {
   background-color: rgba(0, 255, 0, 0.3);
 }
+
 .floated-right {
   float: right;
   margin-top: 8px;
