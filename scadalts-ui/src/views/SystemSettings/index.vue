@@ -18,6 +18,7 @@
                 <EmailSettingsComponent ref="emailSettingsComponent" @changed="componentChanged"></EmailSettingsComponent>
                 <MiscSettingsComponent ref="miscSettingsComponent" @changed="componentChanged"></MiscSettingsComponent>
                 <HttpSettingsComponent ref="httpSettingsComponent" @changed="componentChanged"></HttpSettingsComponent>
+                <SmsDomainSettingsComponent ref="smsDomainSettingsComponent" @changed="componentChanged"></SmsDomainSettingsComponent>
                 <ScadaConfigurationComponent></ScadaConfigurationComponent>
               </v-row>
             </v-col>
@@ -240,6 +241,7 @@ import SystemEventTypesComponent from "./SystemEventTypesComponent";
 import EmailSettingsComponent from "./EmailSettingsComponent";
 import HttpSettingsComponent from "./HttpSettingsComponent";
 import MiscSettingsComponent from "./MiscSettingsComponent";
+import SmsDomainSettingsComponent from "./SmsDomainSettingsComponent";
 import ScadaConfigurationComponent from "./ScadaConfigurationComponent";
 import { keys } from "@amcharts/amcharts4/.internal/core/utils/Object";
 
@@ -253,6 +255,7 @@ export default {
     EmailSettingsComponent,
     HttpSettingsComponent,
     MiscSettingsComponent,
+    SmsDomainSettingsComponent,
     ScadaConfigurationComponent
   },
   filters: {
