@@ -24,7 +24,6 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
 
     private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventServiceImpl.class);
 
-
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final MailingListService mailingListService;
     private final Set<ScheduledExecuteInactiveEventInstance> relations = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -88,13 +87,12 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
             return Collections.emptyList();
         }
         return relations.stream()
-                    .filter(a -> CommunicationChannelType.getType(a.getEventHandler().getHandlerType()) == channel.getType())
-                    .filter(a -> a.getMailingList().getId() == channel.getChannelId())
-                    .map(ScheduledExecuteInactiveEventInstance::toScheduledEvent)
-                    .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
-                    .limit(limit)
-                    .collect(Collectors.toList());
-
+                .filter(a -> a.getEventHandler().getHandlerType() == channel.getType().getEventHandlerType())
+                .filter(a -> a.getMailingList().getId() == channel.getChannelId())
+                .map(ScheduledExecuteInactiveEventInstance::toScheduledEvent)
+                .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -152,10 +150,12 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
 
     private void add(ScheduledExecuteInactiveEventInstance inactiveEventInstance) {
         relations.add(inactiveEventInstance);
+
     }
 
     private void remove(ScheduledExecuteInactiveEventInstance inactiveEventInstance) {
         relations.remove(inactiveEventInstance);
+
     }
 
     private boolean contains(ScheduledExecuteInactiveEventInstance inactiveEventInstance) {
