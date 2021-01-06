@@ -133,7 +133,8 @@ public class RuntimeManager {
 		started = true;
 
 		ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
-		List<MailingList> mailingLists = new MailingListService().getMailingLists();
+		MailingListService mailingListService = new MailingListService();
+		List<MailingList> mailingLists = mailingListService.getMailingLists();
 		for(MailingList mailingList: mailingLists) {
 			if (mailingList.isCollectInactiveEmails()) {
 				startSendEmailForInactiveEvent(mailingList, service);
@@ -149,7 +150,7 @@ public class RuntimeManager {
 		for(MailingList mailingList: mailingLists) {
 			if(mailingList.isCollectInactiveEmails()
 					&& mailingList.isDailyLimitSentEmails()) {
-				startResetDailyLimitSentEmails(mailingList);
+				startResetDailyLimitSentEmails(mailingList, mailingListService);
 			}
 		}
 
@@ -941,8 +942,9 @@ public class RuntimeManager {
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
 	}
 
-	private void startResetDailyLimitSentEmails(MailingList mailingList) {
-		ResetDailyLimitSendingEventRT reset = new ResetDailyLimitSendingEventRT(mailingList, this);
+	private void startResetDailyLimitSentEmails(MailingList mailingList, MailingListService mailingListService) {
+		ResetDailyLimitSendingEventRT reset = new ResetDailyLimitSendingEventRT(mailingList, this,
+				mailingListService);
 		reset.initialize();
 		resetDailyLimitSentEmails.put(mailingList.getId(), reset);
 	}
@@ -957,14 +959,28 @@ public class RuntimeManager {
 		stopResetDailyLimitSentEmails(mailingListId);
 	}
 
+	public void stopSendEmailSms(int mailingListId) {
+		stopSendEmailForInactiveEvent(mailingListId);
+		stopSendSmsForInactiveEvent(mailingListId);
+	}
+
 	public void saveMailingList(MailingList mailingList) {
 		if(mailingList.isCollectInactiveEmails()) {
 			ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
 			startSendEmailForInactiveEvent(mailingList, service);
 			startSendSmsForInactiveEvent(mailingList, service);
 			if(mailingList.isDailyLimitSentEmails()) {
-				startResetDailyLimitSentEmails(mailingList);
+				MailingListService mailingListService = new MailingListService();
+				startResetDailyLimitSentEmails(mailingList, mailingListService);
 			}
+		}
+	}
+
+	public void startSendEmailSms(MailingList mailingList) {
+		if(mailingList.isCollectInactiveEmails()) {
+			ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
+			startSendEmailForInactiveEvent(mailingList, service);
+			startSendSmsForInactiveEvent(mailingList, service);
 		}
 	}
 

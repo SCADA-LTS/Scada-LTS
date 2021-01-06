@@ -99,7 +99,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(communicationChannel, limit.get());
             for (ScheduledEvent event : scheduledEvents) {
                 toExecute.offer(new Execute<>(this::send, event,
-                        new ExecuteData(communicationChannel, limit, fails, currentNumberExecuted, addresses, fireTime)));
+                        new ExecuteData(communicationChannel, limit, fails, addresses, fireTime)));
                 if(fails.get() > 0)
                     fails.decrementAndGet();
                 if (communicationChannel.isDailyLimitSent()) {
@@ -219,16 +219,14 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         CommunicationChannel communicationChannel;
         AtomicInteger limit;
         AtomicInteger fails;
-        AtomicInteger currentNumberExecuted;
         Set<String> addresses;
         long fireTime;
 
         public ExecuteData(CommunicationChannel communicationChannel, AtomicInteger limit, AtomicInteger fails,
-                           AtomicInteger currentNumberExecuted, Set<String> addresses, long fireTime) {
+                           Set<String> addresses, long fireTime) {
             this.communicationChannel = communicationChannel;
             this.limit = limit;
             this.fails = fails;
-            this.currentNumberExecuted = currentNumberExecuted;
             this.addresses = addresses;
             this.fireTime = fireTime;
         }
@@ -251,10 +249,6 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
         public AtomicInteger getFails() {
             return fails;
-        }
-
-        public AtomicInteger getCurrentNumberExecuted() {
-            return currentNumberExecuted;
         }
     }
 
