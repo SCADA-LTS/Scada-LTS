@@ -48,24 +48,24 @@ import static utils.MailingListTestUtils.createAddressEntry;
 public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
     @Parameterized.Parameters(name= "{index}: dailyLimitSentEmailsNumber: {0}, " +
-            "isDailyLimitSentEmails: {1}, CommunicationChannelType: {2}, sentMsgTimes: {3}," +
+            "isDailyLimitSentEmails: {1}, CommunicationChannelType: {2}, invokeSendMsgTimes: {3}," +
             " communicateLimitTimes: {4}, scheduledEventsNumber: {5}," +
             " numberOfLaunches: {6}")
     public static Collection data() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100, 5},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 100, 5},
-                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 5},
-                { 3, false, CommunicationChannelType.EMAIL, 100, 0, 100, 5},
-                { 3, false, CommunicationChannelType.SMS, 100, 0, 100, 5},
-                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 5},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100, 101},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 100, 101},
+                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 101},
+                { 3, false, CommunicationChannelType.EMAIL, 100, 0, 100, 101},
+                { 3, false, CommunicationChannelType.SMS, 100, 0, 100, 101},
+                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 101},
         });
     }
 
 
     private ScheduledExecuteInactiveEventRT testSubject;
 
-    private int sentMsgTimes;
+    private int invokeSendMsgTimes;
     private int communicateLimitTimes;
     private int scheduledEventsNumber;
     private int numberOfLaunches;
@@ -84,12 +84,12 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
     public ScheduledExecuteInactiveEventRtMultiThreadTest(int dailyLimitSentEmailsNumber,
                                                           boolean dailyLimitSentEmails,
                                                           CommunicationChannelType type,
-                                                          int sentMsgTimes,
+                                                          int invokeSendMsgTimes,
                                                           int communicateLimitTimes,
                                                           int scheduledEventsNumber,
                                                           int numberOfLaunches) {
 
-        this.sentMsgTimes = sentMsgTimes;
+        this.invokeSendMsgTimes = invokeSendMsgTimes;
         this.channelType = type;
         this.communicateLimitTimes = communicateLimitTimes;
         this.scheduledEventsNumber = scheduledEventsNumber;
@@ -163,7 +163,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
 
         //then:
-        assertEquals(scheduledEventsNumber - sentMsgTimes, result.size());
+        assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
         verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), anySet(), eq("Limit"));
         verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), eq(addresses),
                 eq("Limit"));
@@ -184,7 +184,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         System.out.println("" + testSubject.getCurrentNumberExecuted());
 
         //then:
-        assertTrue(testSubject.getCurrentNumberExecuted() <= sentMsgTimes * numberOfLaunches);
+        assertTrue(testSubject.getCurrentNumberExecuted() <= invokeSendMsgTimes * numberOfLaunches);
         assertEquals(scheduledEventsNumber, result.size());
         verify(channelTypeMock, times(testSubject.getCurrentNumberExecuted())).sendMsg(any(EventInstance.class),
                 anySet(), eq(alias));
@@ -206,8 +206,8 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
 
         //then:
-        assertEquals(scheduledEventsNumber - sentMsgTimes, result.size());
-        verify(channelTypeMock, times(sentMsgTimes)).sendMsg(any(EventInstance.class), anySet(), eq(alias));
-        verify(channelTypeMock, times(sentMsgTimes)).sendMsg(any(EventInstance.class), eq(addresses), eq(alias));
+        assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
+        verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), anySet(), eq(alias));
+        verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), eq(addresses), eq(alias));
     }
 }

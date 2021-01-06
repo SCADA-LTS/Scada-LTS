@@ -81,9 +81,9 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     @Override
     public void scheduleTimeout(Boolean model, long fireTime) {
         DateTime dateTime = new DateTime(fireTime);
-        Set<String> addresses = communicationChannel.getActiveAdresses(dateTime);
-        if (!addresses.isEmpty()) {
-            if(isSchedule()) {
+        if (communicationChannel.isActiveFor(dateTime)) {
+            Set<String> addresses = communicationChannel.getActiveAdresses(dateTime);
+            if(!addresses.isEmpty() && isSchedule()) {
                 schedule(addresses, fireTime);
                 execute();
             }
@@ -100,11 +100,11 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             for (ScheduledEvent event : scheduledEvents) {
                 toExecute.offer(new Execute<>(this::send, event,
                         new ExecuteData(communicationChannel, limit, fails, currentNumberExecuted, addresses, fireTime)));
+                if(fails.get() > 0)
+                    fails.decrementAndGet();
                 if (communicationChannel.isDailyLimitSent()) {
                     if(limit.get() > 0)
                         limit.decrementAndGet();
-                    if(fails.get() > 0)
-                        fails.decrementAndGet();
                 }
                 currentNumberExecuted.incrementAndGet();
             }
