@@ -42,10 +42,15 @@ public class MailingListTestUtils {
         return result;
     }
 
-    public static MailingList createMailingList(int id, EmailRecipient... emailRecipients) {
+    public static MailingList createMailingList(int id, DateTime inactiveIntervalTime, EmailRecipient... emailRecipients) {
         MailingList mailingList = new MailingList();
         mailingList.setId(id);
+        mailingList.setCollectInactiveEmails(true);
         mailingList.setEntries(Stream.of(emailRecipients).collect(Collectors.toList()));
+        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(inactiveIntervalTime);
+        Set<Integer> inactiveIntervals = new HashSet<>();
+        inactiveIntervals.add(inactiveInterval);
+        mailingList.setInactiveIntervals(inactiveIntervals);
         return mailingList;
     }
 
@@ -80,6 +85,7 @@ public class MailingListTestUtils {
     public static MailingList createMailingList(int id, List<AddressEntry> addressEntries, EmailRecipient... emailRecipients) {
         MailingList mailingList = new MailingList();
         mailingList.setId(id);
+        mailingList.setCollectInactiveEmails(true);
         List<EmailRecipient> entries = Stream.of(emailRecipients).collect(Collectors.toList());
         entries.addAll(addressEntries);
         mailingList.setEntries(entries);

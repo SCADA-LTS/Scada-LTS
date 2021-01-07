@@ -41,12 +41,12 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     private final CommunicationChannel communicationChannel;
     private final ScheduledExecuteInactiveEventService service;
     private final AtomicInteger limit;
+    private final AtomicInteger fails;
+    private final AtomicInteger currentNumberExecuted;
     private final DataPointService dataPointService;
     private final DataSourceService dataSourceService;
-    private volatile boolean communicatedLimit;
-    private volatile boolean lock;
 
-    private final Queue<Execute<?, ?>> toExecute;
+    private final Queue<Execute<ScheduledEvent>> toExecute;
 
     public ScheduledExecuteInactiveEventRT(CommunicationChannel communicationChannel,
                                            ScheduledExecuteInactiveEventService service,
@@ -59,8 +59,9 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         this.dataPointService = dataPointService;
         this.dataSourceService = dataSourceService;
         this.toExecute = new ConcurrentLinkedQueue<>();
-        this.communicatedLimit = false;
-        this.lock = false;
+        this.fails = new AtomicInteger(0);
+        this.currentNumberExecuted = new AtomicInteger(0);
+
     }
 
     public void initialize() {
@@ -80,48 +81,50 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     @Override
     public void scheduleTimeout(Boolean model, long fireTime) {
         DateTime dateTime = new DateTime(fireTime);
-        Set<String> addresses = communicationChannel.getActiveAdresses(dateTime);
-        if(!addresses.isEmpty()) {
-            schedule(addresses);
-            execute(addresses, fireTime);
+        if (communicationChannel.isActiveFor(dateTime)) {
+            Set<String> addresses = communicationChannel.getActiveAdresses(dateTime);
+            if(!addresses.isEmpty() && isSchedule()) {
+                schedule(addresses, fireTime);
+                execute();
+            }
         }
     }
 
-    private synchronized void schedule(Set<String> addresses) {
+    public int getCurrentNumberExecuted() {
+        return currentNumberExecuted.get();
+    }
+
+    private synchronized void schedule(Set<String> addresses, long fireTime) {
         if(isSchedule()) {
-            this.lock = true;
             List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(communicationChannel, limit.get());
             for (ScheduledEvent event : scheduledEvents) {
-                toExecute.add(new Execute<>(this::send, event, addresses));
-                if(communicationChannel.isDailyLimitSent())
-                    limit.decrementAndGet();
+                toExecute.offer(new Execute<>(this::send, event,
+                        new ExecuteData(communicationChannel, limit, fails, addresses, fireTime)));
+                if(fails.get() > 0)
+                    fails.decrementAndGet();
+                if (communicationChannel.isDailyLimitSent()) {
+                    if(limit.get() > 0)
+                        limit.decrementAndGet();
+                }
+                currentNumberExecuted.incrementAndGet();
             }
         }
     }
 
     private boolean isSchedule() {
-        return (!communicationChannel.isDailyLimitSent() || limit.get() > 0) && !lock;
+        return toExecute.isEmpty() && ((!communicationChannel.isDailyLimitSent()
+                || limit.get() > 0) || fails.get() > 0);
     }
 
-    private void execute(Set<String> addresses, long fireTime) {
+    private void execute() {
         Execute execute = toExecute.poll();
         while (execute != null) {
-            boolean executed = execute.execute();
-            if(communicationChannel.isDailyLimitSent()) {
-                if (!executed && limit.get() < communicationChannel.getDailyLimitSentNumber()) {
-                    limit.incrementAndGet();
-                } else if (!communicatedLimit
-                        && limit.get() == 0) {
-                    communicatedLimit = true;
-                    communicatedLimit = communicateLimit(addresses, fireTime);
-                }
-            }
+            execute.execute();
             execute = toExecute.poll();
         }
-        this.lock = false;
     }
 
-    private boolean communicateLimit(Set<String> addresses, long fireTime) {
+    private static boolean communicateLimit(Set<String> addresses, long fireTime, CommunicationChannel communicationChannel) {
         LocalizableMessage dailyLimitExceededMsg = new LocalizableMessage("mailingLists.dailyLimitExceeded");
         EventType eventType = new DataPointEventType();
         EventInstance event = new EventInstance(eventType, fireTime,false,
@@ -137,7 +140,6 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     }
 
     private boolean send(ScheduledEvent scheduledEvent, Set<String> addresses) {
-
         EventInstance event = scheduledEvent.getEvent();
         EventType eventType = event.getEventType();
         EventHandlerVO eventHandler = scheduledEvent.getEventHandler();
@@ -145,7 +147,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
         if (isExists(eventType)) {
             String eventHandlerAlias = eventHandler.getAlias();
-            String alias = eventHandlerAlias == null || eventHandlerAlias.isEmpty() ? "Delay email" : eventHandlerAlias;
+            String alias = eventHandlerAlias == null || eventHandlerAlias.isEmpty() ? "Delay msg" : eventHandlerAlias;
             boolean sent = type.sendMsg(event, addresses, alias);
             if(sent) {
                 service.unscheduleEvent(scheduledEvent, communicationChannel);
@@ -180,19 +182,74 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         }
     }
 
-    private static class Execute<N, M> {
-        BiPredicate<N, M> predicate;
+    private static class Execute<N> {
+        BiPredicate<N, Set<String>> predicate;
+        ExecuteData executeData;
         N arg1;
-        M arg2;
 
-        public Execute(BiPredicate<N, M> predicate, N arg1, M arg2) {
+        public Execute(BiPredicate<N, Set<String>> predicate, N arg1, ExecuteData executeData) {
             this.predicate = predicate;
+            this.executeData = executeData;
             this.arg1 = arg1;
-            this.arg2 = arg2;
         }
 
-        boolean execute() {
-            return predicate.test(arg1, arg2);
+        void execute() {
+            Set<String> addresses = executeData.getAddresses();
+            boolean executed = predicate.test(arg1, addresses);
+
+            long fireTime = executeData.getFireTime();
+            CommunicationChannel channel = executeData.getCommunicationChannel();
+            AtomicInteger limit = executeData.getLimit();
+            AtomicInteger fails = executeData.getFails();
+
+            if (!executed)
+                fails.incrementAndGet();
+
+            if(channel.isDailyLimitSent()) {
+                if (limit.get() == 0 && fails.get() == 0) {
+                    boolean communicated = ScheduledExecuteInactiveEventRT.communicateLimit(addresses, fireTime, channel);
+                    if(communicated)
+                        limit.decrementAndGet();
+                }
+            }
         }
     }
+
+    private class ExecuteData {
+        CommunicationChannel communicationChannel;
+        AtomicInteger limit;
+        AtomicInteger fails;
+        Set<String> addresses;
+        long fireTime;
+
+        public ExecuteData(CommunicationChannel communicationChannel, AtomicInteger limit, AtomicInteger fails,
+                           Set<String> addresses, long fireTime) {
+            this.communicationChannel = communicationChannel;
+            this.limit = limit;
+            this.fails = fails;
+            this.addresses = addresses;
+            this.fireTime = fireTime;
+        }
+
+        public CommunicationChannel getCommunicationChannel() {
+            return communicationChannel;
+        }
+
+        public AtomicInteger getLimit() {
+            return limit;
+        }
+
+        public Set<String> getAddresses() {
+            return addresses;
+        }
+
+        public long getFireTime() {
+            return fireTime;
+        }
+
+        public AtomicInteger getFails() {
+            return fails;
+        }
+    }
+
 }

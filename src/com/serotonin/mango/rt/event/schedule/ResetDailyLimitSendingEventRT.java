@@ -8,6 +8,7 @@ import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.timer.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.MailingListService;
 
 import java.text.ParseException;
 
@@ -18,12 +19,15 @@ public class ResetDailyLimitSendingEventRT implements ModelTimeoutClient<Boolean
     private final Log log = LogFactory.getLog(ResetDailyLimitSendingEventRT.class);
 
     private TimerTask task;
-    private final MailingList mailingList;
+    private final int mailingListId;
     private final RuntimeManager runtimeManager;
+    private final MailingListService mailingListService;
 
-    public ResetDailyLimitSendingEventRT(MailingList mailingList, RuntimeManager runtimeManager) {
-        this.mailingList = mailingList;
+    public ResetDailyLimitSendingEventRT(MailingList mailingList, RuntimeManager runtimeManager,
+                                         MailingListService mailingListService) {
+        this.mailingListId = mailingList.getId();
         this.runtimeManager = runtimeManager;
+        this.mailingListService = mailingListService;
     }
 
     public void initialize() {
@@ -46,8 +50,9 @@ public class ResetDailyLimitSendingEventRT implements ModelTimeoutClient<Boolean
     @Override
     public void scheduleTimeout(Boolean model, long fireTime) {
         log.info("run: " + ResetDailyLimitSendingEventRT.class.getName());
-        runtimeManager.removeMailingList(mailingList.getId());
-        runtimeManager.saveMailingList(mailingList);
+        runtimeManager.stopSendEmailSms(mailingListId);
+        MailingList mailingList1 = mailingListService.getMailingList(mailingListId);
+        runtimeManager.startSendEmailSms(mailingList1);
         log.info("executed: " + ResetDailyLimitSendingEventRT.class.getName());
     }
 }
