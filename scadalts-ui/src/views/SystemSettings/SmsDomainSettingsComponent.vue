@@ -1,24 +1,24 @@
 <template>
-  <v-col cols="12" md="6">
-    <v-card>
-      <v-card-title>
-        {{ $t("systemsettings.smsdomain.title") }}
-        <span v-if="isSmsDomainSettingsEdited">*</span>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="domainSettings"
-              :label="$t('systemsettings.smsdomain.label')"
-              @input="watchDataChange()"
-              dense
-            ></v-text-field>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-  </v-col>
+	<v-col cols="12" md="6">
+		<v-card>
+			<v-card-title>
+				{{ $t('systemsettings.smsdomain.title') }}
+				<span v-if="isSmsDomainSettingsEdited">*</span>
+			</v-card-title>
+			<v-card-text>
+				<v-row>
+					<v-col cols="12">
+						<v-text-field
+							v-model="domainSettings"
+							:label="$t('systemsettings.smsdomain.label')"
+							@input="watchDataChange()"
+							dense
+						></v-text-field>
+					</v-col>
+				</v-row>
+			</v-card-text>
+		</v-card>
+	</v-col>
 </template>
 
 <script>
@@ -29,89 +29,89 @@
  */
 
 export default {
-  name: "SmsDomainSettingsComponent",
+	name: 'SmsDomainSettingsComponent',
 
-  data() {
-    return {
-      domainSettings: undefined,
-      domainSettingsStore: undefined,
-      isSmsDomainSettingsEdited: false,
-    };
-  },
+	data() {
+		return {
+			domainSettings: undefined,
+			domainSettingsStore: undefined,
+			isSmsDomainSettingsEdited: false,
+		};
+	},
 
-  mounted() {
-    this.fetchData();
-  },
+	mounted() {
+		this.fetchData();
+	},
 
-  methods: {
-    async fetchData() {
-      this.domainSettings = await this.$store.dispatch("getSmsDomainSettings");
-      this.domainSettingsStore = this.copyDataFromStore();
-    },
+	methods: {
+		async fetchData() {
+			this.domainSettings = await this.$store.dispatch('getSmsDomainSettings');
+			this.domainSettingsStore = this.copyDataFromStore();
+		},
 
-    saveData() {
-      this.$store.commit("setSmsDomainSettings", this.domainSettings);
-      this.domainSettingsStore = this.copyDataFromStore();
-      this.$store
-        .dispatch("saveSmsDomainSettings")
-        .then((resp) => {
-          if (resp) {
-            this.restoreData();
-            this.$notify({
-              placement: "top-right",
-              type: "success",
-              content: this.$t("systemsettings.notification.save.smsdomain"),
-            });
-          }
-        })
-        .catch(() => {
-          this.$notify({
-            placement: "top-right",
-            type: "danger",
-            content: this.$t("systemsettings.notification.fail"),
-          });
-        });
-    },
+		saveData() {
+			this.$store.commit('setSmsDomainSettings', this.domainSettings);
+			this.domainSettingsStore = this.copyDataFromStore();
+			this.$store
+				.dispatch('saveSmsDomainSettings')
+				.then((resp) => {
+					if (resp) {
+						this.restoreData();
+						this.$notify({
+							placement: 'top-right',
+							type: 'success',
+							content: this.$t('systemsettings.notification.save.smsdomain'),
+						});
+					}
+				})
+				.catch(() => {
+					this.$notify({
+						placement: 'top-right',
+						type: 'danger',
+						content: this.$t('systemsettings.notification.fail'),
+					});
+				});
+		},
 
-    restoreData() {
-      this.fetchData();
-      this.isSmsDomainSettingsEdited = false;
-    },
+		restoreData() {
+			this.fetchData();
+			this.isSmsDomainSettingsEdited = false;
+		},
 
-    copyDataFromStore() {
-      return JSON.parse(
-        JSON.stringify(this.$store.state.systemSettings.smsDomainSettings)
-      );
-    },
+		copyDataFromStore() {
+			return JSON.parse(
+				JSON.stringify(this.$store.state.systemSettings.smsDomainSettings),
+			);
+		},
 
-    async watchDataChange() {
-      this.isSmsDomainSettingsEdited = await this.isDataChanged();
-      this.emitData(this.isSmsDomainSettingsEdited);
-    },
+		async watchDataChange() {
+			this.isSmsDomainSettingsEdited = await this.isDataChanged();
+			this.emitData(this.isSmsDomainSettingsEdited);
+		},
 
-    async isDataChanged() {
-      return this.domainSettingsStore.localeCompare(this.domainSettings) !== 0;
-    },
+		async isDataChanged() {
+			return this.domainSettingsStore.localeCompare(this.domainSettings) !== 0;
+		},
 
-    emitData(changed) {
-      this.$emit("changed", {
-        component: "smsDomainSettingsComponent",
-        title: "systemsettings.smsdomain.title",
-        changed: changed,
-        data: this.sumarizeDataChanges(),
-      });
-    },
+		emitData(changed) {
+			this.$emit('changed', {
+				component: 'smsDomainSettingsComponent',
+				title: 'systemsettings.smsdomain.title',
+				changed: changed,
+				data: this.sumarizeDataChanges(),
+			});
+		},
 
-    sumarizeDataChanges() {
-      let data = [];
-      data.push({
-        label: `systemsettings.smsdomain.label`,
-        originalData: this.domainSettingsStore,
-        changedData: this.domainSettings,
-      });
-      return data;
-    },
-  },
+		sumarizeDataChanges() {
+			let data = [];
+			data.push({
+				label: `systemsettings.smsdomain.label`,
+				originalData: this.domainSettingsStore,
+				changedData: this.domainSettings,
+			});
+			return data;
+		},
+	},
 };
 </script>
 
