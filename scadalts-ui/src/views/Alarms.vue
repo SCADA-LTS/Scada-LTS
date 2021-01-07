@@ -1,64 +1,64 @@
 <template>
-  <div class="alarms">
-    <!--        <p>{{$route.name}}</p>-->
+	<div class="alarms">
+		<!--        <p>{{$route.name}}</p>-->
 
-    <AlarmsComponent></AlarmsComponent>
-  </div>
+		<AlarmsComponent></AlarmsComponent>
+	</div>
 </template>
 
 <script>
-import Components from "@min-gb/vuejs-components";
-import AlarmsComponent from "../components/graphical_views/AlarmsComponent";
+import Components from '@min-gb/vuejs-components';
+import AlarmsComponent from '../components/graphical_views/AlarmsComponent';
 
 export default {
-  el: "#alarms",
-  name: "alarms",
-  components: {
-    AlarmsComponent,
-    ...Components,
-  },
-  methods: {},
+	el: '#alarms',
+	name: 'alarms',
+	components: {
+		AlarmsComponent,
+		...Components,
+	},
+	methods: {},
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../../node_modules/@min-gb/vuejs-components/dist/min-gb.css";
+@import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
 
 .alarms {
-  //position: absolute;
-  z-index: -1;
+	//position: absolute;
+	z-index: -1;
 }
 
 .action {
-  margin-top: 50px;
-  margin-left: 20px;
-  padding-top: 10px;
+	margin-top: 50px;
+	margin-left: 20px;
+	padding-top: 10px;
 }
 .action_bottom {
-  padding-top: 10px;
-  margin-left: 20px;
+	padding-top: 10px;
+	margin-left: 20px;
 }
 
 table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
 }
 
 td,
 th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
 }
 
 .activation_alarm {
-  background: yellow;
+	background: yellow;
 }
 .activation {
-  color: red;
+	color: red;
 }
 .inactivation {
-  color: green;
+	color: green;
 }
 </style>
