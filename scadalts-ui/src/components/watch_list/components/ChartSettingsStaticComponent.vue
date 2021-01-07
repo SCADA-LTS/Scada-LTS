@@ -1,14 +1,12 @@
 <template>
   <div class="col-xs-12">
     <div class="flex-row flex-align-center col-xs-6">
-      <label for="static-sd" class="small-padd">{{$t('modernwatchlist.settings.date.start')}}</label>
+      <label for="static-sd" class="small-padd">{{
+        $t("modernwatchlist.settings.date.start")
+      }}</label>
       <dropdown class="form-group">
         <div class="input-group">
-          <input
-            class="form-control"
-            type="text"
-            v-model="startDate"
-          />
+          <input class="form-control" type="text" v-model="startDate" />
           <div class="input-group-btn">
             <btn class="dropdown-toggle">
               <i class="glyphicon glyphicon-calendar"></i>
@@ -42,14 +40,12 @@
       </dropdown>
     </div>
     <div class="flex-row flex-align-center col-xs-6">
-      <label for="static-ed" class="small-padd">{{$t('modernwatchlist.settings.date.end')}}</label>
+      <label for="static-ed" class="small-padd">{{
+        $t("modernwatchlist.settings.date.end")
+      }}</label>
       <dropdown class="form-group">
         <div class="input-group">
-          <input
-            class="form-control"
-            type="text"
-            v-model="endDate"
-          />
+          <input class="form-control" type="text" v-model="endDate" />
           <div class="input-group-btn">
             <btn class="dropdown-toggle">
               <i class="glyphicon glyphicon-calendar"></i>
@@ -85,13 +81,13 @@
   </div>
 </template>
 <script>
-import Datepicker from 'vuejs-datepicker'
+import Datepicker from "vuejs-datepicker";
 
 export default {
   name: "ChartSettingsStaticComponent",
 
   components: {
-      Datepicker,
+    Datepicker,
   },
 
   props: ["watchListName"],
@@ -177,5 +173,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

@@ -83,7 +83,7 @@ export default {
   methods: {
     async fetchData() {
       this.auditEventTypes = await this.$store.dispatch("getAuditEventTypes");
-      this.auditEventTypesStore = this.copyDataFromStore()
+      this.auditEventTypesStore = this.copyDataFromStore();
     },
 
     saveData() {
@@ -189,5 +189,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>

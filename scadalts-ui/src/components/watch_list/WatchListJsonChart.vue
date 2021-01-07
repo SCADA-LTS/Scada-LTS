@@ -9,7 +9,7 @@
             input-value="live"
             v-model="chartType"
             id="live-btn-1"
-            >{{ $t('modernwatchlist.chart.panel.live') }}</btn
+            >{{ $t("modernwatchlist.chart.panel.live") }}</btn
           >
           <tooltip
             :text="$t('modernwatchlist.chart.panel.live.tooltip')"
@@ -175,10 +175,10 @@ export default {
       console.debug("WLJCH::initChartSeries::Initializing chart series...");
       return new Promise((resolve) => {
         let pointPromises = [];
-        
-        if(this.chartProperties.type == "compare") {
-          this.chartProperties.comparePoints.forEach(p => {
-            pointPromises.push(this.initChartSeriesPoint(p.pointId))
+
+        if (this.chartProperties.type == "compare") {
+          this.chartProperties.comparePoints.forEach((p) => {
+            pointPromises.push(this.initChartSeriesPoint(p.pointId));
           });
         } else {
           let pointArray = this.pointId.split(",");
@@ -186,7 +186,7 @@ export default {
             pointPromises.push(this.initChartSeriesPoint(id));
           });
         }
-        
+
         Promise.all(pointPromises).then(() => {
           console.debug("WLJCH::initChartSeries::Series loaded!");
           this.chartConfiguration.series = this.copyObject(this.chartSeries);
@@ -200,12 +200,19 @@ export default {
         Axios.get(`./api/point_value/getValue/id/${pointId}`).then((r) => {
           let s = this.copyObject(CHART_SERIES_TEMPLATE);
           s.id = `s${pointId}`;
-          s.stroke = CHART_DEFAULT_COLORS[this.activeColor % CHART_DEFAULT_COLORS.length];
-          s.fill = CHART_DEFAULT_COLORS[this.activeColor % CHART_DEFAULT_COLORS.length];
+          s.stroke =
+            CHART_DEFAULT_COLORS[
+              this.activeColor % CHART_DEFAULT_COLORS.length
+            ];
+          s.fill =
+            CHART_DEFAULT_COLORS[
+              this.activeColor % CHART_DEFAULT_COLORS.length
+            ];
           if (r.data.type == "MultistateValue") {
             s.tooltipText = "{name}: [bold]{valueY}[/]";
           } else {
-            s.tooltipText = "{name}: [bold]{valueY}[/] " + r.data.textRenderer.suffix;
+            s.tooltipText =
+              "{name}: [bold]{valueY}[/] " + r.data.textRenderer.suffix;
           }
 
           s.name = r.data.name;

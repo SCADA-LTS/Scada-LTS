@@ -1,13 +1,13 @@
 <template>
   <div>
-    <p>{{label}}</p>
+    <p>{{ label }}</p>
     <div
       class="hello"
-      v-bind:style="{height: this.height + 'px', width: this.width + 'px'}"
+      v-bind:style="{ height: this.height + 'px', width: this.width + 'px' }"
       ref="chartdiv"
     ></div>
     <div v-if="errorMessage">
-      <p class="error">{{errorMessage}}</p>
+      <p class="error">{{ errorMessage }}</p>
     </div>
     <div v-if="showReload">
       <button v-on:click="reload()">Reload</button>
@@ -44,41 +44,46 @@ class LineChart extends BaseChart {
   }
   loadData(pointId, startTimestamp, endTimestamp, exportId) {
     return new Promise((resolve, reject) => {
-      super.loadData(pointId, startTimestamp, endTimestamp, exportId).then(data => {
-        if (this.pointCurrentValue.get(pointId) == undefined) {
-          this.pointCurrentValue.set(pointId, {
-            name: data.name,
-            suffix: data.textRenderer.suffix,
-            type: data.type,
-            labels: new Map()
-          });
-        }
-        if (data.type === "Multistate") {
-          let customLabels = data.textRenderer.multistateValues;
-          if (
-            data.textRenderer.typeName === "textRendererMultistate" &&
-            customLabels !== undefined
-          ) {
-            let labelsMap = new Map();
-            for (let i = 0; i < customLabels.length; i++) {
-              labelsMap.set(String(customLabels[i].key), customLabels[i].text);
+      super
+        .loadData(pointId, startTimestamp, endTimestamp, exportId)
+        .then((data) => {
+          if (this.pointCurrentValue.get(pointId) == undefined) {
+            this.pointCurrentValue.set(pointId, {
+              name: data.name,
+              suffix: data.textRenderer.suffix,
+              type: data.type,
+              labels: new Map(),
+            });
+          }
+          if (data.type === "Multistate") {
+            let customLabels = data.textRenderer.multistateValues;
+            if (
+              data.textRenderer.typeName === "textRendererMultistate" &&
+              customLabels !== undefined
+            ) {
+              let labelsMap = new Map();
+              for (let i = 0; i < customLabels.length; i++) {
+                labelsMap.set(
+                  String(customLabels[i].key),
+                  customLabels[i].text
+                );
+              }
+              this.pointCurrentValue.get(pointId).labels = labelsMap;
             }
-            this.pointCurrentValue.get(pointId).labels = labelsMap;
           }
-        }
-        if (data.type === "Binary") {
-          if(data.textRenderer.typeName === "textRendererBinary") {
-            let labelsMap = new Map();
-            labelsMap.set("0", data.textRenderer.zeroLabel);
-            labelsMap.set("1", data.textRenderer.oneLabel);
-            this.pointCurrentValue.get(pointId).labels = labelsMap;
+          if (data.type === "Binary") {
+            if (data.textRenderer.typeName === "textRendererBinary") {
+              let labelsMap = new Map();
+              labelsMap.set("0", data.textRenderer.zeroLabel);
+              labelsMap.set("1", data.textRenderer.oneLabel);
+              this.pointCurrentValue.get(pointId).labels = labelsMap;
+            }
           }
-        }
-        data.values.forEach(e => {
-          this.addValue(e, data.name, this.pointPastValues);
+          data.values.forEach((e) => {
+            this.addValue(e, data.name, this.pointPastValues);
+          });
+          resolve("done");
         });
-        resolve("done");
-      });
     });
   }
   setupChart() {
@@ -102,7 +107,7 @@ class LineChart extends BaseChart {
         mAxis.title.text = v.name;
       }
       if (v.type === "Binary") {
-        if(v.labels.size > 0) {
+        if (v.labels.size > 0) {
           let bAxis = this.createAxisY(v.labels);
           s.yAxis = bAxis;
           bAxis.renderer.line.stroke = s.stroke;
@@ -134,13 +139,13 @@ export default {
     "showScrollbarX",
     "showScrollbarY",
     "showLegend",
-    "showReload"
+    "showReload",
   ],
   data() {
     return {
       errorMessage: undefined,
       chartClass: undefined,
-      isExportId: false
+      isExportId: false,
     };
   },
   mounted() {
@@ -173,11 +178,16 @@ export default {
       }
       for (let i = 0; i < points.length; i++) {
         promises.push(
-          this.chartClass.loadData(points[i], this.startDate, this.endDate, this.isExportId)
+          this.chartClass.loadData(
+            points[i],
+            this.startDate,
+            this.endDate,
+            this.isExportId
+          )
         );
       }
 
-      Promise.all(promises).then(response => {
+      Promise.all(promises).then((response) => {
         for (let i = 0; i < response.length; i++) {
           if (response[i] !== "done") {
             this.errorMessage =
@@ -202,8 +212,8 @@ export default {
     },
     reload() {
       this.generateChart();
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

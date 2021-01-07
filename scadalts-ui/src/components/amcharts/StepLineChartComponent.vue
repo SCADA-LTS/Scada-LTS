@@ -1,13 +1,13 @@
 <template>
   <div>
-    <p>{{label}}</p>
+    <p>{{ label }}</p>
     <div
       class="hello"
-      v-bind:style="{height: this.height + 'px', width: this.width + 'px'}"
+      v-bind:style="{ height: this.height + 'px', width: this.width + 'px' }"
       ref="chartdiv"
     ></div>
     <div v-if="errorMessage">
-      <p class="error">{{errorMessage}}</p>
+      <p class="error">{{ errorMessage }}</p>
     </div>
     <div v-if="showReload">
       <button v-on:click="reload()">Reload</button>
@@ -49,13 +49,13 @@ class StepLineChart extends BaseChart {
     return new Promise((resolve, reject) => {
       super
         .loadData(pointId, startTimestamp, endTimestamp, exportId)
-        .then(data => {
+        .then((data) => {
           if (this.pointCurrentValue.get(pointId) == undefined) {
             this.pointCurrentValue.set(pointId, {
               name: data.name,
               suffix: data.textRenderer.suffix,
               type: data.type,
-              labels: new Map()
+              labels: new Map(),
             });
           }
           if (data.type === "Multistate") {
@@ -82,7 +82,7 @@ class StepLineChart extends BaseChart {
               this.pointCurrentValue.get(pointId).labels = labelsMap;
             }
           }
-          data.values.forEach(e => {
+          data.values.forEach((e) => {
             this.addValue(e, data.name, this.pointPastValues);
           });
           resolve("done");
@@ -149,13 +149,13 @@ export default {
     "showScrollbarY",
     "showLegend",
     "showReload",
-    "showDebug"
+    "showDebug",
   ],
   data() {
     return {
       errorMessage: undefined,
       chartClass: undefined,
-      isExportId: false
+      isExportId: false,
     };
   },
   mounted() {
@@ -196,7 +196,7 @@ export default {
           )
         );
       }
-      Promise.all(promises).then(response => {
+      Promise.all(promises).then((response) => {
         for (let i = 0; i < response.length; i++) {
           if (response[i] !== "done") {
             this.errorMessage =
@@ -224,8 +224,8 @@ export default {
     },
     debug() {
       console.debug(this.chartClass);
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

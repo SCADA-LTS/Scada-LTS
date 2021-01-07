@@ -1,71 +1,64 @@
 <template>
-    <div class="alarms">
+  <div class="alarms">
+    <!--        <p>{{$route.name}}</p>-->
 
-<!--        <p>{{$route.name}}</p>-->
-
-        <AlarmsComponent></AlarmsComponent>
-    </div>
+    <AlarmsComponent></AlarmsComponent>
+  </div>
 </template>
 
 <script>
+import Components from "@min-gb/vuejs-components";
+import AlarmsComponent from "../components/graphical_views/AlarmsComponent";
 
-    import Components from '@min-gb/vuejs-components'
-    import AlarmsComponent from "../components/graphical_views/AlarmsComponent"
-
-    export default {
-        el: '#alarms',
-        name: 'alarms',
-        components: {
-            AlarmsComponent,
-            ...Components
-        },
-        methods: {
-        }
-    }
+export default {
+  el: "#alarms",
+  name: "alarms",
+  components: {
+    AlarmsComponent,
+    ...Components,
+  },
+  methods: {},
+};
 </script>
 
 <style lang="scss" scoped>
+@import "../../node_modules/@min-gb/vuejs-components/dist/min-gb.css";
 
+.alarms {
+  //position: absolute;
+  z-index: -1;
+}
 
-    @import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
+.action {
+  margin-top: 50px;
+  margin-left: 20px;
+  padding-top: 10px;
+}
+.action_bottom {
+  padding-top: 10px;
+  margin-left: 20px;
+}
 
-    .alarms {
-        //position: absolute;
-        z-index: -1;
-    }
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
 
-    .action {
-        margin-top: 50px;
-        margin-left: 20px;
-        padding-top: 10px;
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
 
-    }
-    .action_bottom {
-        padding-top:10px;
-        margin-left: 20px;
-    }
-
-
-    table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    td, th {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-    }
-
-    .activation_alarm {
-        background: yellow;
-    }
-    .activation {
-        color: red;
-    }
-    .inactivation {
-        color: green;
-    }
-
+.activation_alarm {
+  background: yellow;
+}
+.activation {
+  color: red;
+}
+.inactivation {
+  color: green;
+}
 </style>

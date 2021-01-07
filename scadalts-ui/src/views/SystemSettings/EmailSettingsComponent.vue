@@ -225,7 +225,7 @@ export default {
     },
 
     restoreData() {
-      console.log("Restored Email!")
+      console.log("Restored Email!");
       this.fetchData();
       this.isEmailSettingsEdited = false;
     },
@@ -237,12 +237,12 @@ export default {
     },
 
     watchRadioDataChagne(value, parameter) {
-        if(parameter == "auth") {
-            this.emailSettings.auth = value;
-        } else if (parameter == "tls") {
-            this.emailSettings.tls = value;
-        }
-        this.watchDataChange();
+      if (parameter == "auth") {
+        this.emailSettings.auth = value;
+      } else if (parameter == "tls") {
+        this.emailSettings.tls = value;
+      }
+      this.watchDataChange();
     },
 
     async watchDataChange() {
@@ -252,9 +252,9 @@ export default {
 
     async isDataChanged() {
       return !(await this.$store.dispatch("configurationEqual", {
-          object1: this.emailSettings,
-          object2: this.emailSettingsStore,
-        })); 
+        object1: this.emailSettings,
+        object2: this.emailSettingsStore,
+      }));
     },
 
     emitData(changed) {
@@ -269,13 +269,13 @@ export default {
     sumarizeDataChanges() {
       let data = [];
       for (let key in this.emailSettings) {
-          if(this.emailSettings[key] !== this.emailSettingsStore[key]) {
-              data.push({
-                  label: `systemsettings.email.${key}`,
-                  originalData: this.emailSettingsStore[key],
-                  changedData: this.emailSettings[key]
-              });
-          }
+        if (this.emailSettings[key] !== this.emailSettingsStore[key]) {
+          data.push({
+            label: `systemsettings.email.${key}`,
+            originalData: this.emailSettingsStore[key],
+            changedData: this.emailSettings[key],
+          });
+        }
       }
       return data;
     },
@@ -290,24 +290,28 @@ export default {
     },
 
     sendTestEmail() {
-        this.$store.dispatch("sendTestEmail").then(resp => {
-            if(resp) {
-                this.$notify({
-                    placement: "top-right",
-                    type: "success",
-                    content: `${i18n.t("systemsettings.notification.send.email")} ${resp.recipient}`
-                });
-            }
-        }).catch(() => {
+      this.$store
+        .dispatch("sendTestEmail")
+        .then((resp) => {
+          if (resp) {
             this.$notify({
-                placement: "top-right",
-                type: "danger",
-                content: i18n.t("systemsettings.notification.fail")
+              placement: "top-right",
+              type: "success",
+              content: `${i18n.t("systemsettings.notification.send.email")} ${
+                resp.recipient
+              }`,
             });
+          }
         })
-    }
+        .catch(() => {
+          this.$notify({
+            placement: "top-right",
+            type: "danger",
+            content: i18n.t("systemsettings.notification.fail"),
+          });
+        });
+    },
   },
 };
 </script>
-<style>
-</style>
+<style></style>

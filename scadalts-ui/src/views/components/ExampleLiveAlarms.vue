@@ -5,10 +5,11 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-4">
-          Describe: <br/>A simple test to see if the value of the component is displayed.
+          Describe: <br />A simple test to see if the value of the component is
+          displayed.
         </div>
         <div class="col-xs-8">
-          <LiveAlarms/>
+          <LiveAlarms />
         </div>
       </div>
     </div>
@@ -16,18 +17,14 @@
 </template>
 
 <script>
-
-
-import LiveAlarms from "../../components/graphical_views/AlarmsComponent"
+import LiveAlarms from "../../components/graphical_views/AlarmsComponent";
 
 export default {
-  name: 'example-live-alarms',
+  name: "example-live-alarms",
   components: {
     LiveAlarms,
-  }
-}
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

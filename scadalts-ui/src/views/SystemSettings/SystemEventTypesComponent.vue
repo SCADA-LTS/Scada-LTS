@@ -1,61 +1,60 @@
 <template>
   <div class="col-md-6">
     <div class="row align-items-center">
-          <h2 class="col-xs-12">{{ $t("systemsettings.event.title") }}<span v-if="isSystemEventEdited">*</span></h2>
-        </div>
-        <div
-          class="row"
-          v-for="event in systemEventTypes"
-          v-bind:key="event.i1"
+      <h2 class="col-xs-12">
+        {{ $t("systemsettings.event.title")
+        }}<span v-if="isSystemEventEdited">*</span>
+      </h2>
+    </div>
+    <div class="row" v-for="event in systemEventTypes" v-bind:key="event.i1">
+      <div class="col-xs-6">
+        <p>{{ $t(event.translation) }}</p>
+      </div>
+      <div class="col-xs-5">
+        <select
+          class="form-control"
+          v-model="event.i2"
+          @change="watchDataChange()"
+          @input="watchDataChange()"
         >
-          <div class="col-xs-6">
-            <p>{{ $t(event.translation) }}</p>
-          </div>
-          <div class="col-xs-5">
-            <select
-              class="form-control"
-              v-model="event.i2"
-              @change="watchDataChange()"
-              @input="watchDataChange()"
-            >
-              <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
-              <option v-bind:value="1">
-                {{ $t("alarmlevels.information") }}
-              </option>
-              <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
-              <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
-              <option v-bind:value="4">
-                {{ $t("alarmlevels.lifesafety") }}
-              </option>
-            </select>
-          </div>
-          <div class="col-xs-1">
-            <img
-              v-if="event.i2 === 1"
-              src="images/flag_blue.png"
-              title="Information"
-              alt="Information"
-            />
-            <img
-              v-if="event.i2 === 2"
-              src="images/flag_yellow.png"
-              title="Urgent"
-              alt="Urgent"
-            />
-            <img
-              v-if="event.i2 === 3"
-              src="images/flag_orange.png"
-              title="Critical"
-              alt="Critical"
-            />
-            <img
-              v-if="event.i2 === 4"
-              src="images/flag_red.png"
-              title="Life Safety"
-              alt="Life Safety"
-            />
-          </div>
-        </div>
+          <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
+          <option v-bind:value="1">
+            {{ $t("alarmlevels.information") }}
+          </option>
+          <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
+          <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
+          <option v-bind:value="4">
+            {{ $t("alarmlevels.lifesafety") }}
+          </option>
+        </select>
+      </div>
+      <div class="col-xs-1">
+        <img
+          v-if="event.i2 === 1"
+          src="images/flag_blue.png"
+          title="Information"
+          alt="Information"
+        />
+        <img
+          v-if="event.i2 === 2"
+          src="images/flag_yellow.png"
+          title="Urgent"
+          alt="Urgent"
+        />
+        <img
+          v-if="event.i2 === 3"
+          src="images/flag_orange.png"
+          title="Critical"
+          alt="Critical"
+        />
+        <img
+          v-if="event.i2 === 4"
+          src="images/flag_red.png"
+          title="Life Safety"
+          alt="Life Safety"
+        />
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -109,7 +108,7 @@ export default {
     },
 
     restoreData() {
-      console.log("Restored System!")
+      console.log("Restored System!");
       this.fetchData();
       this.isSystemEventEdited = false;
     },
@@ -127,11 +126,13 @@ export default {
 
     async isDataChanged() {
       for (let i = 0; i < this.systemEventTypes.length; i++) {
-        if(!(await this.$store.dispatch("configurationEqual",{
+        if (
+          !(await this.$store.dispatch("configurationEqual", {
             object1: this.systemEventTypes[i],
             object2: this.systemEventTypesStore[i],
-          })
-        )) return true;
+          }))
+        )
+          return true;
       }
       return false;
     },
@@ -141,19 +142,21 @@ export default {
         component: "systemEventTypesComponent",
         title: "systemsettings.event.title",
         changed: changed,
-        data: this.sumarizeDataChanges()
+        data: this.sumarizeDataChanges(),
       });
     },
 
     sumarizeDataChanges() {
       let data = [];
       for (let i = 0; i < this.systemEventTypes.length; i++) {
-        if(this.systemEventTypes[i].i2 !== this.systemEventTypesStore[i].i2) {
+        if (this.systemEventTypes[i].i2 !== this.systemEventTypesStore[i].i2) {
           data.push({
             label: this.systemEventTypes[i].translation,
-            originalData: this.convertInfoLevel(this.systemEventTypesStore[i].i2),
-            changedData: this.convertInfoLevel(this.systemEventTypes[i].i2)
-          })
+            originalData: this.convertInfoLevel(
+              this.systemEventTypesStore[i].i2
+            ),
+            changedData: this.convertInfoLevel(this.systemEventTypes[i].i2),
+          });
         }
       }
       return data;
@@ -179,9 +182,7 @@ export default {
       }
       return value;
     },
-
   },
 };
 </script>
-<style>
-</style>
+<style></style>

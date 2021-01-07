@@ -9,15 +9,34 @@
           @click="openModal = !openModal"
           class="floated-right"
         >
-          {{ $t("systemsettings.label.save") }} <i class="col-xs-2 glyphicon glyphicon-floppy-disk"></i>
+          {{ $t("systemsettings.label.save") }}
+          <i class="col-xs-2 glyphicon glyphicon-floppy-disk"></i>
         </btn>
       </h1>
-      <AuditEventTypesComponent ref="auditEventTypesComponent" @changed="componentChanged"></AuditEventTypesComponent>
-      <SystemEventTypesComponent ref="systemEventTypesComponent" @changed="componentChanged"></SystemEventTypesComponent>
-      <EmailSettingsComponent ref="emailSettingsComponent" @changed="componentChanged"></EmailSettingsComponent>
-      <HttpSettingsComponent ref="httpSettingsComponent" @changed="componentChanged"></HttpSettingsComponent>
-      <MiscSettingsComponent ref="miscSettingsComponent" @changed="componentChanged"></MiscSettingsComponent>
-      <DefaultLoggingTypeSettingsComponent ref="defaultLoggingTypeSettingsComponent" @changed="componentChanged"></DefaultLoggingTypeSettingsComponent>
+      <AuditEventTypesComponent
+        ref="auditEventTypesComponent"
+        @changed="componentChanged"
+      ></AuditEventTypesComponent>
+      <SystemEventTypesComponent
+        ref="systemEventTypesComponent"
+        @changed="componentChanged"
+      ></SystemEventTypesComponent>
+      <EmailSettingsComponent
+        ref="emailSettingsComponent"
+        @changed="componentChanged"
+      ></EmailSettingsComponent>
+      <HttpSettingsComponent
+        ref="httpSettingsComponent"
+        @changed="componentChanged"
+      ></HttpSettingsComponent>
+      <MiscSettingsComponent
+        ref="miscSettingsComponent"
+        @changed="componentChanged"
+      ></MiscSettingsComponent>
+      <DefaultLoggingTypeSettingsComponent
+        ref="defaultLoggingTypeSettingsComponent"
+        @changed="componentChanged"
+      ></DefaultLoggingTypeSettingsComponent>
       <!-- 'Configuration' components are not changable instead of 'Settings' components -->
       <ScadaConfigurationComponent></ScadaConfigurationComponent>
     </div>
@@ -154,7 +173,10 @@
                 >{{ $t("systemsettings.database.derby") }}</btn
               >
             </btn-group>
-            <tooltip :text="$t('systemsettings.tooltip.derbydatabase')" target="#btn-db-derby"/>
+            <tooltip
+              :text="$t('systemsettings.tooltip.derbydatabase')"
+              target="#btn-db-derby"
+            />
           </div>
         </div>
         <div class="row" v-if="schemaVersion">
@@ -234,34 +256,54 @@
         </div>
       </div>
     </div>
-    <modal v-model="openModal" :title="$t('systemsettings.label.summary')" size="lg">
+    <modal
+      v-model="openModal"
+      :title="$t('systemsettings.label.summary')"
+      size="lg"
+    >
       <div v-if="componentsEdited">
-        
-        <div v-for="component in componentsEdited" :key="component" class="col-xs-12">
-          <h4>{{$t(component.title)}}</h4>
+        <div
+          v-for="component in componentsEdited"
+          :key="component"
+          class="col-xs-12"
+        >
+          <h4>{{ $t(component.title) }}</h4>
           <div class="col-xs-12">
-            <btn type="link" class="col-xs-6" @click="restoreComponent(component.component)">
-              <i class="glyphicon glyphicon-floppy-remove"></i> {{ $t("systemsettings.label.restore") }}
+            <btn
+              type="link"
+              class="col-xs-6"
+              @click="restoreComponent(component.component)"
+            >
+              <i class="glyphicon glyphicon-floppy-remove"></i>
+              {{ $t("systemsettings.label.restore") }}
             </btn>
-            <btn type="link" class="col-xs-6" @click="saveComponent(component.component)">
-              <i class="glyphicon glyphicon-floppy-saved"></i> {{ $t("systemsettings.label.save") }}
+            <btn
+              type="link"
+              class="col-xs-6"
+              @click="saveComponent(component.component)"
+            >
+              <i class="glyphicon glyphicon-floppy-saved"></i>
+              {{ $t("systemsettings.label.save") }}
             </btn>
           </div>
           <div v-for="e in component.data" :key="e" class="col-xs-12">
-            <p class="col-xs-4">{{$t(e.label)}}</p>
-            <p class="col-xs-4 red">{{e.originalData | blank | convert}} </p>
-            <p class="col-xs-4 green">{{e.changedData | blank | convert}}</p>
+            <p class="col-xs-4">{{ $t(e.label) }}</p>
+            <p class="col-xs-4 red">{{ e.originalData | blank | convert }}</p>
+            <p class="col-xs-4 green">{{ e.changedData | blank | convert }}</p>
           </div>
         </div>
-
       </div>
       <div slot="footer">
-        <btn @click="openModal = false">{{$t("uiv.modal.cancel")}}</btn>
-        <btn type="info" @click="restoreAllComponents()">{{ $t("systemsettings.label.restoreall") }}</btn>
-        <btn type="success" @click="saveAllComponents()">{{ $t("systemsettings.label.saveall") }}</btn>
+        <btn @click="openModal = false">{{ $t("uiv.modal.cancel") }}</btn>
+        <btn type="info" @click="restoreAllComponents()">{{
+          $t("systemsettings.label.restoreall")
+        }}</btn>
+        <btn type="success" @click="saveAllComponents()">{{
+          $t("systemsettings.label.saveall")
+        }}</btn>
       </div>
     </modal>
-    <div class="col-md-12"  v-if="!isUserRoleAdmin">
+    <div class="col-md-12" v-if="!isUserRoleAdmin">
       <p class="alert">Not allowed to see that page</p>
     </div>
   </div>
@@ -290,7 +332,7 @@ export default {
     HttpSettingsComponent,
     MiscSettingsComponent,
     DefaultLoggingTypeSettingsComponent,
-    ScadaConfigurationComponent
+    ScadaConfigurationComponent,
   },
   filters: {
     blank: function (value) {
@@ -317,8 +359,8 @@ export default {
     };
   },
   mounted() {
-    if(!this.isUserRoleAdmin) {
-      this.getUserRole()
+    if (!this.isUserRoleAdmin) {
+      this.getUserRole();
     }
     store.dispatch("getSystemInfoSettings");
     this.initDatabaseSection();
@@ -326,14 +368,14 @@ export default {
   },
   methods: {
     async getUserRole() {
-      this.isUserRoleAdmin = await store.dispatch("getUserRole")
+      this.isUserRoleAdmin = await store.dispatch("getUserRole");
     },
     initDatabaseSection() {
       store.dispatch("getDatabaseType");
       store.dispatch("getDatabaseSize");
       store.dispatch("getSchemaVersion");
     },
-   
+
     saveSystemInfoSettings() {
       this.$store.dispatch("saveSystemInfoSettings").then((resp) => {
         if (resp) {
@@ -393,16 +435,18 @@ export default {
     },
 
     async componentChanged(object) {
-      console.log(object)
-      let idx = this.componentsEdited.findIndex(x => x.component == object.component);
-      if(idx == -1 && object.changed) {
-        this.componentsEdited.push(object)
+      console.log(object);
+      let idx = this.componentsEdited.findIndex(
+        (x) => x.component == object.component
+      );
+      if (idx == -1 && object.changed) {
+        this.componentsEdited.push(object);
       } else if (idx != -1 && !object.changed) {
         this.componentsEdited.splice(idx, 1);
       } else if (idx != -1 && object.changed) {
         this.componentsEdited[idx] = object;
       }
-      console.log(this.componentsEdited)
+      console.log(this.componentsEdited);
     },
 
     saveComponent(component) {
@@ -411,9 +455,9 @@ export default {
     },
 
     saveAllComponents() {
-      this.componentsEdited.forEach(e => {
-        this.$refs[e.component].saveData()
-      })
+      this.componentsEdited.forEach((e) => {
+        this.$refs[e.component].saveData();
+      });
       this.componentsEdited = [];
       this.openModal = false;
     },
@@ -424,18 +468,19 @@ export default {
     },
 
     restoreAllComponents() {
-      this.componentsEdited.forEach(e => {
-        this.$refs[e.component].restoreData()
-      })
+      this.componentsEdited.forEach((e) => {
+        this.$refs[e.component].restoreData();
+      });
       this.componentsEdited = [];
       this.openModal = false;
     },
 
     removeComponent(component) {
-      this.componentsEdited = this.componentsEdited.filter(x => x.component !== component);
-      if(this.componentsEdited.length == 0) this.openModal = false;
-    }
-
+      this.componentsEdited = this.componentsEdited.filter(
+        (x) => x.component !== component
+      );
+      if (this.componentsEdited.length == 0) this.openModal = false;
+    },
   },
   computed: {
     databaseType() {
@@ -482,7 +527,7 @@ body > .alert {
 .green {
   background-color: rgba(0, 255, 0, 0.3);
 }
-.modal-footer{
+.modal-footer {
   border: none;
 }
 .floated-right {

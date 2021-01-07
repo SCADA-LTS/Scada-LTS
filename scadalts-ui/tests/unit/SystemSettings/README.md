@@ -1,5 +1,7 @@
 # Vue Unit testing for System Settings
+
 Most important features are emiting, saving and restoring data received from SystemSettings components. So each of the common function must be tested (list below):
+
 - fetchData()
 - saveData()
 - restoreData()

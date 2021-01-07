@@ -203,7 +203,10 @@ export default {
         if (this.miscSettings[key] !== this.miscSettingsStore[key]) {
           data.push({
             label: `systemsettings.misc.${key}`,
-            originalData: this.convertTimePeriod(this.miscSettingsStore[key], key),
+            originalData: this.convertTimePeriod(
+              this.miscSettingsStore[key],
+              key
+            ),
             changedData: this.convertTimePeriod(this.miscSettings[key], key),
           });
         }
@@ -256,5 +259,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>

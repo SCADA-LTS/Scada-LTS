@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       scadaConfig: undefined,
-      showScadaConfig: false
+      showScadaConfig: false,
     };
   },
 
@@ -56,13 +56,10 @@ export default {
   },
 
   methods: {
-    
     async fetchData() {
       this.scadaConfig = await this.$store.dispatch("getScadaConfiguration");
     },
-
   },
 };
 </script>
-<style>
-</style>
+<style></style>
