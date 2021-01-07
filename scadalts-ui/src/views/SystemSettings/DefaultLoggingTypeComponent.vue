@@ -2,7 +2,7 @@
   <v-col cols="12" md="6">
     <v-card>
       <v-card-title>
-        {{ $t("systemsettings.loggingtype.title")}}
+        {{ $t("systemsettings.loggingtype.title") }}
         <span v-if="isLoggingTypeSettingsEdited">*</span>
       </v-card-title>
       <v-card-text>
@@ -23,16 +23,28 @@ export default {
   name: "DefaultLoggingTypeSettingsComponent",
   data() {
     return {
-        defaultLoggingType: undefined,
-        defaultLoggingTypeStore: undefined,
-        isDefaultLoggingTypeEdited: false,
-        loggingTypeList: [
-            {id: 1, type: "ON_CHANGE", label: this.$t("pointEdit.logging.type.change")},
-            {id: 2, type: "ALL", label: this.$t("pointEdit.logging.type.all")},
-            {id: 3, type: "NONE", label: this.$t("pointEdit.logging.type.never")},
-            {id: 4, type: "INTERVAL", label: this.$t("pointEdit.logging.type.interval")},
-            {id: 5, type: "ON_TS_CHANGE", label: this.$t("pointEdit.logging.type.tsChange")}
-        ]
+      defaultLoggingType: undefined,
+      defaultLoggingTypeStore: undefined,
+      isDefaultLoggingTypeEdited: false,
+      loggingTypeList: [
+        {
+          id: 1,
+          type: "ON_CHANGE",
+          label: this.$t("pointEdit.logging.type.change"),
+        },
+        { id: 2, type: "ALL", label: this.$t("pointEdit.logging.type.all") },
+        { id: 3, type: "NONE", label: this.$t("pointEdit.logging.type.never") },
+        {
+          id: 4,
+          type: "INTERVAL",
+          label: this.$t("pointEdit.logging.type.interval"),
+        },
+        {
+          id: 5,
+          type: "ON_TS_CHANGE",
+          label: this.$t("pointEdit.logging.type.tsChange"),
+        },
+      ],
     };
   },
   mounted() {
@@ -40,7 +52,9 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.defaultLoggingType = await this.$store.dispatch("getDefaultLoggingType");
+      this.defaultLoggingType = await this.$store.dispatch(
+        "getDefaultLoggingType"
+      );
       this.defaultLoggingTypeStore = this.copyDataFromStore();
     },
     saveData() {
@@ -69,7 +83,7 @@ export default {
     },
     restoreData() {
       this.fetchData();
-      this.defaultLoggingType = null
+      this.defaultLoggingType = null;
     },
     copyDataFromStore() {
       return JSON.parse(

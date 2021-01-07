@@ -7,19 +7,46 @@
             <v-col cols="12" class="d-flex flex-row justify-space-between">
               <h1>{{ $t("systemsettings.title") }}</h1>
               <v-spacer></v-spacer>
-              <v-btn fab elevation="2" color="primary" @click="openModal = !openModal" v-if="componentsEdited.length > 0">
+              <v-btn
+                fab
+                elevation="2"
+                color="primary"
+                @click="openModal = !openModal"
+                v-if="componentsEdited.length > 0"
+              >
                 <v-icon>mdi-content-save</v-icon>
               </v-btn>
             </v-col>
             <v-col cols="12">
               <v-row dense>
-                <AuditEventTypesComponent ref="auditEventTypesComponent" @changed="componentChanged"></AuditEventTypesComponent>
-                <SystemEventTypesComponent ref="systemEventTypesComponent" @changed="componentChanged"></SystemEventTypesComponent>
-                <EmailSettingsComponent ref="emailSettingsComponent" @changed="componentChanged"></EmailSettingsComponent>
-                <MiscSettingsComponent ref="miscSettingsComponent" @changed="componentChanged"></MiscSettingsComponent>
-                <HttpSettingsComponent ref="httpSettingsComponent" @changed="componentChanged"></HttpSettingsComponent>
-                <DefaultLoggingTypeSettingsComponent ref="defaultLoggingTypeSettingsComponent" @changed="componentChanged"></DefaultLoggingTypeSettingsComponent>
-                <SmsDomainSettingsComponent ref="smsDomainSettingsComponent" @changed="componentChanged"></SmsDomainSettingsComponent>
+                <AuditEventTypesComponent
+                  ref="auditEventTypesComponent"
+                  @changed="componentChanged"
+                ></AuditEventTypesComponent>
+                <SystemEventTypesComponent
+                  ref="systemEventTypesComponent"
+                  @changed="componentChanged"
+                ></SystemEventTypesComponent>
+                <EmailSettingsComponent
+                  ref="emailSettingsComponent"
+                  @changed="componentChanged"
+                ></EmailSettingsComponent>
+                <MiscSettingsComponent
+                  ref="miscSettingsComponent"
+                  @changed="componentChanged"
+                ></MiscSettingsComponent>
+                <HttpSettingsComponent
+                  ref="httpSettingsComponent"
+                  @changed="componentChanged"
+                ></HttpSettingsComponent>
+                <DefaultLoggingTypeSettingsComponent
+                  ref="defaultLoggingTypeSettingsComponent"
+                  @changed="componentChanged"
+                ></DefaultLoggingTypeSettingsComponent>
+                <SmsDomainSettingsComponent
+                  ref="smsDomainSettingsComponent"
+                  @changed="componentChanged"
+                ></SmsDomainSettingsComponent>
                 <ScadaConfigurationComponent></ScadaConfigurationComponent>
               </v-row>
             </v-col>
@@ -51,7 +78,10 @@
               <p>{{ $t("systemsettings.info.milestone") }}</p>
             </v-col>
             <v-col cols="4">
-              <p>{{ $store.getters.appMilestone }} build {{ $store.getters.appBuild }}</p>
+              <p>
+                {{ $store.getters.appMilestone }} build
+                {{ $store.getters.appBuild }}
+              </p>
             </v-col>
           </v-row>
 
@@ -87,7 +117,8 @@
               <v-text-field
                 v-model="systemInfoSettings.instanceDescription"
                 :label="$t('systemsettings.info.instance')"
-                @input="saveSystemInfoSettings()" dense
+                @input="saveSystemInfoSettings()"
+                dense
               ></v-text-field>
             </v-col>
           </v-row>
@@ -162,11 +193,14 @@
                 <v-col cols="12">
                   <p>{{ $t("systemsettings.database.top") }}</p>
                 </v-col>
-                <v-col cols="12"
+                <v-col
+                  cols="12"
                   v-for="point in databaseInfo.topPoints"
-                  v-bind:key="point.pointId">
+                  v-bind:key="point.pointId"
+                >
                   <p>
-                    {{ point.pointName }} (Point ID: {{ point.pointId }} - count: {{ point.count }})
+                    {{ point.pointName }} (Point ID: {{ point.pointId }} -
+                    count: {{ point.count }})
                   </p>
                 </v-col>
               </v-row>
@@ -179,38 +213,54 @@
     <v-dialog v-model="openModal" max-width="750">
       <v-card>
         <v-card-title>
-          {{$t('systemsettings.label.summary')}}
+          {{ $t("systemsettings.label.summary") }}
         </v-card-title>
 
         <v-card-text v-if="componentsEdited">
           <v-row v-for="component in componentsEdited" :key="component">
             <v-col cols="12" class="d-flex flex-row justify-space-between">
-              <h4>{{$t(component.title)}}</h4>
+              <h4>{{ $t(component.title) }}</h4>
               <v-spacer></v-spacer>
               <div>
                 <v-tooltip bottom>
-                  <template v-slot:activator="{on, attrs}">
-                    <v-btn fab icon @click="restoreComponent(component.component)" v-bind="attrs" v-on="on">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      icon
+                      @click="restoreComponent(component.component)"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
                       <v-icon>mdi-redo-variant</v-icon>
                     </v-btn>
                   </template>
-                  <span>{{$t('systemsettings.label.restore')}}</span>
+                  <span>{{ $t("systemsettings.label.restore") }}</span>
                 </v-tooltip>
                 <v-tooltip bottom>
-                  <template v-slot:activator="{on, attrs}">
-                    <v-btn fab icon @click="saveComponent(component.component)" v-bind="attrs" v-on="on">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      icon
+                      @click="saveComponent(component.component)"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
                       <v-icon>mdi-content-save</v-icon>
                     </v-btn>
                   </template>
-                  <span>{{$t('systemsettings.label.save')}}</span>
+                  <span>{{ $t("systemsettings.label.save") }}</span>
                 </v-tooltip>
               </div>
             </v-col>
             <v-col cols="12" v-for="e in component.data" :key="e">
               <v-row>
-                <v-col cols="4">{{$t(e.label)}}</v-col>
-                <v-col cols="4" class="red">{{e.originalData | blank | convert}}</v-col>
-                <v-col cols="4" class="green">{{e.changedData | blank | convert}}</v-col>
+                <v-col cols="4">{{ $t(e.label) }}</v-col>
+                <v-col cols="4" class="red">{{
+                  e.originalData | blank | convert
+                }}</v-col>
+                <v-col cols="4" class="green">{{
+                  e.changedData | blank | convert
+                }}</v-col>
               </v-row>
             </v-col>
           </v-row>
@@ -218,9 +268,15 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="openModal=false">{{$t("uiv.modal.cancel")}}</v-btn>
-          <v-btn text @click="restoreAllComponents()">{{$t("systemsettings.label.restoreall")}}</v-btn>
-          <v-btn text color="primary" @click="saveAllComponents()">{{$t("systemsettings.label.saveall")}}</v-btn>
+          <v-btn text @click="openModal = false">{{
+            $t("uiv.modal.cancel")
+          }}</v-btn>
+          <v-btn text @click="restoreAllComponents()">{{
+            $t("systemsettings.label.restoreall")
+          }}</v-btn>
+          <v-btn text color="primary" @click="saveAllComponents()">{{
+            $t("systemsettings.label.saveall")
+          }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -230,7 +286,6 @@
       <h2>Not allowed to see that page</h2>
       <v-spacer></v-spacer>
     </v-container>
-
   </div>
 </template>
 <script>
@@ -259,7 +314,7 @@ export default {
     MiscSettingsComponent,
     DefaultLoggingTypeSettingsComponent,
     SmsDomainSettingsComponent,
-    ScadaConfigurationComponent
+    ScadaConfigurationComponent,
   },
   filters: {
     blank: function (value) {
@@ -285,8 +340,8 @@ export default {
       openModal: false,
       languageItems: [
         { value: "de", text: "Deutsch" },
-        { value: "en", text: "English" }
-      ]
+        { value: "en", text: "English" },
+      ],
     };
   },
   mounted() {
@@ -299,7 +354,7 @@ export default {
   },
   methods: {
     async getUserRole() {
-      this.isUserRoleAdmin = await store.dispatch("getUserRole")
+      this.isUserRoleAdmin = await store.dispatch("getUserRole");
     },
     initDatabaseSection() {
       store.dispatch("getDatabaseType");
@@ -366,16 +421,18 @@ export default {
     },
 
     async componentChanged(object) {
-      console.log(object)
-      let idx = this.componentsEdited.findIndex(x => x.component == object.component);
-      if(idx == -1 && object.changed) {
-        this.componentsEdited.push(object)
+      console.log(object);
+      let idx = this.componentsEdited.findIndex(
+        (x) => x.component == object.component
+      );
+      if (idx == -1 && object.changed) {
+        this.componentsEdited.push(object);
       } else if (idx != -1 && !object.changed) {
         this.componentsEdited.splice(idx, 1);
       } else if (idx != -1 && object.changed) {
         this.componentsEdited[idx] = object;
       }
-      console.log(this.componentsEdited)
+      console.log(this.componentsEdited);
     },
 
     saveComponent(component) {
@@ -384,9 +441,9 @@ export default {
     },
 
     saveAllComponents() {
-      this.componentsEdited.forEach(e => {
-        this.$refs[e.component].saveData()
-      })
+      this.componentsEdited.forEach((e) => {
+        this.$refs[e.component].saveData();
+      });
       this.componentsEdited = [];
       this.openModal = false;
     },
@@ -397,18 +454,19 @@ export default {
     },
 
     restoreAllComponents() {
-      this.componentsEdited.forEach(e => {
-        this.$refs[e.component].restoreData()
-      })
+      this.componentsEdited.forEach((e) => {
+        this.$refs[e.component].restoreData();
+      });
       this.componentsEdited = [];
       this.openModal = false;
     },
 
     removeComponent(component) {
-      this.componentsEdited = this.componentsEdited.filter(x => x.component !== component);
-      if(this.componentsEdited.length == 0) this.openModal = false;
-    }
-
+      this.componentsEdited = this.componentsEdited.filter(
+        (x) => x.component !== component
+      );
+      if (this.componentsEdited.length == 0) this.openModal = false;
+    },
   },
   computed: {
     databaseType() {

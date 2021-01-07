@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Alarms from './views/Alarms'
-import About from './views/About'
-import HistoricalAlarms from "./views/HistoricalAlarms"
-import SystemSettings from "./views/SystemSettings"
-import AlarmNotifications from "./views/AlarmNotifications"
+import Vue from "vue";
+import Router from "vue-router";
+import Alarms from "./views/Alarms";
+import About from "./views/About";
+import HistoricalAlarms from "./views/HistoricalAlarms";
+import SystemSettings from "./views/SystemSettings";
+import AlarmNotifications from "./views/AlarmNotifications";
 
 Vue.use(Router);
 
@@ -38,14 +38,17 @@ export default new Router({
       component: SystemSettings,
     },
     {
-      path: '/alarm-notifications',
-      name: 'alarm-notifications',
-      component: AlarmNotifications
+      path: "/alarm-notifications",
+      name: "alarm-notifications",
+      component: AlarmNotifications,
     },
     {
-      path: '/example-ph',
-      name: 'example-ph',
-      component: () => import(/* webpackChunkName: "ph" */ './views/components/ExampleExportImportPointHierarchy.vue')
+      path: "/example-ph",
+      name: "example-ph",
+      component: () =>
+        import(
+          /* webpackChunkName: "ph" */ "./views/components/ExampleExportImportPointHierarchy.vue"
+        ),
     },
     {
       path: "/example-test",

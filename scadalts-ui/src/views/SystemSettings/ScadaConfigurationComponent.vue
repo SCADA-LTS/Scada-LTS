@@ -3,10 +3,12 @@
     <v-card>
       <v-card-title>
         <v-tooltip bottom>
-          <template v-slot:activator="{on, attrs}">
-            <span v-bind="attrs" v-on="on">{{ $t("systemsettings.scadaconf.title") }}</span>
+          <template v-slot:activator="{ on, attrs }">
+            <span v-bind="attrs" v-on="on">{{
+              $t("systemsettings.scadaconf.title")
+            }}</span>
           </template>
-          <span>{{$t('systemsettings.tooltip.scadaconf')}}</span>
+          <span>{{ $t("systemsettings.tooltip.scadaconf") }}</span>
         </v-tooltip>
       </v-card-title>
       <v-card-text>

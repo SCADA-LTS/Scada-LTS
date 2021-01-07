@@ -18,13 +18,17 @@
           <v-list-item-icon>
             <v-icon>mdi-alert-decagram</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>{{$t("plcalarms.notification")}}</v-list-item-title>
+          <v-list-item-title>{{
+            $t("plcalarms.notification")
+          }}</v-list-item-title>
         </v-list-item>
         <v-list-item link href="#/system-settings">
           <v-list-item-icon>
             <v-icon>mdi-tune</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>{{$t("systemsettings.title")}}</v-list-item-title>
+          <v-list-item-title>{{
+            $t("systemsettings.title")
+          }}</v-list-item-title>
         </v-list-item>
         <v-list-item link href="#/about">
           <v-list-item-icon>

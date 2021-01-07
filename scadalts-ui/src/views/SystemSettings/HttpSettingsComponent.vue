@@ -2,7 +2,7 @@
   <v-col cols="12" md="6">
     <v-card>
       <v-card-title>
-        {{ $t("systemsettings.http.title")}}
+        {{ $t("systemsettings.http.title") }}
         <span v-if="isHttpSettingsEdited">*</span>
       </v-card-title>
       <v-card-text>
@@ -18,7 +18,8 @@
             <v-text-field
               v-model="httpSettings.host"
               :label="$t('systemsettings.http.proxy.host')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6" v-if="httpSettings.useProxy">
@@ -26,14 +27,16 @@
               v-model="httpSettings.port"
               type="number"
               :label="$t('systemsettings.http.proxy.port')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6" v-if="httpSettings.useProxy">
             <v-text-field
               v-model="httpSettings.username"
               :label="$t('systemsettings.http.proxy.username')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6" v-if="httpSettings.useProxy">
@@ -43,7 +46,8 @@
               :type="passwordVisible ? 'text' : 'password'"
               :label="$t('systemsettings.http.proxy.password')"
               @input="watchDataChange()"
-              @click:append="passwordVisible = !passwordVisible" dense
+              @click:append="passwordVisible = !passwordVisible"
+              dense
             ></v-text-field>
           </v-col>
         </v-row>
@@ -63,7 +67,7 @@ export default {
       httpSettings: undefined,
       httpSettingsStore: undefined,
       isHttpSettingsEdited: false,
-      passwordVisible: false
+      passwordVisible: false,
     };
   },
 

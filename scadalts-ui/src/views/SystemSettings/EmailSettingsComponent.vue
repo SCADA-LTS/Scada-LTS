@@ -6,12 +6,12 @@
         <span v-if="isEmailSettingsEdited">*</span>
         <v-spacer></v-spacer>
         <v-tooltip bottom>
-          <template v-slot:activator="{on, attrs}">
+          <template v-slot:activator="{ on, attrs }">
             <v-btn fab icon @click="sendTestEmail()" v-bind="attrs" v-on="on">
               <v-icon>mdi-send</v-icon>
             </v-btn>
           </template>
-          <span>{{$t('systemsettings.tooltip.sendtestemail')}}</span>
+          <span>{{ $t("systemsettings.tooltip.sendtestemail") }}</span>
         </v-tooltip>
       </v-card-title>
       <v-card-text>
@@ -20,28 +20,32 @@
             <v-text-field
               v-model="emailSettings.host"
               :label="$t('systemsettings.email.host')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6">
             <v-text-field
               v-model="emailSettings.port"
               :label="$t('systemsettings.email.port')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6">
             <v-text-field
               v-model="emailSettings.from"
               :label="$t('systemsettings.email.address')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6">
             <v-text-field
               v-model="emailSettings.name"
               :label="$t('systemsettings.email.name')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="12">
@@ -66,7 +70,8 @@
             <v-text-field
               v-model="emailSettings.username"
               :label="$t('systemsettings.email.username')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6" v-if="emailSettings.auth">
@@ -76,7 +81,8 @@
               :type="show1 ? 'text' : 'password'"
               :label="$t('systemsettings.email.password')"
               @input="watchDataChange()"
-              @click:append="show1 = !show1" dense
+              @click:append="show1 = !show1"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="12">
@@ -105,10 +111,13 @@ export default {
       isEmailSettingsEdited: false,
       show1: false,
       contentTypeItems: [
-        {value: 0, text: this.$t("systemsettings.email.contenttype.htmltext") },
-        {value: 1, text: this.$t("systemsettings.email.contenttype.html") },
-        {value: 2, text: this.$t("systemsettings.email.contenttype.text") }
-      ]
+        {
+          value: 0,
+          text: this.$t("systemsettings.email.contenttype.htmltext"),
+        },
+        { value: 1, text: this.$t("systemsettings.email.contenttype.html") },
+        { value: 2, text: this.$t("systemsettings.email.contenttype.text") },
+      ],
     };
   },
 

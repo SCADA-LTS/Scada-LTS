@@ -1,18 +1,17 @@
 <template>
   <v-col cols="12" md="6">
     <v-card>
-      
       <v-card-title>
-        {{ $t("systemsettings.misc.title")}}
+        {{ $t("systemsettings.misc.title") }}
         <span v-if="isMiscSettingsEdited">*</span>
         <v-spacer></v-spacer>
         <v-tooltip bottom>
-          <template v-slot:activator="{on, attrs}">
+          <template v-slot:activator="{ on, attrs }">
             <v-btn fab icon @click="purgeData()" v-bind="attrs" v-on="on">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
-          <span>{{$t('systemsettings.tooltip.purgedata')}}</span>
+          <span>{{ $t("systemsettings.tooltip.purgedata") }}</span>
         </v-tooltip>
       </v-card-title>
 
@@ -35,7 +34,8 @@
               v-model="miscSettings.eventPurgePeriods"
               type="number"
               :label="$t('systemsettings.misc.purge.events')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6">
@@ -54,7 +54,8 @@
               v-model="miscSettings.reportPurgePeriodType"
               type="number"
               :label="$t('systemsettings.misc.purge.reports')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6">
@@ -73,7 +74,8 @@
               v-model="miscSettings.futureDateLimitPeriods"
               type="number"
               :label="$t('systemsettings.misc.purge.future')"
-              @input="watchDataChange()" dense
+              @input="watchDataChange()"
+              dense
             ></v-text-field>
           </v-col>
           <v-col cols="6">
@@ -85,7 +87,7 @@
               item-text="text"
               dense
             ></v-select>
-          </v-col> 
+          </v-col>
         </v-row>
       </v-card-text>
     </v-card>
@@ -104,20 +106,23 @@ export default {
       miscSettingsStore: undefined,
       isMiscSettingsEdited: false,
       uiPerformanceItems: [
-        {value: 2000, text: this.$t("systemsettings.misc.performance.high") },
-        {value: 5000, text: this.$t("systemsettings.misc.performance.medium") },
-        {value: 10000, text: this.$t("systemsettings.misc.performance.low") }
+        { value: 2000, text: this.$t("systemsettings.misc.performance.high") },
+        {
+          value: 5000,
+          text: this.$t("systemsettings.misc.performance.medium"),
+        },
+        { value: 10000, text: this.$t("systemsettings.misc.performance.low") },
       ],
       futureDateLimitPeriodTypeItems: [
-        {value: 2, text: this.$t("timeperiod.minutes") },
-        {value: 3, text: this.$t("timeperiod.hours") }
+        { value: 2, text: this.$t("timeperiod.minutes") },
+        { value: 3, text: this.$t("timeperiod.hours") },
       ],
       eventPurgePeriodTypeItems: [
-        {value: 4, text: this.$t("timeperiod.days") },
-        {value: 5, text: this.$t("timeperiod.weeks") },
-        {value: 6, text: this.$t("timeperiod.months") },
-        {value: 7, text: this.$t("timeperiod.years") }
-      ]
+        { value: 4, text: this.$t("timeperiod.days") },
+        { value: 5, text: this.$t("timeperiod.weeks") },
+        { value: 6, text: this.$t("timeperiod.months") },
+        { value: 7, text: this.$t("timeperiod.years") },
+      ],
     };
   },
 

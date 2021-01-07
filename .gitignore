@@ -61,6 +61,7 @@ local.properties
 /WebContent/assets/logo.png
 /WebContent/assets/evn.properties
 /WebContent/assets/commons.css
+/WebContent/WEB-INF/classes
 # Locally stored "Eclipse launch configurations"
 *.launch
 # CDT-specific
