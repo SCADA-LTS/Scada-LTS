@@ -46,15 +46,15 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
     @Parameterized.Parameters(name= "{index}: dailyLimitSentEmailsNumber: {0}, " +
             "isDailyLimitSentEmails: {1}, CommunicationChannelType: {2}, invokeSendMsgTimes: {3}," +
-            " communicateLimitTimes: {4}, scheduledEventsNumber: {5}")
+            " communicateLimitTimes: {4}, scheduledEventsNumber: {5}, numberScheduled: {6}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 100},
-                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 100, 0, 100},
-                { 3, false, CommunicationChannelType.SMS, 100, 0, 100},
-                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100, 3},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 100, 3},
+                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
+                { 3, false, CommunicationChannelType.EMAIL, 100, 0, 100, 100},
+                { 3, false, CommunicationChannelType.SMS, 100, 0, 100, 100},
+                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
         });
     }
 
@@ -64,6 +64,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     private int invokeSendMsgTimes;
     private int communicateLimitTimes;
     private int scheduledEventsNumber;
+    private int currentNumberScheduled;
 
     private CommunicationChannelTypable channelType;
     private CommunicationChannel channel;
@@ -81,12 +82,14 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
                                                         CommunicationChannelType type,
                                                         int invokeSendMsgTimes,
                                                         int communicateLimitTimes,
-                                                        int scheduledEventsNumber) {
+                                                        int scheduledEventsNumber,
+                                                        int currentNumberScheduled) {
 
         this.invokeSendMsgTimes = invokeSendMsgTimes;
         this.channelType = type;
         this.communicateLimitTimes = communicateLimitTimes;
         this.scheduledEventsNumber = scheduledEventsNumber;
+        this.currentNumberScheduled = currentNumberScheduled;
 
         eventHandler = new EventHandlerVO();
         eventHandler.setId(123);
@@ -156,10 +159,14 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
 
         //then:
+        assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
+        assertEquals(currentNumberScheduled, testSubject.getCurrentNumberScheduled());
+        assertEquals(testSubject.getCurrentNumberScheduled(), testSubject.getCurrentNumberExecuted());
+
+        //and then:
         verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), anySet(), eq("Limit"));
         verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), eq(addresses),
                 eq("Limit"));
-        assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
     }
 
     @Test
@@ -174,12 +181,14 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
         List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
 
-        System.out.println("" + testSubject.getCurrentNumberExecuted());
-
         //then:
+        assertEquals(scheduledEventsNumber, result.size());
+        assertEquals(currentNumberScheduled, testSubject.getCurrentNumberScheduled());
+        assertEquals(testSubject.getCurrentNumberScheduled(), testSubject.getCurrentNumberExecuted());
+
+        //and then:
         verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), anySet(), eq(alias));
         verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), eq(addresses), eq(alias));
-        assertEquals(scheduledEventsNumber, result.size());
     }
 
     @Test
@@ -195,9 +204,14 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
 
         //then:
+        assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
+        assertEquals(currentNumberScheduled, testSubject.getCurrentNumberScheduled());
+        assertEquals(testSubject.getCurrentNumberScheduled(), testSubject.getCurrentNumberExecuted());
+
+        //and then:
         verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), anySet(), eq(alias));
         verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), eq(addresses), eq(alias));
-        assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
+
     }
 
 }

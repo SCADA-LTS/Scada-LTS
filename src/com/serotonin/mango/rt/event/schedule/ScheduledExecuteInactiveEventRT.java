@@ -42,7 +42,9 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     private final ScheduledExecuteInactiveEventService service;
     private final AtomicInteger limit;
     private final AtomicInteger fails;
+    private final AtomicInteger lock;
     private final AtomicInteger currentNumberExecuted;
+    private final AtomicInteger currentNumberScheduled;
     private final DataPointService dataPointService;
     private final DataSourceService dataSourceService;
 
@@ -54,14 +56,15 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                                            DataSourceService dataSourceService) {
         this.communicationChannel = communicationChannel;
         this.limit = new AtomicInteger(communicationChannel.isDailyLimitSent() ?
-                communicationChannel.getDailyLimitSentNumber() : Integer.MAX_VALUE);
+                communicationChannel.getDailyLimitSentNumber() : 1000);
         this.service = service;
         this.dataPointService = dataPointService;
         this.dataSourceService = dataSourceService;
         this.toExecute = new ConcurrentLinkedQueue<>();
         this.fails = new AtomicInteger(0);
+        this.lock = new AtomicInteger(0);
         this.currentNumberExecuted = new AtomicInteger(0);
-
+        this.currentNumberScheduled = new AtomicInteger(0);
     }
 
     public void initialize() {
@@ -84,8 +87,10 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         if (communicationChannel.isActiveFor(dateTime)) {
             Set<String> addresses = communicationChannel.getActiveAdresses(dateTime);
             if(!addresses.isEmpty() && isSchedule()) {
-                schedule(addresses, fireTime);
-                execute();
+                boolean scheduled = schedule(addresses, fireTime);
+                if(scheduled) {
+                    execute();
+                }
             }
         }
     }
@@ -94,26 +99,31 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         return currentNumberExecuted.get();
     }
 
-    private synchronized void schedule(Set<String> addresses, long fireTime) {
+    public int getCurrentNumberScheduled() {
+        return currentNumberScheduled.get();
+    }
+
+    private synchronized boolean schedule(Set<String> addresses, long fireTime) {
         if(isSchedule()) {
             List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(communicationChannel, limit.get());
             for (ScheduledEvent event : scheduledEvents) {
                 toExecute.offer(new Execute<>(this::send, event,
-                        new ExecuteData(communicationChannel, limit, fails, addresses, fireTime)));
-                if(fails.get() > 0)
-                    fails.decrementAndGet();
+                        new ExecuteData(communicationChannel, limit, fails, lock, addresses, fireTime)));
+                currentNumberScheduled.incrementAndGet();
                 if (communicationChannel.isDailyLimitSent()) {
                     if(limit.get() > 0)
                         limit.decrementAndGet();
+                    if(fails.get() > 0)
+                        fails.decrementAndGet();
                 }
-                currentNumberExecuted.incrementAndGet();
             }
+            return true;
         }
+        return false;
     }
 
     private boolean isSchedule() {
-        return toExecute.isEmpty() && ((!communicationChannel.isDailyLimitSent()
-                || limit.get() > 0) || fails.get() > 0);
+        return toExecute.peek() == null && (!communicationChannel.isDailyLimitSent() || (limit.get() > 0 || fails.get() > 0));
     }
 
     private void execute() {
@@ -121,6 +131,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         while (execute != null) {
             execute.execute();
             execute = toExecute.poll();
+            currentNumberExecuted.incrementAndGet();
         }
     }
 
@@ -199,34 +210,36 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
             long fireTime = executeData.getFireTime();
             CommunicationChannel channel = executeData.getCommunicationChannel();
-            AtomicInteger limit = executeData.getLimit();
-            AtomicInteger fails = executeData.getFails();
-
-            if (!executed)
-                fails.incrementAndGet();
 
             if(channel.isDailyLimitSent()) {
-                if (limit.get() == 0 && fails.get() == 0) {
+                AtomicInteger limit = executeData.getLimit();
+                AtomicInteger fails = executeData.getFails();
+                AtomicInteger lock = executeData.getLock();
+                if (!executed)
+                    fails.incrementAndGet();
+                else if (limit.get() == 0 && fails.get() == 0 && lock.getAndDecrement() == 0) {
                     boolean communicated = ScheduledExecuteInactiveEventRT.communicateLimit(addresses, fireTime, channel);
-                    if(communicated)
-                        limit.decrementAndGet();
+                    if(!communicated)
+                        lock.set(0);
                 }
             }
         }
     }
 
-    private class ExecuteData {
+    private static class ExecuteData {
         CommunicationChannel communicationChannel;
         AtomicInteger limit;
         AtomicInteger fails;
+        AtomicInteger lock;
         Set<String> addresses;
         long fireTime;
 
         public ExecuteData(CommunicationChannel communicationChannel, AtomicInteger limit, AtomicInteger fails,
-                           Set<String> addresses, long fireTime) {
+                           AtomicInteger lock, Set<String> addresses, long fireTime) {
             this.communicationChannel = communicationChannel;
             this.limit = limit;
             this.fails = fails;
+            this.lock = lock;
             this.addresses = addresses;
             this.fireTime = fireTime;
         }
@@ -249,6 +262,10 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
         public AtomicInteger getFails() {
             return fails;
+        }
+
+        public AtomicInteger getLock() {
+            return lock;
         }
     }
 
