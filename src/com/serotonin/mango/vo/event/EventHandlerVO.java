@@ -45,6 +45,7 @@ import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.handlers.ProcessHandlerRT;
 import com.serotonin.mango.rt.event.handlers.ScriptHandlerRT;
 import com.serotonin.mango.rt.event.handlers.SetPointHandlerRT;
+import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
@@ -66,6 +67,7 @@ public class EventHandlerVO implements Serializable,
 	public static final int TYPE_EMAIL = 2;
 	public static final int TYPE_PROCESS = 3;
 	public static final int TYPE_SCRIPT = 4;
+	public static final int TYPE_SMS = 5;
 
 	public static ExportCodes TYPE_CODES = new ExportCodes();
 	static {
@@ -76,6 +78,8 @@ public class EventHandlerVO implements Serializable,
 				"eventHandlers.type.process");
 		TYPE_CODES.addElement(TYPE_SCRIPT, "SCRIPT",
 				"eventHandlers.type.script");
+		TYPE_CODES.addElement(TYPE_SMS, "SMS",
+				"eventHandlers.type.sms");
 	}
 
 	public static final int RECIPIENT_TYPE_ACTIVE = 1;
@@ -152,6 +156,8 @@ public class EventHandlerVO implements Serializable,
 			return new ProcessHandlerRT(this);
 		case TYPE_SCRIPT:
 			return new ScriptHandlerRT(this);
+		case TYPE_SMS:
+			return new EmailToSmsHandlerRT(this);
 		}
 		throw new ShouldNeverHappenException("Unknown handler type: "
 				+ handlerType);
@@ -185,6 +191,8 @@ public class EventHandlerVO implements Serializable,
 			return new LocalizableMessage("eventHandlers.type.process");
 		case TYPE_SCRIPT:
 			return new LocalizableMessage("eventHandlers.type.script");
+		case TYPE_SMS:
+			return new LocalizableMessage("eventHandlers.type.sms");
 		}
 		return new LocalizableMessage("common.unknown");
 	}
@@ -478,6 +486,9 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			if (activeScriptCommand < 1 && inactiveScriptCommand < 1)
 				response.addGenericMessage("eventHandlers.invalidScripts");
+		} else if (handlerType == TYPE_SMS) {
+			if (activeRecipients.isEmpty())
+				response.addGenericMessage("eventHandlers.noEmailRecips");
 		}
 	}
 
@@ -547,6 +558,10 @@ public class EventHandlerVO implements Serializable,
 					"eventHandlers.activeCommand", activeScriptCommand);
 			AuditEventType.addPropertyMessage(list,
 					"eventHandlers.inactiveCommand", inactiveScriptCommand);
+		} else if (handlerType == TYPE_SMS) {
+			AuditEventType.addPropertyMessage(list,
+					"eventHandlers.emailRecipients",
+					createRecipientMessage(activeRecipients));
 		}
 	}
 
@@ -626,6 +641,11 @@ public class EventHandlerVO implements Serializable,
 			AuditEventType.maybeAddPropertyChangeMessage(list,
 					"eventHandlers.inactiveCommand",
 					from.inactiveScriptCommand, inactiveScriptCommand);
+		} else if (handlerType == TYPE_SMS) {
+			AuditEventType.maybeAddPropertyChangeMessage(list,
+					"eventHandlers.emailRecipients",
+					createRecipientMessage(from.activeRecipients),
+					createRecipientMessage(activeRecipients));
 		}
 	}
 
@@ -688,6 +708,8 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			out.writeInt(activeScriptCommand);
 			out.writeInt(inactiveScriptCommand);
+		} else if(handlerType == TYPE_SMS) {
+			out.writeObject(activeRecipients);
 		}
 	}
 
@@ -723,6 +745,9 @@ public class EventHandlerVO implements Serializable,
 			} else if (handlerType == TYPE_PROCESS) {
 				activeProcessCommand = SerializationHelper.readSafeUTF(in);
 				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
+			} else if(handlerType == TYPE_SMS) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
 			}
 		} else if (ver == 2) {
 			handlerType = in.readInt();
@@ -750,6 +775,9 @@ public class EventHandlerVO implements Serializable,
 			} else if (handlerType == TYPE_PROCESS) {
 				activeProcessCommand = SerializationHelper.readSafeUTF(in);
 				inactiveProcessCommand = SerializationHelper.readSafeUTF(in);
+			} else if (handlerType == TYPE_SMS) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
 			}
 		} else if (ver == 3) {
 			handlerType = in.readInt();
@@ -780,6 +808,9 @@ public class EventHandlerVO implements Serializable,
 			} else if (handlerType == TYPE_SCRIPT) {
 				activeScriptCommand = in.readInt();
 				inactiveScriptCommand = in.readInt();
+			} else if (handlerType == TYPE_SMS) {
+				activeRecipients = (List<RecipientListEntryBean>) in
+						.readObject();
 			}
 		}
 	}
@@ -834,6 +865,8 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			map.put("activeScriptCommand", activeScriptCommand);
 			map.put("inactiveScriptCommand", inactiveScriptCommand);
+		} else if (handlerType == TYPE_SMS) {
+			map.put("activeRecipients", activeRecipients);
 		}
 	}
 
@@ -980,6 +1013,13 @@ public class EventHandlerVO implements Serializable,
 			script = json.getInt("inactiveScriptCommand");
 			if (text != null)
 				inactiveScriptCommand = script;
+		} else if (handlerType == TYPE_SMS) {
+			JsonArray jsonActiveRecipients = json
+					.getJsonArray("activeRecipients");
+			if (jsonActiveRecipients != null)
+				activeRecipients = reader.readPropertyValue(
+						jsonActiveRecipients, List.class,
+						RecipientListEntryBean.class);
 		}
 	}
 

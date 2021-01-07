@@ -1,60 +1,38 @@
 <template>
-  <div class="col-md-6" id="default-logging-type-setting">
-    <div class="row align-items-center">
-      <h2 class="col-xs-12">
-        {{ $t("systemsettings.loggingtype.title")
-        }}<span v-if="isLoggingTypeSettingsEdited">*</span>
-      </h2>
-    </div>
-    <div>
-      <div class="row no-gutters">
-        <div class="col-xs-12 no-gutters">
-          <select
-            class="form-control"
-            v-model="defaultLoggingType"
-            @change="watchLoggingTypeChange()"
-            @input="watchLoggingTypeChange()"
-          >
-            <option
-              v-for="opt in loggingTypeList"
-              :key="opt.id"
-              :value="opt.id"
-            >
-              {{ opt.label }}
-            </option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-col cols="12" md="6">
+    <v-card>
+      <v-card-title>
+        {{ $t("systemsettings.loggingtype.title")}}
+        <span v-if="isLoggingTypeSettingsEdited">*</span>
+      </v-card-title>
+      <v-card-text>
+        <v-select
+          @change="watchLoggingTypeChange"
+          v-model="defaultLoggingType"
+          :items="loggingTypeList"
+          item-value="id"
+          item-text="label"
+          dense
+        ></v-select>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 <script>
 export default {
   name: "DefaultLoggingTypeSettingsComponent",
   data() {
     return {
-      defaultLoggingType: undefined,
-      defaultLoggingTypeStore: undefined,
-      isDefaultLoggingTypeEdited: false,
-      loggingTypeList: [
-        {
-          id: 1,
-          type: "ON_CHANGE",
-          label: this.$t("pointEdit.logging.type.change"),
-        },
-        { id: 2, type: "ALL", label: this.$t("pointEdit.logging.type.all") },
-        { id: 3, type: "NONE", label: this.$t("pointEdit.logging.type.never") },
-        {
-          id: 4,
-          type: "INTERVAL",
-          label: this.$t("pointEdit.logging.type.interval"),
-        },
-        {
-          id: 5,
-          type: "ON_TS_CHANGE",
-          label: this.$t("pointEdit.logging.type.tsChange"),
-        },
-      ],
+        defaultLoggingType: undefined,
+        defaultLoggingTypeStore: undefined,
+        isDefaultLoggingTypeEdited: false,
+        loggingTypeList: [
+            {id: 1, type: "ON_CHANGE", label: this.$t("pointEdit.logging.type.change")},
+            {id: 2, type: "ALL", label: this.$t("pointEdit.logging.type.all")},
+            {id: 3, type: "NONE", label: this.$t("pointEdit.logging.type.never")},
+            {id: 4, type: "INTERVAL", label: this.$t("pointEdit.logging.type.interval")},
+            {id: 5, type: "ON_TS_CHANGE", label: this.$t("pointEdit.logging.type.tsChange")}
+        ]
     };
   },
   mounted() {
@@ -62,9 +40,7 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.defaultLoggingType = await this.$store.dispatch(
-        "getDefaultLoggingType"
-      );
+      this.defaultLoggingType = await this.$store.dispatch("getDefaultLoggingType");
       this.defaultLoggingTypeStore = this.copyDataFromStore();
     },
     saveData() {
@@ -93,7 +69,7 @@ export default {
     },
     restoreData() {
       this.fetchData();
-      this.defaultLoggingType = null;
+      this.defaultLoggingType = null
     },
     copyDataFromStore() {
       return JSON.parse(

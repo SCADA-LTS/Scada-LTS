@@ -1,98 +1,55 @@
 <template>
-  <div class="col-md-6">
-    <div class="row align-items-center">
-      <h2 class="col-xs-12">
-        {{ $t("systemsettings.http.title")
-        }}<span v-if="isHttpSettingsEdited">*</span>
-      </h2>
-    </div>
-    <div>
-      <div class="row no-gutters">
-        <div class="col-xs-12 no-gutters">
-          <btn-group class="col-xs-12 no-gutters">
-            <btn
-              input-type="radio"
-              :input-value="true"
-              class="col-xs-6"
+  <v-col cols="12" md="6">
+    <v-card>
+      <v-card-title>
+        {{ $t("systemsettings.http.title")}}
+        <span v-if="isHttpSettingsEdited">*</span>
+      </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12">
+            <v-switch
               v-model="httpSettings.useProxy"
-              @click="watchRadioDataChagne(true)"
-              >{{ $t("systemsettings.http.proxy.enable") }}</btn
-            >
-            <btn
-              input-type="radio"
-              :input-value="false"
-              class="col-xs-6"
-              v-model="httpSettings.useProxy"
-              @click="watchRadioDataChagne(false)"
-              >{{ $t("systemsettings.http.proxy.disable") }}</btn
-            >
-          </btn-group>
-        </div>
-      </div>
-    </div>
-    <div v-if="httpSettings.useProxy">
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.http.proxy.host") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="text"
-            v-model="httpSettings.host"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.http.proxy.port") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="number"
-            v-model="httpSettings.port"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.http.proxy.username") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <input
-            class="form-control"
-            type="text"
-            v-model="httpSettings.username"
-            @change="watchDataChange()"
-          />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.http.proxy.password") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <div class="col-xs-2">
-            <btn @click="togglePassword('httpPasswordInput')">
-              <i class="glyphicon glyphicon-eye-open"></i>
-            </btn>
-          </div>
-          <div class="col-xs-10">
-            <input
-              id="httpPasswordInput"
-              class="form-control"
-              type="password"
+              :label="$t('systemsettings.http.proxy.enable')"
+              @click="watchRadioDataChagne(emailSettings.tls)"
+            ></v-switch>
+          </v-col>
+          <v-col cols="6" v-if="httpSettings.useProxy">
+            <v-text-field
+              v-model="httpSettings.host"
+              :label="$t('systemsettings.http.proxy.host')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6" v-if="httpSettings.useProxy">
+            <v-text-field
+              v-model="httpSettings.port"
+              type="number"
+              :label="$t('systemsettings.http.proxy.port')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6" v-if="httpSettings.useProxy">
+            <v-text-field
+              v-model="httpSettings.username"
+              :label="$t('systemsettings.http.proxy.username')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6" v-if="httpSettings.useProxy">
+            <v-text-field
               v-model="httpSettings.password"
-              @change="watchDataChange()"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+              :append-icon="passwordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="passwordVisible ? 'text' : 'password'"
+              :label="$t('systemsettings.http.proxy.password')"
+              @input="watchDataChange()"
+              @click:append="passwordVisible = !passwordVisible" dense
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 <script>
 import { object } from "@amcharts/amcharts4/core";
@@ -106,6 +63,7 @@ export default {
       httpSettings: undefined,
       httpSettingsStore: undefined,
       isHttpSettingsEdited: false,
+      passwordVisible: false
     };
   },
 

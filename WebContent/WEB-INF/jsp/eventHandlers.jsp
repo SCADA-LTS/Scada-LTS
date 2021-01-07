@@ -51,6 +51,7 @@
     var allPoints;
     var defaultHandlerId;
     var emailRecipients;
+    var smsRecipients;
     var escalRecipients;
     var inactiveRecipients;
     
@@ -69,6 +70,11 @@
                 "<sst:i18n key="eventHandlers.recipTestEmailMessage" escapeDQuotes="true"/>",
                 data.mailingLists, data.users);
         emailRecipients.write("emailRecipients", "emailRecipients", null,
+            "<sst:i18n key="eventHandlers.emailRecipients" escapeDQuotes="true"/>");
+        smsRecipients = new mango.erecip.EmailRecipients("smsRecipients",
+                "<sst:i18n key="eventHandlers.recipTestEmailMessage" escapeDQuotes="true"/>",
+                data.mailingLists, data.users);
+        smsRecipients.write("smsRecipients", "smsRecipients", "smsRecipients",
         		"<sst:i18n key="eventHandlers.emailRecipients" escapeDQuotes="true"/>");
         
         escalRecipients = new mango.erecip.EmailRecipients("escalRecipients",
@@ -105,14 +111,14 @@
             createEventTypeNode("sch"+ et.typeRef1, et, scheduledRoot);
         }
         scheduledRoot.expand();
-        
+
         var compoundRoot = dojo.widget.manager.getWidgetById('rootCompound');
         for (i=0; i<data.compoundEvents.length; i++) {
             et = data.compoundEvents[i];
             createEventTypeNode("ced"+ et.typeRef1, et, compoundRoot);
         }
         compoundRoot.expand();
-        
+
         var dataSourceRoot = dojo.widget.manager.getWidgetById('rootDataSource');
         for (i=0; i<data.dataSources.length; i++) {
             ds = data.dataSources[i];
@@ -121,13 +127,13 @@
                     object: ds
             });
             dataSourceRoot.addChild(dataSourceNode);
-            
+
             for (j=0; j<ds.eventTypes.length; j++) {
                 et = ds.eventTypes[j];
                 createEventTypeNode("dse"+ et.typeRef1 +"/"+ et.typeRef2, et, dataSourceNode);
             }
         }
-        
+
         if (data.publishers) {
             var publisherRoot = dojo.widget.manager.getWidgetById('rootPublisher');
             for (i=0; i<data.publishers.length; i++) {
@@ -137,14 +143,14 @@
                         object: p
                 });
                 publisherRoot.addChild(publisherNode);
-                
+
                 for (j=0; j<p.eventTypes.length; j++) {
                     et = p.eventTypes[j];
                     createEventTypeNode("pube"+ et.typeRef1 +"/"+ et.typeRef2, et, publisherNode);
                 }
             }
         }
-        
+
         if (data.maintenanceEvents) {
             var maintenanceRoot = dojo.widget.manager.getWidgetById('rootMaintenance');
             for (i=0; i<data.maintenanceEvents.length; i++) {
@@ -152,7 +158,7 @@
                 createEventTypeNode("maint"+ et.typeRef1, et, maintenanceRoot);
             }
         }
-        
+
         if (data.systemEvents) {
             var systemRoot = dojo.widget.manager.getWidgetById('rootSystem');
             for (i=0; i<data.systemEvents.length; i++) {
@@ -160,7 +166,7 @@
                 createEventTypeNode("sys"+ et.typeRef1, et, systemRoot);
             }
         }
-        
+
         if (data.auditEvents) {
             var auditRoot = dojo.widget.manager.getWidgetById('rootAudit');
             for (i=0; i<data.auditEvents.length; i++) {
@@ -168,10 +174,10 @@
                 createEventTypeNode("aud"+ et.typeRef1, et, auditRoot);
             }
         }
-        
+
         hide("loadingImg");
         show("tree");
-        
+
         // Default the selection of the parameter was provided.
         if (selectedHandlerNode) {
             selectedHandlerNode.onTitleClick();
@@ -183,7 +189,7 @@
         }
         defaultHandlerId = null;
     }
-    
+
     function createEventTypeNode(widgetId, eventType, parent) {
         var node = dojo.widget.createWidget("TreeNode", {
                 title: "<img id='"+ widgetId +"Img'/> "+ eventType.description,
@@ -194,12 +200,12 @@
         setAlarmLevelImg(eventType.alarmLevel, $(widgetId +"Img"));
         addHandlerNodes(eventType.handlers, node);
     }
-    
+
     function addHandlerNodes(handlers, parent) {
         for (var i=0; i<handlers.length; i++)
             parent.addChild(createHandlerNode(handlers[i]));
     }
-    
+
     function createHandlerNode(handler) {
         var img = "images/cog_wrench.png";
         if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>)
@@ -212,22 +218,22 @@
                 widgetId: "h"+ handler.id,
                 object: handler
         });
-        
+
         if (handler.id == defaultHandlerId)
             selectedHandlerNode = node;
-        
+
         return node;
     }
-    
+
     var selectedEventTypeNode;
     var selectedHandlerNode;
-    
+
     var TreeClickHandler = function() {
         this.handle = function(message) {
             var widget = message.source;
             var wid = widget.widgetId;
-            if (wid.startsWith("ped") || wid.startsWith("sch") || wid.startsWith("ced") || 
-                    wid.startsWith("dse") || wid.startsWith("pube") || wid.startsWith("sys") || 
+            if (wid.startsWith("ped") || wid.startsWith("sch") || wid.startsWith("ced") ||
+                    wid.startsWith("dse") || wid.startsWith("pube") || wid.startsWith("sys") ||
                     wid.startsWith("aud") || wid.startsWith("maint")) {
                 selectedEventTypeNode = widget;
                 selectedHandlerNode = null;
@@ -242,7 +248,7 @@
                 hide("handlerEditDiv");
         }
     }
-    
+
     function showHandlerEdit() {
     	show("handlerEditDiv");
         setUserMessage("");
@@ -257,7 +263,7 @@
         if (selectedHandlerNode) {
             $("saveImg").src = "images/save.png";
             show("deleteImg");
-            
+
             // Put values from the handler object into the input controls.
             var handler = selectedHandlerNode.object;
             $set("handlerTypeSelect", handler.handlerType);
@@ -280,6 +286,9 @@
                 $set("inactiveOverride", handler.inactiveOverride);
                 inactiveRecipients.updateRecipientList(handler.inactiveRecipients);
             }
+            else if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
+                smsRecipients.updateRecipientList(handler.activeRecipients);
+            }
             else if (handler.handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
                 $set("activeProcessCommand", handler.activeProcessCommand);
                 $set("inactiveProcessCommand", handler.inactiveProcessCommand);
@@ -292,7 +301,7 @@
             $("saveImg").src = "images/save_add.png";
             hide("deleteImg");
             $("handlerTypeSelect").disabled = false;
-            
+
             // Clear values that may be left over from another handler.
             $set("xid", "");
             $set("alias", "");
@@ -310,9 +319,10 @@
             $set("inactiveScriptCommand", -1);
             // Clear the recipient lists.
             emailRecipients.updateRecipientList();
+            smsRecipients.updateRecipientList();
             escalRecipients.updateRecipientList();
             inactiveRecipients.updateRecipientList();
-            
+
         }
         // Set the use source value checkbox.
         handlerTypeChanged();
@@ -321,30 +331,37 @@
         targetPointSelectChanged();
         sendEscalationChanged();
         sendInactiveChanged();
-        
+
     }
-    
+
     var currentHandlerEditor;
     function handlerTypeChanged() {
         setUserMessage("");
         var handlerId = $get("handlerTypeSelect");
-        
+
         if (currentHandlerEditor) {
         	hide(currentHandlerEditor);
         	hide($(currentHandlerEditor.id +"Img"));
+        	if(currentHandlerEditor.id === "handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>") {
+        	    hide($(currentHandlerEditor.id + "Help"));
+        	}
         }
         currentHandlerEditor = $("handler"+ handlerId);
         show(currentHandlerEditor);
         show($(currentHandlerEditor.id +"Img"));
+        if(currentHandlerEditor.id === "handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>") {
+            show($(currentHandlerEditor.id + "Help"));
+        }
+        console.log("handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>");
     }
-    
+
     function targetPointSelectChanged() {
         var selectControl = $("targetPointSelect");
-        
+
         // Make sure there are points in the list.
         if (selectControl.options.length == 0)
             return;
-        
+
         // Get the content for the value to set section.
         var targetPointId = selectControl.value;
         var activeValueStr = "";
@@ -357,7 +374,7 @@
                 function(content) { $("activeValueToSetContent").innerHTML = content; });
         EventHandlersDwr.createSetValueContent(targetPointId, inactiveValueStr, "Inactive",
                 function(content) { $("inactiveValueToSetContent").innerHTML = content; });
-        
+
         // Update the source point lists.
         var targetDataTypeId = getPoint(targetPointId).dataType;
         var activeSourceSelect = $("activePointId");
@@ -376,7 +393,7 @@
             $set(inactiveSourceSelect, selectedHandlerNode.object.inactivePointId);
         }
     }
-    
+
     function activeActionChanged() {
         var action = $get("activeAction");
         if (action == <c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>) {
@@ -392,7 +409,7 @@
         	hide("activeValueToSetRow");
         }
     }
-    
+
     function inactiveActionChanged() {
         var action = $get("inactiveAction");
         if (action == <c:out value="<%= EventHandlerVO.SET_ACTION_POINT_VALUE %>"/>) {
@@ -408,7 +425,7 @@
         	hide("inactiveValueToSetRow");
         }
     }
-    
+
     function sendEscalationChanged() {
         if ($get("sendEscalation")) {
         	show("escalationAddresses1");
@@ -419,21 +436,21 @@
         	hide("escalationAddresses2");
         }
     }
-    
+
     function getPoint(id) {
         return getElement(allPoints, id);
     }
-    
+
     function saveHandler() {
     	startImageFader("saveImg");
         setUserMessage();
         hideContextualMessages("scheduledEventDetails")
         hideGenericMessages("genericMessages")
-        
+
         var handlerId = ${NEW_ID};
         if (selectedHandlerNode)
             handlerId = selectedHandlerNode.object.id;
-        
+
         // Do some validation.
         var handlerType = $get("handlerTypeSelect");
         var xid = $get("xid");
@@ -445,14 +462,19 @@
             var inactiveList = inactiveRecipients.createRecipientArray();
             EventHandlersDwr.saveEmailEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
-                    disabled, emailList, $get("sendEscalation"), $get("escalationDelayType"), $get("escalationDelay"), 
+                    disabled, emailList, $get("sendEscalation"), $get("escalationDelayType"), $get("escalationDelay"),
                     escalList, $get("sendInactive"), $get("inactiveOverride"), inactiveList, saveEventHandlerCB);
+        }
+        else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>) {
+            var smsList = smsRecipients.createRecipientArray();
+            EventHandlersDwr.saveSmsEventHandler(selectedEventTypeNode.object.typeId,
+                    selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias, disabled, smsList, saveEventHandlerCB);
         }
         else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>) {
             EventHandlersDwr.saveSetPointEventHandler(selectedEventTypeNode.object.typeId,
                     selectedEventTypeNode.object.typeRef1, selectedEventTypeNode.object.typeRef2, handlerId, xid, alias,
-                    disabled, $get("targetPointSelect"), $get("activeAction"), $get("setPointValueActive"), 
-                    $get("activePointId"), $get("inactiveAction"), $get("setPointValueInactive"), 
+                    disabled, $get("targetPointSelect"), $get("activeAction"), $get("setPointValueActive"),
+                    $get("activePointId"), $get("inactiveAction"), $get("setPointValueInactive"),
                     $get("inactivePointId"), saveEventHandlerCB);
         }
         else if (handlerType == <c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>) {
@@ -466,7 +488,7 @@
                     alias, disabled, $get("activeScriptCommand"), $get("inactiveScriptCommand"), saveEventHandlerCB);
         }
     }
-    
+
     function saveEventHandlerCB(response) {
     	stopImageFader("saveImg");
 
@@ -483,21 +505,21 @@
             }
             else
                 $set(handler.id +"Msg", handler.message);
-            
+
             selectedHandlerNode.object = handler;
         }
     }
-    
+
     function deleteHandler() {
         EventHandlersDwr.deleteEventHandler(selectedHandlerNode.object.id);
         selectedEventTypeNode.removeNode(selectedHandlerNode);
         hide("handlerEditDiv");
     }
-    
+
     function setUserMessage(msg) {
         showMessage("userMessage", msg);
     }
-    
+
     function testProcessCommand(nodeId) {
     	EventHandlersDwr.testProcessCommand($get(nodeId), function(msg) {
     		if (msg)
@@ -508,7 +530,7 @@
     function testScriptCommand(nodeId) {
     	alert('Not implemented.');
     }
-    
+
     function sendInactiveChanged() {
         if ($get("sendInactive")) {
             show("inactiveAddresses1");
@@ -519,7 +541,7 @@
             hide("inactiveAddresses2");
         }
     }
-    
+
     function inactiveOverrideChanged() {
         if ($get("inactiveOverride"))
             show("inactiveAddresses2");
@@ -527,13 +549,13 @@
             hide("inactiveAddresses2");
     }
   </script>
-  
+
   <table class="marB subPageHeader" id="eventHandlerHeader"><tr><td>
     <tag:img png="cog" title="eventHandlers.eventHandlers"/>
     <span class="smallTitle"><fmt:message key="eventHandlers.eventHandlers"/></span>
     <tag:help id="eventHandlers"/>
   </td></tr></table>
-  
+
   <table cellpadding="0" cellspacing="0">
     <tr>
       <td valign="top">
@@ -555,7 +577,7 @@
           </div>
         </div>
       </td>
-      
+
       <td valign="top">
         <div id="handlerEditDiv" class="borderDivPadded" style="display:none;">
           <table width="100%">
@@ -568,7 +590,7 @@
             </tr>
             <tr><td class="formError" id="userMessage"></td></tr>
           </table>
-          
+
           <table width="100%">
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.type"/></td>
@@ -578,32 +600,37 @@
                   <option value="<c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>"><fmt:message key="eventHandlers.type.setPoint"/></option>
                   <option value="<c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>"><fmt:message key="eventHandlers.type.process"/></option>
                   <option value="<c:out value="<%= EventHandlerVO.TYPE_SCRIPT %>"/>"><fmt:message key="eventHandlers.type.script"/></option>
+                  <option value="<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>"><fmt:message key="eventHandlers.type.sms"/></option>
                 </select>
                 <tag:img id="handler1Img" png="cog_wrench" title="eventHandlers.type.setPointHandler" style="display:none;"/>
                 <tag:img id="handler2Img" png="cog_email" title="eventHandlers.type.emailHandler" style="display:none;"/>
                 <tag:img id="handler3Img" png="cog_process" title="eventHandlers.type.processHandler" style="display:none;"/>
                 <tag:img id="handler4Img" png="report" title="eventHandlers.type.processHandler" style="display:none;"/>
+                <tag:img id="handler5Img" png="phone" title="eventHandlers.type.smsHandler" style="display:none;"/>
+                <span id="handler5Help" style="display:none;">
+                    <tag:help id="smsEventHandlers"/>
+                </span>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
               <td class="formField"><input type="text" id="xid"/></td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.alias"/></td>
               <td class="formField"><input id="alias" type="text"/></td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.disabled"/></td>
               <td class="formField"><input type="checkbox" id="disabled"/></td>
             </tr>
-            
+
             <tr><td class="horzSeparator" colspan="2"></td></tr>
           </table>
-          
+
           <table id="handler<c:out value="<%= EventHandlerVO.TYPE_SET_POINT %>"/>" style="display:none" width="100%">
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.target"/></td>
@@ -611,7 +638,7 @@
                 <select id="targetPointSelect" onchange="targetPointSelectChanged()"></select>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.activeAction"/></td>
               <td class="formField">
@@ -622,17 +649,17 @@
                 </select>
               </td>
             </tr>
-          
+
             <tr id="activePointIdRow">
               <td class="formLabel"><fmt:message key="eventHandlers.sourcePoint"/></td>
               <td class="formField"><select id="activePointId"></select></td>
             </tr>
-          
+
             <tr id="activeValueToSetRow">
               <td class="formLabel"><fmt:message key="eventHandlers.valueToSet"/></td>
               <td class="formField" id="activeValueToSetContent"></td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveAction"/></td>
               <td class="formField">
@@ -643,28 +670,28 @@
                 </select>
               </td>
             </tr>
-          
+
             <tr id="inactivePointIdRow">
               <td class="formLabel"><fmt:message key="eventHandlers.sourcePoint"/></td>
               <td class="formField"><select id="inactivePointId"></select></td>
             </tr>
-          
+
             <tr id="inactiveValueToSetRow">
               <td class="formLabel"><fmt:message key="eventHandlers.valueToSet"/></td>
               <td class="formField" id="inactiveValueToSetContent"></td>
             </tr>
           </table>
-            
+
           <table id="handler<c:out value="<%= EventHandlerVO.TYPE_EMAIL %>"/>" style="display:none" width="100%">
             <tbody id="emailRecipients"></tbody>
-            
+
             <tr><td class="horzSeparator" colspan="2"></td></tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.escal"/></td>
               <td class="formField"><input id="sendEscalation" type="checkbox" onclick="sendEscalationChanged()"/></td>
             </tr>
-            
+
             <tr id="escalationAddresses1">
               <td class="formLabelRequired"><fmt:message key="eventHandlers.escalPeriod"/></td>
               <td class="formField">
@@ -674,22 +701,26 @@
                 </select>
               </td>
             </tr>
-              
+
             <tbody id="escalRecipients"></tbody>
-            
+
             <tr><td class="horzSeparator" colspan="2"></td></tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveNotif"/></td>
               <td class="formField"><input id="sendInactive" type="checkbox" onclick="sendInactiveChanged()"/></td>
             </tr>
-            
+
             <tr id="inactiveAddresses1">
               <td class="formLabelRequired"><fmt:message key="eventHandlers.inactiveOverride"/></td>
               <td class="formField"><input id="inactiveOverride" type="checkbox" onclick="inactiveOverrideChanged()"/></td>
             </tr>
-              
+
             <tbody id="inactiveRecipients"></tbody>
+          </table>
+
+          <table id="handler<c:out value="<%= EventHandlerVO.TYPE_SMS %>"/>" style="display:none" width="100%">
+            <tbody id="smsRecipients"></tbody>
           </table>
           
           <table id="handler<c:out value="<%= EventHandlerVO.TYPE_PROCESS %>"/>" style="display:none" width="100%">

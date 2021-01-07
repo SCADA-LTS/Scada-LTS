@@ -41,6 +41,8 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +58,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class EventService implements MangoEvent {
 	
 	private static final Log LOG = LogFactory.getLog(EventService.class);
@@ -287,6 +290,8 @@ public class EventService implements MangoEvent {
 	public List<EventHandlerVO> getEventHandlers() {
 		return eventDAO.getEventHandlers();
 	}
+
+	public List<EventHandlerPlcDTO> getPlcEventHandlers() { return eventDAO.getPlcEventHandlers(); }
 	
 	@Override
 	public EventHandlerVO getEventHandler(int eventHandlerId) {
@@ -309,7 +314,7 @@ public class EventService implements MangoEvent {
 	}
 	
 	@Override
-	public EventHandlerVO saveEventHandler(final EventTypeVO type, final EventHandlerVO handler) {
+	public EventHandlerVO saveEventHandler(EventTypeVO type, EventHandlerVO handler) {
 		if (type == null) {
 			return eventDAO.saveEventHandler(0, 0, 0, handler);
 		} else {
@@ -325,6 +330,12 @@ public class EventService implements MangoEvent {
 		eventDAO.delete(handlerId);
 		
 		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
+	}
+
+	public void deleteEventHandler(final String handlerXid) {
+		EventHandlerVO handler = getEventHandler(handlerXid);
+		eventDAO.delete(handler.getId());
+		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 	}
 	
 	@Override

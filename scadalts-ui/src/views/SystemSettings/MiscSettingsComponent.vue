@@ -1,118 +1,95 @@
 <template>
-  <div class="col-md-6">
-    <div class="row align-items-center">
-      <h2 class="col-xs-11">
-        {{ $t("systemsettings.misc.title")
-        }}<span v-if="isMiscSettingsEdited">*</span>
-      </h2>
-      <div class="col-xs-1">
-        <btn size="lg" type="link" @click="purgeData()" id="btn-purge-data">
-          <i class="glyphicon glyphicon-trash"></i>
-        </btn>
-        <tooltip
-          :text="$t('systemsettings.tooltip.purgedata')"
-          target="#btn-purge-data"
-        />
-      </div>
-    </div>
-    <div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.misc.uiPerformance") }}</p>
-        </div>
-        <div class="col-xs-6">
-          <select
-            class="form-control"
-            v-model="miscSettings.uiPerformance"
-            @input="watchDataChange()"
-          >
-            <option v-bind:value="2000">
-              {{ $t("systemsettings.misc.performance.high") }}
-            </option>
-            <option v-bind:value="5000">
-              {{ $t("systemsettings.misc.performance.medium") }}
-            </option>
-            <option v-bind:value="10000">
-              {{ $t("systemsettings.misc.performance.low") }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.misc.purge.events") }}</p>
-        </div>
-        <div class="col-xs-3">
-          <input
-            class="form-control"
-            type="number"
-            v-model="miscSettings.eventPurgePeriods"
-            @change="watchDataChange()"
-          />
-        </div>
-        <div class="col-xs-3">
-          <select
-            class="form-control"
-            v-model="miscSettings.eventPurgePeriodType"
-            @input="watchDataChange()"
-          >
-            <option v-bind:value="4">{{ $t("timeperiod.days") }}</option>
-            <option v-bind:value="5">{{ $t("timeperiod.weeks") }}</option>
-            <option v-bind:value="6">{{ $t("timeperiod.months") }}</option>
-            <option v-bind:value="7">{{ $t("timeperiod.years") }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.misc.purge.reports") }}</p>
-        </div>
-        <div class="col-xs-3">
-          <input
-            class="form-control"
-            type="number"
-            v-model="miscSettings.reportPurgePeriods"
-            @change="watchDataChange()"
-          />
-        </div>
-        <div class="col-xs-3">
-          <select
-            class="form-control"
-            v-model="miscSettings.reportPurgePeriodType"
-            @input="watchDataChange()"
-          >
-            <option v-bind:value="4">{{ $t("timeperiod.days") }}</option>
-            <option v-bind:value="5">{{ $t("timeperiod.weeks") }}</option>
-            <option v-bind:value="6">{{ $t("timeperiod.months") }}</option>
-            <option v-bind:value="7">{{ $t("timeperiod.years") }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-6">
-          <p>{{ $t("systemsettings.misc.purge.future") }}</p>
-        </div>
-        <div class="col-xs-3">
-          <input
-            class="form-control"
-            type="number"
-            v-model="miscSettings.futureDateLimitPeriods"
-            @change="watchDataChange()"
-          />
-        </div>
-        <div class="col-xs-3">
-          <select
-            class="form-control"
-            v-model="miscSettings.futureDateLimitPeriodType"
-            @input="watchDataChange()"
-          >
-            <option v-bind:value="2">{{ $t("timeperiod.minutes") }}</option>
-            <option v-bind:value="3">{{ $t("timeperiod.hours") }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-col cols="12" md="6">
+    <v-card>
+      
+      <v-card-title>
+        {{ $t("systemsettings.misc.title")}}
+        <span v-if="isMiscSettingsEdited">*</span>
+        <v-spacer></v-spacer>
+        <v-tooltip bottom>
+          <template v-slot:activator="{on, attrs}">
+            <v-btn fab icon @click="purgeData()" v-bind="attrs" v-on="on">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+          <span>{{$t('systemsettings.tooltip.purgedata')}}</span>
+        </v-tooltip>
+      </v-card-title>
+
+      <v-card-text>
+        <v-row>
+          <v-col cols="12">
+            <v-select
+              @change="watchDataChange()"
+              v-model="miscSettings.uiPerformance"
+              :items="uiPerformanceItems"
+              item-value="value"
+              item-text="text"
+              :label="$t('systemsettings.misc.uiPerformance')"
+              dense
+            ></v-select>
+          </v-col>
+
+          <v-col cols="6">
+            <v-text-field
+              v-model="miscSettings.eventPurgePeriods"
+              type="number"
+              :label="$t('systemsettings.misc.purge.events')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-select
+              @change="watchDataChange()"
+              v-model="miscSettings.eventPurgePeriodType"
+              :items="eventPurgePeriodTypeItems"
+              item-value="value"
+              item-text="text"
+              dense
+            ></v-select>
+          </v-col>
+
+          <v-col cols="6">
+            <v-text-field
+              v-model="miscSettings.reportPurgePeriodType"
+              type="number"
+              :label="$t('systemsettings.misc.purge.reports')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-select
+              @change="watchDataChange()"
+              v-model="miscSettings.reportPurgePeriodType"
+              :items="eventPurgePeriodTypeItems"
+              item-value="value"
+              item-text="text"
+              dense
+            ></v-select>
+          </v-col>
+
+          <v-col cols="6">
+            <v-text-field
+              v-model="miscSettings.futureDateLimitPeriods"
+              type="number"
+              :label="$t('systemsettings.misc.purge.future')"
+              @input="watchDataChange()" dense
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-select
+              @change="watchDataChange()"
+              v-model="miscSettings.futureDateLimitPeriodType"
+              :items="futureDateLimitPeriodTypeItems"
+              item-value="value"
+              item-text="text"
+              dense
+            ></v-select>
+          </v-col> 
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 <script>
 import { object } from "@amcharts/amcharts4/core";
@@ -126,6 +103,21 @@ export default {
       miscSettings: undefined,
       miscSettingsStore: undefined,
       isMiscSettingsEdited: false,
+      uiPerformanceItems: [
+        {value: 2000, text: this.$t("systemsettings.misc.performance.high") },
+        {value: 5000, text: this.$t("systemsettings.misc.performance.medium") },
+        {value: 10000, text: this.$t("systemsettings.misc.performance.low") }
+      ],
+      futureDateLimitPeriodTypeItems: [
+        {value: 2, text: this.$t("timeperiod.minutes") },
+        {value: 3, text: this.$t("timeperiod.hours") }
+      ],
+      eventPurgePeriodTypeItems: [
+        {value: 4, text: this.$t("timeperiod.days") },
+        {value: 5, text: this.$t("timeperiod.weeks") },
+        {value: 6, text: this.$t("timeperiod.months") },
+        {value: 7, text: this.$t("timeperiod.years") }
+      ]
     };
   },
 

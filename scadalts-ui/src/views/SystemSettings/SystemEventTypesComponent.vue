@@ -1,61 +1,53 @@
 <template>
-  <div class="col-md-6">
-    <div class="row align-items-center">
-      <h2 class="col-xs-12">
-        {{ $t("systemsettings.event.title")
-        }}<span v-if="isSystemEventEdited">*</span>
-      </h2>
-    </div>
-    <div class="row" v-for="event in systemEventTypes" v-bind:key="event.i1">
-      <div class="col-xs-6">
-        <p>{{ $t(event.translation) }}</p>
-      </div>
-      <div class="col-xs-5">
-        <select
-          class="form-control"
-          v-model="event.i2"
-          @change="watchDataChange()"
-          @input="watchDataChange()"
-        >
-          <option v-bind:value="0">{{ $t("alarmlevels.none") }}</option>
-          <option v-bind:value="1">
-            {{ $t("alarmlevels.information") }}
-          </option>
-          <option v-bind:value="2">{{ $t("alarmlevels.urgent") }}</option>
-          <option v-bind:value="3">{{ $t("alarmlevels.critical") }}</option>
-          <option v-bind:value="4">
-            {{ $t("alarmlevels.lifesafety") }}
-          </option>
-        </select>
-      </div>
-      <div class="col-xs-1">
-        <img
-          v-if="event.i2 === 1"
-          src="images/flag_blue.png"
-          title="Information"
-          alt="Information"
-        />
-        <img
-          v-if="event.i2 === 2"
-          src="images/flag_yellow.png"
-          title="Urgent"
-          alt="Urgent"
-        />
-        <img
-          v-if="event.i2 === 3"
-          src="images/flag_orange.png"
-          title="Critical"
-          alt="Critical"
-        />
-        <img
-          v-if="event.i2 === 4"
-          src="images/flag_red.png"
-          title="Life Safety"
-          alt="Life Safety"
-        />
-      </div>
-    </div>
-  </div>
+  <v-col cols="12" md="6" class="align-stretch">
+    <v-card>
+      <v-card-title>
+        {{ $t("systemsettings.event.title") }}
+        <span v-if="isSystemEventEdited">*</span>
+      </v-card-title>
+      <v-card-text>
+        <v-row v-for="event in systemEventTypes" v-bind:key="event.i1" dense>
+          <v-col cols="10">
+            <v-select
+              @change="watchDataChange()"
+              v-model="event.i2"
+              :items="alarmLevels"
+              item-value="value"
+              item-text="text"
+              :label="$t(`${event.translation}`)"
+              dense
+            ></v-select>
+          </v-col>
+          <v-col cols="2">
+            <img
+              v-if="event.i2 === 1"
+              src="images/flag_blue.png"
+              title="Information"
+              alt="Information"
+            />
+            <img
+              v-if="event.i2 === 2"
+              src="images/flag_yellow.png"
+              title="Urgent"
+              alt="Urgent"
+            />
+            <img
+              v-if="event.i2 === 3"
+              src="images/flag_orange.png"
+              title="Critical"
+              alt="Critical"
+            />
+            <img
+              v-if="event.i2 === 4"
+              src="images/flag_red.png"
+              title="Life Safety"
+              alt="Life Safety"
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 <script>
 import { object } from "@amcharts/amcharts4/core";
@@ -69,6 +61,13 @@ export default {
       systemEventTypes: undefined,
       systemEventTypesStore: undefined,
       isSystemEventEdited: false,
+      alarmLevels: [
+        { text: this.$t("alarmlevels.none"), value: 0 },
+        { text: this.$t("alarmlevels.information"), value: 1 },
+        { text: this.$t("alarmlevels.urgent"), value: 2 },
+        { text: this.$t("alarmlevels.critical"), value: 3 },
+        { text: this.$t("alarmlevels.lifesafety"), value: 4 },
+      ],
     };
   },
 
