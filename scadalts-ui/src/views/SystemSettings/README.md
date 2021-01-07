@@ -83,14 +83,14 @@ Briefly described emitted data:
 // component value must be the same
 // as the reference in parent component
 data = {
-  component: String,
-  title: String,
-  changed: Boolean,
-  data: {
-    label: String,
-    originalData: Object,
-    changedData: Object,
-  },
+	component: String,
+	title: String,
+	changed: Boolean,
+	data: {
+		label: String,
+		originalData: Object,
+		changedData: Object,
+	},
 };
 ```
 
