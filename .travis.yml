@@ -10,6 +10,7 @@ before_script:
 - nvm install 12
 - nvm use node
 - npm -v
+- npx -v
 - node -v
 - env
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
@@ -30,6 +31,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^prerelease/2.5.0.*$/"
+  - "/^feature/#1482.*$/"
 notifications:
   email: false
 env:
