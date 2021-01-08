@@ -13,9 +13,9 @@ const storeAlarmsNotifications = {
 			xid: 'PED-PLC',
 			alias: 'PlcEventDetector',
 			alarmLevel: 0,
-			duration: 0,
+			duration: 5,
 			durationType: 1,
-			binartState: true,
+			binaryState: true,
 		},
 		ehTemplate: {
 			id: -1,
