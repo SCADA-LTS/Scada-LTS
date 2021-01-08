@@ -114,7 +114,7 @@ export default {
 
 		copyDataFromStore() {
 			return JSON.parse(
-				JSON.stringify(this.$store.state.systemSettings.systemEventTypes)
+				JSON.stringify(this.$store.state.systemSettings.systemEventTypes),
 			);
 		},
 

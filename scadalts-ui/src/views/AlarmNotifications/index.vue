@@ -233,19 +233,24 @@ export default {
 
 		saveConfiguration() {
 			if (this.modified.length > 0) {
+				let requestSuccess = true;
 				this.modified.forEach((change) => {
 					for (let x = 0; x < change.mail.length; x++) {
 						if (
 							change.mail[x].handler !== -1 &&
 							change.mail[x].active !== change.mail[x].config
 						) {
-							this.updateEventHandler(
-								change.mail[x].handler.ehId,
-								change.mail[x].mlId,
-								change.id,
-								change.mail[x].handler.edId,
-								'delete',
-							);
+							if (
+								!this.updateEventHandler(
+									change.mail[x].handler.ehId,
+									change.mail[x].mlId,
+									change.id,
+									change.mail[x].handler.edId,
+									'delete',
+								)
+							) {
+								requestSuccess = false;
+							}
 						} else if (
 							change.mail[x].handler === -1 &&
 							change.mail[x].active !== change.mail[x].config
@@ -256,9 +261,15 @@ export default {
 									: this.activeMailingList2;
 							let data = this.getExistingEventHandler(change.id, 2);
 							if (!!data) {
-								this.updateEventHandler(data.ehId, mlId, change.id, data.edId, 'add');
+								if (
+									!this.updateEventHandler(data.ehId, mlId, change.id, data.edId, 'add')
+								) {
+									requestSuccess = false;
+								}
 							} else {
-								this.createEventHandler(mlId, change.id, 2);
+								if (!this.createEventHandler(mlId, change.id, 2)) {
+									requestSuccess = false;
+								}
 							}
 						}
 					}
@@ -267,13 +278,17 @@ export default {
 							change.sms[x].handler !== -1 &&
 							change.sms[x].active !== change.sms[x].config
 						) {
-							this.updateEventHandler(
-								change.sms[x].handler.ehId,
-								change.sms[x].mlId,
-								change.id,
-								change.sms[x].handler.edId,
-								'delete',
-							);
+							if (
+								!this.updateEventHandler(
+									change.sms[x].handler.ehId,
+									change.sms[x].mlId,
+									change.id,
+									change.sms[x].handler.edId,
+									'delete',
+								)
+							) {
+								requestSuccess = false;
+							}
 						} else if (
 							change.sms[x].handler === -1 &&
 							change.sms[x].active !== change.sms[x].config
@@ -284,15 +299,28 @@ export default {
 									: this.activeMailingList2;
 							let data = this.getExistingEventHandler(change.id, 5);
 							if (!!data) {
-								this.updateEventHandler(data.ehId, mlId, change.id, data.edId, 'add');
+								if (
+									!this.updateEventHandler(data.ehId, mlId, change.id, data.edId, 'add')
+								) {
+									requestSuccess = false;
+								}
 							} else {
-								this.createEventHandler(mlId, change.id, 5);
+								if (!this.createEventHandler(mlId, change.id, 5)) {
+									requestSuccess = false;
+								}
 							}
 						}
 					}
 				});
-				this.snackbar.text = this.$t('plcalarms.notification.save');
-				this.snackbar.visible = true;
+				if (requestSuccess) {
+					this.initEventHandlers();
+					this.modified = [];
+					this.snackbar.text = this.$t('plcalarms.notification.save');
+					this.snackbar.visible = true;
+				} else {
+					this.snackbar.text = this.$t('plcalarms.notification.fail');
+					this.snackbar.visible = true;
+				}
 			}
 		},
 
@@ -304,9 +332,12 @@ export default {
 				typeRef2: edId,
 				method: method,
 			};
-			await this.$store.dispatch('updateEventHandler', updateData);
-			this.initEventHandlers();
-			this.modified = [];
+			try {
+				await this.$store.dispatch('updateEventHandler', updateData);
+				return true;
+			} catch (err) {
+				return false;
+			}
 		},
 
 		async createEventHandler(mlId, dpId, handlerType) {
@@ -315,9 +346,14 @@ export default {
 				mailingListId: mlId,
 				handlerType: handlerType,
 			};
-			await this.$store.dispatch('createEventHandler', createData);
-			this.initEventHandlers();
-			this.modified = [];
+			try {
+				await this.$store.dispatch('createEventHandler', createData);
+				return true;
+			} catch (err) {
+				return false;
+			}
+			// this.initEventHandlers();
+			// this.modified = [];
 		},
 
 		getExistingEventHandler(datapointId, handlerType) {

@@ -31,7 +31,6 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^prerelease/2.5.0.*$/"
-  - "/^feature/#1482.*$/"
 notifications:
   email: false
 env:
