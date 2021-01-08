@@ -43,6 +43,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -120,11 +121,12 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         return id == Common.NEW_ID;
     }
 
+
     //
     //
     // Properties
     //
-    private int id = Common.NEW_ID;
+    private int id;
     private String xid;
     @JsonRemoteProperty
     private String name;
@@ -134,16 +136,16 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     @JsonRemoteProperty
     private boolean enabled;
     private int pointFolderId;
-    private int loggingType = LoggingTypes.ON_CHANGE;
-    private int intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+    private int loggingType;
+    private int intervalLoggingPeriodType;
     @JsonRemoteProperty
-    private int intervalLoggingPeriod = 15;
-    private int intervalLoggingType = IntervalLoggingTypes.INSTANT;
+    private int intervalLoggingPeriod;
+    private int intervalLoggingType;
     @JsonRemoteProperty
-    private double tolerance = 0;
-    private int purgeType = Common.TimePeriods.YEARS;
+    private double tolerance;
+    private int purgeType;
     @JsonRemoteProperty
-    private int purgePeriod = 1;
+    private int purgePeriod;
     @JsonRemoteProperty(typeFactory = BaseTextRenderer.Factory.class)
     private TextRenderer textRenderer;
     @JsonRemoteProperty(typeFactory = BaseChartRenderer.Factory.class)
@@ -151,16 +153,33 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private List<PointEventDetectorVO> eventDetectors;
     private List<UserComment> comments;
     @JsonRemoteProperty
-    private int defaultCacheSize = 1;
+    private int defaultCacheSize;
     @JsonRemoteProperty
-    private boolean discardExtremeValues = false;
+    private boolean discardExtremeValues;
     @JsonRemoteProperty
-    private double discardLowLimit = -Double.MAX_VALUE;
+    private double discardLowLimit;
     @JsonRemoteProperty
-    private double discardHighLimit = Double.MAX_VALUE;
-    private int engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+    private double discardHighLimit;
+    private int engineeringUnits;
     @JsonRemoteProperty
     private String chartColour;
+
+    public DataPointVO(){
+        id = Common.NEW_ID;
+        loggingType = SystemSettingsDAO
+                .getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE);
+        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+        intervalLoggingPeriod = 15;
+        intervalLoggingType = IntervalLoggingTypes.INSTANT;
+        tolerance = 0;
+        purgeType = Common.TimePeriods.YEARS;
+        purgePeriod = 1;
+        defaultCacheSize = 1;
+        discardExtremeValues = false;
+        discardLowLimit = -Double.MAX_VALUE;
+        discardHighLimit = Double.MAX_VALUE;
+        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+    }
 
     private PointLocatorVO pointLocator;
 

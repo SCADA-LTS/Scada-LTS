@@ -1,37 +1,37 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>Reports in ScadaBR have two representations: <b>templates</b> which define the content of a report, and <b>instances</b> which are the result of running a report with a given template. Simply: the report engine creates instances from templates. A template has attributes like a name, a list of points that it includes, and the date range of values it extracts. An instance will inherit its name from the template, but have its own attributes such as the time it ran, the run duration, the number of records it includes, and, of course, the data.</p>
-<p>An instance can be considered a snapshot of the data at the time it was run. Instance attributes cannot be changed. Also, the data that the instance reports exists as long as the instance exists. (I.e. it survives the purging of the source data.) For this reason, it is important to purge report instances&mdash;especially large instances&mdash;when they are no longer needed since they can consume large amounts of storage.</p>
-<p>Report templates&mdash;and the instances they create&mdash;belong to the user that created them. They cannot be explicitly shared within the system, but may be shared implicitly. See the "Report templates" documentation for more information.</p>
+<h1>Vue d'ensemble</h1>
+<p>Les rapports en Scada-LTS ont deux représentations : <b>modèles</b> qui définissent le contenu d'un rapport, et <b>instances</b> qui sont le résultat de l'exécution d'un rapport avec un modèle donné. Simplement : le moteur de rapport crée des instances à partir de modèles. Un modèle possède des attributs comme un nom, une liste de points qu'il inclut et la plage de dates des valeurs qu'il extrait. Une instance héritera de son nom du modèle, mais aura ses propres attributs tels que l'heure à laquelle elle a été exécutée, la durée d'exécution, le nombre d'enregistrements qu'elle inclut et, bien sûr, les données.</p>
+<p>Une instance peut être considérée comme un instantané des données au moment où elle a été exécutée. Les attributs de l'instance ne peuvent pas être modifiés. De plus, les données que l'instance rapporte existent tant que l'instance existe. (C'est-à-dire qu'elles survivent à la purge des données sources.) C'est pourquoi il est important de purger les instances de rapport - en particulier les grandes instances - lorsqu'elles ne sont plus nécessaires car elles peuvent consommer de grandes quantités de stockage. </p>
+<p>Les modèles de rapport - et les instances qu'ils créent - appartiennent à l'utilisateur qui les a créés. Ils ne peuvent pas être explicitement partagés dans le système, mais peuvent l'être implicitement. Voir la documentation "Modèles de rapport" pour plus d'informations.</p>
 
-<h1>Report queue</h1>
-<p>The Report queue lists all of the report instances for the current user. This list does not automatically refresh itself. A manual list refresh can be triggered by clicking the <img src="images/control_play_blue.png"/> icon. Certain events, however, will also trigger a list refresh, such as running a report.</p>
-<p>Report instances in any state will be listed, whether they be completed or still running. The columns of the list will reflect the current state of the instance.</p>
-<p>The columns of the list have the following definitions:</p>
+<h1>Piste des rapports</h1>
+<p> La file d'attente des rapports énumère toutes les instances de rapport pour l'utilisateur actuel. Cette liste ne se rafraîchit pas automatiquement. Un rafraîchissement manuel de la liste peut être déclenché en cliquant sur l'icône <img src="images/control_play_blue.png"/>. Certains événements, cependant, déclenchent également un rafraîchissement de la liste, comme l'exécution d'un rapport.</p>
+<p>Les instances de rapport dans n'importe quel état seront listées, qu'elles soient terminées ou en cours d'exécution. Les colonnes de la liste refléteront l'état actuel de l'instance.</p>
+<p>Les colonnes de la liste ont les définitions suivantes:</p>
 <ul>
-  <li><b>Report name</b>: the name inherited from the report template. Once the instance is created the report name does not change even if the name of the template is changed.</li>
-  <li><b>Run time start</b>: the time that the report engine began creating the report instance</li>
-  <li><b>Run duration</b>: the amount of time it took to create the instance</li>
-  <li><b>From</b>: the time from which report records were selected (inclusive)</li>
-  <li><b>To</b>: the time until which report records were selected (exclusive)</li>
-  <li><b>Records</b>: the total number of records selected</li>
+  <li><b>Nom du rapport</b> : le nom hérité du modèle de rapport. Une fois l'instance créée, le nom du rapport ne change pas, même si le nom du modèle est modifié.</li>
+  <li><b>Début de la durée d'exécution</b> : l'heure à laquelle le moteur de rapport a commencé à créer l'instance de rapport</li>
+  <li><b>Run duration</b> : le temps nécessaire à la création de l'instance</li>
+  <li><b>de</b> : l'heure à partir de laquelle les enregistrements du rapport ont été sélectionnés (inclus)</li>
+  <li><b>Vers</b> : l'heure jusqu'à laquelle les enregistrements du rapport ont été sélectionnés (exclusif)</li>
+  <li><b>Records</b> : le nombre total d'enregistrements sélectionnés</li>
 </ul>
-<p>The <b>Do not purge</b> checkbox allows users to prevent important report instances from being deleted by the scheduled purge process. (See the "Other settings" documentation for more information on report purging.) This feature should only be used when necessary since report instances can potentially consume large amounts of storage.</p>
-<p>The final column in the table provides controls for managing instances. The <img src="images/bullet_down.png"/> icon initiates the download of a CSV file of the report's data, suitable for loading into spreadsheet software. The <img src="images/icon_chart.png"/> icon opens a new browser window displaying report instance information, data statistics, and an image chart of the report data. Clicking the <img src="images/bullet_delete.png"/> icon deletes the report instance. Note that large report instances may take some time to delete.</p>
+<p>La case à cocher <b>Ne pas purger</b> permet aux utilisateurs d'empêcher la suppression d'instances de rapport importantes par le processus de purge programmé. (Voir la documentation "Autres paramètres" pour plus d'informations sur la purge des rapports). Cette fonction ne doit être utilisée qu'en cas de nécessité, car les instances de rapport peuvent potentiellement consommer de grandes quantités de stockage.</p>
+<p>La dernière colonne du tableau fournit des contrôles pour la gestion des instances. L'icône <img src="images/bullet_down.png"/> lance le téléchargement d'un fichier CSV des données du rapport, qui peut être chargé dans un tableur. L'icône <img src="images/icon_chart.png"/> ouvre une nouvelle fenêtre de navigateur affichant des informations sur les instances du rapport, des statistiques sur les données et un graphique des données du rapport. Un clic sur l'icône <img src="images/bullet_delete.png"/> supprime l'instance du rapport. Notez que la suppression des grandes instances de rapport peut prendre un certain temps.</p>
