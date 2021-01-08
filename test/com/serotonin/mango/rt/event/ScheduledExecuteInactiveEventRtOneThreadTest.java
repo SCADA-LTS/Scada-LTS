@@ -16,6 +16,7 @@ import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
@@ -75,6 +76,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
     private CommunicationChannelTypable channelTypeMock;
     private MailingListService mailingListServiceMock;
+    private SystemSettingsService systemSettingsServiceMock;
 
 
     public ScheduledExecuteInactiveEventRtOneThreadTest(int dailyLimitSentEmailsNumber,
@@ -108,6 +110,8 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         when(mailingListServiceMock.getMailingLists(any())).thenReturn(Collections.emptyList());
         when(mailingListServiceMock.convertToMailingLists(any())).thenReturn(Arrays.asList(mailingList));
 
+        systemSettingsServiceMock = mock(SystemSettingsService.class);
+        when(systemSettingsServiceMock.getSMSDomain()).thenReturn("domain.com");
     }
 
     @Before
@@ -120,7 +124,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
             Object[] args = a.getArguments();
             return channelType.validateAddress((String)args[0]);
         });
-        this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock);
+        this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
 
         EventDAO eventDAO = mock(EventDAO.class);
         when(eventDAO.getAllStatusEvents(any())).thenReturn(Collections.emptyList());

@@ -4,6 +4,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.joda.time.DateTime;
+import org.scada_lts.mango.service.SystemSettingsService;
 
 import java.util.Set;
 
@@ -23,20 +24,21 @@ public interface CommunicationChannel {
     boolean isCollectInactiveEvents();
     MailingList getData();
 
-    static CommunicationChannel newChannel(MailingList mailingList, CommunicationChannelTypable type) {
-        return new CommunicationChannelImpl(mailingList, type);
+    static CommunicationChannel newChannel(MailingList mailingList, CommunicationChannelTypable type,
+                                           SystemSettingsService systemSettingsService) {
+        return new CommunicationChannelImpl(mailingList, type, systemSettingsService);
     }
 
-    static CommunicationChannel newSmsChannel(MailingList mailingList) {
-        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.SMS);
+    static CommunicationChannel newSmsChannel(MailingList mailingList, SystemSettingsService systemSettingsService) {
+        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.SMS, systemSettingsService);
     }
 
-    static CommunicationChannel newEmailChannel(MailingList mailingList) {
-        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.EMAIL);
+    static CommunicationChannel newEmailChannel(MailingList mailingList, SystemSettingsService systemSettingsService) {
+        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.EMAIL, systemSettingsService);
     }
 
-    static CommunicationChannel newChannel(MailingList mailingList, EventHandlerVO eventHandler) {
-        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.getType(eventHandler.getHandlerType()));
+    static CommunicationChannel newChannel(MailingList mailingList, EventHandlerVO eventHandler, SystemSettingsService systemSettingsService) {
+        return new CommunicationChannelImpl(mailingList, CommunicationChannelType.getType(eventHandler.getHandlerType()), systemSettingsService);
     }
 
 }

@@ -12,6 +12,7 @@ import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
 
@@ -36,6 +37,8 @@ public class ScheduledExecuteInactiveEventServiceTest {
     private CommunicationChannel emailChannel;
     private int limit = Integer.MAX_VALUE;
 
+    private SystemSettingsService systemSettingsServiceMock;
+
     @Before
     public void config() {
 
@@ -45,6 +48,9 @@ public class ScheduledExecuteInactiveEventServiceTest {
         inactiveIntervalTime = MailingListTestUtils.newDateTime("2020-12-13 20:30:00");
         mailingListWithInactiveInterval = MailingListTestUtils
                 .createMailingListWithInactiveIntervalAndUser(1, inactiveIntervalTime, true, "Mark");
+
+        systemSettingsServiceMock = mock(SystemSettingsService.class);
+        when(systemSettingsServiceMock.getSMSDomain()).thenReturn("domain.com");
 
         MailingListService mailingListService = mock(MailingListService.class);
         when(mailingListService.getMailingLists(any())).thenReturn(Collections.emptyList());
@@ -58,8 +64,8 @@ public class ScheduledExecuteInactiveEventServiceTest {
 
         serviceSubject = ScheduledExecuteInactiveEventService.newInstance(eventDAO, dao, mailingListService);
 
-        emailChannel = CommunicationChannel.newEmailChannel(mailingListWithInactiveInterval);
-        smsChannel = CommunicationChannel.newSmsChannel(mailingListWithInactiveInterval);
+        emailChannel = CommunicationChannel.newEmailChannel(mailingListWithInactiveInterval, systemSettingsServiceMock);
+        smsChannel = CommunicationChannel.newSmsChannel(mailingListWithInactiveInterval, systemSettingsServiceMock);
     }
 
     @Test
@@ -88,7 +94,7 @@ public class ScheduledExecuteInactiveEventServiceTest {
                 .createMailingListWithInactiveIntervalAndUser(1, inactiveIntervalTime,
                         true, "John");
 
-        CommunicationChannel emailChannel = CommunicationChannel.newEmailChannel(sameMailingList);
+        CommunicationChannel emailChannel = CommunicationChannel.newEmailChannel(sameMailingList, systemSettingsServiceMock);
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(sameEvent,eventHandler1);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(sameEvent,eventHandler2);
 
@@ -116,7 +122,7 @@ public class ScheduledExecuteInactiveEventServiceTest {
         MailingList sameMailingList = MailingListTestUtils
                 .createMailingListWithInactiveIntervalAndUser(1, inactiveIntervalTime, true, "John");
 
-        CommunicationChannel smsChannel = CommunicationChannel.newSmsChannel(sameMailingList);
+        CommunicationChannel smsChannel = CommunicationChannel.newSmsChannel(sameMailingList, systemSettingsServiceMock);
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(sameEvent,eventHandler1);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(sameEvent,eventHandler2);
 

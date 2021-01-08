@@ -8,7 +8,6 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.AddressEntry;
 import com.serotonin.mango.vo.mailingList.MailingList;
-import com.serotonin.mango.vo.mailingList.UserEntry;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static utils.MailingListTestUtils.createAddressEntry;
-import static utils.MailingListTestUtils.createUserEntry;
 
 @RunWith(Parameterized.class)
 public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
@@ -79,6 +78,7 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     private CommunicationChannelTypable channelTypeMock;
     private DataPointService dataPointServiceMock;
     private DataSourceService dataSourceServiceMock;
+    private SystemSettingsService systemSettingsServiceMock;
 
     public ScheduledExecuteInactiveEventRtUnscheduleEventTest(int dailyLimitSentEmailsNumber,
                                                               boolean dailyLimitSentEmails,
@@ -112,6 +112,8 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
         event2 = EventTestUtils.createEventCriticalWithActiveTime(2, DateTime.now(),type2);
         scheduledEvent2 = new ScheduledEvent(event2, eventHandler);
 
+        systemSettingsServiceMock = mock(SystemSettingsService.class);
+        when(systemSettingsServiceMock.getSMSDomain()).thenReturn("domain.com");
     }
 
     @Before
@@ -124,7 +126,7 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
             Object[] args = a.getArguments();
             return channelType.validateAddress((String)args[0]);
         });
-        this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock);
+        this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
         this.serviceMock = ScheduledInactiveEventTestUtils.createServiceMock(dailyLimitSentEmails, channel,
                 scheduledEvent1, scheduledEvent2);
 

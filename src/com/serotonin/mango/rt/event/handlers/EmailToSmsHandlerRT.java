@@ -9,9 +9,9 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
@@ -75,8 +75,6 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     private Set<String> addedAtDomain(Set<String> addresses) {
         String domain = systemSettingsService.getSMSDomain();
-        return addresses.stream()
-                .map(a -> a + "@" + domain)
-                .collect(Collectors.toSet());
+        return EmailToSmsUtils.addedAtDomain(addresses, domain);
     }
 }

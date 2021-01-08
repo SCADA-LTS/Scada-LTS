@@ -37,8 +37,8 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 import org.springframework.util.Assert;
 
@@ -928,7 +928,7 @@ public class RuntimeManager {
 
 	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
 
-		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newEmailChannel(mailingList),
+		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newEmailChannel(mailingList, new SystemSettingsService()),
 				inactiveEmailsService, new DataPointService(), new DataSourceService());
 		sendEmail.initialize();
 		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
@@ -936,7 +936,7 @@ public class RuntimeManager {
 
 	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
 
-		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newSmsChannel(mailingList),
+		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newSmsChannel(mailingList, new SystemSettingsService()),
 				inactiveEmailsService, new DataPointService(), new DataSourceService());
 		sendSms.initialize();
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
