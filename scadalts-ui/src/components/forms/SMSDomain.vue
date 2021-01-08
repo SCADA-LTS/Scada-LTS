@@ -34,16 +34,13 @@ export default {
   },
   methods: {
     save() {
-      const api = `./api/systemSettings/saveSMSDomain/${this.url}`;
-      console.log(`test ${this.url}`)
-      console.log(`api:${api}`)
+      const parts_of_domain =  this.url.split('.');
+      const api = `./api/systemSettings/saveSMSDomain/${parts_of_domain}`;
       axios.post(api).then(response => {
-        //TODO change color or disable button
-        console.log(`post request ${this.url}`)
-        this.url_save = this.url
-      }).catch(error => {
-        console.error(error);
-      });
+         this.url_save = this.url
+       }).catch(error => {
+         console.error(error);
+       });
     },
     load() {
       const api= `./api/systemSettings/getSMSDomain`;
