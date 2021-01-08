@@ -1,25 +1,24 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>Publishers can be considered the opposite of data sources. Instead of gathering data into the system, publishers distribute data out. This can be useful when using Mango to gather information from disparate systems in order to modify, cleanse, or otherwise manage it, and then send it in a common format to other systems. In this way, Mango is not only M2M, but M2M2M. Publishers can even be used to send data to other Mango instances, perhaps consolidating data among various field instances into head-office management data. Indeed, instance of Mango can use publishers to control each other in many ways.</p>
-
-<h1>Common publisher configuration</h1>
-<p>Every publisher has a <b>Name</b> which is used to visually identify it in lists. It is recommended that each publisher have a unique name, but is not required. The <b>Enabled</b> checkbox is used to enable or disabled the publisher.</p>
-<p>Publishers use caches to ensure that every point update is delivered to its destination. If the destination for whatever reason does not accept these deliveries for an extended period of time, this cache can become very large. Undelivered point updates are never purged from the cache (except upon the disabling of the publisher), but a <b>Cache warning size</b> can be defined which causes an alarm to be raised whenever this size is exceeded. This alarm returns to normal when the cache size no longer exceeds the warning size, or when the publisher is disabled.</p>
-<p>The <b>Update event</b> value determines whether all point updates are delivered, or only point changes.</p>
+<h1>Vue d'ensembles</h1>
+<p>Les éditeurs peuvent être considérés comme l'opposé des sources de données. Au lieu de rassembler des données dans le système, les éditeurs les distribuent. Cela peut être utile lorsque Mango est utilisé pour rassembler des informations provenant de systèmes disparates afin de les modifier, de les nettoyer ou de les gérer d'une autre manière, puis de les envoyer dans un format commun à d'autres systèmes. De cette façon, Mango n'est pas seulement M2M, mais M2M2M. Les éditeurs peuvent même être utilisés pour envoyer des données à d'autres instances de Mango, en consolidant peut-être les données de diverses instances de terrain en données de gestion du siège. En effet, les instances de Mango peuvent utiliser les éditeurs pour se contrôler mutuellement de plusieurs façons.</p>
+<h1>Configuration commune des éditeurs</h1>
+<p>Chaque éditeur possède un <b>Nom</b> qui permet de l'identifier visuellement dans les listes. Il est recommandé que chaque éditeur ait un nom unique, mais ce n'est pas obligatoire. La case à cocher <b>Activé</b> est utilisée pour activer ou désactiver l'éditeur.</p>
+<p>Les éditeurs utilisent des caches pour s'assurer que chaque point mis à jour est livré à sa destination. Si la destination, pour une raison quelconque, n'accepte pas ces livraisons pendant une période prolongée, ce cache peut devenir très important. Les mises à jour de points non livrées ne sont jamais purgées du cache (sauf en cas de désactivation de l'éditeur), mais il est possible de définir une <b>Taille d'avertissement Cache</b> qui déclenche une alarme chaque fois que cette taille est dépassée. Cette alarme revient à la normale lorsque la taille du cache ne dépasse plus la taille d'avertissement, ou lorsque l'éditeur est désactivé.</p>
+<p>La valeur <b>Mise à jour de l'évènement</b> détermine si toutes les mises à jour de points sont livrées, ou seulement les changements de points.</p>

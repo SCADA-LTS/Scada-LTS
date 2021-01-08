@@ -1,0 +1,31 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
+    
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
+
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
+
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
+ -->
+<h1>Vue d'ensemble</h1>
+<p>
+  La source de données JMX est utilisée pour surveiller les valeurs exposées par un serveur JMX, qu'il soit local à l'instance ou distant. Les valeurs disponibles varient considérablement en fonction des applications exécutées dans l'instance JVM, mais il existe toujours des valeurs communes, comme celles associées à la mémoire JVM.
+</p>
+
+<h1>Configuration</h1>
+<p>
+  Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. La case à cocher <b>Utiliser le serveur JMX local</b> indique si le serveur JMX de la JVM locale doit être utilisé. Sinon, la case <b>Remote JMX server address</b> peut être spécifiée.
+</p>
+
+<p>
+  Le <b>période de mise à jour</b> détermine la fréquence à laquelle le serveur JMX est interrogé pour des données. La vérification <b>Quantifier</b> entraîne un retard dans le démarrage de la source de données, de sorte que les sondages se produisent à un moment "arrondi" (par exemple, si le sondage est effectué toutes les 10 secondes, les sondages se produiront à la 10e seconde, à la 20e seconde, etc.). Sinon, le scrutin commencera immédiatement. 
+</p>

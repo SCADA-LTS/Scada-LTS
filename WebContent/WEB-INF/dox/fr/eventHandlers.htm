@@ -1,118 +1,82 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
+<h1>Vue d'ensembles</h1>
 <p>
-  Event handlers provide user-defined behaviour that is to be performed upon the raising of a particular event. Events 
-  can be raised due to various system conditions (see the Events section on the general help page for more information). 
-  When this happens, associated event handlers are executed.
+  Les gestionnaires d'événements fournissent un comportement défini par l'utilisateur qui doit être exécuté lors du déclenchement d'un événement particulier. Les événements peuvent être déclenchés en raison de diverses conditions du système (voir la section Événements sur la page d'aide générale pour plus d'informations). Lorsque cela se produit, les gestionnaires d'événements associés sont exécutés.
 </p>
 <p>
-  There are currently three types of event handlers:
+  Il existe actuellement trois types de gestionnaires d'événements:
 </p>
 <ul>
-  <li><b>Email handlers</b>: send email messages to lists of recipients</li>
-  <li><b>Set point handlers</b>: cause a settable point to be set with a given value</li>
-  <li><b>Process handlers</b>: cause the given O/S process to be executed</li>
+  <li><b>Gestionnaires de courrier électronique</b> : envoi de messages électroniques à des listes de destinataires</li>
+  <li><b>Gestionnaires de points de consigne</b> : permet de définir un point de consigne avec une valeur donnée</li>
+  <li><b>Gestionnaires de processus</b> : provoquent l'exécution du processus O/S donné</li>
 </ul>
 
-<h1>Event types</h1>
+<h1>Types d'événements</h1>
 <p>
-  The event types section arranges all available event types in the system in a tree. The Point event detectors branch 
-  contains a list of all points (indicated with <img src="images/icon_comp.png"/>) in the system that have event 
-  detectors. The event detectors are listed under their respective point branches.
+  La section "Types d'événements" présente sous forme d'arbre tous les types d'événements disponibles dans le système. La branche "Détecteurs d'événements ponctuels" contient une liste de tous les points (indiqués par <img src="images/icon_comp.png"/>) du système qui ont des détecteurs d'événements. Les détecteurs d'événements sont répertoriés sous leurs branches de points respectives.
 </p>
 <p>
-  Event types for scheduled events, compound event detectors, and system events are listed under their respective 
-  branches. The Data source events branch contains a list of all data sources that can raise events. The events are 
-  listed under their respective data source.
+  Les types d'événements pour les événements programmés, les détecteurs d'événements composés et les événements système sont répertoriés sous leurs branches respectives. La branche "Événements sources de données" contient une liste de toutes les sources de données qui peuvent déclencher des événements. Les événements sont répertoriés sous leur source de données respective.
 </p>
 <p>
-  To add a new event handler, click the event type that you wish to handle; the event handler details section will be 
-  displayed. The actual event handler will not be saved until you click the <img src="images/save_add.png"/> icon. To 
-  edit an existing handler, click the handler's name in the list of handlers under the event type's branch.
+  Pour ajouter un nouveau gestionnaire d'événements, cliquez sur le type d'événement que vous souhaitez gérer ; la section des détails du gestionnaire d'événements s'affichera. Le gestionnaire d'événements réel ne sera pas enregistré avant que vous ne cliquiez sur l'icône <img src="images/save_add.png"/>. Pour modifier un gestionnaire existant, cliquez sur le nom du gestionnaire dans la liste des gestionnaires sous la branche du type d'événement.
 </p>
 <p>
-  When you add a new handler, you must select the handler's <b>Type</b>. Once you save a handler, it's type is no 
-  longer editable.
+  Lorsque vous ajoutez un nouveau gestionnaire, vous devez sélectionner le <b>Type</b> du gestionnaire. Une fois que vous avez sauvegardé un gestionnaire, son type n'est plus modifiable.
 </p>
 
-<h1>Event alias</h1>
+<h1>Alias de l'événement</h1>
 <p>
-  An arbitrary event alias can be set by which the event handler will be visually identified. This alias is also used
-  as the basis of the subject line for email event handlers.
+  Un alias d'événement arbitraire peut être défini, grâce auquel le gestionnaire d'événement sera identifié visuellement. Cet alias est également utilisé comme base de la ligne d'objet pour les gestionnaires d'événements de courrier électronique.
 </p>
 
-<h1>Editing existing handlers</h1>
+<h1>Modifier les gestionnaires existants</h1>
 <p>
-  To save changes to a handler, click the <img src="images/save.png"/> icon at the top right of the Event handler 
-  section. To delete a handler, click the <img src="images/delete.png"/> icon.
+  Pour enregistrer les modifications apportées à un gestionnaire, cliquez sur l'icône <img src="images/save.png"/> en haut à droite de la section Gestionnaire d'événements. Pour supprimer un gestionnaire, cliquez sur l'icône <img src="images/delete.png"/>.
 </p>
 
-<h1>Editing email handlers</h1>
+<h1>Édition des gestionnaires de courrier électronique</h1>
 <p>
-  Email handlers maintain up to three recipient lists. The first is the list to which a message is sent when the event 
-  is initially raised. The second is an optional list to which to send escalations. The third is an optional list sent
-  when the event become inactive.
+  Les gestionnaires de courrier électronique tiennent à jour jusqu'à trois listes de destinataires. La première est la liste à laquelle un message est envoyé lorsque l'événement est initialement soulevé. La deuxième est une liste optionnelle à laquelle envoyer les escalades. La troisième est une liste optionnelle envoyée lorsque l'événement devient inactif.
 </p>
 <p>
-  To add a mailing list to a recipient list, select it from the <b>Add mailing list</b> drop-down list and click the 
-  <img src="images/add.png"/> icon beside the drop-down. To add a user, select it from the <b>Add user</b> list and 
-  click the <img src="images/add.png"/> icon beside the drop-down. To add a free-form email address, enter the address 
-  in the <b>Add address</b> box and click the <img src="images/add.png"/> icon beside the box. To delete any recipient 
-  from a list, click the <img src="images/bullet_delete.png"/> icon beside the recipient. To test a recipient list, 
-  click the <img src="images/email_go.png"/> icon for the list.
+  Pour ajouter une liste de diffusion à une liste de destinataires, sélectionnez-la dans la liste déroulante <b>Ajouter une liste de diffusion</b> et cliquez sur l'icône <img src="images/add.png"/> à côté de la liste déroulante. Pour ajouter un utilisateur, sélectionnez-le dans la liste <b>Ajouter utilisateur</b> et cliquez sur l'icône <img src="images/add.png"/> à côté de la liste déroulante. Pour ajouter une adresse électronique libre, entrez l'adresse dans la case <b>Ajouter une adresse</b> et cliquez sur l'icône <img src="images/add.png"/> à côté de la case. Pour supprimer un destinataire d'une liste, cliquez sur l'icône <img src="images/bullet_delete.png"/> à côté du destinataire. Pour tester une liste de destinataires, cliquez sur l'icône <img src="images/email_go.png"/> de la liste.
 </p>
 <p>
-  To have escalation emails sent, check the <b>Send escalation</b> box, and enter the <b>Escalation recipients</b>. The 
-  escalation email will only be sent if the associated event has remained active for the <b>Escalate if active for</b> 
-  period.
+  Pour faire envoyer des courriels d'escalade, cochez la case <b>Envoyer l'escalade</b>, et entrez le <b>Destinataires de l'escalade</b>. L'e-mail d'escalade ne sera envoyé que si l'événement associé est resté actif pendant la période <b>Escalade si actif pendant la période</b>.
 </p>
 <p>
-  An event inactive notification can be sent by checking the <b>Send inactive notification</b> box. If checked, the 
-  notification will be sent to all event recipients once the event becomes inactive. Note that, if an escalation email 
-  was not sent, the inactive notification will not be sent to the escalation list. Only those recipients that received 
-  an active notification will receive an inactive notification. This behaviour can be overridden by checking the 
-  <b>Override inactive recipients</b> checkbox, which allows the setting a list of specific inactive recipients. This 
-  can be useful if there are active notification recipients that should not be sent any subsequent emails (like a 
-  ticketing system).
+  Une notification inactive d'événement peut être envoyée en cochant la case <b>Envoyer une notification inactive</b>. Si cette case est cochée, la notification sera envoyée à tous les destinataires de l'événement une fois que celui-ci sera devenu inactif. Notez que, si un courriel d'escalade n'a pas été envoyé, la notification inactive ne sera pas envoyée à la liste d'escalade. Seuls les destinataires qui ont reçu une notification active recevront une notification inactive. Ce comportement peut être contourné en cochant la case <b>Annuler les destinataires inactifs</b>, qui permet de définir une liste de destinataires inactifs spécifiques. Cela peut être utile s'il y a des destinataires de notification active qui ne doivent pas recevoir d'autres e-mails (comme un système de billetterie).
 </p>
 
-<h1>Editing set point handlers</h1>
+<h1>Édition des gestionnaires de points de consigne</h1>
 <p>
-  When an event is raised, this handler will set the value of a given settable point. The <b>Target</b> is the settable 
-  point that will be set. Optionally, the point may be set with the value which raised the event, but this is only 
-  possible if the event was raised by a "value changed" point event detector, and the data type of the target is the 
-  same as the data type of the source. To have the target be set with the source value, check the <b>Use source 
-  value</b> box. Otherwise, enter the value to which to set the target in the <b>Value to set</b> area.
+  Lorsqu'un événement est soulevé, ce gestionnaire fixera la valeur d'un point de consigne donné. Le <b>cible</b> est le point de settable qui sera défini. En option, le point peut être défini avec la valeur qui a déclenché l'événement, mais cela n'est possible que si l'événement a été déclenché par un détecteur d'événement à point "valeur modifiée" et que le type de données de la cible est le même que celui de la source. Pour que la cible soit définie avec la valeur de la source, cochez la case <b>Utiliser la valeur de la source</b>. Sinon, entrez la valeur à laquelle fixer la cible dans la zone <b>Valeur à fixer</b>.
 </p>
 
-<h1>Editing process handlers</h1>
+<h1>Gestion des processus d'édition</h1>
 <p>
-  This handler will execute a local process, or shell command, optionally when an event is raised or deactivated. 
-  The respective commands can be any shell command appropriate to the host. Commands should be specified as they would
-  be from a terminal command prompt. For very complex commands, you may find it convenient to write a shell script, 
-  and then call the script from ScadaBR.
+  Ce gestionnaire exécutera un processus local, ou une commande shell, éventuellement lorsqu'un événement est déclenché ou désactivé. Les commandes respectives peuvent être n'importe quelle commande shell appropriée à l'hôte. Les commandes doivent être spécifiées comme elles le seraient à partir d'une invite de commande de terminal. Pour les commandes très complexes, vous pouvez trouver pratique d'écrire un script shell, puis d'appeler le script depuis Scada-LTS.
 </p>
 
 <p>
-  If a process fails to initiate for any reason, a system event will be raised providing the failure description. 
-  Also, processes will be terminated if they run for longer than 15 seconds. Non-empty standard output from the process 
-  will be written to the ScadaBR log at an "information" level. Non-empty error output will be written to the Mango log
-  at an "error" level.
+  Si une procédure ne peut être lancée pour une raison quelconque, un événement système sera déclenché, avec une description de l'échec. De plus, les processus seront interrompus s'ils durent plus de 15 secondes. Les sorties standard non vides du processus seront écrites dans le journal ScadaBR à un niveau "information". Les sorties d'erreur non vides seront enregistrées dans le journal Mango au niveau "erreur".
 </p>

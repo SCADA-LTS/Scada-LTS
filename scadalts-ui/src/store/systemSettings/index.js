@@ -19,7 +19,8 @@ const storeSystemSettings = {
         miscSettings: undefined,
         systemStartupTime: undefined,
         schemaVersion: undefined,
-        scadaConfig: undefined
+        scadaConfig: undefined,
+        defaultLoggingType: undefined,
     },
     mutations: {
         setDatabaseType(state, databaseType) {
@@ -54,6 +55,9 @@ const storeSystemSettings = {
         },
         setScadaConfig(state, scadaConfig) {
             state.scadaConfig = scadaConfig;
+        },
+        setDefaultLoggingType(state, defaultLoggingType) {
+            state.defaultLoggingType = defaultLoggingType;
         }
     },
     actions: {
@@ -348,6 +352,35 @@ const storeSystemSettings = {
                     }).catch(err => {
                         reject(err)
                     })
+            })
+        },
+        saveDefaultLoggingType(context) {
+            return new Promise((resolve, reject) => {
+                axios.post(`${context.state.systemSettingsApiUrl}/saveDefaultLoggingType/${context.state.defaultLoggingType}`,
+                    { timeout: 5000, useCredentials: true, credentials: 'same-origin' }).then(response => {
+                        if (response.status === 200) {
+                            resolve(true)
+                        } else {
+                            reject(false)
+                        }
+                    }).catch(err => {
+                        reject(err)
+                    })
+            })
+        },
+        getDefaultLoggingType(context) {
+            return new Promise((resolve, reject) => {
+                axios.get(`${context.state.systemSettingsApiUrl}/getDefaultLoggingType`, context.state.requestOptions).then(response => {
+                    if (response.status === 200) {
+                        console.debug(response.data);
+                        context.commit('setDefaultLoggingType', response.data.defaultLoggingType)
+                        resolve(response.data.defaultLoggingType)
+                    }
+                    reject(false)
+                }).catch(err => {
+                    console.error(err);
+                    reject(false)
+                })
             })
         },
         configurationEqual(ctx, objects) {

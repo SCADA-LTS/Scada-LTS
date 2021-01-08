@@ -1,25 +1,25 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>This data source is used to collect generic information from emails received at a given POP3 mailbox. The messages in the mailbox can have been received from any source. Using mechanisms similar to an email client, the data source connects to the POP3 mailbox and individually processes the messages found there. Messages are deleted after processing. Regular Expressions are used to extract the desired information. This is a polling data source.</p>
+<h1>Vue d'ensemble</h1>
+<p>Cette source de données est utilisée pour collecter des informations génériques à partir des courriels reçus dans une boîte aux lettres POP3 donnée. Les messages dans la boîte aux lettres peuvent avoir été reçus de n'importe quelle source. En utilisant des mécanismes similaires à ceux d'un client de messagerie, la source de données se connecte à la boîte aux lettres POP3 et traite individuellement les messages qui s'y trouvent. Les messages sont supprimés après le traitement. Des expressions régulières sont utilisées pour extraire les informations souhaitées. Il s'agit d'une source de données de sondage.</p>
 
 <h1>Configuration</h1>
-<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Inbox check period</b> determines how often the mailbox is checked for messages. The <b>POP3 server</b> is the domain name or IP address of the server that hosts the mailbox. The standard POP3 port 110 is used to connect. The <b>Inbox username</b> and <b>Inbox password</b> must be provided for access.</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. Le <b>période de contrôle de la boîte aux lettres</b> détermine la fréquence à laquelle la boîte aux lettres est contrôlée pour les messages. Le serveur <b>POP3</b> est le nom de domaine ou l'adresse IP du serveur qui héberge la boîte aux lettres. Le port POP3 standard 110 est utilisé pour la connexion. Le <b>nom d'utilisateur de la boîte aux lettres </b> et le <b>mot de passe de la boîte aux lettres </b> doivent être fournis pour l'accès.</p>
 
-<p>The <b>Test content</b> area is where sample email content can be put to test a point's RegEx. See the "POP3 point properties" documentation for more information.</p>
+<p>La zone <b>Contenu du test</b> est l'endroit où un échantillon de contenu de courriel peut être mis à l'essai pour tester le RegEx d'un point. Pour plus d'informations, voir la documentation sur les "propriétés des points POP3".</p>

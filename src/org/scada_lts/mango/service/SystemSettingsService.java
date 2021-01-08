@@ -1,6 +1,7 @@
 package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
+import com.serotonin.bacnet4j.type.enumerated.LoggingType;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
@@ -8,6 +9,7 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -54,6 +56,16 @@ public class SystemSettingsService {
         return settings;
     }
 
+    public Map<String, Object> getDefaultLoggingType() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("defaultLoggingType", SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
+        return response;
+    }
+
+    public void setDefaultLoggingType(String defaultLoggingType) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE, defaultLoggingType);
+    }
+
     public JsonSettingsEmail getEmailSettings() {
         JsonSettingsEmail json = new JsonSettingsEmail();
         json.setAuth(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_AUTHORIZATION));
@@ -78,6 +90,14 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD, json.getPassword());
         systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS, json.getFrom());
         systemSettingsDAO.setValue(SystemSettingsDAO.EMAIL_FROM_NAME, json.getName());
+    }
+
+    public String getSMSDomain() {
+        return SystemSettingsDAO.getValue(SystemSettingsDAO.SMS_DOMAIN);
+    }
+
+    public void saveSMSDomain(String smsDomain) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.SMS_DOMAIN, smsDomain);
     }
 
     public JsonSettingsHttp getHttpSettings() {

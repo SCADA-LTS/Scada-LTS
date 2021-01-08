@@ -1,26 +1,26 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>The SNMP data source is used to gather data from device that implement the SNMP protocol. This data source performs polling and also accepts SNMP traps.</p>
+<h1>Vue d'ensemble</h1>
+<p>La source de données SNMP est utilisée pour recueillir les données des appareils qui mettent en œuvre le protocole SNMP. Cette source de données effectue des interrogations et accepte également les traps SNMP.</p>
 
 <h1>Configuration</h1>
-<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Update period</b> determines how often the SNMP points will be polled for data. The remainder of the fields are needed to configure the details of SNMP communication.</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. La période <b>Mise à jour</b> détermine à quelle fréquence les points SNMP seront interrogés pour obtenir des données. Les autres champs sont nécessaires pour configurer les détails de la communication SNMP.</p>
 
-<h1>SNMP host testing</h1>
-<p>The host testing can be used to test both the data source configuration and the existence and value of a given OID (Object IDentifier). Enter the OID to test and click "Get OID value". The current configuration settings will be used to sent an SNMP get request. If successful, the OID value will be displayed. Otherwise, a message describing the error will be provided.</p>
+<h1>Test de l'hôte du PNMS</h1>
+<p>Le test de l'hôte peut être utilisé pour tester à la fois la configuration de la source de données et l'existence et la valeur d'un OID (Object IDentifier) donné. Entrez l'OID à tester et cliquez sur "Get OID value". Les paramètres de configuration actuels seront utilisés pour envoyer une demande d'obtention SNMP. En cas de succès, la valeur de l'OID sera affichée. Sinon, un message décrivant l'erreur sera fourni.</p>
