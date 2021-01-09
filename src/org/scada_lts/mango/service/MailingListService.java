@@ -18,7 +18,6 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
@@ -30,6 +29,9 @@ import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
 import org.scada_lts.mango.adapter.MangoMailingList;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.CommunicationChannelType;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,6 +43,7 @@ import java.util.Set;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class MailingListService implements MangoMailingList {
 
 	//TODO
@@ -56,10 +59,20 @@ public class MailingListService implements MangoMailingList {
 	private static final MailingListMemberDAO mailingListMemberDAO = new MailingListMemberDAO();
 
 	private void setRelationalData(MailingList mailingList) {
+		setDataFromDatabase(mailingList);
+
 		mailingList.getInactiveIntervals().addAll(mailingListInactiveDAO.getInactiveInterval(mailingList.getId()));
 		mailingList.setEntries(mailingListMemberDAO.getEmailRecipient(mailingList.getId()));
 
 		populateEntrySubclasses((mailingList.getEntries()));
+	}
+
+	private void setDataFromDatabase(MailingList mailingList) {
+		MailingList mailingListFromDatabase = mailingListDAO.getMailingList(mailingList.getId());
+		mailingList.setDailyLimitSentEmails(mailingListFromDatabase.isDailyLimitSentEmails());
+        mailingList.setDailyLimitSentEmailsNumber(mailingListFromDatabase.getDailyLimitSentEmailsNumber());
+        mailingList.setCronPattern(mailingListFromDatabase.getCronPattern());
+		mailingList.setCollectInactiveEmails(mailingListFromDatabase.isCollectInactiveEmails());
 	}
 
 	@Override
@@ -75,6 +88,13 @@ public class MailingListService implements MangoMailingList {
 	@Override
 	public List<MailingList> getMailingLists() {
 		List<MailingList> lists = mailingListDAO.getMailingLists();
+		setRelationalData(lists);
+		return lists;
+	}
+
+	@Override
+	public List<MailingList> getMailingLists(Set<Integer> ids) {
+		List<MailingList> lists = mailingListDAO.getMailingLists(ids);
 		setRelationalData(lists);
 		return lists;
 	}
@@ -110,6 +130,42 @@ public class MailingListService implements MangoMailingList {
 	}
 
 	@Override
+	public Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, DateTime sendTime, CommunicationChannelType type) {
+		List<EmailRecipient> entries = new ArrayList<EmailRecipient>(beans.size());
+		for (RecipientListEntryBean bean : beans) {
+			entries.add(bean.createEmailRecipient());
+		}
+		populateEntrySubclasses(entries);
+		Set<String> addresses = new HashSet<String>();
+		for (EmailRecipient entry : entries) {
+			entry.appendAddresses(addresses, sendTime, type);
+		}
+		return addresses;
+	}
+
+	@Override
+	public List<MailingList> convertToMailingLists(List<RecipientListEntryBean> beans) {
+		List<EmailRecipient> entries = new ArrayList<>();
+		for (RecipientListEntryBean bean : beans) {
+			entries.add(bean.createEmailRecipient());
+		}
+		populateEntrySubclasses(entries);
+		List<MailingList> addresses = new ArrayList<>();
+		for(EmailRecipient recipient: entries) {
+			if(recipient instanceof  MailingList)
+				addresses.add(MailingList.class.cast(recipient));
+			else {
+				MailingList mailingList = new MailingList();
+				List<EmailRecipient> emailRecipients = new ArrayList<>();
+				emailRecipients.add(recipient);
+				mailingList.setEntries(emailRecipients);
+				addresses.add(mailingList);
+			}
+		}
+		return addresses;
+	}
+
+	@Override
 	public void populateEntrySubclasses(List<EmailRecipient> entries) {
 		// Update the user type entries with their respective user objects.
 		UserDAO userDAO = new UserDAO();
@@ -125,12 +181,19 @@ public class MailingListService implements MangoMailingList {
 
 	@Override
 	public void saveMailingList(final MailingList mailingList) {
+
+		if (mailingList.getId() != Common.NEW_ID) {
+			Common.ctx.getRuntimeManager().removeMailingList(mailingList);
+		}
+
 		if (mailingList.getId() == Common.NEW_ID) {
 			mailingList.setId(mailingListDAO.insert(mailingList));
 		} else {
 			mailingListDAO.update(mailingList);
 		}
 		saveRelationalData(mailingList);
+		setRelationalData(mailingList);
+		Common.ctx.getRuntimeManager().saveMailingList(mailingList);
 	}
 
 	@Override
@@ -150,6 +213,7 @@ public class MailingListService implements MangoMailingList {
 
 	@Override
 	public void deleteMailingList(int mailingListId) {
+		Common.ctx.getRuntimeManager().removeMailingList(mailingListId);
 		mailingListDAO.delete(mailingListId);
 	}
 

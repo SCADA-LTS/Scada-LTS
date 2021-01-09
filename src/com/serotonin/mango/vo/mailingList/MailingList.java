@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.util.IntervalUtil;
+import com.serotonin.timer.CronExpression;
 import org.joda.time.DateTime;
 
 import com.serotonin.json.JsonObject;
@@ -32,6 +35,8 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.service.CommunicationChannelTypable;
+import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
 public class MailingList extends EmailRecipient {
@@ -44,11 +49,19 @@ public class MailingList extends EmailRecipient {
     @JsonRemoteProperty(innerType = EmailRecipient.class)
     private List<EmailRecipient> entries;
 
+    private String cronPattern;
+    private boolean collectInactiveEmails;
+    private int dailyLimitSentEmailsNumber;
+    private boolean dailyLimitSentEmails;
+
     /**
      * Integers that are present in the inactive intervals set are times at which the mailing list schedule is not to be
      * sent to. Intervals are split into 15 minutes, starting at [00:00 to 00:15) on Monday. Thus, there are 4 * 24 * 7
      * = 672 individual periods.
      */
+
+
+
     @JsonRemoteProperty(innerType = Integer.class)
     private Set<Integer> inactiveIntervals = new TreeSet<Integer>();
 
@@ -109,7 +122,7 @@ public class MailingList extends EmailRecipient {
 
     @Override
     public void appendAddresses(Set<String> addresses, DateTime sendTime) {
-        if (sendTime != null && inactiveIntervals.contains(getIntervalIdAt(sendTime)))
+        if (sendTime != null && !isActive(sendTime))
             return;
         appendAllAddresses(addresses);
     }
@@ -120,12 +133,17 @@ public class MailingList extends EmailRecipient {
             e.appendAddresses(addresses, null);
     }
 
-    private static int getIntervalIdAt(DateTime dt) {
-        int interval = 0;
-        interval += dt.getMinuteOfHour() / 15;
-        interval += dt.getHourOfDay() * 4;
-        interval += (dt.getDayOfWeek() - 1) * 96;
-        return interval;
+    @Override
+    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type) {
+        if (sendTime != null && !IntervalUtil.isActiveByInterval(this, sendTime))
+            return;
+        appendAllAddresses(addresses, type);
+    }
+
+    @Override
+    public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type) {
+        for (EmailRecipient e : entries)
+            e.appendAddresses(addresses, null, type);
     }
 
     public void validate(DwrResponseI18n response) {
@@ -140,6 +158,14 @@ public class MailingList extends EmailRecipient {
         // Check for entries.
         if (entries.size() == 0)
             response.addGenericMessage("mailingLists.validate.entries");
+
+        if(isCollectInactiveEmails()) {
+            try {
+                new CronExpression(cronPattern);
+            } catch (Exception e) {
+                response.addContextualMessage("cronPattern", "mailingLists.validate.correctCron", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -156,5 +182,45 @@ public class MailingList extends EmailRecipient {
     @Override
     public void jsonDeserialize(JsonReader reader, JsonObject json) {
         // no op
+    }
+
+    public String getCronPattern() {
+        return cronPattern;
+    }
+
+    public void setCronPattern(String cronPattern) {
+        this.cronPattern = cronPattern;
+    }
+
+    public boolean isCollectInactiveEmails() {
+        return collectInactiveEmails;
+    }
+
+    public void setCollectInactiveEmails(boolean collectInactiveEmails) {
+        this.collectInactiveEmails = collectInactiveEmails;
+    }
+
+    public int getDailyLimitSentEmailsNumber() {
+        return dailyLimitSentEmailsNumber;
+    }
+
+    public void setDailyLimitSentEmailsNumber(int dailyLimitSentEmailsNumber) {
+        this.dailyLimitSentEmailsNumber = dailyLimitSentEmailsNumber;
+    }
+
+    public boolean isDailyLimitSentEmails() {
+        return dailyLimitSentEmails;
+    }
+
+    public void setDailyLimitSentEmails(boolean dailyLimitSentEmails) {
+        this.dailyLimitSentEmails = dailyLimitSentEmails;
+    }
+
+    public boolean isActive(DateTime sendTime) {
+        return IntervalUtil.isActiveByInterval(this, sendTime);
+    }
+
+    public boolean isActive(EventInstance sendTime) {
+        return IntervalUtil.isActiveByInterval(this, sendTime);
     }
 }

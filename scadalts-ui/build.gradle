@@ -1,0 +1,40 @@
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
+apply plugin: 'base'
+apply plugin: 'com.moowork.node'
+
+node {
+    version = "12.19.0"
+    download = false
+}
+
+task bundle(type: NpmTask, dependsOn: npmInstall) {
+    args = ['run', 'build']
+}
+
+task clearResources(type: Delete, dependsOn: bundle) {
+    delete files ("../WebContent/resources/js-ui")
+}
+
+task copyNewUiCss(type: Copy, dependsOn: clearResources) {
+    from "dist/css"
+    include "*.css"
+    into "../WebContent/resources/js-ui/app/css"
+}
+
+task copyNewUiJs(type: Copy, dependsOn: copyNewUiCss) {
+    from "dist/js/app.js" , "dist/js/chunk-vendors.js"
+    into "../WebContent/resources/js-ui/app/js"
+}
+
+task copyNewUiFonts(type: Copy, dependsOn: copyNewUiJs) {
+    from "dist/fonts"
+    into "../WebContent/resources/js-ui/app/fonts"
+}
+
+task copyNewUiImages(type: Copy, dependsOn: copyNewUiFonts) {
+    from "dist/resources"
+    into "../WebContent/resources"
+}

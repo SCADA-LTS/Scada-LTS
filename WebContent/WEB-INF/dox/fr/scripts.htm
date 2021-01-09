@@ -1,0 +1,35 @@
+<!--
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
+    
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
+
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
+
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
+ -->
+<h1>Vue d'ensemble</h1>
+
+<p>Les scripts sont des procédures qui automatisent l'exécution des tâches, permettant le contrôle des sources de données et des points de données. Les scripts n'ont pas de valeur de retour, mais ils permettent de fixer une valeur à un point de données, puisqu'il est paramétrable.</p>
+
+<h1>JavaScript / ECMAScript</h1>
+<p>Les scripts nécessitent une certaine connaissance de JavaScript, également connu sous le nom d'ECMAScript. (La spécification complète de l'ECMAScript est disponible <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank">ici</a>). Le JavaScript est sans doute le langage de script le plus populaire utilisé aujourd'hui, c'est le seul langage disponible pour tous les navigateurs web populaires. Il en résulte que, de loin, l'utilisation la plus courante de JavaScript est celle des pages web. Le contexte dans la source de métadonnées est bien sûr différent, il n'y a pas d'objets "fenêtre" ou "document", entre autres différences plus subtiles. Mis à part les différences contextuelles, une implémentation complète de l'ECMAScript est disponible dans cette source de données. Plus précisément, l'implémentation <a href="http://www.mozilla.org/rhino/" target="_blank">Rhino</a> est utilisée.</p>
+
+<h1>Configuration du script</h1>
+
+<p>Le contexte <b>Script</b> définit les points qui seront disponibles pour le script lorsqu'il s'exécutera. Chaque point ajouté doit recevoir un <b>Var</b>, qui est le nom de variable que les données du point seront à laquelle le scénario est assigné. Ces noms de var script doivent être des noms de variables ECMAScript valides : ils doivent commencer par une lettre ou un trait de soulignement, et ne peuvent pas contenir d'espaces. D'autres contraintes peuvent s'appliquer. Vous recevrez des exceptions de validation ou d'exécution de script si les noms de variables de script ne sont pas correctement définis. Pour ajouter un point au contexte, sélectionnez-le dans la liste et cliquez sur l'icône <img src="images/add.png"/>. Pour supprimer un point existant du contexte, cliquez sur l'icône <img src="images/bullet_delete.png"/> associée à ce point. Les points qui ne sont pas nécessaires dans le script ne doivent pas être ajoutés au contexte, car la préparation des données pour le script implique un certain surcroît de travail. De plus, les variables de script inutiles peuvent provoquer des exécutions de script non intentionnelles. (Voir "Exécution de script" ci-dessous.) Cependant, le contraire peut également être vrai : il peut être utile d'inclure une var de script dans un contexte afin de provoquer l'exécution du script.</p>
+
+<p>Les <b>objets contextuels</b> contrôlent les sources de données et les points de données. Comme pour les points de contexte, un nom <b>Var</b> doit être défini, et la case à cocher permet à l'objet d'être associé au contexte.</p>
+
+<h1>Exécution du script</h1>
+<p>L'exécution peut être manuelle, en cliquant sur l'icône <img src="images/cog_go.png"/>, ou automatisée, par le biais de gestionnaires d'événements. En exécution manuelle, un message s'affichera pour indiquer une erreur ou un succès. Le script doit être sauvegardé avant une exécution.</p>
+
+

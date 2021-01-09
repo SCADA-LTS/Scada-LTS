@@ -1,27 +1,27 @@
 <!--
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Mango -Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
-<p>The Spinwave data source is used to gather data from Spinwave devices connected to a local gateway, and accessible via RS232 or RS485 (requires adapter) communication. This data source receives regular updates from the connected devices; it does not poll.</p>
+<h1>Vue d'ensemble</h1>
+<p>La source de données Spinwave est utilisée pour recueillir des données à partir de dispositifs Spinwave connectés à une passerelle locale, et accessibles via une communication RS232 ou RS485 (nécessite un adaptateur). Cette source de données reçoit des mises à jour régulières des dispositifs connectés ; elle ne pollue pas.</p>
 
 <h1>Configuration</h1>
-<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Port</b> selection provides a list of all available serial ports on the host hardware. This corresponds to the port into which the Spinwave gateway is connected. The <b>Message version</b> depends upon the hardware that you are using. Consult your Spinwave documentation for details.</p>
-<p><b>Sensor addresses</b> are typically found by using the sensor listener functionality described below, although if you know the unique addresses of your hardware you may enter them manually. After entering the address value, click the <img src="images/add.png"/> icon to add it to the list of known addresses.</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. La sélection <b>Port</b> fournit une liste de tous les ports série disponibles sur le matériel hôte. Cela correspond au port dans lequel la passerelle Spinwave est connectée. La version <b>Message</b> dépend du matériel que vous utilisez. Consultez la documentation de votre Spinwave pour plus de détails.</p>
+<p><b>Les adresses des capteurs</b> sont généralement trouvées en utilisant la fonctionnalité d'écoute des capteurs décrite ci-dessous, bien que si vous connaissez les adresses uniques de votre matériel, vous pouvez les saisir manuellement. Après avoir saisi la valeur de l'adresse, cliquez sur l'icône <img src="images/add.png"/> pour l'ajouter à la liste des adresses connues.</p>
 
-<h1>Spinwave sensor listener</h1>
-<p>Once the Spinwave gateway has been connected to the host, a listener can be started that waits for messages to arrive. Typically, devices are configured to send messages every 21 seconds, but other settings are possible. To add the addresses of all devices that were heard to the Sensor addresses list, click the "Add found sensors to list" button.</p>
+<h1>Capteur d'ondes spongieuses à l'écoute</h1>
+<p>Une fois que la passerelle Spinwave a été connectée à l'hôte, il est possible de lancer un auditeur qui attend l'arrivée des messages. En général, les appareils sont configurés pour envoyer des messages toutes les 21 secondes, mais d'autres réglages sont possibles. Pour ajouter les adresses de tous les dispositifs qui ont été écoutés à la liste des adresses de capteurs, cliquez sur le bouton "Ajouter les capteurs trouvés à la liste".</p>

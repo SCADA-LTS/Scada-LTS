@@ -1,0 +1,43 @@
+<!--
+    Scada-LTS - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
+    
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
+
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
+
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
+ -->
+<p>
+  Le Scada-LTS permet actuellement l'utilisation de deux systèmes de gestion de base de données (SGBD): <b>Derby</b> and <b>MySQL</b>.
+</p>
+
+<p>
+  Le <b>Derby</b> est utilisé par défaut par le système. Toutefois, si vous avez besoin de modifier sa configuration initiale, vous pouvez le faire en cliquant sur le bouton
+  est nécessaire pour modifier le fichier situé dans <b>"Scada-LTS*/WEB-INF/classes/env.properties"</b> et <b>"Scada-LTS*/WEB-INF/classes/env.properties.derby"</b>.
+</p>
+
+<p>
+  Pour utiliser <b>MySQL</b>, vous devez saisir les données nécessaires à son utilisation correcte. Ainsi, le fichier devait être modifié
+  est en <b>"Scada-LTS*/WEB-INF/classes/env.properties.mysql"</b>. Fondamentalement, les paramètres suivants doivent être saisis :
+  	<p>
+	  <b>db.Nomd'utilisateur: </b> Nom d'utilisateur.
+  	</p>
+	<p>
+	  <b>db.Motdepasse: </b>Mot de passe.
+  	</p>
+  
+ Vous avez fait les modifications nécessaires, vous devez choisir <b>MySQL</b> comme option et cliquer sur l'icône pour enregistrer. Ensuite, redémarrez le serveur d'application (par exemple Tomcat). 
+</p>
+
+<p>
+  <b>Scada-LTS*: </b> Scada-LTS l'emplacement sur le serveur d'application (ex : "Pasta_Tomcat/webapps/Scada-LTS"). 
+</p>

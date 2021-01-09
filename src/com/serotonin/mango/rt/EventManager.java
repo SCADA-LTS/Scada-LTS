@@ -18,11 +18,7 @@
  */
 package com.serotonin.mango.rt;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
@@ -361,6 +357,10 @@ public class EventManager implements ILifecycle {
 		}
 		if (rts != null)
 			evt.setHandlers(rts);
+	}
+
+	public void handleRaiseEvent(EventInstance evt) {
+		handleRaiseEvent(evt, Collections.emptySet());
 	}
 
 	private void handleRaiseEvent(EventInstance evt,

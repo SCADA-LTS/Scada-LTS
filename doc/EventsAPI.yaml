@@ -1,0 +1,879 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080/ScadaBR/api'
+    description: 'Scada development Server'
+    variables: {}
+info:
+  version: 2.5.0
+  title: Scada-LTS API
+  description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
+  termsOfService: ''
+  contact: 
+    name: 'Radek - SoftQ Developer'
+    email: 'rjajko@softq.pl'
+  license:
+    name: 'GPL-2.0'
+paths:
+  /eventHandler/getAll:
+    get:
+      tags:
+        - EventHandler API
+      summary: 'Get all Event Handlers'
+      description: 'Present Event Handler list of all type of Event Handlers'
+      operationId: 'eventHandlerGetAll'
+      responses:
+        '200':
+          description: 'Fetch successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventHandlerVO'
+          headers: {}
+  /eventHandler/getAllPlc:
+    get:
+      tags:
+        - EventHandler API
+      summary: 'Get all Event Handlers for PLC alarms'
+      description: 'This EventHandlers contain eventTypeId, EventTyepReference and mailing list recipients'
+      operationId: 'eventHandlerGetAllPlc'
+      responses:
+        '200':
+          description: 'Fetch successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventHandlerPlcDTO'
+          headers: {}
+  /eventHandler/get/{xid}:
+    get:
+      tags:
+        - EventHandler API
+      summary: 'Get Event Handler by Export ID'
+      description: 'Get Event Handler by Export ID'
+      operationId: 'eventHandlerGetByXid'
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventHandlerVO'
+          headers: {}
+  /eventHandler/get/id/{id}:
+    get:
+      tags:
+        - EventHandler API
+      summary: 'Get Event Handler by EventHandler ID'
+      description: 'Get Event Handler by Event Handler ID'
+      operationId: 'eventHandlerGetById'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventHandlerVO'
+          headers: {}
+  /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/1:
+    post:
+      tags:
+        - EventHandler API
+      summary: 'Create Point Event Handler'
+      description: 'Create a new Event Handler with Point type property'
+      operationId: 'eventHandlerSetEventHandlerPoint'
+      parameters:
+        - name: 'typeId'
+          description: "Event Handler Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef1'
+          description: "Data Point ID"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef2'
+          description: "Event Detector Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Event Handler with Point properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id: 
+                    type: number
+                  xid: 
+                    type: string
+                  alias: 
+                    type: string
+                  disabled: 
+                    type: boolean
+                  targetPointId: 
+                    type: number
+                  activeAction: 
+                    type: number
+                  activeValueToSet: 
+                    type: string
+                  activePointId: 
+                    type: number
+                  inactiveAction: 
+                    type: number
+                  inactiveValueToSet: 
+                    type: string
+                  inactivePointId: 
+                    type: number
+      responses:
+        '200':
+          description: "Get successful"
+          headers: {}
+  
+  /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/2:
+    post:
+      tags:
+        - EventHandler API
+      summary: 'Create Email Event Handler'
+      description: 'Create a new Event Handler with Email type property'
+      operationId: 'eventHandlerSetEventHandlerEmail'
+      parameters:
+        - name: 'typeId'
+          description: "Event Handler Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef1'
+          description: "Data Point ID"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef2'
+          description: "Event Detector Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Event Handler with Point properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id: 
+                    type: number
+                  xid: 
+                    type: string
+                  alias: 
+                    type: string
+                  disabled: 
+                    type: boolean
+                  activeRecipients: 
+                    type: object
+                  sendEscalation: 
+                    type: boolean
+                  escalationDelayType: 
+                    type: number
+                  escalationDelay: 
+                    type: number
+                  escalationRecipients: 
+                    type: object
+                  sendInactive: 
+                    type: boolean
+                  inactiveOverride: 
+                    type: boolean
+                  inactiveRecipients:
+                    type: object
+      responses:
+        '200':
+          description: "Get successful"
+          headers: {}
+          
+  /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/3:
+    post:
+      tags:
+        - EventHandler API
+      summary: 'Create Process Event Handler'
+      description: 'Create a new Event Handler with Process type property'
+      operationId: 'eventHandlerSetEventHandlerProcess'
+      parameters:
+        - name: 'typeId'
+          description: "Event Handler Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef1'
+          description: "Data Point ID"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef2'
+          description: "Event Detector Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Event Handler with Point properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id: 
+                    type: number
+                  xid: 
+                    type: string
+                  alias: 
+                    type: string
+                  disabled: 
+                    type: boolean
+                  activeProcessCommand: 
+                    type: string
+                  inactiveProcessCommand: 
+                    type: string
+      responses:
+        '200':
+          description: "Get successful"
+          headers: {}
+  
+  /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/4:
+    post:
+      tags:
+        - EventHandler API
+      summary: 'Create Script Event Handler'
+      description: 'Create a new Event Handler with Script type property'
+      operationId: 'eventHandlerSetEventHandlerScript'
+      parameters:
+        - name: 'typeId'
+          description: "Event Handler Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef1'
+          description: "Data Point ID"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef2'
+          description: "Event Detector Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Event Handler with Point properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id: 
+                    type: number
+                  xid: 
+                    type: string
+                  alias: 
+                    type: string
+                  disabled: 
+                    type: boolean
+                  activeScriptCommand: 
+                    type: number
+                  inactiveScriptCommand: 
+                    type: number
+      responses:
+        '200':
+          description: "Get successful"
+          headers: {}
+          
+  /eventHandler/update/{typeId}/{typeRef1}/{typeRef2}:
+    put:
+      tags:
+        - EventHandler API
+      summary: 'Update Event Handler'
+      description: 'Update the Event Handler'
+      operationId: 'eventHandlerUpdateEventHandler'
+      parameters:
+        - name: 'typeId'
+          description: "Event Handler Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef1'
+          description: "Data Point ID"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'typeRef2'
+          description: "Event Detector Type"
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Event Handler with Point properties
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventHandlerVO'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: {}
+  /eventHandler/delete/{xid}:
+    delete:
+      tags:
+        - EventHandler API
+      summary: 'Delete Event Handler by Export ID'
+      description: 'Delete Event Handler'
+      operationId: 'eventHandlerDeleteEventHandler'
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Delete successful'
+  /eventHandler/delete/id/{id}:
+    delete:
+      tags:
+        - EventHandler API
+      summary: 'Delete Event Handler by ID'
+      description: 'Delete Event Handler'
+      operationId: 'eventHandlerDeleteByID'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'Delete successful'
+
+  /eventDetector/getAll/{datapointXid}:
+    get:
+      tags:
+        - EventDetector API
+      summary: 'Get all Event Detectors for given DataPoint by its Export ID'
+      description: 'Get all Event Detectors for given DataPoint by its Export ID'
+      operationId: 'eventDetectorGetEventDetectorsByXid'
+      parameters:
+        - name: 'datapointXid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PointEventDetectorVO'
+          headers: { }
+
+  /eventDetector/getAll/id/{datapointId}:
+    get:
+      tags:
+        - EventDetector API
+      summary: 'Get all Event Detectors for given DataPoint by its ID'
+      description: 'Get all Event Detectors for given DataPoint by its ID'
+      operationId: 'eventDetectorGetEventDetectorsById'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PointEventDetectorVO'
+          headers: { }
+
+  /eventDetector/set/binary/state/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type State for Binary Point by its ID'
+      operationId: 'eventDetectorSetBinaryStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Binary State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                binaryState:
+                  type: boolean
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/binary/state/xid/{datapointXid}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type State for Binary Point by its Export ID'
+      operationId: 'eventDetectorSetBinaryStateEventDetectorXid'
+      parameters:
+        - name: 'datapointXid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        description: Point Event Detector with Binary State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                binaryState:
+                  type: boolean
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/update/binary/state/{datapointId}/{id}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update an existing Event Detector of given ID for Binary Point'
+      operationId: 'eventDetectorUpdateBinaryStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Binary State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                binaryState:
+                  type: boolean
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/delete/{datapointId}/{id}:
+    delete:
+      tags:
+        - EventDetector API
+      summary: 'Delete Event Detector for given Point by ID'
+      description: 'Delete Event Detector'
+      operationId: 'eventDetectorDeleteEventHandlerById'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: 'Delete successful'
+
+  /mailingList/getAll:
+    get:
+      tags:
+        - MailingList API
+      summary: 'Get all MailingLists'
+      description: 'Get all MailingLists'
+      operationId: 'mailingListGetMailingLists'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+          headers: { }
+  /mailingList/get/id/{id}:
+    get:
+      tags:
+        - MailingList API
+      summary: 'Get MailingList by ID'
+      description: 'Get MailingList by ID'
+      operationId: 'mailingListGetMailingListsById'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+          headers: { }
+  /mailingList/get/{xid}:
+    get:
+      tags:
+        - MailingList API
+      summary: 'Get MailingList by Export ID'
+      description: 'Get MailingList by Export ID'
+      operationId: 'mailingListGetMailingListsByXid'
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+          headers: { }
+components:
+  schemas:
+    EventHandlerPlcDTO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        eventTypeId:
+          type: number
+        eventTypeRef1:
+          type: number
+        eventTypeRef2:
+          type: number
+        recipients:
+          type: array
+          items:
+            type: object
+            properties:
+              recipientType:
+                type: number
+              referenceId:
+                type: number
+              referenceAddress:
+                type: string
+    EventHandlerVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        handlerType:
+          type: number
+        disabled:
+          type: boolean
+        targetPointId:
+          type: number
+        activeAction:
+          type: number
+        activeValueToSet:
+          type: string
+        activePointId:
+          type:  number
+        inactiveAction:
+          type: number
+        inactiveValueToSet:
+          type: string
+        inactivePointId:
+          type: number
+        activeRecipients:
+          type: array
+          items:
+            type: object
+            properties:
+              recipientType:
+                type: number
+              referenceId:
+                type: number
+              referenceAddress:
+                type: string
+        sendEscalation:
+          type: boolean
+        escalationDelayType:
+          type: number
+        escalationDelay:
+          type: number
+        escalationRecipients:
+          type: array
+          items:
+            type: string
+        sendInactive:
+          type: boolean
+        inactiveOverride:
+          type: boolean
+        inactiveRecipients:
+          type: array
+          items:
+            type: string
+        activeProcessCommand:
+          type: string
+        inactiveProcessCommand:
+          type: string
+        activeScriptCommand:
+          type: number
+        inactiveScriptCommand:
+          type: number
+        typeKey:
+          type: string
+        message:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: string
+    PointEventDetectorVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        detectorType:
+          type: number
+        alarmLevel:
+          type: number
+        limit:
+          type: number
+        duration:
+          type: number
+        durationType:
+          type: number
+        binaryState:
+          type: boolean
+        multistateState:
+          type: number
+        changeCount:
+          type: number
+        alphanumericState:
+          type: number
+        weight:
+          type: number
+        description:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: string
+        eventType:
+          type: object
+          properties:
+            typeId:
+              type: number
+            typeRef1:
+              type: number
+            typeRef2:
+              type: number
+            description:
+              type: object
+              properties:
+                key:
+                  type: string
+                args:
+                  type: array
+                  items:
+                    type: string
+            handlers:
+              type: object
+            alarmLevel:
+              type: number
+            eventDetectorKey:
+              type: string
+        rtnApplicable:
+          type: boolean
+        eventDetectorKey:
+          type: string
+        def:
+          type: object
+          properties:
+            id:
+              type: number
+            name:
+              type: string
+            exportName:
+              type: string
+            nameKey:
+              type: string
+            supportedDataTypes:
+              type: array
+              items:
+                type: number
+        typeKey:
+          type: string
+        durationDescription:
+          type: object
+          properties:
+            key:
+              type: string
+            args:
+              type: array
+              items:
+                type: object
+    MailingList:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        entries:
+          type: array
+          items:
+            type: object
+        inactiveIntervals:
+          type: array
+          items:
+            type: object
+        recipientType:
+          type: number
+        referenceId:
+          type: number
+        referenceAddress:
+          type: string
+  parameters:
+    Authorization:
+      name: Authorization
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: Basic YWRtaW46YWRtaW4=
+      description: ''
+    Content-Type:
+      name: Content-Type
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: application/json
+security: []
+tags: []
+externalDocs:
+  url: ''
+  description: ''

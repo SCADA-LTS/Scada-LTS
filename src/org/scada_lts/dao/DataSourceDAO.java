@@ -75,6 +75,18 @@ public class DataSourceDAO {
 				+ COLUMN_NAME_DATA + " "
 			+ "from dataSources ";
 
+	private static final String DATA_SOURCE_PLC_SELECT = "" +
+			"SELECT DISTINCT " +
+			"ds." + COLUMN_NAME_ID + ", " +
+			"ds." + COLUMN_NAME_XID + ", " +
+			"ds." + COLUMN_NAME_NAME + ", " +
+			"ds." + COLUMN_NAME_DATA + " " +
+			"FROM dataSources ds " +
+			"JOIN dataPoints dp ON " +
+			"dp.dataSourceId = ds." + COLUMN_NAME_ID + " " +
+			"WHERE dp.plcAlarmLevel>0";
+
+
 	private static final String DATA_SOURCE_SELECT_WHERE_ID = ""
 				+ DATA_SOURCE_SELECT
 			+ "where "
@@ -178,6 +190,11 @@ public class DataSourceDAO {
 		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
 		Collections.sort(objList, new DataSourceNameComparator());
 		return objList;
+	}
+
+	public List<DataSourceVO<?>> getDataSourcesPlc() {
+		List<DataSourceVO<?>> list = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_PLC_SELECT, new DataSourceRowMapper());
+		return list;
 	}
 
 	public List<DataSourceVO<?>> getDataSourceBaseOfName( String partOfNameDS) {

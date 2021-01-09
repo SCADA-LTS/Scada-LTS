@@ -1,33 +1,24 @@
 <!--
-    ScadaBR - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    Scada-LTS - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
 
 <h1>Configuration</h1>
-<p>Every datasource requires one <b>Name</b>, that may contain any
-description.</p>
-<p>The <b>Source Address</b> is the master address, or, the
-datasource's to be registered address and the <b>Slave Address</b> is
-the remote device address to which you wish to communicate.</p>
-<p>The <b>RBE Poll Period</b> corresponds to the time interval upon
-which the system makes requisitions of classes 1, 2 an 3 (events) to the
-slave device. The <b>Static Poll Period</b> corresponds to the time
-interval upon which the system makes requisitions of class 0 to the
-device and is <b>relative to the RBE polling period</b>, so, if RBE
-period = 2s and Static Poll Period = 30,<b> the datasource will
-require class 0 data every 60 seconds to the device.</b></p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut contenir n'importe quelle description.</p>
+<p>La <b>Adresse de la source</b> est l'adresse du maître, ou l'adresse de la source de données à enregistrer et la <b>Adresse de l'esclave</b> est l'adresse du dispositif à distance auquel vous souhaitez communiquer.</p>
+<p>La période de sondage <b>RBE</b> correspond à l'intervalle de temps pendant lequel le système effectue des réquisitions de classes 1, 2 et 3 (événements) au dispositif esclave. La <b>période d'interrogation statique</b> correspond à l'intervalle de temps pendant lequel le système fait des demandes de classe 0 à l'appareil et est <b>relative à la période d'interrogation de l'EBR</b>, donc, si la période d'EBR = 2s et la période d'interrogation statique = 30,<b> la source de données exigera des données de classe 0 toutes les 60 secondes à l'appareil.</b></p>
 

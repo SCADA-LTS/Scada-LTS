@@ -93,7 +93,7 @@ public class Common {
 	 * the correct version.
 	 */
 	public static final String getVersion() {
-		return "2.4.0";
+		return "2.5.0";
 	}
 
 	public static final Long getStartupTime() {

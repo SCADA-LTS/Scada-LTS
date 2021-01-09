@@ -1,36 +1,35 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
  -->
-<h1>Overview</h1>
+<h1>Vue d'ensemble</h1>
 
-<p>A chart renderer is used to provide the aggregate historical state of a point over either some period of time or some number of values. The aggregate information that can be provided depend upon the data type of values to be rendered. As such, only the renderer types that apply to the current point's data type are listed in the <b>Type</b> selection.</p>
+<p>Un moteur de rendu graphique est utilisé pour fournir l'état historique global d'un point sur une certaine période de temps ou un certain nombre de valeurs. Les informations agrégées qui peuvent être fournies dépendent du type de données des valeurs à rendre. Ainsi, seuls les types de moteur de rendu qui s'appliquent au type de données du point actuel sont répertoriés dans la sélection <b>Type</b>.</p>
 
-<p><b>Note!</b> Chart renderers depend upon <i>logged data</i>. If your point has a logging type of "Do not log", your chart renderer may not display as expected. The potential exception is the Table chart, which is able to use point values cached in memory, but only if such values are available. The restart of the system clears all point value caches.</p>
+<p><b>Note!</b> Les rendus de graphiques dépendent de <i>données enregistrées</i>. Si votre point a un type de journalisation "Ne pas journaliser", votre outil de rendu de graphiques peut ne pas s'afficher comme prévu. L'exception potentielle est le graphique Table, qui peut utiliser des valeurs de point mises en cache dans la mémoire, mais seulement si ces valeurs sont disponibles. Le redémarrage du système efface tous les caches de valeurs ponctuelles.</p>
 
-<h1>Table charts</h1>
-<p>This chart renderer displays a given number (the <b>Limit</b>) of most recent historical values for the point. Values are displayed in a table providing the (text-rendered) value, the value time, and any applicable annotation. This chart is available to all data types.</p>
+<h1>Tableaux graphiques</h1>
+<p>Ce moteur de rendu affiche un nombre donné (le <b>Limite</b>) de valeurs historiques les plus récentes pour le point. Les valeurs sont affichées dans un tableau fournissant la valeur (rendue par le texte), la valeur temps, et toute annotation applicable. Ce tableau est disponible pour tous les types de données.</p>
 
-<h1>Statistics charts</h1>
-<p>This chart displays a table of statistical information calculated from the historical point values for the given <b>Time period</b>. The actual data displayed depends upon the data type of the point. This chart is available to all data types.</p>
-<p><b>Binary and Multistate</b>: These data types produce a list of "start and runtime" statistics for each state that the point experienced during the time period. Each start and runtime item provides the number of times the state was entered ("starts"), the total amount of time the point was in the state ("runtime"), and the percentage of the total period time that the runtime represents.</p>
-<p><b>Numeric</b>: Numeric points produces the following statistical values for the time period: minimum value and the time at which it occurred, maximum value and the time at which it occurred, average, and sum (suitable for pulse counting).</p>
-<p><b>Alphanumeric</b>: The number of times the point changed over the period is provided.</p>
+<h1>Graphique Statistiques</h1>
+<p>Ce graphique affiche un tableau d'informations statistiques calculées à partir des valeurs ponctuelles historiques pour la période donnée <b>Période temporelle</b>. Les données réelles affichées dépendent du type de données du point. Ce graphique est disponible pour tous les types de données.</p>
+<p><b>Binaire et Multistate</b> : Ces types de données produisent une liste de statistiques "start and runtime" pour chaque état que le point a connu pendant la période de temps. Chaque élément "start and runtime" fournit le nombre de fois que l'état a été saisi ("starts"), la durée totale pendant laquelle le point était dans l'état ("runtime"), et le pourcentage de la durée totale de la période que représente le runtime.</p>
+<p><b>Numérique</b> : Les points numériques produisent les valeurs statistiques suivantes pour la période de temps : valeur minimale et moment où elle s'est produite, valeur maximale et moment où elle s'est produite, moyenne et somme (adaptée au comptage des impulsions).</p>
+<p><b>Alphanumérique</b> : Le nombre de fois que le point a changé au cours de la période est fourni.</p>
 
-
-<h1>Image charts</h1>
-<p>This chart displays a line bar graph of the points values over the given period. It is available to points with numeric or multistate data types.</p>
+<h1>Graphiques d'images</h1>
+<p>Ce graphique affiche un diagramme à barres linéaires des valeurs des points sur la période donnée. Il est disponible pour les points avec des types de données numériques ou multi-états.</p>

@@ -1,6 +1,7 @@
 package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
+import com.serotonin.bacnet4j.type.enumerated.LoggingType;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
@@ -8,6 +9,7 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -52,6 +54,16 @@ public class SystemSettingsService {
         settings.put("scadaConfig", this.getScadaConfig());
 
         return settings;
+    }
+
+    public Map<String, Object> getDefaultLoggingType() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("defaultLoggingType", SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
+        return response;
+    }
+
+    public void setDefaultLoggingType(String defaultLoggingType) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE, defaultLoggingType);
     }
 
     public JsonSettingsEmail getEmailSettings() {
