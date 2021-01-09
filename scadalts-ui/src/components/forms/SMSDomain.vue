@@ -33,57 +33,52 @@ import axios from 'axios';
  */
 
 export default {
-	data() {
-		return {
-			url: '',
-			url_save: '',
-			enable_save: false,
-		};
-	},
-	methods: {
-		save() {
-			const api = `./api/systemSettings/saveSMSDomain/${this.url}`;
-			console.log(`test ${this.url}`);
-			console.log(`api:${api}`);
-			axios
-				.post(api)
-				.then((response) => {
-					//TODO change color or disable button
-					console.log(`post request ${this.url}`);
-					this.url_save = this.url;
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-		},
-		load() {
-			const api = `./api/systemSettings/getSMSDomain`;
-			axios
-				.get(api)
-				.then((response) => {
-					this.url = response.data;
-					this.url_save = response.data;
-					console.log(`response url:${this.url}, url_save:${this.url_save}`);
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-		},
-	},
-	mounted() {
-		this.load();
-	},
-	watch: {
-		url: function (val) {
-			console.log(`watch ${val}, url_sava:${this.url_save}`);
-			//do something when the data changes.
-			if (val != this.url_save) {
-				this.enable_save = true;
-			} else {
-				this.enable_save = false;
-			}
-		},
-	},
+  data() {
+    return {
+      url:'',
+      url_save:'',
+      enable_save: false
+    };
+  },
+  methods: {
+    save() {
+      const parts_of_domain =  this.url.split('.');
+      const api = `./api/systemSettings/saveSMSDomain/${parts_of_domain}`;
+      axios.post(api).then(response => {
+         this.url_save = this.url
+       }).catch(error => {
+         console.error(error);
+       });
+    },
+    load() {
+      const api= `./api/systemSettings/getSMSDomain`;
+      axios.get(api).then(response => {
+          this.url = response.data
+          this.url_save = response.data
+      }).catch(error => {
+        console.error(error);
+      });
+    }
+  },
+  mounted() {
+    this.load();
+  },
+  watch: {
+      url: function(val) {
+          if (val != this.url_save) {
+              this.enable_save = true
+          } else {
+              this.enable_save = false
+          }
+      },
+      url_save: function(val) {
+          if (val != this.url) {
+              this.enable_save = true
+          } else {
+              this.enable_save = false
+          }
+      }
+  }
 };
 </script>
 
