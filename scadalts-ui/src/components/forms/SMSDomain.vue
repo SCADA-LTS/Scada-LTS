@@ -53,10 +53,8 @@ export default {
     load() {
       const api= `./api/systemSettings/getSMSDomain`;
       axios.get(api).then(response => {
-
           this.url = response.data
           this.url_save = response.data
-          console.log(`response url:${this.url}, url_save:${this.url_save}`)
       }).catch(error => {
         console.error(error);
       });
@@ -67,9 +65,14 @@ export default {
   },
   watch: {
       url: function(val) {
-          console.log(`watch ${val}, url_sava:${this.url_save}`)
-          //do something when the data changes.
           if (val != this.url_save) {
+              this.enable_save = true
+          } else {
+              this.enable_save = false
+          }
+      },
+      url_save: function(val) {
+          if (val != this.url) {
               this.enable_save = true
           } else {
               this.enable_save = false
