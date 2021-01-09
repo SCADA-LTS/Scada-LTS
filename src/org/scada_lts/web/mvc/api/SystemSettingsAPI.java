@@ -146,10 +146,12 @@ public class SystemSettingsAPI {
         }
     }
 
-    @RequestMapping(value = "/saveSMSDomain/{domain}", method = RequestMethod.POST)
+     @RequestMapping(value = "/saveSMSDomain/{parts_of_domain}", method = RequestMethod.POST)
     public ResponseEntity<String> saveSMSDomain(
-            @PathVariable("domain") String domain,
+            @PathVariable("parts_of_domain") String[] parts_of_domain,
             HttpServletRequest request)  {
+
+        String domain = String.join(".", parts_of_domain);
 
         LOG.info("/api/systemSettings/getSMSDomain:" + domain);
         ResponseEntity<String> result = null;
