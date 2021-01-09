@@ -1,6 +1,7 @@
 package com.serotonin.mango.rt.event.handlers;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,7 +71,7 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     @Override
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        CommunicationChannelType.SMS.sendMsg(evt, addresses, getVo().getAlias());
+        SendMsgUtils.sendSms(evt, SmsNotificationType.ACTIVE, addresses, vo.getAlias());
     }
 
     private Set<String> addedAtDomain(Set<String> addresses) {

@@ -17,18 +17,13 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.service.*;
+import utils.EventDAOMock;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
+import utils.ScheduledExecuteInactiveEventDAOMock;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -47,7 +42,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
     @Parameterized.Parameters(name= "{index}: dailyLimitSentEmailsNumber: {0}, " +
             "isDailyLimitSentEmails: {1}, CommunicationChannelType: {2}, invokeSendMsgTimes: {3}," +
-            " communicateLimitTimes: {4}, scheduledEventsNumber: {5}, numberScheduled: {6}")
+            " communicateLimitTimes: {4}, scheduledEventsNumber: {5}, currentNumberScheduled: {6}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
                 { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100, 3},
@@ -73,6 +68,8 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     private MailingList mailingList;
     private DateTime inactiveIntervalTime;
     private ScheduledExecuteInactiveEventService service;
+    private InactiveEventsProvider inactiveEventsProvider;
+    private ScheduledExecuteInactiveEventDAO dao;
 
     private CommunicationChannelTypable channelTypeMock;
     private MailingListService mailingListServiceMock;
@@ -126,19 +123,25 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         });
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
 
-        EventDAO eventDAO = mock(EventDAO.class);
-        when(eventDAO.getAllStatusEvents(any())).thenReturn(Collections.emptyList());
+        dao = new ScheduledExecuteInactiveEventDAOMock();
 
-        ScheduledExecuteInactiveEventDAO dao = mock(ScheduledExecuteInactiveEventDAO.class);
-        when(dao.select()).thenReturn(Collections.emptyList());
+        this.service = ScheduledExecuteInactiveEventService.newInstance(dao, mailingListServiceMock);
 
-        this.service = ScheduledExecuteInactiveEventService.newInstance(eventDAO, dao, mailingListServiceMock);
-
-        for(int i = 0; i < scheduledEventsNumber; i++) {
-            this.service.scheduleEvent(eventHandler, EventTestUtils
+        List<EventInstance> eventInstances = new ArrayList<>();
+        for(int i = 0 ; i<scheduledEventsNumber;i++) {
+            EventInstance eventInstance = EventTestUtils
                     .createScheduledEventWithMock(eventHandler.getId(), eventHandler.getAlias(),
-                            channelTypeMock, inactiveIntervalTime).getEvent());
+                            channelTypeMock, inactiveIntervalTime).getEvent();
+            eventInstances.add(eventInstance);
+            this.service.scheduleEvent(eventHandler, eventInstance);
         }
+        EventDAOMock eventDAOMock = new EventDAOMock(eventInstances, Arrays.asList(eventHandler));
+        EventDAO eventDAO = mock(EventDAO.class);
+        when(eventDAO.getAllStatusEvents(anySet())).thenAnswer(a ->
+                eventDAOMock.getAllStatusEvents((Set<Integer>)a.getArguments()[0]));
+        when(eventDAO.getEventHandlers(anySet())).thenAnswer(a ->
+                eventDAOMock.getEventHandlers((Set<Integer>)a.getArguments()[0]));
+
         DataPointService dataPointServiceMock = mock(DataPointService.class);
         DataPointVO dataPointVO = mock(DataPointVO.class);
         when(dataPointServiceMock.getDataPoint(anyInt())).thenReturn(dataPointVO);
@@ -147,8 +150,10 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        this.testSubject = new ScheduledExecuteInactiveEventRT(channel, service, dataPointServiceMock,
-                dataSourceServiceMock);
+        inactiveEventsProvider = InactiveEventsProvider.newInstance(eventDAO, dao, channel);
+
+        this.testSubject = new ScheduledExecuteInactiveEventRT(service, inactiveEventsProvider,
+                dataPointServiceMock, dataSourceServiceMock);
     }
 
     @Test
@@ -160,7 +165,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
-        List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
+        List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
 
         //then:
         assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
@@ -183,7 +188,10 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
-        List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
+        List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
+        List<?> res = dao.select(Integer.MAX_VALUE);
+
+        assertEquals(res.size(), result.size());
 
         //then:
         assertEquals(scheduledEventsNumber, result.size());
@@ -205,7 +213,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
-        List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
+        List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
 
         //then:
         assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());

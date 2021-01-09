@@ -18,19 +18,10 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.service.ScheduledExecuteInactiveEventService;
-import utils.EventTestUtils;
-import utils.MailingListTestUtils;
-import utils.TestConcurrentUtils;
+import org.scada_lts.service.*;
+import utils.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,12 +45,12 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
             "currentNumberScheduled: {7}")
     public static Collection data() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100, 150, 3},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 100, 150, 3},
-                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 150, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 100, 0, 100, 150, 100},
-                { 3, false, CommunicationChannelType.SMS, 100, 0, 100, 150, 100},
-                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 150, 10},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 100, 111, 3},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 100, 111, 3},
+                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 111, 10},
+                { 3, false, CommunicationChannelType.EMAIL, 100, 0, 100, 111, 100},
+                { 3, false, CommunicationChannelType.SMS, 100, 0, 100, 111, 100},
+                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 111, 10},
         });
     }
 
@@ -78,6 +69,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
     private MailingList mailingList;
     private DateTime inactiveIntervalTime;
     private ScheduledExecuteInactiveEventService service;
+    private InactiveEventsProvider inactiveEventsProvider;
 
     private CommunicationChannelTypable channelTypeMock;
     private MailingListService mailingListServiceMock;
@@ -133,19 +125,25 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         });
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
 
-        EventDAO eventDAO = mock(EventDAO.class);
-        Mockito.when(eventDAO.getAllStatusEvents(any())).thenReturn(Collections.emptyList());
+        ScheduledExecuteInactiveEventDAO dao = new ScheduledExecuteInactiveEventDAOMock();
 
-        ScheduledExecuteInactiveEventDAO dao = mock(ScheduledExecuteInactiveEventDAO.class);
-        Mockito.when(dao.select()).thenReturn(Collections.emptyList());
+        this.service = ScheduledExecuteInactiveEventService.newInstance(dao, mailingListServiceMock);
 
-        this.service = ScheduledExecuteInactiveEventService.newInstance(eventDAO, dao, mailingListServiceMock);
-
+        List<EventInstance> eventInstances = new ArrayList<>();
         for(int i = 0 ; i<scheduledEventsNumber;i++) {
-            this.service.scheduleEvent(eventHandler, EventTestUtils
+            EventInstance eventInstance = EventTestUtils
                     .createScheduledEventWithMock(eventHandler.getId(), eventHandler.getAlias(),
-                            channelTypeMock, inactiveIntervalTime).getEvent());
+                            channelTypeMock, inactiveIntervalTime).getEvent();
+            eventInstances.add(eventInstance);
+            this.service.scheduleEvent(eventHandler, eventInstance);
         }
+        EventDAOMock eventDAOMock = new EventDAOMock(eventInstances, Arrays.asList(eventHandler));
+        EventDAO eventDAO = mock(EventDAO.class);
+        when(eventDAO.getAllStatusEvents(anySet())).thenAnswer(a ->
+                eventDAOMock.getAllStatusEvents((Set<Integer>)a.getArguments()[0]));
+        when(eventDAO.getEventHandlers(anySet())).thenAnswer(a ->
+                eventDAOMock.getEventHandlers((Set<Integer>)a.getArguments()[0]));
+
         DataPointService dataPointServiceMock = mock(DataPointService.class);
         DataPointVO dataPointVO = mock(DataPointVO.class);
         when(dataPointServiceMock.getDataPoint(anyInt())).thenReturn(dataPointVO);
@@ -154,8 +152,10 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        this.testSubject = new ScheduledExecuteInactiveEventRT(channel, service, dataPointServiceMock,
-                dataSourceServiceMock);
+        inactiveEventsProvider = InactiveEventsProvider.newInstance(eventDAO, dao, channel);
+
+        this.testSubject = new ScheduledExecuteInactiveEventRT(service, inactiveEventsProvider,
+                dataPointServiceMock, dataSourceServiceMock);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //when:
         TestConcurrentUtils.biConsumer(numberOfLaunches, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
-        List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
+        List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
 
         //then:
         assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
@@ -190,7 +190,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //when:
         TestConcurrentUtils.biConsumer(numberOfLaunches, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
-        List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
+        List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
 
         System.out.println("when_scheduleTimeout_then_verify_times_sendMsg:" + testSubject.getCurrentNumberExecuted());
 
@@ -218,7 +218,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //when:
         TestConcurrentUtils.biConsumer(numberOfLaunches, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
-        List<ScheduledEvent> result = service.getScheduledEvents(channel, Integer.MAX_VALUE);
+        List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
 
         //then:
         assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());

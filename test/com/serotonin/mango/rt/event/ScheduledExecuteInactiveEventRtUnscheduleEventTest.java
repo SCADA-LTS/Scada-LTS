@@ -16,10 +16,7 @@ import org.junit.runners.Parameterized;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.service.*;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
 import utils.ScheduledInactiveEventTestUtils;
@@ -127,8 +124,10 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
             return channelType.validateAddress((String)args[0]);
         });
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
-        this.serviceMock = ScheduledInactiveEventTestUtils.createServiceMock(dailyLimitSentEmails, channel,
+        InactiveEventsProvider providerMock = ScheduledInactiveEventTestUtils.createProviderMock(dailyLimitSentEmails, channel,
                 scheduledEvent1, scheduledEvent2);
+
+        this.serviceMock = mock(ScheduledExecuteInactiveEventService.class);
 
         dataPointServiceMock = mock(DataPointService.class);
         DataPointVO dataPointVO = mock(DataPointVO.class);
@@ -138,7 +137,7 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        this.testSubject = new ScheduledExecuteInactiveEventRT(channel, serviceMock, dataPointServiceMock,
+        this.testSubject = new ScheduledExecuteInactiveEventRT(serviceMock, providerMock, dataPointServiceMock,
                 dataSourceServiceMock);
     }
 

@@ -1,10 +1,7 @@
 package utils;
 
 import com.serotonin.mango.rt.event.ScheduledEvent;
-import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.service.*;
 import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.Arrays;
@@ -24,22 +21,23 @@ public final class ScheduledInactiveEventTestUtils {
 
     private ScheduledInactiveEventTestUtils() {}
 
-    public static ScheduledExecuteInactiveEventService createServiceMock(boolean dailyLimitSentEmails, CommunicationChannel channel,
+    public static InactiveEventsProvider createProviderMock(boolean dailyLimitSentEmails, CommunicationChannel channel,
                                                                          ScheduledEvent scheduledEvent1, ScheduledEvent scheduledEvent2) {
 
         List<ScheduledEvent> events = Stream.of(scheduledEvent1, scheduledEvent2)
                 .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
                 .collect(Collectors.toList());
 
-        ScheduledExecuteInactiveEventService service = mock(ScheduledExecuteInactiveEventService.class);
+        InactiveEventsProvider service = mock(InactiveEventsProvider.class);
+        when(service.getChannel()).thenReturn(channel);
 
         if(dailyLimitSentEmails) {
-            when(service.getScheduledEvents(channel, 0)).thenReturn(Collections.emptyList());
-            when(service.getScheduledEvents(channel, 1)).thenReturn(Arrays.asList(events.get(0)));
-            when(service.getScheduledEvents(channel, 2)).thenReturn(events);
-            when(service.getScheduledEvents(channel, 3)).thenReturn(events);
+            when(service.getScheduledEvents(0)).thenReturn(Collections.emptyList());
+            when(service.getScheduledEvents(1)).thenReturn(Arrays.asList(events.get(0)));
+            when(service.getScheduledEvents(2)).thenReturn(events);
+            when(service.getScheduledEvents(3)).thenReturn(events);
         } else {
-            when(service.getScheduledEvents(eq(channel), anyInt())).thenReturn(events);
+            when(service.getScheduledEvents(anyInt())).thenReturn(events);
         }
         return service;
     }
