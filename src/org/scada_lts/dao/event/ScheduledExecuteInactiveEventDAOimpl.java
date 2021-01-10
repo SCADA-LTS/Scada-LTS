@@ -16,7 +16,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEventDAO {
@@ -177,8 +178,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
         return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE
                         + " AND " + excludeEventHandlers.toSql()
                         + " AND " + excludeEvents.toSql()
+                        + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " DESC"
                         + " LIMIT " + limit, mergeWithOrder(mailingListId,
-                excludeEventHandlers.getArgs(), excludeEvents.getArgs()),
+                excludeEventHandlers.getArgs(), excludeEvents.getArgs(  )),
                 new ScheduledExecuteInactiveEventRowMapper());
     }
 

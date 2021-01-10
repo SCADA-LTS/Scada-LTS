@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.MailingListService;
@@ -19,15 +18,19 @@ import utils.MailingListTestUtils;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 
 public class ScheduledExecuteInactiveEventServiceTest {
 
-    private ScheduledExecuteInactiveEventService subject;
+    private ScheduledExecuteInactiveEventService testSubject;
     private MailingList mailingListWithInactiveInterval;
-    private ScheduledExecuteInactiveEventDAO dao;
+    private ScheduledExecuteInactiveEventDAO scheduledInactiveEventDAOMock;
     private DateTime inactiveIntervalTime;
     private EventHandlerVO emailEventHandler;
     private EventHandlerVO smsEventHandler;
@@ -47,13 +50,13 @@ public class ScheduledExecuteInactiveEventServiceTest {
         SystemSettingsService systemSettingsServiceMock = mock(SystemSettingsService.class);
         when(systemSettingsServiceMock.getSMSDomain()).thenReturn("domain.com");
 
-        MailingListService mailingListService = mock(MailingListService.class);
-        when(mailingListService.getMailingLists(any())).thenReturn(Collections.emptyList());
-        when(mailingListService.convertToMailingLists(any())).thenReturn(Arrays.asList(mailingListWithInactiveInterval));
+        MailingListService mailingListServiceMock = mock(MailingListService.class);
+        when(mailingListServiceMock.getMailingLists(any())).thenReturn(Collections.emptyList());
+        when(mailingListServiceMock.convertToMailingLists(any())).thenReturn(Arrays.asList(mailingListWithInactiveInterval));
 
-        dao = mock(ScheduledExecuteInactiveEventDAO.class);
+        scheduledInactiveEventDAOMock = mock(ScheduledExecuteInactiveEventDAO.class);
 
-        subject = ScheduledExecuteInactiveEventService.newInstance(dao, mailingListService);
+        testSubject = ScheduledExecuteInactiveEventService.newInstance(scheduledInactiveEventDAOMock, mailingListServiceMock);
         emailChannel = CommunicationChannel.newEmailChannel(mailingListWithInactiveInterval, systemSettingsServiceMock);
         smsChannel = CommunicationChannel.newSmsChannel(mailingListWithInactiveInterval, systemSettingsServiceMock);
     }
@@ -77,16 +80,16 @@ public class ScheduledExecuteInactiveEventServiceTest {
         //given:
         EventInstance event = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(1,inactiveIntervalTime);
         ScheduledEvent scheduledEvent = new ScheduledEvent(event, smsEventHandler);
-        subject.scheduleEvent(smsEventHandler, event);
+        testSubject.scheduleEvent(smsEventHandler, event);
 
         ScheduledExecuteInactiveEvent key = new ScheduledExecuteInactiveEvent(smsEventHandler,
                 event, mailingListWithInactiveInterval);
 
         //when:
-        subject.unscheduleEvent(scheduledEvent, smsChannel);
+        testSubject.unscheduleEvent(scheduledEvent, smsChannel);
 
         //then:
-        verify(dao, times(1)).delete(eq(key));
+        verify(scheduledInactiveEventDAOMock, times(1)).delete(eq(key));
     }
 
     @Test
@@ -96,16 +99,16 @@ public class ScheduledExecuteInactiveEventServiceTest {
         EventInstance event = EventTestUtils
                 .createEventCriticalWithActiveTimeAndDataPointEventType(1,inactiveIntervalTime);
         ScheduledEvent scheduledEvent = new ScheduledEvent(event, emailEventHandler);
-        subject.scheduleEvent(emailEventHandler, event);
+        testSubject.scheduleEvent(emailEventHandler, event);
 
         ScheduledExecuteInactiveEvent key = new ScheduledExecuteInactiveEvent(emailEventHandler,
                 event, mailingListWithInactiveInterval);
 
         //when:
-        subject.unscheduleEvent(scheduledEvent, emailChannel);
+        testSubject.unscheduleEvent(scheduledEvent, emailChannel);
 
         //then:
-        verify(dao, times(1)).delete(eq(key));
+        verify(scheduledInactiveEventDAOMock, times(1)).delete(eq(key));
     }
 
     @Test
@@ -117,10 +120,10 @@ public class ScheduledExecuteInactiveEventServiceTest {
                 event, mailingListWithInactiveInterval);
 
         //when:
-        subject.scheduleEvent(smsEventHandler, event);
+        testSubject.scheduleEvent(smsEventHandler, event);
 
         //then:
-        verify(dao, times(1)).insert(eq(key));
+        verify(scheduledInactiveEventDAOMock, times(1)).insert(eq(key));
     }
 
     @Test
@@ -132,9 +135,9 @@ public class ScheduledExecuteInactiveEventServiceTest {
                 event, mailingListWithInactiveInterval);
 
         //when:
-        subject.scheduleEvent(emailEventHandler, event);
+        testSubject.scheduleEvent(emailEventHandler, event);
 
         //then:
-        verify(dao, times(1)).insert(eq(key));
+        verify(scheduledInactiveEventDAOMock, times(1)).insert(eq(key));
     }
 }

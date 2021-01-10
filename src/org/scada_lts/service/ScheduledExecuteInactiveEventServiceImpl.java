@@ -10,17 +10,13 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.MailingListService;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInactiveEventService {
 
     private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventServiceImpl.class);
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final MailingListService mailingListService;
-    private final Set<ScheduledExecuteInactiveEventInstance> relations;
     private static class LazyHolder {
         public static final ScheduledExecuteInactiveEventService INSTANCE =
                 new ScheduledExecuteInactiveEventServiceImpl(ScheduledExecuteInactiveEventDAO.getInstance(),
@@ -35,8 +31,6 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
                                                      MailingListService mailingListService) {
         this.scheduledEventDAO = scheduledEventDAO;
         this.mailingListService = mailingListService;
-        this.relations = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
     }
 
     @Override

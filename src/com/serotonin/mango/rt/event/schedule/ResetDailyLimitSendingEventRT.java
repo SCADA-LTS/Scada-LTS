@@ -12,7 +12,6 @@ import org.scada_lts.mango.service.MailingListService;
 
 import java.text.ParseException;
 
-
 public class ResetDailyLimitSendingEventRT implements ModelTimeoutClient<Boolean> {
 
 
@@ -31,7 +30,6 @@ public class ResetDailyLimitSendingEventRT implements ModelTimeoutClient<Boolean
     }
 
     public void initialize() {
-
         try {
             CronTimerTrigger activeTrigger = new CronTimerTrigger("0 0 0 * * ?");
             task = new ModelTimeoutTask<>(activeTrigger, this, true);
@@ -39,7 +37,6 @@ public class ResetDailyLimitSendingEventRT implements ModelTimeoutClient<Boolean
             log.error(e);
             throw new RuntimeException(e);
         }
-
     }
 
     public void terminate() {

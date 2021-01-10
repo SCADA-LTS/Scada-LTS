@@ -42,33 +42,37 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     private final CommunicationChannel communicationChannel;
     private final ScheduledExecuteInactiveEventService service;
     private final InactiveEventsProvider inactiveEventsProvider;
-    private final AtomicInteger limit;
-    private final AtomicInteger fails;
-    private final AtomicInteger lock;
-    private final AtomicInteger currentNumberExecuted;
-    private final AtomicInteger currentNumberScheduled;
+    private final int limit;
+
+    private final AtomicInteger nonBlockingLock;
+    private final AtomicInteger failsCounter;
+    private final AtomicInteger limitLock;
+    private final AtomicInteger communicateLimitLock;
+
+    private final AtomicInteger currentExecutedCounter;
+    private final AtomicInteger currentScheduledCounter;
     private final DataPointService dataPointService;
     private final DataSourceService dataSourceService;
-    private final AtomicInteger lockNonBlocking;
     private final Queue<Execute<ScheduledEvent>> toExecute;
 
     public ScheduledExecuteInactiveEventRT(ScheduledExecuteInactiveEventService service,
                                            InactiveEventsProvider inactiveEventsProvider,
                                            DataPointService dataPointService,
                                            DataSourceService dataSourceService) {
-        this.communicationChannel = inactiveEventsProvider.getChannel();
-        this.limit = new AtomicInteger(communicationChannel.isDailyLimitSent() ?
-                communicationChannel.getDailyLimitSentNumber() : 100);
+        this.communicationChannel = inactiveEventsProvider.getCommunicationChannel();
+        this.limit = communicationChannel.isDailyLimitSent() ?
+                communicationChannel.getDailyLimitSentNumber() : 600;
+        this.limitLock = new AtomicInteger(limit);
         this.service = service;
         this.inactiveEventsProvider = inactiveEventsProvider;
         this.dataPointService = dataPointService;
         this.dataSourceService = dataSourceService;
         this.toExecute = new ConcurrentLinkedQueue<>();
-        this.fails = new AtomicInteger(0);
-        this.lock = new AtomicInteger(0);
-        this.currentNumberExecuted = new AtomicInteger(0);
-        this.currentNumberScheduled = new AtomicInteger(0);
-        this.lockNonBlocking = new AtomicInteger(0);
+        this.failsCounter = new AtomicInteger(0);
+        this.communicateLimitLock = new AtomicInteger(0);
+        this.currentExecutedCounter = new AtomicInteger(0);
+        this.currentScheduledCounter = new AtomicInteger(0);
+        this.nonBlockingLock = new AtomicInteger(0);
     }
 
     public void initialize() {
@@ -98,44 +102,45 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         }
     }
 
-    public int getCurrentNumberExecuted() {
-        return currentNumberExecuted.get();
+    public int getCurrentExecutedNumber() {
+        return currentExecutedCounter.get();
     }
 
-    public int getCurrentNumberScheduled() {
-        return currentNumberScheduled.get();
+    public int getCurrentScheduledNumber() {
+        return currentScheduledCounter.get();
     }
 
     private void schedule(Set<String> addresses, long fireTime) {
-        if(isSchedule() && lockNonBlocking.getAndDecrement() == 0) {
+        if(isSchedule() && nonBlockingLock.getAndDecrement() == 0) {
             try {
                 List<ScheduledEvent> scheduledEvents = inactiveEventsProvider
-                        .getScheduledEvents(limit.get());
+                        .getScheduledEvents(limitLock.get());
                 for (ScheduledEvent event : scheduledEvents) {
-                    toExecute.offer(new Execute<>(this::send, event,
-                            new ExecuteData(communicationChannel, limit, fails, lock, addresses, fireTime)));
-                    currentNumberScheduled.incrementAndGet();
+                    toExecute.offer(new Execute<>(this::send, event, new ExecuteData(communicationChannel, limitLock,
+                            failsCounter, communicateLimitLock, addresses, fireTime)));
+                    currentScheduledCounter.incrementAndGet();
                     if (communicationChannel.isDailyLimitSent()) {
-                        if (limit.get() > 0)
-                            limit.decrementAndGet();
+                        if (limitLock.get() > 0)
+                            limitLock.decrementAndGet();
                     }
                 }
             } finally {
-                lockNonBlocking.set(0);
+                nonBlockingLock.set(0);
             }
         }
     }
 
     private boolean isSchedule() {
-        return toExecute.peek() == null && (!communicationChannel.isDailyLimitSent() || limit.get() > 0);
+        return toExecute.peek() == null && (!communicationChannel.isDailyLimitSent() || limitLock.get() > 0);
     }
 
     private void execute() {
         Execute execute = toExecute.poll();
-        while (execute != null) {
+        AtomicInteger oneExecuteLimit = new AtomicInteger(limit);
+        while (execute != null && oneExecuteLimit.getAndDecrement() > 0) {
             execute.execute();
             execute = toExecute.poll();
-            currentNumberExecuted.incrementAndGet();
+            currentExecutedCounter.incrementAndGet();
         }
     }
 

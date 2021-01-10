@@ -14,33 +14,34 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
-import utils.ScheduledExecuteInactiveEventDAOMock;
+import utils.ScheduledExecuteInactiveEventDAOMemory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 public class InactiveEventsProviderTest {
 
-    private ScheduledExecuteInactiveEventService scheduledExecuteInactiveEventService;
+    private ScheduledExecuteInactiveEventService scheduledInactiveEventService;
     private InactiveEventsProvider emailSubject;
     private InactiveEventsProvider smsSubject;
-    private MailingList mailingListWithInactiveInterval;
-    private ScheduledExecuteInactiveEventDAO dao;
+    private ScheduledExecuteInactiveEventDAO scheduledInactiveEventDAOMemory;
     private DateTime inactiveIntervalTime;
     private EventHandlerVO emailEventHandler;
     private EventHandlerVO smsEventHandler;
     private CommunicationChannel smsChannel;
     private CommunicationChannel emailChannel;
-    private int limit = Integer.MAX_VALUE;
-    private EventDAO eventDAO;
+    private int limit = 4;
+    private EventDAO eventDAOMock;
 
     private SystemSettingsService systemSettingsServiceMock;
 
@@ -51,7 +52,7 @@ public class InactiveEventsProviderTest {
         smsEventHandler = EventTestUtils.createEventHandler(2, EventHandlerVO.TYPE_SMS);
 
         inactiveIntervalTime = MailingListTestUtils.newDateTime("2020-12-13 20:30:00");
-        mailingListWithInactiveInterval = MailingListTestUtils
+        MailingList mailingListWithInactiveInterval = MailingListTestUtils
                 .createMailingListWithInactiveIntervalAndUser(1, inactiveIntervalTime, true, "Mark");
 
         systemSettingsServiceMock = mock(SystemSettingsService.class);
@@ -61,19 +62,19 @@ public class InactiveEventsProviderTest {
         when(mailingListService.getMailingLists(any())).thenReturn(Collections.emptyList());
         when(mailingListService.convertToMailingLists(any())).thenReturn(Arrays.asList(mailingListWithInactiveInterval));
 
-        eventDAO = mock(EventDAO.class);
-        when(eventDAO.getAllStatusEvents(any())).thenReturn(Collections.emptyList());
+        eventDAOMock = mock(EventDAO.class);
+        when(eventDAOMock.getAllStatusEvents(any())).thenReturn(Collections.emptyList());
 
-        dao = new ScheduledExecuteInactiveEventDAOMock();
-
-        scheduledExecuteInactiveEventService = ScheduledExecuteInactiveEventService.newInstance(dao, mailingListService);
-
+        scheduledInactiveEventDAOMemory = new ScheduledExecuteInactiveEventDAOMemory();
+        scheduledInactiveEventService = ScheduledExecuteInactiveEventService.newInstance(scheduledInactiveEventDAOMemory, mailingListService);
 
         emailChannel = CommunicationChannel.newEmailChannel(mailingListWithInactiveInterval, systemSettingsServiceMock);
         smsChannel = CommunicationChannel.newSmsChannel(mailingListWithInactiveInterval, systemSettingsServiceMock);
 
-        emailSubject = InactiveEventsProvider.newInstance(eventDAO, dao, emailChannel);
-        smsSubject = InactiveEventsProvider.newInstance(eventDAO, dao, smsChannel);
+        emailSubject = InactiveEventsProvider.newInstance(eventDAOMock, scheduledInactiveEventDAOMemory,
+                emailChannel, 4);
+        smsSubject = InactiveEventsProvider.newInstance(eventDAOMock, scheduledInactiveEventDAOMemory,
+                smsChannel, 4);
     }
 
     @Test
@@ -102,18 +103,19 @@ public class InactiveEventsProviderTest {
                 .createMailingListWithInactiveIntervalAndUser(1, inactiveIntervalTime,
                         true, "John");
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(sameEvent));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(eventHandler1, eventHandler2));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(sameEvent));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(eventHandler1, eventHandler2));
 
         CommunicationChannel emailChannel = CommunicationChannel.newEmailChannel(sameMailingList, systemSettingsServiceMock);
-        InactiveEventsProvider emailProvider = InactiveEventsProvider.newInstance(eventDAO,dao,emailChannel);
+        InactiveEventsProvider emailProvider = InactiveEventsProvider.newInstance(eventDAOMock,
+                scheduledInactiveEventDAOMemory, emailChannel, 2);
 
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(sameEvent,eventHandler1);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(sameEvent,eventHandler2);
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(eventHandler1, sameEvent);
-        scheduledExecuteInactiveEventService.scheduleEvent(eventHandler2, sameEvent);
+        scheduledInactiveEventService.scheduleEvent(eventHandler1, sameEvent);
+        scheduledInactiveEventService.scheduleEvent(eventHandler2, sameEvent);
 
         //and:
         List<ScheduledEvent> events = emailProvider.getScheduledEvents(limit);
@@ -135,17 +137,18 @@ public class InactiveEventsProviderTest {
         MailingList sameMailingList = MailingListTestUtils
                 .createMailingListWithInactiveIntervalAndUser(1, inactiveIntervalTime, true, "John");
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(sameEvent));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(eventHandler1, eventHandler2));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(sameEvent));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(eventHandler1, eventHandler2));
 
         CommunicationChannel smsChannel = CommunicationChannel.newSmsChannel(sameMailingList, systemSettingsServiceMock);
-        InactiveEventsProvider smsProvider = InactiveEventsProvider.newInstance(eventDAO,dao,smsChannel);
+        InactiveEventsProvider smsProvider = InactiveEventsProvider.newInstance(eventDAOMock,
+                scheduledInactiveEventDAOMemory, smsChannel, 2);
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(sameEvent,eventHandler1);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(sameEvent,eventHandler2);
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(eventHandler1, sameEvent);
-        scheduledExecuteInactiveEventService.scheduleEvent(eventHandler2, sameEvent);
+        scheduledInactiveEventService.scheduleEvent(eventHandler1, sameEvent);
+        scheduledInactiveEventService.scheduleEvent(eventHandler2, sameEvent);
 
         //and:
         List<ScheduledEvent> events = smsProvider.getScheduledEvents(limit);
@@ -163,19 +166,19 @@ public class InactiveEventsProviderTest {
         EventInstance eventAsEmail2 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(2, inactiveIntervalTime);
         EventInstance eventAsSms = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3, inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(eventAsEmail1, emailEventHandler);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(eventAsEmail2, emailEventHandler);
         ScheduledEvent scheduledEvent3 = new ScheduledEvent(eventAsSms, emailEventHandler);
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
 
         //and:
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
         //and:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
@@ -194,15 +197,15 @@ public class InactiveEventsProviderTest {
         EventInstance eventAsEmail2 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(2, inactiveIntervalTime);
         EventInstance eventAsSms = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3, inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
 
         //and:
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
         //and:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
@@ -219,17 +222,17 @@ public class InactiveEventsProviderTest {
         EventInstance eventAsEmail2 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(2, inactiveIntervalTime);
         EventInstance eventAsSms = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3, inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
 
         ScheduledEvent scheduledEvent = new ScheduledEvent(eventAsSms, smsEventHandler);
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
 
         //and:
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
         //and:
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
@@ -247,15 +250,15 @@ public class InactiveEventsProviderTest {
         EventInstance eventAsEmail2 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(2, inactiveIntervalTime);
         EventInstance eventAsSms = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3, inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
 
         //and:
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
         //and:
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
@@ -271,23 +274,23 @@ public class InactiveEventsProviderTest {
         EventInstance event = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(1,inactiveIntervalTime);
         ScheduledEvent scheduledEvent = new ScheduledEvent(event, emailEventHandler);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event);
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
 
         //then:
         assertEquals(1, events.size());
         assertTrue(events.contains(scheduledEvent));
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Collections.emptyList());
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Collections.emptyList());
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         //and when:
         emailSubject.getScheduledEvents(limit);
-        scheduledExecuteInactiveEventService.unscheduleEvent(scheduledEvent, emailChannel);
+        scheduledInactiveEventService.unscheduleEvent(scheduledEvent, emailChannel);
         events = emailSubject.getScheduledEvents(limit);
 
         //then:
@@ -301,11 +304,11 @@ public class InactiveEventsProviderTest {
         EventInstance event = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(1,inactiveIntervalTime);
         ScheduledEvent scheduledEvent = new ScheduledEvent(event, smsEventHandler);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(smsEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(smsEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, event);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event);
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
 
         //then:
@@ -314,7 +317,7 @@ public class InactiveEventsProviderTest {
 
         //and when:
         smsSubject.getScheduledEvents(limit);
-        scheduledExecuteInactiveEventService.unscheduleEvent(scheduledEvent, smsChannel);
+        scheduledInactiveEventService.unscheduleEvent(scheduledEvent, smsChannel);
         events = smsSubject.getScheduledEvents(limit);
 
         //then:
@@ -330,8 +333,8 @@ public class InactiveEventsProviderTest {
         EventInstance event3 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3,inactiveIntervalTime);
         EventInstance event4 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(4,inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(smsEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(smsEventHandler));
 
         List<ScheduledEvent> eventsExpected = new ArrayList<>();
         eventsExpected.add(new ScheduledEvent(event1, smsEventHandler));
@@ -340,10 +343,10 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event4, smsEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, event1);
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, event2);
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, event4);
-        scheduledExecuteInactiveEventService.scheduleEvent(smsEventHandler, event3);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event1);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event2);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event4);
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event3);
 
         //and:
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
@@ -362,8 +365,8 @@ public class InactiveEventsProviderTest {
         EventInstance event3 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3,inactiveIntervalTime);
         EventInstance event4 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(4,inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         List<ScheduledEvent> eventsExpected = new ArrayList<>();
         eventsExpected.add(new ScheduledEvent(event1, emailEventHandler));
@@ -372,10 +375,10 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event4, emailEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event2);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event4);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event3);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
         //and:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
@@ -393,17 +396,17 @@ public class InactiveEventsProviderTest {
         EventInstance event3 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3,inactiveIntervalTime);
         EventInstance event4 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(4,inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         List<ScheduledEvent> eventsExpected = new ArrayList<>();
         eventsExpected.add(new ScheduledEvent(event1, emailEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event2);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event4);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event3);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
         //and:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(1);
@@ -421,18 +424,18 @@ public class InactiveEventsProviderTest {
         EventInstance event3 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3,inactiveIntervalTime);
         EventInstance event4 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(4,inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         List<ScheduledEvent> eventsExpected = new ArrayList<>();
         eventsExpected.add(new ScheduledEvent(event1, emailEventHandler));
         eventsExpected.add(new ScheduledEvent(event2, emailEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event2);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event4);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event3);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
         //and:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(2);
@@ -450,8 +453,8 @@ public class InactiveEventsProviderTest {
         EventInstance event3 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(3,inactiveIntervalTime);
         EventInstance event4 = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(4,inactiveIntervalTime);
 
-        when(eventDAO.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
-        when(eventDAO.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
+        when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event2, event1, event4, event3));
+        when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
         List<ScheduledEvent> eventsExpected = new ArrayList<>();
         eventsExpected.add(new ScheduledEvent(event1, emailEventHandler));
@@ -459,10 +462,10 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event3, emailEventHandler));
 
         //when:
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event1);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event2);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event4);
-        scheduledExecuteInactiveEventService.scheduleEvent(emailEventHandler, event3);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
+        scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
         //and:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(3);

@@ -16,7 +16,11 @@ import org.junit.runners.Parameterized;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.service.*;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.CommunicationChannelTypable;
+import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.service.InactiveEventsProvider;
+import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
 import utils.ScheduledInactiveEventTestUtils;
@@ -29,8 +33,12 @@ import java.util.Set;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static utils.MailingListTestUtils.createAddressEntry;
 
 @RunWith(Parameterized.class)
@@ -70,7 +78,7 @@ public class ScheduledExecuteInactiveEventRtTest {
     private EventHandlerVO eventHandler;
     private MailingList mailingList;
 
-    private ScheduledExecuteInactiveEventService serviceMock;
+    private ScheduledExecuteInactiveEventService scheduledInactiveEventServiceMock;
     private CommunicationChannelTypable channelTypeMock;
     private SystemSettingsService systemSettingsServiceMock;
 
@@ -127,7 +135,7 @@ public class ScheduledExecuteInactiveEventRtTest {
         InactiveEventsProvider providerMock = ScheduledInactiveEventTestUtils.createProviderMock(dailyLimitSentEmails, channel,
                 scheduledEvent1, scheduledEvent2);
 
-        this.serviceMock = mock(ScheduledExecuteInactiveEventService.class);
+        this.scheduledInactiveEventServiceMock = mock(ScheduledExecuteInactiveEventService.class);
 
         DataPointService dataPointServiceMock = mock(DataPointService.class);
         DataPointVO dataPointVO = mock(DataPointVO.class);
@@ -137,7 +145,7 @@ public class ScheduledExecuteInactiveEventRtTest {
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        this.testSubject = new ScheduledExecuteInactiveEventRT(serviceMock, providerMock, dataPointServiceMock,
+        this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventServiceMock, providerMock, dataPointServiceMock,
                 dataSourceServiceMock);
     }
 
@@ -151,8 +159,8 @@ public class ScheduledExecuteInactiveEventRtTest {
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(serviceMock, times(times)).unscheduleEvent(any(ScheduledEvent.class), any());
-        verify(serviceMock, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
+        verify(scheduledInactiveEventServiceMock, times(times)).unscheduleEvent(any(ScheduledEvent.class), any());
+        verify(scheduledInactiveEventServiceMock, times(times)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
     }
 
     @Test

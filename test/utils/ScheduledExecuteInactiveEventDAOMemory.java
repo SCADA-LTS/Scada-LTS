@@ -3,15 +3,13 @@ package utils;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class ScheduledExecuteInactiveEventDAOMock implements ScheduledExecuteInactiveEventDAO {
+public class ScheduledExecuteInactiveEventDAOMemory implements ScheduledExecuteInactiveEventDAO {
 
-    private final Set<ScheduledExecuteInactiveEvent> relations = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final List<ScheduledExecuteInactiveEvent> relations = new CopyOnWriteArrayList<>();
 
     @Override
     public List<ScheduledExecuteInactiveEvent> select(int limit) {
@@ -48,16 +46,16 @@ public class ScheduledExecuteInactiveEventDAOMock implements ScheduledExecuteIna
 
     @Override
     public ScheduledExecuteInactiveEvent insert(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent) {
-        /*if(relations.contains(scheduledInactiveCommunicationEvent))
-            throw new IllegalArgumentException("Duplicate!");*/
+        if(relations.contains(scheduledInactiveCommunicationEvent))
+            throw new IllegalArgumentException("Duplicate!");
         relations.add(scheduledInactiveCommunicationEvent);
         return scheduledInactiveCommunicationEvent;
     }
 
     @Override
     public void delete(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent) {
-        /*if(!relations.contains(scheduledInactiveCommunicationEvent))
-            throw new IllegalArgumentException("No exists!");*/
+        if(!relations.contains(scheduledInactiveCommunicationEvent))
+            throw new IllegalArgumentException("No exists!");
         relations.remove(scheduledInactiveCommunicationEvent);
     }
 }

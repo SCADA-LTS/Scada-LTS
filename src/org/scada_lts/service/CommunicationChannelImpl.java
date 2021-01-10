@@ -1,6 +1,5 @@
 package org.scada_lts.service;
 
-
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntervalUtil;
 import com.serotonin.mango.vo.mailingList.MailingList;
@@ -11,7 +10,6 @@ import org.scada_lts.utils.EmailToSmsUtils;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
 
 class CommunicationChannelImpl implements CommunicationChannel {
 

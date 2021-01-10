@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class InactiveEventsProviderImpl implements InactiveEventsProvider {
+class InactiveEventsProviderImpl implements InactiveEventsProvider {
 
-    private static final int LIMIT = 100;
-    private AtomicInteger lockNonBlocking = new AtomicInteger(0);
+    private final int dataFromBaseLimit;
+    private AtomicInteger nonBlockingLock;
     private final EventDAO eventDAO;
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final CommunicationChannel communicationChannel;
@@ -30,12 +30,14 @@ public class InactiveEventsProviderImpl implements InactiveEventsProvider {
     private final Set<ScheduledExecuteInactiveEventInstance> blocking;
 
     InactiveEventsProviderImpl(EventDAO eventDAO, ScheduledExecuteInactiveEventDAO scheduledEventDAO,
-                           CommunicationChannel communicationChannel) {
+                           CommunicationChannel communicationChannel, int dataFromBaseLimit) {
         this.eventDAO = eventDAO;
         this.scheduledEventDAO = scheduledEventDAO;
         this.communicationChannel = communicationChannel;
         this.relations = new ConcurrentLinkedQueue<>();
         this.blocking = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        this.nonBlockingLock = new AtomicInteger(0);
+        this.dataFromBaseLimit = dataFromBaseLimit;
     }
 
     private static Set<ScheduledExecuteInactiveEventInstance> init(EventDAO eventDAO,
@@ -78,21 +80,21 @@ public class InactiveEventsProviderImpl implements InactiveEventsProvider {
         if(limit <= 0) {
             return Collections.emptyList();
         }
-        if(relations.isEmpty() && lockNonBlocking.getAndDecrement() == 0) {
+        if(relations.isEmpty() && nonBlockingLock.getAndDecrement() == 0) {
             try {
-                relations.addAll(init(eventDAO, scheduledEventDAO, communicationChannel, blocking, LIMIT).stream()
+                relations.addAll(init(eventDAO, scheduledEventDAO, communicationChannel, blocking, dataFromBaseLimit).stream()
                         .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
                         .collect(Collectors.toList()));
             } finally {
-                lockNonBlocking.set(0);
+                nonBlockingLock.set(0);
             }
         }
         List<ScheduledEvent> scheduledEvents = new ArrayList<>();
         while(relations.peek() != null && scheduledEvents.size() < limit) {
             ScheduledExecuteInactiveEventInstance poll = relations.poll();
+            blocking.add(poll);
             ScheduledEvent scheduledEvent = poll.toScheduledEvent();
             scheduledEvents.add(scheduledEvent);
-            blocking.add(poll);
         }
         return scheduledEvents;
     }
@@ -102,18 +104,17 @@ public class InactiveEventsProviderImpl implements InactiveEventsProvider {
         ScheduledExecuteInactiveEventInstance instance =
                 new ScheduledExecuteInactiveEventInstance(event.getEventHandler(), event.getEvent(),
                         communicationChannel.getData());
-        if(!relations.contains(instance))
-            relations.add(instance);
+        relations.add(instance);
+        confirm(event);
     }
 
     @Override
     public void confirm(ScheduledEvent event) {
-        blocking.remove(new ScheduledExecuteInactiveEventInstance(event.getEventHandler(), event.getEvent(),
-                communicationChannel.getData()));
+        blocking.remove(event.toScheduledExecuteInactiveEventInstance(communicationChannel));
     }
 
     @Override
-    public CommunicationChannel getChannel() {
+    public CommunicationChannel getCommunicationChannel() {
         return communicationChannel;
     }
 }

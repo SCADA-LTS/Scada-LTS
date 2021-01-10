@@ -10,10 +10,10 @@ public interface InactiveEventsProvider {
     List<ScheduledEvent> getScheduledEvents(int limit);
     void repeat(ScheduledEvent event);
     void confirm(ScheduledEvent event);
-    CommunicationChannel getChannel();
+    CommunicationChannel getCommunicationChannel();
 
     static InactiveEventsProvider newInstance(EventDAO eventDAO, ScheduledExecuteInactiveEventDAO scheduledInactiveEventDAO,
-                                                            CommunicationChannel channel) {
-        return new InactiveEventsProviderImpl(eventDAO, scheduledInactiveEventDAO, channel);
+                                                            CommunicationChannel channel, int dataFromBaseLimit) {
+        return new InactiveEventsProviderImpl(eventDAO, scheduledInactiveEventDAO, channel, dataFromBaseLimit);
     }
 }

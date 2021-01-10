@@ -1,7 +1,10 @@
 package utils;
 
 import com.serotonin.mango.rt.event.ScheduledEvent;
-import org.scada_lts.service.*;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.CommunicationChannelTypable;
+import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.Arrays;
@@ -13,7 +16,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -29,7 +31,7 @@ public final class ScheduledInactiveEventTestUtils {
                 .collect(Collectors.toList());
 
         InactiveEventsProvider service = mock(InactiveEventsProvider.class);
-        when(service.getChannel()).thenReturn(channel);
+        when(service.getCommunicationChannel()).thenReturn(channel);
 
         if(dailyLimitSentEmails) {
             when(service.getScheduledEvents(0)).thenReturn(Collections.emptyList());
