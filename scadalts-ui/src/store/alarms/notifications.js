@@ -148,10 +148,11 @@ const storeAlarmsNotifications = {
 
 			state.ehTemplate.activeRecipients = recipientList;
 
-			return dispatch('requestPost', {
+			let eventHandler = await dispatch('requestPost', {
 				url: `/eventHandler/set/1/${dpId}/${edId}/${payload.handlerType}`,
 				data: state.ehTemplate,
 			});
+			return { edId, ehId: eventHandler.id }
 		},
 	},
 

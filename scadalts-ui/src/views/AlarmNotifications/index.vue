@@ -232,95 +232,58 @@ export default {
 		},
 
 		saveConfiguration() {
+			console.debug(this.modified)
 			if (this.modified.length > 0) {
-				let requestSuccess = true;
 				this.modified.forEach((change) => {
-					for (let x = 0; x < change.mail.length; x++) {
-						if (
-							change.mail[x].handler !== -1 &&
-							change.mail[x].active !== change.mail[x].config
-						) {
-							if (
-								!this.updateEventHandler(
+					let mailingListsLength =
+						change.mail.length > change.sms.length
+							? change.mail.length
+							: change.sms.length;
+
+					console.debug(change)
+
+					//maxLength - 0 = 1st Mailing List, 1 = 2nd ML
+					for (let x = 0; x < mailingListsLength; x++) {
+						let mlId =
+							x % mailingListsLength === 0
+								? this.activeMailingList
+								: this.activeMailingList2;
+
+						//Check the Mail Communitation Channel
+						if (change.mail[x].active !== change.mail[x].config) {
+							if (change.mail[x].handler !== -1) {
+								this.updateEventHandler(
 									change.mail[x].handler.ehId,
 									change.mail[x].mlId,
 									change.id,
 									change.mail[x].handler.edId,
-									'delete',
-								)
-							) {
-								requestSuccess = false;
-							}
-						} else if (
-							change.mail[x].handler === -1 &&
-							change.mail[x].active !== change.mail[x].config
-						) {
-							let mlId =
-								x % change.mail.length === 0
-									? this.activeMailingList
-									: this.activeMailingList2;
-							let data = this.getExistingEventHandler(change.id, 2);
-							if (!!data) {
-								if (
-									!this.updateEventHandler(data.ehId, mlId, change.id, data.edId, 'add')
-								) {
-									requestSuccess = false;
-								}
+									'delete'
+								);
 							} else {
-								if (!this.createEventHandler(mlId, change.id, 2)) {
-									requestSuccess = false;
-								}
+								this.prepareEventHandler(mlId, change.id, 2);
 							}
 						}
-					}
-					for (let x = 0; x < change.sms.length; x++) {
-						if (
-							change.sms[x].handler !== -1 &&
-							change.sms[x].active !== change.sms[x].config
-						) {
-							if (
-								!this.updateEventHandler(
+
+						//Check the SMS Communication Channel
+						if (change.sms[x].active !== change.sms[x].config) {
+							if (change.sms[x].handler !== -1) {
+								this.updateEventHandler(
 									change.sms[x].handler.ehId,
 									change.sms[x].mlId,
 									change.id,
 									change.sms[x].handler.edId,
-									'delete',
-								)
-							) {
-								requestSuccess = false;
-							}
-						} else if (
-							change.sms[x].handler === -1 &&
-							change.sms[x].active !== change.sms[x].config
-						) {
-							let mlId =
-								x % change.mail.length === 0
-									? this.activeMailingList
-									: this.activeMailingList2;
-							let data = this.getExistingEventHandler(change.id, 5);
-							if (!!data) {
-								if (
-									!this.updateEventHandler(data.ehId, mlId, change.id, data.edId, 'add')
-								) {
-									requestSuccess = false;
-								}
+									'delete'
+								);
 							} else {
-								if (!this.createEventHandler(mlId, change.id, 5)) {
-									requestSuccess = false;
-								}
+								this.prepareEventHandler(mlId, change.id, 5);
 							}
 						}
 					}
 				});
-				if (requestSuccess) {
-					this.initEventHandlers();
-					this.modified = [];
-					this.snackbar.text = this.$t('plcalarms.notification.save');
-					this.snackbar.visible = true;
-				} else {
-					this.snackbar.text = this.$t('plcalarms.notification.fail');
-					this.snackbar.visible = true;
-				}
+				this.initEventHandlers();
+				this.modified = [];
+				this.snackbar.text = this.$t('plcalarms.notification.save');
+				this.snackbar.visible = true;
 			}
 		},
 
@@ -332,12 +295,7 @@ export default {
 				typeRef2: edId,
 				method: method,
 			};
-			try {
-				await this.$store.dispatch('updateEventHandler', updateData);
-				return true;
-			} catch (err) {
-				return false;
-			}
+			await this.$store.dispatch('updateEventHandler', updateData);
 		},
 
 		async createEventHandler(mlId, dpId, handlerType) {
@@ -347,13 +305,28 @@ export default {
 				handlerType: handlerType,
 			};
 			try {
-				await this.$store.dispatch('createEventHandler', createData);
+				this.$store.dispatch('createEventHandler', createData);
 				return true;
 			} catch (err) {
+				this.snackbar.text = this.$t('plcalarms.notification.fail');
+				this.snackbar.visible = true;
 				return false;
 			}
-			// this.initEventHandlers();
-			// this.modified = [];
+		},
+
+		prepareEventHandler(mlId, dpId, handlerType) {
+			let eventHandlerData = this.getExistingEventHandler(dpId, handlerType);
+			if (!!eventHandlerData) {
+				this.updateEventHandler(
+					eventHandlerData.ehId,
+					mlId,
+					dpId,
+					eventHandlerData.edId,
+					'add'
+				);
+			} else {
+				this.createEventHandler(mlId, dpId, handlerType);
+			}
 		},
 
 		getExistingEventHandler(datapointId, handlerType) {
