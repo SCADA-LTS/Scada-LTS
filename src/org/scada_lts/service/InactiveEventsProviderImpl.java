@@ -3,6 +3,8 @@ package org.scada_lts.service;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
@@ -20,6 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 class InactiveEventsProviderImpl implements InactiveEventsProvider {
+
+    private static final Log log = LogFactory.getLog(InactiveEventsProviderImpl.class);
+
 
     private final int dataFromBaseLimit;
     private AtomicInteger nonBlockingLock;
@@ -89,6 +94,7 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
                 nonBlockingLock.set(0);
             }
         }
+        log.info("relations: " + relations.size());
         List<ScheduledEvent> scheduledEvents = new ArrayList<>();
         while(relations.peek() != null && scheduledEvents.size() < limit) {
             ScheduledExecuteInactiveEventInstance poll = relations.poll();
