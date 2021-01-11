@@ -61,7 +61,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                                            DataSourceService dataSourceService) {
         this.communicationChannel = inactiveEventsProvider.getCommunicationChannel();
         this.limit = communicationChannel.isDailyLimitSent() ?
-                communicationChannel.getDailyLimitSentNumber() : 600;
+                communicationChannel.getDailyLimitSentNumber() : 300;
         this.limitLock = new AtomicInteger(limit);
         this.service = service;
         this.inactiveEventsProvider = inactiveEventsProvider;

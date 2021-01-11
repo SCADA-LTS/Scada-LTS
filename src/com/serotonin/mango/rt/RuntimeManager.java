@@ -933,7 +933,7 @@ public class RuntimeManager {
 		CommunicationChannel channel = CommunicationChannel.newEmailChannel(mailingList, new SystemSettingsService());
 		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
 				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
-						channel, 300),
+						channel, 600),
 				new DataPointService(), new DataSourceService());
 		sendEmail.initialize();
 		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
@@ -943,7 +943,7 @@ public class RuntimeManager {
 		CommunicationChannel channel = CommunicationChannel.newSmsChannel(mailingList, new SystemSettingsService());
 		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
 				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
-						channel, 300),
+						channel, 600),
 				new DataPointService(), new DataSourceService());
 		sendSms.initialize();
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
