@@ -152,7 +152,7 @@ const storeAlarmsNotifications = {
 				url: `/eventHandler/set/1/${dpId}/${edId}/${payload.handlerType}`,
 				data: state.ehTemplate,
 			});
-			return { edId, ehId: eventHandler.id }
+			return { edId, ehId: eventHandler.id };
 		},
 	},
 

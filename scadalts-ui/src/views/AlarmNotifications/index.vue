@@ -255,7 +255,7 @@ export default {
 									change.mail[x].mlId,
 									change.id,
 									change.mail[x].handler.edId,
-									'delete'
+									'delete',
 								);
 							} else {
 								this.prepareEventHandler(mlId, change.id, 2);
@@ -270,7 +270,7 @@ export default {
 									change.sms[x].mlId,
 									change.id,
 									change.sms[x].handler.edId,
-									'delete'
+									'delete',
 								);
 							} else {
 								this.prepareEventHandler(mlId, change.id, 5);
@@ -294,12 +294,11 @@ export default {
 				typeRef2: edId,
 				method: method,
 			};
-			if(method === 'add') {
+			if (method === 'add') {
 				await this.$store.dispatch('updateEventHandler', updateData);
 			} else {
 				this.operationQueue.push(updateData);
 			}
-			
 		},
 
 		async createEventHandler(mlId, dpId, handlerType) {
@@ -326,7 +325,7 @@ export default {
 					mlId,
 					dpId,
 					eventHandlerData.edId,
-					'add'
+					'add',
 				);
 			} else {
 				this.createEventHandler(mlId, dpId, handlerType);
@@ -334,7 +333,7 @@ export default {
 		},
 
 		deleteEventHandlers() {
-			this.operationQueue.forEach(e => {
+			this.operationQueue.forEach((e) => {
 				this.$store.dispatch('updateEventHandler', e);
 			});
 			this.operationQueue = [];

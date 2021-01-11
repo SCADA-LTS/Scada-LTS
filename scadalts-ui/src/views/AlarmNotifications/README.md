@@ -31,8 +31,8 @@ Sometimes when user tries to save SMS and Email channel to specific datapoint at
 
 ## Troubleshooting
 
-When you have noticed that Inactive Emails or SMSes was not sent make sure that mailing list is configured with selected **Collect inactive msg** and CRON pattern is valid. 
+When you have noticed that Inactive Emails or SMSes was not sent make sure that mailing list is configured with selected **Collect inactive msg** and CRON pattern is valid.
 
-If it's still not working make sure that event handlers generates alarm level higher than none. 
+If it's still not working make sure that event handlers generates alarm level higher than none.
 
-In other cases open an issue on the Scada-LTS GitHub project page or inform the development team. 
+In other cases open an issue on the Scada-LTS GitHub project page or inform the development team.

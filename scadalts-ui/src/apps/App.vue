@@ -112,3 +112,11 @@ a:hover {
 	text-decoration-line: none;
 }
 </style>
+<style>
+td > button,
+td > input,
+td > select,
+td > textarea {
+	border-style: solid;
+}
+</style>
