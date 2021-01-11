@@ -110,7 +110,7 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
                                                                      List<ScheduledExecuteInactiveEvent> exclude,
                                                                      int limit) {
         if(!exclude.isEmpty())
-            selectWithNotIn(mailingListId, exclude, limit);
+            return selectWithNotIn(mailingListId, exclude, limit);
         return selectByMailingListId(mailingListId, limit);
     }
 
