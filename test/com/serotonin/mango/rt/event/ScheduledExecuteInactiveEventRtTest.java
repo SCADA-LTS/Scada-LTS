@@ -131,6 +131,7 @@ public class ScheduledExecuteInactiveEventRtTest {
             Object[] args = a.getArguments();
             return channelType.validateAddress((String)args[0]);
         });
+        when(channelTypeMock.getReplaceRegex()).thenReturn(channelType.getReplaceRegex());
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
         InactiveEventsProvider providerMock = ScheduledInactiveEventTestUtils.createProviderMock(dailyLimitSentEmails, channel,
                 scheduledEvent1, scheduledEvent2);

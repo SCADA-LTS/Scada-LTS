@@ -91,7 +91,7 @@ public class CommunicationChannelTest {
         DateTime activeDate = DateTime.parse("2020-12-13T21:40:00.618-08:00");
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, activeDate, type);
-        addressesExpected = ScheduledInactiveEventTestUtils.addedAtDomain(addressesExpected, domain, type);
+        addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
 
         //when
         Set<String> result = subject.getActiveAdresses(activeDate);
@@ -115,7 +115,7 @@ public class CommunicationChannelTest {
         
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, timeInInactiveInterval, type);
-        addressesExpected = ScheduledInactiveEventTestUtils.addedAtDomain(addressesExpected, domain, type);
+        addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
         subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
         
         //when:
@@ -139,7 +139,7 @@ public class CommunicationChannelTest {
 
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, activeDate, type);
-        addressesExpected = ScheduledInactiveEventTestUtils.addedAtDomain(addressesExpected, domain, type);
+        addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
         subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
 
         //when:
@@ -163,7 +163,7 @@ public class CommunicationChannelTest {
 
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, activeDate, type);
-        addressesExpected = ScheduledInactiveEventTestUtils.addedAtDomain(addressesExpected, domain, type);
+        addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
         subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
 
         //when:
@@ -179,7 +179,7 @@ public class CommunicationChannelTest {
         //given:
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAllAddresses(addressesExpected, type);
-        addressesExpected = ScheduledInactiveEventTestUtils.addedAtDomain(addressesExpected, domain, type);
+        addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
         
         //when:
         Set<String> result = subject.getAllAdresses();
@@ -205,7 +205,7 @@ public class CommunicationChannelTest {
 
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAllAddresses(addressesExpected, type);
-        addressesExpected = ScheduledInactiveEventTestUtils.addedAtDomain(addressesExpected, domain, type);
+        addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
         subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
 
         //when:

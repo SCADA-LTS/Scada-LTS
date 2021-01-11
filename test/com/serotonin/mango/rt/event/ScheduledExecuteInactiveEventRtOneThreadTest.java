@@ -134,6 +134,8 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
             Object[] args = a.getArguments();
             return channelType.validateAddress((String)args[0]);
         });
+        when(channelTypeMock.getReplaceRegex()).thenReturn(channelType.getReplaceRegex());
+
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
         this.scheduledInactiveEventDAOMemory = new ScheduledExecuteInactiveEventDAOMemory();
         ScheduledExecuteInactiveEventService scheduledInactiveEventService =

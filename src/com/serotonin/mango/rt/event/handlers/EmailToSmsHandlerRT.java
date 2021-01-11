@@ -10,7 +10,6 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
-import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.Set;
 
@@ -59,14 +58,14 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
     protected Set<String> getActiveRecipients(EventInstance evt) {
         Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getActiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.SMS);
-        return addedAtDomain(addresses);
+        return formatAddresses(addresses);
     }
 
     @Override
     protected Set<String> getInactiveRecipients(EventInstance evt) {
         Set<String> addresses = mailingListService.getRecipientAddresses(getVo().getInactiveRecipients(),
                 new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.SMS);
-        return addedAtDomain(addresses);
+        return formatAddresses(addresses);
     }
 
     @Override
@@ -74,8 +73,9 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
         SendMsgUtils.sendSms(evt, SmsNotificationType.ACTIVE, addresses, vo.getAlias());
     }
 
-    private Set<String> addedAtDomain(Set<String> addresses) {
+    private Set<String> formatAddresses(Set<String> addresses) {
         String domain = systemSettingsService.getSMSDomain();
-        return EmailToSmsUtils.addedAtDomain(addresses, domain);
+        CommunicationChannelType type = CommunicationChannelType.SMS;
+        return type.formatAddresses(addresses, domain, type.getReplaceRegex());
     }
 }
