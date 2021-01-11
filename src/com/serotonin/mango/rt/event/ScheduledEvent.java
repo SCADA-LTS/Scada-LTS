@@ -1,6 +1,8 @@
 package com.serotonin.mango.rt.event;
 
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.ScheduledExecuteInactiveEventInstance;
 
 import java.util.Objects;
 
@@ -20,6 +22,10 @@ public class ScheduledEvent {
 
     public EventHandlerVO getEventHandler() {
         return eventHandler;
+    }
+
+    public ScheduledExecuteInactiveEventInstance toScheduledExecuteInactiveEventInstance(CommunicationChannel channel) {
+        return new ScheduledExecuteInactiveEventInstance(eventHandler, event, channel.getData());
     }
 
     @Override

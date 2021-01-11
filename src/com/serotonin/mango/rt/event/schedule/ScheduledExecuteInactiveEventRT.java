@@ -21,6 +21,7 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelTypable;
+import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -40,31 +41,38 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     private TimerTask task;
     private final CommunicationChannel communicationChannel;
     private final ScheduledExecuteInactiveEventService service;
-    private final AtomicInteger limit;
-    private final AtomicInteger fails;
-    private final AtomicInteger lock;
-    private final AtomicInteger currentNumberExecuted;
-    private final AtomicInteger currentNumberScheduled;
+    private final InactiveEventsProvider inactiveEventsProvider;
+    private final int limit;
+
+    private final AtomicInteger nonBlockingLock;
+    private final AtomicInteger failsCounter;
+    private final AtomicInteger limitLock;
+    private final AtomicInteger communicateLimitLock;
+
+    private final AtomicInteger currentExecutedCounter;
+    private final AtomicInteger currentScheduledCounter;
     private final DataPointService dataPointService;
     private final DataSourceService dataSourceService;
-
     private final Queue<Execute<ScheduledEvent>> toExecute;
 
-    public ScheduledExecuteInactiveEventRT(CommunicationChannel communicationChannel,
-                                           ScheduledExecuteInactiveEventService service,
+    public ScheduledExecuteInactiveEventRT(ScheduledExecuteInactiveEventService service,
+                                           InactiveEventsProvider inactiveEventsProvider,
                                            DataPointService dataPointService,
                                            DataSourceService dataSourceService) {
-        this.communicationChannel = communicationChannel;
-        this.limit = new AtomicInteger(communicationChannel.isDailyLimitSent() ?
-                communicationChannel.getDailyLimitSentNumber() : 1000);
+        this.communicationChannel = inactiveEventsProvider.getCommunicationChannel();
+        this.limit = communicationChannel.isDailyLimitSent() ?
+                communicationChannel.getDailyLimitSentNumber() : 600;
+        this.limitLock = new AtomicInteger(limit);
         this.service = service;
+        this.inactiveEventsProvider = inactiveEventsProvider;
         this.dataPointService = dataPointService;
         this.dataSourceService = dataSourceService;
         this.toExecute = new ConcurrentLinkedQueue<>();
-        this.fails = new AtomicInteger(0);
-        this.lock = new AtomicInteger(0);
-        this.currentNumberExecuted = new AtomicInteger(0);
-        this.currentNumberScheduled = new AtomicInteger(0);
+        this.failsCounter = new AtomicInteger(0);
+        this.communicateLimitLock = new AtomicInteger(0);
+        this.currentExecutedCounter = new AtomicInteger(0);
+        this.currentScheduledCounter = new AtomicInteger(0);
+        this.nonBlockingLock = new AtomicInteger(0);
     }
 
     public void initialize() {
@@ -79,6 +87,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     public void terminate() {
         if (task != null)
             task.cancel();
+        toExecute.clear();
     }
 
     @Override
@@ -86,52 +95,52 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         DateTime dateTime = new DateTime(fireTime);
         if (communicationChannel.isActiveFor(dateTime)) {
             Set<String> addresses = communicationChannel.getActiveAdresses(dateTime);
-            if(!addresses.isEmpty() && isSchedule()) {
-                boolean scheduled = schedule(addresses, fireTime);
-                if(scheduled) {
-                    execute();
-                }
+            if(!addresses.isEmpty()) {
+                schedule(addresses, fireTime);
+                execute();
             }
         }
     }
 
-    public int getCurrentNumberExecuted() {
-        return currentNumberExecuted.get();
+    public int getCurrentExecutedNumber() {
+        return currentExecutedCounter.get();
     }
 
-    public int getCurrentNumberScheduled() {
-        return currentNumberScheduled.get();
+    public int getCurrentScheduledNumber() {
+        return currentScheduledCounter.get();
     }
 
-    private synchronized boolean schedule(Set<String> addresses, long fireTime) {
-        if(isSchedule()) {
-            List<ScheduledEvent> scheduledEvents = service.getScheduledEvents(communicationChannel, limit.get());
-            for (ScheduledEvent event : scheduledEvents) {
-                toExecute.offer(new Execute<>(this::send, event,
-                        new ExecuteData(communicationChannel, limit, fails, lock, addresses, fireTime)));
-                currentNumberScheduled.incrementAndGet();
-                if (communicationChannel.isDailyLimitSent()) {
-                    if(limit.get() > 0)
-                        limit.decrementAndGet();
-                    if(fails.get() > 0)
-                        fails.decrementAndGet();
+    private void schedule(Set<String> addresses, long fireTime) {
+        if(isSchedule() && nonBlockingLock.getAndDecrement() == 0) {
+            try {
+                List<ScheduledEvent> scheduledEvents = inactiveEventsProvider
+                        .getScheduledEvents(limitLock.get());
+                for (ScheduledEvent event : scheduledEvents) {
+                    toExecute.offer(new Execute<>(this::send, event, new ExecuteData(communicationChannel, limitLock,
+                            failsCounter, communicateLimitLock, addresses, fireTime)));
+                    currentScheduledCounter.incrementAndGet();
+                    if (communicationChannel.isDailyLimitSent()) {
+                        if (limitLock.get() > 0)
+                            limitLock.decrementAndGet();
+                    }
                 }
+            } finally {
+                nonBlockingLock.set(0);
             }
-            return true;
         }
-        return false;
     }
 
     private boolean isSchedule() {
-        return toExecute.peek() == null && (!communicationChannel.isDailyLimitSent() || (limit.get() > 0 || fails.get() > 0));
+        return toExecute.peek() == null && (!communicationChannel.isDailyLimitSent() || limitLock.get() > 0);
     }
 
     private void execute() {
         Execute execute = toExecute.poll();
-        while (execute != null) {
+        AtomicInteger oneExecuteLimit = new AtomicInteger(limit);
+        while (execute != null && oneExecuteLimit.getAndDecrement() > 0) {
             execute.execute();
             execute = toExecute.poll();
-            currentNumberExecuted.incrementAndGet();
+            currentExecutedCounter.incrementAndGet();
         }
     }
 
@@ -162,11 +171,14 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             boolean sent = type.sendMsg(event, addresses, alias);
             if(sent) {
                 service.unscheduleEvent(scheduledEvent, communicationChannel);
+                inactiveEventsProvider.confirm(scheduledEvent);
                 return true;
             }
+            inactiveEventsProvider.repeat(scheduledEvent);
             return false;
         }
         service.unscheduleEvent(scheduledEvent, communicationChannel);
+        inactiveEventsProvider.confirm(scheduledEvent);
         return false;
     }
 
@@ -218,9 +230,13 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 if (!executed)
                     fails.incrementAndGet();
                 else if (limit.get() == 0 && fails.get() == 0 && lock.getAndDecrement() == 0) {
-                    boolean communicated = ScheduledExecuteInactiveEventRT.communicateLimit(addresses, fireTime, channel);
-                    if(!communicated)
-                        lock.set(0);
+                    boolean communicated = false;
+                    try {
+                        communicated = ScheduledExecuteInactiveEventRT.communicateLimit(addresses, fireTime, channel);
+                    } finally {
+                        if(!communicated)
+                            lock.set(0);
+                    }
                 }
             }
         }

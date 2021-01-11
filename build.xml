@@ -600,6 +600,10 @@
 			<test name="com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.service.InactiveEventsProviderTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

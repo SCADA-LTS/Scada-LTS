@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 public class EmailToSmsHandlerRtTest {
 
-    private EmailToSmsHandlerRT emailToSmsHandlerRT;
+    private EmailToSmsHandlerRT testSubject;
     private EventInstance event;
 
     private Set<String> addressesExpected;
@@ -49,7 +49,7 @@ public class EmailToSmsHandlerRtTest {
         SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);
         when(systemSettingsService.getSMSDomain()).thenReturn(domain);
 
-        emailToSmsHandlerRT = new EmailToSmsHandlerRT(mock(EventHandlerVO.class),
+        testSubject = new EmailToSmsHandlerRT(mock(EventHandlerVO.class),
                 mock(ScheduledExecuteInactiveEventService.class),service,
                 systemSettingsService);
 
@@ -66,7 +66,7 @@ public class EmailToSmsHandlerRtTest {
         addressesExpected.add(tel2 + domainAt);
 
         //when:
-        Set<String> result = emailToSmsHandlerRT.getActiveRecipients(event);
+        Set<String> result = testSubject.getActiveRecipients(event);
 
         //then:
         assertEquals(addressesExpected, result);
@@ -80,7 +80,7 @@ public class EmailToSmsHandlerRtTest {
         addressesExpected.add(tel2 + domainAt);
 
         //when:
-        Set<String> result = emailToSmsHandlerRT.getInactiveRecipients(event);
+        Set<String> result = testSubject.getInactiveRecipients(event);
 
         //then:
         assertEquals(addressesExpected, result);

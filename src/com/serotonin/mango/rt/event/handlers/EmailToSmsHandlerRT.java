@@ -1,6 +1,7 @@
 package com.serotonin.mango.rt.event.handlers;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,9 +10,9 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
@@ -70,13 +71,11 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     @Override
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        CommunicationChannelType.SMS.sendMsg(evt, addresses, getVo().getAlias());
+        SendMsgUtils.sendSms(evt, SmsNotificationType.ACTIVE, addresses, vo.getAlias());
     }
 
     private Set<String> addedAtDomain(Set<String> addresses) {
         String domain = systemSettingsService.getSMSDomain();
-        return addresses.stream()
-                .map(a -> a + "@" + domain)
-                .collect(Collectors.toSet());
+        return EmailToSmsUtils.addedAtDomain(addresses, domain);
     }
 }

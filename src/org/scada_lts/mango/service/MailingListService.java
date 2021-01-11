@@ -18,10 +18,13 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserDAO;
@@ -58,8 +61,9 @@ public class MailingListService implements MangoMailingList {
 //	@Resource
 	private static final MailingListMemberDAO mailingListMemberDAO = new MailingListMemberDAO();
 
+	private static final Log LOG = LogFactory.getLog(MailingListService.class);
+
 	private void setRelationalData(MailingList mailingList) {
-		setDataFromDatabase(mailingList);
 
 		mailingList.getInactiveIntervals().addAll(mailingListInactiveDAO.getInactiveInterval(mailingList.getId()));
 		mailingList.setEntries(mailingListMemberDAO.getEmailRecipient(mailingList.getId()));
@@ -67,12 +71,20 @@ public class MailingListService implements MangoMailingList {
 		populateEntrySubclasses((mailingList.getEntries()));
 	}
 
-	private void setDataFromDatabase(MailingList mailingList) {
-		MailingList mailingListFromDatabase = mailingListDAO.getMailingList(mailingList.getId());
-		mailingList.setDailyLimitSentEmails(mailingListFromDatabase.isDailyLimitSentEmails());
-        mailingList.setDailyLimitSentEmailsNumber(mailingListFromDatabase.getDailyLimitSentEmailsNumber());
-        mailingList.setCronPattern(mailingListFromDatabase.getCronPattern());
-		mailingList.setCollectInactiveEmails(mailingListFromDatabase.isCollectInactiveEmails());
+	private boolean updateFromDatabase(MailingList mailingList) {
+		try {
+			MailingList mailingListFromDatabase = mailingListDAO.getMailingList(mailingList.getId());
+
+			mailingList.setDailyLimitSentEmails(mailingListFromDatabase.isDailyLimitSentEmails());
+			mailingList.setDailyLimitSentEmailsNumber(mailingListFromDatabase.getDailyLimitSentEmailsNumber());
+			mailingList.setCronPattern(mailingListFromDatabase.getCronPattern());
+			mailingList.setCollectInactiveEmails(mailingListFromDatabase.isCollectInactiveEmails());
+
+			return true;
+		} catch (Exception ex) {
+			LOG.error("problem with getMailingList id: " + mailingList.getId() + ", message: " + ex.getMessage(), ex);
+			return false;
+		}
 	}
 
 	@Override
@@ -103,6 +115,7 @@ public class MailingListService implements MangoMailingList {
 	public MailingList getMailingList(int id) {
 		MailingList mailingList = mailingListDAO.getMailingList(id);
 		setRelationalData(mailingList);
+		updateFromDatabase(mailingList);
 		return mailingList;
 	}
 
@@ -111,6 +124,7 @@ public class MailingListService implements MangoMailingList {
 		MailingList mailingList = mailingListDAO.getMailingList(xid);
 		if (mailingList != null) {
 			setRelationalData(mailingList);
+			updateFromDatabase(mailingList);
 		}
 		return mailingList;
 	}
@@ -172,6 +186,7 @@ public class MailingListService implements MangoMailingList {
 		for (EmailRecipient e : entries) {
 			if (e instanceof MailingList) {
 				setRelationalData((MailingList) e);
+				updateFromDatabase((MailingList) e);
 			} else if (e instanceof UserEntry) {
 				UserEntry ue = (UserEntry) e;
 				ue.setUser(userDAO.getUser(ue.getUserId()));
@@ -192,8 +207,11 @@ public class MailingListService implements MangoMailingList {
 			mailingListDAO.update(mailingList);
 		}
 		saveRelationalData(mailingList);
-		setRelationalData(mailingList);
-		Common.ctx.getRuntimeManager().saveMailingList(mailingList);
+		boolean updated = updateFromDatabase(mailingList);
+		if(updated) {
+		    setRelationalData(mailingList);
+            Common.ctx.getRuntimeManager().saveMailingList(mailingList);
+        }
 	}
 
 	@Override
@@ -208,6 +226,7 @@ public class MailingListService implements MangoMailingList {
 	private void setRelationalData(List<MailingList> mailingLists) {
 		for (MailingList mailingList: mailingLists) {
 			setRelationalData(mailingList);
+			updateFromDatabase(mailingList);
 		}
 	}
 
