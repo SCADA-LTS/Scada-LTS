@@ -116,6 +116,7 @@ export default {
 			activeMailingList2: undefined,
 			mailingLists: undefined,
 			eventHandlers: undefined,
+			operationQueue: [],
 			modified: [],
 			snackbar: {
 				visible: false,
@@ -232,15 +233,12 @@ export default {
 		},
 
 		saveConfiguration() {
-			console.debug(this.modified)
 			if (this.modified.length > 0) {
 				this.modified.forEach((change) => {
 					let mailingListsLength =
 						change.mail.length > change.sms.length
 							? change.mail.length
 							: change.sms.length;
-
-					console.debug(change)
 
 					//maxLength - 0 = 1st Mailing List, 1 = 2nd ML
 					for (let x = 0; x < mailingListsLength; x++) {
@@ -280,6 +278,7 @@ export default {
 						}
 					}
 				});
+				this.deleteEventHandlers();
 				this.initEventHandlers();
 				this.modified = [];
 				this.snackbar.text = this.$t('plcalarms.notification.save');
@@ -295,7 +294,12 @@ export default {
 				typeRef2: edId,
 				method: method,
 			};
-			await this.$store.dispatch('updateEventHandler', updateData);
+			if(method === 'add') {
+				await this.$store.dispatch('updateEventHandler', updateData);
+			} else {
+				this.operationQueue.push(updateData);
+			}
+			
 		},
 
 		async createEventHandler(mlId, dpId, handlerType) {
@@ -327,6 +331,13 @@ export default {
 			} else {
 				this.createEventHandler(mlId, dpId, handlerType);
 			}
+		},
+
+		deleteEventHandlers() {
+			this.operationQueue.forEach(e => {
+				this.$store.dispatch('updateEventHandler', e);
+			});
+			this.operationQueue = [];
 		},
 
 		getExistingEventHandler(datapointId, handlerType) {
