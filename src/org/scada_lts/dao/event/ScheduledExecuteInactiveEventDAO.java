@@ -6,11 +6,12 @@ import java.util.List;
 
 public interface ScheduledExecuteInactiveEventDAO {
 
-    List<ScheduledExecuteInactiveEvent> select();
-    List<ScheduledExecuteInactiveEvent> select(int mailingListId);
-    int insert(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent);
+    List<ScheduledExecuteInactiveEvent> select(int limit);
+    List<ScheduledExecuteInactiveEvent> selectByMailingListId(int mailingListId);
+    List<ScheduledExecuteInactiveEvent> selectByMailingListId(int mailingListId, int limit);
+    List<ScheduledExecuteInactiveEvent> selectByMailingListId(int mailingListId, List<ScheduledExecuteInactiveEvent> exclude, int limit);
+    ScheduledExecuteInactiveEvent insert(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent);
     void delete(ScheduledExecuteInactiveEvent scheduledInactiveCommunicationEvent);
-    void deleteLast(int mailingListId);
 
     static ScheduledExecuteInactiveEventDAO getInstance() {
         return ScheduledExecuteInactiveEventDAOimpl.getInstance();

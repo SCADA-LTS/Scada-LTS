@@ -34,8 +34,14 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 import org.springframework.util.Assert;
 
@@ -113,6 +119,7 @@ public class RuntimeManager {
 
 	private final Map<Integer, ScheduledExecuteInactiveEventRT> sendEmailForInactiveEvents = new ConcurrentHashMap<>();
 	private final Map<Integer, ScheduledExecuteInactiveEventRT> sendSmsForInactiveEvents = new ConcurrentHashMap<>();
+
 	private final Map<Integer, ResetDailyLimitSendingEventRT> resetDailyLimitSentEmails = new ConcurrentHashMap<>();
 
 
@@ -129,7 +136,8 @@ public class RuntimeManager {
 		started = true;
 
 		ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
-		List<MailingList> mailingLists = new MailingListService().getMailingLists();
+		MailingListService mailingListService = new MailingListService();
+		List<MailingList> mailingLists = mailingListService.getMailingLists();
 		for(MailingList mailingList: mailingLists) {
 			if (mailingList.isCollectInactiveEmails()) {
 				startSendEmailForInactiveEvent(mailingList, service);
@@ -145,7 +153,7 @@ public class RuntimeManager {
 		for(MailingList mailingList: mailingLists) {
 			if(mailingList.isCollectInactiveEmails()
 					&& mailingList.isDailyLimitSentEmails()) {
-				startResetDailyLimitSentEmails(mailingList);
+				startResetDailyLimitSentEmails(mailingList, mailingListService);
 			}
 		}
 
@@ -922,23 +930,28 @@ public class RuntimeManager {
 	}
 
 	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
-
-		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newEmailChannel(mailingList),
-				inactiveEmailsService, Common.ctx.getEventManager());
+		CommunicationChannel channel = CommunicationChannel.newEmailChannel(mailingList, new SystemSettingsService());
+		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
+				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
+						channel, 300),
+				new DataPointService(), new DataSourceService());
 		sendEmail.initialize();
 		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
 	}
 
 	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
-
-		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(CommunicationChannel.newSmsChannel(mailingList),
-				inactiveEmailsService, Common.ctx.getEventManager());
+		CommunicationChannel channel = CommunicationChannel.newSmsChannel(mailingList, new SystemSettingsService());
+		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
+				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
+						channel, 300),
+				new DataPointService(), new DataSourceService());
 		sendSms.initialize();
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
 	}
 
-	private void startResetDailyLimitSentEmails(MailingList mailingList) {
-		ResetDailyLimitSendingEventRT reset = new ResetDailyLimitSendingEventRT(mailingList, this);
+	private void startResetDailyLimitSentEmails(MailingList mailingList, MailingListService mailingListService) {
+		ResetDailyLimitSendingEventRT reset = new ResetDailyLimitSendingEventRT(mailingList, this,
+				mailingListService);
 		reset.initialize();
 		resetDailyLimitSentEmails.put(mailingList.getId(), reset);
 	}
@@ -953,15 +966,40 @@ public class RuntimeManager {
 		stopResetDailyLimitSentEmails(mailingListId);
 	}
 
+	public void stopSendEmailSms(int mailingListId) {
+		stopSendEmailForInactiveEvent(mailingListId);
+		stopSendSmsForInactiveEvent(mailingListId);
+	}
+
 	public void saveMailingList(MailingList mailingList) {
 		if(mailingList.isCollectInactiveEmails()) {
 			ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
 			startSendEmailForInactiveEvent(mailingList, service);
 			startSendSmsForInactiveEvent(mailingList, service);
 			if(mailingList.isDailyLimitSentEmails()) {
-				startResetDailyLimitSentEmails(mailingList);
+				MailingListService mailingListService = new MailingListService();
+				startResetDailyLimitSentEmails(mailingList, mailingListService);
 			}
 		}
+	}
+
+	public void startSendEmailSms(MailingList mailingList) {
+		if(mailingList.isCollectInactiveEmails()) {
+			ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
+			startSendEmailForInactiveEvent(mailingList, service);
+			startSendSmsForInactiveEvent(mailingList, service);
+		}
+	}
+
+	private void stopSendSmsForInactiveEvent(int mailingListId) {
+
+		ScheduledExecuteInactiveEventRT sendSms = sendSmsForInactiveEvents.get(mailingListId);
+
+		if (sendSms == null)
+			return;
+
+		sendSms.terminate();
+		sendSmsForInactiveEvents.remove(mailingListId);
 	}
 
 	private void stopSendEmailForInactiveEvent(int mailingListId) {
@@ -973,17 +1011,6 @@ public class RuntimeManager {
 
 		sendEmail.terminate();
 		sendEmailForInactiveEvents.remove(mailingListId);
-	}
-
-	private void stopSendSmsForInactiveEvent(int mailingListId) {
-
-		ScheduledExecuteInactiveEventRT sendESms = sendSmsForInactiveEvents.get(mailingListId);
-
-		if (sendESms == null)
-			return;
-
-		sendESms.terminate();
-		sendSmsForInactiveEvents.remove(mailingListId);
 	}
 
 	private void stopResetDailyLimitSentEmails(int mailingListId) {

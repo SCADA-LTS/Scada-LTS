@@ -34,9 +34,28 @@
 	</target>
 
 	<target name="run" depends="tomcat_clean_static_content">
-		<exec executable="cmd">
+		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
-			<arg value="%CATALINA_HOME%\bin\startup.bat"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
+			<arg value="run"/>
+		</exec>
+		<exec executable="bash" osfamily="unix">
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh"/>
+			<arg value="run"/>
+		</exec>
+	</target>
+
+	<target name="run_debug" depends="tomcat_clean_static_content">
+		<exec executable="cmd" osfamily="windows">
+			<arg value="/c"/>
+			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
+			<arg value="jpda"/>
+			<arg value="run"/>
+		</exec>
+		<exec executable="bash" osfamily="unix">
+			<arg value="${env.CATALINA_HOME}/bin/catalina.sh"/>
+			<arg value="jpda"/>
+			<arg value="run"/>
 		</exec>
 	</target>
 
@@ -276,19 +295,29 @@
 
 	<!-- Instead of bower package manager -->
 	<target name="static-web-dependency" description="Download web resources from the NPM, required for PointHierarchySLTS">
-		<exec dir="./WebContent/resources" executable="npm">
+		<exec dir="./WebContent/resources" executable="npm.cmd" osfamily="windows">
+			<arg value="install"/>
+		</exec>
+		<exec dir="./WebContent/resources" executable="npm" osfamily="unix">
 			<arg value="install"/>
 		</exec>
 	</target>
 
 	<target name="new-ui-dependency">
-		<exec dir="./scadalts-ui" executable="npm">
+		<exec dir="./scadalts-ui" executable="npm.cmd" osfamily="windows">
+			<arg value="install"/>
+		</exec>
+		<exec dir="./scadalts-ui" executable="npm" osfamily="unix">
 			<arg value="install"/>
 		</exec>
 	</target>
 
 	<target name="new-ui" depends="new-ui-dependency, static-web-dependency">
-		<exec dir="./scadalts-ui" executable="npm">
+		<exec dir="./scadalts-ui" executable="npm.cmd" osfamily="windows">
+			<arg value="run"/>
+			<arg value="build"/>
+		</exec>
+		<exec dir="./scadalts-ui" executable="npm" osfamily="unix">
 			<arg value="run"/>
 			<arg value="build"/>
 		</exec>
@@ -528,11 +557,23 @@
 				  haltonfailure="yes">
 			</test>
 
+			<test name="com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+            <test name="com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRtTest"
+                  haltonfailure="yes">
+            </test>
+
+			<test name="org.scada_lts.service.CommunicationChannelTest"
+				  haltonfailure="yes">
+			</test>
+
 			<test name="com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
 				  haltonfailure="yes">
 			</test>
 
-			<test name="com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>

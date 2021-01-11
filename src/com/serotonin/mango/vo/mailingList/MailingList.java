@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntervalUtil;
 import com.serotonin.timer.CronExpression;
 import org.joda.time.DateTime;
@@ -34,6 +35,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.Common;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
@@ -120,7 +122,7 @@ public class MailingList extends EmailRecipient {
 
     @Override
     public void appendAddresses(Set<String> addresses, DateTime sendTime) {
-        if (sendTime != null && !IntervalUtil.isActiveByInterval(this, sendTime))
+        if (sendTime != null && !isActive(sendTime))
             return;
         appendAllAddresses(addresses);
     }
@@ -132,14 +134,14 @@ public class MailingList extends EmailRecipient {
     }
 
     @Override
-    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelType type) {
+    public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type) {
         if (sendTime != null && !IntervalUtil.isActiveByInterval(this, sendTime))
             return;
         appendAllAddresses(addresses, type);
     }
 
     @Override
-    public void appendAllAddresses(Set<String> addresses, CommunicationChannelType type) {
+    public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type) {
         for (EmailRecipient e : entries)
             e.appendAddresses(addresses, null, type);
     }
@@ -212,5 +214,13 @@ public class MailingList extends EmailRecipient {
 
     public void setDailyLimitSentEmails(boolean dailyLimitSentEmails) {
         this.dailyLimitSentEmails = dailyLimitSentEmails;
+    }
+
+    public boolean isActive(DateTime sendTime) {
+        return IntervalUtil.isActiveByInterval(this, sendTime);
+    }
+
+    public boolean isActive(EventInstance sendTime) {
+        return IntervalUtil.isActiveByInterval(this, sendTime);
     }
 }

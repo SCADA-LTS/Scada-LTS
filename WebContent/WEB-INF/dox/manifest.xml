@@ -388,5 +388,11 @@
         <relation id="emailSettings"/>
         <relation id="eventHandlers"/>
         <relation id="eventDetectors"/>
+        <relation id="mailingLists"/>
     </item>
+
+  <item id="smsEventHandlers">
+    <relation id="emailSettings"/>
+    <relation id="mailingLists"/>
+  </item>
 </doxManifest>

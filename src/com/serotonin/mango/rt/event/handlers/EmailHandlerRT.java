@@ -18,38 +18,22 @@
  */
 package com.serotonin.mango.rt.event.handlers;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-
-import com.serotonin.mango.rt.event.AlarmLevels;
-import com.serotonin.mango.rt.event.type.ScheduledInactiveEventType;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
-import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.SystemEventType;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.mango.web.email.UsedImagesDirective;
 import com.serotonin.timer.TimerTask;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.email.EmailInline;
-import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.scada_lts.mango.service.MailingListService;
-import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+
+import java.util.Set;
 
 public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient<EventInstance> {
     private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);
@@ -60,7 +44,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     private ScheduledExecuteInactiveEventService service;
     private MailingListService mailingListService;
 
-    private enum NotificationType {
+    public enum EmailNotificationType implements NotificationType {
         ACTIVE("active", "ftl.subject.active"), //
         ESCALATION("escalation", "ftl.subject.escalation"), //
         INACTIVE("inactive", "ftl.subject.inactive");
@@ -68,7 +52,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         String file;
         String key;
 
-        private NotificationType(String file, String key) {
+        EmailNotificationType(String file, String key) {
             this.file = file;
             this.key = key;
         }
@@ -93,6 +77,12 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         this.mailingListService = new MailingListService();
     }
 
+    public EmailHandlerRT(EventHandlerVO vo, MailingListService mailingListService) {
+        this.vo = vo;
+        this.service = ScheduledExecuteInactiveEventService.getInstance();
+        this.mailingListService = mailingListService;
+    }
+
     public EmailHandlerRT(EventHandlerVO vo,
                           ScheduledExecuteInactiveEventService service,
                           MailingListService mailingListService) {
@@ -105,39 +95,15 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         return activeRecipients;
     }
 
-    protected Set<String> getActiveRecipients(EventInstance evt) {
-        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
-    }
-
-    protected Set<String> getInactiveRecipients(EventInstance evt) {
-        return mailingListService.getRecipientAddresses(vo.getInactiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
-    }
-
-    protected Set<String> getActiveRecipients(EventInstance evt, CommunicationChannel channel) {
-        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()), channel);
-    }
-
     @Override
     public void eventRaised(EventInstance evt) {
-        if(service.isScheduledInactiveEventType(evt)) {
-            eventScheduledRaised(evt, (ScheduledInactiveEventType)evt.getEventType());
-        } else {
-            raised(evt);
-        }
-    }
-
-    private void raised(EventInstance evt) {
-
         // Get the email addresses to send to
         activeRecipients = getActiveRecipients(evt);
 
         service.scheduleEvent(vo, evt);
 
         // Send an email to the active recipients.
-        sendEmail(evt, NotificationType.ACTIVE, activeRecipients);
+        sendEmail(evt, activeRecipients);
 
         // If an inactive notification is to be sent, save the active recipients.
         if (vo.isSendInactive()) {
@@ -154,13 +120,6 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         }
     }
 
-    private void eventScheduledRaised(EventInstance evt, ScheduledInactiveEventType eventType) {
-        activeRecipients = getActiveRecipients(evt, eventType.getCommunicationChannel());
-
-        // Send an email to the active recipients.
-        sendEmail(evt, NotificationType.ACTIVE, activeRecipients);
-    }
-
     //
     // TimeoutClient
     //
@@ -170,7 +129,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
                 fireTime));
 
         // Send the escalation.
-        sendEmail(evt, NotificationType.ESCALATION, addresses);
+        sendEmail(evt, EmailNotificationType.ESCALATION, addresses);
 
         // If an inactive notification is to be sent, save the escalation recipients, but only if inactive recipients
         // have not been overridden.
@@ -186,133 +145,32 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
 
         if (inactiveRecipients != null && inactiveRecipients.size() > 0)
             // Send an email to the inactive recipients.
-            sendEmail(evt, NotificationType.INACTIVE, inactiveRecipients);
+            sendEmail(evt, EmailNotificationType.INACTIVE, inactiveRecipients);
     }
 
     public static void sendActiveEmail(EventInstance evt, Set<String> addresses) {
-        sendEmail(evt, NotificationType.ACTIVE, addresses, null);
+        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, null);
+    }
+
+    protected Set<String> getActiveRecipients(EventInstance evt) {
+        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
+    }
+
+    protected Set<String> getInactiveRecipients(EventInstance evt) {
+        return mailingListService.getRecipientAddresses(vo.getInactiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
+    }
+
+    protected EventHandlerVO getVo() {
+        return this.vo;
+    }
+
+    protected void sendEmail(EventInstance evt, Set<String> addresses) {
+        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, vo.getAlias());
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
-        sendEmail(evt, notificationType, addresses, vo.getAlias());
-    }
-
-    private static String getInfoEmail(EventInstance evt, NotificationType notificationType, String alias) {
-
-        String messageInfoAlias = MessageFormat.format("Alias: {0} \n", alias);
-        String messageInfoEmail = MessageFormat.format("Event: {0} \n", evt.getId());
-        String messageInfoNotyfication = MessageFormat.format("Notyfication: {0} \n", notificationType.getKey());
-        String subject = "";
-        String messageExceptionWhenGetSubjectEmail = "";
-        try {
-            LocalizableMessage subjectMsg;
-            LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
-            if (StringUtils.isEmpty(alias)) {
-                if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
-                else
-                    subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
-            } else {
-                if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
-                else
-                    subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifTypeMsg, evt.getId());
-            }
-
-            ResourceBundle bundle = Common.getBundle();
-            subject = subjectMsg.getLocalizedMessage(bundle);
-        } catch (Exception e) {
-            messageExceptionWhenGetSubjectEmail =  MessageFormat.format("StackTrace for subjectMsg {0}",ExceptionUtils.getStackTrace(e));
-        }
-
-        String messages = new StringBuilder()
-                .append(messageInfoEmail)
-                .append(messageInfoNotyfication)
-                .append(messageInfoAlias)
-                .append(subject)
-                .append(messageExceptionWhenGetSubjectEmail).toString();
-
-        return messages;
-    }
-
-    private static void validateEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias) throws Exception {
-
-        String messageErrorEventInstance = "Event Instance null \n";
-        String messageErrorNotyficationType = "Notification type is null \n";
-        String messageErrorEmails = "Don't have e-mail \n";
-        String messageErrorAlias = "Don't have alias\n";
-        String messages = "";
-        if (evt == null || evt.getEventType() == null) messages += messageErrorEventInstance;
-        if (notificationType == null) messages += messageErrorNotyficationType;
-        if (addresses == null || addresses.size() == 0) messages += messageErrorEmails;
-        if (alias == null) messages += messageErrorAlias;
-
-        if (messages.length() > 0) {
-            throw new Exception(getInfoEmail(evt, notificationType, alias) + messages );
-        }
-
-    }
-
-    private static void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses,
-                                  String alias) {
-        try {
-
-            validateEmail(evt, notificationType, addresses, alias);
-
-            if (evt.getEventType().isSystemMessage()) {
-                if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
-                    // Don't send email notifications about email send failures.
-                    LOG.info("Not sending email for event raised due to email failure");
-                    return;
-                }
-            }
-
-            ResourceBundle bundle = Common.getBundle();
-
-            // Determine the subject to use.
-
-            LocalizableMessage subjectMsg;
-            LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
-            if (StringUtils.isEmpty(alias)) {
-                if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
-                else
-                    subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
-            } else {
-                if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
-                else
-                    subjectMsg = new LocalizableMessage("ftl.subject.alias.id", alias, notifTypeMsg, evt.getId());
-            }
-
-            String subject = subjectMsg.getLocalizedMessage(bundle);
-
-            String[] toAddrs = addresses.toArray(new String[0]);
-            UsedImagesDirective inlineImages = new UsedImagesDirective();
-
-            // Send the email.
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put("evt", evt);
-            if (evt.getContext() != null)
-                model.putAll(evt.getContext());
-            model.put("img", inlineImages);
-            model.put("instanceDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
-            MangoEmailContent content = new MangoEmailContent(notificationType.getFile(), model, bundle, subject,
-                    Common.UTF8);
-
-            for (String s : inlineImages.getImageList())
-                content.addInline(new EmailInline.FileInline(s, Common.ctx.getServletContext().getRealPath(s)));
-
-            EmailWorkItem.queueEmail(toAddrs, content);
-
-        } catch (Exception e) {
-            LOG.error(
-                    MessageFormat.format(
-                            "Info about email: {0}, StackTrace: {1}",
-                            new Object[] {
-                                    getInfoEmail(evt,notificationType,alias),
-                                    ExceptionUtils.getStackTrace(e)}
-            ));
-        }
+        SendMsgUtils.sendEmail(evt, notificationType, addresses, vo.getAlias());
     }
 }

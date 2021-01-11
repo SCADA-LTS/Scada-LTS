@@ -1,6 +1,8 @@
 package org.scada_lts.utils;
 
-public class QueryUtils {
+public final class QueryUtils {
+
+    private QueryUtils() {}
 
     public static String getArgsIn(int size) {
         StringBuilder args = new StringBuilder();

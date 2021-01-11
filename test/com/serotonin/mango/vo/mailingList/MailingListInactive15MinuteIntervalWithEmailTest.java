@@ -38,21 +38,22 @@ public class MailingListInactive15MinuteIntervalWithEmailTest {
         String badEmail2 = "test2test.com";
         String badEmail3 = "test3@testcom";
 
-        UserEntry user1 = createUserEntry("Ewa",tel1, email1);
-        UserEntry user2 = createUserEntry("Marta",tel2, email2);
-        UserEntry user3 = createUserEntry("Karol",badTel1, email2);
-        UserEntry user4 = createUserEntry("Eryk",badTel1, badEmail1);
+        UserEntry user1 = createUserEntry("Sam", tel1, email1);
+        UserEntry user2 = createUserEntry("Eryk", tel2, email2);
+        UserEntry user3 = createUserEntry("Josh", badTel1, email2);
+        UserEntry user4 = createUserEntry("John", badTel1, badEmail1);
 
         List<AddressEntry> addressEntries = createAddressEntry(tel3, email4,
                 email3, tel4, badTel2, badTel3, badEmail2, badEmail3);
 
-        testSuject = createMailingList(addressEntries, user1, user2, user3, user4);
+        testSuject = createMailingList(1, addressEntries, user1, user2, user3, user4);
 
         addressesExpected = new HashSet<>();
         addressesExpected.add(email1);
         addressesExpected.add(email2);
         addressesExpected.add(email3);
         addressesExpected.add(email4);
+        addressesExpected.add(badEmail1);
     }
 
     @Test

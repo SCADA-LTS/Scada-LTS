@@ -1,116 +1,83 @@
 package org.scada_lts.service;
 
-import com.serotonin.mango.rt.event.*;
-import com.serotonin.mango.rt.event.type.ScheduledInactiveEventType;
+import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
-import org.joda.time.DateTime;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
-import org.scada_lts.dao.event.EventDAO;
-import org.scada_lts.dao.event.ScheduledExecuteInactiveEvent;
 import org.scada_lts.mango.service.MailingListService;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInactiveEventService {
 
+    private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventServiceImpl.class);
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final MailingListService mailingListService;
-    private final Set<ScheduledExecuteInactiveEventInstance> relations;
-    private final Object mutex = new Object();
-
     private static class LazyHolder {
-        public static final ScheduledExecuteInactiveEventService INSTANCE = new ScheduledExecuteInactiveEventServiceImpl(new EventDAO(),
-                ScheduledExecuteInactiveEventDAO.getInstance(), new MailingListService());
+        public static final ScheduledExecuteInactiveEventService INSTANCE =
+                new ScheduledExecuteInactiveEventServiceImpl(ScheduledExecuteInactiveEventDAO.getInstance(),
+                        new MailingListService());
     }
 
     static ScheduledExecuteInactiveEventService getInstance() {
         return LazyHolder.INSTANCE;
     }
 
-    ScheduledExecuteInactiveEventServiceImpl(EventDAO eventDAO,
-                                                     ScheduledExecuteInactiveEventDAO scheduledEventDAO,
+    ScheduledExecuteInactiveEventServiceImpl(ScheduledExecuteInactiveEventDAO scheduledEventDAO,
                                                      MailingListService mailingListService) {
         this.scheduledEventDAO = scheduledEventDAO;
         this.mailingListService = mailingListService;
-        this.relations = init(eventDAO, scheduledEventDAO, mailingListService);
-
-    }
-
-    private Set<ScheduledExecuteInactiveEventInstance> init(EventDAO eventDAO,
-                                                            ScheduledExecuteInactiveEventDAO scheduledEventDAO,
-                                                            MailingListService mailingListService) {
-
-        List<ScheduledExecuteInactiveEvent> scheduledEvents = scheduledEventDAO.select();
-
-        Map<Integer, EventInstance> events = eventDAO.getAllStatusEvents(scheduledEvents.stream()
-                        .map(ScheduledExecuteInactiveEvent::getSourceEventId)
-                        .collect(Collectors.toSet()))
-                .stream()
-                .collect(Collectors.toMap(EventInstance::getId, a -> a));
-
-        Map<Integer, MailingList> mailingLists = mailingListService.getMailingLists(scheduledEvents.stream()
-                        .map(ScheduledExecuteInactiveEvent::getMailingListId)
-                        .collect(Collectors.toSet()))
-                .stream()
-                .collect(Collectors.toMap(MailingList::getId, a -> a));
-
-        return scheduledEvents.stream()
-                .filter(a -> mailingLists.containsKey(a.getMailingListId())
-                        && events.containsKey(a.getSourceEventId()))
-                .map(a -> new ScheduledExecuteInactiveEventInstance(
-                        CommunicationChannel.newChannel(mailingLists.get(a.getMailingListId()),
-                                CommunicationChannelType.getType(a.getEventHandlerType())),
-                        events.get(a.getSourceEventId())))
-                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<EventInstance> getScheduledEvents(CommunicationChannel channel) {
-        synchronized (mutex) {
-            return relations.stream()
-                    .filter(a -> a.getCommunicationChannel().equals(channel))
-                    .map(ScheduledExecuteInactiveEventInstance::getEvent)
-                    .sorted(Comparator.comparingInt(EventInstance::getId).reversed())
-                    .collect(Collectors.toList());
+    public void scheduleEvent(EventHandlerVO eventHandler, EventInstance event) {
+        if(event.getAlarmLevel() == AlarmLevels.NONE) {
+            LOG.warn("Event with alarm level NONE: event type:" + event.getEventType());
+            return;
+        }
+        if(eventHandler.getHandlerType() != EventHandlerVO.TYPE_SMS &&
+                eventHandler.getHandlerType() != EventHandlerVO.TYPE_EMAIL) {
+            LOG.warn("Event handler type not supported:" + eventHandler.getClass().getSimpleName());
+            return;
+        }
+        schedule(eventHandler, event);
+    }
+
+    @Override
+    public void unscheduleEvent(ScheduledEvent event, CommunicationChannel channel) {
+        unscheduleEvent(event.getEventHandler(), event.getEvent(), channel);
+    }
+
+    private void unscheduleEvent(EventHandlerVO eventHandler,
+                                 EventInstance event,
+                                 CommunicationChannel communicationChannel) {
+        if(communicationChannel.getType().getEventHandlerType() == eventHandler.getHandlerType()) {
+            ScheduledExecuteInactiveEventInstance inactiveEventInstance =
+                    new ScheduledExecuteInactiveEventInstance(eventHandler, event, communicationChannel.getData());
+            try {
+                scheduledEventDAO.delete(inactiveEventInstance.getKey());
+            } catch (Exception ex) {
+                LOG.warn("Event is not scheduled!: " + inactiveEventInstance);
+            }
         }
     }
 
-    @Override
-    public void unscheduleEvent(CommunicationChannel channel, EventInstance event) {
-        ScheduledExecuteInactiveEventInstance inactiveEventInstance =
-                new ScheduledExecuteInactiveEventInstance(channel, event);
-        scheduledEventDAO.delete(new ScheduledExecuteInactiveEvent(inactiveEventInstance));
-        synchronized (mutex) {
-            relations.remove(inactiveEventInstance);
-        }
-    }
+    private void schedule(EventHandlerVO eventHandler, EventInstance event) {
+        List<MailingList> mailingLists = mailingListService.convertToMailingLists(eventHandler.getActiveRecipients());
 
-    @Override
-    public boolean isScheduledInactiveEventType(EventInstance event) {
-        return event.getEventType() instanceof ScheduledInactiveEventType;
-    }
-
-    @Override
-    public void scheduleEvent(EventHandlerVO eventHandlerVO, EventInstance event) {
-        if(event.getAlarmLevel() != AlarmLevels.NONE
-                && !isScheduledInactiveEventType(event)) {
-            DateTime fireTime = new DateTime(event.getActiveTimestamp());
-            List<MailingList> mailingLists = mailingListService.convertToMailingLists(eventHandlerVO.getActiveRecipients());
-
-            for (MailingList mailingList : mailingLists) {
-                if (mailingList.isCollectInactiveEmails()) {
-                    CommunicationChannelType type = CommunicationChannelType.getType(eventHandlerVO.getHandlerType());
-                    CommunicationChannel channel = CommunicationChannel.newChannel(mailingList, type);
-                    if (!channel.isActiveFor(fireTime)) {
-                        ScheduledExecuteInactiveEventInstance inactiveEventInstance =
-                                new ScheduledExecuteInactiveEventInstance(channel, event);
-                        scheduledEventDAO.insert(
-                                new ScheduledExecuteInactiveEvent(inactiveEventInstance));
-                        synchronized (mutex) {
-                            relations.add(inactiveEventInstance);
-                        }
+        for (MailingList mailingList : mailingLists) {
+            if (mailingList.isCollectInactiveEmails()) {
+                ScheduledExecuteInactiveEventInstance inactiveEventInstance =
+                        new ScheduledExecuteInactiveEventInstance(eventHandler, event, mailingList);
+                if (!inactiveEventInstance.isActive()) {
+                    try {
+                        scheduledEventDAO.insert(inactiveEventInstance.getKey());
+                    } catch (Exception ex) {
+                        LOG.warn("Inactive event instance is duplicated!: " + inactiveEventInstance);
                     }
                 }
             }

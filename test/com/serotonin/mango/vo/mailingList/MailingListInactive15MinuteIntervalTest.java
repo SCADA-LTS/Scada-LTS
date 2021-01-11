@@ -36,15 +36,15 @@ public class MailingListInactive15MinuteIntervalTest {
         String badEmail2 = "test2test.com";
         String badEmail3 = "test3@testcom";
 
-        UserEntry user1 = createUserEntry("Ewa",tel1, email1);
-        UserEntry user2 = createUserEntry("Adam",tel2, email2);
-        UserEntry user3 = createUserEntry("Tomek",badTel1, email2);
-        UserEntry user4 = createUserEntry("Edward",badTel1, badEmail1);
+        UserEntry user1 = createUserEntry("Sam", tel1, email1);
+        UserEntry user2 = createUserEntry("Eryk", tel2, email2);
+        UserEntry user3 = createUserEntry("Josh", badTel1, email2);
+        UserEntry user4 = createUserEntry("John", badTel1, badEmail1);
 
         List<AddressEntry> addressEntries = createAddressEntry(tel3, email4,
                 email3, tel4, badTel2, badTel3, badEmail2, badEmail3);
 
-        testSuject = createMailingList(addressEntries, user1, user2, user3, user4);
+        testSuject = createMailingList(1, addressEntries, user1, user2, user3, user4);
 
         addressesExpected = new HashSet<>();
         addressesExpected.add(email1);
@@ -78,10 +78,10 @@ public class MailingListInactive15MinuteIntervalTest {
     public void test_appendAddresses_with_inactive_interval_and_time_in_interval_then_empty_list() {
 
         //given:
-        DateTime timeInInactiveInterval = DateTime.parse("2020-12-13T21:44:59.618-08:00");
+        DateTime timeForInactiveInterval = DateTime.parse("2020-12-13T21:44:59.618-08:00");
 
-        DateTime timeForInactiveInverval = DateTime.parse("2020-12-13T21:30:00.618-08:00");
-        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(timeForInactiveInverval);
+        DateTime timeForInactiveInterval1 = DateTime.parse("2020-12-13T21:30:00.618-08:00");
+        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(timeForInactiveInterval1);
 
         Set<Integer> inactiveIntervals = new HashSet<>();
         inactiveIntervals.add(inactiveInterval);
@@ -90,7 +90,7 @@ public class MailingListInactive15MinuteIntervalTest {
         Set<String> addresses = new HashSet<>();
 
         //when
-        testSuject.appendAddresses(addresses, timeInInactiveInterval);
+        testSuject.appendAddresses(addresses, timeForInactiveInterval);
 
         //then:
         assertEquals(Collections.emptySet(), addresses);
@@ -102,16 +102,16 @@ public class MailingListInactive15MinuteIntervalTest {
         //given:
         Set<Integer> inactiveIntervals = new HashSet<>();
 
-        DateTime activeDate = DateTime.parse("2020-12-13T21:45:01.618-08:00");
-        DateTime inactiveDate = DateTime.parse("2020-12-13T21:30:00.618-08:00");
-        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(inactiveDate);
+        DateTime timeForActiveInterval = DateTime.parse("2020-12-13T21:45:00.618-08:00");
+        DateTime timeForInactiveInterval = DateTime.parse("2020-12-13T21:30:00.618-08:00");
+        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(timeForInactiveInterval);
         inactiveIntervals.add(inactiveInterval);
         testSuject.setInactiveIntervals(inactiveIntervals);
 
         Set<String> addresses = new HashSet<>();
 
         //when
-        testSuject.appendAddresses(addresses, activeDate);
+        testSuject.appendAddresses(addresses, timeForActiveInterval);
 
         //then:
         assertEquals(addressesExpected, addresses);
@@ -123,16 +123,16 @@ public class MailingListInactive15MinuteIntervalTest {
         //given:
         Set<Integer> inactiveIntervals = new HashSet<>();
 
-        DateTime activeDate = DateTime.parse("2020-12-13T21:15:00.618-08:00");
-        DateTime inactiveDate = DateTime.parse("2020-12-13T21:30:00.618-08:00");
-        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(inactiveDate);
+        DateTime timeForActiveInterval = DateTime.parse("2020-12-13T21:15:00.618-08:00");
+        DateTime timeForInactiveInterval = DateTime.parse("2020-12-13T21:30:00.618-08:00");
+        Integer inactiveInterval = IntervalUtil.getIntervalIdAt(timeForInactiveInterval);
         inactiveIntervals.add(inactiveInterval);
         testSuject.setInactiveIntervals(inactiveIntervals);
 
         Set<String> addresses = new HashSet<>();
 
         //when
-        testSuject.appendAddresses(addresses, activeDate);
+        testSuject.appendAddresses(addresses, timeForActiveInterval);
 
         //then:
         assertEquals(addressesExpected, addresses);
