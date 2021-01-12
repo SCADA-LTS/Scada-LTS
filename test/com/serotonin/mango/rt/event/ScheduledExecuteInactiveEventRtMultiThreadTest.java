@@ -58,11 +58,11 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
             "currentScheduledNumber: {7}")
     public static Collection data() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 300, 5, 3},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 300, 5, 3},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 250, 5, 3},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 250, 5, 3},
                 { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 5, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 300, 0, 300, 5, 300},
-                { 3, false, CommunicationChannelType.SMS, 300, 0, 300, 5, 300},
+                { 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 5, 250},
+                { 3, false, CommunicationChannelType.SMS, 250, 0, 250, 5, 250},
                 { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 5, 10},
         });
     }

@@ -153,13 +153,17 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     protected Set<String> getActiveRecipients(EventInstance evt) {
-        return mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
+        CommunicationChannelType type = CommunicationChannelType.EMAIL;
+        Set<String> addresses = mailingListService.getRecipientAddresses(vo.getActiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), type);
+        return type.formatAddresses(addresses, "", type.getReplaceRegex());
     }
 
     protected Set<String> getInactiveRecipients(EventInstance evt) {
-        return mailingListService.getRecipientAddresses(vo.getInactiveRecipients(),
-                new DateTime(evt.getActiveTimestamp()), CommunicationChannelType.EMAIL);
+        CommunicationChannelType type = CommunicationChannelType.EMAIL;
+        Set<String> addresses = mailingListService.getRecipientAddresses(vo.getInactiveRecipients(),
+                new DateTime(evt.getActiveTimestamp()), type);
+        return type.formatAddresses(addresses, "", type.getReplaceRegex());
     }
 
     protected EventHandlerVO getVo() {

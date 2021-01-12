@@ -54,11 +54,11 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
             " communicateLimitTimes: {4}, eventsNumber: {5}, currentScheduledNumber: {6}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 300, 3},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 300, 3},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 250, 3},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 250, 3},
                 { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 300, 0, 300, 300},
-                { 3, false, CommunicationChannelType.SMS, 300, 0, 300, 300},
+                { 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 250},
+                { 3, false, CommunicationChannelType.SMS, 250, 0, 250, 250},
                 { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
         });
     }
@@ -163,7 +163,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
         inactiveEventsProvider = InactiveEventsProvider.newInstance(eventDAOMock, scheduledInactiveEventDAOMemory,
-                channel, 300);
+                channel, 600);
 
         this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventService, inactiveEventsProvider,
                 dataPointServiceMock, dataSourceServiceMock);
