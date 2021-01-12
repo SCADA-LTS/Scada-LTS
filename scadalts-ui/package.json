@@ -37,7 +37,6 @@
 		"roboto-fontface": "*",
 		"uiv": "^0.27.0",
 		"util": "^0.12.3",
-		"verte": "0.0.12",
 		"vue": "2.6.10",
 		"vue-color-picker-wheel": "0.4.3",
 		"vue-cookie": "1.1.4",

@@ -2,6 +2,7 @@
  * @author Radoslaw Jajko <rjajko@softq.pl>
  */
 import Vuex from 'vuex';
+import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
 import { createLocalVue, mount } from '@vue/test-utils';
 import DefaultLoggingTypeSettingsComponent from '@/views/SystemSettings/DefaultLoggingTypeComponent';
@@ -9,6 +10,7 @@ import i18n from '@/i18n';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
+localVue.use(Vuetify);
 
 const systemSettings = {
 	state: {
@@ -47,6 +49,7 @@ describe('SystemSettings - LoggingType Settings Tests', () => {
 		store,
 		localVue,
 		i18n,
+		stubs: ['VSelect', 'VIcon'],
 	});
 
 	it('Initialize Component', () => {
@@ -56,11 +59,6 @@ describe('SystemSettings - LoggingType Settings Tests', () => {
 	it('Test loading variable from Vuex store', () => {
 		expect(wrapper.vm.defaultLoggingType).to.equal(3);
 		expect(wrapper.vm.defaultLoggingTypeStore).to.equal(3);
-	});
-
-	it('Test i18n English Translation', () => {
-		expect(wrapper.findAll('option').at(1).html()).to.contain('All data');
-		expect(wrapper.findAll('option').at(2).html()).to.contain('Do not log');
 	});
 
 	it('Test value saving', async () => {

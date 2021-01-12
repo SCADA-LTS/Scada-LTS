@@ -20,9 +20,6 @@ import VueLodash from 'vue-lodash';
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent';
 import LineChartComponent from './components/amcharts/LineChartComponent';
 
-import Verte from 'verte';
-import 'verte/dist/verte.css';
-
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -55,7 +52,6 @@ library.add(
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.component(Verte.name, Verte);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -185,6 +181,7 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 if (window.document.getElementById('example-chart-cmp') != undefined) {
 	new Vue({
 		store,
+		vuetify,
 		i18n,
 		render: (h) => h(WatchListChartWidget),
 	}).$mount('#example-chart-cmp');

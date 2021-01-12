@@ -1,5 +1,6 @@
 import { createLocalVue, mount } from '@vue/test-utils';
 import WatchListJsonChart from '@/components/watch_list/WatchListJsonChart';
+import Vuetify from '@/plugins/vuetify';
 import i18n from '@/i18n';
 import * as uiv from 'uiv';
 import { expect } from 'chai';
@@ -30,6 +31,7 @@ global.localStorage = new LocalStorageMock();
 
 const localVue = createLocalVue();
 localVue.use(uiv);
+localVue.use(Vuetify);
 
 describe('WatchListJsonChart.vue Test', () => {
 	const WATCHLIST_NAME = 'UnitTestWL';
@@ -41,6 +43,7 @@ describe('WatchListJsonChart.vue Test', () => {
 			pointId: '1',
 			watchlistName: WATCHLIST_NAME,
 		},
+		stubs: ['VApp'],
 	});
 
 	it('Initialize blank JsonChart', () => {

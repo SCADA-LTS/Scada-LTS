@@ -76,7 +76,7 @@ describe('PLC Alarms Notification Tests', () => {
 		store,
 		localVue,
 		i18n,
-		stubs: ['VSelect'],
+		stubs: ['VSelect', 'VIcon', 'VSnackbar'],
 	});
 
 	it('Initialize Component', () => {

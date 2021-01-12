@@ -1,255 +1,215 @@
 <template>
-	<div>
-		<div>
-			<btn @click="openModal">
-				<i class="glyphicon glyphicon-cog" />
-			</btn>
-		</div>
-		<div v-if="isModalVisible" class="modal-block">
-			<div class="modal-body-block">
-				<div class="container">
-					<div class="col-xs-12">
-						<btn-group class="col-xs-8">
-							<div class="col-xs-6">
-								<btn
-									block
-									input-type="radio"
-									v-model="aggregation.aggregate"
-									:input-value="false"
-									>{{ $t('modernwatchlist.chartseries.aggregation.all') }}</btn
-								>
-							</div>
-							<div class="col-xs-6">
-								<btn
-									block
-									input-type="radio"
-									v-model="aggregation.aggregate"
-									:input-value="true"
-									>{{ $t('modernwatchlist.chartseries.aggregation.aggregate') }}</btn
-								>
-							</div>
-						</btn-group>
-						<div class="col-xs-4">
-							<input class="form-control" type="number" v-model="aggregation.count" />
-						</div>
-					</div>
-				</div>
-				<div class="container margin-top" v-if="tempSeries">
-					<div class="col-xs-12 justify-content-md-center">
-						<tabs justified>
-							<tab v-for="s in tempSeries" :title="s.name" :key="s.id">
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.name') }}
-									</p>
-									<div class="col-xs-6">
-										<input class="form-control" v-model="s.name" />
-									</div>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.series') }}
-									</p>
-									<btn-group class="col-xs-6">
-										<btn
-											class="col-xs-6"
-											input-type="radio"
-											input-value="LineSeries"
-											v-model="s.type"
-											>{{ $t('modernwatchlist.chartseries.series.line') }}</btn
-										>
-										<btn
-											class="col-xs-6"
-											input-type="radio"
-											input-value="StepLineSeries"
-											v-model="s.type"
-											>{{ $t('modernwatchlist.chartseries.series.stepline') }}</btn
-										>
-									</btn-group>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.yaxis') }}
-									</p>
-									<btn-group class="col-xs-6">
-										<btn
-											class="col-xs-3"
-											input-type="radio"
-											input-value="valueAxis1"
-											v-model="s.yAxis"
-											>1</btn
-										>
-										<btn
-											class="col-xs-3"
-											input-type="radio"
-											input-value="valueAxis2"
-											v-model="s.yAxis"
-											>2</btn
-										>
-										<btn
-											class="col-xs-3"
-											input-type="radio"
-											input-value="logAxis"
-											v-model="s.yAxis"
-											>{{ $t('modernwatchlist.chartseries.yaxis.logarithmic') }}</btn
-										>
-										<btn
-											class="col-xs-3"
-											input-type="radio"
-											input-value="binAxis"
-											v-model="s.yAxis"
-											>{{ $t('modernwatchlist.chartseries.yaxis.binary') }}</btn
-										>
-									</btn-group>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.xaxis') }}
-									</p>
-									<btn-group class="col-xs-6">
-										<btn
-											class="col-xs-6"
-											input-type="radio"
-											input-value="dateAxis1"
-											@click="watchDateAxisChagne(s)"
-											v-model="s.xAxis"
-											>1</btn
-										>
-										<btn
-											class="col-xs-6"
-											input-type="radio"
-											input-value="dateAxis2"
-											@click="watchDateAxisChagne(s)"
-											v-model="s.xAxis"
-											>2</btn
-										>
-									</btn-group>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.stroke.color') }}
-									</p>
-									<div class="col-xs-6">
-										<verte
-											picker="square"
-											v-model="s.stroke"
-											model="hex"
-											:showHistory="null"
-											menuPosition="top"
-										></verte>
-									</div>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.stroke.width') }}
-									</p>
-									<div class="col-xs-6">
-										<input class="form-control" type="number" v-model="s.strokeWidth" />
-									</div>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.stroke.tension') }}
-									</p>
-									<div class="col-xs-6">
-										<input
-											class="form-control"
-											type="number"
-											:min="0"
-											:max="1"
-											v-model="s.tensionX"
-										/>
-									</div>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.fill.color') }}
-									</p>
-									<div class="col-xs-6">
-										<verte
-											picker="square"
-											v-model="s.fill"
-											model="hex"
-											:showHistory="null"
-											menuPosition="top"
-										></verte>
-									</div>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.fill.opacity') }}
-									</p>
-									<div class="col-xs-6">
-										<input
-											class="form-control"
-											type="number"
-											:min="0"
-											:max="1"
-											v-model="s.fillOpacity"
-										/>
-									</div>
-								</div>
-								<div class="col-xs-12">
-									<p class="col-xs-6">
-										{{ $t('modernwatchlist.chartseries.bullets') }}
-									</p>
-									<btn-group class="col-xs-6">
-										<btn
-											class="col-xs-6"
-											input-type="radio"
-											:input-value="5"
-											v-model="s.bullets[0].circle.radius"
-											>{{ $t('modernwatchlist.chartseries.show') }}</btn
-										>
-										<btn
-											class="col-xs-6"
-											input-type="radio"
-											:input-value="0"
-											v-model="s.bullets[0].circle.radius"
-											>{{ $t('modernwatchlist.chartseries.hide') }}</btn
-										>
-									</btn-group>
-								</div>
-							</tab>
-						</tabs>
-					</div>
-					<div class="col-xs-12 margin-top">
-						<div class="col-xs-4">
-							<btn block @click="close">{{
-								$t('modernwatchlist.chartseries.close')
-							}}</btn>
-						</div>
-						<div class="col-xs-4">
-							<btn block @click="restore">{{
-								$t('modernwatchlist.chartseries.restore')
-							}}</btn>
-						</div>
-						<div class="col-xs-4">
-							<btn type="primary" block @click="save">{{
-								$t('modernwatchlist.chartseries.save')
-							}}</btn>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<v-app class="chartVuetify">
+		<btn @click.stop="openModal()">
+			<i class="glyphicon glyphicon-cog" />
+		</btn>
+		<v-dialog v-model="isModalVisible" width="1200">
+			<v-card>
+				<v-card-title> {{ $t('modernwatchlist.chartseries.title') }} </v-card-title>
+				<v-card-text>
+					<v-row>
+						<v-col cols="3">
+							<p>{{ $t('modernwatchlist.chartseries.aggregation.label') }}</p>
+						</v-col>
+						<v-col cols="6">
+							<v-btn-toggle v-model="aggregation.aggregate" dense mandatory>
+								<v-btn block :value="false">{{
+									$t('modernwatchlist.chartseries.aggregation.all')
+								}}</v-btn>
+								<v-btn block :value="true">{{
+									$t('modernwatchlist.chartseries.aggregation.aggregate')
+								}}</v-btn>
+							</v-btn-toggle>
+						</v-col>
+						<v-col cols="3">
+							<v-text-field
+								v-model="aggregation.count"
+								type="number"
+								:label="$t('modernwatchlist.chartseries.aggregation.count')"
+								:disabled="!aggregation.aggregate"
+								dense
+							></v-text-field>
+						</v-col>
+					</v-row>
+					<v-tabs v-model="tab" background-color="primary" dark>
+						<v-tab v-for="s in tempSeries" :key="s">
+							{{ s.name }}
+						</v-tab>
+					</v-tabs>
+					<v-tabs-items v-model="tab">
+						<v-tab-item v-for="s in tempSeries" :key="s">
+							<v-card class="paggin-top-small series-settings limit-height">
+								<v-row>
+									<v-col cols="6">
+										<v-text-field
+											v-model="s.name"
+											:label="$t('modernwatchlist.chartseries.name')"
+											dense
+										></v-text-field>
+									</v-col>
+									<v-col cols="6">
+										<v-btn-toggle v-model="s.type" dense mandatory>
+											<v-btn block value="LineSeries">{{
+												$t('modernwatchlist.chartseries.series.line')
+											}}</v-btn>
+											<v-btn block value="StepLineSeries">{{
+												$t('modernwatchlist.chartseries.series.stepline')
+											}}</v-btn>
+										</v-btn-toggle>
+									</v-col>
+									<v-col cols="6">
+										<v-row>
+											<v-col cols="3">
+												<p>{{ $t('modernwatchlist.chartseries.xaxis') }}</p>
+											</v-col>
+											<v-col cols="9">
+												<v-btn-toggle v-model="s.xAxis" dense mandatory>
+													<v-btn block value="dateAxis1">1</v-btn>
+													<v-btn block value="dateAxis2">2</v-btn>
+												</v-btn-toggle>
+											</v-col>
+										</v-row>
+									</v-col>
+									<v-col cols="6">
+										<v-row>
+											<v-col cols="3">
+												<p>{{ $t('modernwatchlist.chartseries.yaxis') }}</p>
+											</v-col>
+											<v-col cols="9">
+												<v-btn-toggle v-model="s.yAxis" dense mandatory>
+													<v-btn value="valueAxis1">1</v-btn>
+													<v-btn value="valueAxis2">2</v-btn>
+													<v-btn value="logAxis">{{
+														$t('modernwatchlist.chartseries.yaxis.logarithmic')
+													}}</v-btn>
+													<v-btn value="binAxis">{{
+														$t('modernwatchlist.chartseries.yaxis.binary')
+													}}</v-btn>
+												</v-btn-toggle>
+											</v-col>
+										</v-row>
+									</v-col>
+									<v-col cols="6">
+										<v-row>
+											<v-col cols="12">
+												<p>{{ $t('modernwatchlist.chartseries.stroke.color') }}</p>
+											</v-col>
+
+											<v-col cols="12">
+												<v-color-picker
+													v-model="s.stroke"
+													dot-size="20"
+													mode="rgba"
+													:hide-canvas="!canvansVisible"
+													width="500"
+													height="100"
+												></v-color-picker>
+											</v-col>
+											<v-col cols="4">
+												<v-text-field
+													v-model="s.strokeWidth"
+													type="number"
+													:label="$t('modernwatchlist.chartseries.stroke.width')"
+													dense
+												></v-text-field>
+											</v-col>
+											<v-col cols="8">
+												<v-slider
+													v-model="s.tensionX"
+													persistent-hint
+													:hint="$t('modernwatchlist.chartseries.stroke.tension')"
+													max="1"
+													min="0"
+													step="0.1"
+													thumb-label
+													ticks
+												></v-slider>
+											</v-col>
+										</v-row>
+									</v-col>
+									<v-col cols="6">
+										<v-row>
+											<v-col cols="4">
+												<p>{{ $t('modernwatchlist.chartseries.fill.color') }}</p>
+											</v-col>
+											<v-col cols="8">
+												<v-spacer></v-spacer>
+												<v-btn text small @click="canvansVisible = !canvansVisible">
+													Toggle color selector
+												</v-btn>
+											</v-col>
+											<v-col cols="12">
+												<v-color-picker
+													v-model="s.fill"
+													dot-size="20"
+													mode="rgba"
+													:hide-canvas="!canvansVisible"
+													width="500"
+													height="100"
+												></v-color-picker>
+											</v-col>
+											<v-col cols="12">
+												<v-slider
+													v-model="s.fillOpacity"
+													persistent-hint
+													:hint="$t('modernwatchlist.chartseries.fill.opacity')"
+													max="1"
+													min="0"
+													step="0.01"
+													thumb-label
+												></v-slider>
+											</v-col>
+											<v-col cols="6">
+												<p>{{ $t('modernwatchlist.chartseries.bullets') }}</p>
+											</v-col>
+											<v-col cols="6">
+												<v-btn-toggle
+													v-model="s.bullets[0].circle.radius"
+													dense
+													mandatory
+												>
+													<v-btn block :value="5">{{
+														$t('modernwatchlist.chartseries.show')
+													}}</v-btn>
+													<v-btn block :value="0">{{
+														$t('modernwatchlist.chartseries.hide')
+													}}</v-btn>
+												</v-btn-toggle>
+											</v-col>
+										</v-row>
+									</v-col>
+								</v-row>
+							</v-card>
+						</v-tab-item>
+					</v-tabs-items>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn text @click="close()">{{
+						$t('modernwatchlist.chartseries.close')
+					}}</v-btn>
+					<v-btn text @click="restore()">{{
+						$t('modernwatchlist.chartseries.restore')
+					}}</v-btn>
+					<v-btn color="primary" @click="save()">{{
+						$t('modernwatchlist.chartseries.save')
+					}}</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+	</v-app>
 </template>
 <script>
-import verte from 'verte';
-
 export default {
 	name: 'ChartSeriesSettingsComponent',
-
-	components: {
-		verte,
-	},
 
 	props: ['watchListName', 'series'],
 
 	data() {
 		return {
 			tempSeries: undefined,
+			tab: null,
+			canvansVisible: false,
 			isModalVisible: false,
 			aggregation: {
 				aggregate: true,
@@ -314,23 +274,22 @@ export default {
 };
 </script>
 <style scoped>
-.modal-block {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 100;
-	background-color: rgba(0, 0, 0, 0.357);
+.paggin-top-small {
+	padding-top: 20px;
 }
-.modal-body-block {
-	margin: 5%;
-	padding: 15px;
-	background-color: white;
-	border-radius: 10px;
-	box-shadow: 1px 1px 6px 0px black;
+.series-settings p {
+	padding: 5px;
+	margin: 0;
+	margin-bottom: 0;
 }
-.margin-top {
-	margin-top: 15px;
+.limit-height {
+	height: 400px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+</style>
+<style>
+.chartVuetify .v-application--wrap {
+	min-height: 0;
 }
 </style>
