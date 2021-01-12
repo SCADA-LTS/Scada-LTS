@@ -18,7 +18,8 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
     private static final Log LOG = LogFactory.getLog(EmailToSmsHandlerRT.class);
 
     public enum SmsNotificationType implements NotificationType {
-        ACTIVE("activeSms", "ftl.subject.active");
+        ACTIVE("activeSms", "ftl.subject.active"),
+        LIMIT("limitSms", "ftl.subject.active");
 
         String file;
         String key;

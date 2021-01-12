@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
         ScheduledExecuteInactiveEventRtUnscheduleEventTest.class,
         ScheduledExecuteInactiveEventRtTest.class,
         ScheduledExecuteInactiveEventRtOneThreadTest.class,
-        ScheduledExecuteInactiveEventRtMultiThreadTest.class
+        //ScheduledExecuteInactiveEventRtMultiThreadTest.class
 })
 public class ScheduledExecuteInactiveEventRtTestsSuite {
 }

@@ -38,7 +38,7 @@ public class CommunicationChannelTest {
         });
     }
 
-    private CommunicationChannel subject;
+    private CommunicationChannel testSubject;
     private MailingList toCompare;
     private CommunicationChannelType type;
     private SystemSettingsService systemSettingsServiceMock;
@@ -81,7 +81,7 @@ public class CommunicationChannelTest {
         when(systemSettingsServiceMock.getSMSDomain()).thenReturn(domain);
 
         toCompare = createMailingList(1, addressEntries, user1, user2, user3, user4);
-        subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
+        testSubject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class CommunicationChannelTest {
         addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
 
         //when
-        Set<String> result = subject.getActiveAdresses(activeDate);
+        Set<String> result = testSubject.getActiveAdresses(activeDate);
 
         //then:
         assertEquals(addressesExpected, result);
@@ -116,10 +116,10 @@ public class CommunicationChannelTest {
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, timeInInactiveInterval, type);
         addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
-        subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
+        testSubject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
         
         //when:
-        Set<String> result = subject.getActiveAdresses(timeInInactiveInterval);
+        Set<String> result = testSubject.getActiveAdresses(timeInInactiveInterval);
 
         //then:
         assertEquals(addressesExpected, result);
@@ -140,10 +140,10 @@ public class CommunicationChannelTest {
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, activeDate, type);
         addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
-        subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
+        testSubject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
 
         //when:
-        Set<String> result = subject.getActiveAdresses(activeDate);
+        Set<String> result = testSubject.getActiveAdresses(activeDate);
 
         //then:
         assertEquals(addressesExpected, result);
@@ -164,10 +164,10 @@ public class CommunicationChannelTest {
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAddresses(addressesExpected, activeDate, type);
         addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
-        subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
+        testSubject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
 
         //when:
-        Set<String> result = subject.getActiveAdresses(activeDate);
+        Set<String> result = testSubject.getActiveAdresses(activeDate);
 
         //then:
         assertEquals(addressesExpected, result);
@@ -182,7 +182,7 @@ public class CommunicationChannelTest {
         addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
         
         //when:
-        Set<String> result = subject.getAllAdresses();
+        Set<String> result = testSubject.getAllAdresses();
 
         //then:
         assertEquals(addressesExpected, result);
@@ -206,10 +206,10 @@ public class CommunicationChannelTest {
         Set<String> addressesExpected = new HashSet<>();
         toCompare.appendAllAddresses(addressesExpected, type);
         addressesExpected = ScheduledInactiveEventTestUtils.formatAddresses(addressesExpected, domain, type);
-        subject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
+        testSubject = CommunicationChannel.newChannel(toCompare, type, systemSettingsServiceMock);
 
         //when:
-        Set<String> result = subject.getAllAdresses();
+        Set<String> result = testSubject.getAllAdresses();
 
         //then:
         assertEquals(addressesExpected, result);
@@ -219,35 +219,35 @@ public class CommunicationChannelTest {
     public void when_getChannelId_then_equals() {
 
         //then:
-        assertEquals(toCompare.getId(), subject.getChannelId());
+        assertEquals(toCompare.getId(), testSubject.getChannelId());
     }
 
     @Test
     public void when_getType_then_equals() {
 
         //then:
-        assertEquals(type, subject.getType());
+        assertEquals(type, testSubject.getType());
     }
 
     @Test
     public void when_getDailyLimitSentNumber_then_equals() {
 
         //then:
-        assertEquals(toCompare.getDailyLimitSentEmailsNumber(), subject.getDailyLimitSentNumber());
+        assertEquals(toCompare.getDailyLimitSentEmailsNumber(), testSubject.getDailyLimitSentNumber());
     }
 
     @Test
     public void when_isDailyLimitSent_then_equals() {
 
         //then:
-        assertEquals(toCompare.isDailyLimitSentEmails(), subject.isDailyLimitSent());
+        assertEquals(toCompare.isDailyLimitSentEmails(), testSubject.isDailyLimitSent());
     }
 
     @Test
     public void when_getSendingActivationCron_then_equals() {
 
         //then:
-        assertEquals(toCompare.getCronPattern(), subject.getSendingActivationCron());
+        assertEquals(toCompare.getCronPattern(), testSubject.getSendingActivationCron());
     }
 
     @Test
@@ -256,7 +256,7 @@ public class CommunicationChannelTest {
         DateTime dateTime = DateTime.now();
 
         //then:
-        assertEquals(toCompare.isActive(dateTime), subject.isActiveFor(dateTime));
+        assertEquals(toCompare.isActive(dateTime), testSubject.isActiveFor(dateTime));
     }
 
     @Test
@@ -266,20 +266,20 @@ public class CommunicationChannelTest {
         EventInstance event = EventTestUtils.createEventCriticalWithActiveTimeAndDataPointEventType(1, dateTime);
 
         //then:
-        assertEquals(toCompare.isActive(event), subject.isActiveFor(event));
+        assertEquals(toCompare.isActive(event), testSubject.isActiveFor(event));
     }
 
     @Test
     public void when_isCollectInactiveEvents_then_equals() {
 
         //then:
-        assertEquals(toCompare.isCollectInactiveEmails(), subject.isCollectInactiveEvents());
+        assertEquals(toCompare.isCollectInactiveEmails(), testSubject.isCollectInactiveEvents());
     }
 
     @Test
     public void when_getData_then_equals() {
 
         //then:
-        assertEquals(toCompare, subject.getData());
+        assertEquals(toCompare, testSubject.getData());
     }
 }

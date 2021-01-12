@@ -143,6 +143,9 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
             return channelType.validateAddress((String)args[0]);
         });
         when(channelTypeMock.getReplaceRegex()).thenReturn(channelType.getReplaceRegex());
+        when(channelTypeMock.formatAddresses(any(), any(), any())).thenAnswer(a -> channelType
+                .formatAddresses((Set<String>)a.getArguments()[0], (String)a.getArguments()[1],
+                        (String)a.getArguments()[2]));
 
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
 
@@ -182,6 +185,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         //given:
         Set<String> addresses = channel.getAllAdresses();
         when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
+        when(channelTypeMock.sendLimit(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
 
         //when:
         TestConcurrentUtils.biConsumer(launchesNumber, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
@@ -193,8 +197,9 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), anySet(), eq("Limit"));
-        verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), eq(addresses),
+        verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), anySet(),
+                eq("Limit"));
+        verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), eq(addresses),
                 eq("Limit"));
     }
 
@@ -215,8 +220,9 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(0)).sendMsg(any(EventInstance.class), anySet(), eq("Limit"));
-        verify(channelTypeMock, times(0)).sendMsg(any(EventInstance.class), eq(addresses),
+        verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), anySet(),
+                eq("Limit"));
+        verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), eq(addresses),
                 eq("Limit"));
     }
 

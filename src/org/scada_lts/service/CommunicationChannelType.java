@@ -22,6 +22,11 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         }
 
         @Override
+        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias) {
+            return sendMsg(event, addresses, alias);
+        }
+
+        @Override
         public Set<String> formatAddresses(Set<String> addresses, String domain, String replaceRegex) {
             return CommunicationChannelType.removeByRegex(addresses, replaceRegex);
         }
@@ -48,6 +53,11 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         @Override
         public boolean sendMsg(EventInstance event, Set<String> addresses, String alias) {
             return SendMsgUtils.sendSmsWithoutQueue(event,EmailToSmsHandlerRT.SmsNotificationType.ACTIVE,addresses,alias);
+        }
+
+        @Override
+        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias) {
+            return SendMsgUtils.sendSmsWithoutQueue(event,EmailToSmsHandlerRT.SmsNotificationType.LIMIT,addresses,alias);
         }
 
         @Override
@@ -95,6 +105,11 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public String removeWhitespace(String address) {
+        return address.replaceAll("\\s","");
     }
 
     public static CommunicationChannelTypable getType(int eventHandlerType) {

@@ -85,7 +85,7 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
         if(limit <= 0) {
             return Collections.emptyList();
         }
-        if(relations.isEmpty() && nonBlockingLock.getAndDecrement() == 0) {
+        if(relations.peek() == null && nonBlockingLock.getAndDecrement() == 0) {
             try {
                 relations.addAll(init(eventDAO, scheduledEventDAO, communicationChannel, blocking, dataFromBaseLimit).stream()
                         .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
@@ -95,6 +95,7 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
             }
         }
         log.info("relations: " + relations.size());
+        log.info("blocking: " + blocking.size());
         List<ScheduledEvent> scheduledEvents = new ArrayList<>();
         while(relations.peek() != null && scheduledEvents.size() < limit) {
             ScheduledExecuteInactiveEventInstance poll = relations.poll();
@@ -111,7 +112,6 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
                 new ScheduledExecuteInactiveEventInstance(event.getEventHandler(), event.getEvent(),
                         communicationChannel.getData());
         relations.add(instance);
-        confirm(event);
     }
 
     @Override
