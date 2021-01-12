@@ -30,6 +30,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
@@ -61,7 +64,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                                            DataSourceService dataSourceService) {
         this.communicationChannel = inactiveEventsProvider.getCommunicationChannel();
         this.limit = communicationChannel.isDailyLimitSent() ?
-                communicationChannel.getDailyLimitSentNumber() : 600;
+                communicationChannel.getDailyLimitSentNumber() : 300;
         this.limitLock = new AtomicInteger(limit);
         this.service = service;
         this.inactiveEventsProvider = inactiveEventsProvider;
@@ -151,7 +154,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 AlarmLevels.INFORMATION, dailyLimitExceededMsg, Collections.emptyMap());
         CommunicationChannelTypable type = communicationChannel.getType();
 
-        boolean sent = type.sendMsg(event, addresses,"Limit");
+        boolean sent = type.sendLimit(event, addresses,"Limit");
         if(sent) {
             log.info("Last message sent today for a list of addresses id: " + communicationChannel.getChannelId() + ", type: " + communicationChannel.getType());
             return true;
@@ -164,11 +167,15 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         EventType eventType = event.getEventType();
         EventHandlerVO eventHandler = scheduledEvent.getEventHandler();
         CommunicationChannelTypable type = communicationChannel.getType();
+        Optional<DataPointVO> dataPoint = getDataPoint(eventType);
+        if (dataPoint.isPresent() && isExists(eventType)) {
 
-        if (isExists(eventType)) {
+            Map<String, Object> context = createContext(dataPoint.get());
+            EventInstance toSend = event.copyWithContext(context);
+
             String eventHandlerAlias = eventHandler.getAlias();
             String alias = eventHandlerAlias == null || eventHandlerAlias.isEmpty() ? "Delay msg" : eventHandlerAlias;
-            boolean sent = type.sendMsg(event, addresses, alias);
+            boolean sent = type.sendMsg(toSend, addresses, alias);
             if(sent) {
                 service.unscheduleEvent(scheduledEvent, communicationChannel);
                 inactiveEventsProvider.confirm(scheduledEvent);
@@ -182,17 +189,23 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         return false;
     }
 
+    private Map<String, Object> createContext(DataPointVO dataPoint) {
+        Map<String,Object> context = new HashMap<>();
+        context.put("point", dataPoint);
+        return context;
+    }
+
     private boolean isExists(EventType eventType) {
-        return (!(eventType instanceof DataPointEventType) || (isDataSourceExists(eventType) && isDataPointExists(eventType)))
+        return (!(eventType instanceof DataPointEventType) || isDataSourceExists(eventType))
                 && (!(eventType instanceof DataSourceEventType) || isDataSourceExists(eventType));
     }
 
-    private boolean isDataPointExists(EventType eventType) {
+    private Optional<DataPointVO> getDataPoint(EventType eventType) {
         try {
             DataPointVO dataPoint = dataPointService.getDataPoint(eventType.getDataPointId());
-            return dataPoint != null;
+            return Optional.ofNullable(dataPoint);
         } catch (EmptyResultDataAccessException ex) {
-            return false;
+            return Optional.empty();
         }
     }
 

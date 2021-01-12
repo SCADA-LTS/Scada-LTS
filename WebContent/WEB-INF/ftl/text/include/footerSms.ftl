@@ -17,5 +17,4 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
 
-<#include "include/eventDataSms.ftl">
-<#include "include/footerSms.ftl">
+<@fmt key="ftl.htmlFooter.mango"/>

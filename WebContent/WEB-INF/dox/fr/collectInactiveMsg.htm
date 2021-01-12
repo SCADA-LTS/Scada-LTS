@@ -21,3 +21,5 @@
 <p>This function collects events that occurred in the inactive interval, and converts these events into e-mails or sms and sends them to recipients when is already in the active interval.</p>
 
 <p>After enabling this function and setting the cron, the events that occurred in the inactive interval are collected, then according to the cron, the collected events are sent when we enter the active interval. Additionally, we can set a daily limit of sent messages based on this mailing list. Whether an email or a text message will be sent depends on the configuration of the event handler.</p>
+
+<p><b>1 */15 * * * ?</b> - recommended configuration for the scheduler startup frequency is at least + 15 minutes or more, because the smallest MailingList interval is 15 minutes. </p>

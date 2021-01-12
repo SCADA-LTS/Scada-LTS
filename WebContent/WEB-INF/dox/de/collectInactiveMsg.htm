@@ -21,3 +21,5 @@
 <p>Diese Funktion sammelt Ereignisse, die im inaktiven Intervall aufgetreten sind, konvertiert diese Ereignisse in E-Mails oder SMS und sendet sie an Empfänger, wenn sie sich bereits im aktiven Intervall befinden.</p>
 
 <p>Nachdem Sie diese Funktion aktiviert und den Cron eingestellt haben, werden die Ereignisse erfasst, die im inaktiven Intervall aufgetreten sind. Anschließend werden die erfassten Ereignisse gemäß dem Cron gesendet, wenn wir das aktive Intervall eingeben. Darüber hinaus können wir basierend auf dieser Mailingliste ein Tageslimit für gesendete Nachrichten festlegen. Ob eine E-Mail oder eine Textnachricht gesendet wird, hängt von der Konfiguration des Ereignishandlers ab.</p>
+
+<p><b>1 */15 * * * ?</b> - recommended configuration for the scheduler startup frequency is at least + 15 minutes or more, because the smallest MailingList interval is 15 minutes. </p>

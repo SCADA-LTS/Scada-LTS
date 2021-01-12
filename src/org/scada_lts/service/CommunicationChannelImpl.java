@@ -5,7 +5,6 @@ import com.serotonin.mango.util.IntervalUtil;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.joda.time.DateTime;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -18,7 +17,7 @@ class CommunicationChannelImpl implements CommunicationChannel {
     private final SystemSettingsService systemSettingsService;
 
 
-    public CommunicationChannelImpl(MailingList mailingList,
+    CommunicationChannelImpl(MailingList mailingList,
                                     CommunicationChannelTypable type,
                                     SystemSettingsService systemSettingsService) {
         this.mailingList = mailingList;
@@ -61,7 +60,7 @@ class CommunicationChannelImpl implements CommunicationChannel {
     public Set<String> getActiveAdresses(DateTime fireTime) {
         Set<String> adresses = new HashSet<>();
         mailingList.appendAddresses(adresses, fireTime, type);
-        return addedAtDomainForSms(adresses);
+        return formatAddresses(adresses);
     }
 
     @Override
@@ -69,14 +68,14 @@ class CommunicationChannelImpl implements CommunicationChannel {
         Set<String> adresses = new HashSet<>();
         DateTime fireTime = new DateTime(event.getActiveTimestamp());
         mailingList.appendAddresses(adresses, fireTime, type);
-        return addedAtDomainForSms(adresses);
+        return formatAddresses(adresses);
     }
 
     @Override
     public Set<String> getAllAdresses() {
         Set<String> adresses = new HashSet<>();
         mailingList.appendAllAddresses(adresses, type);
-        return addedAtDomainForSms(adresses);
+        return formatAddresses(adresses);
     }
 
     @Override
@@ -105,7 +104,6 @@ class CommunicationChannelImpl implements CommunicationChannel {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(getChannelId(), getType());
     }
 
@@ -117,9 +115,7 @@ class CommunicationChannelImpl implements CommunicationChannel {
                 '}';
     }
 
-    private Set<String> addedAtDomainForSms(Set<String> adresses) {
-        if(CommunicationChannelType.SMS.equals(type))
-            return EmailToSmsUtils.addedAtDomain(adresses, systemSettingsService.getSMSDomain());
-        return adresses;
+    private Set<String> formatAddresses(Set<String> adresses) {
+        return type.formatAddresses(adresses, systemSettingsService.getSMSDomain(), type.getReplaceRegex());
     }
 }

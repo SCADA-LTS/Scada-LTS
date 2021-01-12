@@ -153,7 +153,6 @@ public final class SendMsgUtils {
         boolean tls = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_TLS);
 
         validateConfig(SystemSettingsDAO.EMAIL_FROM_ADDRESS, addr);
-        validateConfig(SystemSettingsDAO.EMAIL_FROM_NAME, pretty);
         validateConfig(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
         if(authorization) {
             validateConfig(SystemSettingsDAO.EMAIL_SMTP_USERNAME, username);

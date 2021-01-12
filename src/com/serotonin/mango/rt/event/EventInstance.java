@@ -407,6 +407,19 @@ public class EventInstance {
 			return false;
 		return true;
 	}
-    
-    
+
+	public EventInstance copyWithContext(Map<String, Object> context) {
+        EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, message, context);
+        eventInstance.setId(id);
+        eventInstance.setAcknowledgedByUserId(acknowledgedByUserId);
+        eventInstance.setAcknowledgedByUsername(acknowledgedByUsername);
+        eventInstance.setAcknowledgedTimestamp(acknowledgedTimestamp);
+        eventInstance.setAlternateAckSource(alternateAckSource);
+        eventInstance.setEventComments(eventComments);
+        eventInstance.setHandlers(handlers);
+        eventInstance.setSilenced(silenced);
+        eventInstance.setUserNotified(userNotified);
+        return eventInstance;
+    }
+
 }

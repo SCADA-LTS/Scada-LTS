@@ -3,9 +3,7 @@ package utils;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.InactiveEventsProvider;
-import org.scada_lts.utils.EmailToSmsUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,10 +42,7 @@ public final class ScheduledInactiveEventTestUtils {
         return service;
     }
 
-    public static Set<String> addedAtDomain(Set<String> addresses, String domain, CommunicationChannelTypable type) {
-        if(CommunicationChannelType.SMS.equals(type)) {
-            return EmailToSmsUtils.addedAtDomain(addresses, domain);
-        }
-        return addresses;
+    public static Set<String> formatAddresses(Set<String> addresses, String domain, CommunicationChannelTypable type) {
+        return type.formatAddresses(addresses, domain, type.getReplaceRegex());
     }
 }

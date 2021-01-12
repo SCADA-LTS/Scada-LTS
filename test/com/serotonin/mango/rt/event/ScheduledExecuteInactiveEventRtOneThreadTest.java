@@ -54,11 +54,11 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
             " communicateLimitTimes: {4}, eventsNumber: {5}, currentScheduledNumber: {6}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 300, 3},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 300, 3},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 250, 3},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 250, 3},
                 { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 300, 0, 300, 300},
-                { 3, false, CommunicationChannelType.SMS, 300, 0, 300, 300},
+                { 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 250},
+                { 3, false, CommunicationChannelType.SMS, 250, 0, 250, 250},
                 { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 10},
         });
     }
@@ -134,6 +134,10 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
             Object[] args = a.getArguments();
             return channelType.validateAddress((String)args[0]);
         });
+        when(channelTypeMock.getReplaceRegex()).thenReturn(channelType.getReplaceRegex());
+        when(channelTypeMock.formatAddresses(any(), any(), any())).thenAnswer(a -> channelType
+                .formatAddresses((Set<String>)a.getArguments()[0], (String)a.getArguments()[1], (String)a.getArguments()[2]));
+
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
         this.scheduledInactiveEventDAOMemory = new ScheduledExecuteInactiveEventDAOMemory();
         ScheduledExecuteInactiveEventService scheduledInactiveEventService =
@@ -159,7 +163,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
         inactiveEventsProvider = InactiveEventsProvider.newInstance(eventDAOMock, scheduledInactiveEventDAOMemory,
-                channel, 300);
+                channel, 600);
 
         this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventService, inactiveEventsProvider,
                 dataPointServiceMock, dataSourceServiceMock);
@@ -171,6 +175,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         //given:
         Set<String> addresses = channel.getAllAdresses();
         when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
+        when(channelTypeMock.sendLimit(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
@@ -182,8 +187,9 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), anySet(), eq("Limit"));
-        verify(channelTypeMock, times(communicateLimitTimes)).sendMsg(any(EventInstance.class), eq(addresses),
+        verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), anySet(),
+                eq("Limit"));
+        verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), eq(addresses),
                 eq("Limit"));
     }
 
@@ -204,8 +210,9 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(0)).sendMsg(any(EventInstance.class), anySet(), eq("Limit"));
-        verify(channelTypeMock, times(0)).sendMsg(any(EventInstance.class), eq(addresses),
+        verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), anySet(),
+                eq("Limit"));
+        verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), eq(addresses),
                 eq("Limit"));
     }
 

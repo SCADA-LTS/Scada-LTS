@@ -1,8 +1,8 @@
-<#ftl strip_whitespace=false><#--
+<#--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -17,5 +17,4 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
 
-<#include "include/eventDataSms.ftl">
-<#include "include/footerSms.ftl">
+<@fmt message=evt.message/> - <@fmt key="ftl.activeAt"/> ${evt.prettyActiveTimestamp}

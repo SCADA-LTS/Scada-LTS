@@ -135,7 +135,7 @@ public class MailingList extends EmailRecipient {
 
     @Override
     public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type) {
-        if (sendTime != null && !IntervalUtil.isActiveByInterval(this, sendTime))
+        if (sendTime != null && !isActive(sendTime))
             return;
         appendAllAddresses(addresses, type);
     }

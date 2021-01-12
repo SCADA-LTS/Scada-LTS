@@ -2,8 +2,6 @@ package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
-import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.mango.web.email.MangoTextContent;
