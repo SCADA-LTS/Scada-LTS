@@ -417,6 +417,9 @@
         if(collecting) {
             show("cronPatternTr");
             show("dailyLimitSentEmailsTr");
+            if(document.getElementById('cronPattern').value == '') {
+                document.getElementById('cronPattern').value = '1 */15 * * * ?';
+            }
         } else {
             document.getElementById('cronPattern').value = '';
             document.getElementById('dailyLimitSentEmails').checked = false;
