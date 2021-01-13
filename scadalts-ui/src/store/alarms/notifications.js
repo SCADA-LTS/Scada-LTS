@@ -19,7 +19,7 @@ const storeAlarmsNotifications = {
 		},
 		ehTemplate: {
 			id: -1,
-			xid: `PLC_0001`,
+			xid: `PLC`,
 			alias: `PLC-EventHandler`,
 			disabled: false,
 			activeRecipients: null,
@@ -60,12 +60,14 @@ const storeAlarmsNotifications = {
 
 		//Event detectors
 		createPointEventDetector({ state, dispatch }, datapointId) {
-			state.pedTemplate.xid = state.pedTemplate.xid + `_${datapointId}`;
-			state.pedTemplate.alias = state.pedTemplate.alias + `_${datapointId}`;
+			let requestData = JSON.parse(JSON.stringify(state.pedTemplate));
+			
+			requestData.xid = requestData.xid + `_${datapointId}`;
+			requestData.alias = requestData.alias + `_${datapointId}`;
 
 			return dispatch('requestPost', {
 				url: `/eventDetector/set/binary/state/${datapointId}`,
-				data: state.pedTemplate,
+				data: requestData,
 			});
 		},
 
@@ -116,11 +118,7 @@ const storeAlarmsNotifications = {
 
 			if (eventHandler.activeRecipients.length === 0) {
 				let ehStatus = await dispatch('deleteEventHandler', eventHandler.id);
-				let edStatus = await dispatch('deleteEventDetector', {
-					dpId: payload.typeRef1,
-					edId: payload.typeRef2,
-				});
-				return ehStatus && edStatus;
+				return ehStatus;
 			} else {
 				return dispatch('requestPut', {
 					url: `/eventHandler/update/1/${payload.typeRef1}/${payload.typeRef2}`,
@@ -135,8 +133,11 @@ const storeAlarmsNotifications = {
 			let dpId = payload.datapointId;
 			let mlId = payload.mailingListId;
 
-			state.ehTemplate.xid = 'EH_' + state.ehTemplate.xid + `_${dpId}_${edId}_${mlId}`;
-			state.ehTemplate.alias = state.ehTemplate.alias + `_${dpId}_${edId}_${mlId}`;
+			let requestData = JSON.parse(JSON.stringify(state.ehTemplate));
+			let type = payload.handlerType === 2 ? 'mail' : 'sms';
+
+			requestData.xid = 'EH_' + requestData.xid + `_${type}_${dpId}_${edId}_${mlId}`;
+			requestData.alias = requestData.alias + `_${type}_${dpId}_${edId}_${mlId}`;
 
 			let recipientList = [
 				{
@@ -146,12 +147,17 @@ const storeAlarmsNotifications = {
 				},
 			];
 
-			state.ehTemplate.activeRecipients = recipientList;
+			requestData.activeRecipients = recipientList;
+			let eventHandler;
 
-			let eventHandler = await dispatch('requestPost', {
-				url: `/eventHandler/set/1/${dpId}/${edId}/${payload.handlerType}`,
-				data: state.ehTemplate,
-			});
+			try {
+				eventHandler = await dispatch('requestPost', {
+					url: `/eventHandler/set/1/${dpId}/${edId}/${payload.handlerType}`,
+					data: requestData,
+				});
+			} catch (error) {
+				throw 'POST request failed!';
+			}
 			return { edId, ehId: eventHandler.id };
 		},
 	},
