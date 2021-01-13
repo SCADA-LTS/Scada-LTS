@@ -302,7 +302,6 @@
             }
         }
 
-        document.onmousedown = function() { return false; };
         document.onmouseup = function() { mouseDown = false; return false; };
         document.onselectstart = function() { return false; };
     }
