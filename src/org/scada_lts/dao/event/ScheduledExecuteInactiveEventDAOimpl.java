@@ -90,7 +90,8 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             LOG.trace("select(int mailingListId) mailingListId:" + mailingListId);
         }
 
-        return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE, new Object[] {mailingListId},
+        return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE
+                        + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC", new Object[] {mailingListId},
                 new ScheduledExecuteInactiveEventRowMapper());
     }
 
@@ -101,7 +102,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             LOG.trace("select(int mailingListId) mailingListId:" + mailingListId);
         }
 
-        return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE + " LIMIT " + limit, new Object[] {mailingListId},
+        return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE
+                        + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC"
+                        + " LIMIT " + limit, new Object[] {mailingListId},
                 new ScheduledExecuteInactiveEventRowMapper());
     }
 
@@ -121,7 +124,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             LOG.trace("select():");
         }
 
-        return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT + " LIMIT " + limit,
+        return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT
+                        + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC"
+                        + " LIMIT " + limit,
                 new ScheduledExecuteInactiveEventRowMapper());
     }
 
@@ -178,7 +183,7 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
         return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE
                         + " AND " + excludeEventHandlers.toSql()
                         + " AND " + excludeEvents.toSql()
-                        + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " DESC"
+                        + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC"
                         + " LIMIT " + limit, mergeWithOrder(mailingListId,
                 excludeEventHandlers.getArgs(), excludeEvents.getArgs(  )),
                 new ScheduledExecuteInactiveEventRowMapper());

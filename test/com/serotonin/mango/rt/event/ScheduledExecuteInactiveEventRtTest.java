@@ -152,7 +152,7 @@ public class ScheduledExecuteInactiveEventRtTest {
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
         this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventServiceMock, providerMock,
-                dataPointServiceMock, dataSourceServiceMock);
+                dataPointServiceMock, dataSourceServiceMock, 250);
     }
 
     @Test

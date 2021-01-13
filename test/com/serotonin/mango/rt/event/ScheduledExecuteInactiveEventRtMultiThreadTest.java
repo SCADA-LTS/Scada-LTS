@@ -176,7 +176,7 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
                 channel, 600);
 
         this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventService, inactiveEventsProvider,
-                dataPointServiceMock, dataSourceServiceMock);
+                dataPointServiceMock, dataSourceServiceMock, 250);
     }
 
     @Test

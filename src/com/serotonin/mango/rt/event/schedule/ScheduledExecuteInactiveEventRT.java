@@ -61,10 +61,11 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     public ScheduledExecuteInactiveEventRT(ScheduledExecuteInactiveEventService service,
                                            InactiveEventsProvider inactiveEventsProvider,
                                            DataPointService dataPointService,
-                                           DataSourceService dataSourceService) {
+                                           DataSourceService dataSourceService,
+                                           int defaultLimit) {
         this.communicationChannel = inactiveEventsProvider.getCommunicationChannel();
         this.limit = communicationChannel.isDailyLimitSent() ?
-                communicationChannel.getDailyLimitSentNumber() : 300;
+                communicationChannel.getDailyLimitSentNumber() : defaultLimit;
         this.limitLock = new AtomicInteger(limit);
         this.service = service;
         this.inactiveEventsProvider = inactiveEventsProvider;
@@ -138,12 +139,16 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     }
 
     private void execute() {
-        Execute execute = toExecute.poll();
+        if(limit <= 0) {
+            return;
+        }
         AtomicInteger oneExecuteLimit = new AtomicInteger(limit);
-        while (execute != null && oneExecuteLimit.getAndDecrement() > 0) {
+        Execute execute;
+        while ((execute = toExecute.poll()) != null) {
             execute.execute();
-            execute = toExecute.poll();
             currentExecutedCounter.incrementAndGet();
+            if(oneExecuteLimit.decrementAndGet() < 1)
+                break;
         }
     }
 

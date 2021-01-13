@@ -28,7 +28,7 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
 
         @Override
         public Set<String> formatAddresses(Set<String> addresses, String domain, String replaceRegex) {
-            return CommunicationChannelType.removeByRegex(addresses, replaceRegex);
+            return CommunicationChannelType.replaceByRegex(addresses, replaceRegex, "");
         }
 
         @Override
@@ -44,6 +44,7 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
     SMS(EventHandlerVO.TYPE_SMS, "") {
 
         private String replaceRegex = "[^0-9+]";
+        private String firstPlus = "^[+]{1}";
 
         @Override
         public boolean validateAddress(String address) {
@@ -62,7 +63,8 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
 
         @Override
         public Set<String> formatAddresses(Set<String> addresses, String domain, String replaceRegex) {
-            Set<String> formatted = CommunicationChannelType.removeByRegex(addresses, replaceRegex);
+            Set<String> formatted = CommunicationChannelType.replaceByRegex(addresses, replaceRegex, "");
+            formatted = CommunicationChannelType.replaceByRegex(formatted, firstPlus, "00");
             return addedAtDomain(formatted,domain);
         }
 
@@ -120,9 +122,9 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
                         new IllegalArgumentException("There is no communication channel for this type of event handler. Type id: " + eventHandlerType));
     }
 
-    private static Set<String> removeByRegex(Set<String> addresses, String regex) {
+    private static Set<String> replaceByRegex(Set<String> addresses, String regex, String replacement) {
         return addresses.stream()
-                .map(a -> a.replaceAll(regex,""))
+                .map(a -> a.replaceAll(regex,replacement))
                 .collect(Collectors.toSet());
     }
 }

@@ -27,7 +27,7 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
 
 
     private final int dataFromBaseLimit;
-    private AtomicInteger nonBlockingLock;
+    private final AtomicInteger nonBlockingLock;
     private final EventDAO eventDAO;
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final CommunicationChannel communicationChannel;
@@ -97,11 +97,15 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
         log.info("relations: " + relations.size());
         log.info("blocking: " + blocking.size());
         List<ScheduledEvent> scheduledEvents = new ArrayList<>();
-        while(relations.peek() != null && scheduledEvents.size() < limit) {
-            ScheduledExecuteInactiveEventInstance poll = relations.poll();
+
+        AtomicInteger oneExecuteLimit = new AtomicInteger(limit);
+        ScheduledExecuteInactiveEventInstance poll;
+        while((poll = relations.poll()) != null) {
             blocking.add(poll);
             ScheduledEvent scheduledEvent = poll.toScheduledEvent();
             scheduledEvents.add(scheduledEvent);
+            if(oneExecuteLimit.decrementAndGet() < 1)
+                break;
         }
         return scheduledEvents;
     }
