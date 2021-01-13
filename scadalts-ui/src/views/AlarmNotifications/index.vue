@@ -118,6 +118,7 @@ export default {
 			eventHandlers: undefined,
 			operationQueue: [],
 			modified: [],
+			isError: false,
 			snackbar: {
 				visible: false,
 				text: '',
@@ -281,8 +282,16 @@ export default {
 				this.deleteEventHandlers();
 				this.initEventHandlers();
 				this.modified = [];
-				this.snackbar.text = this.$t('plcalarms.notification.save');
-				this.snackbar.visible = true;
+				this.afterSave();
+				if(this.isError) {
+					this.snackbar.text = this.$t('plcalarms.notification.fail');
+					this.snackbar.visible = true;
+					this.isError = false;
+				} else {
+					this.snackbar.text = this.$t('plcalarms.notification.save');
+					this.snackbar.visible = true;
+				}
+				
 			}
 		},
 
@@ -309,11 +318,8 @@ export default {
 			};
 			try {
 				this.$store.dispatch('createEventHandler', createData);
-				return true;
 			} catch (err) {
-				this.snackbar.text = this.$t('plcalarms.notification.fail');
-				this.snackbar.visible = true;
-				return false;
+				this.isError = true;
 			}
 		},
 
@@ -348,6 +354,23 @@ export default {
 			});
 			return result;
 		},
+
+		afterSave() {
+			this.items.forEach(item => {
+				if(!!item.children) {
+					item.children.forEach(datapoint => {
+						datapoint.mail.forEach(mail => {
+							mail.config = mail.active;
+						});
+						datapoint.sms.forEach(sms => {
+							sms.config = sms.active;
+						});
+						console.log(datapoint);
+					}) 
+				}
+			}) 
+			console.log(this.items)
+		}
 	},
 };
 </script>

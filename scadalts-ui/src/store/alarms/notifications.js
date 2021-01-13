@@ -156,9 +156,8 @@ const storeAlarmsNotifications = {
 					data: requestData,
 				});
 			} catch (error) {
-				console.error("Not handled requests", error);
+				throw 'POST request failed!';
 			}
-			
 			return { edId, ehId: eventHandler.id };
 		},
 	},
