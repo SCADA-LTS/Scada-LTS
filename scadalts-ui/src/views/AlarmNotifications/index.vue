@@ -283,7 +283,7 @@ export default {
 				this.initEventHandlers();
 				this.modified = [];
 				this.afterSave();
-				if(this.isError) {
+				if (this.isError) {
 					this.snackbar.text = this.$t('plcalarms.notification.fail');
 					this.snackbar.visible = true;
 					this.isError = false;
@@ -291,7 +291,6 @@ export default {
 					this.snackbar.text = this.$t('plcalarms.notification.save');
 					this.snackbar.visible = true;
 				}
-				
 			}
 		},
 
@@ -356,21 +355,21 @@ export default {
 		},
 
 		afterSave() {
-			this.items.forEach(item => {
-				if(!!item.children) {
-					item.children.forEach(datapoint => {
-						datapoint.mail.forEach(mail => {
+			this.items.forEach((item) => {
+				if (!!item.children) {
+					item.children.forEach((datapoint) => {
+						datapoint.mail.forEach((mail) => {
 							mail.config = mail.active;
 						});
-						datapoint.sms.forEach(sms => {
+						datapoint.sms.forEach((sms) => {
 							sms.config = sms.active;
 						});
 						console.log(datapoint);
-					}) 
+					});
 				}
-			}) 
-			console.log(this.items)
-		}
+			});
+			console.log(this.items);
+		},
 	},
 };
 </script>

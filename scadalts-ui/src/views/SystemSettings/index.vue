@@ -199,8 +199,8 @@
 									v-bind:key="point.pointId"
 								>
 									<p>
-										{{ point.pointName }} (Point ID: {{ point.pointId }} - count:
-										{{ point.count }})
+										{{ point.pointName }}<br />
+										(Point ID: {{ point.pointId }} - count: {{ point.count }})
 									</p>
 								</v-col>
 							</v-row>

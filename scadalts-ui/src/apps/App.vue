@@ -119,4 +119,8 @@ td > select,
 td > textarea {
 	border-style: solid;
 }
+td > select {
+	background-color: rgb(221, 221, 221);
+	appearance: auto;
+}
 </style>

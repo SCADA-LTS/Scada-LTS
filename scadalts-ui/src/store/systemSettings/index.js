@@ -33,7 +33,7 @@ const storeSystemSettings = {
 		},
 		setDatabaseInfo(state, databaseInfo) {
 			state.databaseInfo = databaseInfo;
-			state.databaseInfo.topPoints = state.databaseInfo.topPoints.slice(0,10);
+			state.databaseInfo.topPoints = state.databaseInfo.topPoints.slice(0, 10);
 		},
 		setSystemEventTypes(state, systemEventTypes) {
 			state.systemEventTypes = systemEventTypes;

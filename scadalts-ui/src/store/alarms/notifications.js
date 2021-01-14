@@ -61,7 +61,7 @@ const storeAlarmsNotifications = {
 		//Event detectors
 		createPointEventDetector({ state, dispatch }, datapointId) {
 			let requestData = JSON.parse(JSON.stringify(state.pedTemplate));
-			
+
 			requestData.xid = requestData.xid + `_${datapointId}`;
 			requestData.alias = requestData.alias + `_${datapointId}`;
 
