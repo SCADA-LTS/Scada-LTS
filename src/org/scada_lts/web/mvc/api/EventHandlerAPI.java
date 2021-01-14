@@ -131,7 +131,7 @@ public class EventHandlerAPI {
     }
 
     @PostMapping(value = "/set/{typeId}/{typeRef1}/{typeRef2}/5", produces = "application/json")
-    public ResponseEntity<EventHandlerVO> createEventHandlerTypeScript(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerSmsDTO handler, HttpServletRequest request) {
+    public ResponseEntity<EventHandlerVO> createEventHandlerTypeSms(@PathVariable("typeId") int typeId, @PathVariable("typeRef1") int typeRef1, @PathVariable("typeRef2") int typeRef2, @RequestBody EventHandlerSmsDTO handler, HttpServletRequest request) {
         return createEventHandler(typeId, typeRef1, typeRef2, handler.createEventHandlerVO(), request);
     }
 
