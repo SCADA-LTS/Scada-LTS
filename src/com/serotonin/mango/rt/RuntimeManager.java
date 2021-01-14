@@ -934,7 +934,7 @@ public class RuntimeManager {
 		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
 				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
 						channel, 600),
-				new DataPointService(), new DataSourceService());
+				new DataPointService(), new DataSourceService(), 300);
 		sendEmail.initialize();
 		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
 	}
@@ -944,7 +944,7 @@ public class RuntimeManager {
 		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
 				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
 						channel, 600),
-				new DataPointService(), new DataSourceService());
+				new DataPointService(), new DataSourceService(), 300);
 		sendSms.initialize();
 		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
 	}

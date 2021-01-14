@@ -425,7 +425,7 @@
             hide("cronPatternTr");
             hide("dailyLimitSentEmailsTr");
         }
-        dailyLimitSentEmails(collecting);
+        hide("dailyLimitSentEmailsTr");
     }
 
     function dailyLimitSentEmails(collectInactiveEmails) {

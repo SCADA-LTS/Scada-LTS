@@ -166,7 +166,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
                 channel, 600);
 
         this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventService, inactiveEventsProvider,
-                dataPointServiceMock, dataSourceServiceMock);
+                dataPointServiceMock, dataSourceServiceMock, 250);
     }
 
     @Test
@@ -180,8 +180,10 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
         List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
+        List<?> res = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
 
         //then:
+        assertEquals(res.size(), result.size());
         assertEquals(eventsNumber - invokeSendMsgTimes, result.size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
@@ -203,8 +205,10 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
         List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
+        List<?> res = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
 
         //then:
+        assertEquals(res.size(), result.size());
         assertEquals(eventsNumber, result.size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
@@ -229,9 +233,8 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
         List<?> res = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
 
-        assertEquals(res.size(), result.size());
-
         //then:
+        assertEquals(res.size(), result.size());
         assertEquals(eventsNumber, result.size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
@@ -252,8 +255,10 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
         List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
+        List<?> res = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
 
         //then:
+        assertEquals(res.size(), result.size());
         assertEquals(eventsNumber - invokeSendMsgTimes, result.size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
