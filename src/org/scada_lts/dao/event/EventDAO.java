@@ -26,6 +26,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.utils.QueryUtils;
+import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -142,7 +146,38 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "from "
 				+ "events e " 
 			    + "left join users u on e."+COLUMN_NAME_ACT_USER_ID+"=u.id ";
-	
+
+	private static final String BASIC_EVENT_SELECT_WHERE_ID_IN = ""
+			+"select "
+			+ "e."+COLUMN_NAME_ID+", "
+			+ "e."+COLUMN_NAME_TYPE_ID+", "
+			+ "e."+COLUMN_NAME_TYPE_REF_1+", "
+			+ "e."+COLUMN_NAME_TYPE_REF_2+","
+			+ "e."+COLUMN_NAME_ACTIVE_TS+","
+			+ "e."+COLUMN_NAME_RTN_APPLICABLE+", "
+			+ "e."+COLUMN_NAME_RTN_TS+","
+			+ "e."+COLUMN_NAME_RTN_CAUSE+", "
+			+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
+			+ "e."+COLUMN_NAME_MESSAGE+", "
+			+ "e."+COLUMN_NAME_ACT_TS+", "
+			+ "e."+COLUMN_NAME_ACT_USER_ID+", "
+			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+" "
+			+ "from "
+			+ "events e where "
+			+ COLUMN_NAME_ID + " "
+			+ "in (?)";
+
+    private static final String EVENT_HANDLER_SELECT_ID_IN= ""
+            +"select "
+            + COLUMN_NAME_EVENT_HANDLER_ID+", "
+            + COLUMN_NAME_EVENT_HANDLER_XID+", "
+            + COLUMN_NAME_EVENT_HANDLER_ALIAS+", "
+            + COLUMN_NAME_EVENT_HANDLER_DATA+" "
+            + "from "
+            + "eventHandlers where "
+            + COLUMN_NAME_EVENT_HANDLER_ID + " "
+            + "in (?)";
+
 	private static final String EVENT_INSERT = ""
 			+ "insert events ("
 				+ COLUMN_NAME_TYPE_ID + "," 
@@ -276,7 +311,19 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ COLUMN_NAME_EVENT_HANDLER_DATA+" "
 			+ "from "
 				+ "eventHandlers ";
-	
+
+	private static final String EVENT_HANDLER_SELECT_PLC= "" +
+			"SELECT " +
+			COLUMN_NAME_EVENT_HANDLER_ID+", " +
+			COLUMN_NAME_EVENT_HANDLER_XID+", " +
+			COLUMN_NAME_EVENT_HANDLER_ALIAS+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_ID+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+", " +
+			COLUMN_NAME_EVENT_HANDLER_DATA+" " +
+			"FROM " +
+			"eventHandlers ";
+
 	private static final String EVENT_HANDLER_FILTER= " "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+"=? and "
@@ -470,6 +517,27 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			return h;
 		}
 	}
+
+	private class PlcEventHandlerRowMapper implements RowMapper<EventHandlerPlcDTO> {
+		public EventHandlerPlcDTO mapRow(ResultSet rs, int rowNum)	throws SQLException {
+			EventHandlerVO h;
+			EventHandlerPlcDTO result = new EventHandlerPlcDTO();
+
+			h = (EventHandlerVO) new SerializationData().readObject(rs.getBlob(7).getBinaryStream());
+			result.setId(rs.getInt(1));
+			result.setXid(rs.getString(2));
+			result.setAlias(rs.getString(3));
+			result.setEventTypeId(rs.getInt(4));
+			result.setEventTypeRef1(rs.getInt(5));
+			result.setEventTypeRef2(rs.getInt(6));
+			result.setHandlerType(h.getHandlerType());
+			result.setRecipients(h.getActiveRecipients());
+
+			return result;
+		}
+	}
+
+
 
 
 	@Override
@@ -855,7 +923,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	public List<EventHandlerVO> getEventHandlers() {
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT, new Object[] {}, new EventHandlerRowMapper());
 	}
-	
+
+	public List<EventHandlerPlcDTO> getPlcEventHandlers() {
+		return (List<EventHandlerPlcDTO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT_PLC, new Object[] {}, new PlcEventHandlerRowMapper());
+	}
+
 	public EventHandlerVO getEventHandler(int eventHandlerId) {
 		try {
 			return (EventHandlerVO) DAO.getInstance().getJdbcTemp().queryForObject(EVENT_HANDLER_SELECT+" where " + EVENT_HANDLER_FILTER_ID, new Object[] {eventHandlerId}, new EventHandlerRowMapper());
@@ -922,7 +994,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	//TODO rewrite because insert does not requires select
-	public EventHandlerVO saveEventHandler(final int typeId,final int typeRef1, final int typeRef2, final EventHandlerVO handler) {
+	public EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
 			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
 			return getEventHandler(id);
@@ -968,4 +1040,23 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		DAO.getInstance().getJdbcTemp().update(EVENT_UPDATE_WHERE_ACK_USER_ID, new Object[]{userId});
 	}
+
+	@Transactional(readOnly = true)
+	public List<EventInstance> getAllStatusEvents(Set<Integer> ids) {
+		if(ids.isEmpty())
+			return Collections.emptyList();
+		String args = QueryUtils.getArgsIn(ids.size());
+		String query = BASIC_EVENT_SELECT_WHERE_ID_IN.replace("?", args);
+		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventRowMapper());
+	}
+
+	@Transactional(readOnly = true)
+	public List<EventHandlerVO> getEventHandlers(Set<Integer> ids) {
+		if(ids.isEmpty())
+			return Collections.emptyList();
+		String args = QueryUtils.getArgsIn(ids.size());
+		String query = EVENT_HANDLER_SELECT_ID_IN.replace("?", args);
+		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventHandlerRowMapper());
+	}
+
 }

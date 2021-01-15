@@ -1,0 +1,51 @@
+/*
+ *
+ * BETA FEATURE (not-stable, still under development)
+ * We advise to use ANT build instead of gradle.
+ *
+ * Scada-LTS gradle build configuration
+ * Based on the ANT "build.xml" file. This file provide the information
+ * where the source set is located, where are located the java libraries
+ * and use subproject tasks to include an NewUI contents inside Scada-LTS app.
+ */
+
+plugins {
+    id 'war'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
+    compile fileTree(include: ['*.jar'], dir: System.getenv("CATALINA_HOME") + '/lib')
+}
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+war {
+    dependsOn(':scadalts-ui:copyNewUiImages')
+    from 'WebContent'
+}
+
+task clearDockerDir(type: Delete) {
+    delete files("docker/volumes/webapps/ScadaBR.war")
+}
+task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
+    from "build/libs/"
+    into "docker/volumes/webapps/"
+    include('Scada-LTS.war')
+    rename('Scada-LTS.war', "ScadaBR.war")
+}
+
+task installWebDependency(type: Exec) {
+    workingDir "./WebContent/resources"
+    commandLine "npm", "install"
+}

@@ -239,7 +239,7 @@
   <jsp:doBody/>
 </div>
 <div class="footer" style="text-align:center">
-    <span>&copy;2012-2020 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+    <span>&copy;2012-2021 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>

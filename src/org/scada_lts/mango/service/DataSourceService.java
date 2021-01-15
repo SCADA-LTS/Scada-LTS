@@ -56,6 +56,8 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceDAO.getDataSources();
 	}
 
+	public List<DataSourceVO<?>> getDataSourcesPlc() { return dataSourceDAO.getDataSourcesPlc(); }
+
 	@Override
 	public DataSourceVO<?> getDataSource(int id) {
 		try {

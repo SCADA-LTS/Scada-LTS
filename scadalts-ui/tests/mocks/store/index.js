@@ -1,16 +1,15 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import systemSettings from './systemSettings'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import systemSettings from './systemSettings';
 
-Vue.use(Vuex)
-
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-    modules: {
-        systemSettings
-    },
-    state: {},
-    mutations: {},
-    actions: {},
-    plugins: []
-})
+	modules: {
+		systemSettings,
+	},
+	state: {},
+	mutations: {},
+	actions: {},
+	plugins: [],
+});
