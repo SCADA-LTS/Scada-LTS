@@ -1,19 +1,17 @@
 <template>
-    <div>
-      <p>TEST!!!! {{label}}</p>
-    </div>
+	<div>
+		<p>TEST!!!! {{ label }}</p>
+	</div>
 </template>
 
 <script>
-    export default {
-      name: 'test',
-      props: ['plabel'],
-      data () {
-        return {
-          label: this.plabel,
-        }
-      }
-    }
+export default {
+	name: 'test',
+	props: ['plabel'],
+	data() {
+		return {
+			label: this.plabel,
+		};
+	},
+};
 </script>
-
-

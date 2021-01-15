@@ -29,6 +29,8 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.util.ExportCodes;
+import org.scada_lts.service.CommunicationChannelTypable;
+import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity(typeFactory = EmailRecipientFactory.class)
 abstract public class EmailRecipient implements JsonSerializable {
@@ -48,6 +50,10 @@ abstract public class EmailRecipient implements JsonSerializable {
     abstract public void appendAddresses(Set<String> addresses, DateTime sendTime);
 
     abstract public void appendAllAddresses(Set<String> addresses);
+
+    abstract public void appendAddresses(Set<String> addresses, DateTime sendTime, CommunicationChannelTypable type);
+
+    abstract public void appendAllAddresses(Set<String> addresses, CommunicationChannelTypable type);
 
     abstract public int getReferenceId();
 
