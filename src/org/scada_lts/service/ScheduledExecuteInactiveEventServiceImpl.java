@@ -14,7 +14,7 @@ import java.util.List;
 
 class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInactiveEventService {
 
-    private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventServiceImpl.class);
+    private static final Log log = LogFactory.getLog(ScheduledExecuteInactiveEventServiceImpl.class);
     private final ScheduledExecuteInactiveEventDAO scheduledEventDAO;
     private final MailingListService mailingListService;
     private static class LazyHolder {
@@ -36,12 +36,12 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     @Override
     public void scheduleEvent(EventHandlerVO eventHandler, EventInstance event) {
         if(event.getAlarmLevel() == AlarmLevels.NONE) {
-            LOG.warn("Event with alarm level NONE: event type:" + event.getEventType());
+            log.warn("Event with alarm level NONE: event type:" + event.getEventType());
             return;
         }
         if(eventHandler.getHandlerType() != EventHandlerVO.TYPE_SMS &&
                 eventHandler.getHandlerType() != EventHandlerVO.TYPE_EMAIL) {
-            LOG.warn("Event handler type not supported:" + eventHandler.getClass().getSimpleName());
+            log.warn("Event handler type not supported:" + eventHandler.getClass().getSimpleName());
             return;
         }
         schedule(eventHandler, event);
@@ -61,7 +61,7 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
             try {
                 scheduledEventDAO.delete(inactiveEventInstance.getKey());
             } catch (Exception ex) {
-                LOG.warn("Event is not scheduled!: " + inactiveEventInstance);
+                log.error(ex.getMessage(), ex);
             }
         }
     }
@@ -77,7 +77,7 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
                     try {
                         scheduledEventDAO.insert(inactiveEventInstance.getKey());
                     } catch (Exception ex) {
-                        LOG.warn("Inactive event instance is duplicated!: " + inactiveEventInstance);
+                        log.error(ex.getMessage(), ex);
                     }
                 }
             }

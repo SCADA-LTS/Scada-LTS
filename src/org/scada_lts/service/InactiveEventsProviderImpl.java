@@ -124,6 +124,12 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
     }
 
     @Override
+    public void clear() {
+        relations.clear();
+        blocking.clear();
+    }
+
+    @Override
     public CommunicationChannel getCommunicationChannel() {
         return communicationChannel;
     }

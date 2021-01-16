@@ -21,7 +21,7 @@ public final class EmailContentUtils {
 
     private EmailContentUtils(){}
 
-    public static MangoTextContent createTextContent(EventInstance evt, NotificationType notificationType, String alias) throws TemplateException, IOException {
+    public static MangoTextContent createSmsContent(EventInstance evt, NotificationType notificationType, String alias) throws TemplateException, IOException {
         ResourceBundle bundle = Common.getBundle();
         String subject = getSubject(evt, notificationType, alias, bundle);
         Map<String, Object> model = createSmsModel(evt);
