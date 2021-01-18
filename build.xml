@@ -115,7 +115,7 @@
         <pathelement location="WebContent/WEB-INF/lib/jackson-annotations-2.8.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jackson-core-2.8.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jackson-databind-2.8.2.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/javamelody-1.59.0.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/javamelody-core-1.86.0.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jaxrpc.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jboss-common-jdbc-wrapper-3.2.3.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jcifs-1.2.19.jar"/>
