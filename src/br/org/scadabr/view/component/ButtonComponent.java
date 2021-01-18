@@ -74,23 +74,23 @@ public class ButtonComponent extends ScriptComponent {
 					.append(" s += \"<input type='button' value='"
 							+ whenOnLabel
 							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", false);return false;' style='width:"
-							+ width + "px; height:" + height + "px;'/>\";");
+							+ width + "px; height:" + height + "px; background-color:"+ getBkgdColorOverride() + ";'/>\";");
 			sb.append(" else");
 			sb
 					.append(" s += \"<input type='button' value='"
 							+ whenOffLabel
 							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", true);return true;' style='width:"
-							+ width + "px; height:" + height + "px;'/>\";");
+							+ width + "px; height:" + height + "px; background-color:"+ getBkgdColorOverride() + ";'/>\";");
 		} else {
 			sb
 					.append(" s += \"<input type='button' value='"
 							+ whenOnLabel
-							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", false);return false;' />\";");
+							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", false);return false;' style='background-color:"+ getBkgdColorOverride() +";'/>\";");
 			sb.append(" else");
 			sb
 					.append(" s += \"<input type='button' value='"
 							+ whenOffLabel
-							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", true);return true;' />\";");
+							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", true);return true;' style='background-color:"+ getBkgdColorOverride() +";'/>\";");
 		}
 
 		sb.append(" return s;");
