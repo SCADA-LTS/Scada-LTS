@@ -37,7 +37,7 @@ import com.serotonin.util.ILifecycle;
  * A cheesy name for a class, i know, but it pretty much says it like it is.
  * This class keeps an inbox of items to process, and oddly enough, processes
  * them. (Oh, and removes them from the inbox when it's done.)
- * 
+ *
  * @author Matthew Lohbihler
  */
 public class BackgroundProcessing implements ILifecycle {
@@ -104,7 +104,11 @@ public class BackgroundProcessing implements ILifecycle {
 		mediumPriorityService = new ThreadPoolExecutor(3, 100, 60L,
 				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		mediumPriorityService.allowCoreThreadTimeOut(true);
-		lowPriorityService = Executors.newSingleThreadExecutor();
+		lowPriorityService = Executors.newSingleThreadExecutor(r -> {
+            Thread thread = Executors.defaultThreadFactory().newThread(r);
+            thread.setPriority(6);
+            return thread;
+        });
 	}
 
 	public void terminate() {

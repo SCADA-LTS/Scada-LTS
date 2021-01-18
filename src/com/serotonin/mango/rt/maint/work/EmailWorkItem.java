@@ -43,7 +43,7 @@ public class EmailWorkItem implements WorkItem {
     private static final Log LOG = LogFactory.getLog(EmailWorkItem.class);
 
     public int getPriority() {
-        return WorkItem.PRIORITY_MEDIUM;
+        return WorkItem.PRIORITY_LOW;
     }
 
     public static void queueEmail(String toAddr, MangoEmailContent content) throws AddressException {
