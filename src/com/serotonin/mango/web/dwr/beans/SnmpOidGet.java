@@ -23,7 +23,14 @@ import java.util.ResourceBundle;
 
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
+import org.snmp4j.Target;
+import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
@@ -60,19 +67,48 @@ public class SnmpOidGet extends Thread implements TestingUtility {
     public void run() {
         Snmp snmp = null;
         try {
+
             snmp = new Snmp(new DefaultUdpTransportMapping());
+
+            OctetString localEngineId = new OctetString(MPv3.createLocalEngineID()).substring(0,9);
+            USM usm = new USM(SecurityProtocols.getInstance(), localEngineId, 0);
+            SecurityModels.getInstance().addSecurityModel(usm);
+
             version.addUser(snmp);
+
+            Target target = version.getTarget(host, port, retries, timeout);
+
             snmp.listen();
 
             PDU pdu = version.createPDU();
-            pdu.setType(PDU.GET);
             pdu.add(new VariableBinding(new OID(oid)));
+            pdu.setType(PDU.GET);
 
-            PDU response = snmp.send(pdu, version.getTarget(host, port, retries, timeout)).getResponse();
-            if (response == null)
+            ResponseEvent event = snmp.send(pdu, target);
+
+            if(event != null) {
+                if(event.getResponse() != null) {
+                    if(pdu.getErrorStatus() == PDU.noError) {
+                        result = pdu.get(0).getVariable().toString();
+                    } else {
+                        System.err.println("SNMP Error Status!");
+                        result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
+                    }
+                } else {
+                    System.err.println("SNMP No response!");
+                    result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
+                }
+            } else {
+                System.err.println("SNMP Exception!");
                 result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
-            else
-                result = response.get(0).getVariable().toString();
+            }
+
+
+//            PDU response = snmp.send(pdu, version.getTarget(host, port, retries, timeout)).getResponse();
+//            if (response == null)
+//                result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
+//            else
+//                result = response.get(0).getVariable().toString();
         }
         catch (IOException e) {
             result = e.getMessage();

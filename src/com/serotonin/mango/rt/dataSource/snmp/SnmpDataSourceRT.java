@@ -14,7 +14,12 @@ import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
@@ -391,10 +396,26 @@ public class SnmpDataSourceRT extends PollingDataSource {
     }
     private void initializeComponents() throws IOException {
 
-        address = InetAddress.getByName(vo.getHost()).getHostAddress();
-        target = version.getTarget(vo.getHost(), vo.getPort(),
-                vo.getRetries(), vo.getTimeout());
+//        address = InetAddress.getByName(vo.getHost()).getHostAddress();
+
+
+        // 1
         snmp = new Snmp(new DefaultUdpTransportMapping());
+
+        // 2
+        OctetString localEngineId = new OctetString(MPv3.createLocalEngineID()).substring(0,9);
+        USM usm = new USM(SecurityProtocols.getInstance(), localEngineId, 0);
+        SecurityModels.getInstance().addSecurityModel(usm);
+
+        // 3 agent credentials and user creation
+        version.addUser(snmp);
+
+        // 4 create target
+        target = version.getTarget(
+                vo.getHost(), vo.getPort(), vo.getRetries(), vo.getTimeout());
+
+
+
         snmp.listen();
 
     }

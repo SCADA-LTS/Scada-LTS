@@ -6,6 +6,7 @@ import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.UserTarget;
 import org.snmp4j.mp.MPv3;
+import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.*;
 import org.snmp4j.security.nonstandard.PrivAES192With3DESKeyExtension;
@@ -25,13 +26,13 @@ public class Version3 extends Version {
     private final OctetString authPassphrase;
     private OID privProtocol;
     private final OctetString privPassphrase;
-    private final OctetString engineId;
-    private final OctetString contextEngineId;
-    private final OctetString contextName;
+//    private final OctetString engineId;
+//    private final OctetString contextEngineId;
+//    private final OctetString contextName;
 
     public Version3(String securityName, String authProtocol, String authPassphrase, String privProtocol,
                     String privPassphrase, String engineId, String contextEngineId, String contextName) {
-        this.securityName = SnmpUtils.createOctetString(securityName);
+        this.securityName = new OctetString(securityName);
 
         if (!StringUtils.isEmpty(authProtocol)) {
             if (authProtocol.equals("MD5"))
@@ -50,7 +51,7 @@ public class Version3 extends Version {
                 throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
         }
 
-        this.authPassphrase = SnmpUtils.createOctetString(authPassphrase);
+        this.authPassphrase = new OctetString(authPassphrase);
 
         if (!StringUtils.isEmpty(privProtocol)) {
             if (privProtocol.equals("DES"))
@@ -71,10 +72,10 @@ public class Version3 extends Version {
                 throw new IllegalArgumentException("Privacy protocol " + privProtocol + " not supported");
         }
 
-        this.privPassphrase = SnmpUtils.createOctetString(privPassphrase);
-        this.engineId = SnmpUtils.createOctetString(engineId);
-        this.contextEngineId = SnmpUtils.createOctetString(contextEngineId);
-        this.contextName = SnmpUtils.createOctetString(contextName);
+        this.privPassphrase = new OctetString(privPassphrase);
+//        this.engineId = SnmpUtils.createOctetString(engineId);
+//        this.contextEngineId = SnmpUtils.createOctetString(contextEngineId);
+//        this.contextName = SnmpUtils.createOctetString(contextName);
     }
 
     @Override
@@ -84,13 +85,17 @@ public class Version3 extends Version {
 
     @Override
     public void addUser(Snmp snmp) {
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        SecurityModels.getInstance().addSecurityModel(usm);
-        if (engineId != null)
-            snmp.setLocalEngine(engineId.getValue(), 0, 0);
         snmp.getUSM().addUser(securityName,
                 new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
-        SecurityModels.getInstance().addSecurityModel(new TSM(engineId,false));
+
+//        byte[] localEngineID = ((MPv3)snmp.getMessageProcessingModel(MessageProcessingModel.MPv3)).getLocalEngineID();
+//        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(localEngineID), 0);
+//        SecurityModels.getInstance().addSecurityModel(usm);
+//        if (engineId != null)
+//            snmp.setLocalEngine(engineId.getValue(), 0, 0);
+//        snmp.getUSM().addUser(securityName,
+//                new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
+//        SecurityModels.getInstance().addSecurityModel(new TSM(engineId,false));
     }
 
     @Override
@@ -112,22 +117,22 @@ public class Version3 extends Version {
     @Override
     public PDU createPDU() {
         ScopedPDU scopedPDU = new ScopedPDU();
-        if (contextEngineId != null)
-            scopedPDU.setContextEngineID(contextEngineId);
-        if (contextName != null)
-            scopedPDU.setContextName(contextName);
+//        if (contextEngineId != null)
+//            scopedPDU.setContextEngineID(contextEngineId);
+//        if (contextName != null)
+//            scopedPDU.setContextName(contextName);
         return scopedPDU;
     }
 
-    public OctetString getEngineId() {
-        return engineId;
-    }
-
-    public OctetString getContextEngineId() {
-        return contextEngineId;
-    }
-
-    public OctetString getContextName() {
-        return contextName;
-    }
+//    public OctetString getEngineId() {
+//        return engineId;
+//    }
+//
+//    public OctetString getContextEngineId() {
+//        return contextEngineId;
+//    }
+//
+//    public OctetString getContextName() {
+//        return contextName;
+//    }
 }

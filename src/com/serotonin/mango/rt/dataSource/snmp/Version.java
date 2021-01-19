@@ -59,6 +59,7 @@ abstract public class Version {
         Target target = getTarget();
 
         Address address = new UdpAddress(InetAddress.getByName(host), port);
+        target.setVersion(getVersionId());
         target.setAddress(address);
         target.setRetries(retries);
         target.setTimeout(timeout);
