@@ -1,21 +1,3 @@
-/*
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package com.serotonin.mango.rt.dataSource.snmp;
 
 import org.snmp4j.PDU;
@@ -25,17 +7,9 @@ import org.snmp4j.Target;
 import org.snmp4j.UserTarget;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.AuthSHA;
-import org.snmp4j.security.PrivAES128;
-import org.snmp4j.security.PrivAES192;
-import org.snmp4j.security.PrivAES256;
-import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.security.USM;
-import org.snmp4j.security.UsmUser;
+import org.snmp4j.security.*;
+import org.snmp4j.security.nonstandard.PrivAES192With3DESKeyExtension;
+import org.snmp4j.security.nonstandard.PrivAES256With3DESKeyExtension;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 
@@ -43,7 +17,7 @@ import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler
- * 
+ *
  */
 public class Version3 extends Version {
     private final OctetString securityName;
@@ -56,7 +30,7 @@ public class Version3 extends Version {
     private final OctetString contextName;
 
     public Version3(String securityName, String authProtocol, String authPassphrase, String privProtocol,
-            String privPassphrase, String engineId, String contextEngineId, String contextName) {
+                    String privPassphrase, String engineId, String contextEngineId, String contextName) {
         this.securityName = SnmpUtils.createOctetString(securityName);
 
         if (!StringUtils.isEmpty(authProtocol)) {
@@ -64,6 +38,14 @@ public class Version3 extends Version {
                 this.authProtocol = AuthMD5.ID;
             else if (authProtocol.equals("SHA"))
                 this.authProtocol = AuthSHA.ID;
+            else if (authProtocol.equals("HMAC128SHA224"))
+                this.authProtocol = AuthHMAC128SHA224.ID;
+            else if (authProtocol.equals("HMAC192SHA256"))
+                this.authProtocol = AuthHMAC192SHA256.ID;
+            else if (authProtocol.equals("HMAC256SHA384"))
+                this.authProtocol = AuthHMAC256SHA384.ID;
+            else if (authProtocol.equals("HMAC384SHA512"))
+                this.authProtocol = AuthHMAC384SHA512.ID;
             else
                 throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
         }
@@ -79,6 +61,12 @@ public class Version3 extends Version {
                 this.privProtocol = PrivAES192.ID;
             else if (privProtocol.equals("AES256"))
                 this.privProtocol = PrivAES256.ID;
+            else if (privProtocol.equals("3DES"))
+                this.privProtocol = Priv3DES.ID;
+            else if (privProtocol.equals("AES192With3DES"))
+                this.privProtocol = PrivAES192With3DESKeyExtension.ID;
+            else if (privProtocol.equals("AES256With3DES"))
+                this.privProtocol = PrivAES256With3DESKeyExtension.ID;
             else
                 throw new IllegalArgumentException("Privacy protocol " + privProtocol + " not supported");
         }
@@ -102,6 +90,7 @@ public class Version3 extends Version {
             snmp.setLocalEngine(engineId.getValue(), 0, 0);
         snmp.getUSM().addUser(securityName,
                 new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
+        SecurityModels.getInstance().addSecurityModel(new TSM(engineId,false));
     }
 
     @Override
@@ -128,5 +117,17 @@ public class Version3 extends Version {
         if (contextName != null)
             scopedPDU.setContextName(contextName);
         return scopedPDU;
+    }
+
+    public OctetString getEngineId() {
+        return engineId;
+    }
+
+    public OctetString getContextEngineId() {
+        return contextEngineId;
+    }
+
+    public OctetString getContextName() {
+        return contextName;
     }
 }
