@@ -7,6 +7,7 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.link.PointLinkRT;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.junit.Assert;
@@ -25,7 +26,7 @@ public class DataPointDetailsDwrTest {
         source.setUsername(FIRST_ANNOTATION);
         PointValueTime pointValueTime = pointValueCacheTest.getSavedPointValueTimeInCache(source);
 
-        DataPointVO dataPointVO = new DataPointVO();
+        DataPointVO dataPointVO = new DataPointVO(LoggingTypes.ON_CHANGE);
         dataPointVO.setId(2);
         dataPointVO.setDefaultCacheSize(10);
 

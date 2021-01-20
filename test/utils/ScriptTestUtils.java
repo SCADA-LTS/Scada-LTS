@@ -11,6 +11,7 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
@@ -23,11 +24,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -50,7 +51,7 @@ public class ScriptTestUtils {
         PointLocatorVO locatorFromContext = new VirtualPointLocatorVO();
         ((VirtualPointLocatorVO) locatorFromContext).setDataTypeId(mangoValue.getDataType());
 
-        DataPointVO pointFromContextVO = new DataPointVO();
+        DataPointVO pointFromContextVO = new DataPointVO(LoggingTypes.ON_CHANGE);
         pointFromContextVO.setPointLocator(locatorFromContext);
         pointFromContextVO.setEventDetectors(Collections.emptyList());
         pointFromContextVO.setId(pointFromContextId);
@@ -69,7 +70,8 @@ public class ScriptTestUtils {
         Common.ctx = contextWrapper;
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getRealPath(anyString())).thenReturn("test/scriptFunctions.js");
+        when(servletContext.getRealPath(contains("scriptFunctions"))).thenReturn("test/scriptFunctions.js");
+        when(servletContext.getRealPath(eq(""))).thenReturn("test/");
 
         PointValueDao pointValueDao = mock(PointValueDao.class);
         whenNew(PointValueDao.class)
@@ -97,7 +99,7 @@ public class ScriptTestUtils {
         mockStatic(Common.class);
         when(Common.getUser()).thenReturn(user);
 
-        PropertiesUtils propertiesUtils = new PropertiesUtils("env");
+        PropertiesUtils propertiesUtils = new PropertiesUtils("WEB-INF/classes/env");
         when(Common.getEnvironmentProfile()).thenReturn(propertiesUtils);
 
         mockStatic(Permissions.class);
