@@ -27,12 +27,18 @@
       var version = $get("snmpVersion");
       if (version == <c:out value="<%= SnmpConstants.version3 %>"/>) {
           show("version3Fields");
+          show("trapSection");
           hide("version12Fields");
-      }
-      else {
+      } else if (version == <c:out value="<%= SnmpConstants.version1 %>"/>) {
           hide("version3Fields");
           show("version12Fields");
+          hide("trapSection");
+      } else {
+          hide("version3Fields");
+          show("version12Fields");
+          show("trapSection");
       }
+
   }
 
   function securityLevelChange() {
@@ -290,7 +296,7 @@
 
         </tbody>    
 
-        <tr>
+        <tr id="trapSection">
           <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortEnabled"/></td>
           <td class="formField"><sst:checkbox id="trapEnabled" selectedValue="${dataSource.trapEnabled}" onclick="toggleTrapSetting()"/></td>
         </tr>

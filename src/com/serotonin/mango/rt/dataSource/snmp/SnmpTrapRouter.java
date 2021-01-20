@@ -25,7 +25,6 @@ import java.util.List;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
-import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
 import org.snmp4j.mp.CounterSupport;
 import org.snmp4j.mp.DefaultCounterListener;
@@ -33,7 +32,6 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler
@@ -61,7 +59,9 @@ public class SnmpTrapRouter {
     private void addDataSourceImpl(SnmpDataSourceRT ds) throws IOException {
         PortListener l = getPortListener(ds.getTrapPort());
         if (l == null) {
-            l = new PortListener(ds.getTrapPort());
+            String localAddress = ds.getLocalAddress() != null && !ds.getLocalAddress().isEmpty()
+                    ? ds.getLocalAddress() : "0.0.0.0";
+            l = new PortListener(ds.getTrapPort(), localAddress);
             portListeners.add(l);
         }
         l.addDataSource(ds);
@@ -91,10 +91,10 @@ public class SnmpTrapRouter {
         final int port;
         final List<SnmpDataSourceRT> dataSources = new LinkedList<SnmpDataSourceRT>();
 
-        PortListener(int port) throws IOException {
+        PortListener(int port, String localAddress) throws IOException {
             this.port = port;
 
-            snmp = new Snmp(new DefaultUdpTransportMapping(new UdpAddress("0.0.0.0/" + port)));
+            snmp = new Snmp(new DefaultUdpTransportMapping(new UdpAddress(localAddress + "/" + port)));
             snmp.addCommandResponder(this);
             snmp.listen();
         }
@@ -102,22 +102,10 @@ public class SnmpTrapRouter {
         public synchronized void processPdu(CommandResponderEvent evt) {
             PDU command = evt.getPDU();
             if (command != null) {
-                // Get the peer address
-                String peer = evt.getPeerAddress().toString();
-                int slash = peer.indexOf('/');
-                if (slash > 0)
-                    peer = peer.substring(0, slash);
-
-                String localAddress = "";
-                if (command instanceof PDUv1)
-                    localAddress = ((PDUv1) command).getAgentAddress().toString();
 
                 // Look for the peer in the data source list.
                 for (SnmpDataSourceRT ds : dataSources) {
-                    if (ds.getAddress().equals(peer)) {
-                        if (StringUtils.isEmpty(ds.getLocalAddress()) || localAddress.equals(ds.getLocalAddress()))
-                            ds.receivedTrap(command);
-                    }
+                    ds.receivedTrap(command);
                 }
             }
         }
