@@ -5,8 +5,6 @@ import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.UserTarget;
-import org.snmp4j.mp.MPv3;
-import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.*;
 import org.snmp4j.security.nonstandard.PrivAES192With3DESKeyExtension;
@@ -21,18 +19,20 @@ import com.serotonin.util.StringUtils;
  *
  */
 public class Version3 extends Version {
+
+    private final int securityLevel;
+    private final OctetString contextName;
     private final OctetString securityName;
     private OID authProtocol;
     private final OctetString authPassphrase;
     private OID privProtocol;
     private final OctetString privPassphrase;
-//    private final OctetString engineId;
-//    private final OctetString contextEngineId;
-//    private final OctetString contextName;
 
     public Version3(String securityName, String authProtocol, String authPassphrase, String privProtocol,
-                    String privPassphrase, String engineId, String contextEngineId, String contextName) {
+                    String privPassphrase, int securityLevel, String contextName) {
+
         this.securityName = new OctetString(securityName);
+        this.securityLevel = securityLevel;
 
         if (!StringUtils.isEmpty(authProtocol)) {
             if (authProtocol.equals("MD5"))
@@ -73,9 +73,7 @@ public class Version3 extends Version {
         }
 
         this.privPassphrase = new OctetString(privPassphrase);
-//        this.engineId = SnmpUtils.createOctetString(engineId);
-//        this.contextEngineId = SnmpUtils.createOctetString(contextEngineId);
-//        this.contextName = SnmpUtils.createOctetString(contextName);
+        this.contextName = new OctetString(contextName);
     }
 
     @Override
@@ -87,29 +85,12 @@ public class Version3 extends Version {
     public void addUser(Snmp snmp) {
         snmp.getUSM().addUser(securityName,
                 new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
-
-//        byte[] localEngineID = ((MPv3)snmp.getMessageProcessingModel(MessageProcessingModel.MPv3)).getLocalEngineID();
-//        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(localEngineID), 0);
-//        SecurityModels.getInstance().addSecurityModel(usm);
-//        if (engineId != null)
-//            snmp.setLocalEngine(engineId.getValue(), 0, 0);
-//        snmp.getUSM().addUser(securityName,
-//                new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase));
-//        SecurityModels.getInstance().addSecurityModel(new TSM(engineId,false));
     }
 
     @Override
     public Target getTarget() {
         UserTarget target = new UserTarget();
-        if (authPassphrase != null) {
-            if (privPassphrase != null)
-                target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
-            else
-                target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
-        }
-        else
-            target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
-
+        target.setSecurityLevel(securityLevel);
         target.setSecurityName(securityName);
         return target;
     }
@@ -117,22 +98,9 @@ public class Version3 extends Version {
     @Override
     public PDU createPDU() {
         ScopedPDU scopedPDU = new ScopedPDU();
-//        if (contextEngineId != null)
-//            scopedPDU.setContextEngineID(contextEngineId);
-//        if (contextName != null)
-//            scopedPDU.setContextName(contextName);
+        if (contextName != null)
+            scopedPDU.setContextName(contextName);
         return scopedPDU;
     }
 
-//    public OctetString getEngineId() {
-//        return engineId;
-//    }
-//
-//    public OctetString getContextEngineId() {
-//        return contextEngineId;
-//    }
-//
-//    public OctetString getContextName() {
-//        return contextName;
-//    }
 }

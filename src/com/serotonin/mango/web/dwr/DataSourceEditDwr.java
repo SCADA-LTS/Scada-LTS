@@ -782,8 +782,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                               int updatePeriods, int updatePeriodType, String host, int port,
                                               int snmpVersion, String community, String securityName,
                                               String authProtocol, String authPassphrase, String privProtocol,
-                                              String privPassphrase, String engineId, String contextEngineId,
-                                              String contextName, int retries, int timeout, boolean trapEnabled, int trapPort,
+                                              String privPassphrase, int securityLevel, String contextName,
+                                              int retries, int timeout, boolean trapEnabled, int trapPort,
                                               String localAddress) {
         SnmpDataSourceVO ds = (SnmpDataSourceVO) Common.getUser()
                 .getEditDataSource();
@@ -801,8 +801,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setAuthPassphrase(authPassphrase);
         ds.setPrivProtocol(privProtocol);
         ds.setPrivPassphrase(privPassphrase);
-        ds.setEngineId(engineId);
-        ds.setContextEngineId(contextEngineId);
+        ds.setSecurityLevel(securityLevel);
         ds.setContextName(contextName);
         ds.setRetries(retries);
         ds.setTimeout(timeout);
@@ -823,14 +822,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public void snmpGetOid(String oid, String host, int port, int snmpVersion,
                            String community, String securityName, String authProtocol,
                            String authPassphrase, String privProtocol, String privPassphrase,
-                           String engineId, String contextEngineId, String contextName,
+                           int securityLevel, String contextName,
                            int retries, int timeout) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
 
         Version version = Version.getVersion(snmpVersion, community,
                 securityName, authProtocol, authPassphrase, privProtocol,
-                privPassphrase, engineId, contextEngineId, contextName);
+                privPassphrase, securityLevel, contextName);
         user.setTestingUtility(new SnmpOidGet(getResourceBundle(), host, port,
                 version, oid, retries, timeout));
     }
@@ -839,14 +838,14 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public void snmpWalkOid(String oid, String host, int port, int snmpVersion,
                             String community, String securityName, String authProtocol,
                             String authPassphrase, String privProtocol, String privPassphrase,
-                            String engineId, String contextEngineId, String contextName,
+                            int securityLevel, String contextName,
                             int retries, int timeout) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
 
         Version version = Version.getVersion(snmpVersion, community,
                 securityName, authProtocol, authPassphrase, privProtocol,
-                privPassphrase, engineId, contextEngineId, contextName);
+                privPassphrase, securityLevel, contextName);
 //		user.setTestingUtility(new SnmpOidWalk(getResourceBundle(), host, port,
 //				version, oid, retries, timeout));
     }

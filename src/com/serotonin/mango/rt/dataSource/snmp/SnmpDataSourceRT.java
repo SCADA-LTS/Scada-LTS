@@ -1,11 +1,9 @@
 package com.serotonin.mango.rt.dataSource.snmp;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpPointLocatorVO;
 import org.apache.commons.logging.Log;
@@ -127,8 +125,8 @@ public class SnmpDataSourceRT extends PollingDataSource {
         version = Version.getVersion(vo.getSnmpVersion(), vo.getCommunity(),
                 vo.getSecurityName(), vo.getAuthProtocol(),
                 vo.getAuthPassphrase(), vo.getPrivProtocol(),
-                vo.getPrivPassphrase(), vo.getEngineId(),
-                vo.getContextEngineId(), vo.getContextName());
+                vo.getPrivPassphrase(), vo.getSecurityLevel(),
+                vo.getContextName());
         snmpRequests = new SnmpResponses();
     }
 
@@ -355,7 +353,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
                     }
 
                     if (!found)
-//						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
+						raiseEvent(TRAP_NOT_HANDLED_EVENT, time, false, new LocalizableMessage("event.snmp.trapNotHandled", vb));
                         log.warn("Trap not handled: " + vb);
                 }
             }
@@ -380,7 +378,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
             counterEmptyResponsesOrResponsesWithError=0;
             log.info("Counter Empty Responses Or Responses With Error is set 0.");
 
-//            SnmpTrapRouter.addDataSource(this);
+            SnmpTrapRouter.addDataSource(this);
 
             // Deactivate any existing event.
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT,
@@ -395,26 +393,14 @@ public class SnmpDataSourceRT extends PollingDataSource {
         super.initialize();
     }
     private void initializeComponents() throws IOException {
-
-//        address = InetAddress.getByName(vo.getHost()).getHostAddress();
-
-
-        // 1
         snmp = new Snmp(new DefaultUdpTransportMapping());
 
-        // 2
         OctetString localEngineId = new OctetString(MPv3.createLocalEngineID()).substring(0,9);
         USM usm = new USM(SecurityProtocols.getInstance(), localEngineId, 0);
         SecurityModels.getInstance().addSecurityModel(usm);
 
-        // 3 agent credentials and user creation
         version.addUser(snmp);
-
-        // 4 create target
-        target = version.getTarget(
-                vo.getHost(), vo.getPort(), vo.getRetries(), vo.getTimeout());
-
-
+        target = version.getTarget(vo.getHost(), vo.getPort(), vo.getRetries(), vo.getTimeout());
 
         snmp.listen();
 
@@ -423,7 +409,7 @@ public class SnmpDataSourceRT extends PollingDataSource {
     public void terminate() {
         super.terminate();
 
-//        SnmpTrapRouter.removeDataSource(this);
+        SnmpTrapRouter.removeDataSource(this);
 
         try {
             if (snmp != null)

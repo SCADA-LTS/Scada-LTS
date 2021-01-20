@@ -89,26 +89,15 @@ public class SnmpOidGet extends Thread implements TestingUtility {
             if(event != null) {
                 if(event.getResponse() != null) {
                     if(pdu.getErrorStatus() == PDU.noError) {
-                        result = pdu.get(0).getVariable().toString();
+                        result = event.getResponse().get(0).getVariable().toString();
                     } else {
-                        System.err.println("SNMP Error Status!");
                         result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
                     }
                 } else {
-                    System.err.println("SNMP No response!");
                     result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
                 }
-            } else {
-                System.err.println("SNMP Exception!");
-                result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
             }
 
-
-//            PDU response = snmp.send(pdu, version.getTarget(host, port, retries, timeout)).getResponse();
-//            if (response == null)
-//                result = I18NUtils.getMessage(bundle, "dsEdit.snmp.tester.noResponse");
-//            else
-//                result = response.get(0).getVariable().toString();
         }
         catch (IOException e) {
             result = e.getMessage();

@@ -137,6 +137,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     @JsonRemoteProperty
     private String privPassphrase;
     @JsonRemoteProperty
+    private int securityLevel;
+    @JsonRemoteProperty
     private int retries = 2;
     @JsonRemoteProperty
     private int timeout = 1000;
@@ -174,28 +176,12 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         this.community = community;
     }
 
-    public String getContextEngineId() {
-        return contextEngineId;
-    }
-
-    public void setContextEngineId(String contextEngineId) {
-        this.contextEngineId = contextEngineId;
-    }
-
     public String getContextName() {
         return contextName;
     }
 
     public void setContextName(String contextName) {
         this.contextName = contextName;
-    }
-
-    public String getEngineId() {
-        return engineId;
-    }
-
-    public void setEngineId(String engineId) {
-        this.engineId = engineId;
     }
 
     public String getHost() {
@@ -302,6 +288,14 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         this.localAddress = localAddress;
     }
 
+    public int getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(int securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
@@ -347,9 +341,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.authPassphrase", authPassphrase);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.privProtocol", privProtocol);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.privPassphrase", privPassphrase);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.engineId", engineId);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.contextEngine", contextEngineId);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.contextName", contextName);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.sl.label", securityLevel);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.retries", retries);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.timeout", timeout);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapEnabled", trapEnabled);
@@ -372,10 +365,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.privProtocol", from.privProtocol, privProtocol);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.privPassphrase", from.privPassphrase,
                 privPassphrase);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.engineId", from.engineId, engineId);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.contextEngine", from.contextEngineId,
-                contextEngineId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.contextName", from.contextName, contextName);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.sl.label", from.securityLevel, securityLevel);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.retries", from.retries, retries);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.timeout", from.timeout, timeout);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapEnabled", from.trapEnabled, trapEnabled);
@@ -397,14 +388,13 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         out.writeInt(port);
         out.writeInt(snmpVersion);
         SerializationHelper.writeSafeUTF(out, community);
-        SerializationHelper.writeSafeUTF(out, engineId);
-        SerializationHelper.writeSafeUTF(out, contextEngineId);
         SerializationHelper.writeSafeUTF(out, contextName);
         SerializationHelper.writeSafeUTF(out, securityName);
         SerializationHelper.writeSafeUTF(out, authProtocol);
         SerializationHelper.writeSafeUTF(out, authPassphrase);
         SerializationHelper.writeSafeUTF(out, privProtocol);
         SerializationHelper.writeSafeUTF(out, privPassphrase);
+        out.writeInt(securityLevel);
         out.writeInt(retries);
         out.writeInt(timeout);
         out.writeInt(updatePeriodType);
@@ -462,14 +452,13 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
             port = in.readInt();
             snmpVersion = in.readInt();
             community = SerializationHelper.readSafeUTF(in);
-            engineId = SerializationHelper.readSafeUTF(in);
-            contextEngineId = SerializationHelper.readSafeUTF(in);
             contextName = SerializationHelper.readSafeUTF(in);
             securityName = SerializationHelper.readSafeUTF(in);
             authProtocol = SerializationHelper.readSafeUTF(in);
             authPassphrase = SerializationHelper.readSafeUTF(in);
             privProtocol = SerializationHelper.readSafeUTF(in);
             privPassphrase = SerializationHelper.readSafeUTF(in);
+            securityLevel = in.readInt();
             retries = in.readInt();
             timeout = in.readInt();
             updatePeriodType = in.readInt();

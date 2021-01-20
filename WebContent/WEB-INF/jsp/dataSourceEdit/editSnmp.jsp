@@ -35,12 +35,32 @@
       }
   }
 
+  function securityLevelChange() {
+    var securityLevel = $get("securityLevel");
+    if (securityLevel === "1") {
+      hide("authFieldsProtocol")
+      hide("authFieldsPassphrase")
+      hide("privFieldsProtocol")
+      hide("privFieldsPassphrase")
+    } else if (securityLevel === "2") {
+      show("authFieldsProtocol")
+      show("authFieldsPassphrase")
+      hide("privFieldsProtocol")
+      hide("privFieldsPassphrase")
+    } else if (securityLevel === "3") {
+      show("authFieldsProtocol")
+      show("authFieldsPassphrase")
+      show("privFieldsProtocol")
+      show("privFieldsPassphrase")
+    }
+  }
+
   function snmpTest() {
       $set("snmpTestMessage", "<fmt:message key="dsEdit.snmp.gettingValue"/>");
       snmpTestButton(true);
       DataSourceEditDwr.snmpGetOid($get("snmpTestOid"), $get("host"), $get("port"), $get("snmpVersion"),
               $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
-              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
+              $get("privProtocol"), $get("privPassphrase"), $get("securityLevel"),
               $get("contextName"), $get("retries"), $get("timeout"), snmpTestCB);
   }
 
@@ -49,7 +69,7 @@
       snmpWalkButton(true);
       DataSourceEditDwr.snmpWalkOid($get("snmpWalkOid"), $get("host"), $get("port"), $get("snmpVersion"),
               $get("community"), $get("securityName"), $get("authProtocol"), $get("authPassphrase"),
-              $get("privProtocol"), $get("privPassphrase"), $get("engineId"), $get("contextEngineId"),
+              $get("privProtocol"), $get("privPassphrase"), $get("securityLevel"),
               $get("contextName"), $get("retries"), $get("timeout"), snmpWalkCB);
   }
 
@@ -97,6 +117,7 @@
 
   function initImpl() {
       versionChange();
+      securityLevelChange();
       snmpTestButton(false);
       toggleTrapSetting();
   }
@@ -116,7 +137,7 @@
       DataSourceEditDwr.saveSnmpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
               $get("updatePeriodType"), $get("host"), $get("port"), $get("snmpVersion"), $get("community"),
               $get("securityName"), $get("authProtocol"), $get("authPassphrase"), $get("privProtocol"),
-              $get("privPassphrase"), $get("engineId"), $get("contextEngineId"), $get("contextName"), $get("retries"),
+              $get("privPassphrase"), $get("securityLevel"), $get("contextName"), $get("retries"),
               $get("timeout"), $get("trapEnabled"), $get("trapPort"), $get("localAddress"), saveDataSourceCB);
   }
 
@@ -175,6 +196,16 @@
         </tr>
 
         <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.retries"/></td>
+          <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
+        </tr>
+
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.timeout"/></td>
+          <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
+        </tr>
+
+        <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.version"/></td>
           <td class="formField">
             <sst:select id="snmpVersion" value="${dataSource.snmpVersion}" onchange="versionChange()">
@@ -193,12 +224,24 @@
         </tbody>
 
         <tbody id="version3Fields" style="display:none;">
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.securityName"/></td>
             <td class="formField"><input id="securityName" type="text" value="${dataSource.securityName}"/></td>
           </tr>
 
           <tr>
+            <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.sl.label"/></td>
+            <td class="formField">
+              <sst:select id="securityLevel" value="${dataSource.securityLevel}" onchange="securityLevelChange()">
+                <sst:option value="1"><fmt:message key="dsEdit.snmp.sl.noauthnopriv"/></sst:option>
+                <sst:option value="2"><fmt:message key="dsEdit.snmp.sl.authnopriv"/></sst:option>
+                <sst:option value="3"><fmt:message key="dsEdit.snmp.sl.authpriv"/></sst:option>
+              </sst:select>
+            </td>
+          </tr>
+
+          <tr id="authFieldsProtocol">
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.authProtocol"/></td>
             <td class="formField">
               <sst:select id="authProtocol" value="${dataSource.authProtocol}">
@@ -213,12 +256,12 @@
             </td>
           </tr>
 
-          <tr>
+          <tr id="authFieldsPassphrase">
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.authPassphrase"/></td>
             <td class="formField"><input id="authPassphrase" type="text" value="${dataSource.authPassphrase}"/></td>
           </tr>
 
-          <tr>
+          <tr id="privFieldsProtocol">
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.privProtocol"/></td>
             <td class="formField">
               <sst:select id="privProtocol" value="${dataSource.privProtocol}">
@@ -235,36 +278,17 @@
             </td>
           </tr>
 
-          <tr>
+          <tr id="privFieldsPassphrase">
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.privPassphrase"/></td>
             <td class="formField"><input id="privPassphrase" type="text" value="${dataSource.privPassphrase}"/></td>
-          </tr>
-
-          <tr>
-            <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.engineId"/></td>
-            <td class="formField"><input id="engineId" type="text" value="${dataSource.engineId}"/></td>
-          </tr>
-
-          <tr>
-            <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.contextEngine"/></td>
-            <td class="formField"><input id="contextEngineId" type="text" value="${dataSource.contextEngineId}"/></td>
           </tr>
 
           <tr>
             <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.contextName"/></td>
             <td class="formField"><input id="contextName" type="text" value="${dataSource.contextName}"/></td>
           </tr>
-        </tbody>
 
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.retries"/></td>
-          <td class="formField"><input id="retries" type="text" value="${dataSource.retries}"/></td>
-        </tr>
-
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.snmp.timeout"/></td>
-          <td class="formField"><input id="timeout" type="text" value="${dataSource.timeout}"/></td>
-        </tr>
+        </tbody>    
 
         <tr>
           <td class="formLabel"><fmt:message key="dsEdit.snmp.trapPortEnabled"/></td>
@@ -303,19 +327,26 @@
 
         <tr><td colspan="2" id="snmpTestMessage" class="formError"></td></tr>
 
-        <tr><td colspan="2" class="smallTitle"><fmt:message key="dsEdit.snmp.walking"/></td></tr>
+        <!--
+        <tr>
+          <td colspan="2" class="smallTitle"><fmt:message key="dsEdit.snmp.walking"/></td>
+        </tr>
 
-          <tr>
-            <td class="formLabel"><fmt:message key="dsEdit.snmp.oidWalk"/></td>
-            <td class="formField"><input type="text" id="snmpWalkOid"/></td>
-          </tr>
+        <tr>
+          <td class="formLabel"><fmt:message key="dsEdit.snmp.oidWalk"/></td>
+          <td class="formField"><input type="text" id="snmpWalkOid"/></td>
+        </tr>
 
-          <tr>
-            <td colspan="2" align="center">
-              <input id="snmpWalkBtn" type="button" value="<fmt:message key="dsEdit.snmp.walk"/>" onclick="snmpWalk();"/>
-            </td>
-          </tr>
-          <tr><td colspan="2" id="snmpWalkMessage" class="formError"></td></tr>
+        <tr>
+          <td colspan="2" align="center">
+            <input id="snmpWalkBtn" type="button" value="<fmt:message key="dsEdit.snmp.walk"/>" onclick="snmpWalk();"/>
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="2" id="snmpWalkMessage" class="formError"></td>
+        </tr> -->
+
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsFoot.jspf" %>
 
 <tag:pointList pointHelpId="snmpPP">

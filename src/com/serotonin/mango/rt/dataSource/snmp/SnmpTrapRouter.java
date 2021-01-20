@@ -42,11 +42,13 @@ public class SnmpTrapRouter {
     private static SnmpTrapRouter instance;
 
     public synchronized static void addDataSource(SnmpDataSourceRT ds) throws IOException {
-        if (instance == null) {
-            CounterSupport.getInstance().addCounterListener(new DefaultCounterListener());
-            instance = new SnmpTrapRouter();
+        if(ds.isTrapEnabled()) {
+            if (instance == null) {
+                CounterSupport.getInstance().addCounterListener(new DefaultCounterListener());
+                instance = new SnmpTrapRouter();
+            }
+            instance.addDataSourceImpl(ds);
         }
-        instance.addDataSourceImpl(ds);
     }
 
     public synchronized static void removeDataSource(SnmpDataSourceRT ds) {

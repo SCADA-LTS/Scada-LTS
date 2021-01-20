@@ -82,7 +82,7 @@
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/snmp4j-3.4.4.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/snmp4j-2.8.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/activation.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/axis.jar"/>
