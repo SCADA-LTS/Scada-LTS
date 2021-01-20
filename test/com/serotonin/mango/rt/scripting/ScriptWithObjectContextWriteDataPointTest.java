@@ -7,6 +7,7 @@ import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.RuntimeManager;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import utils.IntValuePairPrinted;
 import utils.ScriptTestUtils;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -36,6 +37,9 @@ import static utils.Scripts.createScriptWithObjectContextWriteDataPoint;
 @PrepareForTest({DAO.class, PointValueCache.class, Permissions.class,
         ContextualizedScriptRT.class, ScriptContextObject.class,
         Common.class})
+// resources/org/powermock/extensions/configuration.properties is not working
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
+        "javax.activation.*", "javax.management.*"})
 public class ScriptWithObjectContextWriteDataPointTest {
 
     private static String pointToChangeXid = "DP_093765";

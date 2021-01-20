@@ -65,15 +65,22 @@ public class MailingListsDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n saveMailingList(int id, String xid, String name,
-			List<RecipientListEntryBean> entryBeans,
-			List<Integer> inactiveIntervals) {
+			List<RecipientListEntryBean> entryBeans, List<Integer> inactiveIntervals,
+            boolean dailyLimitSentEmails, String cronPattern, boolean collectInactiveEmails,
+			int collectInactiveEmailsNumber) {
+
 		DwrResponseI18n response = new DwrResponseI18n();
 		MailingListDao mailingListDao = new MailingListDao();
 
 		// Validate the given information. If there is a problem, return an
 		// appropriate error message.
 		MailingList ml = createMailingList(id, xid, name, entryBeans);
+
 		ml.getInactiveIntervals().addAll(inactiveIntervals);
+		ml.setDailyLimitSentEmailsNumber(collectInactiveEmailsNumber);
+		ml.setDailyLimitSentEmails(dailyLimitSentEmails);
+		ml.setCronPattern(cronPattern);
+		ml.setCollectInactiveEmails(collectInactiveEmails);
 
 		if (StringUtils.isEmpty(xid))
 			response.addContextualMessage("xid", "validate.required");

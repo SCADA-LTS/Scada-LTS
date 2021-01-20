@@ -17,10 +17,13 @@
  */
 package org.scada_lts.mango.adapter;
 
+
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import org.joda.time.DateTime;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.CommunicationChannelType;
 
 import java.util.List;
 import java.util.Set;
@@ -42,7 +45,13 @@ public interface MangoMailingList {
 
 	MailingList getMailingList(String xid);
 
+	List<MailingList> getMailingLists(Set<Integer> ids);
+
 	Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, DateTime sendTime);
+
+	Set<String> getRecipientAddresses(List<RecipientListEntryBean> beans, DateTime sendTime, CommunicationChannelType type);
+
+	List<MailingList> convertToMailingLists(List<RecipientListEntryBean> beans);
 
 	void populateEntrySubclasses(List<EmailRecipient> entries);
 

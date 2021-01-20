@@ -69,15 +69,18 @@
 	</path>
 	<path id="test-unit.classpath">
 		<pathelement location="lib/junit-4.12.jar"/>
-		<pathelement location="lib/mockito-all-1.10.19.jar"/>
-		<pathelement location="lib/powermock-api-mockito-1.6.6.jar"/>
-		<pathelement location="lib/powermock-core-1.6.6.jar"/>
-		<pathelement location="lib/powermock-module-junit4-1.6.6.jar"/>
-		<pathelement location="lib/powermock-reflect-1.6.6.jar"/>
-		<pathelement location="lib/powermock-api-support-1.6.6.jar"/>
-		<pathelement location="lib/powermock-module-junit4-common-1.6.6.jar"/>
-		<pathelement location="lib/powermock-api-mockito-common-1.6.6.jar"/>
-        <pathelement location="lib/javassist-3.21.0-GA.jar"/>
+		<pathelement location="lib/mockito-core-2.28.2.jar"/>
+		<pathelement location="lib/powermock-api-mockito2-2.0.7.jar"/>
+		<pathelement location="lib/powermock-core-2.0.7.jar"/>
+		<pathelement location="lib/powermock-module-junit4-2.0.7.jar"/>
+		<pathelement location="lib/powermock-reflect-2.0.7.jar"/>
+		<pathelement location="lib/powermock-api-support-2.0.7.jar"/>
+		<pathelement location="lib/powermock-module-junit4-common-2.0.7.jar"/>
+        <pathelement location="lib/javassist-3.27.0-GA.jar"/>
+        <pathelement location="lib/byte-buddy-1.9.10.jar"/>
+        <pathelement location="lib/byte-buddy-agent-1.9.10.jar"/>
+        <pathelement location="lib/objenesis-3.0.1.jar"/>
+        <pathelement location="lib/hamcrest-core-1.3.jar"/>
     </path>
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
@@ -190,9 +193,6 @@
         <pathelement location="WebContent/WEB-INF/lib/xfire-aegis-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
-    	<!--pathelement location="WebContent/WEB-INF/lib/junit-4.8.2.jar"/>
-  		<pathelement location="WebContent/WEB-INF/lib/mockito-all-1.9.5.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/mockito-core-2.11.0.jar"/-->
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
@@ -245,7 +245,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/bacnet4J.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
-		<!--pathelement location="lib/mockito-all-1.9.5.jar"/-->
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
@@ -381,6 +380,34 @@
                 <include name="glyphicons-halflings-regular.ttf"/>
                 <include name="glyphicons-halflings-regular.woff"/>
                 <include name="glyphicons-halflings-regular.woff2"/>
+				<include name="materialdesignicons-webfont.eot"/>
+				<include name="materialdesignicons-webfont.ttf"/>
+				<include name="materialdesignicons-webfont.woff"/>
+				<include name="materialdesignicons-webfont.woff2"/>
+				<include name="Roboto-Black.woff"/>
+				<include name="Roboto-Black.woff2"/>
+				<include name="Roboto-BlackItalic.woff"/>
+				<include name="Roboto-BlackItalic.woff2"/>
+				<include name="Roboto-Bold.woff"/>
+				<include name="Roboto-Bold.woff2"/>
+				<include name="Roboto-BoldItalic.woff"/>
+				<include name="Roboto-BoldItalic.woff2"/>
+				<include name="Roboto-Light.woff"/>
+				<include name="Roboto-Light.woff2"/>
+				<include name="Roboto-LightItalic.woff"/>
+				<include name="Roboto-LightItalic.woff2"/>
+				<include name="Roboto-Medium.woff"/>
+				<include name="Roboto-Medium.woff2"/>
+				<include name="Roboto-MediumItalic.woff"/>
+				<include name="Roboto-MediumItalic.woff2"/>
+				<include name="Roboto-Regular.woff"/>
+				<include name="Roboto-Regular.woff2"/>
+				<include name="Roboto-ReqularItalic.woff"/>
+				<include name="Roboto-ReqularItalic.woff2"/>
+				<include name="Roboto-Thin.woff"/>
+				<include name="Roboto-Thin.woff2"/>
+				<include name="Roboto-ThinItalic.woff"/>
+				<include name="Roboto-ThinItalic.woff2"/>
             </fileset>
         </copy>
 
@@ -552,6 +579,30 @@
             <test name="com.serotonin.mango.rt.scripting.ContextualizedScriptRTTestsSuite"
                   haltonfailure="yes">
             </test>
+
+			<test name="org.scada_lts.service.ScheduledExecuteInactiveEventServiceTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+            <test name="com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRtTest"
+                  haltonfailure="yes">
+            </test>
+
+			<test name="org.scada_lts.service.CommunicationChannelTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.service.InactiveEventsProviderTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

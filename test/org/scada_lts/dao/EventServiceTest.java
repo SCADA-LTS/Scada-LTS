@@ -37,6 +37,7 @@ import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -206,7 +207,7 @@ public class EventServiceTest extends TestDAO {
 		//
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
 
-		DataPointVO dataPoint = new DataPointVO();
+		DataPointVO dataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dataPoint.setXid(XID);
 		dataPoint.setDataSourceId(DATA_SOURCE_ID);
 		dataPoint.setDataSourceName(DATA_SOURCE_NAME);
