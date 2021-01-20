@@ -1,0 +1,12 @@
+/*
+ * Scada-LTS gradle settings file.
+ *
+ * The settings file is used to specify which projects to include in your build.
+ *
+ * This project contains a sub-project called "scadalts-ui" that is an Vue.js frontend
+ * project for User Interface for modern Scada-LTS views. It also provides some additional
+ * controls to the classic application.
+ */
+
+rootProject.name = 'Scada-LTS'
+include ':scadalts-ui'

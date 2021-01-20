@@ -25,22 +25,28 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.db.dao.*;
+import com.serotonin.mango.rt.event.*;
+import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
+import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
+import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.event.EventDAO;
+import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.service.CommunicationChannel;
+import org.scada_lts.service.InactiveEventsProvider;
+import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PointLinkDao;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.rt.dataImage.DataPointEventMulticaster;
 import com.serotonin.mango.rt.dataImage.DataPointListener;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -49,7 +55,6 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
-import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.compound.CompoundEventDetectorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.event.maintenance.MaintenanceEventRT;
@@ -112,6 +117,12 @@ public class RuntimeManager {
 	 */
 	private final List<MaintenanceEventRT> maintenanceEvents = new CopyOnWriteArrayList<MaintenanceEventRT>();
 
+	private final Map<Integer, ScheduledExecuteInactiveEventRT> sendEmailForInactiveEvents = new ConcurrentHashMap<>();
+	private final Map<Integer, ScheduledExecuteInactiveEventRT> sendSmsForInactiveEvents = new ConcurrentHashMap<>();
+
+	private final Map<Integer, ResetDailyLimitSendingEventRT> resetDailyLimitSentEmails = new ConcurrentHashMap<>();
+
+
 	private boolean started = false;
 
 	//
@@ -123,6 +134,28 @@ public class RuntimeManager {
 
 		// Set the started indicator to true.
 		started = true;
+
+		ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
+		MailingListService mailingListService = new MailingListService();
+		List<MailingList> mailingLists = mailingListService.getMailingLists();
+		for(MailingList mailingList: mailingLists) {
+			if (mailingList.isCollectInactiveEmails()) {
+				startSendEmailForInactiveEvent(mailingList, service);
+			}
+		}
+
+		for(MailingList mailingList: mailingLists) {
+			if (mailingList.isCollectInactiveEmails()) {
+				startSendSmsForInactiveEvent(mailingList, service);
+			}
+		}
+
+		for(MailingList mailingList: mailingLists) {
+			if(mailingList.isCollectInactiveEmails()
+					&& mailingList.isDailyLimitSentEmails()) {
+				startResetDailyLimitSentEmails(mailingList, mailingListService);
+			}
+		}
 
 		// Initialize data sources that are enabled.
 		DataSourceDao dataSourceDao = new DataSourceDao();
@@ -248,6 +281,15 @@ public class RuntimeManager {
 
 		for (String key : simpleEventDetectors.keySet())
 			stopSimpleEventDetector(key);
+
+		for (Integer key : sendEmailForInactiveEvents.keySet())
+			stopSendEmailForInactiveEvent(key);
+
+		for (Integer key : sendSmsForInactiveEvents.keySet())
+			stopSendSmsForInactiveEvent(key);
+
+		for (Integer key : resetDailyLimitSentEmails.keySet())
+			stopResetDailyLimitSentEmails(key);
 	}
 
 	public void joinTermination() {
@@ -885,5 +927,99 @@ public class RuntimeManager {
 			maintenanceEvents.remove(rt);
 			rt.terminate();
 		}
+	}
+
+	private void startSendEmailForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
+		CommunicationChannel channel = CommunicationChannel.newEmailChannel(mailingList, new SystemSettingsService());
+		ScheduledExecuteInactiveEventRT sendEmail = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
+				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
+						channel, 600),
+				new DataPointService(), new DataSourceService(), 300);
+		sendEmail.initialize();
+		sendEmailForInactiveEvents.put(mailingList.getId(), sendEmail);
+	}
+
+	private void startSendSmsForInactiveEvent(MailingList mailingList, ScheduledExecuteInactiveEventService inactiveEmailsService) {
+		CommunicationChannel channel = CommunicationChannel.newSmsChannel(mailingList, new SystemSettingsService());
+		ScheduledExecuteInactiveEventRT sendSms = new ScheduledExecuteInactiveEventRT(inactiveEmailsService,
+				InactiveEventsProvider.newInstance(new EventDAO(), ScheduledExecuteInactiveEventDAO.getInstance(),
+						channel, 600),
+				new DataPointService(), new DataSourceService(), 300);
+		sendSms.initialize();
+		sendSmsForInactiveEvents.put(mailingList.getId(), sendSms);
+	}
+
+	private void startResetDailyLimitSentEmails(MailingList mailingList, MailingListService mailingListService) {
+		ResetDailyLimitSendingEventRT reset = new ResetDailyLimitSendingEventRT(mailingList, this,
+				mailingListService);
+		reset.initialize();
+		resetDailyLimitSentEmails.put(mailingList.getId(), reset);
+	}
+
+	public void removeMailingList(MailingList mailingList) {
+		removeMailingList(mailingList.getId());
+	}
+
+	public void removeMailingList(int mailingListId) {
+		stopSendEmailForInactiveEvent(mailingListId);
+		stopSendSmsForInactiveEvent(mailingListId);
+		stopResetDailyLimitSentEmails(mailingListId);
+	}
+
+	public void stopSendEmailSms(int mailingListId) {
+		stopSendEmailForInactiveEvent(mailingListId);
+		stopSendSmsForInactiveEvent(mailingListId);
+	}
+
+	public void saveMailingList(MailingList mailingList) {
+		if(mailingList.isCollectInactiveEmails()) {
+			ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
+			startSendEmailForInactiveEvent(mailingList, service);
+			startSendSmsForInactiveEvent(mailingList, service);
+			if(mailingList.isDailyLimitSentEmails()) {
+				MailingListService mailingListService = new MailingListService();
+				startResetDailyLimitSentEmails(mailingList, mailingListService);
+			}
+		}
+	}
+
+	public void startSendEmailSms(MailingList mailingList) {
+		if(mailingList.isCollectInactiveEmails()) {
+			ScheduledExecuteInactiveEventService service = ScheduledExecuteInactiveEventService.getInstance();
+			startSendEmailForInactiveEvent(mailingList, service);
+			startSendSmsForInactiveEvent(mailingList, service);
+		}
+	}
+
+	private void stopSendSmsForInactiveEvent(int mailingListId) {
+
+		ScheduledExecuteInactiveEventRT sendSms = sendSmsForInactiveEvents.get(mailingListId);
+
+		if (sendSms == null)
+			return;
+
+		sendSms.terminate();
+		sendSmsForInactiveEvents.remove(mailingListId);
+	}
+
+	private void stopSendEmailForInactiveEvent(int mailingListId) {
+
+		ScheduledExecuteInactiveEventRT sendEmail = sendEmailForInactiveEvents.get(mailingListId);
+
+		if (sendEmail == null)
+			return;
+
+		sendEmail.terminate();
+		sendEmailForInactiveEvents.remove(mailingListId);
+	}
+
+	private void stopResetDailyLimitSentEmails(int mailingListId) {
+		ResetDailyLimitSendingEventRT reset = resetDailyLimitSentEmails.get(mailingListId);
+
+		if (reset == null)
+			return;
+
+		reset.terminate();
+		resetDailyLimitSentEmails.remove(mailingListId);
 	}
 }

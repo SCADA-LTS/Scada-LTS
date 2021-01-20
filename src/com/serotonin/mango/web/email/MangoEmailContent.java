@@ -23,7 +23,7 @@ public class MangoEmailContent extends TemplateEmailContent {
             String defaultSubject, String encoding) throws TemplateException, IOException {
         super(encoding);
 
-        int type = SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE);
+        int type = getType();
 
         this.defaultSubject = defaultSubject;
         this.subjectDirective = new SubjectDirective(bundle);
@@ -43,6 +43,10 @@ public class MangoEmailContent extends TemplateEmailContent {
         if (subject == null)
             return defaultSubject;
         return subject;
+    }
+
+    protected int getType() {
+        return SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_CONTENT_TYPE);
     }
 
     private Template getTemplate(String name, boolean html) throws IOException {

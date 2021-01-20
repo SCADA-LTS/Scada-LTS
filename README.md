@@ -1,9 +1,14 @@
-# [Scada-LTS](http://scada-lts.org)
+# [Scada-LTS](http://scada-lts.org) 
 
-[![](https://images.microbadger.com/badges/version/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own version badge on microbadger.com")
+Open Source, web-based, multi-platform solution for building your own SCADA (Supervisory Control and Data Acquisition) system.
+Visit our [Wiki site](https://github.com/SCADA-LTS/Scada-LTS/wiki) to see project description and to be up to date with the latest changes. 
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/SCADA-LTS/Scada-LTS)
+
+[![Build Status](https://travis-ci.org/SCADA-LTS/Scada-LTS.svg?branch=develop)](https://travis-ci.org/SCADA-LTS/Scada-LTS)
+![GitHub all releases](https://img.shields.io/github/downloads/SCADA-LTS/Scada-LTS/total)
+[![](https://images.microbadger.com/badges/version/scadalts/scadalts.svg)](https://microbadger.com/images/scadalts/scadalts "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/dockergb/scadalts-dev.svg)](https://microbadger.com/images/dockergb/scadalts-dev "Get your own image badge on microbadger.com")
-
-Scada-LTS is an Open Source, web-based, multi-platform solution for building your own SCADA (Supervisory Control and Data Acquisition) system.
 
 
 ## Table of contents
@@ -49,8 +54,7 @@ Here is two of the several start options:
 
 ### What's included
 
-App ScadaBR.war 
-App ScadaLTS.war
+App ScadaBR.war
 
 ## Bugs and feature requests
 
@@ -58,7 +62,8 @@ Have a bug or a feature request? Please first read the [issue guidelines](https:
 
 ## Documentation
 
-Scada-LTS documentation, will be included in this repo in the root directory.
+Scada-LTS documentation, will be included in this repo in the root directory.  
+API documentation can be found [here](https://github.com/SCADA-LTS/Scada-LTS/tree/develop/doc/RESTAPI).
 
 
 ## Contributing
@@ -115,6 +120,14 @@ Code base on [ScadaBR](https://sourceforge.net/projects/scadabr/?source=director
 **Jerzy Piejko**
 
 * <https://github.com/JerzyPiejko>
+
+**Artur Wolak**
+
+* <https://github.com/arturro96>
+
+**Kamil Jarmusik**
+
+* <https://github.com/Limraj>
 
 **Radosław Jajko**
 

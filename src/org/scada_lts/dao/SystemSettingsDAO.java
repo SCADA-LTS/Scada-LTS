@@ -343,6 +343,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+
 		DEFAULT_VALUES.put(DEFAULT_LOGGING_TYPE, DataPointVO.LoggingTypes.ON_CHANGE);
 		DEFAULT_VALUES.put(SMS_DOMAIN, "localhost");
 	}
