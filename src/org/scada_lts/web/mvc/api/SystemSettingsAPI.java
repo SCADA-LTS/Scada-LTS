@@ -53,7 +53,47 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/getDefaultLoggingType", produces = "application/json")
+    public ResponseEntity<String> getLoggingType(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getDefaultLoggingType");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    String json = mapper.writeValueAsString(systemSettingsService.getDefaultLoggingType());
+                    return new ResponseEntity<>(json, HttpStatus.OK);
+                } catch (JsonProcessingException e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/saveDefaultLoggingType/{defaultLoggingType}")
+    public ResponseEntity<String> saveLoggingType(HttpServletRequest request, @PathVariable("defaultLoggingType") String defaultLoggingType) {
+        LOG.info("/api/systemSettings/saveLoggingType");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                systemSettingsService.setDefaultLoggingType(defaultLoggingType);
+                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -69,7 +109,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -86,7 +126,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,10 +146,12 @@ public class SystemSettingsAPI {
         }
     }
 
-    @RequestMapping(value = "/saveSMSDomain/{domain}", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveSMSDomain/{parts_of_domain}", method = RequestMethod.POST)
     public ResponseEntity<String> saveSMSDomain(
-            @PathVariable("domain") String domain,
+            @PathVariable("parts_of_domain") String[] parts_of_domain,
             HttpServletRequest request)  {
+
+        String domain = String.join(".", parts_of_domain);
 
         LOG.info("/api/systemSettings/getSMSDomain:" + domain);
         ResponseEntity<String> result = null;
@@ -162,7 +204,7 @@ public class SystemSettingsAPI {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -178,7 +220,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -195,7 +237,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -211,7 +253,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -228,7 +270,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -243,7 +285,7 @@ public class SystemSettingsAPI {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -266,7 +308,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -281,7 +323,7 @@ public class SystemSettingsAPI {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -305,7 +347,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -320,7 +362,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -337,7 +379,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -354,11 +396,11 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping(value = "/saveDatabaseType/{databaseType}")
+    @PostMapping(value = "/saveDatabaseType/{databaseType}")
     public ResponseEntity<String> saveDatabaseType(HttpServletRequest request, @PathVariable("databaseType") String databaseType) {
         LOG.info("/api/systemSettings/saveDatabaseType");
         try {
@@ -371,7 +413,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -387,14 +429,14 @@ public class SystemSettingsAPI {
                     return new ResponseEntity<>(json, HttpStatus.OK);
                 } catch (JsonProcessingException e) {
                     LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -412,7 +454,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -429,7 +471,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -446,7 +488,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -462,7 +504,7 @@ public class SystemSettingsAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

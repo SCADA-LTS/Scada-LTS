@@ -380,6 +380,34 @@
                 <include name="glyphicons-halflings-regular.ttf"/>
                 <include name="glyphicons-halflings-regular.woff"/>
                 <include name="glyphicons-halflings-regular.woff2"/>
+				<include name="materialdesignicons-webfont.eot"/>
+				<include name="materialdesignicons-webfont.ttf"/>
+				<include name="materialdesignicons-webfont.woff"/>
+				<include name="materialdesignicons-webfont.woff2"/>
+				<include name="Roboto-Black.woff"/>
+				<include name="Roboto-Black.woff2"/>
+				<include name="Roboto-BlackItalic.woff"/>
+				<include name="Roboto-BlackItalic.woff2"/>
+				<include name="Roboto-Bold.woff"/>
+				<include name="Roboto-Bold.woff2"/>
+				<include name="Roboto-BoldItalic.woff"/>
+				<include name="Roboto-BoldItalic.woff2"/>
+				<include name="Roboto-Light.woff"/>
+				<include name="Roboto-Light.woff2"/>
+				<include name="Roboto-LightItalic.woff"/>
+				<include name="Roboto-LightItalic.woff2"/>
+				<include name="Roboto-Medium.woff"/>
+				<include name="Roboto-Medium.woff2"/>
+				<include name="Roboto-MediumItalic.woff"/>
+				<include name="Roboto-MediumItalic.woff2"/>
+				<include name="Roboto-Regular.woff"/>
+				<include name="Roboto-Regular.woff2"/>
+				<include name="Roboto-ReqularItalic.woff"/>
+				<include name="Roboto-ReqularItalic.woff2"/>
+				<include name="Roboto-Thin.woff"/>
+				<include name="Roboto-Thin.woff2"/>
+				<include name="Roboto-ThinItalic.woff"/>
+				<include name="Roboto-ThinItalic.woff2"/>
             </fileset>
         </copy>
 
@@ -551,6 +579,30 @@
             <test name="com.serotonin.mango.rt.scripting.ContextualizedScriptRTTestsSuite"
                   haltonfailure="yes">
             </test>
+
+			<test name="org.scada_lts.service.ScheduledExecuteInactiveEventServiceTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+            <test name="com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRtTest"
+                  haltonfailure="yes">
+            </test>
+
+			<test name="org.scada_lts.service.CommunicationChannelTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.service.InactiveEventsProviderTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

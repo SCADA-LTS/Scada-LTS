@@ -1,0 +1,32 @@
+# Docker compose file to manage your deployed images.
+# Use MySQL server 5.7 and latest Scada-LTS local build.
+# Using attached webapps folder as developer you will be able to modify the static content from host os.
+# Attach shell to stop the tomcat instance and then you will be able to run in JPDA mode.
+version: '3'
+services: 
+    database:
+        container_name: mysql
+        image: mysql/mysql-server:5.7
+        ports:
+            - "3306:3306"
+        environment: 
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=root
+            - MYSQL_DATABASE=scadalts
+        expose: ["3306"]
+        volumes:
+            -   ./docker/volumes/databases:/home/
+        network_mode: host
+    tomcat:
+        image: scadalts/scadalts:2.5.0
+        build: .
+        ports: 
+            - "8080:8080"
+        depends_on: 
+            - database
+        expose: ["8080", "8000"]
+        volumes:
+        -   ./docker/volumes/webapps:/usr/local/tomcat/webapps
+#        -   ./build/libs/Scada-LTS.war:/usr/local/tomcat/webapps/ScadaBR.war
+        network_mode: host

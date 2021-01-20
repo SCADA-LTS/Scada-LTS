@@ -20,6 +20,7 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.utils.ColorUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
@@ -128,6 +129,9 @@ public class SystemSettingsDAO {
 	private static final String DELETE_DATA_SOURCE_USERS = "delete from dataSourceUsers";
 	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
 	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
+
+	// Logging
+	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -334,11 +338,13 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				Common.TimePeriods.HOURS);
-		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.2");
+		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.5");
 
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+
+		DEFAULT_VALUES.put(DEFAULT_LOGGING_TYPE, DataPointVO.LoggingTypes.ON_CHANGE);
 		DEFAULT_VALUES.put(SMS_DOMAIN, "localhost");
 	}
 
