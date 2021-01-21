@@ -54,6 +54,7 @@ public class ButtonComponentTest {
     public void test_execute_js_with_button_off_script_html() {
 
         //given:
+        String bkgColor = "#ff0000";
         Map<String, Object> model = new HashMap<>();
         PointValueTime value = new PointValueTime(new BinaryValue(true), 0);
 
@@ -65,7 +66,7 @@ public class ButtonComponentTest {
         dataPointVO.setTextRenderer(textRenderer);
 
         scriptComponent.setNameOverride("point");
-        scriptComponent.setBkgdColorOverride("");
+        scriptComponent.setBkgdColorOverride(bkgColor);
         scriptComponent.setDisplayControls(true);
         scriptComponent.setSettableOverride(true);
         scriptComponent.tsetDataPoint(dataPointVO);
@@ -75,13 +76,14 @@ public class ButtonComponentTest {
 
         //then:
         Object result = model.get("scriptContent");
-        Assert.assertEquals("<input type='button' value='OFF' onclick='mango.view.setPoint(1234,0, false);return false;' />", result);
+        Assert.assertEquals("<input type='button' value='OFF' onclick='mango.view.setPoint(1234,0, false);return false;' style='background-color:\""+ scriptComponent.getBkgdColorOverride() +"\";'/>\";", result);
     }
 
     @Test
     public void test_execute_js_with_button_on_script_html() {
 
         //given:
+        String bkgColor = "#ff0000";
         Map<String, Object> model = new HashMap<>();
         PointValueTime value = new PointValueTime(new BinaryValue(false), 0);
 
@@ -93,7 +95,7 @@ public class ButtonComponentTest {
         dataPointVO.setTextRenderer(textRenderer);
 
         scriptComponent.setNameOverride("point");
-        scriptComponent.setBkgdColorOverride("");
+        scriptComponent.setBkgdColorOverride(bkgColor);
         scriptComponent.setDisplayControls(true);
         scriptComponent.setSettableOverride(true);
         scriptComponent.tsetDataPoint(dataPointVO);
@@ -103,7 +105,7 @@ public class ButtonComponentTest {
 
         //then:
         Object result = model.get("scriptContent");
-        Assert.assertEquals("<input type='button' value='ON' onclick='mango.view.setPoint(1234,0, true);return true;' />", result);
+        Assert.assertEquals("<input type='button' value='ON' onclick='mango.view.setPoint(1234,0, true);return true;' style='background-color:\""+ scriptComponent.getBkgdColorOverride() +"\";'/>\";", result);
     }
 
 }
