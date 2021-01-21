@@ -175,7 +175,18 @@ export default new Vuex.Store({
 			return state.scadaLtsBranch;
 		},
 		appCommit: (state) => {
-			return state.scadaLtsCommit;
+			if (state.scadaLtsCommit.length > 6) {
+				return state.scadaLtsCommit.substring(0, 7);
+			} else {
+				return state.scadaLtsCommit;
+			}
+		},
+		appCommitLink: (state) => {
+			if (state.scadaLtsCommit.length > 6) {
+				return `https://github.com/SCADA-LTS/Scada-LTS/commit/${state.scadaLtsCommit}`;
+			} else {
+				return false;
+			}
 		},
 		appPullRequestNumber: (state) => {
 			return state.scadaLtsPullRequestNumber;

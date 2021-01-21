@@ -99,7 +99,15 @@
 							<p>{{ $t('systemsettings.info.commit') }}</p>
 						</v-col>
 						<v-col cols="5">
-							<p>{{ $store.getters.appCommit }}</p>
+							<p v-if="!$store.getters.appCommitLink">
+								{{ $store.getters.appCommit }}
+							</p>
+							<a
+								v-if="!!$store.getters.appCommitLink"
+								:href="$store.getters.appCommitLink"
+							>
+								{{ $store.getters.appCommit }}
+							</a>
 						</v-col>
 					</v-row>
 
@@ -108,7 +116,8 @@
 							<p>{{ $t('systemsettings.info.pullrequest') }}</p>
 						</v-col>
 						<v-col cols="5">
-							<p>{{ $store.getters.appPullRequestNumber }}</p><br />
+							<p>{{ $store.getters.appPullRequestNumber }}</p>
+							<br />
 							<p>{{ $store.getters.appPullRequestBranch }}</p>
 						</v-col>
 					</v-row>
