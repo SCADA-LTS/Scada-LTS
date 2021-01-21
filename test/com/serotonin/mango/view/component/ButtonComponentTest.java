@@ -9,20 +9,18 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueCache;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;
 import com.serotonin.mango.rt.dataImage.types.BinaryValue;
-import com.serotonin.mango.rt.dataImage.types.MultistateValue;
-import com.serotonin.mango.rt.dataImage.types.NumericValue;
+
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.view.text.MultistateRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.DAO;
@@ -32,14 +30,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DAO.class, PointValueCache.class, Permissions.class,
         ContextualizedScriptRT.class, ScriptContextObject.class,
         ScriptExecutor.class, Common.class})
+// resources/org/powermock/extensions/configuration.properties is not working
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
+        "javax.activation.*", "javax.management.*"})
 public class ButtonComponentTest {
 
     @Before
