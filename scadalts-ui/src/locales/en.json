@@ -81,6 +81,8 @@
 	"systemsettings.info.tag": "Scada-LTS latest GitHub release",
 	"systemsettings.info.milestone": "Scada-LTS build version",
 	"systemsettings.info.branch": "Build from GitHub branch",
+	"systemsettings.info.commit": "Build from GitHub commit",
+	"systemsettings.info.pullrequest": "Build from PullRequest",
 	"systemsettings.info.instance": "Instance description",
 	"systemsettings.info.language": "System language",
 	"systemsettings.event.title": "System event alarm levels",

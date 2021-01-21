@@ -65,19 +65,19 @@
 					</v-row>
 
 					<v-row v-if="systemRunningTime">
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.systemtime') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ systemRunningTime }}</p>
 						</v-col>
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.milestone') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>
 								{{ $store.getters.appMilestone }} build
 								{{ $store.getters.appBuild }}
@@ -86,28 +86,47 @@
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.branch') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ $store.getters.appBranch }}</p>
 						</v-col>
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
+							<p>{{ $t('systemsettings.info.commit') }}</p>
+						</v-col>
+						<v-col cols="5">
+							<p>{{ $store.getters.appCommit }}</p>
+						</v-col>
+					</v-row>
+
+					<v-row v-if="$store.getters.appPullRequestNumber !== 'false'">
+						<v-col cols="7">
+							<p>{{ $t('systemsettings.info.pullrequest') }}</p>
+						</v-col>
+						<v-col cols="5">
+							<p>{{ $store.getters.appPullRequestNumber }}</p><br />
+							<p>{{ $store.getters.appPullRequestBranch }}</p>
+						</v-col>
+					</v-row>
+
+					<v-row>
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.tag') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ $store.getters.appTag }}</p>
 						</v-col>
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.uiversion') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ $store.getters.appVersion }}</p>
 						</v-col>
 					</v-row>

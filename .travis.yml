@@ -17,7 +17,7 @@ before_script:
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
 - npm install
-- npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH
+- npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH $TRAVIS_COMMIT $TRAVIS_PULL_REQUEST $TRAVIS_PULL_REQUEST_BRANCH
 - cd ../
 language: java
 jdk:
@@ -32,6 +32,7 @@ branches:
   - "/^master.*$/"
   - "/^prerelease/2.5.0.*$/"
   - "/^bug/#1497.*$/"
+  - "/^feature/#1502.*$"
 notifications:
   email: false
 env:

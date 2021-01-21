@@ -31,6 +31,9 @@ export default new Vuex.Store({
 		scadaLtsMilestone: process.env.SCADA_LTS_MILESTONE || '0',
 		scadaLtsBuild: process.env.SCADA_LTS_BUILD || '0',
 		scadaLtsBranch: process.env.SCADA_LTS_BRANCH || 'local',
+		scadaLtsCommit: process.env.SCADA_LTS_COMMIT || 'N/A',
+		scadaLtsPullRequestNumber: process.env.SCADA_LTS_PULLREQUEST_NUMBER || 'false',
+		scadaLtsPullRequestBranch: process.env.SCADA_LTS_PULLREQUEST_BRANCH || '',
 		applicationUrl: './api',
 		applicationDebug: false,
 		requestConfig: {
@@ -170,6 +173,15 @@ export default new Vuex.Store({
 		},
 		appBranch: (state) => {
 			return state.scadaLtsBranch;
+		},
+		appCommit: (state) => {
+			return state.scadaLtsCommit;
+		},
+		appPullRequestNumber: (state) => {
+			return state.scadaLtsPullRequestNumber;
+		},
+		appPullRequestBranch: (state) => {
+			return state.scadaLtsPullRequestBranch;
 		},
 	},
 	plugins: [myLoggerForVuexMutation],
