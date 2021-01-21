@@ -1,6 +1,6 @@
-name=Leds24
+name=Weather
 type=imageSet
-width=24
-height=24
+width=60
+height=51
 text.x=0
 text.y=24
