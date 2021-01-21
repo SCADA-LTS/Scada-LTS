@@ -75,7 +75,7 @@ public class ButtonComponentTest {
 
         //then:
         Object result = model.get("scriptContent");
-        Assert.assertEquals("<input type='button' value='OFF' onclick='mango.view.setPoint(1234,0, false);return false;' style='background-color:\""+ scriptComponent.getBkgdColorOverride() +"\";'/>\";", result);
+        Assert.assertEquals("<input type='button' value='OFF' onclick='mango.view.setPoint(1234,0, false);return false;' style='background-color:\""+ scriptComponent.getBkgdColorOverride() +"\";'/>", result);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class ButtonComponentTest {
 
         //then:
         Object result = model.get("scriptContent");
-        Assert.assertEquals("<input type='button' value='ON' onclick='mango.view.setPoint(1234,0, true);return true;' style='background-color:\""+ scriptComponent.getBkgdColorOverride() +"\";'/>\";", result);
+        Assert.assertEquals("<input type='button' value='ON' onclick='mango.view.setPoint(1234,0, true);return true;' style='background-color:\""+ scriptComponent.getBkgdColorOverride() +"\";'/>", result);
     }
 
 }
