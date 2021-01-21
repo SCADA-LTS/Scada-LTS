@@ -25,21 +25,15 @@ var commit = 'N/A';
 var pullRequestNumber = "false"
 var pullRequestBranch = ""
 // ----- ---------------------- ----- //
-if (process.argv.length === 7) {
+if (process.argv.length === 7 || process.argv.length === 8) {
 	milestone = process.argv[2];
 	build = process.argv[3];
 	branch = process.argv[4];
 	commit = process.argv[5];
 	pullRequestNumber = process.argv[6];
-}
-
-if (process.argv.length === 8) {
-	milestone = process.argv[2];
-	build = process.argv[3];
-	branch = process.argv[4];
-	commit = process.argv[5];
-	pullRequestNumber = process.argv[6];
-	pullRequestBranch = process.argv[7];
+	if(process.argv.length === 8) {
+		pullRequestBranch = process.argv[7];	
+	}
 }
 
 if (!json.hasOwnProperty('scripts')) {
