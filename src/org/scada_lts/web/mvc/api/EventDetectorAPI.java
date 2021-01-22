@@ -67,7 +67,7 @@ public class EventDetectorAPI {
     }
 
     @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
-    public synchronized ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
+    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
         LOG.info("/api/eventDetector/set/binary/state/" + datapointId);
         try {
             User user = Common.getUser(request);
@@ -86,7 +86,7 @@ public class EventDetectorAPI {
 
 
     @PostMapping(value = "/set/binary/state/xid/{datapointXid}", consumes = "application/json", produces = "application/json")
-    public synchronized ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetectorXid(@PathVariable String datapointXid, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
+    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetectorXid(@PathVariable String datapointXid, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
         LOG.info("/api/eventDetector/set/binary/state/xid/" + datapointXid);
         try {
             User user = Common.getUser(request);
