@@ -103,14 +103,14 @@ public class EventDetectorAPI {
         }
     }
 
-    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body) throws Exception {
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body) {
         PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
 
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty())  {
             for (PointEventDetectorVO ped : peds) {
                 if (ped.getXid().equals(pointEventDetectorVO.getXid())) {
-                    throw new Exception("Xid already exists");
+                    return new JsonPointEventDetector(ped.getId(), ped.getXid(), ped.getAlias());
                 }
             }
         }
