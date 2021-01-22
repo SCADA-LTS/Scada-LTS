@@ -10,7 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorBinaryStateDTO;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorDTO;
 import org.scada_lts.web.mvc.api.json.JsonPointEventDetector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,10 +103,20 @@ public class EventDetectorAPI {
         }
     }
 
-    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body){
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body) {
         PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
+
+        List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
+        if (!peds.isEmpty())  {
+            for (PointEventDetectorVO ped : peds) {
+                if (ped.getXid().equals(pointEventDetectorVO.getXid())) {
+                    return new JsonPointEventDetector(ped.getId(), ped.getXid(), ped.getAlias());
+                }
+            }
+        }
         dataPointVO.getEventDetectors().add(pointEventDetectorVO);
         dataPointService.saveEventDetectors(dataPointVO);
+        Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
         int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
         return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }

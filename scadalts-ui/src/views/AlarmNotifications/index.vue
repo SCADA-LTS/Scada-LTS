@@ -247,6 +247,15 @@ export default {
 							x % mailingListsLength === 0
 								? this.activeMailingList
 								: this.activeMailingList2;
+							
+						//Check if both are selected form non to active
+						if (change.mail[x].active !== change.mail.config
+							&& change.sms[x].active !== change.sms.config) {
+								if(change.mail[x].active && change.sms[x].active) {
+									this.prepareDualEventHandler(mlId, change.id)
+									continue;
+								}
+						}
 
 						//Check the Mail Communitation Channel
 						if (change.mail[x].active !== change.mail[x].config) {
@@ -322,6 +331,19 @@ export default {
 			}
 		},
 
+		async createDualEventHandler(mlId, dpId) {
+
+			let createData = {
+				datapointId: dpId,
+				mailingListId: mlId
+			};
+			try {
+				this.$store.dispatch('createDualEventHandler', createData);
+			} catch (err) {
+				this.isError = true;
+			}
+		},
+
 		prepareEventHandler(mlId, dpId, handlerType) {
 			let eventHandlerData = this.getExistingEventHandler(dpId, handlerType);
 			if (!!eventHandlerData) {
@@ -334,6 +356,32 @@ export default {
 				);
 			} else {
 				this.createEventHandler(mlId, dpId, handlerType);
+			}
+		},
+
+		prepareDualEventHandler(mlId, dpId) {
+			let mailEventHandlerData = this.getExistingEventHandler(dpId, 2);
+			let smsEventHandlerData = this.getExistingEventHandler(dpId, 5);
+			if (!!mailEventHandlerData) {
+				this.updateEventHandler(
+					mailEventHandlerData.ehId,
+					mlId,
+					dpId,
+					mailEventHandlerData.edId,
+					'add',
+				);
+			}
+			if (!!smsEventHandlerData) {
+				this.updateEventHandler(
+					smsEventHandlerData.ehId,
+					mlId,
+					dpId,
+					smsEventHandlerData.edId,
+					'add',
+				);
+			} 
+			if (!mailEventHandlerData && !smsEventHandlerData) {
+				this.createDualEventHandler(mlId, dpId);
 			}
 		},
 

@@ -160,6 +160,48 @@ const storeAlarmsNotifications = {
 			}
 			return { edId, ehId: eventHandler.id };
 		},
+
+		async createDualEventHandler({state, dispatch}, payload) {
+			let pedId = await dispatch('createPointEventDetector', payload.datapointId);
+			let edId = pedId.id;
+			let dpId = payload.datapointId;
+			let mlId = payload.mailingListId;
+
+			let requestDataMail = JSON.parse(JSON.stringify(state.ehTemplate));
+			let requestDataSms  = JSON.parse(JSON.stringify(state.ehTemplate));
+
+			requestDataMail.xid = 'EH_' + requestDataMail.xid + `_mail_${dpId}_${edId}_${mlId}`;
+			requestDataMail.alias = requestDataMail.alias + `_mail_${dpId}_${edId}_${mlId}`;
+
+			requestDataSms.xid = 'EH_' + requestDataSms.xid + `_sms_${dpId}_${edId}_${mlId}`;
+			requestDataSms.alias = requestDataSms.alias + `_sms_${dpId}_${edId}_${mlId}`;
+
+			let recipientList = [
+				{
+					recipientType: 1,
+					referenceId: mlId,
+					referenceAddress: null,
+				},
+			];
+
+			requestDataMail.activeRecipients = recipientList;
+			requestDataSms.activeRecipients = recipientList;
+			let eventHandler;
+
+			try {
+				eventHandler = await dispatch('requestPost', {
+					url: `/eventHandler/set/1/${dpId}/${edId}/2`,
+					data: requestDataMail,
+				});
+				eventHandler = await dispatch('requestPost', {
+					url: `/eventHandler/set/1/${dpId}/${edId}/5`,
+					data: requestDataSms,
+				});
+			} catch (error) {
+				throw 'POST request failed!';
+			}
+			return { edId, ehId: eventHandler.id };
+		}
 	},
 
 	getters: {},
