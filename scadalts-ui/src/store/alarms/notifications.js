@@ -161,8 +161,7 @@ const storeAlarmsNotifications = {
 			return { edId, ehId: eventHandler.id };
 		},
 
-		async createDoubleEventHandler({state, dispatch}, payload) {
-			console.log("Vuex::createDoubleEventHandler")
+		async createDualEventHandler({state, dispatch}, payload) {
 			let pedId = await dispatch('createPointEventDetector', payload.datapointId);
 			let edId = pedId.id;
 			let dpId = payload.datapointId;

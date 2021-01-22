@@ -252,7 +252,7 @@ export default {
 						if (change.mail[x].active !== change.mail.config
 							&& change.sms[x].active !== change.sms.config) {
 								if(change.mail[x].active && change.sms[x].active) {
-									this.prepareDoubleEventHandler(mlId, change.id)
+									this.prepareDualEventHandler(mlId, change.id)
 									continue;
 								}
 						}
@@ -331,14 +331,14 @@ export default {
 			}
 		},
 
-		async createDoubleEventHandler(mlId, dpId) {
+		async createDualEventHandler(mlId, dpId) {
 
 			let createData = {
 				datapointId: dpId,
 				mailingListId: mlId
 			};
 			try {
-				this.$store.dispatch('createDoubleEventHandler', createData);
+				this.$store.dispatch('createDualEventHandler', createData);
 			} catch (err) {
 				this.isError = true;
 			}
@@ -359,11 +359,9 @@ export default {
 			}
 		},
 
-		prepareDoubleEventHandler(mlId, dpId) {
+		prepareDualEventHandler(mlId, dpId) {
 			let mailEventHandlerData = this.getExistingEventHandler(dpId, 2);
 			let smsEventHandlerData = this.getExistingEventHandler(dpId, 5);
-			console.log("NEW::prepareDoubleEventHandler")
-			console.log(mailEventHandlerData, smsEventHandlerData)
 			if (!!mailEventHandlerData) {
 				this.updateEventHandler(
 					mailEventHandlerData.ehId,
@@ -383,7 +381,7 @@ export default {
 				);
 			} 
 			if (!mailEventHandlerData && !smsEventHandlerData) {
-				this.createDoubleEventHandler(mlId, dpId);
+				this.createDualEventHandler(mlId, dpId);
 			}
 		},
 
