@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -21,6 +22,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +71,7 @@ public class EventDetectorAPI {
     }
 
     @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
+    public synchronized ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
         LOG.info("/api/eventDetector/set/binary/state/" + datapointId);
         try {
             User user = Common.getUser(request);
@@ -88,7 +90,7 @@ public class EventDetectorAPI {
 
 
     @PostMapping(value = "/set/binary/state/xid/{datapointXid}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetectorXid(@PathVariable String datapointXid, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
+    public synchronized ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetectorXid(@PathVariable String datapointXid, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
         LOG.info("/api/eventDetector/set/binary/state/xid/" + datapointXid);
         try {
             User user = Common.getUser(request);
@@ -105,10 +107,20 @@ public class EventDetectorAPI {
         }
     }
 
-    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body){
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body) throws Exception {
         PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
+
+        List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
+        if (!peds.isEmpty())  {
+            for (PointEventDetectorVO ped : peds) {
+                if (ped.getXid().equals(pointEventDetectorVO.getXid())) {
+                    throw new Exception("Xid already exists");
+                }
+            }
+        }
         dataPointVO.getEventDetectors().add(pointEventDetectorVO);
         dataPointService.saveEventDetectors(dataPointVO);
+        Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
         int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
         return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }
