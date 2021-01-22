@@ -1,8 +1,11 @@
 package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
+import com.serotonin.mango.rt.event.type.DataPointEventType;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.mango.web.email.MangoTextContent;
 import com.serotonin.mango.web.email.UsedImagesDirective;
@@ -11,6 +14,7 @@ import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.template.TemplateException;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.utils.PlcAlarmsUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -65,6 +69,19 @@ public final class EmailContentUtils {
     }
 
     private static String getSubject(EventInstance evt, NotificationType notificationType, String alias, ResourceBundle bundle) {
+
+        if(evt.getEventType() instanceof DataPointEventType) {
+            DataPointVO dataPoint;
+            Map<String, Object> context = evt.getContext();
+            if(context != null && (dataPoint = (DataPointVO)context.get("point")) != null && dataPoint.getName() != null
+                && PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()) != AlarmLevels.NONE) {
+
+                LocalizableMessage subjectMsg = new LocalizableMessage("ftl.subject.pointname.timestamp",
+                        dataPoint.getName(), evt.getPrettyActiveTimestamp());
+                return subjectMsg.getLocalizedMessage(bundle);
+            }
+        }
+
         // Determine the subject to use.
         LocalizableMessage subjectMsg;
         LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
