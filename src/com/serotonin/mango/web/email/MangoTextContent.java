@@ -1,16 +1,28 @@
 package com.serotonin.mango.web.email;
 
+import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 public class MangoTextContent extends MangoEmailContent {
+
     public MangoTextContent(String templateName, Map<String, Object> model, ResourceBundle bundle, String defaultSubject, String encoding) throws TemplateException, IOException {
         super(templateName, model, bundle, defaultSubject, encoding);
-        REPLACEMENT_EMPTY_TAG.put(Pattern.compile("\r\n"),"");
+    }
+
+    @Override
+    public void setPlainTemplate(Template plainTpl, Object model) throws TemplateException, IOException {
+        if (plainTpl != null) {
+            try (StringWriter plain = new StringWriter()) {
+                plainTpl.process(model, plain);
+                this.plainContent = Pattern.compile("\r\n").matcher(plain.toString()).replaceAll("");
+            }
+        }
     }
 
     @Override
