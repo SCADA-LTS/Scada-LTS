@@ -11,11 +11,8 @@ const storeAlarmsNotifications = {
 	state: {
 		pedTemplate: {
 			xid: 'PED-PLC',
-			alias: 'PlcEventDetector',
+			alias: '',
 			alarmLevel: 1,
-			duration: 5,
-			durationType: 1,
-			binaryState: true,
 		},
 		ehTemplate: {
 			id: -1,
@@ -63,10 +60,9 @@ const storeAlarmsNotifications = {
 			let requestData = JSON.parse(JSON.stringify(state.pedTemplate));
 
 			requestData.xid = requestData.xid + `_${datapointId}`;
-			requestData.alias = requestData.alias + `_${datapointId}`;
 
 			return dispatch('requestPost', {
-				url: `/eventDetector/set/binary/state/${datapointId}`,
+				url: `/eventDetector/set/change/${datapointId}`,
 				data: requestData,
 			});
 		},
