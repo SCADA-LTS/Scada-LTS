@@ -10,6 +10,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorBinaryStateDTO;
+import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorChangeDTO;
+import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorDTO;
 import org.scada_lts.web.mvc.api.json.JsonPointEventDetector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,14 +68,14 @@ public class EventDetectorAPI {
         }
     }
 
-    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
-        LOG.info("/api/eventDetector/set/binary/state/" + datapointId);
+    private ResponseEntity<JsonPointEventDetector> createEventDetectorType(int datapointId, EventDetectorDTO body, HttpServletRequest request){
+        LOG.info("/api/eventDetector/set/.../" + datapointId);
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, eventDetectorBinaryStateDTO);
+                PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
+                JsonPointEventDetector jsonPointEventDetector = _createEventDetector(dataPointVO, pointEventDetectorVO);
                 return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -85,26 +87,17 @@ public class EventDetectorAPI {
     }
 
 
-    @PostMapping(value = "/set/binary/state/xid/{datapointXid}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetectorXid(@PathVariable String datapointXid, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
-        LOG.info("/api/eventDetector/set/binary/state/xid/" + datapointXid);
-        try {
-            User user = Common.getUser(request);
-            if (user != null) {
-                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointXid);
-                JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, eventDetectorBinaryStateDTO);
-                return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> _setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
     }
 
-    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, EventDetectorBinaryStateDTO body) {
-        PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
+    @PostMapping(value = "/set/change/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> _setChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    private JsonPointEventDetector _createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
 
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty())  {
