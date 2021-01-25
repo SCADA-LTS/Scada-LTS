@@ -69,12 +69,12 @@ public class EventDetectorAPI {
     }
 
     @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
+    public ResponseEntity<JsonPointEventDetector> createBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
         return createEventDetectorType(datapointId, body, request);
     }
 
     @PostMapping(value = "/set/change/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> setChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
+    public ResponseEntity<JsonPointEventDetector> createChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
         return createEventDetectorType(datapointId, body, request);
     }
 
@@ -99,8 +99,8 @@ public class EventDetectorAPI {
                 if (!peds.isEmpty())  {
                     peds.removeIf(ped -> ped.getId() == id);
                 }
-                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 dataPointService.deleteEventDetector(dataPointVO, id);
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 Map<String, String> response = new HashMap<>();
                 response.put("status", "deleted");
                 ObjectMapper m = new ObjectMapper();
@@ -169,8 +169,8 @@ public class EventDetectorAPI {
                     peds.removeIf(ped -> ped.getId() == id);
                 }
                 dataPointVO.getEventDetectors().add(pointEventDetectorVO);
-                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 dataPointService.saveEventDetectors(dataPointVO);
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

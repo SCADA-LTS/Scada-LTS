@@ -440,7 +440,7 @@ paths:
         - EventDetector API
       summary: 'Create Point Event Detector'
       description: 'Create a new Event Detector of type State for Binary Point by its ID'
-      operationId: 'eventDetectorSetBinaryStateEventDetector'
+      operationId: 'eventDetectorCreateBinaryStateEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
@@ -478,7 +478,7 @@ paths:
         - EventDetector API
       summary: 'Create Point Event Detector'
       description: 'Create a new Event Detector of type Change for Binary Point by its ID'
-      operationId: 'eventDetectorSetChangeEventDetector'
+      operationId: 'eventDetectorCreateChangeEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
