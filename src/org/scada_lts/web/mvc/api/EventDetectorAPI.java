@@ -68,6 +68,58 @@ public class EventDetectorAPI {
         }
     }
 
+    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/change/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> setChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/binary/state/{datapointId}/{id}", consumes = "application/json")
+    public ResponseEntity<String> updateBinaryStateEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
+        return updateEventDetectorType(datapointId, id, body, request);
+    }
+
+    @PutMapping(value = "/update/change/{datapointId}/{id}", consumes = "application/json")
+    public ResponseEntity<String> updateChangeEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
+        return updateEventDetectorType(datapointId, id, body, request);
+    }
+
+    @DeleteMapping(value = "/delete/{datapointId}/{id}", produces = "application/json")
+    public ResponseEntity<String> deleteEventDetectorById(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request) {
+        LOG.info("/api/eventDetector/delete/" + datapointId + "/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
+                List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
+                if (!peds.isEmpty())  {
+                    peds.removeIf(ped -> ped.getId() == id);
+                }
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+                dataPointService.deleteEventDetector(dataPointVO, id);
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "deleted");
+                ObjectMapper m = new ObjectMapper();
+                try {
+                    String json = m.writeValueAsString(response);
+                    return new ResponseEntity<>(json, HttpStatus.OK);
+                } catch (JsonProcessingException e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private ResponseEntity<JsonPointEventDetector> createEventDetectorType(int datapointId, EventDetectorDTO body, HttpServletRequest request){
         LOG.info("/api/eventDetector/set/.../" + datapointId);
         try {
@@ -84,17 +136,6 @@ public class EventDetectorAPI {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }
-
-
-    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> _setBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
-        return createEventDetectorType(datapointId, body, request);
-    }
-
-    @PostMapping(value = "/set/change/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> _setChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
-        return createEventDetectorType(datapointId, body, request);
     }
 
     private JsonPointEventDetector _createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
@@ -114,45 +155,23 @@ public class EventDetectorAPI {
         return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }
 
-    @PutMapping(value = "/update/binary/state/{datapointId}/{id}", consumes = "application/json")
-    public ResponseEntity<String> updateBinaryStateEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO eventDetectorBinaryStateDTO) {
-        LOG.info("/api/eventDetector/update/binary/state/" + datapointId + "/" + id);
+
+    private ResponseEntity<String> updateEventDetectorType(int datapointId, int id, EventDetectorDTO body, HttpServletRequest request) {
+        LOG.info("/api/eventDetector/update/.../" + datapointId + "/" + id);
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                PointEventDetectorVO pointEventDetectorVO = eventDetectorBinaryStateDTO.createPointEventDetectorVO(dataPointVO);
+                PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
                 pointEventDetectorVO.setId(id);
+                List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
+                if (!peds.isEmpty())  {
+                    peds.removeIf(ped -> ped.getId() == id);
+                }
                 dataPointVO.getEventDetectors().add(pointEventDetectorVO);
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 dataPointService.saveEventDetectors(dataPointVO);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @DeleteMapping(value = "/delete/{datapointId}/{id}", produces = "application/json")
-    public ResponseEntity<String> deleteEventHandlerById(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request) {
-        LOG.info("/api/eventDetector/delete/" + datapointId + "/" + id);
-        try {
-            User user = Common.getUser(request);
-            if (user != null) {
-                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                dataPointService.deleteEventDetector(dataPointVO, id);
-                Map<String, String> response = new HashMap<>();
-                response.put("status", "deleted");
-                ObjectMapper m = new ObjectMapper();
-                try {
-                    String json = m.writeValueAsString(response);
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
