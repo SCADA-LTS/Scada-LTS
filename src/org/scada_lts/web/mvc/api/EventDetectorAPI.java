@@ -127,7 +127,7 @@ public class EventDetectorAPI {
             if (user != null) {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
-                JsonPointEventDetector jsonPointEventDetector = _createEventDetector(dataPointVO, pointEventDetectorVO);
+                JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, pointEventDetectorVO);
                 return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -138,7 +138,7 @@ public class EventDetectorAPI {
         }
     }
 
-    private JsonPointEventDetector _createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
 
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty())  {
