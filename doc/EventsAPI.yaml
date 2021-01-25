@@ -440,7 +440,7 @@ paths:
         - EventDetector API
       summary: 'Create Point Event Detector'
       description: 'Create a new Event Detector of type State for Binary Point by its ID'
-      operationId: 'eventDetectorSetBinaryStateEventDetector'
+      operationId: 'eventDetectorCreateBinaryStateEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
@@ -472,21 +472,21 @@ paths:
           description: "Post successful"
           headers: { }
 
-  /eventDetector/set/binary/state/xid/{datapointXid}:
+  /eventDetector/set/change/{datapointId}:
     post:
       tags:
         - EventDetector API
       summary: 'Create Point Event Detector'
-      description: 'Create a new Event Detector of type State for Binary Point by its Export ID'
-      operationId: 'eventDetectorSetBinaryStateEventDetectorXid'
+      description: 'Create a new Event Detector of type Change for Binary Point by its ID'
+      operationId: 'eventDetectorCreateChangeEventDetector'
       parameters:
-        - name: 'datapointXid'
+        - name: 'datapointId'
           in: 'path'
           required: true
           schema:
-            type: 'string'
+            type: 'number'
       requestBody:
-        description: Point Event Detector with Binary State properties
+        description: Point Event Detector with Change properties
         required: true
         content:
           application/json:
@@ -499,12 +499,6 @@ paths:
                   type: string
                 alarmLevel:
                   type: number
-                duration:
-                  type: number
-                durationType:
-                  type: number
-                binaryState:
-                  type: boolean
       responses:
         '200':
           description: "Post successful"
@@ -548,6 +542,43 @@ paths:
                   type: number
                 binaryState:
                   type: boolean
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/change/{datapointId}/{id}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Change Event Detector'
+      description: 'Update an existing Change Event Detector of given ID for Binary Point'
+      operationId: 'eventDetectorUpdateChangeEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Change properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
       responses:
         '200':
           description: "Put successful"
