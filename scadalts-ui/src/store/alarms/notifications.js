@@ -100,6 +100,15 @@ const storeAlarmsNotifications = {
 		async updateEventHandler({ dispatch }, payload) {
 			let eventHandler = await dispatch('getPlcEventHandlerById', payload.ehId);
 
+			if(eventHandler.handlerType !== payload.handlerType) {
+				let createData = {
+					datapointId: payload.typeRef1,
+					mailingListId: payload.activeMailingList,
+					handlerType: payload.handlerType,
+				};
+				return await dispatch('createEventHandler', createData);
+			}
+
 			if (payload.method === 'add') {
 				eventHandler = await dispatch('addMailingListToEventHandler', {
 					eventHandler: eventHandler,

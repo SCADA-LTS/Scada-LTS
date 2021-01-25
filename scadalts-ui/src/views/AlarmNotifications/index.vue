@@ -249,8 +249,8 @@ export default {
 								: this.activeMailingList2;
 							
 						//Check if both are selected form non to active
-						if (change.mail[x].active !== change.mail.config
-							&& change.sms[x].active !== change.sms.config) {
+						if (change.mail[x].active !== change.mail[x].config
+							&& change.sms[x].active !== change.sms[x].config) {
 								if(change.mail[x].active && change.sms[x].active) {
 									this.prepareDualEventHandler(mlId, change.id)
 									continue;
@@ -266,6 +266,7 @@ export default {
 									change.id,
 									change.mail[x].handler.edId,
 									'delete',
+									2,
 								);
 							} else {
 								this.prepareEventHandler(mlId, change.id, 2);
@@ -281,6 +282,7 @@ export default {
 									change.id,
 									change.sms[x].handler.edId,
 									'delete',
+									5,
 								);
 							} else {
 								this.prepareEventHandler(mlId, change.id, 5);
@@ -303,13 +305,14 @@ export default {
 			}
 		},
 
-		async updateEventHandler(ehId, mlId, dpId, edId, method) {
+		async updateEventHandler(ehId, mlId, dpId, edId, method, type) {
 			let updateData = {
 				ehId: ehId,
 				activeMailingList: mlId,
 				typeRef1: dpId,
 				typeRef2: edId,
 				method: method,
+				handlerType: type
 			};
 			if (method === 'add') {
 				await this.$store.dispatch('updateEventHandler', updateData);
@@ -353,6 +356,7 @@ export default {
 					dpId,
 					eventHandlerData.edId,
 					'add',
+					handlerType,
 				);
 			} else {
 				this.createEventHandler(mlId, dpId, handlerType);
@@ -369,6 +373,7 @@ export default {
 					dpId,
 					mailEventHandlerData.edId,
 					'add',
+					2,
 				);
 			}
 			if (!!smsEventHandlerData) {
@@ -378,6 +383,7 @@ export default {
 					dpId,
 					smsEventHandlerData.edId,
 					'add',
+					5,
 				);
 			} 
 			if (!mailEventHandlerData && !smsEventHandlerData) {
