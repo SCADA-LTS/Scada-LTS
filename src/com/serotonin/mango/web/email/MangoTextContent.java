@@ -20,7 +20,8 @@ public class MangoTextContent extends MangoEmailContent {
         if (plainTpl != null) {
             try (StringWriter plain = new StringWriter()) {
                 plainTpl.process(model, plain);
-                this.plainContent = Pattern.compile("\r\n").matcher(plain.toString()).replaceAll("");
+                String text = Pattern.compile("\r\n").matcher(plain.toString()).replaceAll("");
+                this.plainContent = Pattern.compile("\n").matcher(text).replaceAll("");
             }
         }
     }
