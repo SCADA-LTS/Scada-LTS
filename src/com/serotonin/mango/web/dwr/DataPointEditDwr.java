@@ -29,6 +29,8 @@ import com.serotonin.mango.view.chart.ImageChartRenderer;
 import com.serotonin.mango.view.chart.ImageFlipbookRenderer;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.view.chart.TableChartRenderer;
+import com.serotonin.mango.view.event.EventRenderer;
+import com.serotonin.mango.view.event.EventTextRenderer;
 import com.serotonin.mango.view.text.AnalogRenderer;
 import com.serotonin.mango.view.text.BinaryTextRenderer;
 import com.serotonin.mango.view.text.MultistateRenderer;
@@ -52,6 +54,18 @@ public class DataPointEditDwr extends BaseDwr {
         DataPointVO dataPoint = user.getEditPoint();
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         return dataPoint;
+    }
+
+    //
+    // Set event text renderer
+    //
+
+    public void setEventTextRenderer(String text){
+        setEventRenderer(new EventTextRenderer(text));
+    }
+
+    private void setEventRenderer(EventRenderer renderer) {
+        getDataPoint().setEventRenderer(renderer);
     }
 
     //

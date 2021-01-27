@@ -72,6 +72,7 @@
         <td valign="top">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
         </td>
@@ -134,7 +135,7 @@
 
                        // Interval logging period
 
-                       jQuery("[name='intervalLoggingPeriod'").val(prop.intervalLoggingPeriod);
+                       jQuery("[name='intervalLoggingPeriod']").val(prop.intervalLoggingPeriod);
 
                        // Interval logging period type
                        jQuery("[name='intervalLoggingPeriodType']").val(prop.intervalLoggingPeriodType);
@@ -170,6 +171,10 @@
 
                       showAndSetLoginType(properties);
 
+                      if (properties.def.name == "eventTextRenderer") {
+                           jQuery("#eventTextRendererText").val(properties.eventTextRenderer.text);
+                      }
+
                       var currentTextRenderer = $("textRendererSelect").value;
 
                       dojo.html.hide(
@@ -183,18 +188,18 @@
                       dojo.html.show(
                         $(currentTextRenderer)
                       );
+                       if (properties.def.name == "textRendererBinary") {
+                          jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
+                          dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
+                          jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
+                          jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
+                          jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
+                          dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
 
-                      if (properties.def.name == "textRendererBinary") {
-                        jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
-                        dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
-                        jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
-                        jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
-                        jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
-                        dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
                       }
+                       if (properties.def.name == "textRendererPlain") {
+                          jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
 
-                      if (properties.def.name == "textRendererPlain") {
-                        jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
                       }
 
                       if (properties.def.name == "textRendererMultistate") {
@@ -551,6 +556,14 @@
                       + "<li>low:" + properties.discardLowLimit + "</li>"
                       + "<li>high:" + properties.discardHighLimit + "</li></ul></li>"
 
+                      let eventRenderer = "";
+
+                      if (properties.def.name == "eventTextRenderer") {
+                          eventRenderer = ""
+                              + "<ul class='scada-swal-ul2'>"
+                              + "<li>Text: " + properties.eventTextRenderer.text + "</li></ul></li>";
+                      }
+
                       let textRenderer = "";
 
                       if (properties.def.name == "textRendererBinary") {
@@ -656,6 +669,7 @@
                         + htmlLogginProperties
                         + "<li>Purge After: " + properties.purgePeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
                         + "<li>Default cache size: " + properties.defaultCacheSize + "</li>"
+                        + eventRenderer
                         + textRenderer
                         + chartRenderer
                         + "</ul></div>";

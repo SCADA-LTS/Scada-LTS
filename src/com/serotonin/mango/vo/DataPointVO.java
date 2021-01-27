@@ -33,6 +33,8 @@ import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.chart.BaseChartRenderer;
 import com.serotonin.mango.view.chart.ChartRenderer;
+import com.serotonin.mango.view.event.BaseEventTextRenderer;
+import com.serotonin.mango.view.event.EventRenderer;
 import com.serotonin.mango.view.text.BaseTextRenderer;
 import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.view.text.PlainRenderer;
@@ -146,6 +148,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int purgeType;
     @JsonRemoteProperty
     private int purgePeriod;
+    @JsonRemoteProperty(typeFactory = BaseEventTextRenderer.Factory.class)
+    private EventRenderer eventRenderer;
     @JsonRemoteProperty(typeFactory = BaseTextRenderer.Factory.class)
     private TextRenderer textRenderer;
     @JsonRemoteProperty(typeFactory = BaseChartRenderer.Factory.class)
@@ -431,6 +435,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.tolerance = tolerance;
     }
 
+    public EventRenderer getEventRenderer() {
+        return eventRenderer;
+    }
+
+    public void setEventRenderer(EventRenderer eventRenderer) {
+        this.eventRenderer = eventRenderer;
+    }
+
     public TextRenderer getTextRenderer() {
         return textRenderer;
     }
@@ -551,12 +563,13 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 + ", loggingType=" + loggingType + ", intervalLoggingPeriodType=" + intervalLoggingPeriodType
                 + ", intervalLoggingPeriod=" + intervalLoggingPeriod + ", intervalLoggingType=" + intervalLoggingType
                 + ", tolerance=" + tolerance + ", purgeType=" + purgeType + ", purgePeriod=" + purgePeriod
-                + ", textRenderer=" + textRenderer + ", chartRenderer=" + chartRenderer + ", eventDetectors="
-                + eventDetectors + ", comments=" + comments + ", defaultCacheSize=" + defaultCacheSize
-                + ", discardExtremeValues=" + discardExtremeValues + ", discardLowLimit=" + discardLowLimit
-                + ", discardHighLimit=" + discardHighLimit + ", engineeringUnits=" + engineeringUnits
-                + ", chartColour=" + chartColour + ", pointLocator=" + pointLocator + ", dataSourceTypeId="
-                + dataSourceTypeId + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
+                + ", eventRenderer=" + eventRenderer + ", textRenderer=" + textRenderer
+                + ", chartRenderer=" + chartRenderer + ", eventDetectors=" + eventDetectors + ", comments=" + comments
+                + ", defaultCacheSize=" + defaultCacheSize + ", discardExtremeValues=" + discardExtremeValues
+                + ", discardLowLimit=" + discardLowLimit + ", discardHighLimit=" + discardHighLimit
+                + ", engineeringUnits=" + engineeringUnits + ", chartColour=" + chartColour
+                + ", pointLocator=" + pointLocator + ", dataSourceTypeId=" + dataSourceTypeId
+                + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
                 + ", lastValue=" + lastValue + ", settable=" + settable + "]";
     }
 
@@ -617,13 +630,17 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         // Check chart renderer type
         if (chartRenderer != null && !chartRenderer.getDef().supports(pointLocator.getDataTypeId()))
             response.addGenericMessage("validate.chart.incompatible");
+
+        // Check event renderer type
+        if (eventRenderer != null && !eventRenderer.getDef().supports(pointLocator.getDataTypeId()))
+            response.addGenericMessage("validate.event.incompatible");
     }
 
     //
     //
     // Serialization
     //
-    private static final int version = 8;
+    private static final int version = 9;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -638,6 +655,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         out.writeDouble(tolerance);
         out.writeInt(purgeType);
         out.writeInt(purgePeriod);
+        out.writeObject(eventRenderer);
         out.writeObject(textRenderer);
         out.writeObject(chartRenderer);
         out.writeObject(pointLocator);
@@ -831,6 +849,29 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             tolerance = in.readDouble();
             purgeType = in.readInt();
             purgePeriod = in.readInt();
+            textRenderer = (TextRenderer) in.readObject();
+            chartRenderer = (ChartRenderer) in.readObject();
+            pointLocator = (PointLocatorVO) in.readObject();
+            defaultCacheSize = in.readInt();
+            discardExtremeValues = in.readBoolean();
+            discardLowLimit = in.readDouble();
+            discardHighLimit = in.readDouble();
+            engineeringUnits = in.readInt();
+            chartColour = SerializationHelper.readSafeUTF(in);
+        }
+        else if (ver == 9) {
+            name = SerializationHelper.readSafeUTF(in);
+            deviceName = SerializationHelper.readSafeUTF(in);
+            enabled = in.readBoolean();
+            pointFolderId = in.readInt();
+            loggingType = in.readInt();
+            intervalLoggingPeriodType = in.readInt();
+            intervalLoggingPeriod = in.readInt();
+            intervalLoggingType = in.readInt();
+            tolerance = in.readDouble();
+            purgeType = in.readInt();
+            purgePeriod = in.readInt();
+            eventRenderer = (EventRenderer) in.readObject();
             textRenderer = (TextRenderer) in.readObject();
             chartRenderer = (ChartRenderer) in.readObject();
             pointLocator = (PointLocatorVO) in.readObject();
