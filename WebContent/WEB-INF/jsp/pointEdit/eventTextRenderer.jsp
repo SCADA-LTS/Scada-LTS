@@ -27,7 +27,7 @@
     <tbody id="eventTextRenderer">
     <tr>
       <td class="formLabelRequired"><fmt:message key="pointEdit.text.text"/></td>
-      <td class="formField"><input id="eventTextRendererText" type="text"/></td>
+      <td class="formField"><input class="formLong" id="eventTextRendererText" type="text"/></td>
     </tr>
     </tbody>
   </table>
