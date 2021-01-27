@@ -90,6 +90,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/EventHandlerVO'
           headers: {}
+  /eventHandler/get/plc/datapoint/{id}:
+    get:
+      tags:
+        - EventHandler API
+      summary: 'Get Event Handler by DataPoint ID'
+      description: 'Get Event Handler by Data point ID'
+      operationId: 'eventHandlerGetByDataPointId'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      responses:
+        '200':
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventHandlerPlcDTO'
+          headers: {}
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/1:
     post:
       tags:

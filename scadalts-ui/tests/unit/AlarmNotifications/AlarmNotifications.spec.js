@@ -83,8 +83,6 @@ describe('PLC Alarms Notification Tests', () => {
 		expect(wrapper.name()).to.equal('AlarmNotifications');
 		expect(wrapper.vm.mailingLists[0].id).to.equal(1);
 		expect(wrapper.vm.mailingLists[0].name).to.equal('TestUnit');
-		expect(wrapper.vm.eventHandlers[0].id).to.equal(11);
-		expect(wrapper.vm.eventHandlers[0].alias).to.equal('UnitTest_EventHandler');
 	});
 
 	it('Load PLC DataSources', () => {

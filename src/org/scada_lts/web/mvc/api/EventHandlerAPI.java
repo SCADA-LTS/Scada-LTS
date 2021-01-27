@@ -94,6 +94,22 @@ public class EventHandlerAPI {
         }
     }
 
+    @GetMapping(value = "/get/plc/datapoint/{id}", produces = "application/json")
+    public ResponseEntity<List<EventHandlerPlcDTO>> getPlcEventHandlerByDatapointId(@PathVariable("id") int id, HttpServletRequest request) {
+        LOG.info("/api/eventHandler/get/plc/datapoint/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(eventHandlerService.getEventHandlersByDatapointId(id), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private ResponseEntity<EventHandlerVO> createEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler, HttpServletRequest request) {
         LOG.info("/api/eventHandler/set/...");
         try {
