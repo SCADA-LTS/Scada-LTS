@@ -132,6 +132,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private String xid;
     @JsonRemoteProperty
     private String name;
+    @JsonRemoteProperty
+    private String description;
     private int dataSourceId;
     @JsonRemoteProperty
     private String deviceName;
@@ -368,6 +370,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends PointLocatorVO> T getPointLocator() {
         return (T) pointLocator;
@@ -558,9 +568,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     @Override
     public String toString() {
-        return "DataPointVO [id=" + id + ", xid=" + xid + ", name=" + name + ", dataSourceId=" + dataSourceId
-                + ", deviceName=" + deviceName + ", enabled=" + enabled + ", pointFolderId=" + pointFolderId
-                + ", loggingType=" + loggingType + ", intervalLoggingPeriodType=" + intervalLoggingPeriodType
+        return "DataPointVO [id=" + id + ", xid=" + xid + ", name=" + name + ", description=" + description
+                + ", dataSourceId=" + dataSourceId + ", deviceName=" + deviceName + ", enabled=" + enabled
+                + ", pointFolderId=" + pointFolderId + ", loggingType=" + loggingType
+                + ", intervalLoggingPeriodType=" + intervalLoggingPeriodType
                 + ", intervalLoggingPeriod=" + intervalLoggingPeriod + ", intervalLoggingType=" + intervalLoggingType
                 + ", tolerance=" + tolerance + ", purgeType=" + purgeType + ", purgePeriod=" + purgePeriod
                 + ", eventRenderer=" + eventRenderer + ", textRenderer=" + textRenderer
@@ -645,6 +656,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
         SerializationHelper.writeSafeUTF(out, name);
+        SerializationHelper.writeSafeUTF(out, description);
         SerializationHelper.writeSafeUTF(out, deviceName);
         out.writeBoolean(enabled);
         out.writeInt(pointFolderId);
@@ -861,6 +873,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         }
         else if (ver == 9) {
             name = SerializationHelper.readSafeUTF(in);
+            description = SerializationHelper.readSafeUTF(in);
             deviceName = SerializationHelper.readSafeUTF(in);
             enabled = in.readBoolean();
             pointFolderId = in.readInt();
