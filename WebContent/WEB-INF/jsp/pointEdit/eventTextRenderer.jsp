@@ -18,32 +18,32 @@
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <div class="borderDiv marB marR">
-    <table>
-        <tr><td colspan="3">
-            <span class="smallTitle"><fmt:message key="pointEdit.event.text.props"/></span>
-            <tag:help id="eventTextRenderers"/>
-        </td></tr>
+  <table>
+    <tr><td colspan="3">
+      <span class="smallTitle"><fmt:message key="pointEdit.event.text.props"/></span>
+      <tag:help id="eventTextRenderers"/>
+    </td></tr>
 
-        <tbody id="eventTextRenderer" style="display:none;">
-        <tr>
-            <td class="formLabel"><fmt:message key="pointEdit.text.text"/></td>
-            <td class="formField"><input id="eventTextRendererText" type="text"/></td>
-        </tr>
-        </tbody>
-    </table>
+    <tbody id="eventTextRenderer">
+    <tr>
+      <td class="formLabelRequired"><fmt:message key="pointEdit.text.text"/></td>
+      <td class="formField"><input id="eventTextRendererText" type="text"/></td>
+    </tr>
+    </tbody>
+  </table>
 </div>
 
 <script type="text/javascript">
-    function EventRendererEditor() {
+  function EventRendererEditor() {
 
-        this.init = function() {
-            $set("eventTextRendererText", "${form.eventTextRenderer.text}");
-        };
+    this.init = function() {
+      $set("eventTextRendererText", "${form.eventRenderer.text}");
+    };
 
-        this.save = function(callback) {
-            DataPointEditDwr.setEventTextRenderer($get("eventTextRendererText"), callback);
-        };
-    }
-    var eventRendererEditor = new EventRendererEditor();
-    dojo.addOnLoad(eventRendererEditor, "init");
+    this.save = function(callback) {
+      DataPointEditDwr.setEventTextRenderer($get("eventTextRendererText"), callback);
+    };
+  }
+  var eventRendererEditor = new EventRendererEditor();
+  dojo.addOnLoad(eventRendererEditor, "init");
 </script>

@@ -172,7 +172,7 @@
                       showAndSetLoginType(properties);
 
                       if (properties.def.name == "eventTextRenderer") {
-                           jQuery("#eventTextRendererText").val(properties.eventTextRenderer.text);
+                           jQuery("#eventTextRendererText").val(properties.eventRenderer.text);
                       }
 
                       var currentTextRenderer = $("textRendererSelect").value;
@@ -561,7 +561,7 @@
                       if (properties.def.name == "eventTextRenderer") {
                           eventRenderer = ""
                               + "<ul class='scada-swal-ul2'>"
-                              + "<li>Text: " + properties.eventTextRenderer.text + "</li></ul></li>";
+                              + "<li>Text: " + properties.eventRenderer.text + "</li></ul></li>";
                       }
 
                       let textRenderer = "";

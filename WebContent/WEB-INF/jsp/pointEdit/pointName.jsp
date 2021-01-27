@@ -24,8 +24,11 @@
 <script type="text/javascript">
   function doSave(taskName) {
       $("taskName").name = taskName;
-      textRendererEditor.save(doSaveChartRenderer);
+      textRendererEditor.save(doSaveEventRenderer);
       return false;
+  }
+  function doSaveEventRenderer() {
+    eventRendererEditor.save(doSaveChartRenderer)
   }
   function doSaveChartRenderer() {
       chartRendererEditor.save(doSavePointEventDetectors);

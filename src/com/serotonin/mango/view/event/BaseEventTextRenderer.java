@@ -47,7 +47,7 @@ abstract public class BaseEventTextRenderer implements EventRenderer, JsonSerial
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 1;
+    private static final int version = 9;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
