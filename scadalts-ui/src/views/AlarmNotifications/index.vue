@@ -381,7 +381,12 @@ export default {
 						change.mail,
 						this.TYPE_MAIL,
 					);
-					this.updateHandler(change.id, change.configuration, change.sms, this.TYPE_SMS);
+					this.updateHandler(
+						change.id, 
+						change.configuration, 
+						change.sms, 
+						this.TYPE_SMS
+					);
 				});
 
 				this.modified = [];

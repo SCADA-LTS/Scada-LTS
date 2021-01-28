@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Controller for EventDetector
@@ -34,6 +32,7 @@ import java.util.Map;
 public class EventDetectorAPI {
 
     private static final Log LOG = LogFactory.getLog(EventDetectorAPI.class);
+    private List<String> eventDetectorsList = Collections.synchronizedList(new ArrayList<>());
 
     @Resource
     private DataPointService dataPointService;
@@ -128,6 +127,7 @@ public class EventDetectorAPI {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
                 JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, pointEventDetectorVO);
+                eventDetectorsList.remove(body.getXid());
                 return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -150,7 +150,12 @@ public class EventDetectorAPI {
         }
         dataPointVO.getEventDetectors().add(pointEventDetectorVO);
         dataPointService.saveEventDetectors(dataPointVO);
-        Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+        synchronized (eventDetectorsList) {
+            if(!eventDetectorsList.contains(pointEventDetectorVO.getXid())) {
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+                eventDetectorsList.add(pointEventDetectorVO.getXid());
+            }
+        }
         int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
         return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }
