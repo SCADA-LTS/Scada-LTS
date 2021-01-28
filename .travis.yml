@@ -10,8 +10,8 @@ before_install:
 before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
-- nvm install 12
-- nvm use node
+- nvm install 12.19.0
+- nvm use 12.19.0
 - npm -v
 - npx -v
 - node -v
@@ -55,8 +55,8 @@ after_script:
 - ls -l
 - mv ./apache-tomcat-7.0.85/* ./
 - rm -rf ./apache-tomcat-7.0.85
-- cp ../../ScadaBR.war ./webapps
-- ls -l ./webapps/ScadaBR.war
+- cp ../../build/libs/Scada-LTS.war ./webapps
+- ls -l ./webapps/Scada-LTS.war
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
 - cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
 - ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
