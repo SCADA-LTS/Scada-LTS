@@ -285,10 +285,10 @@ export default {
 		async updateHandler(id, config, recipientLists, type) {
 			let eventHandler = this.getEventHandler(config, type);
 			if (!!eventHandler) {
-				let requestChange = false;
+				let requestChange = [];
 				recipientLists.forEach((m) => {
 					if (m.config !== m.active) {
-						requestChange = true;
+						requestChange.push(m.mlId);
 						if (m.active) {
 							// Add Mailing List to recipients list
 							eventHandler.recipients.push({
@@ -305,7 +305,7 @@ export default {
 					}
 				});
 
-				if (requestChange) {
+				if (requestChange.length !== 0) {
 					if (eventHandler.recipients.length === 0) {
 						await this.$store.dispatch('deleteEventHandler', eventHandler.id);
 						config = config.filter((e) => {
@@ -319,10 +319,19 @@ export default {
 						}
 						this.saveDatapoint(id, config);
 					} else {
-						await this.$store.dispatch('updateEventHandlerV2', eventHandler);
-						const index = config.findIndex((x) => x.id === id);
-						config[index] = eventHandler;
-						this.saveDatapoint(id, config);
+						let resp = await this.$store.dispatch('updateEventHandlerV2', eventHandler);
+						if (!!resp) {
+							let index = config.findIndex((x) => x.id === id);
+							config[index] = eventHandler;
+							this.saveDatapoint(id, config);
+						} else {
+							let resp1 = await this.$store.dispatch(
+								'createEventHandler',
+								this.createEventHandlerData(id, requestChange, type, false),
+							);
+							config.push(resp1);
+							this.saveDatapoint(id, config);
+						}
 					}
 				}
 			} else {
@@ -334,13 +343,15 @@ export default {
 				});
 
 				if (creationRequests.length !== 0) {
-					let createData = {
-						datapointId: id,
-						mailingListId: creationRequests,
-						handlerType: type,
-						dual: creationRequests.length === 2,
-					};
-					let resp = await this.$store.dispatch('createEventHandler', createData);
+					let resp = await this.$store.dispatch(
+						'createEventHandler',
+						this.createEventHandlerData(
+							id,
+							creationRequests,
+							type,
+							creationRequests.length === 2,
+						),
+					);
 					config.push(resp);
 					this.saveDatapoint(id, config);
 				}
@@ -381,12 +392,7 @@ export default {
 						change.mail,
 						this.TYPE_MAIL,
 					);
-					this.updateHandler(
-						change.id, 
-						change.configuration, 
-						change.sms, 
-						this.TYPE_SMS
-					);
+					this.updateHandler(change.id, change.configuration, change.sms, this.TYPE_SMS);
 				});
 
 				this.modified = [];
@@ -425,6 +431,19 @@ export default {
 					});
 				}
 			});
+		},
+
+		/**
+		 * Create Event Handler payload object
+		 * @param {number} datapointId - DataPoint ID number
+		 * @param {number} mailingListId - Mailing List ID to be attached
+		 * @param {number} handlerType - Type of EventHandler (SMS or Mail)
+		 * @param {boolean} dual - Are two mailing list attached at once
+		 *
+		 * Create payload data for Vuex method.
+		 */
+		createEventHandlerData(datapointId, mailingListId, handlerType, dual) {
+			return { datapointId, mailingListId, handlerType, dual };
 		},
 	},
 };

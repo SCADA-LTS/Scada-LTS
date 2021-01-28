@@ -52,12 +52,15 @@ const storeAlarmsNotifications = {
 
 		async updateEventHandlerV2({ dispatch }, payload) {
 			let eventHandler = await dispatch('_getPlcEventHandlerById', payload.id);
-			eventHandler.activeRecipients = payload.recipients;
-
-			return dispatch('requestPut', {
-				url: `/eventHandler/update/1/${payload.eventTypeRef1}/${payload.eventTypeRef2}`,
-				data: eventHandler,
-			});
+			if (!!eventHandler) {
+				eventHandler.activeRecipients = payload.recipients;
+				return dispatch('requestPut', {
+					url: `/eventHandler/update/1/${payload.eventTypeRef1}/${payload.eventTypeRef2}`,
+					data: eventHandler,
+				});
+			} else {
+				return null;
+			}
 		},
 
 		//Mailing Lists
@@ -104,14 +107,11 @@ const storeAlarmsNotifications = {
 				},
 			];
 			if (payload.dual) {
-				console.log('CREATE-DUAL');
 				recipientList.push({
 					recipientType: 1,
 					referenceId: payload.mailingListId[1],
 					referenceAddress: null,
 				});
-			} else {
-				console.log('CREATE-SINGLE');
 			}
 
 			requestData.activeRecipients = recipientList;
