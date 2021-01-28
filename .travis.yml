@@ -15,6 +15,7 @@ before_script:
 - npm -v
 - npx -v
 - node -v
+- npm i -g --force graceful-fs
 - env
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
