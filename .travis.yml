@@ -12,6 +12,7 @@ before_script:
 - nvm ls
 - nvm install 12.19.0
 - nvm use 12.19.0
+- npm cache clean --force
 - npm -v
 - npx -v
 - node -v
