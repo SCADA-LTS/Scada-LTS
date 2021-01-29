@@ -13,6 +13,8 @@ before_script:
 - nvm install 12.19.0
 - nvm use 12.19.0
 - npm cache clean --force
+- rm -r ./scadalts-ui/node_modules
+- rm ./scadalts-ui/package-lock.json
 - npm -v
 - npx -v
 - node -v
