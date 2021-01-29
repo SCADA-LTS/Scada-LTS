@@ -1,25 +1,26 @@
-dist: xenial
+dist: bionic
 sudo: required
 before_install:
 - sudo apt-get update
-- sudo apt-get install tomcat7
-- sudo apt-get install ant-optional
+- sudo apt-get tomcat7
 - sudo apt-get install gradle
 - gradle assemble
 - gradle check
 before_script:
+- export MY_SRC=`pwd`
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
-- nvm ls
-- nvm install 12.19.0
-- nvm use 12.19.0
-- npm cache clean --force
-- sudo rm -rf ./scadalts-ui/node_modules
-- sudo rm -f ./scadalts-ui/package-lock.json
+- cd /opt
+- sudo wget https://nodejs.org/dist/latest-v12.x/node-v12.20.1-linux-x64.tar.gz .
+- sudo tar -xzvf node-v12.20.1-linux-x64.tar.gz
+- sudo ln -s node-v12.20.1-linux-x64 node
+- chown -r users:users /opt/node
+- sudo export NODE_HOME=/opt/node
+- sudo export PATH=$NODE_HOME:$NODE_HOME/bin:$PATH
 - npm -v
 - npx -v
 - node -v
-- npm i -g --force graceful-fs
 - env
+- cd $MY_SRC
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
