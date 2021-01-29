@@ -48,16 +48,15 @@ public class EmailWorkItem implements WorkItem {
         return WorkItem.PRIORITY_MEDIUM;
     }
 
-    public static void queueEmail(String toAddr, MangoEmailContent content) throws AddressException {
+    public static void queueEmail(String toAddr, MangoEmailContent content) {
         queueEmail(new String[] { toAddr }, content);
     }
 
-    public static void queueEmail(String[] toAddrs, MangoEmailContent content) throws AddressException {
+    public static void queueEmail(String[] toAddrs, MangoEmailContent content) {
         queueEmail(toAddrs, content, null);
     }
 
-    public static void queueEmail(String[] toAddrs, MangoEmailContent content, Runnable[] postSendExecution)
-            throws AddressException {
+    public static void queueEmail(String[] toAddrs, MangoEmailContent content, Runnable[] postSendExecution) {
         queueEmail(toAddrs, content.getSubject(), content, postSendExecution);
     }
 
