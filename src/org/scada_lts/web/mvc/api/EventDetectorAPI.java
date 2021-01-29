@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Controller for EventDetector
@@ -32,7 +34,7 @@ import java.util.*;
 public class EventDetectorAPI {
 
     private static final Log LOG = LogFactory.getLog(EventDetectorAPI.class);
-    private List<String> eventDetectorsList = Collections.synchronizedList(new ArrayList<>());
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
     @Resource
     private DataPointService dataPointService;
@@ -127,7 +129,6 @@ public class EventDetectorAPI {
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
                 JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, pointEventDetectorVO);
-                eventDetectorsList.remove(body.getXid());
                 return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -150,12 +151,15 @@ public class EventDetectorAPI {
         }
         dataPointVO.getEventDetectors().add(pointEventDetectorVO);
         dataPointService.saveEventDetectors(dataPointVO);
-        synchronized (eventDetectorsList) {
-            if(!eventDetectorsList.contains(pointEventDetectorVO.getXid())) {
+        if(atomicInteger.getAndDecrement() == 0) {
+            try {
                 Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
-                eventDetectorsList.add(pointEventDetectorVO.getXid());
+            } finally {
+                atomicInteger.set(0);
             }
         }
+
+
         int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
         return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }
