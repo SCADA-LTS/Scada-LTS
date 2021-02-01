@@ -102,6 +102,14 @@
 <script>
 import CreationSettingsDialog from './CreationSettings';
 
+/**
+ * Alarm notification View-component.
+ * Render page that main purpose is management of PLC notifications.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.1
+ *
+ */
 export default {
 	name: 'AlarmNotifications',
 
@@ -115,20 +123,19 @@ export default {
 			activeMailingList: undefined,
 			activeMailingList2: undefined,
 			mailingLists: undefined,
-			eventHandlers: undefined,
-			operationQueue: [],
 			modified: [],
 			isError: false,
 			snackbar: {
 				visible: false,
 				text: '',
 			},
+			TYPE_MAIL: 2,
+			TYPE_SMS: 5,
 		};
 	},
 
 	mounted() {
 		this.initMailingLists();
-		this.initEventHandlers();
 	},
 
 	methods: {
@@ -144,72 +151,96 @@ export default {
 			this.mailingLists = await this.$store.dispatch('getAllMailingLists');
 		},
 
-		async initEventHandlers() {
-			this.eventHandlers = await this.$store.dispatch('getPlcEventHandlers');
-		},
-
 		async fetchDataPoints(item) {
 			let dp = await this.$store.dispatch('getPlcDataPoints', item.id);
-			dp.forEach((e) => {
-				let i = { id: e.id, name: e.name, mail: [], sms: [] };
-				i.mail.push(this.addConfiguration(e.id, this.activeMailingList, 'mail'));
-				i.mail.push(this.addConfiguration(e.id, this.activeMailingList2, 'mail'));
-				i.sms.push(this.addConfiguration(e.id, this.activeMailingList, 'sms'));
-				i.sms.push(this.addConfiguration(e.id, this.activeMailingList2, 'sms'));
+			for (let i = 0; i < dp.length; i++) {
+				let configuration = await this.$store.dispatch(
+					'getPlcDataPointConfiguration',
+					dp[i].id,
+				);
+				let datapoint = this.prepareDataPoint(dp[i].id, dp[i].name, configuration);
 
-				item.children.push(i);
-			});
-		},
-
-		bindEmailEventHandler(datapointId, mlId) {
-			let find = -1;
-			this.eventHandlers.forEach((eh) => {
-				if (eh.eventTypeRef1 == datapointId && eh.handlerType === 2) {
-					if (!!eh.recipients) {
-						eh.recipients.forEach((r) => {
-							if (r.referenceId == mlId) {
-								find = { ehId: eh.id, edId: eh.eventTypeRef2 };
-							}
-						});
-					}
-				}
-			});
-			return find;
-		},
-
-		bindSmsEventHandler(datapointId, mlId) {
-			let find = -1;
-			this.eventHandlers.forEach((eh) => {
-				if (eh.eventTypeRef1 == datapointId && eh.handlerType === 5) {
-					if (!!eh.recipients) {
-						eh.recipients.forEach((r) => {
-							if (r.referenceId == mlId) {
-								find = { ehId: eh.id, edId: eh.eventTypeRef2 };
-							}
-						});
-					}
-				}
-			});
-			return find;
-		},
-
-		addConfiguration(datapointId, mailingListId, type) {
-			let eventHandlerId;
-			if (!!mailingListId) {
-				if (type === 'mail') {
-					eventHandlerId = this.bindEmailEventHandler(datapointId, mailingListId);
-				} else if (type === 'sms') {
-					eventHandlerId = this.bindSmsEventHandler(datapointId, mailingListId);
-				}
-				let ehExist = eventHandlerId !== -1;
-				return {
-					handler: eventHandlerId,
-					active: ehExist,
-					config: ehExist,
-					mlId: mailingListId,
-				};
+				item.children.push(datapoint);
 			}
-			return { active: false, config: false };
+		},
+
+		/**
+		 * Watch Point Change
+		 * @param {number} id - DataPoint ID number
+		 * @param {string} name - DataPoint Name
+		 * @param {array} configuration - List of EventHandlers configuration
+		 *
+		 * Initialize data to present on the UI for specific datapoint.
+		 */
+		prepareDataPoint(id, name, configuration) {
+			let mail = this.prepareInitialPointConfiguration();
+			let sms = this.prepareInitialPointConfiguration();
+
+			if (configuration.length !== 0) {
+				configuration.forEach((c) => {
+					c.recipients.forEach((r) => {
+						if (r.recipientType === 1 && r.referenceId === this.activeMailingList) {
+							if (c.handlerType === this.TYPE_MAIL) {
+								mail[0].active = true;
+								mail[0].config = true;
+								mail[0].handler = c.eventTypeRef2;
+								mail[0].mlId = r.referenceId;
+							}
+							if (c.handlerType === this.TYPE_SMS) {
+								sms[0].active = true;
+								sms[0].config = true;
+								sms[0].handler = c.eventTypeRef2;
+								sms[0].mlId = r.referenceId;
+							}
+						}
+						if (r.recipientType === 1 && r.referenceId === this.activeMailingList2) {
+							if (c.handlerType === this.TYPE_MAIL) {
+								mail[1].active = true;
+								mail[1].config = true;
+								mail[1].handler = c.eventTypeRef2;
+								mail[1].mlId = r.referenceId;
+							}
+							if (c.handlerType === this.TYPE_SMS) {
+								sms[1].active = true;
+								sms[1].config = true;
+								sms[1].handler = c.eventTypeRef2;
+								sms[1].mlId = r.referenceId;
+							}
+						}
+					});
+				});
+			}
+			return { id, name, configuration, mail, sms };
+		},
+
+		/**
+		 * Prepre Initial Point Configuration
+		 *
+		 * Prepare data based on the active mailing list on the UI.
+		 */
+		prepareInitialPointConfiguration() {
+			let configuration = [];
+			if (!!this.activeMailingList) {
+				configuration.push({
+					active: false,
+					config: false,
+					handler: -1,
+					mlId: this.activeMailingList,
+				});
+			} else {
+				configuration.push({ active: false, config: false });
+			}
+			if (!!this.activeMailingList2) {
+				configuration.push({
+					active: false,
+					config: false,
+					handler: -1,
+					mlId: this.activeMailingList2,
+				});
+			} else {
+				configuration.push({ active: false, config: false });
+			}
+			return configuration;
 		},
 
 		changeMailingList(item) {
@@ -218,6 +249,12 @@ export default {
 			this.initDataSources();
 		},
 
+		/**
+		 * Watch Point Change
+		 * @param {object} item - Element of UI
+		 *
+		 * Chceck change made by user while clicking the checkbox icon.
+		 */
 		watchPointChange(item) {
 			this.modified = this.modified.filter((element) => {
 				return element.id !== item.id;
@@ -233,67 +270,132 @@ export default {
 			}
 		},
 
-		saveConfiguration() {
-			if (this.modified.length > 0) {
-				this.modified.forEach((change) => {
-					let mailingListsLength =
-						change.mail.length > change.sms.length
-							? change.mail.length
-							: change.sms.length;
-
-					//maxLength - 0 = 1st Mailing List, 1 = 2nd ML
-					for (let x = 0; x < mailingListsLength; x++) {
-						let mlId =
-							x % mailingListsLength === 0
-								? this.activeMailingList
-								: this.activeMailingList2;
-							
-						//Check if both are selected form non to active
-						if (change.mail[x].active !== change.mail[x].config
-							&& change.sms[x].active !== change.sms[x].config) {
-								if(change.mail[x].active && change.sms[x].active) {
-									this.prepareDualEventHandler(mlId, change.id)
-									continue;
-								}
-						}
-
-						//Check the Mail Communitation Channel
-						if (change.mail[x].active !== change.mail[x].config) {
-							if (change.mail[x].handler !== -1) {
-								this.updateEventHandler(
-									change.mail[x].handler.ehId,
-									change.mail[x].mlId,
-									change.id,
-									change.mail[x].handler.edId,
-									'delete',
-									2,
-								);
-							} else {
-								this.prepareEventHandler(mlId, change.id, 2);
-							}
-						}
-
-						//Check the SMS Communication Channel
-						if (change.sms[x].active !== change.sms[x].config) {
-							if (change.sms[x].handler !== -1) {
-								this.updateEventHandler(
-									change.sms[x].handler.ehId,
-									change.sms[x].mlId,
-									change.id,
-									change.sms[x].handler.edId,
-									'delete',
-									5,
-								);
-							} else {
-								this.prepareEventHandler(mlId, change.id, 5);
-							}
+		/**
+		 * Update single EventHandler
+		 * @param {number} id - DataPoint ID number
+		 * @param {object} config - DataPoint EventHandler configuration
+		 * @param {object} recipientLists - Active mailing lists
+		 * @param {number} type - Type of EventHandler (SMS or Mail)
+		 *
+		 * Chceck data for specific datapoint and make decision what to do.
+		 * If eventHandler do not exists (eventHandler === null) try to create.
+		 * If there is any change (config !== active) take steps to delete
+		 * or update that handler.
+		 */
+		async updateHandler(id, config, recipientLists, type) {
+			let eventHandler = this.getEventHandler(config, type);
+			if (!!eventHandler) {
+				let requestChange = [];
+				recipientLists.forEach((m) => {
+					if (m.config !== m.active) {
+						requestChange.push(m.mlId);
+						if (m.active) {
+							// Add Mailing List to recipients list
+							eventHandler.recipients.push({
+								recipientType: 1,
+								referenceAddress: null,
+								referenceId: m.mlId,
+							});
+						} else {
+							// Remove Mailing List from recipients list
+							eventHandler.recipients = eventHandler.recipients.filter((e) => {
+								return e.referenceId !== m.mlId;
+							});
 						}
 					}
 				});
-				this.deleteEventHandlers();
-				this.initEventHandlers();
+
+				if (requestChange.length !== 0) {
+					if (eventHandler.recipients.length === 0) {
+						await this.$store.dispatch('deleteEventHandler', eventHandler.id);
+						config = config.filter((e) => {
+							return e.id !== eventHandler.id;
+						});
+						if (config.length === 0) {
+							this.$store.dispatch('deleteEventDetector', {
+								datapointId: id,
+								pointEventDetectorId: eventHandler.eventTypeRef2,
+							});
+						}
+						this.saveDatapoint(id, config);
+					} else {
+						let resp = await this.$store.dispatch('updateEventHandlerV2', eventHandler);
+						if (!!resp) {
+							let index = config.findIndex((x) => x.id === id);
+							config[index] = eventHandler;
+							this.saveDatapoint(id, config);
+						} else {
+							let resp1 = await this.$store.dispatch(
+								'createEventHandler',
+								this.createEventHandlerData(id, requestChange, type, false),
+							);
+							config.push(resp1);
+							this.saveDatapoint(id, config);
+						}
+					}
+				}
+			} else {
+				let creationRequests = [];
+				recipientLists.forEach((m) => {
+					if (m.config !== m.active) {
+						creationRequests.push(m.mlId);
+					}
+				});
+
+				if (creationRequests.length !== 0) {
+					let resp = await this.$store.dispatch(
+						'createEventHandler',
+						this.createEventHandlerData(
+							id,
+							creationRequests,
+							type,
+							creationRequests.length === 2,
+						),
+					);
+					config.push(resp);
+					this.saveDatapoint(id, config);
+				}
+			}
+		},
+
+		/**
+		 * Get Event Handler
+		 * @param {array} configuration - List of EventHandlers configuration
+		 * @param {type} number - Type of EventHandler (SMS or Mail)
+		 *
+		 * @returns {object} Valid Event Handler data.
+		 */
+		getEventHandler(configuration, type) {
+			let eventHandler = null;
+			if (configuration.length !== 0) {
+				configuration.forEach((c) => {
+					if (c.handlerType === type) {
+						eventHandler = c;
+					}
+				});
+			}
+			return eventHandler;
+		},
+
+		/**
+		 * Save User Configuration
+		 *
+		 * Save PLC Notification configuration. This method is invoked after
+		 * clicking Save button by User on the UI. Save data to database.
+		 */
+		saveConfiguration() {
+			if (this.modified.length > 0) {
+				this.modified.forEach((change) => {
+					this.updateHandler(
+						change.id,
+						change.configuration,
+						change.mail,
+						this.TYPE_MAIL,
+					);
+					this.updateHandler(change.id, change.configuration, change.sms, this.TYPE_SMS);
+				});
+
 				this.modified = [];
-				this.afterSave();
 				if (this.isError) {
 					this.snackbar.text = this.$t('plcalarms.notification.fail');
 					this.snackbar.visible = true;
@@ -305,124 +407,43 @@ export default {
 			}
 		},
 
-		async updateEventHandler(ehId, mlId, dpId, edId, method, type) {
-			let updateData = {
-				ehId: ehId,
-				activeMailingList: mlId,
-				typeRef1: dpId,
-				typeRef2: edId,
-				method: method,
-				handlerType: type
-			};
-			if (method === 'add') {
-				await this.$store.dispatch('updateEventHandler', updateData);
-			} else {
-				this.operationQueue.push(updateData);
-			}
-		},
-
-		async createEventHandler(mlId, dpId, handlerType) {
-			let createData = {
-				datapointId: dpId,
-				mailingListId: mlId,
-				handlerType: handlerType,
-			};
-			try {
-				this.$store.dispatch('createEventHandler', createData);
-			} catch (err) {
-				this.isError = true;
-			}
-		},
-
-		async createDualEventHandler(mlId, dpId) {
-
-			let createData = {
-				datapointId: dpId,
-				mailingListId: mlId
-			};
-			try {
-				this.$store.dispatch('createDualEventHandler', createData);
-			} catch (err) {
-				this.isError = true;
-			}
-		},
-
-		prepareEventHandler(mlId, dpId, handlerType) {
-			let eventHandlerData = this.getExistingEventHandler(dpId, handlerType);
-			if (!!eventHandlerData) {
-				this.updateEventHandler(
-					eventHandlerData.ehId,
-					mlId,
-					dpId,
-					eventHandlerData.edId,
-					'add',
-					handlerType,
-				);
-			} else {
-				this.createEventHandler(mlId, dpId, handlerType);
-			}
-		},
-
-		prepareDualEventHandler(mlId, dpId) {
-			let mailEventHandlerData = this.getExistingEventHandler(dpId, 2);
-			let smsEventHandlerData = this.getExistingEventHandler(dpId, 5);
-			if (!!mailEventHandlerData) {
-				this.updateEventHandler(
-					mailEventHandlerData.ehId,
-					mlId,
-					dpId,
-					mailEventHandlerData.edId,
-					'add',
-					2,
-				);
-			}
-			if (!!smsEventHandlerData) {
-				this.updateEventHandler(
-					smsEventHandlerData.ehId,
-					mlId,
-					dpId,
-					smsEventHandlerData.edId,
-					'add',
-					5,
-				);
-			} 
-			if (!mailEventHandlerData && !smsEventHandlerData) {
-				this.createDualEventHandler(mlId, dpId);
-			}
-		},
-
-		deleteEventHandlers() {
-			this.operationQueue.forEach((e) => {
-				this.$store.dispatch('updateEventHandler', e);
-			});
-			this.operationQueue = [];
-		},
-
-		getExistingEventHandler(datapointId, handlerType) {
-			let result = null;
-			this.eventHandlers.forEach((eh) => {
-				if (eh.eventTypeRef1 == datapointId && eh.handlerType === handlerType) {
-					result = { ehId: eh.id, edId: eh.eventTypeRef2 };
-				}
-			});
-			return result;
-		},
-
-		afterSave() {
+		/**
+		 * Save DataPoint
+		 * @param {number} id - DataPoint ID number
+		 * @param {object} config - DataPoint EventHandler configuration
+		 *
+		 * Save specific data point after change. Add EventHandler configuration
+		 * and update the UI checkbox status.
+		 */
+		saveDatapoint(id, config) {
 			this.items.forEach((item) => {
 				if (!!item.children) {
 					item.children.forEach((datapoint) => {
-						datapoint.mail.forEach((mail) => {
-							mail.config = mail.active;
-						});
-						datapoint.sms.forEach((sms) => {
-							sms.config = sms.active;
-						});
-						console.log(datapoint);
+						if (datapoint.id === id) {
+							datapoint.configuration = config;
+							datapoint.mail.forEach((mail) => {
+								mail.config = mail.active;
+							});
+							datapoint.sms.forEach((sms) => {
+								sms.config = sms.active;
+							});
+						}
 					});
 				}
 			});
-			console.log(this.items);
+		},
+
+		/**
+		 * Create Event Handler payload object
+		 * @param {number} datapointId - DataPoint ID number
+		 * @param {number} mailingListId - Mailing List ID to be attached
+		 * @param {number} handlerType - Type of EventHandler (SMS or Mail)
+		 * @param {boolean} dual - Are two mailing list attached at once
+		 *
+		 * Create payload data for Vuex method.
+		 */
+		createEventHandlerData(datapointId, mailingListId, handlerType, dual) {
+			return { datapointId, mailingListId, handlerType, dual };
 		},
 	},
 };

@@ -38,16 +38,29 @@ const storeAlarmsNotifications = {
 		},
 
 		//Event Handlers
-		getPlcEventHandlers({ dispatch }) {
-			return dispatch('requestGet', '/eventHandler/getAllPlc');
+		_getPlcEventHandlerById({ dispatch }, eventHandlerId) {
+			return dispatch('requestGet', `/eventHandler/get/id/${eventHandlerId}`);
 		},
 
-		getPlcEventHandlerById({ dispatch }, eventHandlerId) {
-			return dispatch('requestGet', `/eventHandler/get/id/${eventHandlerId}`);
+		getPlcDataPointConfiguration({ dispatch }, datapointId) {
+			return dispatch('requestGet', `/eventHandler/get/plc/datapoint/${datapointId}`);
 		},
 
 		deleteEventHandler({ dispatch }, eventHandlerId) {
 			return dispatch('requestDelete', `/eventHandler/delete/id/${eventHandlerId}`);
+		},
+
+		async updateEventHandlerV2({ dispatch }, payload) {
+			let eventHandler = await dispatch('_getPlcEventHandlerById', payload.id);
+			if (!!eventHandler) {
+				eventHandler.activeRecipients = payload.recipients;
+				return dispatch('requestPut', {
+					url: `/eventHandler/update/1/${payload.eventTypeRef1}/${payload.eventTypeRef2}`,
+					data: eventHandler,
+				});
+			} else {
+				return null;
+			}
 		},
 
 		//Mailing Lists
@@ -70,73 +83,15 @@ const storeAlarmsNotifications = {
 		deleteEventDetector({ dispatch }, payload) {
 			return dispatch(
 				'requestDelete',
-				`/eventDetector/delete/${payload.dpId}/${payload.edId}`,
+				`/eventDetector/delete/${payload.datapointId}/${payload.pointEventDetectorId}`,
 			);
-		},
-
-		deleteMailingListFromEventHandler(context, payload) {
-			payload.eventHandler.activeRecipients = payload.eventHandler.activeRecipients.filter(
-				(e) => {
-					return e.referenceId !== payload.activeMailingList;
-				},
-			);
-			return payload.eventHandler;
-		},
-
-		addMailingListToEventHandler(context, payload) {
-			if (!payload.eventHandler.activeRecipients) {
-				payload.eventHandler.activeRecipients = [];
-			}
-			let mailingList = {
-				recipientType: 1,
-				referenceId: payload.activeMailingList,
-				referenceAddress: null,
-			};
-			payload.eventHandler.activeRecipients.push(mailingList);
-			console.log(payload.eventHandler);
-			return payload.eventHandler;
-		},
-
-		async updateEventHandler({ dispatch }, payload) {
-			let eventHandler = await dispatch('getPlcEventHandlerById', payload.ehId);
-
-			if(eventHandler.handlerType !== payload.handlerType) {
-				let createData = {
-					datapointId: payload.typeRef1,
-					mailingListId: payload.activeMailingList,
-					handlerType: payload.handlerType,
-				};
-				return await dispatch('createEventHandler', createData);
-			}
-
-			if (payload.method === 'add') {
-				eventHandler = await dispatch('addMailingListToEventHandler', {
-					eventHandler: eventHandler,
-					activeMailingList: payload.activeMailingList,
-				});
-			} else if (payload.method === 'delete') {
-				eventHandler = await dispatch('deleteMailingListFromEventHandler', {
-					eventHandler: eventHandler,
-					activeMailingList: payload.activeMailingList,
-				});
-			}
-
-			if (eventHandler.activeRecipients.length === 0) {
-				let ehStatus = await dispatch('deleteEventHandler', eventHandler.id);
-				return ehStatus;
-			} else {
-				return dispatch('requestPut', {
-					url: `/eventHandler/update/1/${payload.typeRef1}/${payload.typeRef2}`,
-					data: eventHandler,
-				});
-			}
 		},
 
 		async createEventHandler({ state, dispatch }, payload) {
 			let pedId = await dispatch('createPointEventDetector', payload.datapointId);
 			let edId = pedId.id;
 			let dpId = payload.datapointId;
-			let mlId = payload.mailingListId;
+			let mlId = payload.mailingListId[0];
 
 			let requestData = JSON.parse(JSON.stringify(state.ehTemplate));
 			let type = payload.handlerType === 2 ? 'mail' : 'sms';
@@ -151,6 +106,13 @@ const storeAlarmsNotifications = {
 					referenceAddress: null,
 				},
 			];
+			if (payload.dual) {
+				recipientList.push({
+					recipientType: 1,
+					referenceId: payload.mailingListId[1],
+					referenceAddress: null,
+				});
+			}
 
 			requestData.activeRecipients = recipientList;
 			let eventHandler;
@@ -163,50 +125,18 @@ const storeAlarmsNotifications = {
 			} catch (error) {
 				throw 'POST request failed!';
 			}
-			return { edId, ehId: eventHandler.id };
+			let response = {
+				eventTypeId: 1,
+				eventTypeRef1: dpId,
+				eventTypeRef2: edId,
+				id: eventHandler.id,
+				xid: eventHandler.xid,
+				alias: eventHandler.alias,
+				handlerType: eventHandler.handlerType,
+				recipients: eventHandler.activeRecipients,
+			};
+			return response;
 		},
-
-		async createDualEventHandler({state, dispatch}, payload) {
-			let pedId = await dispatch('createPointEventDetector', payload.datapointId);
-			let edId = pedId.id;
-			let dpId = payload.datapointId;
-			let mlId = payload.mailingListId;
-
-			let requestDataMail = JSON.parse(JSON.stringify(state.ehTemplate));
-			let requestDataSms  = JSON.parse(JSON.stringify(state.ehTemplate));
-
-			requestDataMail.xid = 'EH_' + requestDataMail.xid + `_mail_${dpId}_${edId}_${mlId}`;
-			requestDataMail.alias = requestDataMail.alias + `_mail_${dpId}_${edId}_${mlId}`;
-
-			requestDataSms.xid = 'EH_' + requestDataSms.xid + `_sms_${dpId}_${edId}_${mlId}`;
-			requestDataSms.alias = requestDataSms.alias + `_sms_${dpId}_${edId}_${mlId}`;
-
-			let recipientList = [
-				{
-					recipientType: 1,
-					referenceId: mlId,
-					referenceAddress: null,
-				},
-			];
-
-			requestDataMail.activeRecipients = recipientList;
-			requestDataSms.activeRecipients = recipientList;
-			let eventHandler;
-
-			try {
-				eventHandler = await dispatch('requestPost', {
-					url: `/eventHandler/set/1/${dpId}/${edId}/2`,
-					data: requestDataMail,
-				});
-				eventHandler = await dispatch('requestPost', {
-					url: `/eventHandler/set/1/${dpId}/${edId}/5`,
-					data: requestDataSms,
-				});
-			} catch (error) {
-				throw 'POST request failed!';
-			}
-			return { edId, ehId: eventHandler.id };
-		}
 	},
 
 	getters: {},

@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Controller for EventDetector
@@ -34,6 +34,7 @@ import java.util.Map;
 public class EventDetectorAPI {
 
     private static final Log LOG = LogFactory.getLog(EventDetectorAPI.class);
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
     @Resource
     private DataPointService dataPointService;
@@ -150,7 +151,15 @@ public class EventDetectorAPI {
         }
         dataPointVO.getEventDetectors().add(pointEventDetectorVO);
         dataPointService.saveEventDetectors(dataPointVO);
-        Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+        if(atomicInteger.getAndDecrement() == 0) {
+            try {
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+            } finally {
+                atomicInteger.set(0);
+            }
+        }
+
+
         int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
         return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
     }
