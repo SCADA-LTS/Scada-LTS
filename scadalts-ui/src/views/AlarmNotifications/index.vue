@@ -307,13 +307,11 @@ export default {
 					});
 
 					if (requestChange.length !== 0) {
-						console.debug(`updateHandler::CHANGE::${requestChange.length}`);
 						if (eventHandler.recipients.length === 0) {
 							await this.$store.dispatch('deleteEventHandler', eventHandler.id);
 							config = config.filter((e) => {
 								return e.id !== eventHandler.id;
 							});
-							console.debug(config);
 							if (config.length === 0) {
 								this.$store.dispatch('deleteEventDetector', {
 									datapointId: id,
