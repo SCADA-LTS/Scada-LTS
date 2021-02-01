@@ -3,9 +3,7 @@ dist: xenial
 sudo: required
 before_install:
 - sudo apt-get update
-- sudo apt-get install gradle
-- gradle assemble
-- gradle check
+- sudo apt-get install tomcat7
 before_script:
 - export MY_SRC=`pwd`
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
