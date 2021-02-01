@@ -1,8 +1,8 @@
-dist: bionic
+#dist: bionic
+dist: xenial
 sudo: required
 before_install:
 - sudo apt-get update
-- sudo apt-get install tomcat7
 - sudo apt-get install gradle
 - gradle assemble
 - gradle check
