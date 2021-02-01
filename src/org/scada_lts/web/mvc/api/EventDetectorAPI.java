@@ -39,6 +39,13 @@ public class EventDetectorAPI {
     @Resource
     private DataPointService dataPointService;
 
+    public EventDetectorAPI() {
+    }
+
+    public EventDetectorAPI(DataPointService dataPointService) {
+        this.dataPointService = dataPointService;
+    }
+
     @GetMapping(value = "/getAll/id/{datapointId}", produces = "application/json")
     public ResponseEntity<List<PointEventDetectorVO>> getEventDetectorsById(@PathVariable int datapointId, HttpServletRequest request) {
         LOG.info("/api/eventDetector/getAll/" + datapointId);

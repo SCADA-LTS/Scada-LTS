@@ -24,6 +24,26 @@ public class TestConcurrentUtils {
         MultiThreadEngine.execute(executor, numberOfLaunches, action);
     }
 
+    public static <A, B, R> void biFunction(int numberOfLaunches, BiFunction<A, B, R> fun, A keyA, Supplier<B> keyB) {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Runnable action = () -> fun.apply(keyA, keyB.get());
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
+    }
+
+
+    public static <A, B, R> void biFunction(int numberOfLaunches, BiFunction<A, B, R> fun, Supplier<A> getKeyA, B keyB) {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Runnable action = () -> fun.apply(getKeyA.get(), keyB);
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
+    }
+
+    public static <A, B, R> void biFunction(int numberOfLaunches, BiFunction<A, B, R> fun, Supplier<A> keyA,
+                                            Supplier<B> keyB) {
+        Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Runnable action = () -> fun.apply(keyA.get(), keyB.get());
+        MultiThreadEngine.execute(executor, numberOfLaunches, action);
+    }
+
     public static <A, B> void biConsumer(int numberOfLaunches, BiConsumer<A, B> fun, A keyA, B keyB) {
         Executor executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = () -> fun.accept(keyA, keyB);

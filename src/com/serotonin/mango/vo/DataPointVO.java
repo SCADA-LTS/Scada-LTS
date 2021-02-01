@@ -181,6 +181,22 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
     }
 
+    public DataPointVO(int loggingType) {
+        id = Common.NEW_ID;
+        this.loggingType = loggingType;
+        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+        intervalLoggingPeriod = 15;
+        intervalLoggingType = IntervalLoggingTypes.INSTANT;
+        tolerance = 0;
+        purgeType = Common.TimePeriods.YEARS;
+        purgePeriod = 1;
+        defaultCacheSize = 1;
+        discardExtremeValues = false;
+        discardLowLimit = -Double.MAX_VALUE;
+        discardHighLimit = Double.MAX_VALUE;
+        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+    }
+
     private PointLocatorVO pointLocator;
 
     //

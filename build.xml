@@ -604,6 +604,10 @@
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.web.mvc.api.EventDetectorAPIConcurrentTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>
