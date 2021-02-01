@@ -22,13 +22,19 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
-    compile fileTree(include: ['*.jar'], dir: System.getenv("CATALINA_HOME") + '/lib')
+    providedCompile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
+    testCompile fileTree(include: ['*.jar'], dir: 'lib')
+    providedCompile fileTree(include: ['*.jar'], dir: System.getenv("CATALINA_HOME") + '/lib')
 }
 sourceSets {
     main {
         java {
             srcDirs = ['src']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['test']
         }
     }
 }
