@@ -27,17 +27,15 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -49,6 +47,25 @@ public class DataPointAPI {
     private static final Log LOG = LogFactory.getLog(DataPointAPI.class);
 
     DataPointService dataPointService = new DataPointService();
+
+    @GetMapping(value = "/api/datapoint/{id}")
+    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam Map<String, String> query, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(query.containsKey("id")) {
+                    return new ResponseEntity<>(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))), HttpStatus.OK);
+                } else if (query.containsKey("xid")){
+                    return new ResponseEntity<>(dataPointService.getDataPoint(query.get("xid")), HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getConfigurationByXid(
@@ -153,7 +170,7 @@ public class DataPointAPI {
         }
     }
 
-    private class DatapointJSON implements Serializable {
+    public class DatapointJSON implements Serializable {
         private long id;
         private String name;
         private String xid;

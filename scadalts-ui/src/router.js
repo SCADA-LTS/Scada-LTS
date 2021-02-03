@@ -5,6 +5,7 @@ import About from './views/About';
 import HistoricalAlarms from './views/HistoricalAlarms';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
+import DataPointDetails from './views/DataPointDetails';
 
 Vue.use(Router);
 
@@ -41,6 +42,11 @@ export default new Router({
 			path: '/alarm-notifications',
 			name: 'alarm-notifications',
 			component: AlarmNotifications,
+		},
+		{
+			path: '/datapoint-details/:id',
+			name: 'datapoint-details',
+			component: DataPointDetails,
 		},
 		{
 			path: '/example-ph',
