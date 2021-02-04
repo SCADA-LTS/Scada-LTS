@@ -1,33 +1,55 @@
 <template>
-    <v-autocomplete
-        :items="datapoints"
-        item-text="name"
-        prepend-icon="mdi-magnify">
-    </v-autocomplete>
-    
+	<v-autocomplete
+		v-model="select"
+		:items="datapoints"
+		:loading="isLoading"
+		:search-input.sync="search"
+		cache-items
+		hide-no-data
+		hide-details
+		item-text="name"
+		item-value="id"
+		label="Selected Data Point"
+		placeholder="Type to search Data Point"
+		return-object
+		prepend-icon="mdi-magnify"
+		@change="emit()"
+	>
+	</v-autocomplete>
 </template>
 <script>
 export default {
-    name: 'DataPointSearchComponent',
+	name: 'DataPointSearchComponent',
 
-    data() {
-        return {
-            datapoints: undefined,
-        }
-    },
+	data() {
+		return {
+			isLoading: false,
+			datapoints: [],
+			search: null,
+			select: null,
+		};
+	},
 
-    mounted() { 
-        this.fetchDataPointSimpleList();
-    },
+	mounted() {},
 
-    methods: {
-        async fetchDataPointSimpleList() {
-            this.datapoints = await this.$store.dispatch("getDataPointSimpleList");
-        }
-    },
-    
-}
+	watch: {
+		search(val) {
+			val && this.quesrySelect(val);
+		},
+	},
+
+	methods: {
+		async quesrySelect(v) {
+			this.isLoading = true;
+			this.datapoints = await this.$store.dispatch('getDataPointSimpleFilteredList', v);
+			this.isLoading = false;
+		},
+		emit() {
+			if (!!this.select) {
+				this.$emit('change', this.select);
+			}
+		},
+	},
+};
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

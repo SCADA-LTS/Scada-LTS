@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import dataSource from './dataSource';
+import dataPoint from './dataPoint';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
 import amcharts from './amcharts';
@@ -18,6 +19,7 @@ const myLoggerForVuexMutation = (store) => {
 export default new Vuex.Store({
 	modules: {
 		dataSource,
+		dataPoint,
 		graphicView,
 		pointHierarchy,
 		amcharts,

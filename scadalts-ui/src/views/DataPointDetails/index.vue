@@ -1,9 +1,9 @@
 <template>
-	<div>
+	<div v-if="dataPointDetails">
         <v-container fluid>
             <v-row>
                 <v-col cols="8" xs="12">
-                    <h1>Data Point Details {{$route.params.id}}
+                    <h1>Data Point Details {{dataPointDetails.id}}
                         <v-badge
                             overlap
                             color="error"
@@ -24,10 +24,7 @@
                     </v-btn>
                 </v-col>
                 <v-col cols="2">
-                    <v-autocomplete
-                    :items="datapoints"
-                    item-text="name"
-                    prepend-icon="mdi-magnify"></v-autocomplete>
+                    <DataPointSearchComponent @change="reload"></DataPointSearchComponent>
                 </v-col>
             </v-row>
         </v-container>
@@ -42,7 +39,7 @@
                             Description:
                         </v-col>
                         <v-col cols="6">
-                            Some point
+                            {{dataPointDetails.description}}
                         </v-col>
                         <v-col cols="6">
                             Value:
@@ -124,6 +121,7 @@
 	</div>
 </template>
 <script>
+import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
 import LineChartComponent from '@/components/amcharts/LineChartComponent';
 /**
  * Data Point Details page
@@ -136,23 +134,35 @@ export default {
 	name: 'DataPointDetails',
 
 	components: { 
+        DataPointSearchComponent,
         LineChartComponent
     },
 
 	data() {
 		return { 
-            datapoints: [
-                {name: '1 minute Load', id: 1, xid: 'DP_250372'},
-                {name: '5 minutes Load', id: 2, xid: 'DP_335775'},
-                {name: 'Point', id: 5, xid: 'DP_712779'},
-                {name: 'Numeric', id: 6, xid: 'DP_954927'},
-            ]   
+            dataPointDetails: undefined,
+            
         };
 	},
 
-	mounted() { },
+	mounted() { 
+        console.log(this.$route.params.id);
+        this.fetchDataPointDetails(this.$route.params.id);
+    },
 
-	methods: { }
+	methods: { 
+        reload(dataPoint) {
+            this.$router.push(`${dataPoint.id}`);
+            this.$router.go();
+            // console.log(dataPoint.name, dataPoint.xid);
+            // console.log(dataPoint);
+            // this.fetchDataPointDetails(dataPoint.id);
+        },
+
+        async fetchDataPointDetails(datapointId) {
+            this.dataPointDetails = await this.$store.dispatch("getDataPointDetails", datapointId);
+        }
+    }
 		
 };
 </script>
