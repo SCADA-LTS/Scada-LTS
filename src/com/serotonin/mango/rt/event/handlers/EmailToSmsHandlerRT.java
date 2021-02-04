@@ -19,6 +19,7 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     public enum SmsNotificationType implements NotificationType {
         ACTIVE("activeSms", "ftl.subject.active"),
+        MSG_FROM_EVENT("msgFormEventSms", "ftl.subject.active"),
         LIMIT("limitSms", "ftl.subject.active");
 
         String file;
@@ -71,7 +72,7 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     @Override
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        SendMsgUtils.sendSms(evt, SmsNotificationType.ACTIVE, addresses, vo.getAlias());
+        SendMsgUtils.sendSms(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias());
     }
 
     private Set<String> formatAddresses(Set<String> addresses) {

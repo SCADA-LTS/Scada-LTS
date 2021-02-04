@@ -2,6 +2,8 @@ plugins {
     id "com.moowork.node" version "1.2.0"
 }
 
+boolean buildVue = false
+
 apply plugin: 'base'
 apply plugin: 'com.moowork.node'
 
@@ -38,3 +40,6 @@ task copyNewUiImages(type: Copy, dependsOn: copyNewUiFonts) {
     from "dist/resources"
     into "../WebContent/resources"
 }
+
+bundle.onlyIf { project.ext.get("buildUi") }
+clearResources.onlyIf { project.ext.get("buildUi") }

@@ -24,21 +24,6 @@
 						item-value="id"
 						item-text="label"
 					></v-select>
-					<v-text-field
-						:label="$t('plcalarms.notification.settings.ped.duration')"
-						v-model="pedTemplate.duration"
-					></v-text-field>
-					<v-select
-						:items="itemsDuration"
-						:label="$t('plcalarms.notification.settings.ped.duration.type')"
-						v-model="pedTemplate.durationType"
-						item-value="id"
-						item-text="label"
-					></v-select>
-					<v-checkbox
-						:label="$t('plcalarms.notification.settings.ped.binary')"
-						v-model="pedTemplate.binaryState"
-					></v-checkbox>
 				</div>
 				<div v-if="ehTemplate">
 					<h3>{{ $t('plcalarms.notification.settings.eh.title') }}</h3>
