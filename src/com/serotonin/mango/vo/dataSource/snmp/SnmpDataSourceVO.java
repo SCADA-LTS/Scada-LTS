@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -47,7 +47,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 /**
  * @author Matthew Lohbihler
- * 
+ *
  */
 @JsonRemoteEntity
 public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
@@ -57,6 +57,10 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         String NONE = "";
         String MD5 = "MD5";
         String SHA = "SHA";
+        String HMAC128SHA224 = "HMAC128SHA224";
+        String HMAC192SHA256 = "HMAC192SHA256";
+        String HMAC256SHA384 = "HMAC256SHA384";
+        String HMAC384SHA512 = "HMAC384SHA512";
     }
 
     public interface PrivProtocols {
@@ -65,6 +69,9 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         String AES128 = "AES128";
         String AES192 = "AES192";
         String AES256 = "AES256";
+        String DES3 = "3DES";
+        String AES192With3DES = "AES192With3DES";
+        String AES256With3DES = "AES256With3DES";
     }
 
     @Override
@@ -130,12 +137,16 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     @JsonRemoteProperty
     private String privPassphrase;
     @JsonRemoteProperty
+    private int securityLevel;
+    @JsonRemoteProperty
     private int retries = 2;
     @JsonRemoteProperty
     private int timeout = 1000;
     private int updatePeriodType = Common.TimePeriods.MINUTES;
     @JsonRemoteProperty
     private int updatePeriods = 5;
+    @JsonRemoteProperty
+    private boolean trapEnabled;
     @JsonRemoteProperty
     private int trapPort = SnmpConstants.DEFAULT_NOTIFICATION_RECEIVER_PORT;
     @JsonRemoteProperty
@@ -165,28 +176,12 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         this.community = community;
     }
 
-    public String getContextEngineId() {
-        return contextEngineId;
-    }
-
-    public void setContextEngineId(String contextEngineId) {
-        this.contextEngineId = contextEngineId;
-    }
-
     public String getContextName() {
         return contextName;
     }
 
     public void setContextName(String contextName) {
         this.contextName = contextName;
-    }
-
-    public String getEngineId() {
-        return engineId;
-    }
-
-    public void setEngineId(String engineId) {
-        this.engineId = engineId;
     }
 
     public String getHost() {
@@ -269,6 +264,14 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         this.timeout = timeout;
     }
 
+    public boolean isTrapEnabled() {
+        return trapEnabled;
+    }
+
+    public void setTrapEnabled(boolean trapEnabled) {
+        this.trapEnabled = trapEnabled;
+    }
+
     public int getTrapPort() {
         return trapPort;
     }
@@ -283,6 +286,14 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
 
     public void setLocalAddress(String localAddress) {
         this.localAddress = localAddress;
+    }
+
+    public int getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(int securityLevel) {
+        this.securityLevel = securityLevel;
     }
 
     @Override
@@ -330,11 +341,11 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.authPassphrase", authPassphrase);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.privProtocol", privProtocol);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.privPassphrase", privPassphrase);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.engineId", engineId);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.contextEngine", contextEngineId);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.contextName", contextName);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.sl.label", securityLevel);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.retries", retries);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.timeout", timeout);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapEnabled", trapEnabled);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapPort", trapPort);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.localAddress", localAddress);
     }
@@ -354,12 +365,11 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.privProtocol", from.privProtocol, privProtocol);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.privPassphrase", from.privPassphrase,
                 privPassphrase);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.engineId", from.engineId, engineId);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.contextEngine", from.contextEngineId,
-                contextEngineId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.contextName", from.contextName, contextName);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.sl.label", from.securityLevel, securityLevel);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.retries", from.retries, retries);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.timeout", from.timeout, timeout);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapEnabled", from.trapEnabled, trapEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapPort", from.trapPort, trapPort);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.localAddress", from.localAddress, localAddress);
     }
@@ -370,7 +380,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 2;
+    private static final int version = 3;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -378,18 +388,18 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         out.writeInt(port);
         out.writeInt(snmpVersion);
         SerializationHelper.writeSafeUTF(out, community);
-        SerializationHelper.writeSafeUTF(out, engineId);
-        SerializationHelper.writeSafeUTF(out, contextEngineId);
         SerializationHelper.writeSafeUTF(out, contextName);
         SerializationHelper.writeSafeUTF(out, securityName);
         SerializationHelper.writeSafeUTF(out, authProtocol);
         SerializationHelper.writeSafeUTF(out, authPassphrase);
         SerializationHelper.writeSafeUTF(out, privProtocol);
         SerializationHelper.writeSafeUTF(out, privPassphrase);
+        out.writeInt(securityLevel);
         out.writeInt(retries);
         out.writeInt(timeout);
         out.writeInt(updatePeriodType);
         out.writeInt(updatePeriods);
+        out.writeBoolean(trapEnabled);
         out.writeInt(trapPort);
         SerializationHelper.writeSafeUTF(out, localAddress);
     }
@@ -435,6 +445,25 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
             timeout = in.readInt();
             updatePeriodType = in.readInt();
             updatePeriods = in.readInt();
+            trapPort = in.readInt();
+            localAddress = SerializationHelper.readSafeUTF(in);
+        } else if (ver == 3) {
+            host = SerializationHelper.readSafeUTF(in);
+            port = in.readInt();
+            snmpVersion = in.readInt();
+            community = SerializationHelper.readSafeUTF(in);
+            contextName = SerializationHelper.readSafeUTF(in);
+            securityName = SerializationHelper.readSafeUTF(in);
+            authProtocol = SerializationHelper.readSafeUTF(in);
+            authPassphrase = SerializationHelper.readSafeUTF(in);
+            privProtocol = SerializationHelper.readSafeUTF(in);
+            privPassphrase = SerializationHelper.readSafeUTF(in);
+            securityLevel = in.readInt();
+            retries = in.readInt();
+            timeout = in.readInt();
+            updatePeriodType = in.readInt();
+            updatePeriods = in.readInt();
+            trapEnabled = in.readBoolean();
             trapPort = in.readInt();
             localAddress = SerializationHelper.readSafeUTF(in);
         }
