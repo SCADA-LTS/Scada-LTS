@@ -30,7 +30,7 @@ import com.serotonin.mango.view.ImplDefinition;
 @JsonRemoteEntity
 public class NoneEventRenderer extends BaseEventTextRenderer {
     private static ImplDefinition definition = new ImplDefinition("eventTextRendererNone", "EVENT_NONE", "textRenderer.none",
-            new int[] { DataTypes.IMAGE });
+            new int[] { DataTypes.BINARY, DataTypes.ALPHANUMERIC, DataTypes.MULTISTATE, DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {
         return definition;

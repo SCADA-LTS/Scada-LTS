@@ -184,7 +184,7 @@
                        dojo.html.show(
                            $(currentEventTextRenderer)
                        );
-                       if (properties.def.name == "EventTextRendererBinary") {
+                       if (properties.eventTextRenderer.def.name == "eventTextRendererBinary") {
                            jQuery("#eventTextRendererBinaryZeroShort").val(properties.eventTextRenderer.zeroShortLabel);
                            jQuery("#eventTextRendererBinaryZeroLong").val(properties.eventTextRenderer.zeroLongLabel);
                            dojo.widget.byId("eventTextRendererBinaryZeroColour").selectedColour = properties.eventTextRenderer.zeroColour;
@@ -195,13 +195,8 @@
                            dojo.widget.byId("eventTextRendererBinaryOneColour").selectedColour = properties.eventTextRenderer.oneColour;
 
                        }
-                       if (properties.def.name == "eventTextRendererPlain") {
-                           jQuery("#eventTextRendererPlainSuffixShort").val(properties.eventTextRenderer.shortSuffix);
-                           jQuery("#eventTextRendererPlainSuffixLong").val(properties.eventTextRenderer.longSuffix);
 
-                       }
-
-                       if (properties.def.name == "eventTextRendererMultistate") {
+                       if (properties.eventTextRenderer.def.name == "eventTextRendererMultistate") {
 
                            if (checkGetAlertError()) {
                                try {
@@ -232,7 +227,7 @@
                            }
                        }
 
-                       if (properties.def.name == "eventTextRendererRange") {
+                       if (properties.eventTextRenderer.def.name == "eventTextRendererRange") {
                            jQuery("#eventTextRendererRangeFormat").val(properties.eventTextRenderer.format);
 
                            if (checkGetAlertError()) {
@@ -659,13 +654,6 @@
                               + "<ul class='scada-swal-ul2'>"
                               + "<li>zero short: " + properties.eventTextRenderer.zeroShortLabel + " + zero long: " + properties.eventTextRenderer.zeroLongLabel + " color:" + properties.eventTextRenderer.zeroColour + "</li>"
                               + "<li>one: " +  properties.eventTextRenderer.oneLabel +  " color:" + properties.eventTextRenderer.oneColour + "</li></ul></li>";
-                      }
-
-                      if (properties.def.name == "eventTextRendererPlain") {
-                          eventTextRenderer = ""
-                              + "<li>Event text renderer properties: Plain"
-                              + "<ul class='scada-swal-ul2'>"
-                              + "<li>Short suffix: " + properties.eventTextRenderer.shortSuffix + " + Long suffix: " + properties.eventTextRenderer.longSuffix + "</li></ul></li>";
                       }
 
                       if (properties.def.name == "eventTextRendererMultistate") {

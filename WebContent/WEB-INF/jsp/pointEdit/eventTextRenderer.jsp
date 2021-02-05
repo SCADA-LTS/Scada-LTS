@@ -29,8 +29,8 @@
       <td class="formField">
         <sst:select id="eventTextRendererSelect" onchange="eventTextRendererEditor.change();"
                     value="${form.eventTextRenderer.typeName}">
-          <c:forEach items="${eventTextRenderers}" var="trdef">
-            <sst:option value="${trdef.name}"><fmt:message key="${trdef.nameKey}"/></sst:option>
+          <c:forEach items="${eventTextRenderers}" var="etrdef">
+            <sst:option value="${etrdef.name}"><fmt:message key="${etrdef.nameKey}"/></sst:option>
           </c:forEach>
         </sst:select>
       </td>
@@ -46,7 +46,7 @@
             <td valign="top"><input id="eventTextRendererBinaryZeroShort" type="text"/></td>
             <td width="10"></td>
             <td valign="top" rowspan="2" align="center">
-              <div dojoType="ColorPalette" palette="3x4" id="textRendererBinaryZeroColour"></div>
+              <div dojoType="ColorPalette" palette="3x4" id="eventTextRendererBinaryZeroColour"></div>
               <a href="#" onclick="eventTextRendererEditor.handlerBinaryZeroColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
             </td>
           </tr>
@@ -67,7 +67,7 @@
             <td valign="top"><input id="eventTextRendererBinaryOneShort" type="text"/></td>
             <td width="10"></td>
             <td valign="top" rowspan="2" align="center">
-              <div dojoType="ColorPalette" palette="3x4" id="textRendererBinaryOneColour"></div>
+              <div dojoType="ColorPalette" palette="3x4" id="eventTextRendererBinaryOneColour"></div>
               <a href="#" onclick="eventTextRendererEditor.handlerBinaryOneColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
             </td>
           </tr>
@@ -113,16 +113,6 @@
     </tr>
     </tbody>
     <tbody id="eventTextRendererNone" style="display:none;">
-    </tbody>
-    <tbody id="eventTextRendererPlain" style="display:none;">
-    <tr>
-      <td class="formLabel"><fmt:message key="pointEdit.text.short"/></td>
-      <td class="formField"><input id="eventTextRendererPlainSuffixShort" type="text"/></td>
-    </tr>
-    <tr>
-      <td class="formLabel"><fmt:message key="pointEdit.text.long"/></td>
-      <td class="formField"><input class="formLong" id="eventTextRendererPlainSuffixLong" type="text"/></td>
-    </tr>
     </tbody>
     <tbody id="eventTextRendererRange" style="display:none;">
     <tr>
@@ -187,7 +177,7 @@
 
       // Figure out which fields to populate with data.
       <c:choose>
-      <c:when test='${form.textRenderer.typeName == "eventTextRendererBinary"}'>
+      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
       $set("eventTextRendererBinaryZeroShort", "${form.eventTextRenderer.zeroShortLabel}");
       $set("eventTextRendererBinaryZeroLong", "${form.eventTextRenderer.zeroLongLabel}");
       eventTextRendererEditor.handlerBinaryZeroColour("${form.eventTextRenderer.zeroColour}");
@@ -195,16 +185,12 @@
       $set("eventTextRendererBinaryOneLong", "${form.eventTextRenderer.oneLongLabel}");
       eventTextRendererEditor.handlerBinaryOneColour("${form.textRenderer.oneColour}");
       </c:when>
-      <c:when test='${form.textRenderer.typeName == "eventTextRendererMultistate"}'>
+      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateValues}" var="msValue">
-      eventTextRendererEditor.addMultistateValue("${msValue.key}", "${msValue.text}", "${msValue.colour}");
+      eventTextRendererEditor.addMultistateValue("${msValue.key}", "${msValue.shortText}", "${msValue.longText}", "${msValue.colour}");
       </c:forEach>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
-      </c:when>
-      <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererPlain"}'>
-      $set("eventTextRendererPlainSuffixShort", "${form.textRenderer.shortSuffix}");
-      $set("eventTextRendererPlainSuffixLong", "${form.textRenderer.longSuffix}");
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
       $set("textRendererRangeFormat", "${form.eventTextRenderer.format}");
@@ -238,8 +224,6 @@
         DataPointEditDwr.setMultistateEventRenderer(multistateValues, callback);
       else if (typeName == "eventTextRendererNone")
         DataPointEditDwr.setNoneEventRenderer(callback);
-      else if (typeName == "eventTextRendererPlain")
-        DataPointEditDwr.setPlainEventRenderer($get("eventTextRendererPlainSuffixShort"), $get("eventTextRendererPlainSuffixLong"), callback);
       else if (typeName == "eventTextRendererRange")
         DataPointEditDwr.setRangeEventRenderer($get("eventTextRendererRangeFormat"), rangeValues, callback);
       else

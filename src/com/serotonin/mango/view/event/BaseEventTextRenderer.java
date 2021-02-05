@@ -43,10 +43,9 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
     static void ensureDefinitions() {
         if (definitions == null) {
             List<ImplDefinition> d = new ArrayList<ImplDefinition>();
+            d.add(NoneEventRenderer.getDefinition());
             d.add(BinaryEventTextRenderer.getDefinition());
             d.add(MultistateEventRenderer.getDefinition());
-            d.add(NoneEventRenderer.getDefinition());
-            d.add(PlainEventRenderer.getDefinition());
             d.add(RangeEventRenderer.getDefinition());
             definitions = d;
         }
@@ -243,8 +242,6 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
                 clazz = MultistateEventRenderer.class;
             else if (def == NoneEventRenderer.getDefinition())
                 clazz = NoneEventRenderer.class;
-            else if (def == PlainEventRenderer.getDefinition())
-                clazz = PlainEventRenderer.class;
             else if (def == RangeEventRenderer.getDefinition())
                 clazz = RangeEventRenderer.class;
             else
