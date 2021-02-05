@@ -108,7 +108,7 @@ public class DataPointEditController {
         ControllerUtils.addPointListDataToModel(user, id, model);
         model.addAttribute("form", dataPoint);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
-		model.addAttribute("eventRenderers", BaseEventTextRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+		model.addAttribute("eventTextRenderers", BaseEventTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
@@ -138,7 +138,7 @@ public class DataPointEditController {
         model.addAttribute("form", dataPoint);
         model.addAttribute("error", errors);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
-        model.addAttribute("eventRenderers", BaseEventTextRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
+        model.addAttribute("eventTextRenderers", BaseEventTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));

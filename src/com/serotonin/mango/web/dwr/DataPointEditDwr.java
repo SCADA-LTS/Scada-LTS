@@ -29,8 +29,7 @@ import com.serotonin.mango.view.chart.ImageChartRenderer;
 import com.serotonin.mango.view.chart.ImageFlipbookRenderer;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.view.chart.TableChartRenderer;
-import com.serotonin.mango.view.event.EventRenderer;
-import com.serotonin.mango.view.event.EventTextRenderer;
+import com.serotonin.mango.view.event.*;
 import com.serotonin.mango.view.text.AnalogRenderer;
 import com.serotonin.mango.view.text.BinaryTextRenderer;
 import com.serotonin.mango.view.text.MultistateRenderer;
@@ -60,12 +59,34 @@ public class DataPointEditDwr extends BaseDwr {
     // Set event text renderer
     //
 
-    public void setEventTextRenderer(String text){
-        setEventRenderer(new EventTextRenderer(text));
+    public void setBinaryEventTextRenderer(String zeroShortValue, String zeroLongValue, String zeroColour, String oneShortValue, String oneLongValue, String oneColour) {
+        setEventTextRenderer(new BinaryEventTextRenderer(zeroShortValue, zeroLongValue, zeroColour, oneShortValue, oneLongValue, oneColour));
     }
 
-    private void setEventRenderer(EventRenderer renderer) {
-        getDataPoint().setEventRenderer(renderer);
+    public void setMultistateEventRenderer(List<MultistateEventValue> values) {
+        MultistateEventRenderer r = new MultistateEventRenderer();
+        for (MultistateEventValue v : values)
+            r.addMultistateValue(v.getKey(), v.getShortText(), v.getLongText(), v.getColour());
+        setEventTextRenderer(r);
+    }
+
+    public void setNoneEventRenderer() {
+        setEventTextRenderer(new NoneEventRenderer());
+    }
+
+    public void setPlainEventRenderer(String shortSuffix, String longSuffix) {
+        setEventTextRenderer(new PlainEventRenderer(shortSuffix, longSuffix));
+    }
+
+    public void setRangeEventRenderer(String format, List<RangeEventValue> values) {
+        RangeEventRenderer r = new RangeEventRenderer(format);
+        for (RangeEventValue v : values)
+            r.addRangeValues(v.getFrom(), v.getTo(), v.getShortText(), v.getLongText(), v.getColour());
+        setEventTextRenderer(r);
+    }
+
+    private void setEventTextRenderer(EventTextRenderer renderer) {
+        getDataPoint().setEventTextRenderer(renderer);
     }
 
     //
