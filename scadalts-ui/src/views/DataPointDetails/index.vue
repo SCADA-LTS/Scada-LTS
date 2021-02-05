@@ -16,12 +16,7 @@
                     </h1>
                 </v-col>
                 <v-col cols="2" xs="12" class="row justify-end">
-                    <v-btn
-                        elevation="2"
-                        fab dark color="primary"
-                    >
-                        <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
+                    <PointProperties :data="dataPointDetails"></PointProperties>
                 </v-col>
                 <v-col cols="2">
                     <DataPointSearchComponent @change="reload"></DataPointSearchComponent>
@@ -39,13 +34,13 @@
                             Description:
                         </v-col>
                         <v-col cols="6">
-                            {{dataPointDetails.description}}
+                            {{dataPointDetails.extendedName}}
                         </v-col>
                         <v-col cols="6">
                             Value:
                         </v-col>
                         <v-col cols="6">
-                            2231
+                            2231 {{dataPointDetails.intervalLoggingType}}
                         </v-col>
                         <v-col cols="6">
                             Time:
@@ -57,7 +52,7 @@
                             Export Id:
                         </v-col>
                         <v-col cols="6">
-                            EX_DP_12312
+                            {{dataPointDetails.xid}}
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -122,6 +117,7 @@
 </template>
 <script>
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
+import PointProperties from './PointProperties';
 import LineChartComponent from '@/components/amcharts/LineChartComponent';
 /**
  * Data Point Details page
@@ -135,6 +131,7 @@ export default {
 
 	components: { 
         DataPointSearchComponent,
+        PointProperties,
         LineChartComponent
     },
 

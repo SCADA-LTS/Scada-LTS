@@ -48,7 +48,7 @@ public class DataPointAPI {
 
     DataPointService dataPointService = new DataPointService();
 
-    @GetMapping(value = "/api/datapoint/{id}")
+    @GetMapping(value = "/api/datapoint")
     public ResponseEntity<DataPointVO> getDataPoint(@RequestParam Map<String, String> query, HttpServletRequest request) {
         try {
             User user = Common.getUser(request);

@@ -26,27 +26,15 @@ export default {
 			defaultLoggingType: undefined,
 			defaultLoggingTypeStore: undefined,
 			isDefaultLoggingTypeEdited: false,
-			loggingTypeList: [
-				{
-					id: 1,
-					type: 'ON_CHANGE',
-					label: this.$t('pointEdit.logging.type.change'),
-				},
-				{ id: 2, type: 'ALL', label: this.$t('pointEdit.logging.type.all') },
-				{ id: 3, type: 'NONE', label: this.$t('pointEdit.logging.type.never') },
-				{
-					id: 4,
-					type: 'INTERVAL',
-					label: this.$t('pointEdit.logging.type.interval'),
-				},
-				{
-					id: 5,
-					type: 'ON_TS_CHANGE',
-					label: this.$t('pointEdit.logging.type.tsChange'),
-				},
-			],
 		};
 	},
+
+	computed: {
+		loggingTypeList() {
+			return this.$store.state.dataPoint.loggingTypeList;
+		}
+	},
+
 	mounted() {
 		this.fetchData();
 	},
