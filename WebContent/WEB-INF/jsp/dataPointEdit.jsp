@@ -228,7 +228,6 @@
                        }
 
                        if (properties.eventTextRenderer.def.name == "eventTextRendererRange") {
-                           jQuery("#eventTextRendererRangeFormat").val(properties.eventTextRenderer.format);
 
                            if (checkGetAlertError()) {
                                try {
@@ -676,8 +675,7 @@
 
                           eventTextRenderer = ""
                               + "<li>Text renderer properties: Range "
-                              + "<ul class='scada-swal-ul2'>"
-                              + "<li> Format: " + properties.eventTextRenderer.format + "</li>";
+                              + "<ul class='scada-swal-ul2'>";
 
                           for (var range in properties.eventTextRenderer.rangeEventValues) {
 

@@ -50,8 +50,6 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         return definition;
     }
 
-    @JsonRemoteProperty
-    private String format;
     @JsonRemoteProperty(innerType = RangeEventValue.class)
     private List<RangeEventValue> rangeEventValues = new ArrayList<RangeEventValue>();
 
@@ -59,10 +57,6 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
 
     public RangeEventRenderer() {
         // no op
-    }
-
-    public RangeEventRenderer(String format) {
-        setFormat(format);
     }
 
     public void addRangeEventValues(double from, double to, String shortText, String longText, String colour) {
@@ -75,15 +69,6 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
 
     public void setRangeEventValues(List<RangeEventValue> rangeEventValues) {
         this.rangeEventValues = rangeEventValues;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-        formatInstance = new DecimalFormat(format);
     }
 
     @Override
@@ -156,7 +141,6 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
-        SerializationHelper.writeSafeUTF(out, format);
         out.writeObject(rangeEventValues);
     }
 
@@ -166,7 +150,6 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
 
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1) {
-            setFormat(SerializationHelper.readSafeUTF(in));
             rangeEventValues = (List<RangeEventValue>) in.readObject();
         }
     }

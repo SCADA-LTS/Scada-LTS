@@ -257,7 +257,7 @@
       import com.serotonin.mango.vo.permission.DataPointAccess;
       
       DataPointEditDwr.setRangeRenderer(String, List<RangeValue>);
-      DataPointEditDwr.setRangeEventRenderer(String, List<RangeEventValue>);
+      DataPointEditDwr.setRangeEventRenderer(List<RangeEventValue>);
       DataPointEditDwr.setMultistateRenderer(List<MultistateValue>);
       DataPointEditDwr.setMultistateEventRenderer(List<MultistateEventValue>);
       

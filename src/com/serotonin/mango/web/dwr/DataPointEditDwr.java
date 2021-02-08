@@ -74,8 +74,8 @@ public class DataPointEditDwr extends BaseDwr {
         setEventTextRenderer(new NoneEventRenderer());
     }
 
-    public void setRangeEventRenderer(String format, List<RangeEventValue> values) {
-        RangeEventRenderer r = new RangeEventRenderer(format);
+    public void setRangeEventRenderer(List<RangeEventValue> values) {
+        RangeEventRenderer r = new RangeEventRenderer();
         for (RangeEventValue v : values)
             r.addRangeEventValues(v.getFrom(), v.getTo(), v.getShortText(), v.getLongText(), v.getColour());
         setEventTextRenderer(r);

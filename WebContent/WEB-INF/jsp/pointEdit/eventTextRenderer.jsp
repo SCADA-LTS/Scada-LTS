@@ -116,10 +116,6 @@
     </tbody>
     <tbody id="eventTextRendererRange" style="display:none;">
     <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.text.format"/></td>
-      <td class="formField"><input id="eventTextRendererRangeFormat" type="text"/></td>
-    </tr>
-    <tr>
       <td colspan="2">
         <table>
           <tr>
@@ -193,7 +189,6 @@
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
-      $set("textRendererRangeFormat", "${form.eventTextRenderer.format}");
       <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
       eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.shortText}", "${rgValue.longText}",
               "${rgValue.colour}");
@@ -225,7 +220,7 @@
       else if (typeName == "eventTextRendererNone")
         DataPointEditDwr.setNoneEventRenderer(callback);
       else if (typeName == "eventTextRendererRange")
-        DataPointEditDwr.setRangeEventRenderer($get("eventTextRendererRangeFormat"), rangeEventValues, callback);
+        DataPointEditDwr.setRangeEventRenderer(rangeEventValues, callback);
       else
         callback();
     };
