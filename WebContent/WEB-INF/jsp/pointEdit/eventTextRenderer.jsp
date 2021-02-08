@@ -183,7 +183,7 @@
       eventTextRendererEditor.handlerBinaryZeroColour("${form.eventTextRenderer.zeroColour}");
       $set("eventTextRendererBinaryOneShort", "${form.eventTextRenderer.oneShortLabel}");
       $set("eventTextRendererBinaryOneLong", "${form.eventTextRenderer.oneLongLabel}");
-      eventTextRendererEditor.handlerBinaryOneColour("${form.textRenderer.oneColour}");
+      eventTextRendererEditor.handlerBinaryOneColour("${form.eventTextRenderer.oneColour}");
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateValues}" var="msValue">
