@@ -99,7 +99,7 @@
               <a href="#" onclick="eventTextRendererEditor.handlerMultistateColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
             </td>
             <td valign="top">
-              <tag:img png="add" title="common.add" onclick="return eventTextRendererEditor.addMultistateValue();"/>
+              <tag:img png="add" title="common.add" onclick="return eventTextRendererEditor.addMultistateEventValue();"/>
             </td>
           </tr>
           <tr>
@@ -139,7 +139,7 @@
               <a href="#" onclick="eventTextRendererEditor.handlerRangeColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
             </td>
             <td valign="top">
-              <tag:img png="add" title="common.add" onclick="return eventTextRendererEditor.addRangeValue();"/>
+              <tag:img png="add" title="common.add" onclick="return eventTextRendererEditor.addRangeEventValue();"/>
             </td>
           </tr>
           <tr>
@@ -161,8 +161,8 @@
 
   function EventTextRendererEditor() {
     var currentEventTextRenderer;
-    var multistateValues = new Array();
-    var rangeValues = new Array();
+    var multistateEventValues = new Array();
+    var rangeEventValues = new Array();
 
     this.init = function() {
       // Colour handler events
@@ -186,16 +186,16 @@
       eventTextRendererEditor.handlerBinaryOneColour("${form.eventTextRenderer.oneColour}");
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
-      <c:forEach items="${form.eventTextRenderer.multistateValues}" var="msValue">
-      eventTextRendererEditor.addMultistateValue("${msValue.key}", "${msValue.shortText}", "${msValue.longText}", "${msValue.colour}");
+      <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
+      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "${msValue.shortText}", "${msValue.longText}", "${msValue.colour}");
       </c:forEach>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
       $set("textRendererRangeFormat", "${form.eventTextRenderer.format}");
-      <c:forEach items="${form.eventTextRenderer.rangeValues}" var="rgValue">
-      eventTextRendererEditor.addRangeValue("${rgValue.from}", "${rgValue.to}", "${rgValue.shortText}", "${rgValue.longText}",
+      <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
+      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.shortText}", "${rgValue.longText}",
               "${rgValue.colour}");
       </c:forEach>
       </c:when>
@@ -221,25 +221,25 @@
                 dojo.widget.byId("eventTextRendererBinaryZeroColour").selectedColour, $get("eventTextRendererBinaryOneShort"),
                 $get("eventTextRendererBinaryOneLong"), dojo.widget.byId("eventTextRendererBinaryOneColour").selectedColour, callback);
       else if (typeName == "eventTextRendererMultistate")
-        DataPointEditDwr.setMultistateEventRenderer(multistateValues, callback);
+        DataPointEditDwr.setMultistateEventRenderer(multistateEventValues, callback);
       else if (typeName == "eventTextRendererNone")
         DataPointEditDwr.setNoneEventRenderer(callback);
       else if (typeName == "eventTextRendererRange")
-        DataPointEditDwr.setRangeEventRenderer($get("eventTextRendererRangeFormat"), rangeValues, callback);
+        DataPointEditDwr.setRangeEventRenderer($get("eventTextRendererRangeFormat"), rangeEventValues, callback);
       else
         callback();
     };
 
     //
     // List objects
-    this.MultistateValue = function() {
+    this.MultistateEventValue = function() {
       this.key;
       this.shortText;
       this.longText;
       this.colour;
     };
 
-    this.RangeValue = function() {
+    this.RangeEventValue = function() {
       this.from;
       this.to;
       this.shortText;
@@ -249,7 +249,7 @@
 
     //
     // Multistate list manipulation
-    this.addMultistateValue = function(theKey, shortText, longText, colour) {
+    this.addMultistateEventValue = function(theKey, shortText, longText, colour) {
       if (!theKey)
         theKey = $get("eventTextRendererMultistateKey");
       var theNumericKey = parseInt(theKey);
@@ -257,14 +257,14 @@
         alert("<fmt:message key="pointEdit.text.errorParsingKey"/>");
         return false;
       }
-      for (var i=multistateValues.length-1; i>=0; i--) {
-        if (multistateValues[i].key == theNumericKey) {
+      for (var i=multistateEventValues.length-1; i>=0; i--) {
+        if (multistateEventValues[i].key == theNumericKey) {
           alert("<fmt:message key="pointEdit.text.listContainsKey"/> "+ theNumericKey);
           return false;
         }
       }
 
-      var theValue = new this.MultistateValue();
+      var theValue = new this.MultistateEventValue();
       theValue.key = theNumericKey;
       if (shortText)
         theValue.shortText = shortText;
@@ -278,30 +278,30 @@
         theValue.colour = colour;
       else
         theValue.colour = dojo.widget.byId("eventTextRendererMultistateColour").selectedColour;
-      multistateValues[multistateValues.length] = theValue;
-      this.sortMultistateValues();
-      this.refreshMultistateList();
+      multistateEventValues[multistateEventValues.length] = theValue;
+      this.sortMultistateEventValues();
+      this.refreshMultistateEventList();
       $set("eventTextRendererMultistateKey", theNumericKey+1);
 
       return false;
     };
 
-    this.removeMultistateValue = function(theValue) {
-      for (var i=multistateValues.length-1; i>=0; i--) {
-        if (multistateValues[i].key == theValue)
-          multistateValues.splice(i, 1);
+    this.removeMultistateEventValue = function(theValue) {
+      for (var i=multistateEventValues.length-1; i>=0; i--) {
+        if (multistateEventValues[i].key == theValue)
+          multistateEventValues.splice(i, 1);
       }
-      this.refreshMultistateList();
+      this.refreshMultistateEventList();
       return false;
     };
 
-    this.sortMultistateValues = function() {
-      multistateValues.sort( function(a,b) { return a.key-b.key; } );
+    this.sortMultistateEventValues = function() {
+      multistateEventValues.sort( function(a,b) { return a.key-b.key; } );
     };
 
-    this.refreshMultistateList = function() {
+    this.refreshMultistateEventList = function() {
       dwr.util.removeAllRows("eventTextRendererMultistateTable");
-      dwr.util.addRows("eventTextRendererMultistateTable", multistateValues, [
+      dwr.util.addRows("eventTextRendererMultistateTable", multistateEventValues, [
         function(data) { return data.key; },
         function(data) {
           if (data.colour)
@@ -309,7 +309,12 @@
           return data.shortText;
         },
         function(data) {
-          return "<a href='#' onclick='return eventTextRendererEditor.removeMultistateValue("+ data.key +
+          if (data.colour)
+            return "<span style='color:"+ data.colour +"'>"+ data.longText +"</span>";
+          return data.longText;
+        },
+        function(data) {
+          return "<a href='#' onclick='return eventTextRendererEditor.removeMultistateEventValue("+ data.key +
                   ");'><img src='images/bullet_delete.png' width='16' height='16' border='0' "+
                   "title='<fmt:message key="common.delete"/>'/><\/a>";
         }
@@ -318,7 +323,7 @@
 
     //
     // Range list manipulation
-    this.addRangeValue = function(theFrom, theTo, shortText, longText, colour) {
+    this.addRangeEventValue = function(theFrom, theTo, shortText, longText, colour) {
       if (!theFrom)
         theFrom = parseFloat($get("eventTextRendererRangeFrom"));
       if (isNaN(theFrom)) {
@@ -338,14 +343,14 @@
         return false;
       }
 
-      for (var i=0; i<rangeValues.length; i++) {
-        if (rangeValues[i].from == theFrom && rangeValues[i].to == theTo) {
+      for (var i=0; i<rangeEventValues.length; i++) {
+        if (rangeEventValues[i].from == theFrom && rangeEventValues[i].to == theTo) {
           alert("<fmt:message key="pointEdit.text.listContainsRange"/> "+ theFrom +" - "+ theTo);
           return false;
         }
       }
 
-      var theValue = new this.RangeValue();
+      var theValue = new this.RangeEventValue();
       theValue.from = theFrom;
       theValue.to = theTo;
       if (shortText)
@@ -360,25 +365,25 @@
         theValue.colour = colour;
       else
         theValue.colour = dojo.widget.byId("eventTextRendererRangeColour").selectedColour;
-      rangeValues[rangeValues.length] = theValue;
-      this.sortRangeValues();
+      rangeEventValues[rangeEventValues.length] = theValue;
+      this.sortRangeEventValues();
       this.refreshRangeList();
       $set("eventTextRendererRangeFrom", theTo);
       $set("eventTextRendererRangeTo", theTo + (theTo - theFrom));
       return false;
     };
 
-    this.removeRangeValue = function(theFrom, theTo) {
-      for (var i=rangeValues.length-1; i>=0; i--) {
-        if (rangeValues[i].from == theFrom && rangeValues[i].to == theTo)
-          rangeValues.splice(i, 1);
+    this.removeRangeEventValue = function(theFrom, theTo) {
+      for (var i=rangeEventValues.length-1; i>=0; i--) {
+        if (rangeEventValues[i].from == theFrom && rangeEventValues[i].to == theTo)
+          rangeEventValues.splice(i, 1);
       }
       this.refreshRangeList();
       return false;
     };
 
-    this.sortRangeValues = function() {
-      rangeValues.sort( function(a,b) {
+    this.sortRangeEventValues = function() {
+      rangeEventValues.sort( function(a,b) {
         if (a.from == b.from)
           return a.to-b.to;
         return a.from-b.from;
@@ -387,7 +392,7 @@
 
     this.refreshRangeList = function() {
       dwr.util.removeAllRows("eventTextRendererRangeTable");
-      dwr.util.addRows("eventTextRendererRangeTable", rangeValues, [
+      dwr.util.addRows("eventTextRendererRangeTable", rangeEventValues, [
         function(data) { return data.from; },
         function(data) { return data.to; },
         function(data) {
@@ -396,7 +401,12 @@
           return data.shortText;
         },
         function(data) {
-          return "<a href='#' onclick='return eventTextRendererEditor.removeRangeValue("+
+          if (data.colour)
+            return "<span style='color:"+ data.colour +"'>"+ data.longText +"</span>";
+          return data.longText;
+        },
+        function(data) {
+          return "<a href='#' onclick='return eventTextRendererEditor.removeRangeEventValue("+
                   data.from +","+ data.to +");'><img src='images/bullet_delete.png' width='16' "+
                   "height='16' border='0' title='<fmt:message key="common.delete"/>'/><\/a>";
         }

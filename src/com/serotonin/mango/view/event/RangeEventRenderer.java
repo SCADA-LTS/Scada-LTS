@@ -53,7 +53,7 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
     @JsonRemoteProperty
     private String format;
     @JsonRemoteProperty(innerType = RangeEventValue.class)
-    private List<RangeEventValue> rangeValues = new ArrayList<RangeEventValue>();
+    private List<RangeEventValue> rangeEventValues = new ArrayList<RangeEventValue>();
 
     private DecimalFormat formatInstance;
 
@@ -65,16 +65,16 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         setFormat(format);
     }
 
-    public void addRangeValues(double from, double to, String shortText, String longText, String colour) {
-        rangeValues.add(new RangeEventValue(from, to, shortText, longText, colour));
+    public void addRangeEventValues(double from, double to, String shortText, String longText, String colour) {
+        rangeEventValues.add(new RangeEventValue(from, to, shortText, longText, colour));
     }
 
-    public List<RangeEventValue> getRangeValues() {
-        return rangeValues;
+    public List<RangeEventValue> getRangeEventValues() {
+        return rangeEventValues;
     }
 
-    public void setRangeValues(List<RangeEventValue> rangeValues) {
-        this.rangeValues = rangeValues;
+    public void setRangeEventValues(List<RangeEventValue> rangeEventValues) {
+        this.rangeEventValues = rangeEventValues;
     }
 
     public String getFormat() {
@@ -105,7 +105,7 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         if (hint == HINT_RAW || hint == HINT_SPECIFIC)
             return formatInstance.format(value);
 
-        RangeEventValue range = getRangeValue(value);
+        RangeEventValue range = getRangeEventValue(value);
         if (range == null)
             return formatInstance.format(value);
         return range.getShortText();
@@ -116,7 +116,7 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         if (hint == HINT_RAW || hint == HINT_SPECIFIC)
             return formatInstance.format(value);
 
-        RangeEventValue range = getRangeValue(value);
+        RangeEventValue range = getRangeEventValue(value);
         if (range == null)
             return formatInstance.format(value);
         return range.getLongText();
@@ -131,14 +131,14 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
 
     @Override
     public String getColour(double value) {
-        RangeEventValue range = getRangeValue(value);
+        RangeEventValue range = getRangeEventValue(value);
         if (range == null)
             return null;
         return range.getColour();
     }
 
-    private RangeEventValue getRangeValue(double value) {
-        for (RangeEventValue range : rangeValues) {
+    private RangeEventValue getRangeEventValue(double value) {
+        for (RangeEventValue range : rangeEventValues) {
             if (range.contains(value)) {
                 return range;
             }
@@ -157,7 +157,7 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
         SerializationHelper.writeSafeUTF(out, format);
-        out.writeObject(rangeValues);
+        out.writeObject(rangeEventValues);
     }
 
     @SuppressWarnings("unchecked")
@@ -167,7 +167,7 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1) {
             setFormat(SerializationHelper.readSafeUTF(in));
-            rangeValues = (List<RangeEventValue>) in.readObject();
+            rangeEventValues = (List<RangeEventValue>) in.readObject();
         }
     }
 }

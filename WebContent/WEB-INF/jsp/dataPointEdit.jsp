@@ -204,8 +204,8 @@
                                    alert = function (message) {
                                        console.log(message);
                                    }
-                                   for (var multistate in properties.eventTextRenderer.multistateValues) {
-                                       eventTextRendererEditor.addMultistateValue(
+                                   for (var multistate in properties.eventTextRenderer.multistateEventValues) {
+                                       eventTextRendererEditor.addMultistateEventValue(
                                            String( properties.eventTextRenderer.multistateValues[multistate].key ),
                                            String( properties.eventTextRenderer.multistateValues[multistate].shortText ),
                                            String( properties.eventTextRenderer.multistateValues[multistate].longText ),
@@ -217,8 +217,8 @@
                                    alert = alert_old;
                                }
                            } else {
-                               for (var multistate in properties.eventTextRenderer.multistateValues) {
-                                   eventTextRendererEditor.addMultistateValue(
+                               for (var multistate in properties.eventTextRenderer.multistateEventValues) {
+                                   eventTextRendererEditor.addMultistateEventValue(
                                        String( properties.eventTextRenderer.multistateValues[multistate].key ),
                                        String( properties.eventTextRenderer.multistateValues[multistate].shortText ),
                                        String( properties.eventTextRenderer.multistateValues[multistate].longText ),
@@ -236,13 +236,13 @@
                                    alert = function (message) {
                                        console.log(message);
                                    }
-                                   for (var range in properties.eventTextRenderer.rangeValues) {
-                                       eventTextRendererEditor.addRangeValue(
-                                           String( properties.eventTextRenderer.rangeValues[range].from ),
-                                           String( properties.eventTextRenderer.rangeValues[range].to ),
-                                           String( properties.eventTextRenderer.rangeValues[range].shortText ),
-                                           String( properties.eventTextRenderer.rangeValues[range].longText ),
-                                           String( properties.eventTextRenderer.rangeValues[range].colour ));
+                                   for (var range in properties.eventTextRenderer.rangeEventValues) {
+                                       eventTextRendererEditor.addRangeEventValue(
+                                           String( properties.eventTextRenderer.rangeEventValues[range].from ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].to ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].shortText ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].longText ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].colour ));
                                    }
                                } catch( err ) {
                                    console.log(err);
@@ -251,13 +251,13 @@
                                }
 
                            } else {
-                               for (var range in properties.eventTextRenderer.rangeValues) {
-                                   eventTextRendererEditor.addRangeValue(
-                                       String( properties.eventTextRenderer.rangeValues[range].from ),
-                                       String( properties.eventTextRenderer.rangeValues[range].to ),
-                                       String( properties.eventTextRenderer.rangeValues[range].shortText ),
-                                       String( properties.eventTextRenderer.rangeValues[range].longText ),
-                                       String( properties.eventTextRenderer.rangeValues[range].colour ));
+                               for (var range in properties.eventTextRenderer.rangeEventValues) {
+                                   eventTextRendererEditor.addRangeEventValue(
+                                       String( properties.eventTextRenderer.rangeEventValues[range].from ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].to ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].shortText ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].longText ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].colour ));
                                }
                            }
 
@@ -679,13 +679,13 @@
                               + "<ul class='scada-swal-ul2'>"
                               + "<li> Format: " + properties.eventTextRenderer.format + "</li>";
 
-                          for (var range in properties.eventTextRenderer.rangeValues) {
+                          for (var range in properties.eventTextRenderer.rangeEventValues) {
 
-                              eventTextRenderer = eventTextRenderer + "<li>from: " + properties.eventTextRenderer.rangeValues[range].from
-                                  + " to: " + properties.eventTextRenderer.rangeValues[range].to
-                                  + " short text: " + properties.eventTextRenderer.rangeValues[range].shortText
-                                  + " long text: " + properties.eventTextRenderer.rangeValues[range].longText
-                                  + " color: " + properties.eventTextRenderer.rangeValues[range].colour + "</li>";
+                              eventTextRenderer = eventTextRenderer + "<li>from: " + properties.eventTextRenderer.rangeEventValues[range].from
+                                  + " to: " + properties.eventTextRenderer.rangeEventValues[range].to
+                                  + " short text: " + properties.eventTextRenderer.rangeEventValues[range].shortText
+                                  + " long text: " + properties.eventTextRenderer.rangeEventValues[range].longText
+                                  + " color: " + properties.eventTextRenderer.rangeEventValues[range].colour + "</li>";
 
                           }
 

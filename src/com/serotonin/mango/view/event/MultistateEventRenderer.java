@@ -48,18 +48,18 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
     }
 
     @JsonRemoteProperty(innerType = MultistateEventValue.class)
-    private List<MultistateEventValue> multistateValues = new ArrayList<MultistateEventValue>();
+    private List<MultistateEventValue> multistateEventValues = new ArrayList<MultistateEventValue>();
 
-    public void addMultistateValue(int key, String shortText, String longText, String colour) {
-        multistateValues.add(new MultistateEventValue(key, shortText, longText, colour));
+    public void addMultistateEventValue(int key, String shortText, String longText, String colour) {
+        multistateEventValues.add(new MultistateEventValue(key, shortText, longText, colour));
     }
 
-    public List<MultistateEventValue> getMultistateValues() {
-        return multistateValues;
+    public List<MultistateEventValue> getMultistateEventValues() {
+        return multistateEventValues;
     }
 
-    public void setMultistateValues(List<MultistateEventValue> multistateValues) {
-        this.multistateValues = multistateValues;
+    public void setMultistateEventValues(List<MultistateEventValue> multistateEventValues) {
+        this.multistateEventValues = multistateEventValues;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
         if (hint == HINT_RAW)
             return Integer.toString(value);
 
-        MultistateEventValue mv = getMultistateValue(value);
+        MultistateEventValue mv = getMultistateEventValue(value);
         if (mv == null)
             return Integer.toString(value);
         return mv.getShortText();
@@ -92,7 +92,7 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
         if (hint == HINT_RAW)
             return Integer.toString(value);
 
-        MultistateEventValue mv = getMultistateValue(value);
+        MultistateEventValue mv = getMultistateEventValue(value);
         if (mv == null)
             return Integer.toString(value);
         return mv.getLongText();
@@ -107,14 +107,14 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
 
     @Override
     public String getColour(int value) {
-        MultistateEventValue mv = getMultistateValue(value);
+        MultistateEventValue mv = getMultistateEventValue(value);
         if (mv == null)
             return null;
         return mv.getColour();
     }
 
-    private MultistateEventValue getMultistateValue(int value) {
-        for (MultistateEventValue mv : multistateValues) {
+    private MultistateEventValue getMultistateEventValue(int value) {
+        for (MultistateEventValue mv : multistateEventValues) {
             if (mv.getKey() == value)
                 return mv;
         }
@@ -131,7 +131,7 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
-        out.writeObject(multistateValues);
+        out.writeObject(multistateEventValues);
     }
 
     @SuppressWarnings("unchecked")
@@ -140,7 +140,7 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
 
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1) {
-            multistateValues = (List<MultistateEventValue>) in.readObject();
+            multistateEventValues = (List<MultistateEventValue>) in.readObject();
         }
     }
 }
