@@ -95,6 +95,10 @@ const storeDataPoint = {
 			});
 		},
 
+		getAllDatapoints({dispatch}) {
+			return dispatch('requestGet', `/datapoint/getAll`);
+		},
+
 		getDataPointDetails({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},
