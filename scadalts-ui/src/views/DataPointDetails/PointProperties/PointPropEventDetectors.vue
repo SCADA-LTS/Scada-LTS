@@ -1,7 +1,15 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>Event Detectors</h3>
+			<v-row justify="space-between" align="center">
+				<v-col>
+					<h3>Event Detectors</h3>
+				</v-col>
+				<v-col class="row justify-end">
+					<CreateEventDetectorDialog>
+					</CreateEventDetectorDialog>
+				</v-col>
+			</v-row>
 		</v-col>
 		<v-col cols="12">
 			<v-row v-for="e in data.eventDetectors" :key="e.id">
@@ -209,13 +217,19 @@
 	</v-row>
 </template>
 <script>
+import CreateEventDetectorDialog from '@/layout/dialogs/CreateEventDetectorDialog';
+
 export default {
 	name: 'PointPropEventDetectors',
 
+	components: {
+		CreateEventDetectorDialog,
+	},
+
 	filters: {
 		detectorType: (value) => {
-            console.log(value);
-            let detectorsList = [
+			console.log(value);
+			let detectorsList = [
 				'High Limit',
 				'Low Limit',
 				'Binary State Detector',
@@ -234,7 +248,6 @@ export default {
 
 	data() {
 		return {
-			
 			binaryState: [
 				{ text: 'Zero', value: false },
 				{ text: 'One', value: true },

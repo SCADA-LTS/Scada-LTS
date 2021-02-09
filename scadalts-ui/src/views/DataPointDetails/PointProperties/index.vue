@@ -13,22 +13,50 @@
 					<v-col cols="6" xs="12">
 						<v-row>
 							<v-col cols="12">
-								<h3>
-									<v-btn x-small fab elevation="1" :color="data.enabled ? 'primary' : 'error'">
-										<v-icon v-show="data.enabled">mdi-decagram</v-icon>
-										<v-icon v-show="!data.enabled">mdi-decagram-outline</v-icon>
-									</v-btn>
-									Point properties
-								</h3>
+								<v-row justify="space-between" align="center">
+									<v-col>
+										<h3>
+											<v-btn
+												x-small
+												fab
+												elevation="1"
+												:color="data.enabled ? 'primary' : 'error'"
+											>
+												<v-icon v-show="data.enabled">mdi-decagram</v-icon>
+												<v-icon v-show="!data.enabled">mdi-decagram-outline</v-icon>
+											</v-btn>
+											Point properties
+										</h3>
+									</v-col>
+									<v-col class="row justify-end">
+										<v-menu bottom offset-y>
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn icon v-bind="attrs" v-on="on">
+													<v-icon>mdi-dots-vertical</v-icon>
+												</v-btn>
+											</template>
+
+											<v-list>
+												<v-list-item>
+													<v-list-item-icon><v-icon>mdi-eraser-variant</v-icon></v-list-item-icon>
+													<v-list-item-title>Purge data</v-list-item-title>
+												</v-list-item>
+												<v-list-item>
+													<v-list-item-icon><v-icon>mdi-content-copy</v-icon></v-list-item-icon>
+													<v-list-item-title>Apply properties</v-list-item-title>
+												</v-list-item>
+											</v-list>
+										</v-menu>
+									</v-col>
+								</v-row>
 							</v-col>
-							
+
 							<v-col md="6" cols="12">
 								<v-text-field v-model="data.name" label="Point Name" dense></v-text-field>
 							</v-col>
 
-                            <v-col md="6" cols="12">
-                                <v-icon>mdi-database
-                                </v-icon>
+							<v-col md="6" cols="12">
+								<v-icon>mdi-database </v-icon>
 								{{ data.dataSourceName }}
 							</v-col>
 						</v-row>
@@ -39,12 +67,10 @@
 						<PointPropChartRenderer :data="data"></PointPropChartRenderer>
 					</v-col>
 
-                    
-                    <v-divider vertical class="point-properties-horizontal"></v-divider>
-                    
-                
+					<v-divider vertical class="point-properties-horizontal"></v-divider>
+
 					<v-col cols="5" xs="12">
-                        <PointPropEventDetectors :data="data"></PointPropEventDetectors>
+						<PointPropEventDetectors :data="data"></PointPropEventDetectors>
 					</v-col>
 				</v-row>
 			</v-card-text>
@@ -73,7 +99,7 @@ export default {
 		PointPropTextRenderer,
 		PointPropChartRenderer,
 		PointPropEventRenderer,
-        PointPropEventDetectors,
+		PointPropEventDetectors,
 	},
 
 	props: ['data'],
@@ -89,10 +115,10 @@ export default {
 </script>
 <style scoped>
 .point-properties-box {
-    max-height: 70vh;
-    overflow: auto;
+	max-height: 70vh;
+	overflow: auto;
 }
 .point-properties-horizontal {
-    margin: 0 3.5%;
+	margin: 0 3.5%;
 }
 </style>

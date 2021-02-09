@@ -98,30 +98,33 @@
 
 				<v-divider></v-divider>
 
-				<v-row v-for="e in data.eventTextRenderer.multistateEventValues" :key="e" dense>
-					<v-col cols="1">
-						<v-btn :color="e.colour" block> </v-btn>
-					</v-col>
+				<v-col cols="12">
+					<v-row v-for="e in data.eventTextRenderer.multistateEventValues" :key="e" dense>
+						<v-col cols="1">
+							<v-btn :color="e.colour" block> </v-btn>
+						</v-col>
 
-					<v-col cols="2">
-						<v-text-field v-model="e.key" label="Key" dense> </v-text-field>
-					</v-col>
+						<v-col cols="2">
+							<v-text-field v-model="e.key" label="Key" dense> </v-text-field>
+						</v-col>
 
-					<v-col cols="3">
-						<v-text-field v-model="e.shortText" label="Short Text" dense> </v-text-field>
-					</v-col>
+						<v-col cols="3">
+							<v-text-field v-model="e.shortText" label="Short Text" dense>
+							</v-text-field>
+						</v-col>
 
-					<v-col cols="6">
-						<v-text-field
-							v-model="e.longText"
-							label="Long Text"
-							dense
-							append-outer-icon="mdi-close-circle-outline"
-							@click:append-outer="delMultistateValue(e)"
-						>
-						</v-text-field>
-					</v-col>
-				</v-row>
+						<v-col cols="6">
+							<v-text-field
+								v-model="e.longText"
+								label="Long Text"
+								dense
+								append-outer-icon="mdi-close-circle-outline"
+								@click:append-outer="delMultistateValue(e)"
+							>
+							</v-text-field>
+						</v-col>
+					</v-row>
+				</v-col>
 			</v-row>
 
 			<!-- RANGE RENDERER PROPERTIES -->
@@ -157,31 +160,34 @@
 
 				<v-divider></v-divider>
 
-				<v-row v-for="e in data.eventTextRenderer.rangeEventValues" :key="e" dense>
-					<v-col cols="1">
-						<v-btn :color="e.colour" block></v-btn>
-					</v-col>
+				<v-col cols="12">
+					<v-row v-for="e in data.eventTextRenderer.rangeEventValues" :key="e" dense>
+						<v-col cols="1">
+							<v-btn :color="e.colour" block></v-btn>
+						</v-col>
 
-					<v-col cols="2">
-						<v-text-field v-model="e.from" label="From" dense> </v-text-field>
-					</v-col>
-					<v-col cols="2">
-						<v-text-field v-model="e.to" label="To" dense> </v-text-field>
-					</v-col>
-					<v-col cols="3">
-						<v-text-field v-model="e.shortText" label="Short Text" dense> </v-text-field>
-					</v-col>
-					<v-col cols="4">
-						<v-text-field
-							v-model="e.longText"
-							label="Long Text"
-							dense
-							append-outer-icon="mdi-close-circle-outline"
-							@click:append-outer="delRangeValue(e)"
-						>
-						</v-text-field>
-					</v-col>
-				</v-row>
+						<v-col cols="2">
+							<v-text-field v-model="e.from" label="From" dense> </v-text-field>
+						</v-col>
+						<v-col cols="2">
+							<v-text-field v-model="e.to" label="To" dense> </v-text-field>
+						</v-col>
+						<v-col cols="3">
+							<v-text-field v-model="e.shortText" label="Short Text" dense>
+							</v-text-field>
+						</v-col>
+						<v-col cols="4">
+							<v-text-field
+								v-model="e.longText"
+								label="Long Text"
+								dense
+								append-outer-icon="mdi-close-circle-outline"
+								@click:append-outer="delRangeValue(e)"
+							>
+							</v-text-field>
+						</v-col>
+					</v-row>
+				</v-col>
 			</v-row>
 		</v-col>
 	</v-row>
