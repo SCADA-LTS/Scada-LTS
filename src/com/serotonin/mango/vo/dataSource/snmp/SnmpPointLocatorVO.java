@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +44,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 /**
  * @author Matthew Lohbihler
- * 
+ *
  */
 @JsonRemoteEntity
 public class SnmpPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {

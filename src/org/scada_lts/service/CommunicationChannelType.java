@@ -53,7 +53,7 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
 
         @Override
         public boolean sendMsg(EventInstance event, Set<String> addresses, String alias) {
-            return SendMsgUtils.sendSmsWithoutQueue(event,EmailToSmsHandlerRT.SmsNotificationType.ACTIVE,addresses,alias);
+            return SendMsgUtils.sendSmsWithoutQueue(event,EmailToSmsHandlerRT.SmsNotificationType.MSG_FROM_EVENT,addresses,alias);
         }
 
         @Override
