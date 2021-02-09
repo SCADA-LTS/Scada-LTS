@@ -112,6 +112,13 @@ const storeDataPoint = {
 				url: `/point_value/setValue/${payload.xid}/${payload.type}/${payload.value}`,
 				data: null,
 			});
+		},
+
+		saveDataPointDetails({dispatch}, payload) {
+			return dispatch('requestPut', {
+				url: `/point_properties/updateProperties?id=${payload.id}`,
+				data: payload,
+			});
 		}
 	},
 

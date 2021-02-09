@@ -53,7 +53,7 @@
 					</h1>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
-					<PointProperties :data="dataPointDetails"></PointProperties>
+					<PointProperties :data="dataPointDetails" @saved="saveDataPointDetails"></PointProperties>
 				</v-col>
 				<v-col cols="2">
 					<DataPointSearchComponent @change="reload"></DataPointSearchComponent>
@@ -205,7 +205,13 @@ export default {
 				Number(value.ts).toString() !== 'NaN'
 					? new Date(value.ts).toLocaleString()
 					: 'Not valid date!';
-		}
+		},
+
+		saveDataPointDetails() {
+			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then(resp => {
+				alert(resp);
+			});
+		},
 	},
 };
 </script>
