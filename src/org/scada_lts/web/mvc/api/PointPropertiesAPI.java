@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,12 +10,11 @@ import com.serotonin.mango.view.ImplDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
@@ -43,6 +43,7 @@ public class PointPropertiesAPI {
 
     private DataPointService dataPointService = new DataPointService();
 
+    private static final String SAVED_MSG = "saved";
 
     @RequestMapping(value = "/api/point_properties/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getPropertiesBaseOnId(@PathVariable("id") int id, HttpServletRequest request) {
@@ -557,5 +558,26 @@ public class PointPropertiesAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping(value = "/api/point_properties/saveProperties")
+    public ResponseEntity<String> savePointProperties(@RequestParam Map<String, String> query, HttpServletRequest request, @RequestBody JsonPointProperties body) {
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                if(query.containsKey("id")) {
+                    dataPointService.savePointProperties(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))), body);
+                    return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+                } else if (query.containsKey("xid")) {
+                    dataPointService.savePointProperties(dataPointService.getDataPoint(query.get("xid")), body);
+                    return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+                } else
+                    return new ResponseEntity<>("no param id or xid", HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

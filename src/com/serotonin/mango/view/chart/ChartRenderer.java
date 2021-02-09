@@ -21,9 +21,21 @@ package com.serotonin.mango.view.chart;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.vo.DataPointVO;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "typeName"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ImageChartRenderer.class, name = "chartRendererImage"),
+        @JsonSubTypes.Type(value = ImageFlipbookRenderer.class, name = "chartRendererImageFlipbook"),
+        @JsonSubTypes.Type(value = StatisticsChartRenderer.class, name = "chartRendererStats"),
+        @JsonSubTypes.Type(value = TableChartRenderer.class, name = "chartRendererTable"),
+})
 public interface ChartRenderer extends Serializable {
     public static final int TYPE_NONE = 1;
     public static final int TYPE_TABLE = 2;

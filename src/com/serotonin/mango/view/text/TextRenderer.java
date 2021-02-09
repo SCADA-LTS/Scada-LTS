@@ -20,10 +20,25 @@ package com.serotonin.mango.view.text;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.ImplDefinition;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "typeName"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = BinaryTextRenderer.class, name = "textRendererBinary"),
+        @JsonSubTypes.Type(value = MultistateRenderer.class, name = "textRendererMultistate"),
+        @JsonSubTypes.Type(value = RangeRenderer.class, name = "textRendererRange"),
+        @JsonSubTypes.Type(value = NoneRenderer.class, name = "textRendererNone"),
+        @JsonSubTypes.Type(value = PlainRenderer.class, name = "textRendererPlain"),
+        @JsonSubTypes.Type(value = AnalogRenderer.class, name = "textRendererAnalog"),
+        @JsonSubTypes.Type(value = TimeRenderer.class, name = "textRendererTime"),
+})
 public interface TextRenderer extends Serializable {
     public static final int TYPE_ANALOG = 1;
     public static final int TYPE_BINARY = 2;
