@@ -560,8 +560,8 @@ public class PointPropertiesAPI {
 
     }
 
-    @PostMapping(value = "/api/point_properties/saveProperties")
-    public ResponseEntity<String> savePointProperties(@RequestParam Map<String, String> query, HttpServletRequest request, @RequestBody JsonPointProperties body) {
+    @PutMapping(value = "/api/point_properties/updateProperties")
+    public ResponseEntity<String> updatePointProperties(@RequestParam Map<String, String> query, HttpServletRequest request, @RequestBody JsonPointProperties body) {
         try {
             User user = Common.getUser(request);
             if (user != null) {
