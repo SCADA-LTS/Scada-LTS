@@ -72,6 +72,7 @@
         <td valign="top">
           <%@ include file="/WEB-INF/jsp/pointEdit/pointProperties.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/loggingProperties.jsp" %>
+          <%@ include file="/WEB-INF/jsp/pointEdit/eventTextRenderer.jsp"%>
           <%@ include file="/WEB-INF/jsp/pointEdit/textRenderer.jsp" %>
           <%@ include file="/WEB-INF/jsp/pointEdit/chartRenderer.jsp" %>
         </td>
@@ -134,7 +135,7 @@
 
                        // Interval logging period
 
-                       jQuery("[name='intervalLoggingPeriod'").val(prop.intervalLoggingPeriod);
+                       jQuery("[name='intervalLoggingPeriod']").val(prop.intervalLoggingPeriod);
 
                        // Interval logging period type
                        jQuery("[name='intervalLoggingPeriodType']").val(prop.intervalLoggingPeriodType);
@@ -170,6 +171,99 @@
 
                       showAndSetLoginType(properties);
 
+                       var currentEventTextRenderer = $("eventTextRendererSelect").value;
+
+                       dojo.html.hide(
+                           $(currentEventTextRenderer)
+                       );
+
+                       jQuery("#eventTextRendererSelect").val(properties.def.name);
+
+                       currentEventTextRenderer = $("eventTextRendererSelect").value;
+
+                       dojo.html.show(
+                           $(currentEventTextRenderer)
+                       );
+                       if (properties.eventTextRenderer.def.name == "eventTextRendererBinary") {
+                           jQuery("#eventTextRendererBinaryZeroShort").val(properties.eventTextRenderer.zeroShortLabel);
+                           jQuery("#eventTextRendererBinaryZeroLong").val(properties.eventTextRenderer.zeroLongLabel);
+                           dojo.widget.byId("eventTextRendererBinaryZeroColour").selectedColour = properties.eventTextRenderer.zeroColour;
+                           jQuery("#eventTextRendererBinaryZero").css('color', properties.eventTextRenderer.zeroColour);
+                           jQuery("#eventTextRendererBinaryOneShort").val(properties.eventTextRenderer.oneShortLabel);
+                           jQuery("#eventTextRendererBinaryOneLong").val(properties.eventTextRenderer.oneLongLabel);
+                           jQuery("#eventTextRendererBinaryOne").css('color', properties.eventTextRenderer.oneColour);
+                           dojo.widget.byId("eventTextRendererBinaryOneColour").selectedColour = properties.eventTextRenderer.oneColour;
+
+                       }
+
+                       if (properties.eventTextRenderer.def.name == "eventTextRendererMultistate") {
+
+                           if (checkGetAlertError()) {
+                               try {
+                                   var alert_old = alert;
+                                   alert = function (message) {
+                                       console.log(message);
+                                   }
+                                   for (var multistate in properties.eventTextRenderer.multistateEventValues) {
+                                       eventTextRendererEditor.addMultistateEventValue(
+                                           String( properties.eventTextRenderer.multistateValues[multistate].key ),
+                                           String( properties.eventTextRenderer.multistateValues[multistate].shortText ),
+                                           String( properties.eventTextRenderer.multistateValues[multistate].longText ),
+                                           String( properties.eventTextRenderer.multistateValues[multistate].colour ));
+                                   }
+                               } catch (err) {
+                                   console.log(err);
+                               } finally {
+                                   alert = alert_old;
+                               }
+                           } else {
+                               for (var multistate in properties.eventTextRenderer.multistateEventValues) {
+                                   eventTextRendererEditor.addMultistateEventValue(
+                                       String( properties.eventTextRenderer.multistateValues[multistate].key ),
+                                       String( properties.eventTextRenderer.multistateValues[multistate].shortText ),
+                                       String( properties.eventTextRenderer.multistateValues[multistate].longText ),
+                                       String( properties.eventTextRenderer.multistateValues[multistate].colour ));
+                               }
+                           }
+                       }
+
+                       if (properties.eventTextRenderer.def.name == "eventTextRendererRange") {
+
+                           if (checkGetAlertError()) {
+                               try {
+                                   var alert_old = alert;
+                                   alert = function (message) {
+                                       console.log(message);
+                                   }
+                                   for (var range in properties.eventTextRenderer.rangeEventValues) {
+                                       eventTextRendererEditor.addRangeEventValue(
+                                           String( properties.eventTextRenderer.rangeEventValues[range].from ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].to ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].shortText ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].longText ),
+                                           String( properties.eventTextRenderer.rangeEventValues[range].colour ));
+                                   }
+                               } catch( err ) {
+                                   console.log(err);
+                               } finally {
+                                   alert = alert_old;
+                               }
+
+                           } else {
+                               for (var range in properties.eventTextRenderer.rangeEventValues) {
+                                   eventTextRendererEditor.addRangeEventValue(
+                                       String( properties.eventTextRenderer.rangeEventValues[range].from ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].to ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].shortText ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].longText ),
+                                       String( properties.eventTextRenderer.rangeEventValues[range].colour ));
+                               }
+                           }
+
+                       }
+
+                       // text renderer
+
                       var currentTextRenderer = $("textRendererSelect").value;
 
                       dojo.html.hide(
@@ -183,18 +277,18 @@
                       dojo.html.show(
                         $(currentTextRenderer)
                       );
+                       if (properties.def.name == "textRendererBinary") {
+                          jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
+                          dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
+                          jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
+                          jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
+                          jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
+                          dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
 
-                      if (properties.def.name == "textRendererBinary") {
-                        jQuery("#textRendererBinaryZero").val(properties.textRenderer.zeroLabel);
-                        dojo.widget.byId("textRendererBinaryZeroColour").selectedColour = properties.textRenderer.zeroColour;
-                        jQuery("#textRendererBinaryZero").css('color', properties.textRenderer.zeroColour);
-                        jQuery("#textRendererBinaryOne").val(properties.textRenderer.oneLabel);
-                        jQuery("#textRendererBinaryOne").css('color', properties.textRenderer.oneColour);
-                        dojo.widget.byId("textRendererBinaryOneColour").selectedColour = properties.textRenderer.oneColour;
                       }
+                       if (properties.def.name == "textRendererPlain") {
+                          jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
 
-                      if (properties.def.name == "textRendererPlain") {
-                        jQuery("#textRendererPlainSuffix").val(properties.textRenderer.suffix);
                       }
 
                       if (properties.def.name == "textRendererMultistate") {
@@ -551,6 +645,51 @@
                       + "<li>low:" + properties.discardLowLimit + "</li>"
                       + "<li>high:" + properties.discardHighLimit + "</li></ul></li>"
 
+                      let eventTextRenderer = "";
+
+                      if (properties.def.name == "eventTextRendererBinary") {
+                          eventTextRenderer = ""
+                              + "<li>Event text renderer properties: Binary"
+                              + "<ul class='scada-swal-ul2'>"
+                              + "<li>zero short: " + properties.eventTextRenderer.zeroShortLabel + " + zero long: " + properties.eventTextRenderer.zeroLongLabel + " color:" + properties.eventTextRenderer.zeroColour + "</li>"
+                              + "<li>one: " +  properties.eventTextRenderer.oneLabel +  " color:" + properties.eventTextRenderer.oneColour + "</li></ul></li>";
+                      }
+
+                      if (properties.def.name == "eventTextRendererMultistate") {
+
+                          eventTextRenderer = ""
+                              + "<li>Event text renderer properties: Multistate "
+                              + "<ul class='scada-swal-ul2'>";
+
+                          for (var multistate in properties.eventTextRenderer.multistateValues) {
+                              eventTextRenderer = eventTextRenderer + "<li>key: " + properties.eventTextRenderer.multistateValues[multistate].key
+                                  + " short text: " + properties.eventTextRenderer.multistateValues[multistate].shortText
+                                  + " long text: " + properties.eventTextRenderer.multistateValues[multistate].longText
+                                  + " color: " + properties.eventTextRenderer.multistateValues[multistate].colour + "</li>";
+                          }
+
+                          eventTextRenderer = eventTextRenderer + "</ul></li>";
+                      }
+
+                      if (properties.def.name == "eventTextRendererRange") {
+
+                          eventTextRenderer = ""
+                              + "<li>Text renderer properties: Range "
+                              + "<ul class='scada-swal-ul2'>";
+
+                          for (var range in properties.eventTextRenderer.rangeEventValues) {
+
+                              eventTextRenderer = eventTextRenderer + "<li>from: " + properties.eventTextRenderer.rangeEventValues[range].from
+                                  + " to: " + properties.eventTextRenderer.rangeEventValues[range].to
+                                  + " short text: " + properties.eventTextRenderer.rangeEventValues[range].shortText
+                                  + " long text: " + properties.eventTextRenderer.rangeEventValues[range].longText
+                                  + " color: " + properties.eventTextRenderer.rangeEventValues[range].colour + "</li>";
+
+                          }
+
+                          eventTextRenderer = eventTextRenderer + "</ul></li>";
+                      }
+
                       let textRenderer = "";
 
                       if (properties.def.name == "textRendererBinary") {
@@ -656,6 +795,7 @@
                         + htmlLogginProperties
                         + "<li>Purge After: " + properties.purgePeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
                         + "<li>Default cache size: " + properties.defaultCacheSize + "</li>"
+                        + eventTextRenderer
                         + textRenderer
                         + chartRenderer
                         + "</ul></div>";

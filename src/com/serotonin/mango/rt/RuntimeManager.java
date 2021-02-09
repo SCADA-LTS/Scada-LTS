@@ -422,6 +422,12 @@ public class RuntimeManager {
 		// it.
 		int dataType = point.getPointLocator().getDataTypeId();
 
+		// Event text renderer
+		if (point.getEventTextRenderer() != null
+				&& !point.getEventTextRenderer().getDef().supports(dataType))
+			// Return to a default renderer
+			point.setEventTextRenderer(null);
+
 		// Chart renderer
 		if (point.getChartRenderer() != null
 				&& !point.getChartRenderer().getDef().supports(dataType))
