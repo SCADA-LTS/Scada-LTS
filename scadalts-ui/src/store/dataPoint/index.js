@@ -172,6 +172,58 @@ const storeDataPoint = {
 				duration: 60000,
 				startTime: undefined,
 			},
+		],
+
+		eventRenderersTemplates: [
+			{},
+			{
+				zeroShortLabel: "",
+				zeroLongLabel: "",
+				zeroColour: "#000000",
+				oneShortLabel: "",
+				oneLongLabel: "",
+				oneColour: "#000000",
+				typeName: "eventTextRendererBinary",
+				def: {
+					id: 0,
+					name: "eventTextRendererBinary",
+					exportName: "EVENT_BINARY",
+					nameKey: "textRenderer.binary",
+					supportedDataTypes: [1]
+				},
+				colour: null,
+				metaShortText: null,
+				metaLongText: null
+			},
+			{
+				multistateEventValues: [ ],
+				typeName: "eventTextRendererMultistate",
+				def: {
+					id: 0,
+					name: "eventTextRendererMultistate",
+					exportName: "EVENT_MULTISTATE",
+					nameKey: "textRenderer.multistate",
+					supportedDataTypes: [2]
+				},
+				colour: null,
+				metaShortText: null,
+				metaLongText: null
+			},
+			{},
+			{
+				rangeEventValues: [ ],
+				typeName: "eventTextRendererRange",
+				def: {
+					id: 0,
+					name: "eventTextRendererRange",
+					exportName: "EVENT_RANGE",
+					nameKey: "textRenderer.range",
+					supportedDataTypes: [3]
+				},
+				colour: null,
+				metaShortText: null,
+				metaLongText: null
+			}
 		]
 		
 	},

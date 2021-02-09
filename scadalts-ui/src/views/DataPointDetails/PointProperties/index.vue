@@ -35,6 +35,7 @@
 
 						<PointPropLogging :data="data"></PointPropLogging>
 						<PointPropTextRenderer :data="data"></PointPropTextRenderer>
+						<PointPropEventRenderer :data="data"></PointPropEventRenderer>
 						<PointPropChartRenderer :data="data"></PointPropChartRenderer>
 					</v-col>
 
@@ -61,6 +62,7 @@
 import PointPropLogging from './PointPropLogging';
 import PointPropTextRenderer from './PointPropTextRenderer';
 import PointPropChartRenderer from './PointPropChartRenderer';
+import PointPropEventRenderer from './PointPropEventRenderer';
 import PointPropEventDetectors from './PointPropEventDetectors';
 
 export default {
@@ -70,6 +72,7 @@ export default {
 		PointPropLogging,
 		PointPropTextRenderer,
 		PointPropChartRenderer,
+		PointPropEventRenderer,
         PointPropEventDetectors,
 	},
 
