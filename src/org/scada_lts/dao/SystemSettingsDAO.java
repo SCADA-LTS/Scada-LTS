@@ -20,6 +20,7 @@ package org.scada_lts.dao;
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.utils.ColorUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
@@ -102,6 +103,12 @@ public class SystemSettingsDAO {
 	private static final String COLUMN_NAME_SETTING_VALUE = "settingValue";
 	private static final String COLUMN_NAME_SETTINGS_NAME = "settingName";
 
+	// Database
+	public static final String DATABASE_INFO_SCHEMA_VERSION = "version";
+
+	// SMS domain
+	public static final String SMS_DOMAIN = "sms.domain";
+
 	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
 	private static final String DELETE_MANGO_VIEWS = "delete from mangoViews";
 	private static final String DELETE_POINT_EVENT_DETECTORS = "delete from pointEventDetectors";
@@ -122,6 +129,9 @@ public class SystemSettingsDAO {
 	private static final String DELETE_DATA_SOURCE_USERS = "delete from dataSourceUsers";
 	private static final String DELETE_DATA_POINTS = "delete from dataPoints";
 	private static final String DELETE_DATA_SOURCES = "delete from dataSources";
+
+	// Logging
+	public static final String DEFAULT_LOGGING_TYPE = "defaultLoggingType";
 
 	// @formatter:off
 	private static final String SELECT_SETTING_VALUE_WHERE = ""
@@ -145,6 +155,9 @@ public class SystemSettingsDAO {
 	private static final String SELECT_DATABASE = ""
 			+ "select "
 			+ DATABASE_STATEMENT + ";";
+
+	private static final String SELECT_LATEST_SCHEMA_VERSION = ""
+			+ "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1";
 	// @formatter:on
 
 	// Value cache
@@ -263,6 +276,26 @@ public class SystemSettingsDAO {
 		}
 	}
 
+	public String getDatabaseSchemaVersion(String key, String defaultValue) {
+		String result = cache.get(key);
+		if (result == null) {
+			if (!cache.containsKey(key)) {
+				try {
+					result = DAO.getInstance().getJdbcTemp().queryForObject(SELECT_LATEST_SCHEMA_VERSION, String.class);
+				} catch (EmptyResultDataAccessException e) {
+					result = null;
+				}
+				cache.put(key, result);
+				if (result == null) {
+					result = defaultValue;
+				}
+			} else {
+				result = defaultValue;
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * Special caching for the future dated values property, which needs high
 	 * performance.
@@ -305,11 +338,14 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				Common.TimePeriods.HOURS);
-		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.2");
+		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.5");
 
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_GRIDLINE_COLOUR, "silver");
+
+		DEFAULT_VALUES.put(DEFAULT_LOGGING_TYPE, DataPointVO.LoggingTypes.ON_CHANGE);
+		DEFAULT_VALUES.put(SMS_DOMAIN, "localhost");
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

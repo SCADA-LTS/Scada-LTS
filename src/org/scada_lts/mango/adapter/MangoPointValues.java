@@ -32,7 +32,7 @@ import org.scada_lts.dao.model.point.PointValueAdnnotation;
  */
 public interface MangoPointValues {
 
-	long deletePointValuesBefore(int dataPointId, long time);
+	long deletePointValuesBeforeWithOutLast(int dataPointId, long time);
 	
 	long deletePointValues(int dataPointId);
 	

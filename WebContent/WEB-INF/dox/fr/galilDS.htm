@@ -1,28 +1,27 @@
 <!--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
+    @auteur Matthew Lohbihler
     
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
- -->
-<h1>Overview</h1>
-<p>The Galil data source is used to exchange data with Galil DMC-21x2 equipment accessible over an I/P network. Equipment can be in a local network or intranet, or could also be anywhere in the internet. This is a polling data source.</p>
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/-->
+<h1>Vue d'ensembles</h1>
+<p>La source de données Galil est utilisée pour échanger des données avec l'équipement Galil DMC-21x2 accessible via un réseau I/P. L'équipement peut se trouver dans un réseau local ou un intranet, ou peut également se trouver n'importe où sur Internet. Il s'agit d'une source de données de sondage.</p>
 
 <h1>Configuration</h1>
-<p>Every data source requires a <b>Name</b>, which can be any description. The <b>Host</b> and <b>Port</b> settings determine how to find the equipment on the network. The host can be a domain name or an IP address. The <b>Timeout</b> and <b>Retries</b> fields determine the system behaviour in the case of a polling failure. The data source waits the given number of timeout milliseconds for a response from the equipment. If it is not received the request will be retried the given number of times. The <b>Update period</b> determines how often the equipment is polled for data. </p>
-<p>Once a connection is established with the equipment, it is kept alive for as long as the equipment allows. Closed connections cause an automatic reopen attempt.</p>
+<p>Chaque source de données nécessite un <b>Nom</b>, qui peut être n'importe quelle description. Les paramètres <b>Hôte</b> et <b>Port</b> déterminent comment trouver l'équipement sur le réseau. L'hôte peut être un nom de domaine ou une adresse IP. Les champs <b>Timeout</b> et <b>Retries</b> déterminent le comportement du système en cas d'échec de l'interrogation. La source de données attend le nombre de millisecondes de délai d'attente donné pour une réponse de l'équipement. Si elle n'est pas reçue, la demande sera réessayée le nombre de fois indiqué. La période <b>Mise à jour</b> détermine la fréquence à laquelle l'équipement est interrogé pour des données. </p>
+<p>Une fois qu'une connexion est établie avec l'équipement, elle est maintenue en vie aussi longtemps que l'équipement le permet. Les connexions fermées provoquent une tentative de réouverture automatique.</p>
 
-<h1>Command testing</h1>
-<p>Equipment connectivity and state can be tested using the <b>Galil command testing</b> section. This feature opens a new connection over which to send the command, so it will not conflict with any running data source. However, if the equipment only allows a restricted number of simultaneous connections, connectivity could fail.</p>
-<p>The <b>Command</b> value can be any valid command string (excluding the CRLF terminator, and optionally excluding a closing semi-colon). The result of the command will be displayed below the Execute button. If the connection to the equipment failed, the error message will be displayed. The connection will timeout after the given timeout duration if no response is received. If an error response is received (i.e. '?' is received), the message "(error response)" will be displayed.</p>
+<h1>Test de commande</h1>
+<p>La connectivité et l'état des équipements peuvent être testés en utilisant la section <b>Test de la commande Galil</b>. Cette fonction ouvre une nouvelle connexion sur laquelle envoyer la commande, de sorte qu'elle n'entre en conflit avec aucune source de données en cours d'exécution. Toutefois, si l'équipement n'autorise qu'un nombre limité de connexions simultanées, la connectivité pourrait échouer.</p>
+<p>La valeur <b>Commande</b> peut être toute chaîne de commande valide (à l'exclusion du terminateur CRLF, et éventuellement à l'exclusion d'un point-virgule fermant). Le résultat de la commande sera affiché sous le bouton Exécuter. Si la connexion à l'équipement a échoué, le message d'erreur sera affiché. Si aucune réponse n'est reçue, la connexion s'interrompra après la durée de temporisation donnée. Si une réponse d'erreur est reçue (c'est-à-dire si '?' est reçu), le message "(réponse d'erreur)" sera affiché.</p>

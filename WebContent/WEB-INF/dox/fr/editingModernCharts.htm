@@ -1,0 +1,123 @@
+<!--
+    Scada-LTS - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @auteur Matthew Lohbihler
+    
+    Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+    aux termes de la licence publique générale GNU telle que publiée par
+    la Free Software Foundation, soit la version 3 de la licence, ou
+    (à votre choix) toute version ultérieure.
+
+    Ce programme est distribué dans l'espoir qu'il sera utile,
+    mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
+    la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+    Licence publique générale GNU pour plus de détails.
+
+    Vous devriez avoir reçu une copie de la licence publique générale de GNU
+    en même temps que ce programme.  Si ce n'est pas le cas, voir http://www.gnu.org/licenses/.
+ -->
+<h1>Composantes des graphiques modernes</h1>
+<h2>Février 2020 - Version 1.0.2</h2>
+<p>Scada-LTS composants graphiques modernes : il s'agit d'un ensemble de nouveaux composants VueJS v2.0 conçus pour la vue graphique en Scada-LTS. Il est basé sur <a href="https://www.amcharts.com/">am4chart</a> bibliothèque. Elle génère des graphiques en utilisant JavaScript du côté de l'utilisateur qui est une nouvelle approche des graphiques en Scada (ils ont été générés via des scripts et des bibliothèques côté serveur). Il s'agit plus d'un navigateur charge qu'auparavant, mais l'application serveur devient plus légère et gagne en performance.</p>
+<h2>Types de graphiques:</h2>
+<ul>
+    <li><strong>&lt;line-chart&gt;</strong> Tableau des séries de lignes</li>
+    <li><strong>&lt;step-line-chart&gt;</strong> Diagramme de la série Step Line</li>
+</ul>
+<h2>Usage:</h2>
+<p>De nouveaux graphiques pourraient être ajoutés à la vue graphique Scada-LTS en ajoutant un nouveau composant HTML avec un contenu spécifique. Chaque graphique doit être initialisé en utilisant les balises HTML étendues énumérées ci-dessus. Chacune de ces balises prend une propriété spécifique nécessaire pour mettre en place un tableau spécifique. La carte est générée à l'intérieur de cette balise qui a une taille par défaut de 750x500px.</p>
+<hr>
+<h3>Démarrage rapide:</h3>
+<p>Créer un graphique linéaire simple pour un point de données [ numérique | multi-états | binaire ] spécifique.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot;/&gt;
+</code></pre>
+<p>ou</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot;/&gt;
+</code></pre>
+<p><b>C'est tout !</b>
+ Il a rendu un graphique linéaire pour un point spécifique de la dernière heure avec des paramètres par défaut. Donc, si vous voulez surveiller le état du point de la dernière heure, c'est la façon la plus simple de le faire. Ce graphique peut être zoomé et dézoomé en utilisant barre de défilement en bas du composant. Les valeurs des données à un moment donné sont représentées par des points blancs sur le graphique..
+</p>
+<p>Mais il ne s'agit encore que d'un tableau comme ce vieux. Quoique si nous voulons vraiment surveiller l'état de ce point <strong>en temps réel</strong> ? Pas de problème, il suffit d'ajouter le suivant
+    propriétés.</p>
+<hr>
+<h3>Données en directs</h3>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot; refresh-rate=&quot;10000&quot;/&gt;
+</code></pre>
+<p><strong>Nous avons maintenant un graphique en direct ! Il est rafraîchi toutes les 10 minutes (10 000 ms) et lorsqu'un point de données change d'état pour prendre une autre valeur, ce nouveau point est ajouté à la carte et le plus ancien sera supprimé de notre carte. Nous pouvons désormais surveiller l'état du point de données en temps réel avec un taux de rafraîchissement choisi par nous. Pour les données critiques, nous pouvons surveiller l'état du point avec une fréquence élevée de les requêtes au serveur (plus de données en temps réel mais plus gourmandes en ressources) et pour les données non critiques, nous pouvons rafraîchir le graphique après quelques secondes.</strong></p>
+<p>Mais qu'en est-il si nous voulons afficher des cartes pour <strong>des points de données multiples ?</strong></p>
+<hr>
+<h3>Multiple points</h3>
+<p>Il suffit d'ajouter le point de données suivant après la virgule dans <em>âpoint-idâ</em> property.</p>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dataPointID],[anotherDataPointID],[andNextDataPointID&quot;],[fourthDataPointID&quot;]/&gt;
+</code></pre>
+<p><br>
+    Nous avons maintenant un graphique pour 3 points de données avec les valeurs de la dernière heure. Ces composantes n'ont pas de limites pour un le nombre de points affichés sur un seul graphique, mais j'espère que vous avez l'intuition que 30 points sur un seul graphique est ce n'est pas une bonne idée.</p>
+<p>Pouvons-nous afficher <strong>des valeurs plus anciennes</strong> que de durer une heure ?</p>
+<hr>
+<h3>Période déterminée</h3>
+<p>Oui ! Il suffit d'ajouter une nouvelle propriété à notre balise.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot; refresh-rate=&quot;10000&quot; start-date=&quot;1-day&quot;/&gt;
+</code></pre>
+<p>Comme vous pouvez le voir, c'est un morceau de gâteau. Il suffit de taper à l'intérieur la propriété "date de début", la période à partir de laquelle vous voulez voir les données. Vous pouvez utiliser toutes les combinaisons de chiffres avec une période de temps spécifique <strong> [heure(s) | jour(s) | faible(s) | mois ]</strong>. (ex. à 2-jours, à 1-semaine, à 3 mois à etc.) Mais ce n'est pas tout ! C'est du temps calculé dynamique à partir de maintenant mais on peut aussi utiliser un date. Si nous voulons voir les données du début de l'année précédente, il suffit de taper date <em>(par exemple â2019/02/01â pour voir les données à partir du 1er février 2019)</em>. Il pourrait être utile de limiter les données affichées.</p>
+<p>Pour afficher les valeurs d'une période donnée, il suffit d'ajouter le paramètre <strong>âend-dateâ</strong>..</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot; start-date=&quot;2019/02/01&quot; end-date=&quot;2019/03/01&quot;/&gt;
+</code></pre>
+<p>Et il fonctionne toujours avec plusieurs points de données. C'est formidable ! N'est-ce pas ? <br>
+    Mais que faire si je veux ajouter une ligne horizontale à la carte pour créer par exemple un niveau d'alerte, lequel d'entre eux est dépassé et pourrait être dangereux ?</p>
+<hr>
+<h3>Ligne de niveau</h3>
+<p>Ok, examinons celui-ci:</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot; range-value=&quot;100&quot; range-color=&quot;#FF0000&quot; range-label=&quot;boiling&quot;/&gt;
+</code></pre>
+<p>Nous avons maintenant créé une ligne horizontale pour notre carte qui indique le niveau d'ébullition de l'eau. Grâce à cela, nous pouvons rapidement observer que la température de l'eau à l'intérieur du réservoir est bouillant. Il est utile même à l'intérieur de Scada-LTS.</p>
+<p>Attendez un instant ! Nous avons décidé de la couleur de cette ligne horizontale. Pourrions-nous faire de même avec les lignes du graphique ?</p>
+<hr>
+<h3>Couleurs des graphiques</h3>
+<p>Par exemple, nous avons 3 capteurs. Les couleurs vertes par défaut sont trop similaires. Pouvons-nous mettre en place un jeu de couleurs différent pour nos cartes. Il suffit d'ajouter ce paramètre:</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dpID],[dpID_2],[dpID_3]&quot; color=&quot;#FFFC19, #0971B3, #B31212&quot;/&gt;
+</code></pre>
+<p>Nous avons maintenant défini 3 couleurs personnalisées pour nos cartes. Nous pouvons donner une seule valeur de couleur et le reste sera récupéré à partir de ces valeurs par défaut. Ce qui est le plus important<strong>UTILISER DES VALEURS DE CODE COULEUR HEXADÉCIMALES</strong><br> Des tableaux modernes assez colorés. Mais nous avons toujours la même taille pour le thème Oui, oui, il pourrait aussi être modifié.</p>
+<hr>
+<h3>Taille du graphique</h3>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; width=&quot;1080&quot; height=&quot;720&quot;/&gt;
+</code></pre>
+<p>Graphique HD ? Pourquoi pas ! Les valeurs des attributs sont données en Pixels (px). Cela est utile lorsque nous avons défini plusieurs instances de graphique sur une vue graphique. Nous pouvons facilement calculer la position de la carte suivante.</p>
+<h3>Etiquettes</h3>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; label=&quot;Mid season temperature&quot;/&gt;
+</code></pre>
+<p>Cela suffirait à partir de la base. Il est temps de passer à des tâches plus complexes.</p>
+<hr>
+<h3>Graphiques multiples</h3>
+<p>Pour générer plusieurs graphiques sur la page Afficher, il suffit d'utiliser des identifiants uniques.</p>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; label=&quot;Outdoor temperature&quot;/&gt;
+
+&lt;div id=&quot;chart-step-line-1&quot; point-id=&quot;[dpID]&quot; label=&quot;Outdoor humidity&quot;/&gt;
+
+&lt;div id=&quot;chart-step-line-2&quot; point-id=&quot;[dpID]&quot; label=&quot;Indoor pressure&quot;/&gt;
+</code></pre>
+<p></p>
+<h2>Documentation sur les cartes modernes:</h2>
+<p>Propriétés disponibles en un seul endroit pour tous les types de cartes. Les graphiques <em>(à l'exclusion des graphiques de jauge) </em> peuvent être exportés vers un fichier externe sous forme graphique ou textuelle. Vous pouvez exporter vers des fichiers *.png, *.jpg, *.csv, *.json.</p>
+<p>Propriétés pour Step Line, Diagrammes de lignes</p>
+<ul>
+    <li>point-id</li>
+    <li>point-xid</li>
+    <li>étiquette</li>
+    <li>largeur</li>
+    <li>hauteur</li>
+    <li>couleur</li>
+    <li>date de lancement</li>
+    <li>date de clôture</li>
+    <li>taux de rafraîchissement</li>
+    <li>étape de la polyligne</li>
+    <li>valeur de la gamme</li>
+    <li>valeur de la couleur</li>
+    <li>valeur de l'étiquette</li>
+    <li>afficher la barre de défilement-x</li>
+    <li>afficher la barre de défilement-y</li>
+    <li>afficher le journal</li>
+</ul>
+<h1>Auteur</h1>
+<ul>
+    <li><a href="https://github.com/radek2s">Radosław Jajko</a>: <strong><a href="mailto:rjajko@softq.pl">rjajko@softq.pl</a></strong></li>
+</ul>

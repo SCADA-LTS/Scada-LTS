@@ -17,16 +17,21 @@
  */
 package org.scada_lts.dao.migration.mysql;
 
-import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+
+import org.flywaydb.core.api.migration.Context;
+import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author grzegorz bylica grzegorz.bylica@gmail.com
  */
-public class V1_1__ViewsHierarchy implements SpringJdbcMigration {
-	
-	public void migrate(JdbcTemplate jdbcTmp) throws Exception {
-		
+public class V1_1__ViewsHierarchy extends BaseJavaMigration {
+
+	public void migrate(Context context) throws Exception {
+
+		final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
+
 		final String folderViewsHierarchySQL = ""
 		    		+ "create table category_views_hierarchy ("
 		    			+ "id int(11) not null auto_increment,"

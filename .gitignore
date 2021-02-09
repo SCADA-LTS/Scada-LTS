@@ -3,8 +3,11 @@
 /bin/
 target/
 /WebContent/assets/.sass-cache/
-/WebContent/images/oldicons
-/WebContent/resources/app/bower_components/
+###########################
+#   Static web content    #
+###########################
+/WebContent/resources/node_modules/
+/WebContent/resources/package-lock.json
 /WebContent/resources/js-ui/
 # OS Files #
 .DS_Store
@@ -58,14 +61,13 @@ local.properties
 /WebContent/assets/logo.png
 /WebContent/assets/evn.properties
 /WebContent/assets/commons.css
+/WebContent/WEB-INF/classes
 # Locally stored "Eclipse launch configurations"
 *.launch
 # CDT-specific
 .cproject
 # PDT-specific
 .buildpath
-# seroUtils.jar
-seroUtils.jar
 *deploy_rsa
 *deploy_rsa.pub
 *.exe
@@ -102,3 +104,13 @@ scadabr-1.1.0-RC_.iml
 ###########################
 catalina-jrebel.bat
 scadabr-1.1.0-RC.iml
+# Ignore Gradle project-specific cache directory
+.gradle
+gradle/
+# Ignore Gradle build output directory
+WebContent/resources/node_modules/
+WebContent/resources/package-lock.json
+build
+databases
+gradlew
+gradlew.bat

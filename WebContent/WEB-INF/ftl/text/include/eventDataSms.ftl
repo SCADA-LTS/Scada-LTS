@@ -1,0 +1,1 @@
+${point.name} - <@fmt key="ftl.activeAt"/> ${evt.prettyActiveTimestamp}

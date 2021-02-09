@@ -1,0 +1,1 @@
+<@fmt message=evt.message/> - <@fmt key="ftl.activeAt"/> ${evt.prettyActiveTimestamp}
