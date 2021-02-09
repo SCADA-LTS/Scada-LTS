@@ -14,168 +14,177 @@
 			></v-select>
 		</v-col>
 
-		<!-- ANALOG RENDERER PROPERTIES -->
-		<v-row v-if="selected === 0" dense>
-			<v-col cols="6">
-				<v-text-field v-model="data.textRenderer.format" label="Format" dense>
-				</v-text-field>
-			</v-col>
-			<v-col cols="6">
-				<v-text-field v-model="data.textRenderer.suffix" label="Suffix" dense>
-				</v-text-field>
-			</v-col>
-		</v-row>
+		<v-col cols="12">
 
-		<!-- BINARY RENDERER PROPERTIES -->
-		<v-row v-if="selected === 1" dense>
-            <v-col cols="1">
-				<v-menu offset-y>
-					<template v-slot:activator="{ on }">
-						<v-btn :color="data.textRenderer.zeroColour" v-on="on" block> </v-btn>
-					</template>
-					<v-color-picker v-model="data.textRenderer.zeroColour"> </v-color-picker>
-				</v-menu>
-			</v-col>
-			<v-col cols="11">
-				<v-text-field v-model="data.textRenderer.zeroLabel" label="Zero" dense>
-				</v-text-field>
-			</v-col>
-            <v-col cols="1">
-				<v-menu offset-y>
-					<template v-slot:activator="{ on }">
-						<v-btn :color="data.textRenderer.oneColour" v-on="on" block> </v-btn>
-					</template>
-					<v-color-picker v-model="data.textRenderer.oneColour"> </v-color-picker>
-				</v-menu>
-			</v-col>
-			<v-col cols="11">
-				<v-text-field v-model="data.textRenderer.oneLabel" label="One" dense>
-				</v-text-field>
-			</v-col>
-		</v-row>
-
-		<!-- MULTISTATE RENDERER PROPERTIES -->
-		<v-row v-if="selected === 2" dense>
-			<v-col cols="1">
-				<v-menu offset-y>
-					<template v-slot:activator="{ on }">
-						<v-btn :color="multistateRenderer.colour" v-on="on" block> </v-btn>
-					</template>
-					<v-color-picker v-model="multistateRenderer.colour"> </v-color-picker>
-				</v-menu>
-			</v-col>
-			<v-col cols="3">
-				<v-text-field v-model="multistateRenderer.key" label="Key" dense> </v-text-field>
-			</v-col>
-			<v-col cols="8">
-				<v-text-field v-model="multistateRenderer.text" label="Text" dense
-                append-outer-icon="mdi-plus-circle"
-					@click:append-outer="addMultistateValue"> </v-text-field>
-			</v-col>
-
-            <v-divider></v-divider>
-
-			<v-row v-for="e in data.textRenderer.multistateValues" :key="e" dense>
-				<v-col cols="1">
-					<v-btn :color="e.colour" block> </v-btn>
+			<!-- ANALOG RENDERER PROPERTIES -->
+			<v-row v-if="selected === 0" dense>
+				<v-col cols="6">
+					<v-text-field v-model="data.textRenderer.format" label="Format" dense>
+					</v-text-field>
 				</v-col>
-
-				<v-col cols="3">
-					<v-text-field v-model="e.key" label="Key" dense> </v-text-field>
-				</v-col>
-				
-				<v-col cols="8">
-					<v-text-field
-						v-model="e.text"
-						label="Text"
-						dense
-						append-outer-icon="mdi-close-circle-outline"
-						@click:append-outer="delMultistateValue(e)"
-					>
+				<v-col cols="6">
+					<v-text-field v-model="data.textRenderer.suffix" label="Suffix" dense>
 					</v-text-field>
 				</v-col>
 			</v-row>
-		</v-row>
 
-		<!-- PLAIN RENDERER PROPERTIES -->
-		<v-row v-if="selected === 3" dense>
-			<v-col cols="12">
-				<v-text-field
-					v-model="data.textRenderer.format"
-					label="Suffix"
-					dense
-				></v-text-field>
-			</v-col>
-		</v-row>
-
-		<!-- RANGE RENDERER PROPERTIES -->
-		<v-row v-if="selected === 4" dense>
-			<v-col cols="1">
-				<v-menu offset-y>
-					<template v-slot:activator="{ on }">
-						<v-btn :color="rangeRenderer.colour" v-on="on" block> </v-btn>
-					</template>
-					<v-color-picker v-model="rangeRenderer.colour"> </v-color-picker>
-				</v-menu>
-			</v-col>
-			<v-col cols="2">
-				<v-text-field v-model="rangeRenderer.from" label="From" dense> </v-text-field>
-			</v-col>
-			<v-col cols="2">
-				<v-text-field v-model="rangeRenderer.to" label="To" dense> </v-text-field>
-			</v-col>
-			<v-col cols="7">
-				<v-text-field
-					v-model="rangeRenderer.text"
-					label="Text"
-					dense
-					append-outer-icon="mdi-plus-circle"
-					@click:append-outer="addRangeValue"
-				>
-				</v-text-field>
-			</v-col>
-
-            <v-divider></v-divider>
-
-			<v-row v-for="e in data.textRenderer.rangeValues" :key="e" dense>
+			<!-- BINARY RENDERER PROPERTIES -->
+			<v-row v-if="selected === 1" dense>
 				<v-col cols="1">
-					<v-btn :color="e.colour" block></v-btn>
+					<v-menu offset-y>
+						<template v-slot:activator="{ on }">
+							<v-btn :color="data.textRenderer.zeroColour" v-on="on" block> </v-btn>
+						</template>
+						<v-color-picker v-model="data.textRenderer.zeroColour"> </v-color-picker>
+					</v-menu>
+				</v-col>
+				<v-col cols="11">
+					<v-text-field v-model="data.textRenderer.zeroLabel" label="Zero" dense>
+					</v-text-field>
+				</v-col>
+				<v-col cols="1">
+					<v-menu offset-y>
+						<template v-slot:activator="{ on }">
+							<v-btn :color="data.textRenderer.oneColour" v-on="on" block> </v-btn>
+						</template>
+						<v-color-picker v-model="data.textRenderer.oneColour"> </v-color-picker>
+					</v-menu>
+				</v-col>
+				<v-col cols="11">
+					<v-text-field v-model="data.textRenderer.oneLabel" label="One" dense>
+					</v-text-field>
+				</v-col>
+			</v-row>
+
+			<!-- MULTISTATE RENDERER PROPERTIES -->
+			<v-row v-if="selected === 2" dense>
+				<v-col cols="1">
+					<v-menu offset-y>
+						<template v-slot:activator="{ on }">
+							<v-btn :color="multistateRenderer.colour" v-on="on" block> </v-btn>
+						</template>
+						<v-color-picker v-model="multistateRenderer.colour"> </v-color-picker>
+					</v-menu>
+				</v-col>
+				<v-col cols="3">
+					<v-text-field v-model="multistateRenderer.key" label="Key" dense>
+					</v-text-field>
+				</v-col>
+				<v-col cols="8">
+					<v-text-field
+						v-model="multistateRenderer.text"
+						label="Text"
+						dense
+						append-outer-icon="mdi-plus-circle"
+						@click:append-outer="addMultistateValue"
+					>
+					</v-text-field>
 				</v-col>
 
-				<v-col cols="2">
-					<v-text-field v-model="e.from" label="From" dense> </v-text-field>
+				<v-divider></v-divider>
+
+				<v-row v-for="e in data.textRenderer.multistateValues" :key="e" dense>
+					<v-col cols="1">
+						<v-btn :color="e.colour" block> </v-btn>
+					</v-col>
+
+					<v-col cols="3">
+						<v-text-field v-model="e.key" label="Key" dense> </v-text-field>
+					</v-col>
+
+					<v-col cols="8">
+						<v-text-field
+							v-model="e.text"
+							label="Text"
+							dense
+							append-outer-icon="mdi-close-circle-outline"
+							@click:append-outer="delMultistateValue(e)"
+						>
+						</v-text-field>
+					</v-col>
+				</v-row>
+			</v-row>
+
+			<!-- PLAIN RENDERER PROPERTIES -->
+			<v-row v-if="selected === 3" dense>
+				<v-col cols="12">
+					<v-text-field
+						v-model="data.textRenderer.format"
+						label="Suffix"
+						dense
+					></v-text-field>
+				</v-col>
+			</v-row>
+
+			<!-- RANGE RENDERER PROPERTIES -->
+			<v-row v-if="selected === 4" dense>
+				<v-col cols="1">
+					<v-menu offset-y>
+						<template v-slot:activator="{ on }">
+							<v-btn :color="rangeRenderer.colour" v-on="on" block> </v-btn>
+						</template>
+						<v-color-picker v-model="rangeRenderer.colour"> </v-color-picker>
+					</v-menu>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="e.to" label="To" dense> </v-text-field>
+					<v-text-field v-model="rangeRenderer.from" label="From" dense> </v-text-field>
+				</v-col>
+				<v-col cols="2">
+					<v-text-field v-model="rangeRenderer.to" label="To" dense> </v-text-field>
 				</v-col>
 				<v-col cols="7">
 					<v-text-field
-						v-model="e.text"
+						v-model="rangeRenderer.text"
 						label="Text"
 						dense
-						append-outer-icon="mdi-close-circle-outline"
-						@click:append-outer="delRangeValue(e)"
+						append-outer-icon="mdi-plus-circle"
+						@click:append-outer="addRangeValue"
+					>
+					</v-text-field>
+				</v-col>
+
+				<v-divider></v-divider>
+
+				<v-row v-for="e in data.textRenderer.rangeValues" :key="e" dense>
+					<v-col cols="1">
+						<v-btn :color="e.colour" block></v-btn>
+					</v-col>
+
+					<v-col cols="2">
+						<v-text-field v-model="e.from" label="From" dense> </v-text-field>
+					</v-col>
+					<v-col cols="2">
+						<v-text-field v-model="e.to" label="To" dense> </v-text-field>
+					</v-col>
+					<v-col cols="7">
+						<v-text-field
+							v-model="e.text"
+							label="Text"
+							dense
+							append-outer-icon="mdi-close-circle-outline"
+							@click:append-outer="delRangeValue(e)"
+						>
+						</v-text-field>
+					</v-col>
+				</v-row>
+			</v-row>
+
+			<!-- TIME RENDERER PROPERTIES -->
+			<v-row v-if="selected === 5" dense>
+				<v-col cols="12">
+					<v-text-field v-model="data.textRenderer.format" label="Format" dense>
+					</v-text-field>
+				</v-col>
+				<v-col cols="12">
+					<v-text-field
+						v-model="data.textRenderer.conversionExponent"
+						label="Conversion exponent"
+						dense
 					>
 					</v-text-field>
 				</v-col>
 			</v-row>
-		</v-row>
-
-		<!-- TIME RENDERER PROPERTIES -->
-		<v-row v-if="selected === 5" dense>
-			<v-col cols="12">
-				<v-text-field v-model="data.textRenderer.format" label="Format" dense>
-				</v-text-field>
-			</v-col>
-			<v-col cols="12">
-				<v-text-field
-					v-model="data.textRenderer.conversionExponent"
-					label="Conversion exponent"
-					dense
-				>
-				</v-text-field>
-			</v-col>
-		</v-row>
+		</v-col>
 	</v-row>
 </template>
 <script>
@@ -188,7 +197,7 @@ export default {
 		return {
 			selected: undefined,
 			rangeRenderer: { from: 0, to: 0, text: '', colour: '#458e23' },
-            multistateRenderer: { key: 0, text: '', colour: '#458e23' },
+			multistateRenderer: { key: 0, text: '', colour: '#458e23' },
 		};
 	},
 
@@ -270,18 +279,17 @@ export default {
 			);
 		},
 
-        addMultistateValue() {
-            this.data.textRenderer.multistateValues.push(this.multistateRenderer);
+		addMultistateValue() {
+			this.data.textRenderer.multistateValues.push(this.multistateRenderer);
 			this.rangeRenderer = { key: 0, text: '', colour: '#458e23' };
-        },
-        delMultistateValue(val) {
+		},
+		delMultistateValue(val) {
 			this.data.textRenderer.multistateValues = this.data.textRenderer.multistateValues.filter(
 				(e) => {
 					return e.key !== val.key;
 				}
 			);
 		},
-
 	},
 };
 </script>

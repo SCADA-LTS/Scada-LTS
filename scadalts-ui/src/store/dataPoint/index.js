@@ -130,6 +130,49 @@ const storeDataPoint = {
 				metaText: null,
 			},
 		],
+
+		chartRenderersTemplates: [
+			{
+				limit: 2,
+				typeName: 'chartRendererTable',
+				def: {
+					id: 0,
+					name: 'chartRendererTable',
+					exportName: 'TABLE',
+					nameKey: 'chartRenderer.table',
+					supportedDataTypes: [1,2,3,4]
+				}
+			},
+			{
+				timePeriod: 2,
+				numberOfPeriods: 1,
+				typeName: 'chartRendererImage',
+				def: {
+					id: 0,
+					name: 'chartRendererImage',
+					exportName: 'IMAGE',
+					nameKey: 'chartRenderer.image',
+					supportedDataTypes: [1,2,3]
+				},
+				duration: 60000,
+				startTime: undefined,
+			},
+			{
+				timePeriod: 2,
+				numberOfPeriods: 1,
+				includeSum: false,
+				typeName: 'chartRendererStats',
+				def: {
+					id: 0,
+					name: 'chartRendererStats',
+					exportName: 'STATS',
+					nameKey: 'chartRenderer.statistics',
+					supportedDataTypes: [1,2,3,4]
+				},
+				duration: 60000,
+				startTime: undefined,
+			},
+		]
 		
 	},
 
@@ -178,6 +221,17 @@ const storeDataPoint = {
 		getDataPointDetails({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},
+
+		getDataPointValue({dispatch}, datapointId) {
+			return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+		},
+
+		setDataPointValue({dispatch}, payload) {
+			return dispatch('requestPost', {
+				url: `/point_value/setValue/${payload.xid}/${payload.type}/${payload.value}`,
+				data: null,
+			});
+		}
 	},
 
 	getters: {},
