@@ -819,11 +819,11 @@ paths:
         - PointPropertiesAPI
       parameters:
         - name: 'id'
-          in: 'path'
+          in: 'query'
           schema:
             type: number
         - name: 'xid'
-          in: 'path'
+          in: 'query'
           schema:
             type: string
       requestBody:

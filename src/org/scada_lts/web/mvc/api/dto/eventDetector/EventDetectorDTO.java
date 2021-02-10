@@ -20,7 +20,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
         @JsonSubTypes.Type(value = EventDetectorNoUpdateDTO.class, name = "8"),
         @JsonSubTypes.Type(value = EventDetectorAlphanumericStateDTO.class, name = "9"),
         @JsonSubTypes.Type(value = EventDetectorPositiveCusumDTO.class, name = "10"),
-        @JsonSubTypes.Type(value = EventDetectorNegativeCusumDTO.class, name = "11"),
+        @JsonSubTypes.Type(value = EventDetectorNegativeCusumDTO.class, name = "11")
 })
 public abstract class EventDetectorDTO {
     private String xid;
