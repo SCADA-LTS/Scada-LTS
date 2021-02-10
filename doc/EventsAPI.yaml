@@ -835,7 +835,7 @@ paths:
         - EventDetector API
       summary: 'Create Point Event Detector'
       description: 'Create a new Event Detector of type Negative CUSUM for Numeric DataPoint by its ID'
-      operationId: 'eventDetectorCreatePositiveCusumEventDetector'
+      operationId: 'eventDetectorCreateNegativeCusumEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
@@ -1257,7 +1257,7 @@ paths:
         - EventDetector API
       summary: 'Update Point Event Detector'
       description: 'Update a new Event Detector of type Negative CUSUM for Numeric DataPoint by its ID'
-      operationId: 'eventDetectorUpdatePositiveCusumEventDetector'
+      operationId: 'eventDetectorUpdateNegativeCusumEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
