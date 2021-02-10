@@ -23,7 +23,7 @@ public class EventDetectorNegativeCusumDTO extends EventDetectorDTO {
     @Override
     public PointEventDetectorVO createPointEventDetectorVO(DataPointVO dataPointVO) {
         PointEventDetectorVO ped = new PointEventDetectorVO();
-        ped.setDetectorType(PointEventDetectorVO.TYPE_POSITIVE_CUSUM);
+        ped.setDetectorType(PointEventDetectorVO.TYPE_NEGATIVE_CUSUM);
         ped.njbSetDataPoint(dataPointVO);
         ped.setXid(getXid());
         ped.setAlias(getAlias());

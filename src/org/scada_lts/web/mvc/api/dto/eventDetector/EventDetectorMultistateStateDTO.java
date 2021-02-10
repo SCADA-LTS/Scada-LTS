@@ -20,7 +20,7 @@ public class EventDetectorMultistateStateDTO extends EventDetectorDTO{
     @Override
     public PointEventDetectorVO createPointEventDetectorVO(DataPointVO dataPointVO) {
         PointEventDetectorVO ped = new PointEventDetectorVO();
-        ped.setDetectorType(PointEventDetectorVO.TYPE_BINARY_STATE);
+        ped.setDetectorType(PointEventDetectorVO.TYPE_MULTISTATE_STATE);
         ped.njbSetDataPoint(dataPointVO);
         ped.setXid(getXid());
         ped.setAlias(getAlias());
