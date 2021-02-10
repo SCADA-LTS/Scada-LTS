@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.view.ImplDefinition;
+import com.serotonin.mango.view.event.EventTextRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
@@ -64,6 +65,7 @@ public class PointPropertiesAPI {
 
                     private static final long serialVersionUID = 1L;
 
+                    private String description;
                     private int loggingType;
                     private int intervalLoggingPeriod;
                     private int intervalLoggingPeriodType;
@@ -73,6 +75,7 @@ public class PointPropertiesAPI {
                     private int defaultCacheSize;
                     private String typeKey;
                     private TextRenderer textRenderer;
+                    private EventTextRenderer eventTextRenderer;
                     private ImplDefinition def;
                     private ChartRenderer chartRenderer;
                     private int engineeringUnits;
@@ -84,6 +87,7 @@ public class PointPropertiesAPI {
 
 
                     public PropertiesPointToJSON(
+                            String description,
                             int loggingType,
                             int intervalLoggingPeriod,
                             int intervalLoggingPeriodType,
@@ -92,6 +96,7 @@ public class PointPropertiesAPI {
                             int defaultCacheSize,
                             String typeKey,
                             TextRenderer textRenderer,
+                            EventTextRenderer eventTextRenderer,
                             ImplDefinition def,
                             ChartRenderer chartRenderer,
                             int engineeringUnits,
@@ -103,6 +108,7 @@ public class PointPropertiesAPI {
                             int dataTypeId
 
                     ) {
+                        this.description = description;
                         this.loggingType = loggingType;
                         this.intervalLoggingPeriod = intervalLoggingPeriod;
                         this.intervalLoggingPeriodType = intervalLoggingPeriodType;
@@ -111,6 +117,7 @@ public class PointPropertiesAPI {
                         this.defaultCacheSize = defaultCacheSize;
                         this.typeKey = typeKey;
                         this.textRenderer = textRenderer;
+                        this.eventTextRenderer = eventTextRenderer;
                         this.def = def;
                         this.chartRenderer = chartRenderer;
                         this.engineeringUnits = engineeringUnits;
@@ -120,6 +127,14 @@ public class PointPropertiesAPI {
                         this.discardLowLimit = discardLowLimit;
                         this.discardHighLimit = discardHighLimit;
                         this.dataTypeId = dataTypeId;
+                    }
+
+                    public String getDescription() {
+                        return description;
+                    }
+
+                    public void setDescription(String description) {
+                        this.description = description;
                     }
 
                     public int getLoggingType() {
@@ -176,6 +191,14 @@ public class PointPropertiesAPI {
 
                     public void setTextRenderer(TextRenderer textRenderer) {
                         this.textRenderer = textRenderer;
+                    }
+
+                    public EventTextRenderer getEventTextRenderer() {
+                        return eventTextRenderer;
+                    }
+
+                    public void setEventTextRenderer(EventTextRenderer eventTextRenderer) {
+                        this.eventTextRenderer = eventTextRenderer;
                     }
 
                     public ImplDefinition getDef() {
@@ -260,6 +283,7 @@ public class PointPropertiesAPI {
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
+                        dpvo.getDescription(),
                         dpvo.getLoggingType(),
                         dpvo.getIntervalLoggingPeriod(),
                         dpvo.getIntervalLoggingPeriodType(),
@@ -268,6 +292,7 @@ public class PointPropertiesAPI {
                         dpvo.getDefaultCacheSize(),
                         dpvo.getTypeKey(),
                         dpvo.getTextRenderer(),
+                        dpvo.getEventTextRenderer(),
                         dpvo.getTextRenderer().getDef(),
                         dpvo.getChartRenderer(),
                         dpvo.getEngineeringUnits(),
@@ -318,10 +343,12 @@ public class PointPropertiesAPI {
                     private String dataSourceXId;
                     private String dataTypeMessage;
                     private String deviceName;
+                    private String description;
                     private Double discardHighLimit;
                     private Double discardLowLimit;
                     private int engineeringUnits;
                     private String extendedName;
+                    private EventTextRenderer eventTextRenderer;
                     private int intervalLoggingPeriod;
                     private int intervalLoggingPeriodType;
                     private int intervalLoggingType;
@@ -333,8 +360,8 @@ public class PointPropertiesAPI {
                     private String typeKey;
 
                     public PropertiesPointToJSON(String chartColour, ChartRenderer chartRenderer, String descConfiguration, String dataSourceName, String dataSourceXId,
-                                                 String dataTypeMessage, String deviceName, Double discardHighLimit, Double discardLowLimit, int engineeringUnits, String extendedName, int intervalLoggingPeriod,
-                                                 int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey) {
+                                                 String dataTypeMessage, String deviceName, String description, Double discardHighLimit, Double discardLowLimit, int engineeringUnits, String extendedName, EventTextRenderer eventTextRenderer,
+                                                 int intervalLoggingPeriod, int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey) {
 
                         this.chartColour = chartColour;
                         this.chartRenderer = chartRenderer;
@@ -343,10 +370,12 @@ public class PointPropertiesAPI {
                         this.dataSourceXId = dataSourceXId;
                         this.dataTypeMessage = dataTypeMessage;
                         this.deviceName = deviceName;
+                        this.description = description;
                         this.discardHighLimit = discardHighLimit;
                         this.discardLowLimit = discardLowLimit;
                         this.engineeringUnits = engineeringUnits;
                         this.extendedName = extendedName;
+                        this.eventTextRenderer = eventTextRenderer;
                         this.intervalLoggingPeriod = intervalLoggingPeriod;
                         this.intervalLoggingPeriodType = intervalLoggingPeriodType;
                         this.intervalLoggingType = intervalLoggingType;
@@ -414,6 +443,14 @@ public class PointPropertiesAPI {
                         this.deviceName = deviceName;
                     }
 
+                    public String getDescription() {
+                        return description;
+                    }
+
+                    public void setDescription(String description) {
+                        this.description = description;
+                    }
+
                     public Double getDiscardHighLimit() {
                         return discardHighLimit;
                     }
@@ -444,6 +481,14 @@ public class PointPropertiesAPI {
 
                     public void setExtendedName(String extendedName) {
                         this.extendedName = extendedName;
+                    }
+
+                    public EventTextRenderer getEventTextRenderer() {
+                        return eventTextRenderer;
+                    }
+
+                    public void setEventTextRenderer(EventTextRenderer eventTextRenderer) {
+                        this.eventTextRenderer = eventTextRenderer;
                     }
 
                     public int getIntervalLoggingPeriod() {
@@ -531,10 +576,12 @@ public class PointPropertiesAPI {
 
                         dpvo.getDataTypeMessage().getLocalizedMessage(bundle),
                         dpvo.getDeviceName(),
+                        dpvo.getDescription(),
                         dpvo.getDiscardHighLimit(),
                         dpvo.getDiscardLowLimit(),
                         dpvo.getEngineeringUnits(),
                         dpvo.getExtendedName(),
+                        dpvo.getEventTextRenderer(),
                         dpvo.getIntervalLoggingPeriod(),
 
                         dpvo.getIntervalLoggingPeriodType(),
