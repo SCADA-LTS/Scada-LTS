@@ -62,13 +62,14 @@ export default {
         addComment() {
             let time = new Date();
             let comment = {
-                userId: 1,
+                userId: this.$store.state.loggedUser.id,
                 ts: time.getTime(),
-                comment: JSON.stringify(this.newComment),
-                username: 'admin',
+                comment: this.newComment,
+                username: this.$store.state.loggedUser.username,
                 prettyTime: time.toLocaleTimeString()
             }
-            this.data.comments.push(comment);
+            this.data.comments.push(Object.assign({}, comment));
+            this.newComment = '';
         }
     }
 };

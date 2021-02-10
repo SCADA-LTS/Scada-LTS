@@ -56,15 +56,17 @@
 			</v-list-item>
 
 			<v-spacer></v-spacer>
-			<v-menu bottom rounded max-width="250" offset-y>
+			<v-menu bottom rounded max-width="250" offset-y v-if="user">
 				<template v-slot:activator="{ on }">
 					<v-btn icon v-on="on">
-						<v-icon>mdi-account</v-icon>
+						<v-icon v-show="!user.admin">mdi-account</v-icon>
+						<v-icon v-show="user.admin">mdi-account-tie</v-icon>
 					</v-btn>
 				</template>
-				<v-card v-if="user">
+				<v-card>
 					<v-list-item-content class="justify-center text-center">
-						<v-icon>mdi-account</v-icon>
+						<v-icon v-show="!user.admin">mdi-account</v-icon>
+						<v-icon v-show="user.admin">mdi-account-tie</v-icon>
 						<h3>{{user.username}}</h3>
 						<p>{{user.email}}</p>
 						<v-divider></v-divider>

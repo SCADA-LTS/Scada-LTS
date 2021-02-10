@@ -4,7 +4,7 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.5.0
+  version: 2.6.0
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. REST API interface description with examples and request structure. It can be easily imported into Postman or Swagger application.'
   termsOfService: ''
@@ -92,6 +92,20 @@ paths:
         '200':
           description: ''
           headers: {}
+  /auth/user:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Get basic user info'
+      description: 'Fetch basic user information'
+      operationId: 'getUser'
+      responses:
+        '200':
+          description: 'Simple User Information'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonUser'
   /config/replacealert:
     get:
       tags:
@@ -1957,6 +1971,25 @@ components:
           type: number
         referenceAddress:
           type: string
+    JsonUser:
+      type: object
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        admin:
+          type: boolean
+        disabled:
+          type: boolean
+        homeUrl:
+          type: string
+        lastLogin:
+          type: number
   parameters:
     Authorization:
       name: Authorization

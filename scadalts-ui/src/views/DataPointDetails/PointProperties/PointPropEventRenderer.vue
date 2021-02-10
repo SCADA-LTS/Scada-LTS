@@ -98,7 +98,7 @@
 
 				<v-divider></v-divider>
 
-				<v-col cols="12">
+				<v-col cols="12" v-if="data.eventTextRenderer.multistateEventValues">
 					<v-row v-for="e in data.eventTextRenderer.multistateEventValues" :key="e" dense>
 						<v-col cols="1">
 							<v-btn :color="e.colour" block> </v-btn>
@@ -263,7 +263,7 @@ export default {
 				this.data.eventTextRenderer = null;
 			} else {
 				let template = JSON.parse(
-					JSON.stringify(this.$store.state.dataPoint.eventRenderesTemplates[val])
+					JSON.stringify(this.$store.state.dataPoint.eventRenderersTemplates[val])
 				);
 				if (!!this.data.eventTextRenderer) {
 					if (this.data.eventTextRenderer.def.exportName === template.def.exportName) {
@@ -275,7 +275,7 @@ export default {
 		},
 
 		addRangeValue() {
-			this.data.eventTextRenderer.rangeEventValues.push(this.rangeRenderer);
+			this.data.eventTextRenderer.rangeEventValues.push(Object.assign({}, this.rangeRenderer));
 			this.rangeRenderer = {
 				from: 0,
 				to: 0,
@@ -293,7 +293,7 @@ export default {
 		},
 
 		addMultistateValue() {
-			this.data.eventTextRenderer.multistateEventValues.push(this.multistateRenderer);
+			this.data.eventTextRenderer.multistateEventValues.push(Object.assign({}, this.multistateRenderer));
 			this.rangeRenderer = { key: 0, shortText: '', longText: '', colour: '#458e23' };
 		},
 		delMultistateValue(val) {

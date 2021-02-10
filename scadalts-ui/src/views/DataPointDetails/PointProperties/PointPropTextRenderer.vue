@@ -259,7 +259,6 @@ export default {
 
 	methods: {
 		watchTextRendererChange(val) {
-			console.log(val);
 			let template = JSON.parse(
 				JSON.stringify(this.$store.state.dataPoint.textRenderesTemplates[val])
 			);
@@ -268,7 +267,7 @@ export default {
 			}
 		},
 		addRangeValue() {
-			this.data.textRenderer.rangeValues.push(this.rangeRenderer);
+			this.data.textRenderer.rangeValues.push(Object.assign({}, this.rangeRenderer));
 			this.rangeRenderer = { from: 0, to: 0, text: '', colour: '#458e23' };
 		},
 		delRangeValue(val) {
@@ -280,8 +279,8 @@ export default {
 		},
 
 		addMultistateValue() {
-			this.data.textRenderer.multistateValues.push(this.multistateRenderer);
-			this.rangeRenderer = { key: 0, text: '', colour: '#458e23' };
+			this.data.textRenderer.multistateValues.push(Object.assign({}, this.multistateRenderer));
+			this.multistateRenderer = { key: 0, text: '', colour: '#458e23' };
 		},
 		delMultistateValue(val) {
 			this.data.textRenderer.multistateValues = this.data.textRenderer.multistateValues.filter(
