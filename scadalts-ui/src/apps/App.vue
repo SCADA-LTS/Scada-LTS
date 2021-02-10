@@ -62,11 +62,11 @@
 						<v-icon>mdi-account</v-icon>
 					</v-btn>
 				</template>
-				<v-card>
+				<v-card v-if="user">
 					<v-list-item-content class="justify-center text-center">
 						<v-icon>mdi-account</v-icon>
-						<h3>Admin</h3>
-						<p>admin@user.com</p>
+						<h3>{{user.username}}</h3>
+						<p>{{user.email}}</p>
 						<v-divider></v-divider>
 						<v-btn block text link href="./users.shtm">
 							<span>Edit profile</span>
@@ -102,7 +102,15 @@ export default {
 			isUserRoleAdmin: false,
 		};
 	},
+
+	computed: {
+		user() {
+			return this.$store.state.loggedUser;
+		}
+	},
+
 	mounted() {
+		this.$store.dispatch('getUserInfo');
 		this.getUserRole();
 	},
 	methods: {

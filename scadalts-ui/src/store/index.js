@@ -28,6 +28,7 @@ export default new Vuex.Store({
 		storeAlarmsNotifications,
 	},
 	state: {
+		loggedUser: null,
 		packageVersion: process.env.PACKAGE_VERSION || '0',
 		packageTag: process.env.PACKAGE_TAG || '0',
 		scadaLtsMilestone: process.env.SCADA_LTS_MILESTONE || '0',
@@ -71,6 +72,16 @@ export default new Vuex.Store({
 						reject(error);
 					});
 			});
+		},
+
+		/**
+		 * Fetch User Data from REST API
+		 * 
+		 * @param {*} param0 - Vuex Store variables
+		 */
+		async getUserInfo({state, dispatch}) {
+			state.loggedUser = await dispatch("requestGet", '/auth/user');
+			console.log("VUEX::GET_USER_INFO::",state.loggedUser);
 		},
 
 		/**

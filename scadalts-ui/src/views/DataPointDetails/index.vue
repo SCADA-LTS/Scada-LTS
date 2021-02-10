@@ -5,51 +5,7 @@
 				<v-col cols="8" xs="12">
 					<h1>
 						{{ dataPointDetails.name }}
-						<v-menu 
-                            v-model="commentsVisible" 
-                            :close-on-content-click="false"
-                            offset-y>
-							<template v-slot:activator="{ on, attrs }">
-								<v-badge
-									overlap
-									color="error"
-									:value="dataPointDetails.comments.length > 0"
-									:content="dataPointDetails.comments.length"
-								>
-									<v-btn icon fab dark color="primary" v-bind="attrs" v-on="on">
-										<v-icon>mdi-message-alert</v-icon>
-									</v-btn>
-								</v-badge>
-							</template>
-							<v-card>
-								<v-list>
-									<v-list-item v-for="comment in dataPointDetails.comments" :key="comment">
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-message</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            <v-list-item-title>{{comment.username}}, {{comment.prettyTime}}</v-list-item-title>
-                                            <v-list-item-subtitle>{{comment.comment}}</v-list-item-subtitle>
-                                        </v-list-item-content>										
-									</v-list-item>
-                                    <v-list-item>
-                                        <v-list-item-icon>
-                                            <v-icon>mdi-message-reply-text</v-icon>
-                                        </v-list-item-icon>
-                                        <v-list-item-content>
-                                            <v-list-item-title>
-                                                <v-text-field
-						                            v-model="newComment"
-						                            label="Add comment..."
-                                                    append-icon="mdi-check"
-						                            dense
-					                            ></v-text-field>
-                                            </v-list-item-title>
-                                        </v-list-item-content>										
-									</v-list-item>
-								</v-list>
-							</v-card>
-						</v-menu>
+						<DataPointComment :data="dataPointDetails"></DataPointComment>
 					</h1>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
@@ -132,6 +88,7 @@
 </template>
 <script>
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
+import DataPointComment from './DataPointComment';
 import PointProperties from './PointProperties';
 import LineChartComponent from '@/components/amcharts/LineChartComponent';
 /**
@@ -146,6 +103,7 @@ export default {
 
 	components: {
 		DataPointSearchComponent,
+		DataPointComment,
 		PointProperties,
 		LineChartComponent,
 	},
