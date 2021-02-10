@@ -9,9 +9,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorBinaryStateDTO;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorChangeDTO;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorDTO;
+import org.scada_lts.web.mvc.api.dto.eventDetector.*;
 import org.scada_lts.web.mvc.api.json.JsonPointEventDetector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,8 +71,53 @@ public class EventDetectorAPI {
         return createEventDetectorType(datapointId, body, request);
     }
 
+    @PostMapping(value = "/set/alphanumeric/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createAlphanumericStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorAlphanumericStateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/multistate/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createMultistateStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorMultistateStateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/statechangecounter/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createStateChangeCounterEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorStateChangeCounterDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
     @PostMapping(value = "/set/change/{datapointId}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<JsonPointEventDetector> createChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/nochange/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createNoChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorNoChangeDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/noupdate/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createNoUpdateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorNoUpdateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/highlimit/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createHighLimitEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorHighLimitDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/lowlimit/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createLowLimitEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorLowLimitDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/positivecusum/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createPositiveCusumEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorPositiveCusumDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PostMapping(value = "/set/negativecusum/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createNegativeCusumEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorNegativeCusumDTO body) {
         return createEventDetectorType(datapointId, body, request);
     }
 
@@ -83,9 +126,54 @@ public class EventDetectorAPI {
         return updateEventDetectorType(datapointId, id, body, request);
     }
 
+    @PutMapping(value = "/update/alphanumeric/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateAlphanumericStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorAlphanumericStateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/multistate/state/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateMultistateStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorMultistateStateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/statechangecounter/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateStateChangeCounterEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorStateChangeCounterDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
     @PutMapping(value = "/update/change/{datapointId}/{id}", consumes = "application/json")
     public ResponseEntity<String> updateChangeEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
         return updateEventDetectorType(datapointId, id, body, request);
+    }
+
+    @PutMapping(value = "/update/nochange/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateNoChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorNoChangeDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/noupdate/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateNoUpdateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorNoUpdateDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/highlimit/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateHighLimitEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorHighLimitDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/lowlimit/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateLowLimitEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorLowLimitDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/positivecusum/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updatePositiveCusumEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorPositiveCusumDTO body) {
+        return createEventDetectorType(datapointId, body, request);
+    }
+
+    @PutMapping(value = "/update/negativecusum/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> updateNegativeCusumEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorNegativeCusumDTO body) {
+        return createEventDetectorType(datapointId, body, request);
     }
 
     @DeleteMapping(value = "/delete/{datapointId}/{id}", produces = "application/json")

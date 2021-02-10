@@ -4,7 +4,7 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.5.0
+  version: 2.6.0
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
@@ -462,7 +462,7 @@ paths:
       tags:
         - EventDetector API
       summary: 'Create Point Event Detector'
-      description: 'Create a new Event Detector of type State for Binary Point by its ID'
+      description: 'Create a new Event Detector of type Binary State for Binary DataPoint by its ID'
       operationId: 'eventDetectorCreateBinaryStateEventDetector'
       parameters:
         - name: 'datapointId'
@@ -495,12 +495,126 @@ paths:
           description: "Post successful"
           headers: { }
 
+  /eventDetector/set/alphanumeric/state/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type Alphanumeric State for Alphanumeric DataPoint by its ID'
+      operationId: 'eventDetectorCreateAlphanumericStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Alphanumeric State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                alphanumericState:
+                  type: string
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/multistate/state/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type Multistate State for Multistate DataPoint by its ID'
+      operationId: 'eventDetectorCreateMultistateStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Alphanumeric State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                multistateState:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/statechangecounter/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type State Change Counter for Binary, Multistate, Alphanumeric DataPoint by its ID'
+      operationId: 'eventDetectorCreateStateChangeCounterEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with State Change Counter properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                changeCount:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
   /eventDetector/set/change/{datapointId}:
     post:
       tags:
         - EventDetector API
       summary: 'Create Point Event Detector'
-      description: 'Create a new Event Detector of type Change for Binary Point by its ID'
+      description: 'Create a new Event Detector of type Change for DataPoint of any type by its ID'
       operationId: 'eventDetectorCreateChangeEventDetector'
       parameters:
         - name: 'datapointId'
@@ -521,6 +635,234 @@ paths:
                 alias:
                   type: string
                 alarmLevel:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/nochange/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type No Change for DataPoint of any type by its ID'
+      operationId: 'eventDetectorCreateNoChangeEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with No Change properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/noupdate/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type No Update for DataPoint of any type by its ID'
+      operationId: 'eventDetectorCreateNoUpdateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with No Update properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/highlimit/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type High Limit for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorCreateHighLimitEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with High Limit properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                highLimit:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/lowlimit/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type Low Limit for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorCreateLowLimitEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Low Limit properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                lowLimit:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/positivecusum/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type Positive CUSUM for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorCreatePositiveCusumEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Positive CUSUM properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                positiveLimit:
+                  type: number
+                weight:
+                  type: number
+      responses:
+        '200':
+          description: "Post successful"
+          headers: { }
+
+  /eventDetector/set/negativecusum/{datapointId}:
+    post:
+      tags:
+        - EventDetector API
+      summary: 'Create Point Event Detector'
+      description: 'Create a new Event Detector of type Negative CUSUM for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorCreatePositiveCusumEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Negative CUSUM properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                negativeLimit:
+                  type: number
+                weight:
                   type: number
       responses:
         '200':
@@ -570,6 +912,120 @@ paths:
           description: "Put successful"
           headers: { }
 
+  /eventDetector/update/alphanumeric/state/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type Alphanumeric State for Alphanumeric DataPoint by its ID'
+      operationId: 'eventDetectorUpdateAlphanumericStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Alphanumeric State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                alphanumericState:
+                  type: string
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/multistate/state/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type Multistate State for Multistate DataPoint by its ID'
+      operationId: 'eventDetectorUpdateMultistateStateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Alphanumeric State properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                multistateState:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/statechangecounter/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type State Change Counter for Binary, Multistate, Alphanumeric DataPoint by its ID'
+      operationId: 'eventDetectorUpdateStateChangeCounterEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with State Change Counter properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                changeCount:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
   /eventDetector/update/change/{datapointId}/{id}:
     put:
       tags:
@@ -601,6 +1057,234 @@ paths:
                 alias:
                   type: string
                 alarmLevel:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/nochange/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type No Change for DataPoint of any type by its ID'
+      operationId: 'eventDetectorUpdateNoChangeEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with No Change properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/noupdate/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type No Update for DataPoint of any type by its ID'
+      operationId: 'eventDetectorUpdateNoUpdateEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with No Update properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/highlimit/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type High Limit for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorUpdateHighLimitEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with High Limit properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                highLimit:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/lowlimit/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type Low Limit for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorUpdateLowLimitEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Low Limit properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                lowLimit:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/positivecusum/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type Positive CUSUM for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorUpdatePositiveCusumEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Positive CUSUM properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                positiveLimit:
+                  type: number
+                weight:
+                  type: number
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+
+  /eventDetector/update/negativecusum/{datapointId}:
+    put:
+      tags:
+        - EventDetector API
+      summary: 'Update Point Event Detector'
+      description: 'Update a new Event Detector of type Negative CUSUM for Numeric DataPoint by its ID'
+      operationId: 'eventDetectorUpdatePositiveCusumEventDetector'
+      parameters:
+        - name: 'datapointId'
+          in: 'path'
+          required: true
+          schema:
+            type: 'number'
+      requestBody:
+        description: Point Event Detector with Negative CUSUM properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                xid:
+                  type: string
+                alias:
+                  type: string
+                alarmLevel:
+                  type: number
+                duration:
+                  type: number
+                durationType:
+                  type: number
+                negativeLimit:
+                  type: number
+                weight:
                   type: number
       responses:
         '200':
