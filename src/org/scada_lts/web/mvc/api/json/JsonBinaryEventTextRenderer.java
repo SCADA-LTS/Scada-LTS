@@ -1,10 +1,10 @@
 package org.scada_lts.web.mvc.api.json;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonBinaryEventTextRenderer implements Serializable {
     private String zeroShortLabel;
     private String zeroLongLabel;
@@ -12,6 +12,9 @@ public class JsonBinaryEventTextRenderer implements Serializable {
     private String oneShortLabel;
     private String oneLongLabel;
     private String oneColour;
+
+    public JsonBinaryEventTextRenderer() {
+    }
 
     public JsonBinaryEventTextRenderer(String zeroShortLabel, String zeroLongLabel, String zeroColour, String oneShortLabel, String oneLongLabel, String oneColour) {
         this.zeroShortLabel = zeroShortLabel;

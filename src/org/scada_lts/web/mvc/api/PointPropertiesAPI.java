@@ -1,11 +1,13 @@
 package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import org.apache.commons.logging.Log;
@@ -636,11 +638,49 @@ public class PointPropertiesAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                if(query.containsKey("id")){
-                    return new ResponseEntity<>(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))).getDescription(), HttpStatus.OK);
-                } else if(query.containsKey("xid")) {
-                    return new ResponseEntity<>(dataPointService.getDataPoint(query.get("xid")).getDescription(), HttpStatus.OK);
-                } else
+                DataPointVO dataPointVO;
+                if (query.containsKey("id"))
+                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
+                else if (query.containsKey("xid"))
+                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
+                else
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+                Map<String, String> response = new HashMap<>();
+                response.put("description", dataPointVO.getDescription());
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    String json = mapper.writeValueAsString(response);
+                    return new ResponseEntity<>(json, HttpStatus.OK);
+                } catch (JsonProcessingException e) {
+                    LOG.error(e);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getBinaryEventRenderer", produces = "application/json")
+    public ResponseEntity<JsonBinaryEventTextRenderer> getBinaryEventRenderer(@RequestParam Map<String, String> query, HttpServletRequest request) {
+        LOG.info("/api/point_properties/getBinaryEventRenderer");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                DataPointVO dataPointVO;
+                if (query.containsKey("id"))
+                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
+                else if (query.containsKey("xid"))
+                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
+                else
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                if(query.containsKey("value"))
+                    return new ResponseEntity<>(dataPointService.getBinaryEventTextRenderer(dataPointVO, Integer.parseInt(query.get("value"))), HttpStatus.OK);
+                else
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

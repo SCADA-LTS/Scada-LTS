@@ -49,12 +49,12 @@ public class NoneEventRenderer extends BaseEventTextRenderer {
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value, int hint) {
+    protected String getShortTextImpl(MangoValue value) {
         return "";
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value, int hint) {
+    protected String getLongTextImpl(MangoValue value) {
         return "";
     }
 

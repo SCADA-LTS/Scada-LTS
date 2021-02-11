@@ -69,77 +69,41 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
         return result;
     }
 
-    public String getShortText(int hint) {
-        if (hint == HINT_RAW)
-            return "";
+    public String getShortText(MangoValue value) {
+        if (value == null)
+            return getShortText();
+        return getShortTextImpl(value);
+    }
+
+    abstract protected String getShortTextImpl(MangoValue value);
+
+    public String getShortText() {
         return UNKNOWN_VALUE;
     }
 
-    public String getShortText(PointValueTime valueTime, int hint) {
-        if (valueTime == null)
-            return getShortText(hint);
-        return getShortText(valueTime.getValue(), hint);
-    }
+    public String getShortText(boolean value) { return null; }
 
-    public String getShortText(MangoValue value, int hint) {
-        if (value == null)
-            return getShortText(hint);
-        return getShortTextImpl(value, hint);
-    }
+    public String getShortText(int value) { return null; }
 
-    abstract protected String getShortTextImpl(MangoValue value, int hint);
+    public String getShortText(double value) { return null; }
 
-    public String getShortText(double value, int hint) {
-        return Double.toString(value);
-    }
-
-    public String getShortText(int value, int hint) {
-        return Integer.toString(value);
-    }
-
-    public String getShortText(boolean value, int hint) {
-        return value ? "1" : "0";
-    }
-
-    public String getShortText(String value, int hint) {
-        return value;
-    }
-
-    public String getLongText(int hint) {
-        if (hint == HINT_RAW)
-            return "";
+    public String getLongText() {
         return UNKNOWN_VALUE;
     }
 
-    public String getLongText(PointValueTime valueTime, int hint) {
-        if (valueTime == null)
-            return getLongText(hint);
-        return getLongText(valueTime.getValue(), hint);
-    }
+    public String getLongText(boolean value) { return null; }
 
-    public String getLongText(MangoValue value, int hint) {
+    public String getLongText(int value) { return null; }
+
+    public String getLongText(double value) { return null; }
+
+    public String getLongText(MangoValue value) {
         if (value == null)
-            return getLongText(hint);
-        return getLongTextImpl(value, hint);
+            return getLongText();
+        return getLongTextImpl(value);
     }
 
-    abstract protected String getLongTextImpl(MangoValue value, int hint);
-
-    public String getLongText(double value, int hint) {
-        return Double.toString(value);
-    }
-
-    public String getLongText(int value, int hint) {
-        return Integer.toString(value);
-    }
-
-    public String getLongText(boolean value, int hint) {
-        return value ? "1" : "0";
-    }
-
-    public String getLongText(String value, int hint) {
-        return value;
-    }
+    abstract protected String getLongTextImpl(MangoValue value);
 
     @Override
     public String getMetaShortText() {
@@ -156,12 +120,6 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
     //
     public String getColour() {
         return null;
-    }
-
-    public String getColour(PointValueTime valueTime) {
-        if (valueTime == null)
-            return getColour();
-        return getColour(valueTime.getValue());
     }
 
     public String getColour(MangoValue value) {

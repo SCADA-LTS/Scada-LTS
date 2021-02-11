@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.ImplDefinition;
 
@@ -37,75 +36,46 @@ import com.serotonin.mango.view.ImplDefinition;
         @JsonSubTypes.Type(value = NoneEventRenderer.class, name = "eventTextRendererNone"),
 })
 public interface EventTextRenderer extends Serializable {
-    public static final int TYPE_ANALOG = 1;
-    public static final int TYPE_BINARY = 2;
-    public static final int TYPE_MULTISTATE = 3;
-    public static final int TYPE_PLAIN = 4;
-    public static final int TYPE_RANGE = 5;
 
-    /**
-     * Do not render the value. Just return the java-formatted version of the value.
-     */
-    public static final int HINT_RAW = 1;
-    /**
-     * Render the value according to the full functionality of the renderer.
-     */
-    public static final int HINT_FULL = 2;
-    /**
-     * Render the value in a way that does not generalize. Currently only used to prevent analog range renderers from
-     * obfuscating a numeric into a descriptor.
-     */
-    public static final int HINT_SPECIFIC = 3;
+    String UNKNOWN_VALUE = "(n/a)";
 
-    public static final String UNKNOWN_VALUE = "(n/a)";
+    String getShortText();
 
-    public String getShortText(int hint);
+    String getShortText(boolean value);
 
-    public String getShortText(PointValueTime valueTime, int hint);
+    String getShortText(int value);
 
-    public String getShortText(MangoValue value, int hint);
+    String getShortText(double value);
 
-    public String getShortText(double value, int hint);
+    String getShortText(MangoValue value);
 
-    public String getShortText(int value, int hint);
+    String getLongText();
 
-    public String getShortText(boolean value, int hint);
+    String getLongText(boolean value);
 
-    public String getShortText(String value, int hint);
+    String getLongText(int value);
 
-    public String getLongText(int hint);
+    String getLongText(double value);
 
-    public String getLongText(PointValueTime valueTime, int hint);
+    String getLongText(MangoValue value);
 
-    public String getLongText(MangoValue value, int hint);
+    String getMetaShortText();
 
-    public String getLongText(double value, int hint);
+    String getMetaLongText();
 
-    public String getLongText(int value, int hint);
+    String getColour();
 
-    public String getLongText(boolean value, int hint);
+    String getColour(MangoValue value);
 
-    public String getLongText(String value, int hint);
+    String getColour(double value);
 
-    public String getMetaShortText();
+    String getColour(int value);
 
-    public String getMetaLongText();
+    String getColour(boolean value);
 
-    public String getColour();
+    String getColour(String value);
 
-    public String getColour(PointValueTime valueTime);
+    String getTypeName();
 
-    public String getColour(MangoValue value);
-
-    public String getColour(double value);
-
-    public String getColour(int value);
-
-    public String getColour(boolean value);
-
-    public String getColour(String value);
-
-    public String getTypeName();
-
-    public ImplDefinition getDef();
+    ImplDefinition getDef();
 }

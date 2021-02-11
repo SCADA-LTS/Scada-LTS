@@ -63,38 +63,32 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value, int hint) {
+    protected String getShortTextImpl(MangoValue value) {
         if (!(value instanceof com.serotonin.mango.rt.dataImage.types.MultistateValue))
             return null;
-        return getShortText(value.getIntegerValue(), hint);
+        return getShortText(value.getIntegerValue());
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value, int hint) {
+    protected String getLongTextImpl(MangoValue value) {
         if (!(value instanceof com.serotonin.mango.rt.dataImage.types.MultistateValue))
             return null;
-        return getLongText(value.getIntegerValue(), hint);
+        return getLongText(value.getIntegerValue());
     }
 
     @Override
-    public String getShortText(int value, int hint) {
-        if (hint == HINT_RAW)
-            return Integer.toString(value);
-
+    public String getShortText(int value) {
         MultistateEventValue mv = getMultistateEventValue(value);
         if (mv == null)
-            return Integer.toString(value);
+            return null;
         return mv.getShortText();
     }
 
     @Override
-    public String getLongText(int value, int hint) {
-        if (hint == HINT_RAW)
-            return Integer.toString(value);
-
+    public String getLongText(int value) {
         MultistateEventValue mv = getMultistateEventValue(value);
         if (mv == null)
-            return Integer.toString(value);
+            return null;
         return mv.getLongText();
     }
 

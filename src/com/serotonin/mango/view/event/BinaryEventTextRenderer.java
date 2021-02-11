@@ -81,17 +81,17 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value, int hint) {
+    protected String getShortTextImpl(MangoValue value) {
         if (!(value instanceof BinaryValue))
             return null;
-        return getShortText(value.getBooleanValue(), hint);
+        return getShortText(value.getBooleanValue());
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value, int hint) {
+    protected String getLongTextImpl(MangoValue value) {
         if (!(value instanceof BinaryValue))
             return null;
-        return getLongText(value.getBooleanValue(), hint);
+        return getLongText(value.getBooleanValue());
     }
 
     @Override
@@ -158,18 +158,14 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
 
 
     @Override
-    public String getShortText(boolean value, int hint) {
-        if (hint == EventTextRenderer.HINT_RAW)
-            return value ? "1" : "0";
+    public String getShortText(boolean value) {
         if (value)
             return oneShortLabel;
         return zeroShortLabel;
     }
 
     @Override
-    public String getLongText(boolean value, int hint) {
-        if (hint == EventTextRenderer.HINT_RAW)
-            return value ? "1" : "0";
+    public String getLongText(boolean value) {
         if (value)
             return oneLongLabel;
         return zeroLongLabel;

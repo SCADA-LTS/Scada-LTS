@@ -53,8 +53,6 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
     @JsonRemoteProperty(innerType = RangeEventValue.class)
     private List<RangeEventValue> rangeEventValues = new ArrayList<RangeEventValue>();
 
-    private DecimalFormat formatInstance;
-
     public RangeEventRenderer() {
         // no op
     }
@@ -72,38 +70,32 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value, int hint) {
+    protected String getShortTextImpl(MangoValue value) {
         if (!(value instanceof NumericValue))
             return null;
-        return getShortText(value.getDoubleValue(), hint);
+        return getShortText(value.getDoubleValue());
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value, int hint) {
+    protected String getLongTextImpl(MangoValue value) {
         if (!(value instanceof NumericValue))
             return null;
-        return getLongText(value.getDoubleValue(), hint);
+        return getLongText(value.getDoubleValue());
     }
 
     @Override
-    public String getShortText(double value, int hint) {
-        if (hint == HINT_RAW || hint == HINT_SPECIFIC)
-            return formatInstance.format(value);
-
+    public String getShortText(double value) {
         RangeEventValue range = getRangeEventValue(value);
         if (range == null)
-            return formatInstance.format(value);
+            return null;
         return range.getShortText();
     }
 
     @Override
-    public String getLongText(double value, int hint) {
-        if (hint == HINT_RAW || hint == HINT_SPECIFIC)
-            return formatInstance.format(value);
-
+    public String getLongText(double value) {
         RangeEventValue range = getRangeEventValue(value);
         if (range == null)
-            return formatInstance.format(value);
+            return null;
         return range.getLongText();
     }
 
