@@ -11,6 +11,7 @@ import com.serotonin.mango.view.event.EventTextRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ import com.serotonin.mango.vo.User;
 
 
 /**
- * Hellper class
+ * Helper class
  *
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
@@ -38,6 +39,7 @@ import com.serotonin.mango.vo.User;
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
 @Controller
+@RequestMapping(path = "/api/point_properties")
 public class PointPropertiesAPI {
 
     private static final Log LOG = LogFactory.getLog(PointPropertiesAPI.class);
@@ -46,7 +48,7 @@ public class PointPropertiesAPI {
 
     private static final String SAVED_MSG = "saved";
 
-    @RequestMapping(value = "/api/point_properties/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getPropertiesBaseOnId(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("/api/point_properties/getPropertiesBaseOnId/{id} id:" + id);
 
@@ -318,7 +320,7 @@ public class PointPropertiesAPI {
     }
 
 
-    @RequestMapping(value = "/api/point_properties/getProperties/{xid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getProperties/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getProperties(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/point_properties/getProperties/{xid} id:" + xid);
 
@@ -607,7 +609,7 @@ public class PointPropertiesAPI {
 
     }
 
-    @PutMapping(value = "/api/point_properties/updateProperties")
+    @PutMapping(value = "/updateProperties")
     public ResponseEntity<String> updatePointProperties(@RequestParam Map<String, String> query, HttpServletRequest request, @RequestBody JsonPointProperties body) {
         try {
             User user = Common.getUser(request);
@@ -624,6 +626,27 @@ public class PointPropertiesAPI {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getPointDescription", produces = "application/json")
+    public ResponseEntity<String> getPointDescription(@RequestParam Map<String, String> query, HttpServletRequest request) {
+        LOG.info("/api/point_properties/getPointDescription");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                if(query.containsKey("id")){
+                    return new ResponseEntity<>(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))).getDescription(), HttpStatus.OK);
+                } else if(query.containsKey("xid")) {
+                    return new ResponseEntity<>(dataPointService.getDataPoint(query.get("xid")).getDescription(), HttpStatus.OK);
+                } else
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
