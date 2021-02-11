@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        property = "type"
+        property = "detectorType"
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = EventDetectorHighLimitDTO.class, name = "1"),

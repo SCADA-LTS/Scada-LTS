@@ -850,7 +850,7 @@ components:
           type: number
         alphanumericState:
           type: string
-        type:
+        detectorType:
           type: number
     EventDetectorBinaryStateDTO:
       type: object
@@ -867,7 +867,7 @@ components:
           type: number
         binaryState:
           type: boolean
-        type:
+        detectorType:
           type: number
     EventDetectorChangeDTO:
       type: object
@@ -878,7 +878,7 @@ components:
           type: string
         alarmLevel:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorHighLimitDTO:
       type: object
@@ -895,7 +895,7 @@ components:
           type: number
         highLimit:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorLowLimitDTO:
       type: object
@@ -912,7 +912,7 @@ components:
           type: number
         lowLimit:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorMultistateStateDTO:
       type: object
@@ -929,7 +929,7 @@ components:
           type: number
         multistateState:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorNegativeCusumDTO:
       type: object
@@ -948,7 +948,7 @@ components:
           type: number
         weight:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorPositiveCusumDTO:
       type: object
@@ -967,7 +967,7 @@ components:
           type: number
         weight:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorNoChangeDTO:
       type: object
@@ -982,7 +982,7 @@ components:
           type: number
         durationType:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorNoUpdateDTO:
       type: object
@@ -997,7 +997,7 @@ components:
           type: number
         durationType:
           type: number
-        type:
+        detectorType:
           type: number
     EventDetectorStateChangeCounterDTO:
       type: object
@@ -1014,7 +1014,7 @@ components:
           type: number
         changeCount:
           type: number
-        type:
+        detectorType:
           type: number
   parameters:
     Authorization:
