@@ -6,7 +6,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 public class EventDetectorLowLimitDTO extends EventDetectorDTO{
     private int duration;
     private int durationType;
-    private int lowLimit;
+    private int limit;
 
     public EventDetectorLowLimitDTO() {
     }
@@ -15,7 +15,7 @@ public class EventDetectorLowLimitDTO extends EventDetectorDTO{
         super(xid, alias, alarmLevel);
         this.duration = duration;
         this.durationType = durationType;
-        this.lowLimit = lowLimit;
+        this.limit = lowLimit;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class EventDetectorLowLimitDTO extends EventDetectorDTO{
 
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setLimit(lowLimit);
+        ped.setLimit(limit);
         return ped;
     }
 
@@ -50,10 +50,10 @@ public class EventDetectorLowLimitDTO extends EventDetectorDTO{
     }
 
     public int getLowLimit() {
-        return lowLimit;
+        return limit;
     }
 
     public void setLowLimit(int lowLimit) {
-        this.lowLimit = lowLimit;
+        this.limit = lowLimit;
     }
 }

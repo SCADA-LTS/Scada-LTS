@@ -126,21 +126,25 @@ public class EventDetectorAPI {
         }
     }
 
-    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO ped) {
 
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty())  {
-            for (PointEventDetectorVO ped : peds) {
-                if (ped.getXid().equals(pointEventDetectorVO.getXid())) {
-                    return new JsonPointEventDetector(ped.getId(), ped.getXid(), ped.getAlias());
+            for (PointEventDetectorVO _ped : peds) {
+                if (ped.getXid().equals(ped.getXid())) {
+                    return new JsonPointEventDetector(_ped.getId(), _ped.getXid(), _ped.getAlias(), _ped.getDetectorType(),
+                            _ped.getAlarmLevel(), _ped.getLimit(), _ped.getDuration(), _ped.getDurationType(), _ped.isBinaryState(),
+                            _ped.getMultistateState(), _ped.getChangeCount(), _ped.getAlphanumericState(), _ped.getWeight());
                 }
             }
         }
-        dataPointVO.getEventDetectors().add(pointEventDetectorVO);
+        dataPointVO.getEventDetectors().add(ped);
         dataPointService.saveEventDetectors(dataPointVO);
         Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
-        int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
-        return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
+        int pedID = dataPointService.getDetectorId(ped.getXid(), dataPointVO.getId());
+        return new JsonPointEventDetector(pedID, ped.getXid(), ped.getAlias(), ped.getDetectorType(), ped.getAlarmLevel(),
+                ped.getLimit(), ped.getDuration(), ped.getDurationType(), ped.isBinaryState(), ped.getMultistateState(),
+                ped.getChangeCount(), ped.getAlphanumericState(), ped.getWeight());
     }
 
 

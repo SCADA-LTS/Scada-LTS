@@ -7,7 +7,7 @@ public class EventDetectorNegativeCusumDTO extends EventDetectorDTO {
     private int duration;
     private int durationType;
     private int weight;
-    private int negativeLimit;
+    private int limit;
 
     public EventDetectorNegativeCusumDTO() {
     }
@@ -17,7 +17,7 @@ public class EventDetectorNegativeCusumDTO extends EventDetectorDTO {
         this.duration = duration;
         this.durationType = durationType;
         this.weight = weight;
-        this.negativeLimit = negativeLimit;
+        this.limit = negativeLimit;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class EventDetectorNegativeCusumDTO extends EventDetectorDTO {
 
         ped.setDuration(duration);
         ped.setDurationType(durationType);
-        ped.setLimit(negativeLimit);
+        ped.setLimit(limit);
         ped.setWeight(weight);
         return ped;
     }
@@ -61,10 +61,10 @@ public class EventDetectorNegativeCusumDTO extends EventDetectorDTO {
     }
 
     public int getNegativeLimit() {
-        return negativeLimit;
+        return limit;
     }
 
     public void setNegativeLimit(int negativeLimit) {
-        this.negativeLimit = negativeLimit;
+        this.limit = negativeLimit;
     }
 }
