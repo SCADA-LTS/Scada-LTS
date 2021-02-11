@@ -12,8 +12,8 @@
 							@change="watchDataChange()"
 							v-model="event.i2"
 							:items="alarmLevels"
-							item-value="value"
-							item-text="text"
+							item-value="id"
+							item-text="label"
 							:label="$t(`${event.translation}`)"
 							dense
 						></v-select>
@@ -61,14 +61,13 @@ export default {
 			systemEventTypes: undefined,
 			systemEventTypesStore: undefined,
 			isSystemEventEdited: false,
-			alarmLevels: [
-				{ text: this.$t('alarmlevels.none'), value: 0 },
-				{ text: this.$t('alarmlevels.information'), value: 1 },
-				{ text: this.$t('alarmlevels.urgent'), value: 2 },
-				{ text: this.$t('alarmlevels.critical'), value: 3 },
-				{ text: this.$t('alarmlevels.lifesafety'), value: 4 },
-			],
 		};
+	},
+
+	computed: {
+		alarmLevels() {
+			return this.$store.state.alarmLevels;
+		},
 	},
 
 	mounted() {

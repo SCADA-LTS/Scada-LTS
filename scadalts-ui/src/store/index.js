@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataPoint from './dataPoint';
+import storeEventDetectors from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
 import amcharts from './amcharts';
@@ -9,6 +10,8 @@ import alarms from './alarms';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import axios from 'axios';
+
+import i18n from '@/i18n';
 
 Vue.use(Vuex);
 
@@ -20,6 +23,7 @@ export default new Vuex.Store({
 	modules: {
 		dataSource,
 		dataPoint,
+		storeEventDetectors,
 		graphicView,
 		pointHierarchy,
 		amcharts,
@@ -51,6 +55,14 @@ export default new Vuex.Store({
 			{ id: 6, label: 'Months' },
 			{ id: 7, label: 'Years' },
 			{ id: 8, label: 'Miliseconds' },
+		],
+
+		alarmLevels: [
+			{ id: 0, label: i18n.t('alarmlevels.none')},
+			{ id: 1, label: i18n.t('alarmlevels.information')},
+			{ id: 2, label: i18n.t('alarmlevels.urgent')},
+			{ id: 3, label: i18n.t('alarmlevels.critical')},
+			{ id: 4, label: i18n.t('alarmlevels.lifesafety')},
 		],
 		
 	},

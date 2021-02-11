@@ -3,10 +3,19 @@
 		<v-col cols="12">
 			<v-row justify="space-between" align="center">
 				<v-col>
-					<h3>Event Detectors</h3>
+					<h3>
+						Event Detectors
+						<ConfirmationDialog
+							:btnvisible="false"
+							:dialog="confirmDeleteDialog"
+							@result="deleteEventDetector"
+							title="Delete Event Detector"
+							message="Are you sure you want to delete this event detector"
+						></ConfirmationDialog>
+					</h3>
 				</v-col>
 				<v-col class="row justify-end">
-					<CreateEventDetectorDialog>
+					<CreateEventDetectorDialog :data="data" @saved="addEventDetector">
 					</CreateEventDetectorDialog>
 				</v-col>
 			</v-row>
@@ -15,11 +24,20 @@
 			<v-row v-for="e in data.eventDetectors" :key="e.id">
 				<hr class="v-divider theme--light ped-divider" />
 
-				<v-col cols="11">
+				<v-col cols="10">
 					<h4>{{ e.detectorType | detectorType }} - {{ e.xid }}</h4>
 				</v-col>
+
 				<v-col cols="1">
-					<v-btn icon> <v-icon>mdi-minus-circle</v-icon></v-btn>
+					<v-btn icon @click="updateEventDetector(e)">
+						<v-icon>mdi-content-save</v-icon></v-btn
+					>
+				</v-col>
+
+				<v-col cols="1">
+					<v-btn icon @click="openConfirmDialog(e)">
+						<v-icon>mdi-minus-circle</v-icon></v-btn
+					>
 				</v-col>
 
 				<v-col cols="1">
@@ -53,8 +71,8 @@
 					<v-select
 						v-model="e.alarmLevel"
 						:items="alarmLevels"
-						item-value="value"
-						item-text="text"
+						item-value="id"
+						item-text="label"
 						label="Alarm Level"
 						dense
 					></v-select>
@@ -213,17 +231,22 @@
 					</v-row>
 				</v-col>
 			</v-row>
+			<v-snackbar v-model="response.status">
+				{{response.message}}
+			</v-snackbar>
 		</v-col>
 	</v-row>
 </template>
 <script>
 import CreateEventDetectorDialog from '@/layout/dialogs/CreateEventDetectorDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
 export default {
 	name: 'PointPropEventDetectors',
 
 	components: {
 		CreateEventDetectorDialog,
+		ConfirmationDialog,
 	},
 
 	filters: {
@@ -248,25 +271,78 @@ export default {
 
 	data() {
 		return {
+			confirmDeleteDialog: false,
+			confirmDeleteDetector: null,
 			binaryState: [
 				{ text: 'Zero', value: false },
 				{ text: 'One', value: true },
 			],
-			alarmLevels: [
-				{ text: this.$t('alarmlevels.none'), value: 0 },
-				{ text: this.$t('alarmlevels.information'), value: 1 },
-				{ text: this.$t('alarmlevels.urgent'), value: 2 },
-				{ text: this.$t('alarmlevels.critical'), value: 3 },
-				{ text: this.$t('alarmlevels.lifesafety'), value: 4 },
-			],
+			response: {
+				status: false,
+				message: '',
+			},
 		};
 	},
 
 	computed: {
+		alarmLevels() {
+			return this.$store.state.alarmLevels;
+		},
+
 		timePeriods() {
 			return this.$store.state.timePeriods.filter((e) => {
 				return e.id === 1 || e.id === 2 || e.id === 3;
 			});
+		},
+	},
+
+	methods: {
+		addEventDetector(value) {
+			this.data.eventDetectors.push(value);
+			this.response.status = true;
+			this.response.message = "Added succesfully!";
+		},
+
+		openConfirmDialog(e) {
+			this.confirmDeleteDialog = true;
+			this.confirmDeleteDetector = e;
+		},
+
+		updateEventDetector(e) {
+			this.$store.dispatch("updateEventDetector", {
+				datapointId: this.data.id,
+				pointEventDetectorId: e.id,
+				requestData: e
+			}).then(resp => {
+				this.response.status = true;
+				this.response.message = "Updated succesfully!";
+			}).catch(err => {
+				this.response.status = true;
+				this.response.message = "Update failed!";
+			});
+		},
+
+		deleteEventDetector(e) {
+			this.confirmDeleteDialog = false;
+			if (e) {
+				this.$store
+					.dispatch('deleteEventDetector', {
+						datapointId: this.data.id,
+						pointEventDetectorId: this.confirmDeleteDetector.id,
+					})
+					.then((resp) => {
+						if(resp.status === "deleted") {
+							this.data.eventDetectors = this.data.eventDetectors.filter(e => {
+								return e.id !== this.confirmDeleteDetector.id;
+							});
+							this.response.status = true;
+							this.response.message = "Deleted succesfully!";
+						} else {
+							this.response.status = true;
+							this.response.message = "Deletion failed!";
+						}
+					});
+			}
 		},
 	},
 };

@@ -13,6 +13,7 @@ const storeAlarmsNotifications = {
 			xid: 'PED-PLC',
 			alias: '',
 			alarmLevel: 1,
+			type: 5,
 		},
 		ehTemplate: {
 			id: -1,
@@ -75,16 +76,9 @@ const storeAlarmsNotifications = {
 			requestData.xid = requestData.xid + `_${datapointId}`;
 
 			return dispatch('requestPost', {
-				url: `/eventDetector/set/change/${datapointId}`,
+				url: `/eventDetector/set/${datapointId}`,
 				data: requestData,
 			});
-		},
-
-		deleteEventDetector({ dispatch }, payload) {
-			return dispatch(
-				'requestDelete',
-				`/eventDetector/delete/${payload.datapointId}/${payload.pointEventDetectorId}`,
-			);
 		},
 
 		async createEventHandler({ state, dispatch }, payload) {

@@ -179,3 +179,116 @@ export const eventRenderersTemplates = [
         metaLongText: null
     }
 ]
+
+export const eventDetectorTemplates = [
+    {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 1,
+        
+        duration: 0,
+        durationType: 1,
+        limit: 0.0,
+    },
+    {    
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 2,
+        
+        duration: 0,
+        durationType: 1,
+        limit: 0.0,
+    }, 
+    {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 3,
+
+        duration: 0,
+        durationType: 1,
+        binaryState: false,
+    }, 
+    {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 4,
+
+        duration: 0,
+        durationType: 1,
+        multistateState: 0,
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 5
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 6,
+
+        duration: 0,
+        durationType: 1,
+        changeCount: 2,
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 7,
+
+        duration: 0,
+        durationType: 1,
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 8,
+
+        duration: 0,
+        durationType: 1,
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 9,
+
+        duration: 0,
+        durationType: 1,
+        alphanumericState: null,
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 10,
+
+        duration: 0,
+        durationType: 1,
+        weight: 0,
+        positiveLimit: 1,
+    }, {
+        id: -1,
+        xid: "",
+        alias: "",
+        alarmLevel: 0,
+        detectorType: 11,
+
+        duration: 0,
+        durationType: 1,
+        weight: 0,
+        negativeLimit: 1,
+    },
+]
