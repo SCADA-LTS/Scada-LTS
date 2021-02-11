@@ -491,6 +491,10 @@ paths:
       responses:
         '200':
           description: "Post successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONPointEventDetectorVO'
           headers: { }
 
   /eventDetector/update/{datapointId}/{id}:
@@ -814,6 +818,35 @@ components:
               type: array
               items:
                 type: object
+    JSONPointEventDetectorVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        detectorType:
+          type: number
+        alarmLevel:
+          type: number
+        limit:
+          type: number
+        duration:
+          type: number
+        durationType:
+          type: number
+        binaryState:
+          type: boolean
+        multistateState:
+          type: number
+        changeCount:
+          type: number
+        alphanumericState:
+          type: number
+        weight:
+          type: number
     MailingList:
       type: object
       properties:
@@ -893,7 +926,7 @@ components:
           type: number
         durationType:
           type: number
-        highLimit:
+        limit:
           type: number
         detectorType:
           type: number
@@ -910,7 +943,7 @@ components:
           type: number
         durationType:
           type: number
-        lowLimit:
+        limit:
           type: number
         detectorType:
           type: number
@@ -944,7 +977,7 @@ components:
           type: number
         durationType:
           type: number
-        negativeLimit:
+        limit:
           type: number
         weight:
           type: number
@@ -963,7 +996,7 @@ components:
           type: number
         durationType:
           type: number
-        positiveLimit:
+        limit:
           type: number
         weight:
           type: number
