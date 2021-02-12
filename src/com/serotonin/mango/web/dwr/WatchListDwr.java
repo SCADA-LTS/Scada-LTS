@@ -486,4 +486,15 @@ public class WatchListDwr extends BaseDwr {
 		DataExportDefinition def = new DataExportDefinition(pointIds, from, to);
 		Common.getUser().setDataExportDefinition(def);
 	}
+
+	public String getPointDescription(int pointId) {
+		DataPointVO point = new DataPointDao().getDataPoint(pointId);
+		if (point == null)
+			return null;
+		String description = point.getDescription();
+		if (description.equals(""))
+			return "";
+		else
+			return " (" + description + ")";
+	}
 }

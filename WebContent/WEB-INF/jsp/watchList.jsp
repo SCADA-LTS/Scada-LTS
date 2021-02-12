@@ -333,7 +333,9 @@
               show("p"+ pointId +"Delete");
           }
 
-          $("p"+ pointId +"Name").innerHTML = pointNames[pointId];
+          WatchListDwr.getPointDescription(pointId, function(data) {
+            $("p"+ pointId +"Name").innerHTML = pointNames[pointId] + data;
+          });
 
           // Disable the element in the point list.
           togglePointTreeIcon(pointId, false);
