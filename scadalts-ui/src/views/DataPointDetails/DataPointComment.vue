@@ -35,7 +35,7 @@
 								v-model="newComment"
 								label="Add comment..."
 								append-icon="mdi-check"
-                                @click:append="addComment"
+								@click:append="addComment"
 								dense
 							></v-text-field>
 						</v-list-item-title>
@@ -47,31 +47,31 @@
 </template>
 <script>
 export default {
-    name: 'DataPointComment',
+	name: 'DataPointComment',
 
-    props: ['data'],
+	props: ['data'],
 
-    data() {
-        return {
-            componentVisible: false,
-            newComment: '',
-        }
-    },
+	data() {
+		return {
+			componentVisible: false,
+			newComment: '',
+		};
+	},
 
-    methods: {
-        addComment() {
-            let time = new Date();
-            let comment = {
-                userId: this.$store.state.loggedUser.id,
-                ts: time.getTime(),
-                comment: this.newComment,
-                username: this.$store.state.loggedUser.username,
-                prettyTime: time.toLocaleTimeString()
-            }
-            this.data.comments.push(Object.assign({}, comment));
-            this.newComment = '';
-        }
-    }
+	methods: {
+		addComment() {
+			let time = new Date();
+			let comment = {
+				userId: this.$store.state.loggedUser.id,
+				ts: time.getTime(),
+				comment: this.newComment,
+				username: this.$store.state.loggedUser.username,
+				prettyTime: time.toLocaleTimeString(),
+			};
+			this.data.comments.push(Object.assign({}, comment));
+			this.newComment = '';
+		},
+	},
 };
 </script>
 <style scoped></style>

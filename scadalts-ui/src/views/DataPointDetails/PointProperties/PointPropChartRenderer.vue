@@ -102,7 +102,7 @@ export default {
 		watchChartRendererChange(val) {
 			console.log(val);
 			let template = JSON.parse(
-				JSON.stringify(this.$store.state.dataPoint.chartRenderersTemplates[val])
+				JSON.stringify(this.$store.state.dataPoint.chartRenderersTemplates[val]),
 			);
 			if (!!template) {
 				if (!!this.data.chartRenderer) {

@@ -32,7 +32,7 @@ export default {
 	computed: {
 		loggingTypeList() {
 			return this.$store.state.dataPoint.loggingTypeList;
-		}
+		},
 	},
 
 	mounted() {

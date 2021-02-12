@@ -51,7 +51,9 @@
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title class="title"> Scada-LTS </v-list-item-title>
-					<v-list-item-subtitle> version 2.5.0 </v-list-item-subtitle>
+					<v-list-item-subtitle>
+						version {{ $store.getters.appMilestone }} build {{ $store.getters.appBuild }}
+					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
 
@@ -67,8 +69,8 @@
 					<v-list-item-content class="justify-center text-center">
 						<v-icon v-show="!user.admin">mdi-account</v-icon>
 						<v-icon v-show="user.admin">mdi-account-tie</v-icon>
-						<h3>{{user.username}}</h3>
-						<p>{{user.email}}</p>
+						<h3>{{ user.username }}</h3>
+						<p>{{ user.email }}</p>
 						<v-divider></v-divider>
 						<v-btn block text link href="./users.shtm">
 							<span>Edit profile</span>
@@ -108,7 +110,7 @@ export default {
 	computed: {
 		user() {
 			return this.$store.state.loggedUser;
-		}
+		},
 	},
 
 	mounted() {

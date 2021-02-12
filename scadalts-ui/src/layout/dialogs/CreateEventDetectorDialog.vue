@@ -17,14 +17,18 @@
 							item-value="id"
 							item-text="label"
 							label="Event Detector Type"
-                            @change="watchEventDectectorChange"
+							@change="watchEventDectectorChange"
 							dense
 						></v-select>
 					</v-col>
 				</v-row>
 				<v-row v-if="eventDetector">
 					<v-col cols="12">
-						<v-text-field v-model="eventDetector.xid" label="Export ID" dense></v-text-field>
+						<v-text-field
+							v-model="eventDetector.xid"
+							label="Export ID"
+							dense
+						></v-text-field>
 					</v-col>
 					<v-col cols="1">
 						<img
@@ -63,7 +67,11 @@
 						></v-select>
 					</v-col>
 					<v-col cols="7">
-						<v-text-field v-model="eventDetector.alias" label="Alias" dense></v-text-field>
+						<v-text-field
+							v-model="eventDetector.alias"
+							label="Alias"
+							dense
+						></v-text-field>
 					</v-col>
 
 					<v-col cols="12">
@@ -71,10 +79,18 @@
 						<v-row v-if="selected === 1">
 							<v-col cols="1"></v-col>
 							<v-col cols="4">
-								<v-text-field v-model="eventDetector.limit" label="High limit" dense></v-text-field>
+								<v-text-field
+									v-model="eventDetector.limit"
+									label="High limit"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="3">
-								<v-text-field label="Duration" v-model="eventDetector.duration" dense></v-text-field>
+								<v-text-field
+									label="Duration"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="4">
 								<v-select
@@ -92,10 +108,18 @@
 						<v-row v-if="selected === 2">
 							<v-col cols="1"></v-col>
 							<v-col cols="4">
-								<v-text-field v-model="eventDetector.limit" label="Low limit" dense></v-text-field>
+								<v-text-field
+									v-model="eventDetector.limit"
+									label="Low limit"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="3">
-								<v-text-field label="Duration" v-model="eventDetector.duration" dense></v-text-field>
+								<v-text-field
+									label="Duration"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="4">
 								<v-select
@@ -110,9 +134,7 @@
 						</v-row>
 
 						<!-- State Detector -->
-						<v-row
-							v-if="selected === 3 || selected === 4 || selected === 9"
-						>
+						<v-row v-if="selected === 3 || selected === 4 || selected === 9">
 							<v-col cols="1"></v-col>
 							<v-col cols="4" v-if="data.pointLocator.dataTypeId === 1">
 								<v-select
@@ -139,7 +161,11 @@
 								></v-text-field>
 							</v-col>
 							<v-col cols="3">
-								<v-text-field label="Duration" v-model="eventDetector.duration" dense></v-text-field>
+								<v-text-field
+									label="Duration"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="4">
 								<v-select
@@ -164,7 +190,11 @@
 								></v-text-field>
 							</v-col>
 							<v-col cols="3">
-								<v-text-field label="Duration" v-model="eventDetector.duration" dense></v-text-field>
+								<v-text-field
+									label="Duration"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="4">
 								<v-select
@@ -182,7 +212,11 @@
 						<v-row v-if="selected === 7">
 							<v-col cols="1"></v-col>
 							<v-col cols="5">
-								<v-text-field label="Duration" v-model="eventDetector.duration" dense></v-text-field>
+								<v-text-field
+									label="Duration"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="6">
 								<v-select
@@ -200,7 +234,11 @@
 						<v-row v-if="selected === 8">
 							<v-col cols="1"></v-col>
 							<v-col cols="5">
-								<v-text-field label="Duration" v-model="eventDetector.duration" dense></v-text-field>
+								<v-text-field
+									label="Duration"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
 							</v-col>
 							<v-col cols="6">
 								<v-select
@@ -219,7 +257,7 @@
 			<v-divider></v-divider>
 			<v-card-actions>
 				<v-spacer></v-spacer>
-                <v-btn color="primary" text @click="cancel">
+				<v-btn color="primary" text @click="cancel">
 					{{ $t('uiv.modal.cancel') }}
 				</v-btn>
 				<v-btn color="primary" text @click="add">
@@ -233,81 +271,84 @@
 export default {
 	name: 'CreateEventDetectorDialog',
 
-    props: ['data'],
+	props: ['data'],
 
 	data() {
 		return {
 			dialog: false,
-            select: 0,
-            eventDetector: null,
-            binaryState: [
+			select: 0,
+			eventDetector: null,
+			binaryState: [
 				{ text: 'Zero', value: false },
 				{ text: 'One', value: true },
 			],
 		};
 	},
 
-    computed: {
-        alarmLevels() {
-            return this.$store.state.alarmLevels;
-        },
+	computed: {
+		alarmLevels() {
+			return this.$store.state.alarmLevels;
+		},
 
-        timePeriods() {
+		timePeriods() {
 			return this.$store.state.timePeriods.filter((e) => {
 				return e.id === 1 || e.id === 2 || e.id === 3;
 			});
 		},
 
-        eventDetectorList() {
+		eventDetectorList() {
 			if (!!this.data) {
-                if(this.data.pointLocator.dataTypeId === 1) {
-                    // Binary Datapoint
-                    return this.$store.state.storeEventDetectors.eventDetectorList.filter(e => {
-                        return e.id === 3 || e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8
-                    });
-                } else if (this.data.pointLocator.dataTypeId === 2) {
-                    // Multistate Datapoint
-                    return this.$store.state.storeEventDetectors.eventDetectorList.filter(e => {
-                        return e.id === 4 || e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8
-                    });
-                } else if (this.data.pointLocator.dataTypeId === 3) {
-                    // Numeric Datapoint
-                    return this.$store.state.storeEventDetectors.eventDetectorList.filter(e => {
-                        return !(e.id === 3 || e.id === 4 || e.id === 6 || e.id === 9)
-                    });
-                } else if (this.data.pointLocator.dataTypeId === 4) {
-                    // Alphanumeric Datapoint
-                    return this.$store.state.storeEventDetectors.eventDetectorList.filter(e => {
-                        return e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8 || e.id === 9
-                    });
-                }
-                return null;
+				if (this.data.pointLocator.dataTypeId === 1) {
+					// Binary Datapoint
+					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+						return e.id === 3 || e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8;
+					});
+				} else if (this.data.pointLocator.dataTypeId === 2) {
+					// Multistate Datapoint
+					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+						return e.id === 4 || e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8;
+					});
+				} else if (this.data.pointLocator.dataTypeId === 3) {
+					// Numeric Datapoint
+					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+						return !(e.id === 3 || e.id === 4 || e.id === 6 || e.id === 9);
+					});
+				} else if (this.data.pointLocator.dataTypeId === 4) {
+					// Alphanumeric Datapoint
+					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+						return e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8 || e.id === 9;
+					});
+				}
+				return null;
 			}
 		},
-    },
+	},
 
 	methods: {
 		add() {
-            this.$store.dispatch("createEventDetector", {
-                datapointId: this.data.id, requestData: this.eventDetector
-            }).then(resp => {
-                this.$emit('saved', resp);
-            });
+			this.$store
+				.dispatch('createEventDetector', {
+					datapointId: this.data.id,
+					requestData: this.eventDetector,
+				})
+				.then((resp) => {
+					this.$emit('saved', resp);
+				});
 			this.dialog = false;
 		},
 
-        cancel() {
-            this.dialog = false;
-        },
+		cancel() {
+			this.dialog = false;
+		},
 
-        watchEventDectectorChange(val) {
-            this.eventDetector = Object.assign(
-                {}, this.$store.state.storeEventDetectors.eventDetectorTemplates[val-1]
-            );
-            this.eventDetector.xid = `PED_${Math.round(Math.random()*100000)}`
-            console.log(this.eventDetector)
-
-        },
+		watchEventDectectorChange(val) {
+			this.eventDetector = Object.assign(
+				{},
+				this.$store.state.storeEventDetectors.eventDetectorTemplates[val - 1],
+			);
+			this.eventDetector.xid = `PED_${Math.round(Math.random() * 100000)}`;
+			console.log(this.eventDetector);
+		},
 	},
 };
 </script>

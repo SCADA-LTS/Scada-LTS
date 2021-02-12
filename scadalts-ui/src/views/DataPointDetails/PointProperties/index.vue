@@ -20,6 +20,7 @@
 												x-small
 												fab
 												elevation="1"
+												@click="toggleDataPoint"
 												:color="data.enabled ? 'primary' : 'error'"
 											>
 												<v-icon v-show="data.enabled">mdi-decagram</v-icon>
@@ -28,6 +29,11 @@
 											Point properties
 										</h3>
 									</v-col>
+									<PurgeDataDialog
+										:data="data"
+										:dialog="purgeDialog"
+										@result="purgeDataResult"
+									></PurgeDataDialog>
 									<v-col class="row justify-end">
 										<v-menu bottom offset-y>
 											<template v-slot:activator="{ on, attrs }">
@@ -38,13 +44,15 @@
 
 											<v-list>
 												<v-list-item @click="purgeData">
-													<v-list-item-icon><v-icon>mdi-eraser-variant</v-icon></v-list-item-icon>
+													<v-list-item-icon
+														><v-icon>mdi-eraser-variant</v-icon></v-list-item-icon
+													>
 													<v-list-item-title>Purge data</v-list-item-title>
 												</v-list-item>
-												<v-list-item @click="applyProperties">
+												<!-- <v-list-item @click="applyProperties">
 													<v-list-item-icon><v-icon>mdi-content-copy</v-icon></v-list-item-icon>
 													<v-list-item-title>Apply properties</v-list-item-title>
-												</v-list-item>
+												</v-list-item> -->
 											</v-list>
 										</v-menu>
 									</v-col>
@@ -58,12 +66,15 @@
 							<v-col md="6" cols="12" @click="navToDataSource">
 								<v-btn text block>
 									<v-icon>mdi-database </v-icon>
-									<span>{{ data.dataSourceName }}</span>
+									<span> {{ data.dataSourceName }}</span>
 								</v-btn>
-								
 							</v-col>
 							<v-col cols="12">
-								<v-text-field v-model="data.description" label="Description" dense></v-text-field>
+								<v-text-field
+									v-model="data.description"
+									label="Description"
+									dense
+								></v-text-field>
 							</v-col>
 						</v-row>
 
@@ -83,12 +94,8 @@
 			<v-divider></v-divider>
 			<v-card-actions>
 				<v-spacer> </v-spacer>
-				<v-btn text @click="dialog = false">{{
-					$t('uiv.modal.cancel')
-				}}</v-btn>
-				<v-btn color="primary" text @click="save">{{
-					$t('uiv.modal.ok')
-				}}</v-btn>
+				<v-btn text @click="dialog = false">{{ $t('uiv.modal.cancel') }}</v-btn>
+				<v-btn color="primary" text @click="save">{{ $t('uiv.modal.ok') }}</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
@@ -100,6 +107,8 @@ import PointPropChartRenderer from './PointPropChartRenderer';
 import PointPropEventRenderer from './PointPropEventRenderer';
 import PointPropEventDetectors from './PointPropEventDetectors';
 
+import PurgeDataDialog from '@/layout/dialogs/PurgeDataDialog';
+
 export default {
 	name: 'PointProperties',
 
@@ -109,6 +118,7 @@ export default {
 		PointPropChartRenderer,
 		PointPropEventRenderer,
 		PointPropEventDetectors,
+		PurgeDataDialog,
 	},
 
 	props: ['data'],
@@ -116,6 +126,7 @@ export default {
 	data() {
 		return {
 			dialog: false,
+			purgeDialog: false,
 		};
 	},
 
@@ -125,16 +136,31 @@ export default {
 			this.dialog = false;
 		},
 
+		async toggleDataPoint() {
+			let resp = await this.$store.dispatch('toggleDataPoint', this.data.id);
+			if (!!resp) {
+				this.data.enabled = resp.enabled;
+			}
+		},
+
 		purgeData() {
-			console.log("Purge Data");
+			this.purgeDialog = true;
+		},
+
+		purgeDataResult() {
+			this.purgeDialog = false;
 		},
 
 		applyProperties() {
-			console.log("Apply Properties");
+			console.log('Apply Properties');
 		},
 
 		navToDataSource() {
-			location.replace(`${location.protocol}//${location.host}/${location.pathname.split('/')[1]}/data_source_edit.shtm?dsid=${this.data.dataSourceId}&pid=${this.data.id}`);
+			location.replace(
+				`${location.protocol}//${location.host}/${
+					location.pathname.split('/')[1]
+				}/data_source_edit.shtm?dsid=${this.data.dataSourceId}&pid=${this.data.id}`,
+			);
 		},
 	},
 };

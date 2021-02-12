@@ -15,7 +15,7 @@
 				<v-btn text @click="cancel">
 					{{ $t('uiv.modal.cancel') }}
 				</v-btn>
-				<v-btn color="success" @click="accept">
+				<v-btn text color="success" @click="accept">
 					{{ $t('uiv.modal.ok') }}
 				</v-btn>
 			</v-card-actions>

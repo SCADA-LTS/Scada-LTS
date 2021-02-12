@@ -9,7 +9,10 @@
 					</h1>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
-					<PointProperties :data="dataPointDetails" @saved="saveDataPointDetails"></PointProperties>
+					<PointProperties
+						:data="dataPointDetails"
+						@saved="saveDataPointDetails"
+					></PointProperties>
 				</v-col>
 				<v-col cols="2">
 					<DataPointSearchComponent @change="reload"></DataPointSearchComponent>
@@ -23,6 +26,7 @@
 						x-small
 						fab
 						elevation="1"
+						@click="toggleDataPoint"
 						:color="dataPointDetails.enabled ? 'primary' : 'error'"
 					>
 						<v-icon v-show="dataPointDetails.enabled">mdi-decagram</v-icon>
@@ -112,7 +116,7 @@ export default {
 		return {
 			pointValue: 0.0,
 			pointValueTime: 'N/A',
-            newComment: '',
+			newComment: '',
 			dataPointDetails: undefined,
 		};
 	},
@@ -131,27 +135,34 @@ export default {
 		async fetchDataPointDetails(datapointId) {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
-				datapointId
+				datapointId,
 			);
 			this.getDataPointValue(datapointId);
+		},
+
+		async toggleDataPoint() {
+			let resp = await this.$store.dispatch('toggleDataPoint', this.dataPointDetails.id);
+			if (!!resp) {
+				this.dataPointDetails.enabled = resp.enabled;
+			}
 		},
 
 		sendValue() {
 			let request = {
 				xid: this.dataPointDetails.xid,
 				type: this.dataPointDetails.pointLocator.dataTypeId,
-				value: this.pointValue
-			}
+				value: this.pointValue,
+			};
 
-			if(request.type === 1) {
-				if(request.value === true || request.value === "true") {
+			if (request.type === 1) {
+				if (request.value === true || request.value === 'true') {
 					request.value = 1;
-				} else if (request.value === false || request.value === "false") {
+				} else if (request.value === false || request.value === 'false') {
 					request.value = 0;
 				}
 			}
 
-			this.$store.dispatch('setDataPointValue', request).then(resp => {
+			this.$store.dispatch('setDataPointValue', request).then((resp) => {
 				this.getDataPointValue(this.dataPointDetails.id);
 			});
 		},
@@ -166,7 +177,7 @@ export default {
 		},
 
 		saveDataPointDetails() {
-			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then(resp => {
+			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then((resp) => {
 				alert(resp);
 			});
 		},

@@ -78,7 +78,14 @@
 		</v-col>
 		<v-col cols="6"> Default cache size </v-col>
 		<v-col cols="6">
-			<v-text-field v-model="data.defaultCacheSize" dense></v-text-field>
+			<v-text-field v-model="data.defaultCacheSize" dense>
+				<template v-slot:append-outer>
+					<v-btn text block @click="clearCache">
+						<v-icon>mdi-delete-sweep</v-icon>
+						<span> Clear cache</span>
+					</v-btn>
+				</template>
+			</v-text-field>
 		</v-col>
 	</v-row>
 </template>
@@ -89,18 +96,23 @@ export default {
 	props: ['data'],
 
 	data() {
-		return {
-			intervalLoggingPeriodTypeList: [
-				{ id: 1, label: 'Seconds' },
-				{ id: 2, label: 'Hours' },
-				{ id: 3, label: 'Days' },
-			],
-		};
+		return {};
 	},
 
 	computed: {
+		intervalLoggingPeriodTypeList() {
+			return this.$store.state.timePeriods.filter((e) => {
+				return e.id === 1 || e.id === 2 || e.id === 3;
+			});
+		},
 		loggingTypeList() {
 			return this.$store.state.dataPoint.loggingTypeList;
+		},
+	},
+
+	methods: {
+		clearCache() {
+			this.$store.dispatch('clearDataPointCache', this.data.id);
 		},
 	},
 };

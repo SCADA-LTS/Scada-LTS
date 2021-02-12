@@ -232,7 +232,7 @@
 				</v-col>
 			</v-row>
 			<v-snackbar v-model="response.status">
-				{{response.message}}
+				{{ response.message }}
 			</v-snackbar>
 		</v-col>
 	</v-row>
@@ -300,7 +300,7 @@ export default {
 		addEventDetector(value) {
 			this.data.eventDetectors.push(value);
 			this.response.status = true;
-			this.response.message = "Added succesfully!";
+			this.response.message = 'Added succesfully!';
 		},
 
 		openConfirmDialog(e) {
@@ -309,17 +309,20 @@ export default {
 		},
 
 		updateEventDetector(e) {
-			this.$store.dispatch("updateEventDetector", {
-				datapointId: this.data.id,
-				pointEventDetectorId: e.id,
-				requestData: e
-			}).then(resp => {
-				this.response.status = true;
-				this.response.message = "Updated succesfully!";
-			}).catch(err => {
-				this.response.status = true;
-				this.response.message = "Update failed!";
-			});
+			this.$store
+				.dispatch('updateEventDetector', {
+					datapointId: this.data.id,
+					pointEventDetectorId: e.id,
+					requestData: e,
+				})
+				.then((resp) => {
+					this.response.status = true;
+					this.response.message = 'Updated succesfully!';
+				})
+				.catch((err) => {
+					this.response.status = true;
+					this.response.message = 'Update failed!';
+				});
 		},
 
 		deleteEventDetector(e) {
@@ -331,15 +334,15 @@ export default {
 						pointEventDetectorId: this.confirmDeleteDetector.id,
 					})
 					.then((resp) => {
-						if(resp.status === "deleted") {
-							this.data.eventDetectors = this.data.eventDetectors.filter(e => {
+						if (resp.status === 'deleted') {
+							this.data.eventDetectors = this.data.eventDetectors.filter((e) => {
 								return e.id !== this.confirmDeleteDetector.id;
 							});
 							this.response.status = true;
-							this.response.message = "Deleted succesfully!";
+							this.response.message = 'Deleted succesfully!';
 						} else {
 							this.response.status = true;
-							this.response.message = "Deletion failed!";
+							this.response.message = 'Deletion failed!';
 						}
 					});
 			}

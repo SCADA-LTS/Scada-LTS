@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.rt.RuntimeManager;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import org.apache.commons.logging.Log;
@@ -627,4 +629,76 @@ public class PointPropertiesAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PatchMapping(value = "/api/point_properties/{id}/purge")
+    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id, @RequestParam Map<String, String> query, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataPointVO point = dataPointService.getDataPoint(id);
+                RuntimeManager rm = Common.ctx.getRuntimeManager();
+                Long count;
+                if(query.containsKey("all")) {
+                    if(query.get("all").equals("true")) {
+                        count = rm.purgeDataPointValues(point.getId());
+                        return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
+                    }
+                }
+                if(query.containsKey("type") && query.containsKey("period")) {
+                    count = rm.purgeDataPointValues(point.getId(), Integer.parseInt(query.get("type")), Integer.parseInt(query.get("period")));
+                    return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PatchMapping(value = "/api/point_properties/{id}/clearcache")
+    public ResponseEntity<String> clearDataPointCache(@PathVariable("id") int id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataPointVO point = dataPointService.getDataPoint(id);
+                DataPointRT rt = Common.ctx.getRuntimeManager().getDataPoint(point.getId());
+                if(rt != null) {
+                    rt.resetValues();
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("DataPointRT not exists", HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(value = "/api/point_properties/{id}/toggle")
+    public ResponseEntity<String> toggleDataPoint(@PathVariable("id") int id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataPointVO point = dataPointService.getDataPoint(id);
+                RuntimeManager rm = Common.ctx.getRuntimeManager();
+                point.setEnabled(!point.isEnabled());
+                rm.saveDataPoint(point);
+
+                if(point.isEnabled()) {
+                    return new ResponseEntity<>("{\"enabled\":true}", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("{\"enabled\":false}", HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

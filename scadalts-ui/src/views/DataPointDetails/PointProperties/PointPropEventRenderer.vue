@@ -215,21 +215,21 @@ export default {
 					renderers.push(
 						this.$store.state.dataPoint.textRenderesList.filter((e) => {
 							return e.id === 1;
-						})[0]
+						})[0],
 					);
 				} else if (this.data.pointLocator.dataTypeId === 2) {
 					// Multistate datapoint
 					renderers.push(
 						this.$store.state.dataPoint.textRenderesList.filter((e) => {
 							return e.id === 2;
-						})[0]
+						})[0],
 					);
 				} else if (this.data.pointLocator.dataTypeId === 3) {
 					// Numeric datapoint
 					renderers.push(
 						this.$store.state.dataPoint.textRenderesList.filter((e) => {
 							return e.id === 4;
-						})[0]
+						})[0],
 					);
 				}
 				return renderers;
@@ -263,7 +263,7 @@ export default {
 				this.data.eventTextRenderer = null;
 			} else {
 				let template = JSON.parse(
-					JSON.stringify(this.$store.state.dataPoint.eventRenderersTemplates[val])
+					JSON.stringify(this.$store.state.dataPoint.eventRenderersTemplates[val]),
 				);
 				if (!!this.data.eventTextRenderer) {
 					if (this.data.eventTextRenderer.def.exportName === template.def.exportName) {
@@ -275,7 +275,9 @@ export default {
 		},
 
 		addRangeValue() {
-			this.data.eventTextRenderer.rangeEventValues.push(Object.assign({}, this.rangeRenderer));
+			this.data.eventTextRenderer.rangeEventValues.push(
+				Object.assign({}, this.rangeRenderer),
+			);
 			this.rangeRenderer = {
 				from: 0,
 				to: 0,
@@ -288,19 +290,21 @@ export default {
 			this.data.eventTextRenderer.rangeEventValues = this.data.eventTextRenderer.rangeEventValues.filter(
 				(e) => {
 					return e.longText !== val.longText;
-				}
+				},
 			);
 		},
 
 		addMultistateValue() {
-			this.data.eventTextRenderer.multistateEventValues.push(Object.assign({}, this.multistateRenderer));
+			this.data.eventTextRenderer.multistateEventValues.push(
+				Object.assign({}, this.multistateRenderer),
+			);
 			this.rangeRenderer = { key: 0, shortText: '', longText: '', colour: '#458e23' };
 		},
 		delMultistateValue(val) {
 			this.data.eventTextRenderer.multistateEventValues = this.data.eventTextRenderer.multistateEventValues.filter(
 				(e) => {
 					return e.key !== val.key;
-				}
+				},
 			);
 		},
 	},

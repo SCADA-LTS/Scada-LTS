@@ -1,5 +1,9 @@
 import i18n from '@/i18n';
-import { chartRenderersTemplates, eventRenderersTemplates, textRenderesTemplates } from './templates';
+import {
+	chartRenderersTemplates,
+	eventRenderersTemplates,
+	textRenderesTemplates,
+} from './templates';
 
 const storeDataPoint = {
 	state: {
@@ -9,15 +13,15 @@ const storeDataPoint = {
 				type: 'ON_CHANGE',
 				label: i18n.t('pointEdit.logging.type.change'),
 			},
-			{ 
-				id: 2, 
-				type: 'ALL', 
-				label: i18n.t('pointEdit.logging.type.all') 
+			{
+				id: 2,
+				type: 'ALL',
+				label: i18n.t('pointEdit.logging.type.all'),
 			},
-			{ 
-				id: 3, 
-				type: 'NONE', 
-				label: i18n.t('pointEdit.logging.type.never') 
+			{
+				id: 3,
+				type: 'NONE',
+				label: i18n.t('pointEdit.logging.type.never'),
 			},
 			{
 				id: 4,
@@ -31,18 +35,17 @@ const storeDataPoint = {
 			},
 		],
 
-		//TODO: ADD General Time Selectors 
+		//TODO: ADD General Time Selectors
 		//      as it is done with TextRenderer list
-
 
 		//TODO: ADD i18n translations
 		textRenderesList: [
-			{ id: 0, label: "Analog"},
-			{ id: 1, label: "Binary"},
-			{ id: 2, label: "Multistate"},
-			{ id: 3, label: "Plain"},
-			{ id: 4, label: "Range"},
-			{ id: 5, label: "Time"},
+			{ id: 0, label: 'Analog' },
+			{ id: 1, label: 'Binary' },
+			{ id: 2, label: 'Multistate' },
+			{ id: 3, label: 'Plain' },
+			{ id: 4, label: 'Range' },
+			{ id: 5, label: 'Time' },
 		],
 
 		textRenderesTemplates: textRenderesTemplates,
@@ -50,7 +53,6 @@ const storeDataPoint = {
 		chartRenderersTemplates: chartRenderersTemplates,
 
 		eventRenderersTemplates: eventRenderersTemplates,
-		
 	},
 
 	mutations: {},
@@ -95,7 +97,7 @@ const storeDataPoint = {
 			});
 		},
 
-		getAllDatapoints({dispatch}) {
+		getAllDatapoints({ dispatch }) {
 			return dispatch('requestGet', `/datapoint/getAll`);
 		},
 
@@ -103,23 +105,55 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},
 
-		getDataPointValue({dispatch}, datapointId) {
+		getDataPointValue({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
 		},
 
-		setDataPointValue({dispatch}, payload) {
+		setDataPointValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/point_value/setValue/${payload.xid}/${payload.type}/${payload.value}`,
 				data: null,
 			});
 		},
 
-		saveDataPointDetails({dispatch}, payload) {
+		saveDataPointDetails({ dispatch }, payload) {
 			return dispatch('requestPut', {
 				url: `/point_properties/updateProperties?id=${payload.id}`,
 				data: payload,
 			});
-		}
+		},
+
+		clearDataPointCache({ dispatch }, datapointId) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/clearcache`,
+				data: null,
+			});
+		},
+
+		purgeDataPointValues({ dispatch }, payload) {
+			let request = '?';
+			if (payload.allData) {
+				request = request + 'all=true';
+			}
+			if (!!payload.type && !!payload.period) {
+				if (payload.allData) {
+					request = request + '&';
+				}
+				request = request + `type=${payload.type}&period=${payload.period}`;
+			}
+
+			return dispatch('requestPatch', {
+				url: `/point_properties/${payload.datapointId}/purge${request}`,
+				data: null,
+			});
+		},
+
+		toggleDataPoint({ dispatch }, datapointId) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/toggle`,
+				data: null,
+			});
+		},
 	},
 
 	getters: {},

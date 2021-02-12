@@ -361,8 +361,8 @@ export default {
 						resolve(config);
 					}
 				}
-				resolve("nochange");
-			})
+				resolve('nochange');
+			});
 		},
 
 		/**
@@ -392,21 +392,21 @@ export default {
 		 */
 		async saveConfiguration() {
 			if (this.modified.length > 0) {
-				for(let i = 0; i< this.modified.length; i++) {
+				for (let i = 0; i < this.modified.length; i++) {
 					let x = await this.updateHandler(
 						this.modified[i].id,
 						this.modified[i].configuration,
 						this.modified[i].mail,
 						this.TYPE_MAIL,
 					);
-					if(x !== "nochange") {
+					if (x !== 'nochange') {
 						this.modified[i].configuration = x;
 					}
 					await this.updateHandler(
-						this.modified[i].id, 
-						this.modified[i].configuration, 
-						this.modified[i].sms, 
-						this.TYPE_SMS
+						this.modified[i].id,
+						this.modified[i].configuration,
+						this.modified[i].sms,
+						this.TYPE_SMS,
 					);
 				}
 
@@ -437,7 +437,7 @@ export default {
 					item.children.forEach((datapoint) => {
 						if (datapoint.id === id) {
 							datapoint.configuration = config;
-							if(type === this.TYPE_MAIL) {
+							if (type === this.TYPE_MAIL) {
 								datapoint.mail.forEach((mail) => {
 									mail.config = mail.active;
 								});

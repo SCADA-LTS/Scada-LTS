@@ -58,13 +58,12 @@ export default new Vuex.Store({
 		],
 
 		alarmLevels: [
-			{ id: 0, label: i18n.t('alarmlevels.none')},
-			{ id: 1, label: i18n.t('alarmlevels.information')},
-			{ id: 2, label: i18n.t('alarmlevels.urgent')},
-			{ id: 3, label: i18n.t('alarmlevels.critical')},
-			{ id: 4, label: i18n.t('alarmlevels.lifesafety')},
+			{ id: 0, label: i18n.t('alarmlevels.none') },
+			{ id: 1, label: i18n.t('alarmlevels.information') },
+			{ id: 2, label: i18n.t('alarmlevels.urgent') },
+			{ id: 3, label: i18n.t('alarmlevels.critical') },
+			{ id: 4, label: i18n.t('alarmlevels.lifesafety') },
 		],
-		
 	},
 	mutations: {},
 	actions: {
@@ -88,12 +87,12 @@ export default new Vuex.Store({
 
 		/**
 		 * Fetch User Data from REST API
-		 * 
+		 *
 		 * @param {*} param0 - Vuex Store variables
 		 */
-		async getUserInfo({state, dispatch}) {
-			state.loggedUser = await dispatch("requestGet", '/auth/user');
-			console.log("VUEX::GET_USER_INFO::",state.loggedUser);
+		async getUserInfo({ state, dispatch }) {
+			state.loggedUser = await dispatch('requestGet', '/auth/user');
+			console.log('VUEX::GET_USER_INFO::', state.loggedUser);
 		},
 
 		/**
@@ -178,6 +177,30 @@ export default new Vuex.Store({
 			return new Promise((resolve, reject) => {
 				axios
 					.put(state.applicationUrl + payload.url, payload.data, state.requestConfig)
+					.then((r) => {
+						if (r.status === 201 || r.status === 200) {
+							resolve(r.data);
+						} else {
+							reject(false);
+						}
+					})
+					.catch((error) => {
+						console.error(error);
+						reject(false);
+					});
+			});
+		},
+
+		/**
+		 * HTTP Request PATCH method to partialy update data by the REST API
+		 *
+		 * @param {*} param0 - Vuex Store variables
+		 * @param {*} payload - {url, data} JS object with request data.
+		 */
+		requestPatch({ state }, payload) {
+			return new Promise((resolve, reject) => {
+				axios
+					.patch(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then((r) => {
 						if (r.status === 201 || r.status === 200) {
 							resolve(r.data);

@@ -813,6 +813,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
+  /api/point_properties/{id}/purge:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'all'
+          in: 'query'
+          schema:
+            type: boolean
+        - name: 'type'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'period'
+          in: 'query'
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: number
+  /api/point_properties/{id}/clearcache:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /api/point_properties/{id}/toggle:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled:
+                    type: string
   /api/point_properties/updateProperties:
     put:
       tags:

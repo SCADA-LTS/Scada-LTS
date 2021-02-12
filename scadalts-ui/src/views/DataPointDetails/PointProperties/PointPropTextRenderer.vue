@@ -15,7 +15,6 @@
 		</v-col>
 
 		<v-col cols="12">
-
 			<!-- ANALOG RENDERER PROPERTIES -->
 			<v-row v-if="selected === 0" dense>
 				<v-col cols="6">
@@ -260,7 +259,7 @@ export default {
 	methods: {
 		watchTextRendererChange(val) {
 			let template = JSON.parse(
-				JSON.stringify(this.$store.state.dataPoint.textRenderesTemplates[val])
+				JSON.stringify(this.$store.state.dataPoint.textRenderesTemplates[val]),
 			);
 			if (this.data.textRenderer.def.exportName !== template.def.exportName) {
 				this.data.textRenderer = template;
@@ -274,19 +273,21 @@ export default {
 			this.data.textRenderer.rangeValues = this.data.textRenderer.rangeValues.filter(
 				(e) => {
 					return e.text !== val.text;
-				}
+				},
 			);
 		},
 
 		addMultistateValue() {
-			this.data.textRenderer.multistateValues.push(Object.assign({}, this.multistateRenderer));
+			this.data.textRenderer.multistateValues.push(
+				Object.assign({}, this.multistateRenderer),
+			);
 			this.multistateRenderer = { key: 0, text: '', colour: '#458e23' };
 		},
 		delMultistateValue(val) {
 			this.data.textRenderer.multistateValues = this.data.textRenderer.multistateValues.filter(
 				(e) => {
 					return e.key !== val.key;
-				}
+				},
 			);
 		},
 	},
