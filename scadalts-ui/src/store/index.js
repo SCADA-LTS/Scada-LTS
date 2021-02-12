@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataPoint from './dataPoint';
+import storeEvents from './events';
 import storeEventDetectors from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
@@ -24,6 +25,7 @@ export default new Vuex.Store({
 		dataSource,
 		dataPoint,
 		storeEventDetectors,
+		storeEvents,
 		graphicView,
 		pointHierarchy,
 		amcharts,

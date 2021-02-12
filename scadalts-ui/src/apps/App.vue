@@ -52,7 +52,7 @@
 				<v-list-item-content>
 					<v-list-item-title class="title"> Scada-LTS </v-list-item-title>
 					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }} build {{ $store.getters.appBuild }}
+						version {{ $store.getters.appMilestone }}
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>

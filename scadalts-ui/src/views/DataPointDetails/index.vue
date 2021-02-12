@@ -61,10 +61,7 @@
 					</v-row>
 				</v-card-text>
 			</v-card>
-			<v-card class="pointDetailsCards">
-				<v-card-title> Events </v-card-title>
-				<v-card-text> Description and so on... </v-card-text>
-			</v-card>
+			<DataPointEventList :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointEventList>
 			<v-card class="pointDetailsCards">
 				<v-card-title> Views </v-card-title>
 				<v-card-text> Description and so on... </v-card-text>
@@ -94,6 +91,7 @@
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
 import DataPointComment from './DataPointComment';
 import PointProperties from './PointProperties';
+import DataPointEventList from './DataPointEventList';
 import LineChartComponent from '@/components/amcharts/LineChartComponent';
 /**
  * Data Point Details page
@@ -109,6 +107,7 @@ export default {
 		DataPointSearchComponent,
 		DataPointComment,
 		PointProperties,
+		DataPointEventList,
 		LineChartComponent,
 	},
 
