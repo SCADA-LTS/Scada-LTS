@@ -38,6 +38,22 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
                 formatValue(oldValue), formatValue(newValue));
     }
 
+    public LocalizableMessage getMailMessage() {
+        return new LocalizableMessage("event.detector.changeMail", vo.njbGetDataPoint().getName(),
+                vo.njbGetDataPoint().getDescription(), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
+    }
+
+    public LocalizableMessage getSMSMessage() {
+        if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
+            return new LocalizableMessage("event.detector.changeSMSWithRenderer", vo.njbGetDataPoint().getName(),
+                    vo.njbGetDataPoint().getEventTextRenderer().getShortText(newValue));
+        } else {
+            return new LocalizableMessage("event.detector.changeMail", vo.njbGetDataPoint().getName(),
+                    vo.njbGetDataPoint().getDescription(), formatValue(newValue), "");
+        }
+
+    }
+
     private String formatValue(MangoValue value) {
         return vo.njbGetDataPoint().getTextRenderer().getText(value, TextRenderer.HINT_SPECIFIC);
     }
