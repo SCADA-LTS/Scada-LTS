@@ -131,7 +131,7 @@ public class EventDetectorAPI {
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty())  {
             for (PointEventDetectorVO _ped : peds) {
-                if (ped.getXid().equals(ped.getXid())) {
+                if (_ped.getXid().equals(ped.getXid())) {
                     return new JsonPointEventDetector(_ped.getId(), _ped.getXid(), _ped.getAlias(), _ped.getDetectorType(),
                             _ped.getAlarmLevel(), _ped.getLimit(), _ped.getDuration(), _ped.getDurationType(), _ped.isBinaryState(),
                             _ped.getMultistateState(), _ped.getChangeCount(), _ped.getAlphanumericState(), _ped.getWeight());
