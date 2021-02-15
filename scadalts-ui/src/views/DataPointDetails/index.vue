@@ -7,6 +7,7 @@
 						{{ dataPointDetails.name }}
 						<DataPointComment :data="dataPointDetails"></DataPointComment>
 					</h1>
+					<p class="thin-top-margin">{{dataPointDetails.description}}</p>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
 					<PointProperties
@@ -61,12 +62,13 @@
 					</v-row>
 				</v-card-text>
 			</v-card>
-			<DataPointEventList :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointEventList>
-			<v-card class="pointDetailsCards">
+			<!-- <DataPointEventList :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointEventList> -->
+			<DataPointValueHistory :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointValueHistory>
+			<!-- <v-card class="pointDetailsCards">
 				<v-card-title> Views </v-card-title>
 				<v-card-text> Description and so on... </v-card-text>
-			</v-card>
-			<v-card class="pointDetailsCards">
+			</v-card> -->
+			<!-- <v-card class="pointDetailsCards">
 				<v-card-title> Statistics </v-card-title>
 				<v-card-text>
 					<v-row>
@@ -80,7 +82,7 @@
 						<v-col cols="6"> ... </v-col>
 					</v-row>
 				</v-card-text>
-			</v-card>
+			</v-card> -->
 		</v-container>
 		<v-container fluid>
 			<LineChartComponent :pointId="this.$route.params.id"> </LineChartComponent>
@@ -92,6 +94,7 @@ import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent'
 import DataPointComment from './DataPointComment';
 import PointProperties from './PointProperties';
 import DataPointEventList from './DataPointEventList';
+import DataPointValueHistory from './DataPointValueHistory';
 import LineChartComponent from '@/components/amcharts/LineChartComponent';
 /**
  * Data Point Details page
@@ -108,6 +111,7 @@ export default {
 		DataPointComment,
 		PointProperties,
 		DataPointEventList,
+		DataPointValueHistory,
 		LineChartComponent,
 	},
 
@@ -185,7 +189,12 @@ export default {
 </script>
 <style scoped>
 .pointDetailsCards {
-	width: 25%;
+	width: 49%;
 	float: left;
+	max-height: 40vh;
+    overflow-y: auto;
+}
+.thin-top-margin {
+	margin-top: -24px;
 }
 </style>

@@ -116,6 +116,11 @@ const storeDataPoint = {
 			});
 		},
 
+		getDataPointValueFromTimeperiod({dispatch}, payload) {
+			return dispatch('requestGet', 
+				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`);
+		},
+
 		saveDataPointDetails({ dispatch }, payload) {
 			return dispatch('requestPut', {
 				url: `/point_properties/updateProperties?id=${payload.id}`,

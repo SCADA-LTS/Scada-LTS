@@ -216,6 +216,34 @@ export default new Vuex.Store({
 					});
 			});
 		},
+
+		/**
+		 * Convert from select to specific Timestamp since past.
+		 * 
+		 * @param {*} param0 
+		 * @param {*} payload - {period, type} Time and Period Type 
+		 */
+		convertSinceTimePeriodToTimestamp({state}, payload) {
+			let result = payload.period;
+			let now = new Date();
+			if (payload.type === 1) {
+				result = result * 1000;
+			} else if(payload.type === 2) {
+				result = result * 1000 * 60;
+			} else if (payload.type === 3){
+				result = result * 1000 * 60 * 60;
+			} else if (payload.type === 4) {
+				result = result * 1000 * 60 * 60 * 24;
+			} else if (payload.type === 5) {
+				result = result * 1000 * 60 * 60 * 24 * 7;
+			} else if (payload.type === 6) {
+				result = result * 1000 * 60 * 60 * 24 * 7 * 4;
+			} else if (payload.type === 7) {
+				result = result * 1000 * 60 * 60 * 24 * 7 * 4 * 12;
+			}
+
+			return new Date(now - result);
+		}
 	},
 	getters: {
 		appVersion: (state) => {

@@ -20,7 +20,7 @@
 					</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title
-							>{{ comment.username }}, {{ new Date(comment.ts).toLocaleString }}</v-list-item-title
+							>{{ comment.username }}, {{ new Date(comment.ts).toLocaleString() }}</v-list-item-title
 						>
 						<v-list-item-subtitle>{{ comment.comment }}</v-list-item-subtitle>
 					</v-list-item-content>
@@ -90,7 +90,7 @@ export default {
 			});
 			this.newComment = '';
 		},
-		
+
 		deleteComment(e) {
 			this.$store.dispatch("delUserComment", {
 				typeId: 2,
