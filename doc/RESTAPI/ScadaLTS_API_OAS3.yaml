@@ -779,7 +779,7 @@ paths:
                           type: object
                         chartColour:
                           type: string
-  /api/point_properties/getProperties/{xid}:
+  /point_properties/getProperties/{xid}:
     get:
       tags:
         - PointPropertiesAPI
@@ -796,7 +796,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
-  /api/point_properties/getPropertiesBaseOnId/{id}:
+  /point_properties/getPropertiesBaseOnId/{id}:
     get:
       tags:
         - PointPropertiesAPI
@@ -813,7 +813,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
-  /api/point_properties/updateProperties:
+  /point_properties/updateProperties:
     put:
       tags:
         - PointPropertiesAPI
@@ -875,7 +875,7 @@ paths:
         '200':
           description: "Put successful"
           headers: { }
-  /api/point_properties/getPointDescription:
+  /point_properties/getPointDescription:
     get:
       tags:
         - PointPropertiesAPI
@@ -895,7 +895,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JsonDescription'
-  /api/point_properties/getBinaryEventRenderer:
+  /point_properties/getBinaryEventRenderer:
     get:
       tags:
         - PointPropertiesAPI
@@ -2104,17 +2104,11 @@ components:
     JsonBinaryEventTextRenderer:
       type: object
       properties:
-        zeroShortLabel:
+        shortLabel:
           type: string
-        zeroLongLabel:
+        longLabel:
           type: string
-        zeroColour:
-          type: string
-        oneShortLabel:
-          type: string
-        oneLongLabel:
-          type: string
-        oneColour:
+        colour:
           type: string
   parameters:
     Authorization:

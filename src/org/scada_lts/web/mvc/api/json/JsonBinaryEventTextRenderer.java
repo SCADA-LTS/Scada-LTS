@@ -1,75 +1,42 @@
 package org.scada_lts.web.mvc.api.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonBinaryEventTextRenderer implements Serializable {
-    private String zeroShortLabel;
-    private String zeroLongLabel;
-    private String zeroColour;
-    private String oneShortLabel;
-    private String oneLongLabel;
-    private String oneColour;
+    private String shortLabel;
+    private String longLabel;
+    private String colour;
 
     public JsonBinaryEventTextRenderer() {
     }
 
-    public JsonBinaryEventTextRenderer(String zeroShortLabel, String zeroLongLabel, String zeroColour, String oneShortLabel, String oneLongLabel, String oneColour) {
-        this.zeroShortLabel = zeroShortLabel;
-        this.zeroLongLabel = zeroLongLabel;
-        this.zeroColour = zeroColour;
-        this.oneShortLabel = oneShortLabel;
-        this.oneLongLabel = oneLongLabel;
-        this.oneColour = oneColour;
+    public JsonBinaryEventTextRenderer(String shortLabel, String longLabel, String colour) {
+        this.shortLabel = shortLabel;
+        this.longLabel = longLabel;
+        this.colour = colour;
     }
 
-    public String getZeroShortLabel() {
-        return zeroShortLabel;
+    public String getShortLabel() {
+        return shortLabel;
     }
 
-    public void setZeroShortLabel(String zeroShortLabel) {
-        this.zeroShortLabel = zeroShortLabel;
+    public void setShortLabel(String shortLabel) {
+        this.shortLabel = shortLabel;
     }
 
-    public String getZeroLongLabel() {
-        return zeroLongLabel;
+    public String getLongLabel() {
+        return longLabel;
     }
 
-    public void setZeroLongLabel(String zeroLongLabel) {
-        this.zeroLongLabel = zeroLongLabel;
+    public void setLongLabel(String longLabel) {
+        this.longLabel = longLabel;
     }
 
-    public String getZeroColour() {
-        return zeroColour;
+    public String getColour() {
+        return colour;
     }
 
-    public void setZeroColour(String zeroColour) {
-        this.zeroColour = zeroColour;
-    }
-
-    public String getOneShortLabel() {
-        return oneShortLabel;
-    }
-
-    public void setOneShortLabel(String oneShortLabel) {
-        this.oneShortLabel = oneShortLabel;
-    }
-
-    public String getOneLongLabel() {
-        return oneLongLabel;
-    }
-
-    public void setOneLongLabel(String oneLongLabel) {
-        this.oneLongLabel = oneLongLabel;
-    }
-
-    public String getOneColour() {
-        return oneColour;
-    }
-
-    public void setOneColour(String oneColour) {
-        this.oneColour = oneColour;
+    public void setColour(String colour) {
+        this.colour = colour;
     }
 }
