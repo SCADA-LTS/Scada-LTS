@@ -1,9 +1,8 @@
 <template>
 	<v-card>
 		<v-card-title>
-			History
-            <v-spacer>
-            </v-spacer>
+			Data Point Values
+			<v-spacer> </v-spacer>
 			<v-dialog v-model="dialog" width="800">
 				<template v-slot:activator="{ on, attrs }">
 					<v-btn icon fab small v-bind="attrs" v-on="on">
@@ -12,9 +11,7 @@
 				</template>
 
 				<v-card>
-                    <v-card-title>
-                        Hisotry
-                    </v-card-title>
+					<v-card-title> History </v-card-title>
 					<v-card-text>
 						<v-row>
 							<v-col cols="6">
@@ -55,38 +52,113 @@
 		</v-card-title>
 
 		<v-card-text>
-			<v-row>
-				<v-col cols="6">
-					<v-text-field v-model="timePeriod" label="Time period" dense> </v-text-field>
+			<v-row align="center">
+				<v-col cols="4">
+					<v-text-field
+						v-model="pointValue"
+						label="Set a new value"
+						append-icon="mdi-send"
+						@click:append="sendValue"
+						:disabled="!data.pointLocator.settable"
+						dense
+					></v-text-field>
 				</v-col>
-				<v-col cols="6">
+				<v-col cols="2"> </v-col>
+				<v-col cols="3">
+					<v-text-field v-model="timePeriod" label="Show history form" dense>
+					</v-text-field>
+				</v-col>
+				<v-col cols="3">
 					<v-select
 						v-model="timePeriodType"
 						:items="timePeriods"
 						item-value="id"
 						item-text="label"
-						append-outer-icon="mdi-autorenew"
-						@click:append-outer="fetchData"
 						dense
-					></v-select>
+					>
+						<template v-slot:append-outer>
+							<v-btn
+								icon
+								fab
+								x-small
+								@click="fetchData"
+								:loading="fetchingData"
+								:disabled="fetchingData"
+							>
+								<v-icon>mdi-autorenew</v-icon>
+							</v-btn>
+						</template>
+					</v-select>
 				</v-col>
 			</v-row>
-			<v-simple-table dense fixed-header height="150px">
-				<template v-slot:default>
-					<thead>
-						<tr>
-							<th>Value</th>
-							<th>Date</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr v-for="e in valueList" :key="e">
-							<td>{{ e.value }}</td>
-							<td>{{ new Date(e.ts).toLocaleString() }}</td>
-						</tr>
-					</tbody>
-				</template>
-			</v-simple-table>
+			<v-row>
+				<v-col cols="5" v-if="data.pointLocator.dataTypeId === 3">
+					<v-row>
+						<v-col cols="6"> Max Value: </v-col>
+						<v-col cols="6">
+							{{ maxValue.value }}
+						</v-col>
+						<v-col cols="6"> Min Value: </v-col>
+						<v-col cols="6">
+							{{ minValue.value }}
+						</v-col>
+						<v-col cols="6"> Average Value: </v-col>
+						<v-col cols="6">
+							{{ avgValue }}
+						</v-col>
+						<v-col cols="6"> Sum value: </v-col>
+						<v-col cols="6">
+							{{ sumValue }}
+						</v-col>
+						<v-col cols="6"> Values count: </v-col>
+						<v-col cols="6">
+							{{ countValue }}
+						</v-col>
+					</v-row>
+				</v-col>
+                <v-col cols="5" v-else>
+                    <v-row>
+                        <v-col cols="4">
+                            Value
+                        </v-col>
+                        <v-col cols="4">
+                            Count
+                        </v-col>
+                        <v-col cols="4">
+                            Runtime
+                        </v-col>
+                    </v-row>
+                    <v-row v-for="el in statArray" :key="el">
+                        <v-col cols="4">
+                            {{el.value}}
+                        </v-col>
+                        <v-col cols="4">
+                            {{el.count}}
+                        </v-col>
+                        <v-col cols="4">
+                            {{el.runtime}}
+                        </v-col>
+                    </v-row>
+                </v-col>
+				<v-col cols="7">
+					<v-simple-table dense fixed-header height="150px">
+						<template v-slot:default>
+							<thead>
+								<tr>
+									<th>Value</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="e in valueList" :key="e">
+									<td>{{ e.value }}</td>
+									<td>{{ new Date(e.ts).toLocaleString() }}</td>
+								</tr>
+							</tbody>
+						</template>
+					</v-simple-table>
+				</v-col>
+			</v-row>
 		</v-card-text>
 	</v-card>
 </template>
@@ -94,13 +166,25 @@
 export default {
 	name: 'DataPointValueHistory',
 
-	props: ['datapointId'],
+	props: ['data'],
 
 	data() {
 		return {
+			pointValue: 0.0,
 			timePeriod: 1,
 			timePeriodType: 3,
+			fetchingData: false,
 			valueList: null,
+			maxValue: { value: -Infinity, ts: null },
+			minValue: { value: Infinity, ts: null },
+			countValue: 0,
+			sumValue: 0,
+			avgValue: 0,
+            statArray: [],
+            temp: {
+                ts: null,
+                value: null,
+            }
 		};
 	},
 
@@ -118,21 +202,108 @@ export default {
 
 	methods: {
 		async fetchData() {
+			this.fetchingData = true;
 			let from = await this.$store.dispatch('convertSinceTimePeriodToTimestamp', {
 				period: this.timePeriod,
 				type: this.timePeriodType,
 			});
 
-			console.log(from.getTime());
-
 			let response = await this.$store.dispatch('getDataPointValueFromTimeperiod', {
-				datapointId: this.datapointId,
+				datapointId: this.data.id,
 				startTs: from.getTime(),
 				endTs: new Date().getTime(),
 			});
-			this.valueList = response.values.reverse();
-			// console.log("FETCH HISTORY DATA", response);
+			this.valueList = response.values;
+			this.calculateStatistics();
+            this.valueList.reverse();
+			this.fetchingData = false;
 		},
+
+		sendValue() {
+			let request = {
+				xid: this.data.xid,
+				type: this.data.pointLocator.dataTypeId,
+				value: this.pointValue,
+			};
+
+			if (request.type === 1) {
+				if (request.value === true || request.value === 'true') {
+					request.value = 1;
+				} else if (request.value === false || request.value === 'false') {
+					request.value = 0;
+				}
+			}
+
+			this.$store.dispatch('setDataPointValue', request).then((resp) => {
+				this.fetchData();
+			});
+		},
+
+		calculateStatistics(precision = 1000) {
+			this.restoreStatistics();
+			if (this.data.pointLocator.dataTypeId === 3) {
+				this.valueList.forEach((v) => {
+					this.countValue = 1 + this.countValue;
+					this.sumValue = Number(this.sumValue) + Number(v.value);
+					this.avgValue = this.sumValue / this.countValue;
+					if (v.value > this.maxValue.value) {
+						this.maxValue = v;
+					}
+					if (v.value < this.minValue.value) {
+						this.minValue = v;
+					}
+				});
+				this.avgValue = Math.round(this.avgValue * precision) / precision;
+				this.sumValue = Math.round(this.sumValue * precision) / precision;
+			} else {
+                this.valueList.forEach((v) => {
+                    let index = this.statArray.findIndex(x => x.value === v.value);
+                    if(index < 0) {
+                        this.statArray.push({
+                            value: v.value,
+                            ts: v.ts,
+                            count: 1,
+                            duration: 0
+                        });
+                        if(this.temp.value === null) {
+                            this.temp.ts = v.ts;
+                        } else {
+                            let index2 = this.statArray.findIndex(x2 => x2.value === this.temp.value);
+                            this.statArray[index2].duration += (v.ts - this.statArray[index2].ts);
+                        }
+                    } else {
+                        let index2 = this.statArray.findIndex(x2 => x2.value === this.temp.value);
+                        this.statArray[index].count += 1;
+                        this.statArray[index].ts = v.ts;
+                        this.statArray[index2].duration += (v.ts - this.statArray[index2].ts);
+                    }
+                    this.temp.value = v.value;
+				});
+                let time = new Date().getTime();
+                let since = time - this.temp.ts;
+                let index = this.statArray.findIndex(x => x.value === this.temp.value);
+                this.statArray[index].duration = this.statArray[index].duration + (time - this.statArray[index].ts);
+                this.statArray.forEach(v => {
+                    v.runtime = `${Math.round((v.duration / since) * 100)}%`;
+                });
+            }
+		},
+
+		restoreStatistics() {
+			this.countValue = 0;
+			this.sumValue = 0;
+			this.avgValue = 0;
+			this.maxValue.value = -Infinity;
+			this.minValue.value = Infinity;
+            this.statArray = [];
+            this.temp.ts = null;
+            this.temp.value = null;
+		},
+
+        isInArray(element) {
+            this.statArray.forEach(e => { return element === e.value });
+            return -1;
+        }
 	},
 };
 </script>

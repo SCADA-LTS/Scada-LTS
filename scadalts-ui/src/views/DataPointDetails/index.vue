@@ -1,13 +1,26 @@
 <template>
 	<div v-if="dataPointDetails">
 		<v-container fluid>
-			<v-row>
+			<v-row align="center">
 				<v-col cols="8" xs="12">
 					<h1>
+						<v-btn
+							x-small
+							fab
+							elevation="1"
+							@click="toggleDataPoint"
+							:color="dataPointDetails.enabled ? 'primary' : 'error'"
+						>
+							<v-icon v-show="dataPointDetails.enabled">mdi-decagram</v-icon>
+							<v-icon v-show="!dataPointDetails.enabled">mdi-decagram-outline</v-icon>
+						</v-btn>
 						{{ dataPointDetails.name }}
 						<DataPointComment :data="dataPointDetails"></DataPointComment>
 					</h1>
-					<p class="thin-top-margin">{{dataPointDetails.description}}</p>
+					<p class="thin-top-margin small-description">
+						<span>{{ dataPointDetails.xid }}</span>
+						<span v-if="dataPointDetails.description.length>0"> - {{ dataPointDetails.description }}</span>
+					</p>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
 					<PointProperties
@@ -21,49 +34,11 @@
 			</v-row>
 		</v-container>
 		<v-container fluid>
-			<v-card class="pointDetailsCards">
-				<v-card-title>
-					<v-btn
-						x-small
-						fab
-						elevation="1"
-						@click="toggleDataPoint"
-						:color="dataPointDetails.enabled ? 'primary' : 'error'"
-					>
-						<v-icon v-show="dataPointDetails.enabled">mdi-decagram</v-icon>
-						<v-icon v-show="!dataPointDetails.enabled">mdi-decagram-outline</v-icon>
-					</v-btn>
-					<span> Details and previlages </span></v-card-title
-				>
-				<v-card-text>
-					<v-row>
-						<v-col cols="6">
-							<v-text-field
-								v-model="pointValue"
-								label="Value:"
-								append-icon="mdi-send"
-								@click:append="sendValue"
-								:disabled="!dataPointDetails.pointLocator.settable"
-								dense
-							></v-text-field>
-						</v-col>
-						<v-col cols="6">
-							<v-text-field
-								v-model="pointValueTime"
-								label="Time:"
-								dense
-								disabled
-							></v-text-field>
-						</v-col>
-						<v-col cols="6"> Export Id: </v-col>
-						<v-col cols="6">
-							{{ dataPointDetails.xid }}
-						</v-col>
-					</v-row>
-				</v-card-text>
-			</v-card>
 			<!-- <DataPointEventList :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointEventList> -->
-			<DataPointValueHistory :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointValueHistory>
+			<DataPointValueHistory
+				:data="dataPointDetails"
+				class="pointDetailsCards"
+			></DataPointValueHistory>
 			<!-- <v-card class="pointDetailsCards">
 				<v-card-title> Views </v-card-title>
 				<v-card-text> Description and so on... </v-card-text>
@@ -117,8 +92,6 @@ export default {
 
 	data() {
 		return {
-			pointValue: 0.0,
-			pointValueTime: 'N/A',
 			newComment: '',
 			dataPointDetails: undefined,
 		};
@@ -138,7 +111,7 @@ export default {
 		async fetchDataPointDetails(datapointId) {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
-				datapointId,
+				datapointId
 			);
 			this.getDataPointValue(datapointId);
 		},
@@ -148,35 +121,6 @@ export default {
 			if (!!resp) {
 				this.dataPointDetails.enabled = resp.enabled;
 			}
-		},
-
-		sendValue() {
-			let request = {
-				xid: this.dataPointDetails.xid,
-				type: this.dataPointDetails.pointLocator.dataTypeId,
-				value: this.pointValue,
-			};
-
-			if (request.type === 1) {
-				if (request.value === true || request.value === 'true') {
-					request.value = 1;
-				} else if (request.value === false || request.value === 'false') {
-					request.value = 0;
-				}
-			}
-
-			this.$store.dispatch('setDataPointValue', request).then((resp) => {
-				this.getDataPointValue(this.dataPointDetails.id);
-			});
-		},
-
-		async getDataPointValue(datapointId) {
-			let value = await this.$store.dispatch('getDataPointValue', datapointId);
-			this.pointValue = value.value;
-			this.pointValueTime =
-				Number(value.ts).toString() !== 'NaN'
-					? new Date(value.ts).toLocaleString()
-					: 'Not valid date!';
 		},
 
 		saveDataPointDetails() {
@@ -192,9 +136,13 @@ export default {
 	width: 49%;
 	float: left;
 	max-height: 40vh;
-    overflow-y: auto;
+	overflow-y: auto;
 }
 .thin-top-margin {
 	margin-top: -24px;
+	margin-left: 44px;
+}
+.small-description {
+	color: rgba(0,0,0,.50);
 }
 </style>

@@ -19,10 +19,12 @@
 						<v-icon>mdi-message</v-icon>
 					</v-list-item-icon>
 					<v-list-item-content>
-						<v-list-item-title
-							>{{ comment.username }}, {{ new Date(comment.ts).toLocaleString() }}</v-list-item-title
-						>
-						<v-list-item-subtitle>{{ comment.comment }}</v-list-item-subtitle>
+						<v-list-item-title>
+							{{ comment.comment }}
+						</v-list-item-title>
+						<v-list-item-subtitle>
+							{{ comment.username }}, {{ new Date(comment.ts).toLocaleString() }}
+						</v-list-item-subtitle>
 					</v-list-item-content>
 					<v-list-item-action v-if="comment.userId === activeUserId" @click="deleteComment(comment)">
 						<v-icon>
