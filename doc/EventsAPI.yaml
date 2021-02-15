@@ -8,7 +8,7 @@ info:
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
-  contact: 
+  contact:
     name: 'Radek - SoftQ Developer'
     email: 'rjajko@softq.pl'
   license:
@@ -147,33 +147,33 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  targetPointId: 
-                    type: number
-                  activeAction: 
-                    type: number
-                  activeValueToSet: 
-                    type: string
-                  activePointId: 
-                    type: number
-                  inactiveAction: 
-                    type: number
-                  inactiveValueToSet: 
-                    type: string
-                  inactivePointId: 
-                    type: number
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                targetPointId:
+                  type: number
+                activeAction:
+                  type: number
+                activeValueToSet:
+                  type: string
+                activePointId:
+                  type: number
+                inactiveAction:
+                  type: number
+                inactiveValueToSet:
+                  type: string
+                inactivePointId:
+                  type: number
       responses:
         '200':
           description: "Get successful"
           headers: {}
-  
+
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/2:
     post:
       tags:
@@ -208,35 +208,35 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  activeRecipients: 
-                    type: object
-                  sendEscalation: 
-                    type: boolean
-                  escalationDelayType: 
-                    type: number
-                  escalationDelay: 
-                    type: number
-                  escalationRecipients: 
-                    type: object
-                  sendInactive: 
-                    type: boolean
-                  inactiveOverride: 
-                    type: boolean
-                  inactiveRecipients:
-                    type: object
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                activeRecipients:
+                  type: object
+                sendEscalation:
+                  type: boolean
+                escalationDelayType:
+                  type: number
+                escalationDelay:
+                  type: number
+                escalationRecipients:
+                  type: object
+                sendInactive:
+                  type: boolean
+                inactiveOverride:
+                  type: boolean
+                inactiveRecipients:
+                  type: object
       responses:
         '200':
           description: "Get successful"
           headers: {}
-          
+
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/3:
     post:
       tags:
@@ -271,23 +271,23 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  activeProcessCommand: 
-                    type: string
-                  inactiveProcessCommand: 
-                    type: string
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                activeProcessCommand:
+                  type: string
+                inactiveProcessCommand:
+                  type: string
       responses:
         '200':
           description: "Get successful"
           headers: {}
-  
+
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/4:
     post:
       tags:
@@ -322,23 +322,23 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  activeScriptCommand: 
-                    type: number
-                  inactiveScriptCommand: 
-                    type: number
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                activeScriptCommand:
+                  type: number
+                inactiveScriptCommand:
+                  type: number
       responses:
         '200':
           description: "Get successful"
           headers: {}
-          
+
   /eventHandler/update/{typeId}/{typeRef1}/{typeRef2}:
     put:
       tags:
@@ -476,18 +476,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/EventDetectorAlphanumericStateDTO'
-                - $ref: '#/components/schemas/EventDetectorBinaryStateDTO'
-                - $ref: '#/components/schemas/EventDetectorChangeDTO'
-                - $ref: '#/components/schemas/EventDetectorHighLimitDTO'
-                - $ref: '#/components/schemas/EventDetectorLowLimitDTO'
-                - $ref: '#/components/schemas/EventDetectorMultistateStateDTO'
-                - $ref: '#/components/schemas/EventDetectorNegativeCusumDTO'
-                - $ref: '#/components/schemas/EventDetectorNoChangeDTO'
-                - $ref: '#/components/schemas/EventDetectorNoUpdateDTO'
-                - $ref: '#/components/schemas/EventDetectorPositiveCusumDTO'
-                - $ref: '#/components/schemas/EventDetectorStateChangeCounterDTO'
+              $ref: '#/components/schemas/JSONPointEventDetectorVO'
       responses:
         '200':
           description: "Post successful"
@@ -521,18 +510,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/EventDetectorAlphanumericStateDTO'
-                - $ref: '#/components/schemas/EventDetectorBinaryStateDTO'
-                - $ref: '#/components/schemas/EventDetectorChangeDTO'
-                - $ref: '#/components/schemas/EventDetectorHighLimitDTO'
-                - $ref: '#/components/schemas/EventDetectorLowLimitDTO'
-                - $ref: '#/components/schemas/EventDetectorMultistateStateDTO'
-                - $ref: '#/components/schemas/EventDetectorNegativeCusumDTO'
-                - $ref: '#/components/schemas/EventDetectorNoChangeDTO'
-                - $ref: '#/components/schemas/EventDetectorNoUpdateDTO'
-                - $ref: '#/components/schemas/EventDetectorPositiveCusumDTO'
-                - $ref: '#/components/schemas/EventDetectorStateChangeCounterDTO'
+              $ref: '#/components/schemas/JSONPointEventDetectorVO'
       responses:
         '200':
           description: "Put successful"
@@ -868,187 +846,6 @@ components:
           type: number
         referenceAddress:
           type: string
-    EventDetectorAlphanumericStateDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        alphanumericState:
-          type: string
-        detectorType:
-          type: number
-    EventDetectorBinaryStateDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        binaryState:
-          type: boolean
-        detectorType:
-          type: number
-    EventDetectorChangeDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorHighLimitDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        limit:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorLowLimitDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        limit:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorMultistateStateDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        multistateState:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorNegativeCusumDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        limit:
-          type: number
-        weight:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorPositiveCusumDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        limit:
-          type: number
-        weight:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorNoChangeDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorNoUpdateDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        detectorType:
-          type: number
-    EventDetectorStateChangeCounterDTO:
-      type: object
-      properties:
-        xid:
-          type: string
-        alias:
-          type: string
-        alarmLevel:
-          type: number
-        duration:
-          type: number
-        durationType:
-          type: number
-        changeCount:
-          type: number
-        detectorType:
-          type: number
   parameters:
     Authorization:
       name: Authorization

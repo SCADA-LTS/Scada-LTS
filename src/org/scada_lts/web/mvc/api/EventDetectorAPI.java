@@ -9,7 +9,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.web.mvc.api.dto.eventDetector.*;
+import org.scada_lts.web.mvc.api.dto.EventDetectorDTO;
 import org.scada_lts.web.mvc.api.json.JsonPointEventDetector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
