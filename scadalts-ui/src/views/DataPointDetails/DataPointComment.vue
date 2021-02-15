@@ -7,7 +7,7 @@
 				:value="data.comments.length > 0"
 				:content="data.comments.length"
 			>
-				<v-btn icon fab dark color="primary" v-bind="attrs" v-on="on">
+				<v-btn icon fab dark color="primary" v-bind="attrs" v-on="on" @click="refresh">
 					<v-icon>mdi-message-alert</v-icon>
 				</v-btn>
 			</v-badge>
@@ -20,10 +20,15 @@
 					</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title
-							>{{ comment.username }}, {{ comment.prettyTime }}</v-list-item-title
+							>{{ comment.username }}, {{ new Date(comment.ts).toLocaleString }}</v-list-item-title
 						>
 						<v-list-item-subtitle>{{ comment.comment }}</v-list-item-subtitle>
 					</v-list-item-content>
+					<v-list-item-action v-if="comment.userId === activeUserId" @click="deleteComment(comment)">
+						<v-icon>
+							mdi-minus-circle
+						</v-icon>
+					</v-list-item-action>
 				</v-list-item>
 				<v-list-item>
 					<v-list-item-icon>
@@ -54,11 +59,20 @@ export default {
 	data() {
 		return {
 			componentVisible: false,
+			activeUserId: -1,
 			newComment: '',
 		};
 	},
 
+	mounted() {
+		this.refresh();
+	},
+
 	methods: {
+		refresh() {
+			this.activeUserId = this.$store.state.loggedUser.id;
+		},
+
 		addComment() {
 			let time = new Date();
 			let comment = {
@@ -69,8 +83,25 @@ export default {
 				prettyTime: time.toLocaleTimeString(),
 			};
 			this.data.comments.push(Object.assign({}, comment));
+			this.$store.dispatch("addUserComment", {
+				comment: comment,
+				typeId: 2,
+				refId: this.data.id,
+			});
 			this.newComment = '';
 		},
+		
+		deleteComment(e) {
+			this.$store.dispatch("delUserComment", {
+				typeId: 2,
+				refId: this.data.id,
+				userId: this.$store.state.loggedUser.id,
+				ts: e.ts,
+			});
+			this.data.comments = this.data.comments.filter(el => {
+				return (el.comment !==  e.comment) 
+			});
+		}
 	},
 };
 </script>
