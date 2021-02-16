@@ -36,6 +36,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
 import org.scada_lts.utils.QueryUtils;
+import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -410,8 +411,39 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ EventInstance.AlternateAcknowledgementSources.DELETED_USER + " "
 			+ "where "
 				+ COLUMN_NAME_ACT_USER_ID + "=? ";
-	
-	// @formatter:onn
+
+	private static final String SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT = "" +
+			"SELECT " +
+			"e." + COLUMN_NAME_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
+			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
+			"e." + COLUMN_NAME_RTN_TS + ", " +
+			"e." + COLUMN_NAME_RTN_CAUSE + ", " +
+			"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
+			"e." + COLUMN_NAME_MESSAGE + ", " +
+			"e." + COLUMN_NAME_ACT_TS + ", " +
+			"u." + COLUMN_NAME_USER_NAME + ", " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
+			"FROM events e " +
+				"LEFT JOIN users u ON u.id=e.ackUserId " +
+			"WHERE typeId=? AND typeRef1=? " +
+			"ORDER BY activeTs DESC " +
+			"LIMIT ? OFFSET ?";
+
+	private static final String SELECT_SPECIFIC_EVENT_USER_COMMENTS = "" +
+			"SELECT " +
+			"uc." + COLUMN_NAME_COMMENT_TEXT + ", " +
+			"uc." + COLUMN_NAME_TIME_STAMP + ", " +
+			"uc." + COLUMN_NAME_USER_ID + ", " +
+			"u." + COLUMN_NAME_USER_NAME + " " +
+			"FROM events e " +
+				"LEFT JOIN userComments uc ON uc.typeKey=e.id " +
+				"LEFT JOIN users u ON uc.userId=u.id " +
+			"WHERE e.id=? AND uc.commentType=1";
+	// @formatter:on
 	
 	//TODO rewrite
 	static EventType createEventType(ResultSet rs, int offset)
@@ -550,8 +582,44 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
+	private class EventDTORowMapper implements RowMapper<EventDTO> {
+		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EventDTO result = new EventDTO(
+					rs.getInt(COLUMN_NAME_ID),
+					rs.getInt(COLUMN_NAME_TYPE_ID),
+					rs.getInt(COLUMN_NAME_TYPE_REF_1),
+					rs.getInt(COLUMN_NAME_TYPE_REF_2),
+					rs.getLong(COLUMN_NAME_ACTIVE_TS),
+					rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
+					rs.getLong(COLUMN_NAME_RTN_TS),
+					rs.getInt(COLUMN_NAME_RTN_CAUSE),
+					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
+					rs.getString(COLUMN_NAME_MESSAGE),
+					rs.getLong(COLUMN_NAME_ACT_TS),
+					rs.getString(COLUMN_NAME_USER_NAME),
+					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE)
+			);
 
+			result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
+			return result;
+		}
+	}
 
+	/**
+	 * Select from Database Event Rows containing specific Type and Reference
+	 * To increase performance there is provided a pagination function.
+	 * This events containing also UserComments objects.
+	 *
+	 * @param typeId Event Type Identification (@see EventType.EventSources)
+	 * @param typeRef Object ID with which that Event is related
+	 * @param limit Limit the ResultSet
+	 * @param offset Offset of the ResultSet
+	 *
+	 * @return List of Events
+	 */
+	public List<EventDTO> findEventsWithLimit(int typeId, int typeRef, int limit, int offset) {
+		return  (List<EventDTO>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT, new Object[]{typeId, typeRef, limit, offset}, new EventDTORowMapper());
+	}
 
 	@Override
 	public List<EventInstance> findAllWithUserName() {

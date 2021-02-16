@@ -34,30 +34,17 @@
 			</v-row>
 		</v-container>
 		<v-container fluid>
-			<!-- <DataPointEventList :datapointId="dataPointDetails.id" class="pointDetailsCards"></DataPointEventList> -->
+			
 			<DataPointValueHistory
 				:data="dataPointDetails"
 				class="pointDetailsCards"
 			></DataPointValueHistory>
-			<!-- <v-card class="pointDetailsCards">
-				<v-card-title> Views </v-card-title>
-				<v-card-text> Description and so on... </v-card-text>
-			</v-card> -->
-			<!-- <v-card class="pointDetailsCards">
-				<v-card-title> Statistics </v-card-title>
-				<v-card-text>
-					<v-row>
-						<v-col cols="6"> Start: </v-col>
-						<v-col cols="6"> ... </v-col>
-						<v-col cols="6"> End: </v-col>
-						<v-col cols="6"> ... </v-col>
-						<v-col cols="6"> Minimum: </v-col>
-						<v-col cols="6"> ... </v-col>
-						<v-col cols="6"> Maximum: </v-col>
-						<v-col cols="6"> ... </v-col>
-					</v-row>
-				</v-card-text>
-			</v-card> -->
+
+			<DataPointEventList 
+				:datapointId="dataPointDetails.id" 
+				class="pointDetailsCards"
+			></DataPointEventList>
+			
 		</v-container>
 		<v-container fluid>
 			<LineChartComponent :pointId="this.$route.params.id"> </LineChartComponent>
@@ -112,8 +99,7 @@ export default {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
 				datapointId
-			);
-			this.getDataPointValue(datapointId);
+			);		
 		},
 
 		async toggleDataPoint() {

@@ -1,6 +1,6 @@
 <template>
 	<v-card>
-		<v-card-title>
+		<v-card-title v-if="hideSkeleton">
 			Data Point Values
 			<v-spacer> </v-spacer>
 			<v-dialog v-model="dialog" width="800">
@@ -51,7 +51,7 @@
 			</v-dialog>
 		</v-card-title>
 
-		<v-card-text>
+		<v-card-text v-if="hideSkeleton">
 			<v-row align="center">
 				<v-col cols="4">
 					<v-text-field
@@ -160,6 +160,10 @@
 				</v-col>
 			</v-row>
 		</v-card-text>
+
+		<v-skeleton-loader v-else
+          type="article"
+    	></v-skeleton-loader>
 	</v-card>
 </template>
 <script>
@@ -170,6 +174,7 @@ export default {
 
 	data() {
 		return {
+			hideSkeleton: false,
 			pointValue: 0.0,
 			timePeriod: 1,
 			timePeriodType: 3,
@@ -198,6 +203,7 @@ export default {
 
 	mounted() {
 		this.fetchData();
+		this.hideSkeleton = true;
 	},
 
 	methods: {
