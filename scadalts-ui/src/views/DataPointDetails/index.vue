@@ -19,7 +19,10 @@
 					</h1>
 					<p class="thin-top-margin small-description">
 						<span>{{ dataPointDetails.xid }}</span>
-						<span v-if="dataPointDetails.description.length>0"> - {{ dataPointDetails.description }}</span>
+						<span v-if="dataPointDetails.description">
+							<span v-if="dataPointDetails.description.length>0"> - {{ dataPointDetails.description }}</span>
+						</span>
+						
 					</p>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
@@ -44,7 +47,7 @@
 				:datapointId="dataPointDetails.id" 
 				class="pointDetailsCards"
 			></DataPointEventList>
-			
+
 		</v-container>
 		<v-container fluid>
 			<LineChartComponent :pointId="this.$route.params.id"> </LineChartComponent>

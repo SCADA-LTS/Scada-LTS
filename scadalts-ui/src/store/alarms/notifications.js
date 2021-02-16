@@ -13,7 +13,7 @@ const storeAlarmsNotifications = {
 			xid: 'PED-PLC',
 			alias: '',
 			alarmLevel: 1,
-			type: 5,
+			detectorType: 5,
 		},
 		ehTemplate: {
 			id: -1,
