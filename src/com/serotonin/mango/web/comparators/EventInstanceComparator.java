@@ -59,8 +59,8 @@ public class EventInstanceComparator extends BaseComparator<EventInstance> {
                 result = 1;
         }
         else if (sortType == SORT_MESSAGE) {
-            String s1 = e1.getMessage().getLocalizedMessage(bundle);
-            String s2 = e2.getMessage().getLocalizedMessage(bundle);
+            String s1 = e1.getMessage().get("mail").getLocalizedMessage(bundle);
+            String s2 = e2.getMessage().get("mail").getLocalizedMessage(bundle);
             result = s1.compareTo(s2);
         }
         else if (sortType == SORT_ID)

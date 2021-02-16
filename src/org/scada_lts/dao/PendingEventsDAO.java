@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -174,7 +175,10 @@ public class PendingEventsDAO {
 				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
 		}
 
-		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
+		Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+		messages.put("mail", message);
+		messages.put("sms", null);
+		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, messages, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
 		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);

@@ -34,16 +34,24 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
 
     @Override
     protected LocalizableMessage getMessage() {
+//        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+//        String name = vo.njbGetDataPoint().getName();
+//        return new LocalizableMessage("event.detector.changeMail", name, description,
+//                formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
         return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
                 formatValue(oldValue), formatValue(newValue));
     }
 
+    @Override
     public LocalizableMessage getMailMessage() {
-        return new LocalizableMessage("event.detector.changeMail", vo.njbGetDataPoint().getName(),
-                vo.njbGetDataPoint().getDescription(), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
+        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String name = vo.njbGetDataPoint().getName();
+        return new LocalizableMessage("event.detector.changeMail", name, description,
+                formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
     }
 
-    public LocalizableMessage getSMSMessage() {
+    @Override
+    public LocalizableMessage getSmsMessage() {
         if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
             return new LocalizableMessage("event.detector.changeSMSWithRenderer", vo.njbGetDataPoint().getName(),
                     vo.njbGetDataPoint().getEventTextRenderer().getShortText(newValue));

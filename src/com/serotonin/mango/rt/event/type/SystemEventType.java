@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.event.type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,8 +129,11 @@ public class SystemEventType extends EventType {
 			LocalizableMessage message) {
 		EventTypeVO vo = getEventType(type.getSystemEventTypeId());
 		int alarmLevel = vo.getAlarmLevel();
+		Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+		messages.put("mail", message);
+		messages.put("sms", null);
 		Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
-				message, null);
+				messages, null);
 	}
 
 	public static void returnToNormal(SystemEventType type, long time) {

@@ -20,6 +20,8 @@ package com.serotonin.mango.rt.event.schedule;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
@@ -57,8 +59,11 @@ public class ScheduledEventRT extends SimpleEventDetector implements ModelTimeou
     }
 
     private void raiseEvent(long time) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", getMessage());
+        messages.put("sms", null);
         Common.ctx.getEventManager().raiseEvent(eventType, time, vo.isReturnToNormal(), vo.getAlarmLevel(),
-                getMessage(), null);
+                messages, null);
         eventActive = true;
         fireEventDetectorStateChanged(time);
     }

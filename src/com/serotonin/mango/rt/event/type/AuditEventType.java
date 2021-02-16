@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.event.type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -146,8 +147,11 @@ public class AuditEventType extends EventType {
         AuditEventType type = new AuditEventType(auditEventTypeId, o.getId());
         type.setRaisingUser(user);
 
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", message);
+        messages.put("sms", null);
         Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), false,
-                getEventType(type.getAuditEventTypeId()).getAlarmLevel(), message, null);
+                getEventType(type.getAuditEventTypeId()).getAlarmLevel(), messages, null);
     }
 
     //

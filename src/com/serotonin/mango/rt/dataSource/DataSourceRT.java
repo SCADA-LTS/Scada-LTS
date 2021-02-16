@@ -135,22 +135,27 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     public static void raiseEvent(String describe, DataSourceVO vo) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
         LocalizableMessage message = new LocalizableMessage("event.ds.describe", "", describe);
+        messages.put("mail", message);
+        messages.put("sms", null);
         int urgentAlarmLevel = 2;
         DataSourceEventType dset = new DataSourceEventType(vo.getId(), vo.getId(), urgentAlarmLevel, 0);
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
-        Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
+        Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), messages, context);
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
         message = new LocalizableMessage("event.ds", vo.getName(), message);
+        messages.put("mail", message);
         DataSourceEventType type = getEventType(eventId);
 
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
 
-        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
+        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), messages, context);
     }
 
     protected void returnToNormal(int eventId, long time) {

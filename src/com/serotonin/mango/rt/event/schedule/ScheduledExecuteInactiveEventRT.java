@@ -154,9 +154,12 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
     private static boolean communicateLimit(Set<String> addresses, long fireTime, CommunicationChannel communicationChannel) {
         LocalizableMessage dailyLimitExceededMsg = new LocalizableMessage("mailingLists.dailyLimitExceeded");
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", dailyLimitExceededMsg);
+        messages.put("sms", null);
         EventType eventType = new DataPointEventType();
         EventInstance event = new EventInstance(eventType, fireTime,false,
-                AlarmLevels.INFORMATION, dailyLimitExceededMsg, Collections.emptyMap());
+                AlarmLevels.INFORMATION, messages, Collections.emptyMap());
         CommunicationChannelTypable type = communicationChannel.getType();
 
         boolean sent = type.sendLimit(event, addresses,"Limit");

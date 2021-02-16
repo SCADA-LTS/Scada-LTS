@@ -147,10 +147,14 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
 
         if (pointDisabledEventActive != foundDisabledPoint) {
             pointDisabledEventActive = foundDisabledPoint;
-            if (pointDisabledEventActive)
-                // A published point has been terminated, was never enabled, or no longer exists.
-                Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
-                        AlarmLevels.URGENT, new LocalizableMessage("event.publish.pointMissing"), createEventContext());
+                if (pointDisabledEventActive) {
+                    // A published point has been terminated, was never enabled, or no longer exists.
+                    Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+                    messages.put("mail", new LocalizableMessage("event.publish.pointMissing"));
+                    messages.put("sms", null);
+                    Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
+                            AlarmLevels.URGENT, messages, createEventContext());
+                }
             else
                 // Everything is good
                 Common.ctx.getEventManager().returnToNormal(pointDisabledEventType, System.currentTimeMillis());
@@ -158,8 +162,11 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     }
 
     void fireQueueSizeWarningEvent() {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()));
+        messages.put("sms", null);
         Common.ctx.getEventManager().raiseEvent(queueSizeWarningEventType, System.currentTimeMillis(), true,
-                AlarmLevels.URGENT, new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()),
+                AlarmLevels.URGENT, messages,
                 createEventContext());
     }
 

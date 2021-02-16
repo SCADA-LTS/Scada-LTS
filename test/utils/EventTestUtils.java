@@ -11,6 +11,8 @@ import org.joda.time.DateTime;
 import org.scada_lts.service.CommunicationChannelTypable;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static org.mockito.Mockito.mock;
@@ -40,31 +42,43 @@ public final class EventTestUtils {
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage,
                                                                   EventType eventType) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", localizableMessage);
+        messages.put("sms", null);
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                localizableMessage, Collections.emptyMap());
+                messages, Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", localizableMessage);
+        messages.put("sms", null);
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                localizableMessage, Collections.emptyMap());
+                messages, Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, EventType eventType) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", new LocalizableMessage("com.test"));
+        messages.put("sms", null);
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                new LocalizableMessage("com.test"), Collections.emptyMap());
+                messages, Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
     public static EventInstance createEventCriticalWithActiveTimeAndDataPointEventType(int id, DateTime activeTime) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", new LocalizableMessage("com.test"));
+        messages.put("sms", null);
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
-                activeTime.getMillis(), false, AlarmLevels.CRITICAL, new LocalizableMessage("com.test"), Collections.emptyMap());
+                activeTime.getMillis(), false, AlarmLevels.CRITICAL, messages, Collections.emptyMap());
         event.setId(id);
         return event;
     }

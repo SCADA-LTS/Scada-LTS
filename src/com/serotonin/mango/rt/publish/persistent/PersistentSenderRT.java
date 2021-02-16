@@ -1,6 +1,8 @@
 package com.serotonin.mango.rt.publish.persistent;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -142,12 +144,18 @@ public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
     }
 
     void raiseConnectionEvent(EventType type, LocalizableMessage lm) {
-        Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), true, AlarmLevels.URGENT, lm,
-                createEventContext());
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", lm);
+        messages.put("sms", null);
+        Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), true, AlarmLevels.URGENT,
+                messages, createEventContext());
     }
 
     void raiseSyncCompletionEvent(LocalizableMessage lm) {
+        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
+        messages.put("mail", lm);
+        messages.put("sms", null);
         Common.ctx.getEventManager().raiseEvent(syncCompletionEventType, System.currentTimeMillis(), false,
-                AlarmLevels.NONE, lm, createEventContext());
+                AlarmLevels.NONE, messages, createEventContext());
     }
 }

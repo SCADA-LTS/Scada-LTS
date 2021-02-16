@@ -18,9 +18,7 @@
  */
 package com.serotonin.mango.rt.publish.httpSender;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
@@ -146,15 +144,19 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
 
             // Send the request. Set message non-null if there is a failure.
             LocalizableMessage message = null;
+            Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
             try {
                 int code = Common.getHttpClient().executeMethod(method);
                 if (code == HttpStatus.SC_OK) {
                     if (vo.isRaiseResultWarning()) {
                         String result = HttpUtils.readResponseBody(method, 1024);
-                        if (!StringUtils.isEmpty(result))
+                        if (!StringUtils.isEmpty(result)) {
+                            messages.put("mail", new LocalizableMessage("common.default", result));
+                            messages.put("sms", null);
                             Common.ctx.getEventManager().raiseEvent(resultWarningsEventType,
                                     System.currentTimeMillis(), false, AlarmLevels.INFORMATION,
-                                    new LocalizableMessage("common.default", result), createEventContext());
+                                    messages, createEventContext());
+                        }
                     }
                 }
                 else
@@ -173,9 +175,13 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                 if (failureMessage == null)
                     failureMessage = message;
 
-                if (failureCount == MAX_FAILURES + 1)
+                if (failureCount == MAX_FAILURES + 1) {
+                    Map<String, LocalizableMessage> msgs = new HashMap<String, LocalizableMessage>();
+                    msgs.put("mail", failureMessage);
+                    msgs.put("sms", null);
                     Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
-                            AlarmLevels.URGENT, failureMessage, createEventContext());
+                            AlarmLevels.URGENT, msgs, createEventContext());
+                }
 
                 return false;
             }
