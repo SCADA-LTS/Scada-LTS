@@ -130,7 +130,7 @@ public class DataSourceEventType extends EventType {
             map.put("XID", ds.getXid());
             map.put("dataSourceEventType", ds.getEventCodes().getCode(dataSourceEventTypeId));
         } else {
-            LOG.error("DataSource for id: " + dataSourceId + " is not exists.");
+            LOG.error("DataSource for id: " + dataSourceId + " does not exist.");
         }
     }
 

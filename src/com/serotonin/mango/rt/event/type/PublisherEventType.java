@@ -120,7 +120,7 @@ public class PublisherEventType extends EventType {
             map.put("XID", pub.getXid());
             map.put("publisherEventTypeId", pub.getEventCodes().getCode(publisherEventTypeId));
         } else {
-            LOG.error("Publisher for id: " + publisherId + " is not exists.");
+            LOG.error("Publisher for id: " + publisherId + " does not exist.");
         }
     }
 

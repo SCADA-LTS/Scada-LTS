@@ -137,7 +137,7 @@ public class DataPointEventType extends EventType {
 		if(dataPointVO != null)
 			map.put("dataPointXID", dataPointVO.getXid());
 		else {
-			LOG.error("DataPoint for id: " + dataPointId + " is not exists.");
+			LOG.error("DataPoint for id: " + dataPointId + " does not exist.");
 		}
 	}
 

@@ -123,7 +123,7 @@ public class CompoundDetectorEventType extends EventType {
         if(eventDetectorVO != null)
             map.put("XID", eventDetectorVO.getXid());
         else {
-            LOG.error("CompoundEventDetector for id: " + compoundDetectorId + " is not exists.");
+            LOG.error("CompoundEventDetector for id: " + compoundDetectorId + " does not exist.");
         }
     }
 
