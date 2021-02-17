@@ -28,6 +28,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.EventMessages;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ExportCodes;
@@ -129,9 +130,7 @@ public class SystemEventType extends EventType {
 			LocalizableMessage message) {
 		EventTypeVO vo = getEventType(type.getSystemEventTypeId());
 		int alarmLevel = vo.getAlarmLevel();
-		Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-		messages.put("mail", message);
-		messages.put("sms", null);
+		EventMessages messages = new EventMessages(message, message);
 		Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
 				messages, null);
 	}

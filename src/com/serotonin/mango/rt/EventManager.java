@@ -21,6 +21,7 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.UserHighestAlarmLevelListener;
@@ -60,7 +61,7 @@ public class EventManager implements ILifecycle {
 	// Basic event management.
 	//
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
-			int alarmLevel, Map<String, LocalizableMessage> messages,
+			int alarmLevel, EventMessages messages,
 			Map<String, Object> context) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
@@ -70,7 +71,7 @@ public class EventManager implements ILifecycle {
 			if (dh == EventType.DuplicateHandling.DO_NOT_ALLOW) {
 				// Create a log error...
 				log.error("An event was raised for a type that is already active: type="
-						+ type + ", message=" + messages.get("mail").getKey());
+						+ type + ", message=" + messages.getMessage());
 				// ... but ultimately just ignore the thing.
 				return;
 			}
@@ -84,7 +85,7 @@ public class EventManager implements ILifecycle {
 				// of this type with different messages,
 				// so look through them all for a match.
 				for (EventInstance e : getAll(type)) {
-					if (e.getMessage().equals(messages.get("mail")))
+					if (e.getMessages().getMessage().equals(messages.getMessage()))
 						return;
 				}
 			}
@@ -161,7 +162,7 @@ public class EventManager implements ILifecycle {
 
 			if (log.isDebugEnabled())
 				log.debug("Event raised: type=" + type + ", message="
-						+ messages.get("mail").getLocalizedMessage(Common.getBundle()));
+						+ messages.getMessage().getLocalizedMessage(Common.getBundle()));
 		}
 	}
 

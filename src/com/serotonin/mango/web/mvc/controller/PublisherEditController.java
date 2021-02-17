@@ -86,7 +86,7 @@ public class PublisherEditController extends ParameterizableViewController {
                 ResourceBundle bundle = ControllerUtils.getResourceBundle(request);
                 for (EventInstance event : events)
                     beans.add(new EventInstanceBean(event.isActive(), event.getAlarmLevel(), DateFunctions
-                            .getTime(event.getActiveTimestamp()), event.getMessage().get("mail").getLocalizedMessage(bundle)));
+                            .getTime(event.getActiveTimestamp()), event.getMessages().getMessage().getLocalizedMessage(bundle)));
             }
             model.put("publisherEvents", beans);
         }

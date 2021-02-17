@@ -75,8 +75,8 @@ public final class EmailContentUtils {
             Map<String, Object> context = evt.getContext();
             if(context != null && (dataPoint = (DataPointVO)context.get("point")) != null && dataPoint.getName() != null
                 && PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()) != AlarmLevels.NONE
-                    && evt.getMessage().get("mail") != null) {
-                LocalizableMessage subjectMsg = evt.getMessage().get("mail");
+                    && evt.getMessages().getMessage() != null) {
+                LocalizableMessage subjectMsg = evt.getMessages().getMessage();
                 return evt.getPrettyActiveTimestamp() + " - "  + subjectMsg.getLocalizedMessage(bundle);
             }
         }

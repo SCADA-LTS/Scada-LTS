@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -135,10 +136,8 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     public static void raiseEvent(String describe, DataSourceVO vo) {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
         LocalizableMessage message = new LocalizableMessage("event.ds.describe", "", describe);
-        messages.put("mail", message);
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(message, message);
         int urgentAlarmLevel = 2;
         DataSourceEventType dset = new DataSourceEventType(vo.getId(), vo.getId(), urgentAlarmLevel, 0);
         Map<String, Object> context = new HashMap<String, Object>();
@@ -147,9 +146,8 @@ abstract public class DataSourceRT implements ILifecycle {
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
         message = new LocalizableMessage("event.ds", vo.getName(), message);
-        messages.put("mail", message);
+        EventMessages messages = new EventMessages(message, message);
         DataSourceEventType type = getEventType(eventId);
 
         Map<String, Object> context = new HashMap<String, Object>();

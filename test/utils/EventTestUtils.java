@@ -2,6 +2,7 @@ package utils;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -42,9 +43,7 @@ public final class EventTestUtils {
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage,
                                                                   EventType eventType) {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-        messages.put("mail", localizableMessage);
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(localizableMessage, localizableMessage);
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
                 messages, Collections.emptyMap());
         event.setId(id);
@@ -53,9 +52,7 @@ public final class EventTestUtils {
 
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage) {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-        messages.put("mail", localizableMessage);
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(localizableMessage, localizableMessage);
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL,
                 messages, Collections.emptyMap());
@@ -64,9 +61,7 @@ public final class EventTestUtils {
     }
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, EventType eventType) {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-        messages.put("mail", new LocalizableMessage("com.test"));
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(new LocalizableMessage("com.test"), new LocalizableMessage("com.test"));
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
                 messages, Collections.emptyMap());
         event.setId(id);
@@ -74,9 +69,7 @@ public final class EventTestUtils {
     }
 
     public static EventInstance createEventCriticalWithActiveTimeAndDataPointEventType(int id, DateTime activeTime) {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-        messages.put("mail", new LocalizableMessage("com.test"));
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(new LocalizableMessage("com.test"), new LocalizableMessage("com.test"));
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL, messages, Collections.emptyMap());
         event.setId(id);

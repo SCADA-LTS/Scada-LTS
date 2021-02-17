@@ -55,7 +55,7 @@
 		          <td><tag:eventIcon event="${event}"/></td>
 		          <td style="white-space:nowrap;">&nbsp;<tag:alarmAck event="${event}"/></td>
 		          <td>${sst:time(event.activeTimestamp)}</td>
-		          <td style="white-space:nowrap;">&nbsp;<sst:i18n message="${event.message}"/></td>
+		          <td style="white-space:nowrap;">&nbsp;<sst:i18n message="${event.messages.message}"/></td>
 		        </tr>
 	        </c:if>
 	      </c:forEach>

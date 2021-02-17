@@ -29,6 +29,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.rt.event.EventMessages;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ChangeComparable;
@@ -147,9 +148,7 @@ public class AuditEventType extends EventType {
         AuditEventType type = new AuditEventType(auditEventTypeId, o.getId());
         type.setRaisingUser(user);
 
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-        messages.put("mail", message);
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(message, message);
         Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), false,
                 getEventType(type.getAuditEventTypeId()).getAlarmLevel(), messages, null);
     }

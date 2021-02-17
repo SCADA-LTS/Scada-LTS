@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -453,17 +454,19 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			EventType type = createEventType(rs, 2);
 			
 			LocalizableMessage message;
+			LocalizableMessage messageSms;
 			try {
 				//TODO to remove
-				message = LocalizableMessage.deserialize(rs.getString(10));
+				message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE));
+				messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE_SMS));
 			} catch (LocalizableMessageParseException e) {
 				message = new LocalizableMessage("common.default",
-						rs.getString(10));
+						rs.getString(COLUMN_NAME_MESSAGE));
+				messageSms = new LocalizableMessage("common.default",
+						rs.getString(COLUMN_NAME_MESSAGE_SMS));
 			}
 
-			Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-			messages.put("mail", message);
-			messages.put("sms", null);
+			EventMessages messages = new EventMessages(message, messageSms);
 			EventInstance event = new EventInstance(
 					type, 
 					rs.getLong(COLUMN_NAME_ACTIVE_TS), 
@@ -609,8 +612,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 						(!entity.isActive() ? entity.getRtnTimestamp():0),
 				 						(!entity.isActive() ? entity.getRtnCause():0),
 				 						entity.getAlarmLevel(),
-				 						entity.getMessage().get("mail").serialize(),
-										entity.getMessage().get("sms").serialize(),
+				 						entity.getMessages().getMessage().serialize(),
+										entity.getMessages().getMessageSms().serialize(),
 				 						(!entity.isAlarm() ? entity.getAcknowledgedTimestamp():0)
 				 				}).setValues(ps);
 				 				return ps;
@@ -759,7 +762,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						// it in the result. Otherwise ignore.
 						StringBuilder text = new StringBuilder();
 						//TODO
-						text.append(e.getMessage().get("mail").getLocalizedMessage(bundle));
+						text.append(e.getMessages().getMessage().getLocalizedMessage(bundle));
 						for (UserComment comment : e.getEventComments())
 							text.append(' ').append(comment.getComment());
 
@@ -881,7 +884,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						// Do the text search. If the instance has a match, put
 						// it in the result. Otherwise ignore.
 						StringBuilder text = new StringBuilder();
-						text.append(e.getMessage().get("mail").getLocalizedMessage(bundle));
+						text.append(e.getMessages().getMessage().getLocalizedMessage(bundle));
 						for (UserComment comment : e.getEventComments())
 							text.append(' ').append(comment.getComment());
 

@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.rt.event;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,7 +79,7 @@ public class EventInstance {
     /**
      * Configuration field. The message associated with the event.
      */
-    private final Map<String, LocalizableMessage> messages;
+    private EventMessages messages;
 
     /**
      * User comments on the event. Added in the events interface after the event has been raised.
@@ -106,14 +105,13 @@ public class EventInstance {
     private final Map<String, Object> context;
 
     public EventInstance(EventType eventType, long activeTimestamp, boolean rtnApplicable, int alarmLevel,
-            Map<String, LocalizableMessage> messages, Map<String, Object> context) {
+                         EventMessages messages, Map<String, Object> context) {
         this.eventType = eventType;
         this.activeTimestamp = activeTimestamp;
         this.rtnApplicable = rtnApplicable;
         this.alarmLevel = alarmLevel;
         if (messages == null) {
-            this.messages = new HashMap<String, LocalizableMessage>();
-            this.messages.put("mail", new LocalizableMessage("common.noMessage"));
+            this.messages = new EventMessages(new LocalizableMessage("common.noMessage"), new LocalizableMessage("common.noMessage"));
         }
         else
             this.messages = messages;
@@ -239,7 +237,7 @@ public class EventInstance {
         return rtnTimestamp;
     }
 
-    public Map<String, LocalizableMessage> getMessage() {
+    public EventMessages getMessages() {
         return messages;
     }
 

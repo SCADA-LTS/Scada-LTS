@@ -30,6 +30,7 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.rt.event.type.PublisherEventType;
 import com.serotonin.mango.util.timeout.TimeoutClient;
@@ -149,9 +150,7 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
             pointDisabledEventActive = foundDisabledPoint;
                 if (pointDisabledEventActive) {
                     // A published point has been terminated, was never enabled, or no longer exists.
-                    Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-                    messages.put("mail", new LocalizableMessage("event.publish.pointMissing"));
-                    messages.put("sms", null);
+                    EventMessages messages = new EventMessages(new LocalizableMessage("event.publish.pointMissing"), new LocalizableMessage("event.publish.pointMissing"));
                     Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
                             AlarmLevels.URGENT, messages, createEventContext());
                 }
@@ -162,9 +161,7 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     }
 
     void fireQueueSizeWarningEvent() {
-        Map<String, LocalizableMessage> messages = new HashMap<String, LocalizableMessage>();
-        messages.put("mail", new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()));
-        messages.put("sms", null);
+        EventMessages messages = new EventMessages(new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()), new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()));
         Common.ctx.getEventManager().raiseEvent(queueSizeWarningEventType, System.currentTimeMillis(), true,
                 AlarmLevels.URGENT, messages,
                 createEventContext());

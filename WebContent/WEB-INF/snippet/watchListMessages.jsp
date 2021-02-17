@@ -30,7 +30,7 @@
 <c:forEach items="${events}" var="event">
 	<c:if test="${event.alarmLevel>0}">
 	  <tag:eventIcon event="${event}"/>
-	  ${sst:time(event.activeTimestamp)} - <sst:i18n message="${event.message}"/>
+	  ${sst:time(event.activeTimestamp)} - <sst:i18n message="${event.messages.message}"/>
 	  <tag:alarmAck event="${event}"/><br/>
 	 </c:if>
 </c:forEach>
