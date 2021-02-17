@@ -3,6 +3,7 @@ package com.serotonin.mango.util;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.vo.DataPointVO;
@@ -76,7 +77,12 @@ public final class EmailContentUtils {
             if(context != null && (dataPoint = (DataPointVO)context.get("point")) != null && dataPoint.getName() != null
                 && PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()) != AlarmLevels.NONE
                     && evt.getMessages().getMessage() != null) {
-                LocalizableMessage subjectMsg = evt.getMessages().getMessage();
+                LocalizableMessage subjectMsg;
+                if (notificationType instanceof EmailToSmsHandlerRT.SmsNotificationType) {
+                    subjectMsg = evt.getMessages().getMessageSms();
+                } else {
+                    subjectMsg = evt.getMessages().getMessage();
+                }
                 return evt.getPrettyActiveTimestamp() + " - "  + subjectMsg.getLocalizedMessage(bundle);
             }
         }

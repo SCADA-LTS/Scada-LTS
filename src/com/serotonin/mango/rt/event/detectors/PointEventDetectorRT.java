@@ -49,7 +49,7 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
             messages.setMessage(msg);
             messages.setMessageSms(msg);
         } else {
-            messages.setMessage(getMailMessage());
+            messages.setMessage(getMessage());
             messages.setMessageSms(getSmsMessage());
         }
 
@@ -72,13 +72,7 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
 
     abstract protected LocalizableMessage getMessage();
 
-    protected LocalizableMessage getMailMessage() {
-        return null;
-    }
-
-    protected LocalizableMessage getSmsMessage() {
-        return null;
-    }
+    abstract protected LocalizableMessage getSmsMessage();
 
     public String getEventDetectorKey() {
         return vo.getEventDetectorKey();

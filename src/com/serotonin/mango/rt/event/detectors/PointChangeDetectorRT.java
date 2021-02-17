@@ -34,30 +34,24 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
 
     @Override
     protected LocalizableMessage getMessage() {
-//        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
-//        String name = vo.njbGetDataPoint().getName();
-//        return new LocalizableMessage("event.detector.changeMail", name, description,
-//                formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                formatValue(oldValue), formatValue(newValue));
-    }
-
-    @Override
-    public LocalizableMessage getMailMessage() {
         String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
-        String name = vo.njbGetDataPoint().getName();
-        return new LocalizableMessage("event.detector.changeMail", name, description,
-                formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
+        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(), description,
+                formatValue(oldValue), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
     }
 
     @Override
     public LocalizableMessage getSmsMessage() {
+        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
         if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
-            return new LocalizableMessage("event.detector.changeSMSWithRenderer", vo.njbGetDataPoint().getName(),
+            if (vo.njbGetDataPoint().getEventTextRenderer().getShortText(newValue) != null)
+                return new LocalizableMessage("event.detector.messageSms", vo.njbGetDataPoint().getName(),
                     vo.njbGetDataPoint().getEventTextRenderer().getShortText(newValue));
+            else
+                return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
+                        description, formatValue(oldValue), formatValue(newValue), "");
         } else {
-            return new LocalizableMessage("event.detector.changeMail", vo.njbGetDataPoint().getName(),
-                    vo.njbGetDataPoint().getDescription(), formatValue(newValue), "");
+            return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
+                    description, formatValue(oldValue), formatValue(newValue), "");
         }
 
     }

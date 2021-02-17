@@ -45,6 +45,18 @@ public class AlphanumericStateDetectorRT extends StateDetectorRT {
     }
 
     @Override
+    protected LocalizableMessage getSmsMessage() {
+        String name = vo.njbGetDataPoint().getName();
+        String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.getAlphanumericState(),
+                TextRenderer.HINT_SPECIFIC);
+        LocalizableMessage durationDescription = getDurationDescription();
+
+        if (durationDescription != null)
+            return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription);
+        return new LocalizableMessage("event.detector.state", name, prettyText);
+    }
+
+    @Override
     protected boolean stateDetected(PointValueTime newValue) {
         String newAlpha = newValue.getStringValue();
         return StringUtils.isEqual(newAlpha, vo.getAlphanumericState());

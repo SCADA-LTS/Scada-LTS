@@ -40,4 +40,10 @@ public class NoChangeDetectorRT extends DifferenceDetectorRT {
         return new LocalizableMessage("event.detector.noChange", vo.njbGetDataPoint().getName(),
                 getDurationDescription());
     }
+
+    @Override
+    protected LocalizableMessage getSmsMessage() {
+        return new LocalizableMessage("event.detector.noChange", vo.njbGetDataPoint().getName(),
+                getDurationDescription());
+    }
 }
