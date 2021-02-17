@@ -31,7 +31,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^prerelease/2.5.0.*$/"
-  - "/^bug/#1497.*$/"
+  - "/^feature/#993.*$/"
 notifications:
   email: false
 env:
