@@ -7,7 +7,7 @@
 		</template>
 
 		<v-card>
-			<v-card-title> Create Event Detector </v-card-title>
+			<v-card-title> {{$t('eventDetector.dialog.create.title')}} </v-card-title>
 			<v-card-text>
 				<v-row>
 					<v-col cols="12">
@@ -16,7 +16,7 @@
 							:items="eventDetectorList"
 							item-value="id"
 							item-text="label"
-							label="Event Detector Type"
+							:label="$t('eventDetector.dialog.create.select')"
 							@change="watchEventDectectorChange"
 							dense
 						></v-select>
@@ -26,7 +26,7 @@
 					<v-col cols="12">
 						<v-text-field
 							v-model="eventDetector.xid"
-							label="Export ID"
+							:label="$t('eventDetector.dialog.create.xid')"
 							dense
 						></v-text-field>
 					</v-col>
@@ -62,14 +62,14 @@
 							:items="alarmLevels"
 							item-value="id"
 							item-text="label"
-							label="Alarm Level"
+							:label="$t('common.alarmlevels.title')"
 							dense
 						></v-select>
 					</v-col>
 					<v-col cols="7">
 						<v-text-field
 							v-model="eventDetector.alias"
-							label="Alias"
+							:label="$t('datapointDetails.pointProperties.eventDetectors.alias')"
 							dense
 						></v-text-field>
 					</v-col>
@@ -81,13 +81,13 @@
 							<v-col cols="4">
 								<v-text-field
 									v-model="eventDetector.limit"
-									label="High limit"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.limit.high')"
 									dense
 								></v-text-field>
 							</v-col>
 							<v-col cols="3">
 								<v-text-field
-									label="Duration"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 									v-model="eventDetector.duration"
 									dense
 								></v-text-field>
@@ -110,13 +110,13 @@
 							<v-col cols="4">
 								<v-text-field
 									v-model="eventDetector.limit"
-									label="Low limit"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.limit.low')"
 									dense
 								></v-text-field>
 							</v-col>
 							<v-col cols="3">
 								<v-text-field
-									label="Duration"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 									v-model="eventDetector.duration"
 									dense
 								></v-text-field>
@@ -148,21 +148,21 @@
 							</v-col>
 							<v-col cols="4" v-if="data.pointLocator.dataTypeId === 2">
 								<v-text-field
-									label="State"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.state')"
 									v-model="eventDetector.multistateState"
 									dense
 								></v-text-field>
 							</v-col>
 							<v-col cols="4" v-if="data.pointLocator.dataTypeId === 4">
 								<v-text-field
-									label="State"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.state')"
 									v-model="eventDetector.alphanumericState"
 									dense
 								></v-text-field>
 							</v-col>
 							<v-col cols="3">
 								<v-text-field
-									label="Duration"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 									v-model="eventDetector.duration"
 									dense
 								></v-text-field>
@@ -185,13 +185,13 @@
 							<v-col cols="4">
 								<v-text-field
 									v-model="eventDetector.changeCount"
-									label="State change count"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.change')"
 									dense
 								></v-text-field>
 							</v-col>
 							<v-col cols="3">
 								<v-text-field
-									label="Duration"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 									v-model="eventDetector.duration"
 									dense
 								></v-text-field>
@@ -213,7 +213,7 @@
 							<v-col cols="1"></v-col>
 							<v-col cols="5">
 								<v-text-field
-									label="Duration"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 									v-model="eventDetector.duration"
 									dense
 								></v-text-field>
@@ -235,7 +235,7 @@
 							<v-col cols="1"></v-col>
 							<v-col cols="5">
 								<v-text-field
-									label="Duration"
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 									v-model="eventDetector.duration"
 									dense
 								></v-text-field>
@@ -258,10 +258,10 @@
 			<v-card-actions>
 				<v-spacer></v-spacer>
 				<v-btn color="primary" text @click="cancel">
-					{{ $t('uiv.modal.cancel') }}
+					{{ $t('common.cancel') }}
 				</v-btn>
 				<v-btn color="primary" text @click="add">
-					{{ $t('uiv.modal.ok') }}
+					{{ $t('common.save') }}
 				</v-btn>
 			</v-card-actions>
 		</v-card>
@@ -279,8 +279,8 @@ export default {
 			select: 0,
 			eventDetector: null,
 			binaryState: [
-				{ text: 'Zero', value: false },
-				{ text: 'One', value: true },
+				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.zero'), value: false },
+				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.one'), value: true },
 			],
 		};
 	},
@@ -347,7 +347,6 @@ export default {
 				this.$store.state.storeEventDetectors.eventDetectorTemplates[val - 1],
 			);
 			this.eventDetector.xid = `PED_${Math.round(Math.random() * 100000)}`;
-			console.log(this.eventDetector);
 		},
 	},
 };

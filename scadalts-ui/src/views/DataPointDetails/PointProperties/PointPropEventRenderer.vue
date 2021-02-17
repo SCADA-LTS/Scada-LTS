@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>Event renderer properties</h3>
+			<h3>{{$t('datapointDetails.pointProperties.eventRenderer.title')}}</h3>
 		</v-col>
 		<v-col cols="12">
 			<v-select
@@ -28,7 +28,7 @@
 				<v-col cols="4">
 					<v-text-field
 						v-model="data.eventTextRenderer.zeroShortLabel"
-						label="Zero Short Label"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.short.zero')"
 						dense
 					>
 					</v-text-field>
@@ -36,7 +36,7 @@
 				<v-col cols="7">
 					<v-text-field
 						v-model="data.eventTextRenderer.zeroLongLabel"
-						label="Zero Long Label"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long.zero')"
 						dense
 					>
 					</v-text-field>
@@ -52,7 +52,7 @@
 				<v-col cols="4">
 					<v-text-field
 						v-model="data.eventTextRenderer.oneShortLabel"
-						label="One Short Label"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.short.one')"
 						dense
 					>
 					</v-text-field>
@@ -60,7 +60,7 @@
 				<v-col cols="7">
 					<v-text-field
 						v-model="data.eventTextRenderer.oneLongLabel"
-						label="One Long Label"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long.one')"
 						dense
 					>
 					</v-text-field>
@@ -78,17 +78,17 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="multistateRenderer.key" label="Key" dense>
+					<v-text-field v-model="multistateRenderer.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="3">
-					<v-text-field v-model="multistateRenderer.shortText" label="Short Text" dense>
+					<v-text-field v-model="multistateRenderer.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="6">
 					<v-text-field
 						v-model="multistateRenderer.longText"
-						label="Long Text"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
 						dense
 						append-outer-icon="mdi-plus-circle"
 						@click:append-outer="addMultistateValue"
@@ -105,18 +105,18 @@
 						</v-col>
 
 						<v-col cols="2">
-							<v-text-field v-model="e.key" label="Key" dense> </v-text-field>
+							<v-text-field v-model="e.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense> </v-text-field>
 						</v-col>
 
 						<v-col cols="3">
-							<v-text-field v-model="e.shortText" label="Short Text" dense>
+							<v-text-field v-model="e.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
 							</v-text-field>
 						</v-col>
 
 						<v-col cols="6">
 							<v-text-field
 								v-model="e.longText"
-								label="Long Text"
+								:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
 								dense
 								append-outer-icon="mdi-close-circle-outline"
 								@click:append-outer="delMultistateValue(e)"
@@ -138,19 +138,19 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.from" label="From" dense> </v-text-field>
+					<v-text-field v-model="rangeRenderer.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.to" label="To" dense> </v-text-field>
+					<v-text-field v-model="rangeRenderer.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
 				</v-col>
 				<v-col cols="3">
-					<v-text-field v-model="rangeRenderer.shortText" label="Short Text" dense>
+					<v-text-field v-model="rangeRenderer.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="4">
 					<v-text-field
 						v-model="rangeRenderer.longText"
-						label="Long Text"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
 						dense
 						append-outer-icon="mdi-plus-circle"
 						@click:append-outer="addRangeValue"
@@ -167,19 +167,19 @@
 						</v-col>
 
 						<v-col cols="2">
-							<v-text-field v-model="e.from" label="From" dense> </v-text-field>
+							<v-text-field v-model="e.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
 						</v-col>
 						<v-col cols="2">
-							<v-text-field v-model="e.to" label="To" dense> </v-text-field>
+							<v-text-field v-model="e.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field v-model="e.shortText" label="Short Text" dense>
+							<v-text-field v-model="e.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
 							</v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-text-field
 								v-model="e.longText"
-								label="Long Text"
+								:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
 								dense
 								append-outer-icon="mdi-close-circle-outline"
 								@click:append-outer="delRangeValue(e)"

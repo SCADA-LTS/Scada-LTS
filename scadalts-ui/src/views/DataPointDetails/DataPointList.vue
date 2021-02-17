@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<v-container fluid v-if="!!datapointList">
-			<h1>Data Point List</h1>
+			<h1>{{$t("datapointDetails.pointList.title")}}</h1>
 			<v-text-field
 				v-model="search"
         		append-icon="mdi-magnify"
-        		label="Search"
+        		:label="$t('common.search')"
         		single-line
         		hide-details
 			></v-text-field>
@@ -43,12 +43,12 @@ export default {
 			loading: true,
 			search: '',
 			headers: [
-				{text: 'Status', align: 'center', value: 'enabled'},
-				{text: 'DataSource', align: 'center', value: 'datasourceName'},
-				{text: 'Name', align: 'center', value: 'name'},
-				{text: 'Description', sortable: false, filterable: false, align: 'center', value: 'description'},
-				{text: 'Type', filterable: false, align: 'center', value: 'typeId'},
-				{text: 'XID', align: 'center', value: 'xid'},
+				{text: this.$t('datapointDetails.pointList.table.header.status'), align: 'center', value: 'enabled'},
+				{text: this.$t('datapointDetails.pointList.table.header.datasource'), align: 'center', value: 'datasourceName'},
+				{text: this.$t('datapointDetails.pointList.table.header.name'), align: 'center', value: 'name'},
+				{text: this.$t('datapointDetails.pointList.table.header.description'), sortable: false, filterable: false, align: 'center', value: 'description'},
+				{text: this.$t('datapointDetails.pointList.table.header.type'), filterable: false, align: 'center', value: 'typeId'},
+				{text: this.$t('datapointDetails.pointList.table.header.xid'), align: 'center', value: 'xid'},
 			],
 		};
 	},

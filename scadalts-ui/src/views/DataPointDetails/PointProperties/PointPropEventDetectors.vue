@@ -9,8 +9,8 @@
 							:btnvisible="false"
 							:dialog="confirmDeleteDialog"
 							@result="deleteEventDetector"
-							title="Delete Event Detector"
-							message="Are you sure you want to delete this event detector"
+							:title="$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.title')"
+							:message="$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.text')"
 						></ConfirmationDialog>
 					</h3>
 				</v-col>
@@ -73,13 +73,13 @@
 						:items="alarmLevels"
 						item-value="id"
 						item-text="label"
-						label="Alarm Level"
+						:label="$t('common.alarmlevels.title')"
 						dense
 					></v-select>
 				</v-col>
 
 				<v-col cols="7">
-					<v-text-field v-model="e.alias" label="Alias" dense> </v-text-field>
+					<v-text-field v-model="e.alias" :label="$t('datapointDetails.pointProperties.eventDetectors.alias')" dense> </v-text-field>
 				</v-col>
 
 				<v-col cols="12">
@@ -87,10 +87,10 @@
 					<v-row v-if="e.detectorType === 1">
 						<v-col cols="1"></v-col>
 						<v-col cols="4">
-							<v-text-field v-model="e.limit" label="High limit" dense></v-text-field>
+							<v-text-field v-model="e.limit" :label="$t('datapointDetails.pointProperties.eventDetectors.limit.high')" dense></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field label="Duration" v-model="e.duration" dense></v-text-field>
+							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -108,10 +108,10 @@
 					<v-row v-if="e.detectorType === 2">
 						<v-col cols="1"></v-col>
 						<v-col cols="4">
-							<v-text-field v-model="e.limit" label="Low limit" dense></v-text-field>
+							<v-text-field v-model="e.limit" :label="$t('datapointDetails.pointProperties.eventDetectors.limit.low')" dense></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field label="Duration" v-model="e.duration" dense></v-text-field>
+							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duartion')" v-model="e.duration" dense></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -142,20 +142,20 @@
 						</v-col>
 						<v-col cols="4" v-if="data.pointLocator.dataTypeId === 2">
 							<v-text-field
-								label="State"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.state')"
 								v-model="e.multistateState"
 								dense
 							></v-text-field>
 						</v-col>
 						<v-col cols="4" v-if="data.pointLocator.dataTypeId === 4">
 							<v-text-field
-								label="State"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.state')"
 								v-model="e.alphanumericState"
 								dense
 							></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field label="Duration" v-model="e.duration" dense></v-text-field>
+							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -175,12 +175,12 @@
 						<v-col cols="4">
 							<v-text-field
 								v-model="e.changeCount"
-								label="State change count"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.change')"
 								dense
 							></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field label="Duration" v-model="e.duration" dense></v-text-field>
+							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -198,7 +198,7 @@
 					<v-row v-if="e.detectorType === 7">
 						<v-col cols="1"></v-col>
 						<v-col cols="5">
-							<v-text-field label="Duration" v-model="e.duration" dense></v-text-field>
+							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duartion')" v-model="e.duration" dense></v-text-field>
 						</v-col>
 						<v-col cols="6">
 							<v-select
@@ -216,7 +216,7 @@
 					<v-row v-if="e.detectorType === 8">
 						<v-col cols="1"></v-col>
 						<v-col cols="5">
-							<v-text-field label="Duration" v-model="e.duration" dense></v-text-field>
+							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
 						</v-col>
 						<v-col cols="6">
 							<v-select
@@ -274,8 +274,8 @@ export default {
 			confirmDeleteDialog: false,
 			confirmDeleteDetector: null,
 			binaryState: [
-				{ text: 'Zero', value: false },
-				{ text: 'One', value: true },
+				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.zero'), value: false },
+				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.one'), value: true },
 			],
 			response: {
 				status: false,
@@ -300,7 +300,7 @@ export default {
 		addEventDetector(value) {
 			this.data.eventDetectors.push(value);
 			this.response.status = true;
-			this.response.message = 'Added succesfully!';
+			this.response.message = this.$t('common.snackbar.add.success');
 		},
 
 		openConfirmDialog(e) {
@@ -317,11 +317,11 @@ export default {
 				})
 				.then((resp) => {
 					this.response.status = true;
-					this.response.message = 'Updated succesfully!';
+					this.response.message = this.$t('common.snackbar.update.success');
 				})
 				.catch((err) => {
 					this.response.status = true;
-					this.response.message = 'Update failed!';
+					this.response.message = this.$t('common.snackbar.update.fail');
 				});
 		},
 
@@ -335,14 +335,14 @@ export default {
 					})
 					.then((resp) => {
 						if (resp.status === 'deleted') {
-							this.data.eventDetectors = this.data.eventDetectors.filter((e) => {
-								return e.id !== this.confirmDeleteDetector.id;
+							this.data.eventDetectors = this.data.eventDetectors.filter((el) => {
+								return el.id !== this.confirmDeleteDetector.id;
 							});
 							this.response.status = true;
-							this.response.message = 'Deleted succesfully!';
+							this.response.message = this.$t('common.snackbar.delete.success');
 						} else {
 							this.response.status = true;
-							this.response.message = 'Deletion failed!';
+							this.response.message = this.$t('common.snackbar.delete.fail');
 						}
 					});
 			}

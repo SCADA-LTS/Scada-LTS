@@ -26,7 +26,7 @@
 												<v-icon v-show="data.enabled">mdi-decagram</v-icon>
 												<v-icon v-show="!data.enabled">mdi-decagram-outline</v-icon>
 											</v-btn>
-											Point properties
+											{{$t('datapointDetails.pointProperties.title')}}
 										</h3>
 									</v-col>
 									<PurgeDataDialog
@@ -47,12 +47,10 @@
 													<v-list-item-icon
 														><v-icon>mdi-eraser-variant</v-icon></v-list-item-icon
 													>
-													<v-list-item-title>Purge data</v-list-item-title>
+													<v-list-item-title>
+														{{$t('datapointDetails.pointProperties.purgedata')}}
+													</v-list-item-title>
 												</v-list-item>
-												<!-- <v-list-item @click="applyProperties">
-													<v-list-item-icon><v-icon>mdi-content-copy</v-icon></v-list-item-icon>
-													<v-list-item-title>Apply properties</v-list-item-title>
-												</v-list-item> -->
 											</v-list>
 										</v-menu>
 									</v-col>
@@ -60,7 +58,7 @@
 							</v-col>
 
 							<v-col md="6" cols="12">
-								<v-text-field v-model="data.name" label="Point Name" dense></v-text-field>
+								<v-text-field v-model="data.name" :label="$t('datapointDetails.pointProperties.point.name')" dense></v-text-field>
 							</v-col>
 
 							<v-col md="6" cols="12" @click="navToDataSource">
@@ -72,7 +70,7 @@
 							<v-col cols="12">
 								<v-text-field
 									v-model="data.description"
-									label="Description"
+									:label="$t('datapointDetails.pointProperties.point.description')"
 									dense
 								></v-text-field>
 							</v-col>
@@ -94,8 +92,8 @@
 			<v-divider></v-divider>
 			<v-card-actions>
 				<v-spacer> </v-spacer>
-				<v-btn text @click="dialog = false">{{ $t('uiv.modal.cancel') }}</v-btn>
-				<v-btn color="primary" text @click="save">{{ $t('uiv.modal.ok') }}</v-btn>
+				<v-btn text @click="dialog = false">{{ $t('common.cancel') }}</v-btn>
+				<v-btn color="primary" text @click="save">{{ $t('common.save') }}</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>

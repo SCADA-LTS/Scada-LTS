@@ -35,17 +35,13 @@ const storeDataPoint = {
 			},
 		],
 
-		//TODO: ADD General Time Selectors
-		//      as it is done with TextRenderer list
-
-		//TODO: ADD i18n translations
 		textRenderesList: [
-			{ id: 0, label: 'Analog' },
-			{ id: 1, label: 'Binary' },
-			{ id: 2, label: 'Multistate' },
-			{ id: 3, label: 'Plain' },
-			{ id: 4, label: 'Range' },
-			{ id: 5, label: 'Time' },
+			{ id: 0, label: i18n.t('textRenderer.analog') },
+			{ id: 1, label: i18n.t('textRenderer.binary') },
+			{ id: 2, label: i18n.t('textRenderer.multistate') },
+			{ id: 3, label: i18n.t('textRenderer.plain') },
+			{ id: 4, label: i18n.t('textRenderer.range') },
+			{ id: 5, label: i18n.t('textRenderer.time') },
 		],
 
 		textRenderesTemplates: textRenderesTemplates,
@@ -70,45 +66,6 @@ const storeDataPoint = {
 				return (e.name || '').toLowerCase().indexOf((value || '').toLowerCase()) > -1;
 			});
 			return data;
-		},
-
-		// getDataPointSimpleFilteredList({ dispatch }, value) {
-		// 	return new Promise((resolve) => {
-		// 		//MOCK of DATAPOINT UI
-		// 		let data = [
-		// 			{ name: '1 minute Load', id: 1, xid: 'DP_250372' },
-		// 			{ name: '5 minutes Load', id: 2, xid: 'DP_335775' },
-		// 			{ name: 'Point', id: 5, xid: 'DP_712779' },
-		// 			{ name: 'Numeric', id: 6, xid: 'DP_954927' },
-		// 			{ name: 'SysUptime', id: 7, xid: 'DP_305240' },
-		// 			{ name: 'TrapTest', id: 10, xid: 'DP_568054' },
-		// 		];
-		// 		data = data.filter((e) => {
-		// 			return (e.name || '').toLowerCase().indexOf((value || '').toLowerCase()) > -1;
-		// 		});
-		// 		resolve(data);
-		// 	});
-		// },
-
-		getDataPointDetailsMock({ dispatch }, datapointId) {
-			return new Promise((resolve) => {
-				let data = [
-					{ name: '1 minute Load', id: 1, xid: 'DP_250372', description: 'First Point' },
-					{
-						name: '5 minutes Load',
-						id: 2,
-						xid: 'DP_335775',
-						description: 'Example Point',
-					},
-					{ name: 'Point', id: 5, xid: 'DP_712779', description: 'Just a point' },
-					{ name: 'Numeric', id: 6, xid: 'DP_954927', description: 'Not binary' },
-					{ name: 'SysUptime', id: 7, xid: 'DP_305240', description: 'Runtime' },
-					{ name: 'TrapTest', id: 10, xid: 'DP_568054', description: 'Not worked' },
-				];
-				data = data.find(({ id }) => id === Number(datapointId));
-
-				resolve(data);
-			});
 		},
 
 		getAllDatapoints({ dispatch }) {

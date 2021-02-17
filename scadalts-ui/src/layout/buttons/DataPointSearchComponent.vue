@@ -9,8 +9,8 @@
 		hide-details
 		item-text="name"
 		item-value="id"
-		label="Selected Data Point"
-		placeholder="Type to search Data Point"
+		:label="$t('datapoint.search.label')"
+		:placeholder="$t('datapoint.search.placeholder')"
 		return-object
 		prepend-icon="mdi-magnify"
 		@change="emit()"

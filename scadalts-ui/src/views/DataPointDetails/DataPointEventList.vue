@@ -2,9 +2,9 @@
 	<v-card>
 		<v-card-title v-if="hideSkeleton">
 			<v-row>
-				<v-col cols="8"> Events </v-col>
+				<v-col cols="8"> {{$t('datapointDetails.eventList.title')}} </v-col>
 				<v-col cols="4">
-					<v-text-field v-model="eventLimit" label="Show latest events">
+					<v-text-field v-model="eventLimit" :label="$t('datapointDetails.eventList.controls.latest')">
 						<template v-slot:append-outer>
 							<v-btn
 								icon
@@ -85,7 +85,7 @@
 								{{ new Date(e.activeTs).toLocaleString() }}
 							</span>
 							<span v-if="!!e.ackTs">
-								- Acknowledged at {{ new Date(e.ackTs).toLocaleString() }} by
+								- {{$t('datapointDetails.eventList.acknowledged')}} {{ new Date(e.ackTs).toLocaleString() }} by
 								{{ e.username }}
 							</span>
 						</v-list-item-subtitle>
@@ -135,7 +135,7 @@
 											<v-list-item-title>
 												<v-text-field
 													v-model="newComment"
-													label="Add comment..."
+													:label="$t('comment.add')"
 													append-icon="mdi-check"
 													@click:append="addComment(e)"
 													dense
@@ -157,7 +157,7 @@
 				<v-list-item>
 					<v-list-item-content>
 						<v-list-item-title>
-							There is no events related to that DataPoint.
+							{{$t('datapointDetails.eventList.empty')}}
 						</v-list-item-title>
 					</v-list-item-content>
 				</v-list-item>

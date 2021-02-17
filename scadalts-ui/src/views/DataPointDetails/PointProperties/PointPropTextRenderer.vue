@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>Text renderer properties</h3>
+			<h3>{{$t('datapointDetails.pointProperties.textRenderer.title')}}</h3>
 		</v-col>
 		<v-col cols="12" v-if="textRenderesList">
 			<v-select
@@ -18,11 +18,11 @@
 			<!-- ANALOG RENDERER PROPERTIES -->
 			<v-row v-if="selected === 0" dense>
 				<v-col cols="6">
-					<v-text-field v-model="data.textRenderer.format" label="Format" dense>
+					<v-text-field v-model="data.textRenderer.format" :label="$t('datapointDetails.pointProperties.textRenderer.label.format')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="6">
-					<v-text-field v-model="data.textRenderer.suffix" label="Suffix" dense>
+					<v-text-field v-model="data.textRenderer.suffix" :label="$t('datapointDetails.pointProperties.textRenderer.label.suffix')" dense>
 					</v-text-field>
 				</v-col>
 			</v-row>
@@ -38,7 +38,7 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="11">
-					<v-text-field v-model="data.textRenderer.zeroLabel" label="Zero" dense>
+					<v-text-field v-model="data.textRenderer.zeroLabel" :label="$t('datapointDetails.pointProperties.textRenderer.label.zero')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="1">
@@ -50,7 +50,7 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="11">
-					<v-text-field v-model="data.textRenderer.oneLabel" label="One" dense>
+					<v-text-field v-model="data.textRenderer.oneLabel" :label="$t('datapointDetails.pointProperties.textRenderer.label.one')" dense>
 					</v-text-field>
 				</v-col>
 			</v-row>
@@ -66,13 +66,13 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="3">
-					<v-text-field v-model="multistateRenderer.key" label="Key" dense>
+					<v-text-field v-model="multistateRenderer.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="8">
 					<v-text-field
 						v-model="multistateRenderer.text"
-						label="Text"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 						dense
 						append-outer-icon="mdi-plus-circle"
 						@click:append-outer="addMultistateValue"
@@ -88,13 +88,13 @@
 					</v-col>
 
 					<v-col cols="3">
-						<v-text-field v-model="e.key" label="Key" dense> </v-text-field>
+						<v-text-field v-model="e.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense> </v-text-field>
 					</v-col>
 
 					<v-col cols="8">
 						<v-text-field
 							v-model="e.text"
-							label="Text"
+							:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 							dense
 							append-outer-icon="mdi-close-circle-outline"
 							@click:append-outer="delMultistateValue(e)"
@@ -109,7 +109,7 @@
 				<v-col cols="12">
 					<v-text-field
 						v-model="data.textRenderer.format"
-						label="Suffix"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.suffix')"
 						dense
 					></v-text-field>
 				</v-col>
@@ -126,15 +126,15 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.from" label="From" dense> </v-text-field>
+					<v-text-field v-model="rangeRenderer.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.to" label="To" dense> </v-text-field>
+					<v-text-field v-model="rangeRenderer.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
 				</v-col>
 				<v-col cols="7">
 					<v-text-field
 						v-model="rangeRenderer.text"
-						label="Text"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 						dense
 						append-outer-icon="mdi-plus-circle"
 						@click:append-outer="addRangeValue"
@@ -150,15 +150,15 @@
 					</v-col>
 
 					<v-col cols="2">
-						<v-text-field v-model="e.from" label="From" dense> </v-text-field>
+						<v-text-field v-model="e.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
 					</v-col>
 					<v-col cols="2">
-						<v-text-field v-model="e.to" label="To" dense> </v-text-field>
+						<v-text-field v-model="e.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
 					</v-col>
 					<v-col cols="7">
 						<v-text-field
 							v-model="e.text"
-							label="Text"
+							:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 							dense
 							append-outer-icon="mdi-close-circle-outline"
 							@click:append-outer="delRangeValue(e)"
@@ -171,13 +171,13 @@
 			<!-- TIME RENDERER PROPERTIES -->
 			<v-row v-if="selected === 5" dense>
 				<v-col cols="12">
-					<v-text-field v-model="data.textRenderer.format" label="Format" dense>
+					<v-text-field v-model="data.textRenderer.format" :label="$t('datapointDetails.pointProperties.textRenderer.label.format')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="12">
 					<v-text-field
 						v-model="data.textRenderer.conversionExponent"
-						label="Conversion exponent"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.exponent')"
 						dense
 					>
 					</v-text-field>

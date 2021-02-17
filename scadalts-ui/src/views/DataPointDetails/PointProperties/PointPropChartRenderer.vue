@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>Chart renderer</h3>
+			<h3>{{$t('datapointDetails.pointProperties.chartRenderer')}}</h3>
 		</v-col>
 		<v-col cols="12">
 			<v-select
@@ -19,7 +19,7 @@
 				<v-col cols="12">
 					<v-text-field
 						v-model="data.chartRenderer.limit"
-						label="Limit"
+						:label="$t('datapointDetails.pointProperties.chartRenderer.limit')"
 						dense
 					></v-text-field>
 				</v-col>
@@ -29,7 +29,7 @@
 				<v-col cols="6">
 					<v-text-field
 						v-model="data.chartRenderer.numberOfPeriods"
-						label="Time period"
+						:label="$t('common.timeperiod.title')"
 						dense
 					>
 					</v-text-field>
@@ -47,7 +47,7 @@
 				<v-col cols="12" v-if="selected === 2">
 					<v-switch
 						v-model="data.chartRenderer.includeSum"
-						label="Include sum"
+						:label="$t('datapointDetails.pointProperties.chartRenderer.sum')"
 					></v-switch>
 				</v-col>
 			</v-row>
@@ -64,10 +64,10 @@ export default {
 		return {
 			selected: undefined,
 			chartRenderersList: [
-				{ id: -1, label: 'None' },
-				{ id: 0, label: 'Table' },
-				{ id: 1, label: 'Image' },
-				{ id: 2, label: 'Statistics' },
+				{ id: -1, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.none') },
+				{ id: 0, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.table') },
+				{ id: 1, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.image') },
+				{ id: 2, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.stats') },
 			],
 		};
 	},

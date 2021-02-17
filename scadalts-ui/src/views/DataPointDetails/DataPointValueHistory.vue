@@ -1,7 +1,7 @@
 <template>
 	<v-card>
 		<v-card-title v-if="hideSkeleton">
-			Data Point Values
+			{{$t('datapointDetails.valueHistory.title')}}
 			<v-spacer> </v-spacer>
 			<v-dialog v-model="dialog" width="800">
 				<template v-slot:activator="{ on, attrs }">
@@ -11,11 +11,11 @@
 				</template>
 
 				<v-card>
-					<v-card-title> History </v-card-title>
+					<v-card-title> {{$t('datapointDetails.valueHistory.subtitle')}} </v-card-title>
 					<v-card-text>
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="timePeriod" label="Time period" dense>
+								<v-text-field v-model="timePeriod" :label="$t('common.timeperiod.title')" dense>
 								</v-text-field>
 							</v-col>
 							<v-col cols="6">
@@ -34,8 +34,8 @@
 							<template v-slot:default>
 								<thead>
 									<tr>
-										<th>Value</th>
-										<th>Date</th>
+										<th>{{$t('datapointDetails.valueHistory.table.value')}}</th>
+										<th>{{$t('datapointDetails.valueHistory.table.date')}}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -56,7 +56,7 @@
 				<v-col cols="4">
 					<v-text-field
 						v-model="pointValue"
-						label="Set a new value"
+						:label="$t('datapointDetails.valueHistory.stats.add')"
 						append-icon="mdi-send"
 						@click:append="sendValue"
 						:disabled="!data.pointLocator.settable"
@@ -65,7 +65,7 @@
 				</v-col>
 				<v-col cols="2"> </v-col>
 				<v-col cols="3">
-					<v-text-field v-model="timePeriod" label="Show history form" dense>
+					<v-text-field v-model="timePeriod" :label="$t('datapointDetails.valueHistory.stats.timeperiod')" dense>
 					</v-text-field>
 				</v-col>
 				<v-col cols="3">
@@ -94,23 +94,23 @@
 			<v-row>
 				<v-col cols="5" v-if="data.pointLocator.dataTypeId === 3">
 					<v-row>
-						<v-col cols="6"> Max Value: </v-col>
+						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.max')}} </v-col>
 						<v-col cols="6">
 							{{ maxValue.value }}
 						</v-col>
-						<v-col cols="6"> Min Value: </v-col>
+						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.min')}} </v-col>
 						<v-col cols="6">
 							{{ minValue.value }}
 						</v-col>
-						<v-col cols="6"> Average Value: </v-col>
+						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.avg')}} </v-col>
 						<v-col cols="6">
 							{{ avgValue }}
 						</v-col>
-						<v-col cols="6"> Sum value: </v-col>
+						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.sum')}} </v-col>
 						<v-col cols="6">
 							{{ sumValue }}
 						</v-col>
-						<v-col cols="6"> Values count: </v-col>
+						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.count')}} </v-col>
 						<v-col cols="6">
 							{{ countValue }}
 						</v-col>
@@ -119,13 +119,13 @@
                 <v-col cols="5" v-else>
                     <v-row>
                         <v-col cols="4">
-                            Value
+                            {{$t('datapointDetails.valueHistory.table.value')}}
                         </v-col>
                         <v-col cols="4">
-                            Count
+                            {{$t('datapointDetails.valueHistory.table.count')}}
                         </v-col>
                         <v-col cols="4">
-                            Runtime
+                            {{$t('datapointDetails.valueHistory.table.runtime')}}
                         </v-col>
                     </v-row>
                     <v-row v-for="el in statArray" :key="el">
@@ -145,8 +145,8 @@
 						<template v-slot:default>
 							<thead>
 								<tr>
-									<th>Value</th>
-									<th>Date</th>
+									<th>{{$t('datapointDetails.valueHistory.table.value')}}</th>
+									<th>{{$t('datapointDetails.valueHistory.table.date')}}</th>
 								</tr>
 							</thead>
 							<tbody>

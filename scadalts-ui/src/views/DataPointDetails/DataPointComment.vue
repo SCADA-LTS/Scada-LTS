@@ -40,7 +40,7 @@
 						<v-list-item-title>
 							<v-text-field
 								v-model="newComment"
-								label="Add comment..."
+								:label="$t('comment.add')"
 								append-icon="mdi-check"
 								@click:append="addComment"
 								dense

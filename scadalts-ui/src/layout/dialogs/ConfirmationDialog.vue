@@ -13,10 +13,10 @@
 			<v-card-actions>
 				<v-spacer></v-spacer>
 				<v-btn text @click="cancel">
-					{{ $t('uiv.modal.cancel') }}
+					{{ $t('common.cancel') }}
 				</v-btn>
 				<v-btn text color="success" @click="accept">
-					{{ $t('uiv.modal.ok') }}
+					{{ $t('common.ok') }}
 				</v-btn>
 			</v-card-actions>
 		</v-card>

@@ -1,13 +1,13 @@
 <template>
 	<v-dialog max-width="600" v-model="dialog">
 		<v-card>
-			<v-card-title class="headline"> Purge Data Point data now </v-card-title>
+			<v-card-title class="headline"> {{$t('purge.dialog.title')}} </v-card-title>
 			<v-card-text>
 				<v-row align="center">
 					<v-col cols="4">
 						<v-text-field
 							v-model="purgePeriod"
-							label="Purge data older than"
+							:label="$t('purge.dialog.older')"
 							:disabled="purgeAll"
 							dense
 						></v-text-field>
@@ -23,17 +23,17 @@
 						></v-select>
 					</v-col>
 					<v-col cols="5">
-						<v-switch v-model="purgeAll" label="Purge all data"></v-switch>
+						<v-switch v-model="purgeAll" :label="$t('purge.dialog.all')"></v-switch>
 					</v-col>
 				</v-row>
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer></v-spacer>
 				<v-btn text @click="cancel">
-					{{ $t('uiv.modal.cancel') }}
+					{{ $t('common.cancel') }}
 				</v-btn>
 				<v-btn text color="success" @click="accept">
-					{{ $t('uiv.modal.ok') }}
+					{{ $t('common.ok') }}
 				</v-btn>
 			</v-card-actions>
 		</v-card>
