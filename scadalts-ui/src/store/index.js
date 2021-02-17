@@ -243,6 +243,11 @@ export default new Vuex.Store({
 			}
 
 			return new Date(now - result);
+		},
+
+		async getLocaleInfo({dispatch}) {
+			let temp = await dispatch('requestGet', '/systemSettings/getSystemInfo');
+			i18n.locale = temp.language;
 		}
 	},
 	getters: {

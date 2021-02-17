@@ -10,7 +10,7 @@
 	"common.alarmlevels.information": "Information",
 	"common.alarmlevels.lifesafety": "Labensgefahr",
 	"common.alarmlevels.none": "Keine(r)",
-	"common.alarmlevels.title": "",
+	"common.alarmlevels.title": "Alarmpriorität",
 	"common.alarmlevels.urgent": "Dringend",
 	"common.cancel": "Stornieren",
 	"common.ok": "Ok",
@@ -23,7 +23,7 @@
 	"common.snackbar.update.fail": "Update fehlgeschlagen!",
 	"common.snackbar.update.success": "Erfolgreich aktualisiert!",
 	"common.timeperiod.days": "Tag(e)",
-	"common.timeperiod.hours": "",
+	"common.timeperiod.hours": "Stunde(n)",
 	"common.timeperiod.miliseconds": "Millisekunde(n)",
 	"common.timeperiod.minutes": "Minute(n)",
 	"common.timeperiod.months": "Monat(e)",
@@ -213,7 +213,7 @@
 	"pointEdit.logging.type.all": "Alle Daten",
 	"pointEdit.logging.type.change": "Wenn sich der Punktwert ändert",
 	"pointEdit.logging.type.interval": "Intervall",
-	"pointEdit.logging.type.never": "Nicht anmelden",
+	"pointEdit.logging.type.never": "Nicht Loggen",
 	"pointEdit.logging.type.tsChange": "Wenn sich der Punktzeitstempel ändert",
 	"purge.dialog.all": "Alle Daten löschen",
 	"purge.dialog.older": "Daten löschen älter als",
@@ -340,5 +340,5 @@
 	"uiv.disable": "Behindert",
 	"uiv.enable": "Aktiviert",
 	"uiv.modal.cancel": "Stornieren",
-	"uiv.modal.ok": ""
+	"uiv.modal.ok": "Ok"
 }

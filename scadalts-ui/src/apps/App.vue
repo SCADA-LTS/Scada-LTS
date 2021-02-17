@@ -4,39 +4,33 @@
 			<v-list nav dense>
 				<v-list-item link href="#/alarms">
 					<v-list-item-icon>
-						<v-icon>mdi-bell</v-icon>
+						<v-icon>mdi-bell-ring</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>Alarms</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/historical-alarms">
 					<v-list-item-icon>
-						<v-icon>mdi-bell-sleep</v-icon>
+						<v-icon>mdi-bell-outline</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>Historical Alarms</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/alarm-notifications">
 					<v-list-item-icon>
-						<v-icon>mdi-alert-decagram</v-icon>
+						<v-icon>mdi-bell-circle</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>{{ $t('plcalarms.notification') }}</v-list-item-title>
 				</v-list-item>
-				<v-list-item link href="#/datapoint-list">
+				<v-list-item link href="#/datapoint-list" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-database</v-icon>
 					</v-list-item-icon>
-					<v-list-item-title>Datapoint List</v-list-item-title>
+					<v-list-item-title>{{$t('datapointDetails.pointList.title')}}</v-list-item-title>
 				</v-list-item>
-				<v-list-item link href="#/system-settings">
+				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-tune</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>{{ $t('systemsettings.title') }}</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/about">
-					<v-list-item-icon>
-						<v-icon>mdi-information</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>About</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="./watch_list.shtm">
 					<v-list-item-icon>
@@ -115,6 +109,7 @@ export default {
 
 	mounted() {
 		this.$store.dispatch('getUserInfo');
+		this.$store.dispatch('getLocaleInfo');
 		this.getUserRole();
 	},
 	methods: {
