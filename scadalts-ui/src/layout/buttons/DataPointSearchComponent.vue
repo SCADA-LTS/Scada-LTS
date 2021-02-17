@@ -30,7 +30,9 @@ export default {
 		};
 	},
 
-	mounted() {},
+	mounted() {
+		this.$store.dispatch('fetchDataPointSimpleList');
+	},
 
 	watch: {
 		search(val) {

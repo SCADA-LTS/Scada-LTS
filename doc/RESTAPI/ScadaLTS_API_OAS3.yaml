@@ -113,6 +113,43 @@ paths:
       responses:
         '200':
           description: ''
+  /datapoint:
+    get:
+      tags:
+        - DataPointAPI
+      parameters:
+        - name: 'id'
+          description: 'DataPoint ID'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'xid'
+          description: 'DataPoint Export ID'
+          in: 'query'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Get complete Data Point object'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataPointVO'
+  /datapoints:
+    get:
+      tags:
+        - DataPointAPI
+      responses:
+        '200':
+          description: 'Get more detailed Data Point object'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JsonDataPoint'
   /datapoint/getAll:
     get:
       tags:
@@ -151,6 +188,50 @@ paths:
                       type: number
                     xid:
                       type: string
+  /events/datapoint/{id}:
+    get:
+      tags:
+        - EventsAPI
+      parameters:
+        - name: 'id'
+          description: 'DataPoint ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'limit'
+          description: 'Limit the result set (DEFAULT 1000)'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'offset'
+          description: 'Offset the result set (DEFAULT 0)'
+          in: 'query'
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventDTO'
+  /events/ack/{id}:
+    get:
+      tags:
+        - EventsAPI
+      parameters:
+        - name: 'id'
+          description: 'Event ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
   /view/getAll:
     get:
       tags:
@@ -1713,6 +1794,113 @@ paths:
 
 components:
   schemas:
+    JsonDataPoint:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        xid:
+          type: string
+        enabled:
+          type: boolean
+        description:
+          type: string
+        datasourceName:
+          type: string
+        typeId:
+          type: number
+    EventDTO:
+      type: object
+      properties:
+        id:
+          type: number
+        typeId:
+          type: number
+        typeRef1:
+          type: number
+        typeRef2:
+          type: number
+        activeTs:
+          type: number
+        rtnApplicable:
+          type: boolean
+        rtnTs:
+          type: number
+        rtnCause:
+          type: number
+        alarmLevel:
+          type: number
+        message:
+          type: string
+        ackTs:
+          type: number
+        username:
+          type: string
+        ackAlternateSource:
+          type: number
+        userComments:
+          type: object
+    DataPointVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        dataSourceId:
+          type: number
+        deviceName:
+          type: string
+        enabled:
+          type: boolean
+        pointFolderId:
+          type: number
+        loggingType:
+          type: number
+        intervalLoggingPeriodType:
+          type: number
+        intervalLoggingPeriod:
+          type: number
+        intervalLoggingType:
+          type: number
+        tolerance:
+          type: number
+        purgeType:
+          type: number
+        purgePeriod:
+          type: number
+        eventTextRenderer:
+          type: object
+        textRenderer:
+          type: object
+        chartRenderer:
+          type: object
+        eventDetectors:
+          type: array
+          items:
+            type: object
+        comments:
+          type: array
+          items:
+            type: object
+        defaultCacheSize:
+          type: number
+        discardExtremeValues:
+          type: boolean
+        discardLowLimit:
+          type: string
+        discardHighLimit:
+          type: number
+        engineeringUnits:
+          type: number
+        chartColour:
+          type: string
     PointValuesJSON:
       type: object
       properties:

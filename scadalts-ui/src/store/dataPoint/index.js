@@ -53,28 +53,42 @@ const storeDataPoint = {
 		chartRenderersTemplates: chartRenderersTemplates,
 
 		eventRenderersTemplates: eventRenderersTemplates,
+
+		datapointSimpleList: undefined,
 	},
 
 	mutations: {},
 
 	actions: {
-		getDataPointSimpleFilteredList({ dispatch }, value) {
-			return new Promise((resolve) => {
-				//MOCK of DATAPOINT UI
-				let data = [
-					{ name: '1 minute Load', id: 1, xid: 'DP_250372' },
-					{ name: '5 minutes Load', id: 2, xid: 'DP_335775' },
-					{ name: 'Point', id: 5, xid: 'DP_712779' },
-					{ name: 'Numeric', id: 6, xid: 'DP_954927' },
-					{ name: 'SysUptime', id: 7, xid: 'DP_305240' },
-					{ name: 'TrapTest', id: 10, xid: 'DP_568054' },
-				];
-				data = data.filter((e) => {
-					return (e.name || '').toLowerCase().indexOf((value || '').toLowerCase()) > -1;
-				});
-				resolve(data);
-			});
+		async fetchDataPointSimpleList({ state, dispatch }) {
+			state.datapointSimpleList = await dispatch('requestGet', `/datapoint/getAll`);
 		},
+
+		getDataPointSimpleFilteredList({ state }, value) {
+			let data = Object.assign([], state.datapointSimpleList);
+			data = data.filter((e) => {
+				return (e.name || '').toLowerCase().indexOf((value || '').toLowerCase()) > -1;
+			});
+			return data;
+		},
+
+		// getDataPointSimpleFilteredList({ dispatch }, value) {
+		// 	return new Promise((resolve) => {
+		// 		//MOCK of DATAPOINT UI
+		// 		let data = [
+		// 			{ name: '1 minute Load', id: 1, xid: 'DP_250372' },
+		// 			{ name: '5 minutes Load', id: 2, xid: 'DP_335775' },
+		// 			{ name: 'Point', id: 5, xid: 'DP_712779' },
+		// 			{ name: 'Numeric', id: 6, xid: 'DP_954927' },
+		// 			{ name: 'SysUptime', id: 7, xid: 'DP_305240' },
+		// 			{ name: 'TrapTest', id: 10, xid: 'DP_568054' },
+		// 		];
+		// 		data = data.filter((e) => {
+		// 			return (e.name || '').toLowerCase().indexOf((value || '').toLowerCase()) > -1;
+		// 		});
+		// 		resolve(data);
+		// 	});
+		// },
 
 		getDataPointDetailsMock({ dispatch }, datapointId) {
 			return new Promise((resolve) => {
@@ -99,6 +113,10 @@ const storeDataPoint = {
 
 		getAllDatapoints({ dispatch }) {
 			return dispatch('requestGet', `/datapoint/getAll`);
+		},
+
+		getAllDataPointsTable({dispatch}) {
+			return dispatch('requestGet', `/datapoints`);
 		},
 
 		getDataPointDetails({ dispatch }, datapointId) {

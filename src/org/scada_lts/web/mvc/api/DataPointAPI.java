@@ -25,6 +25,7 @@ import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.json.JsonDataPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +67,45 @@ public class DataPointAPI {
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @GetMapping(value = "/api/datapoints")
+    public ResponseEntity<List<JsonDataPoint>> getDataPoints(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                List<DataPointVO> lstDP;
+
+                Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
+                    @Override
+                    public int compare(DataPointVO o1, DataPointVO o2) {
+                        return 0;
+                    }
+                };
+
+                lstDP = dataPointService.getDataPoints(comparator, false);
+
+                List<JsonDataPoint> result = new ArrayList<>();
+                for (DataPointVO dp:lstDP){
+                    JsonDataPoint jdp = new JsonDataPoint(
+                            dp.getId(),
+                            dp.getName(),
+                            dp.getXid(),
+                            dp.isEnabled(),
+                            dp.getDescription(),
+                            dp.getDataSourceName(),
+                            dp.getPointLocator().getDataTypeId()
+                    );
+                    result.add(jdp);
+                }
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getConfigurationByXid(
