@@ -3,7 +3,7 @@
 		<v-card>
 			<v-card-title>
 				{{ $t('systemsettings.loggingtype.title') }}
-				<span v-if="isLoggingTypeSettingsEdited">*</span>
+				<span v-if="isDefaultLoggingTypeEdited">*</span>
 			</v-card-title>
 			<v-card-text>
 				<v-select

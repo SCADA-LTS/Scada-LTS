@@ -96,6 +96,9 @@
 				<v-btn color="primary" text @click="save">{{ $t('common.save') }}</v-btn>
 			</v-card-actions>
 		</v-card>
+		<v-snackbar v-model="response.status">
+			{{ response.message }}
+		</v-snackbar>
 	</v-dialog>
 </template>
 <script>
@@ -125,6 +128,10 @@ export default {
 		return {
 			dialog: false,
 			purgeDialog: false,
+			response: {
+				status: false,
+				message: '',
+			},
 		};
 	},
 
@@ -145,7 +152,14 @@ export default {
 			this.purgeDialog = true;
 		},
 
-		purgeDataResult() {
+		purgeDataResult(result) {
+			if(result) {
+				this.response.status = true;
+				this.response.message = this.$t('common.snackbar.delete.success');
+			} else {
+				this.response.status = true;
+				this.response.message = this.$t('common.snackbar.delete.fail');
+			}
 			this.purgeDialog = false;
 		},
 

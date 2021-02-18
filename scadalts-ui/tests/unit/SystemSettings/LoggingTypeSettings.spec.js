@@ -38,8 +38,21 @@ const systemSettings = {
 	},
 };
 
+const dataPoint = {
+	state: {
+		loggingTypeList: [
+			{ id: 1, type: 'ON_CHANGE', label: 'On change' },
+			{ id: 2, type: 'ALL', label: 'All' },
+			{ id: 3, type: 'NONE', label: 'Never' },
+			{ id: 4, type: 'INTERVAL', label: 'Interval' },
+			{ id: 5, type: 'ON_TS_CHANGE', label: 'Ts Change' },
+		]
+	}
+}
+
 const modules = {
 	systemSettings,
+	dataPoint,
 };
 
 const store = new Vuex.Store({ modules });

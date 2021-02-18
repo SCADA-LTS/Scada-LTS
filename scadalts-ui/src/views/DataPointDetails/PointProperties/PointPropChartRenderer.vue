@@ -95,6 +95,8 @@ export default {
 				default:
 					console.error('Not found suitable Text Renderer!');
 			}
+		} else {
+			this.selected = -1;
 		}
 	},
 

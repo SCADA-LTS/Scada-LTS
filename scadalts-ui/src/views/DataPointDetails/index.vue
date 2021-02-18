@@ -20,9 +20,10 @@
 					<p class="thin-top-margin small-description">
 						<span>{{ dataPointDetails.xid }}</span>
 						<span v-if="dataPointDetails.description">
-							<span v-if="dataPointDetails.description.length>0"> - {{ dataPointDetails.description }}</span>
+							<span v-if="dataPointDetails.description.length > 0">
+								- {{ dataPointDetails.description }}</span
+							>
 						</span>
-						
 					</p>
 				</v-col>
 				<v-col cols="2" xs="12" class="row justify-end">
@@ -37,21 +38,22 @@
 			</v-row>
 		</v-container>
 		<v-container fluid>
-			
 			<DataPointValueHistory
 				:data="dataPointDetails"
 				class="pointDetailsCards"
 			></DataPointValueHistory>
 
-			<DataPointEventList 
-				:datapointId="dataPointDetails.id" 
+			<DataPointEventList
+				:datapointId="dataPointDetails.id"
 				class="pointDetailsCards"
 			></DataPointEventList>
-
 		</v-container>
 		<v-container fluid>
 			<LineChartComponent :pointId="this.$route.params.id"> </LineChartComponent>
 		</v-container>
+		<v-snackbar v-model="response.status">
+			{{ response.message }}
+		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -84,6 +86,10 @@ export default {
 		return {
 			newComment: '',
 			dataPointDetails: undefined,
+			response: {
+				status: false,
+				message: '',
+			},
 		};
 	},
 
@@ -102,7 +108,7 @@ export default {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
 				datapointId
-			);		
+			);
 		},
 
 		async toggleDataPoint() {
@@ -114,7 +120,13 @@ export default {
 
 		saveDataPointDetails() {
 			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then((resp) => {
-				alert(resp);
+				if(resp === "saved") {
+					this.response.status = true;
+					this.response.message = this.$t('common.snackbar.update.success');
+				} else {
+					this.response.status = true;
+					this.response.message = this.$t('common.snackbar.update.fail');
+				}
 			});
 		},
 	},
@@ -132,6 +144,6 @@ export default {
 	margin-left: 44px;
 }
 .small-description {
-	color: rgba(0,0,0,.50);
+	color: rgba(0, 0, 0, 0.5);
 }
 </style>

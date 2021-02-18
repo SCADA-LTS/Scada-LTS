@@ -10,7 +10,9 @@ import i18n from '@/i18n';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
-localVue.use(Vuetify);
+const vuetify = Vuetify;
+
+global.requestAnimationFrame = cb => cb();
 
 const storeAlarmsNotifications = {
 	state: {},
@@ -75,8 +77,8 @@ describe('PLC Alarms Notification Tests', () => {
 	const wrapper = mount(AlarmNotifications, {
 		store,
 		localVue,
-		i18n,
-		stubs: ['VSelect', 'VIcon', 'VSnackbar'],
+		vuetify,
+		i18n
 	});
 
 	it('Initialize Component', () => {
@@ -180,7 +182,7 @@ describe('PLC Alarms Notification Tests', () => {
 			},
 		];
 
-		wrapper.vm.saveDatapoint(1, config);
+		wrapper.vm.saveDatapoint(1, config, 2);
 
 		expect(wrapper.vm.items[0].children[0].mail[0].config).to.equal(false);
 		expect(wrapper.vm.items[0].children[0].configuration).to.equal(config);

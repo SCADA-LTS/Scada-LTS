@@ -42,6 +42,7 @@ describe('WatchListJsonChart.vue Test', () => {
 		propsData: {
 			pointId: '1',
 			watchlistName: WATCHLIST_NAME,
+			width: 600
 		},
 		stubs: ['VApp'],
 	});

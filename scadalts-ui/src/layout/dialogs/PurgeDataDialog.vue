@@ -1,7 +1,7 @@
 <template>
 	<v-dialog max-width="600" v-model="dialog">
 		<v-card>
-			<v-card-title class="headline"> {{$t('purge.dialog.title')}} </v-card-title>
+			<v-card-title class="headline"> {{ $t('purge.dialog.title') }} </v-card-title>
 			<v-card-text>
 				<v-row align="center">
 					<v-col cols="4">
@@ -47,7 +47,7 @@ export default {
 		return {
 			purgeAll: false,
 			purgeType: 2,
-			purgePeriod: 1,
+			purgePeriod: 1
 		};
 	},
 
@@ -86,10 +86,15 @@ export default {
 					allData: this.purgeAll,
 				})
 				.then((resp) => {
-					console.log('PURGE', resp);
+					console.log(resp)
+					console.log(resp.deleted)
+					if(resp.deleted)  {
+						this.$emit('result', true);
+					} else {
+						this.$emit('result', false);
+					}
+					this.dialog = false;
 				});
-			this.dialog = false;
-			this.$emit('result', true);
 		},
 	},
 };
