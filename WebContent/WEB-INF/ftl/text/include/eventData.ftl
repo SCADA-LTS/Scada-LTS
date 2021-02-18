@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
-<#include "alarmLevel.ftl">${evt.prettyActiveTimestamp} - <@fmt message=evt.message/>
+<#include "alarmLevel.ftl">${evt.prettyActiveTimestamp} - <@fmt message=evt.messages.message/>
 
 <#if evt.eventComments??>
 <#list evt.eventComments as comment>

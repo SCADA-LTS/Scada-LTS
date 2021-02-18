@@ -458,7 +458,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			try {
 				//TODO to remove
 				message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE));
-				messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE_SMS));
+				if (rs.getString(COLUMN_NAME_MESSAGE_SMS) == null)
+					messageSms = new LocalizableMessage("common.noMessage");
+				else
+					messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE_SMS));
 			} catch (LocalizableMessageParseException e) {
 				message = new LocalizableMessage("common.default",
 						rs.getString(COLUMN_NAME_MESSAGE));
