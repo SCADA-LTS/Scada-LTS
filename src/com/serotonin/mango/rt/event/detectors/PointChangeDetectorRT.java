@@ -35,8 +35,8 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
     @Override
     protected LocalizableMessage getMessage() {
         String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(), description,
-                formatValue(oldValue), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
+        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
+                formatValue(oldValue), formatValue(newValue), description, vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
     }
 
     @Override
@@ -44,14 +44,14 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
         String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
         if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
             if (vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null)
-                return new LocalizableMessage("event.detector.messageSms", vo.njbGetDataPoint().getName(),
-                    vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
+                return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
+                        vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
             else
                 return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                        description, formatValue(oldValue), formatValue(newValue), "");
+                        formatValue(oldValue), formatValue(newValue), description, "");
         } else {
             return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                    description, formatValue(oldValue), formatValue(newValue), "");
+                    formatValue(oldValue), formatValue(newValue), description,  "");
         }
 
     }

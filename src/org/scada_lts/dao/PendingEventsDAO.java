@@ -19,7 +19,6 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,7 +57,7 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_RTN_COUSE = "rtnCause";
 	private final static String  COLUMN_NAME_EVENT_ALARM_LEVEL = "alarmLevel";
 	private final static String  COLUMN_NAME_EVENT_MESSAGE = "message";
-	private final static String  COLUMN_NAME_EVENT_MESSAGE_SMS = "messageSms";
+	private final static String  COLUMN_NAME_EVENT_SHORT_MESSAGE = "shortMessage";
 	private final static String  COLUMN_NAME_EVENT_ACK_TS = "ackTs";
 	private final static String  COLUMN_NAME_EVENT_ACK_USER_ID = "ackUserId";
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
@@ -84,6 +83,7 @@ public class PendingEventsDAO {
 				+ "e.rtnCause,   "
 				+ "e.alarmLevel, "
 				+ "e.message, "
+				+ "e.shortMessage, "
 				+ "e.ackTs, "
 				+ "e.ackUserId, "
 				+ "u.username, "
@@ -170,18 +170,18 @@ public class PendingEventsDAO {
 		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
 
 		LocalizableMessage message;
-		LocalizableMessage messageSms;
+		LocalizableMessage shortMessage;
 		try {
 			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-			messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE_SMS));
+			shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		} catch (LocalizableMessageParseException e) {
 			message = new LocalizableMessage("common.default",
 				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-			messageSms = new LocalizableMessage("common.default",
-					rs.getString(COLUMN_NAME_EVENT_MESSAGE_SMS));
+			shortMessage = new LocalizableMessage("common.default",
+					rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		}
 
-		EventMessages messages = new EventMessages(message, messageSms);
+		EventMessages messages = new EventMessages(message, shortMessage);
 		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, messages, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));

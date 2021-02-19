@@ -26,7 +26,7 @@ public class V2_6__NewDataPointProperties extends BaseJavaMigration {
 
         updateDataPointsTable(jdbcTmp);
 
-        jdbcTmp.execute("ALTER TABLE events ADD messageSms LONGTEXT;");
+        jdbcTmp.execute("ALTER TABLE events ADD shortMessage LONGTEXT;");
 
     }
 
