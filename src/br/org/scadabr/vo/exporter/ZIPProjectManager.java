@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.web.mvc.api.json.ExportConfig;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,8 +55,19 @@ public class ZIPProjectManager {
 	private boolean includeUploadsFolder;
 	private boolean includeGraphicsFolder;
 
+	public ZIPProjectManager() {}
+
+	public ZIPProjectManager(ExportConfig config) {
+		this.projectName = config.getProjectName();
+		this.projectDescription = config.getProjectDescription();
+		this.includePointValues = config.isIncludePointValues();
+		this.maxPointValues = config.getPointValuesMaxZip();
+		this.includeUploadsFolder = config.isIncludeUploadsFolder();
+		this.includeGraphicsFolder = config.isIncludeGraphicsFolder();
+	}
+
 	public void exportProject(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+							  HttpServletResponse response) throws Exception {
 
 		extractExportParametersFromRequest(request);
 
@@ -282,20 +295,30 @@ public class ZIPProjectManager {
 	}
 
 	private void extractExportParametersFromRequest(HttpServletRequest request) {
-		this.projectName = request.getParameter("projectName");
-		this.projectDescription = request.getParameter("projectDescription");
-		this.includePointValues = Boolean.parseBoolean(request
-				.getParameter("includePointValues"));
-		this.maxPointValues = Integer.parseInt(request
-				.getParameter("pointValuesMaxZip"));
+
+		if(this.projectName == null)
+			this.projectName = HttpParameterUtils.getValue("projectName", request, a -> a).orElse("");
+
+		if(this.projectDescription == null)
+			this.projectDescription = HttpParameterUtils.getValue("projectDescription", request, a -> a).orElse("");
+
+		if(this.maxPointValues <= 0)
+			this.maxPointValues = HttpParameterUtils.getValue("maxPointValues", request, Integer::valueOf)
+				.orElse(0);
 
 		System.out.println(this.maxPointValues);
-		this.includeUploadsFolder = Boolean.parseBoolean(request
-				.getParameter("includeUploadsFolder"));
-		this.includeGraphicsFolder = Boolean.parseBoolean(request
-				.getParameter("includeGraphicsFolder"));
 
+		if(!this.includePointValues)
+			this.includePointValues = HttpParameterUtils.getValue("includePointValues", request, Boolean::valueOf).orElse(false);
+
+		if(!this.includeUploadsFolder)
+			this.includeUploadsFolder = HttpParameterUtils.getValue("includeUploadsFolder", request, Boolean::valueOf).orElse(false);
+
+		if(!this.includeGraphicsFolder)
+			this.includeGraphicsFolder = HttpParameterUtils.getValue("includeGraphicsFolder", request, Boolean::valueOf).orElse(false);
 	}
+
+
 
 	private void extractImportParametersFromRequest(HttpServletRequest request)
 			throws Exception {
