@@ -1,5 +1,12 @@
 <template>
 	<v-dialog v-model="dialog" width="1200">
+		<ConfirmationDialog
+			:btnvisible="false"
+			:dialog="confirmToggleDialog"
+			@result="toggleDataPointDialog"
+			:title="$t('datapointDetails.pointProperties.toggle.dialog.title')"
+			:message="$t('datapointDetails.pointProperties.toggle.dialog.text')"
+		></ConfirmationDialog>
 		<template v-slot:activator="{ on, attrs }">
 			<v-btn elevation="2" fab v-bind="attrs" v-on="on">
 				<v-icon>mdi-pencil</v-icon>
@@ -26,7 +33,7 @@
 												<v-icon v-show="data.enabled">mdi-decagram</v-icon>
 												<v-icon v-show="!data.enabled">mdi-decagram-outline</v-icon>
 											</v-btn>
-											{{$t('datapointDetails.pointProperties.title')}}
+											{{ $t('datapointDetails.pointProperties.title') }}
 										</h3>
 									</v-col>
 									<PurgeDataDialog
@@ -48,7 +55,7 @@
 														><v-icon>mdi-eraser-variant</v-icon></v-list-item-icon
 													>
 													<v-list-item-title>
-														{{$t('datapointDetails.pointProperties.purgedata')}}
+														{{ $t('datapointDetails.pointProperties.purgedata') }}
 													</v-list-item-title>
 												</v-list-item>
 											</v-list>
@@ -58,7 +65,11 @@
 							</v-col>
 
 							<v-col md="6" cols="12">
-								<v-text-field v-model="data.name" :label="$t('datapointDetails.pointProperties.point.name')" dense></v-text-field>
+								<v-text-field
+									v-model="data.name"
+									:label="$t('datapointDetails.pointProperties.point.name')"
+									dense
+								></v-text-field>
 							</v-col>
 
 							<v-col md="6" cols="12" @click="navToDataSource">
@@ -109,6 +120,7 @@ import PointPropEventRenderer from './PointPropEventRenderer';
 import PointPropEventDetectors from './PointPropEventDetectors';
 
 import PurgeDataDialog from '@/layout/dialogs/PurgeDataDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
 export default {
 	name: 'PointProperties',
@@ -120,6 +132,7 @@ export default {
 		PointPropEventRenderer,
 		PointPropEventDetectors,
 		PurgeDataDialog,
+		ConfirmationDialog,
 	},
 
 	props: ['data'],
@@ -128,6 +141,7 @@ export default {
 		return {
 			dialog: false,
 			purgeDialog: false,
+			confirmToggleDialog: false,
 			response: {
 				status: false,
 				message: '',
@@ -141,10 +155,17 @@ export default {
 			this.dialog = false;
 		},
 
-		async toggleDataPoint() {
-			let resp = await this.$store.dispatch('toggleDataPoint', this.data.id);
-			if (!!resp) {
-				this.data.enabled = resp.enabled;
+		toggleDataPoint() {
+			this.confirmToggleDialog = true;
+		},
+
+		async toggleDataPointDialog(e) {
+			this.confirmToggleDialog = false;
+			if (e) {
+				let resp = await this.$store.dispatch('toggleDataPoint', this.data.id);
+				if (!!resp) {
+					this.data.enabled = resp.enabled;
+				}
 			}
 		},
 
@@ -153,7 +174,7 @@ export default {
 		},
 
 		purgeDataResult(result) {
-			if(result) {
+			if (result) {
 				this.response.status = true;
 				this.response.message = this.$t('common.snackbar.delete.success');
 			} else {

@@ -1,5 +1,5 @@
 <template>
-	<v-dialog max-width="300" persistent v-model="dialog">
+	<v-dialog max-width="500" persistent v-model="dialog">
 		<template v-if="btnvisible" v-slot:activator="{ on, attrs }">
 			<v-btn v-bind="attrs" v-on="on"> Open </v-btn>
 		</template>

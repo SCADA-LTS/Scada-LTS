@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>{{$t('datapointDetails.pointProperties.chartRenderer')}}</h3>
+			<h3>{{ $t('datapointDetails.pointProperties.chartRenderer') }}</h3>
 		</v-col>
 		<v-col cols="12">
 			<v-select
@@ -64,10 +64,22 @@ export default {
 		return {
 			selected: undefined,
 			chartRenderersList: [
-				{ id: -1, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.none') },
-				{ id: 0, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.table') },
-				{ id: 1, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.image') },
-				{ id: 2, label: this.$t('datapointDetails.pointProperties.chartRenderer.type.stats') },
+				{
+					id: -1,
+					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.none'),
+				},
+				{
+					id: 0,
+					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.table'),
+				},
+				{
+					id: 1,
+					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.image'),
+				},
+				{
+					id: 2,
+					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.stats'),
+				},
 			],
 		};
 	},
@@ -102,7 +114,6 @@ export default {
 
 	methods: {
 		watchChartRendererChange(val) {
-			console.log(val);
 			let template = JSON.parse(
 				JSON.stringify(this.$store.state.dataPoint.chartRenderersTemplates[val]),
 			);

@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>{{$t('datapointDetails.pointProperties.eventRenderer.title')}}</h3>
+			<h3>{{ $t('datapointDetails.pointProperties.eventRenderer.title') }}</h3>
 		</v-col>
 		<v-col cols="12">
 			<v-select
@@ -15,9 +15,7 @@
 		</v-col>
 
 		<v-col cols="12">
-			<!-- BINARY EVENT RENDERER -->
-			<v-row v-if="selected === 1" dense>
-				
+			<v-row v-if="selected === 1" dense id="renderer-binary">
 				<v-col cols="6">
 					<v-text-field
 						v-model="data.eventTextRenderer.zeroLabel"
@@ -27,7 +25,6 @@
 					</v-text-field>
 				</v-col>
 
-				
 				<v-col cols="6">
 					<v-text-field
 						v-model="data.eventTextRenderer.oneLabel"
@@ -36,13 +33,15 @@
 					>
 					</v-text-field>
 				</v-col>
-				
 			</v-row>
 
-			<!-- MULTISTATE RENDERER PROPERTIES -->
-			<v-row v-if="selected === 2" dense>
+			<v-row v-if="selected === 2" dense id="renderer-multistate">
 				<v-col cols="2">
-					<v-text-field v-model="multistateRenderer.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense>
+					<v-text-field
+						v-model="multistateRenderer.key"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.key')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 
@@ -60,10 +59,18 @@
 				<v-divider></v-divider>
 
 				<v-col cols="12" v-if="data.eventTextRenderer.multistateEventValues">
-					<v-row v-for="e in data.eventTextRenderer.multistateEventValues" :key="e.key" dense>
-
+					<v-row
+						v-for="e in data.eventTextRenderer.multistateEventValues"
+						:key="e.key"
+						dense
+					>
 						<v-col cols="2">
-							<v-text-field v-model="e.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense> </v-text-field>
+							<v-text-field
+								v-model="e.key"
+								:label="$t('datapointDetails.pointProperties.eventRenderer.label.key')"
+								dense
+							>
+							</v-text-field>
 						</v-col>
 
 						<v-col cols="10">
@@ -80,14 +87,22 @@
 				</v-col>
 			</v-row>
 
-			<!-- RANGE RENDERER PROPERTIES -->
-			<v-row v-if="selected === 4" dense>
-				
+			<v-row v-if="selected === 4" dense id="renderer-range">
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
+					<v-text-field
+						v-model="rangeRenderer.from"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.from')"
+						dense
+					>
+					</v-text-field>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
+					<v-text-field
+						v-model="rangeRenderer.to"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.to')"
+						dense
+					>
+					</v-text-field>
 				</v-col>
 
 				<v-col cols="8">
@@ -105,12 +120,21 @@
 
 				<v-col cols="12">
 					<v-row v-for="e in data.eventTextRenderer.rangeEventValues" :key="e.from" dense>
-						
 						<v-col cols="2">
-							<v-text-field v-model="e.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
+							<v-text-field
+								v-model="e.from"
+								:label="$t('datapointDetails.pointProperties.eventRenderer.label.from')"
+								dense
+							>
+							</v-text-field>
 						</v-col>
 						<v-col cols="2">
-							<v-text-field v-model="e.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
+							<v-text-field
+								v-model="e.to"
+								:label="$t('datapointDetails.pointProperties.eventRenderer.label.to')"
+								dense
+							>
+							</v-text-field>
 						</v-col>
 
 						<v-col cols="8">
@@ -138,8 +162,8 @@ export default {
 	data() {
 		return {
 			selected: undefined,
-			rangeRenderer: { from: 0, to: 0, text: ''},
-			multistateRenderer: { key: 0, text: ''},
+			rangeRenderer: { from: 0, to: 0, text: '' },
+			multistateRenderer: { key: 0, text: '' },
 		};
 	},
 
@@ -218,7 +242,7 @@ export default {
 			this.rangeRenderer = {
 				from: 0,
 				to: 0,
-				text: ''
+				text: '',
 			};
 		},
 		delRangeValue(val) {

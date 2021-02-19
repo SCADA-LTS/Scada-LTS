@@ -77,11 +77,7 @@
 				</div>
 			</div>
 		</div>
-		<div
-			class="hello"
-			v-bind:style="{ height: 600 + 'px' }"
-			ref="chartdiv"
-		></div>
+		<div class="hello" v-bind:style="{ height: 600 + 'px' }" ref="chartdiv"></div>
 	</div>
 </template>
 <script>

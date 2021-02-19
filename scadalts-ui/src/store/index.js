@@ -219,18 +219,18 @@ export default new Vuex.Store({
 
 		/**
 		 * Convert from select to specific Timestamp since past.
-		 * 
-		 * @param {*} param0 
-		 * @param {*} payload - {period, type} Time and Period Type 
+		 *
+		 * @param {*} param0
+		 * @param {*} payload - {period, type} Time and Period Type
 		 */
-		convertSinceTimePeriodToTimestamp({state}, payload) {
+		convertSinceTimePeriodToTimestamp({ state }, payload) {
 			let result = payload.period;
 			let now = new Date();
 			if (payload.type === 1) {
 				result = result * 1000;
-			} else if(payload.type === 2) {
+			} else if (payload.type === 2) {
 				result = result * 1000 * 60;
-			} else if (payload.type === 3){
+			} else if (payload.type === 3) {
 				result = result * 1000 * 60 * 60;
 			} else if (payload.type === 4) {
 				result = result * 1000 * 60 * 60 * 24;
@@ -245,10 +245,10 @@ export default new Vuex.Store({
 			return new Date(now - result);
 		},
 
-		async getLocaleInfo({dispatch}) {
+		async getLocaleInfo({ dispatch }) {
 			let temp = await dispatch('requestGet', '/systemSettings/getSystemInfo');
 			i18n.locale = temp.language;
-		}
+		},
 	},
 	getters: {
 		appVersion: (state) => {

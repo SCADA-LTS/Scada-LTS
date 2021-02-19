@@ -7,7 +7,7 @@
 		</template>
 
 		<v-card>
-			<v-card-title> {{$t('eventDetector.dialog.create.title')}} </v-card-title>
+			<v-card-title> {{ $t('eventDetector.dialog.create.title') }} </v-card-title>
 			<v-card-text>
 				<v-row>
 					<v-col cols="12">
@@ -81,7 +81,9 @@
 							<v-col cols="4">
 								<v-text-field
 									v-model="eventDetector.limit"
-									:label="$t('datapointDetails.pointProperties.eventDetectors.limit.high')"
+									:label="
+										$t('datapointDetails.pointProperties.eventDetectors.limit.high')
+									"
 									dense
 								></v-text-field>
 							</v-col>
@@ -279,8 +281,14 @@ export default {
 			select: 0,
 			eventDetector: null,
 			binaryState: [
-				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.zero'), value: false },
-				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.one'), value: true },
+				{
+					text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.zero'),
+					value: false,
+				},
+				{
+					text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.one'),
+					value: true,
+				},
 			],
 		};
 	},

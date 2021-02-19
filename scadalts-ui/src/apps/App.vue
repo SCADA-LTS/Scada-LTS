@@ -24,7 +24,9 @@
 					<v-list-item-icon>
 						<v-icon>mdi-database</v-icon>
 					</v-list-item-icon>
-					<v-list-item-title>{{$t('datapointDetails.pointList.title')}}</v-list-item-title>
+					<v-list-item-title>{{
+						$t('datapointDetails.pointList.title')
+					}}</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
 					<v-list-item-icon>

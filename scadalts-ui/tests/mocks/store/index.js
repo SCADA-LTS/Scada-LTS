@@ -1,7 +1,6 @@
 export let mainStore = {
-
 	modules: {},
-	
+
 	state: {
 		timePeriods: [
 			{ id: 1, label: 'Seconds' },
@@ -19,4 +18,4 @@ export let mainStore = {
 	actions: {},
 };
 
-export default mainStore
+export default mainStore;

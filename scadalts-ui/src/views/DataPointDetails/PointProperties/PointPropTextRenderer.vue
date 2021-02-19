@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<v-col cols="12">
-			<h3>{{$t('datapointDetails.pointProperties.textRenderer.title')}}</h3>
+			<h3>{{ $t('datapointDetails.pointProperties.textRenderer.title') }}</h3>
 		</v-col>
 		<v-col cols="12" v-if="textRenderesList">
 			<v-select
@@ -18,11 +18,19 @@
 			<!-- ANALOG RENDERER PROPERTIES -->
 			<v-row v-if="selected === 0" dense>
 				<v-col cols="6">
-					<v-text-field v-model="data.textRenderer.format" :label="$t('datapointDetails.pointProperties.textRenderer.label.format')" dense>
+					<v-text-field
+						v-model="data.textRenderer.format"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.format')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 				<v-col cols="6">
-					<v-text-field v-model="data.textRenderer.suffix" :label="$t('datapointDetails.pointProperties.textRenderer.label.suffix')" dense>
+					<v-text-field
+						v-model="data.textRenderer.suffix"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.suffix')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 			</v-row>
@@ -38,7 +46,11 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="11">
-					<v-text-field v-model="data.textRenderer.zeroLabel" :label="$t('datapointDetails.pointProperties.textRenderer.label.zero')" dense>
+					<v-text-field
+						v-model="data.textRenderer.zeroLabel"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.zero')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 				<v-col cols="1">
@@ -50,7 +62,11 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="11">
-					<v-text-field v-model="data.textRenderer.oneLabel" :label="$t('datapointDetails.pointProperties.textRenderer.label.one')" dense>
+					<v-text-field
+						v-model="data.textRenderer.oneLabel"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.one')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 			</v-row>
@@ -66,7 +82,11 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="3">
-					<v-text-field v-model="multistateRenderer.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense>
+					<v-text-field
+						v-model="multistateRenderer.key"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.key')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 				<v-col cols="8">
@@ -88,7 +108,12 @@
 					</v-col>
 
 					<v-col cols="3">
-						<v-text-field v-model="e.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense> </v-text-field>
+						<v-text-field
+							v-model="e.key"
+							:label="$t('datapointDetails.pointProperties.eventRenderer.label.key')"
+							dense
+						>
+						</v-text-field>
 					</v-col>
 
 					<v-col cols="8">
@@ -126,10 +151,20 @@
 					</v-menu>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
+					<v-text-field
+						v-model="rangeRenderer.from"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.from')"
+						dense
+					>
+					</v-text-field>
 				</v-col>
 				<v-col cols="2">
-					<v-text-field v-model="rangeRenderer.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
+					<v-text-field
+						v-model="rangeRenderer.to"
+						:label="$t('datapointDetails.pointProperties.eventRenderer.label.to')"
+						dense
+					>
+					</v-text-field>
 				</v-col>
 				<v-col cols="7">
 					<v-text-field
@@ -150,10 +185,20 @@
 					</v-col>
 
 					<v-col cols="2">
-						<v-text-field v-model="e.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
+						<v-text-field
+							v-model="e.from"
+							:label="$t('datapointDetails.pointProperties.eventRenderer.label.from')"
+							dense
+						>
+						</v-text-field>
 					</v-col>
 					<v-col cols="2">
-						<v-text-field v-model="e.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
+						<v-text-field
+							v-model="e.to"
+							:label="$t('datapointDetails.pointProperties.eventRenderer.label.to')"
+							dense
+						>
+						</v-text-field>
 					</v-col>
 					<v-col cols="7">
 						<v-text-field
@@ -171,7 +216,11 @@
 			<!-- TIME RENDERER PROPERTIES -->
 			<v-row v-if="selected === 5" dense>
 				<v-col cols="12">
-					<v-text-field v-model="data.textRenderer.format" :label="$t('datapointDetails.pointProperties.textRenderer.label.format')" dense>
+					<v-text-field
+						v-model="data.textRenderer.format"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.format')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 				<v-col cols="12">

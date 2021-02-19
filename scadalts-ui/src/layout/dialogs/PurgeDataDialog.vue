@@ -1,5 +1,12 @@
 <template>
 	<v-dialog max-width="600" v-model="dialog">
+		<ConfirmationDialog
+			:btnvisible="false"
+			:dialog="confirmPurgeDialog"
+			@result="purgeDialogResult"
+			:title="$t('purge.dialog.confirm.title')"
+			:message="$t('purge.dialog.confirm.text')"
+		></ConfirmationDialog>
 		<v-card>
 			<v-card-title class="headline"> {{ $t('purge.dialog.title') }} </v-card-title>
 			<v-card-text>
@@ -40,14 +47,20 @@
 	</v-dialog>
 </template>
 <script>
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 export default {
 	name: 'PurgeDataDialog',
 
+	components: {
+		ConfirmationDialog,
+	},
+
 	data() {
 		return {
+			confirmPurgeDialog: false,
 			purgeAll: false,
 			purgeType: 2,
-			purgePeriod: 1
+			purgePeriod: 1,
 		};
 	},
 
@@ -77,24 +90,31 @@ export default {
 			this.$emit('result', false);
 		},
 
+		purgeDialogResult(e) {
+			this.confirmPurgeDialog = false;
+			if (e) {
+				this.$store
+					.dispatch('purgeDataPointValues', {
+						datapointId: this.data.id,
+						period: this.purgePeriod,
+						type: this.purgeType,
+						allData: this.purgeAll,
+					})
+					.then((resp) => {
+						console.log(resp);
+						console.log(resp.deleted);
+						if (resp.deleted) {
+							this.$emit('result', true);
+						} else {
+							this.$emit('result', false);
+						}
+						this.dialog = false;
+					});
+			}
+		},
+
 		accept() {
-			this.$store
-				.dispatch('purgeDataPointValues', {
-					datapointId: this.data.id,
-					period: this.purgePeriod,
-					type: this.purgeType,
-					allData: this.purgeAll,
-				})
-				.then((resp) => {
-					console.log(resp)
-					console.log(resp.deleted)
-					if(resp.deleted)  {
-						this.$emit('result', true);
-					} else {
-						this.$emit('result', false);
-					}
-					this.dialog = false;
-				});
+			this.confirmPurgeDialog = true;
 		},
 	},
 };

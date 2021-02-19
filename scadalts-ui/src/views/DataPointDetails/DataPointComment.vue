@@ -26,10 +26,11 @@
 							{{ comment.username }}, {{ new Date(comment.ts).toLocaleString() }}
 						</v-list-item-subtitle>
 					</v-list-item-content>
-					<v-list-item-action v-if="comment.userId === activeUserId" @click="deleteComment(comment)">
-						<v-icon>
-							mdi-minus-circle
-						</v-icon>
+					<v-list-item-action
+						v-if="comment.userId === activeUserId"
+						@click="deleteComment(comment)"
+					>
+						<v-icon> mdi-minus-circle </v-icon>
 					</v-list-item-action>
 				</v-list-item>
 				<v-list-item>
@@ -85,7 +86,7 @@ export default {
 				prettyTime: time.toLocaleTimeString(),
 			};
 			this.data.comments.push(Object.assign({}, comment));
-			this.$store.dispatch("addUserComment", {
+			this.$store.dispatch('addUserComment', {
 				comment: comment,
 				typeId: 2,
 				refId: this.data.id,
@@ -94,16 +95,16 @@ export default {
 		},
 
 		deleteComment(e) {
-			this.$store.dispatch("delUserComment", {
+			this.$store.dispatch('delUserComment', {
 				typeId: 2,
 				refId: this.data.id,
 				userId: this.$store.state.loggedUser.id,
 				ts: e.ts,
 			});
-			this.data.comments = this.data.comments.filter(el => {
-				return (el.comment !==  e.comment) 
+			this.data.comments = this.data.comments.filter((el) => {
+				return el.comment !== e.comment;
 			});
-		}
+		},
 	},
 };
 </script>

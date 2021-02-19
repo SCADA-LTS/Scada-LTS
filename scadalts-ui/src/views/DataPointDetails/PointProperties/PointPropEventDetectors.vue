@@ -9,8 +9,12 @@
 							:btnvisible="false"
 							:dialog="confirmDeleteDialog"
 							@result="deleteEventDetector"
-							:title="$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.title')"
-							:message="$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.text')"
+							:title="
+								$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.title')
+							"
+							:message="
+								$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.text')
+							"
 						></ConfirmationDialog>
 					</h3>
 				</v-col>
@@ -79,7 +83,12 @@
 				</v-col>
 
 				<v-col cols="7">
-					<v-text-field v-model="e.alias" :label="$t('datapointDetails.pointProperties.eventDetectors.alias')" dense> </v-text-field>
+					<v-text-field
+						v-model="e.alias"
+						:label="$t('datapointDetails.pointProperties.eventDetectors.alias')"
+						dense
+					>
+					</v-text-field>
 				</v-col>
 
 				<v-col cols="12">
@@ -87,10 +96,18 @@
 					<v-row v-if="e.detectorType === 1">
 						<v-col cols="1"></v-col>
 						<v-col cols="4">
-							<v-text-field v-model="e.limit" :label="$t('datapointDetails.pointProperties.eventDetectors.limit.high')" dense></v-text-field>
+							<v-text-field
+								v-model="e.limit"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.limit.high')"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -108,10 +125,18 @@
 					<v-row v-if="e.detectorType === 2">
 						<v-col cols="1"></v-col>
 						<v-col cols="4">
-							<v-text-field v-model="e.limit" :label="$t('datapointDetails.pointProperties.eventDetectors.limit.low')" dense></v-text-field>
+							<v-text-field
+								v-model="e.limit"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.limit.low')"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duartion')" v-model="e.duration" dense></v-text-field>
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duartion')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -155,7 +180,11 @@
 							></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -180,7 +209,11 @@
 							></v-text-field>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="4">
 							<v-select
@@ -198,7 +231,11 @@
 					<v-row v-if="e.detectorType === 7">
 						<v-col cols="1"></v-col>
 						<v-col cols="5">
-							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duartion')" v-model="e.duration" dense></v-text-field>
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duartion')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="6">
 							<v-select
@@ -216,7 +253,11 @@
 					<v-row v-if="e.detectorType === 8">
 						<v-col cols="1"></v-col>
 						<v-col cols="5">
-							<v-text-field :label="$t('datapointDetails.pointProperties.eventDetectors.duration')" v-model="e.duration" dense></v-text-field>
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
 						</v-col>
 						<v-col cols="6">
 							<v-select
@@ -274,8 +315,14 @@ export default {
 			confirmDeleteDialog: false,
 			confirmDeleteDetector: null,
 			binaryState: [
-				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.zero'), value: false },
-				{ text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.one'), value: true },
+				{
+					text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.zero'),
+					value: false,
+				},
+				{
+					text: this.$t('datapointDetails.pointProperties.eventDetectors.binary.one'),
+					value: true,
+				},
 			],
 			response: {
 				status: false,

@@ -12,7 +12,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 const vuetify = Vuetify;
 
-global.requestAnimationFrame = cb => cb();
+global.requestAnimationFrame = (cb) => cb();
 
 const storeAlarmsNotifications = {
 	state: {},
@@ -78,7 +78,7 @@ describe('PLC Alarms Notification Tests', () => {
 		store,
 		localVue,
 		vuetify,
-		i18n
+		i18n,
 	});
 
 	it('Initialize Component', () => {

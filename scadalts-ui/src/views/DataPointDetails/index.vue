@@ -1,19 +1,35 @@
 <template>
 	<div v-if="dataPointDetails">
 		<v-container fluid>
+			<ConfirmationDialog
+				:btnvisible="false"
+				:dialog="confirmToggleDialog"
+				@result="toggleDataPointDialog"
+				:title="$t('datapointDetails.pointProperties.toggle.dialog.title')"
+				:message="$t('datapointDetails.pointProperties.toggle.dialog.text')"
+			></ConfirmationDialog>
 			<v-row align="center">
 				<v-col cols="8" xs="12">
 					<h1>
-						<v-btn
-							x-small
-							fab
-							elevation="1"
-							@click="toggleDataPoint"
-							:color="dataPointDetails.enabled ? 'primary' : 'error'"
-						>
-							<v-icon v-show="dataPointDetails.enabled">mdi-decagram</v-icon>
-							<v-icon v-show="!dataPointDetails.enabled">mdi-decagram-outline</v-icon>
-						</v-btn>
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									x-small
+									fab
+									elevation="1"
+									v-bind="attrs"
+									v-on="on"
+									@click="toggleDataPoint"
+									:color="dataPointDetails.enabled ? 'primary' : 'error'"
+								>
+									<v-icon v-show="dataPointDetails.enabled">mdi-decagram</v-icon>
+									<v-icon v-show="!dataPointDetails.enabled">mdi-decagram-outline</v-icon>
+								</v-btn>
+							</template>
+							<span class="help-message">{{
+								$t('datapointDetails.pointProperties.toggle.help')
+							}}</span>
+						</v-tooltip>
 						{{ dataPointDetails.name }}
 						<DataPointComment :data="dataPointDetails"></DataPointComment>
 					</h1>
@@ -63,6 +79,8 @@ import PointProperties from './PointProperties';
 import DataPointEventList from './DataPointEventList';
 import DataPointValueHistory from './DataPointValueHistory';
 import LineChartComponent from '@/components/amcharts/LineChartComponent';
+
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 /**
  * Data Point Details page
  *
@@ -80,12 +98,14 @@ export default {
 		DataPointEventList,
 		DataPointValueHistory,
 		LineChartComponent,
+		ConfirmationDialog,
 	},
 
 	data() {
 		return {
 			newComment: '',
 			dataPointDetails: undefined,
+			confirmToggleDialog: false,
 			response: {
 				status: false,
 				message: '',
@@ -107,20 +127,30 @@ export default {
 		async fetchDataPointDetails(datapointId) {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
-				datapointId
+				datapointId,
 			);
 		},
 
-		async toggleDataPoint() {
-			let resp = await this.$store.dispatch('toggleDataPoint', this.dataPointDetails.id);
-			if (!!resp) {
-				this.dataPointDetails.enabled = resp.enabled;
+		toggleDataPoint() {
+			this.confirmToggleDialog = true;
+		},
+
+		async toggleDataPointDialog(e) {
+			this.confirmToggleDialog = false;
+			if (e) {
+				let resp = await this.$store.dispatch(
+					'toggleDataPoint',
+					this.dataPointDetails.id,
+				);
+				if (!!resp) {
+					this.dataPointDetails.enabled = resp.enabled;
+				}
 			}
 		},
 
 		saveDataPointDetails() {
 			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then((resp) => {
-				if(resp === "saved") {
+				if (resp === 'saved') {
 					this.response.status = true;
 					this.response.message = this.$t('common.snackbar.update.success');
 				} else {

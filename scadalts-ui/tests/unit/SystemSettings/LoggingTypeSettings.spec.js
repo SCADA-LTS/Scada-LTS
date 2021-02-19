@@ -46,9 +46,9 @@ const dataPoint = {
 			{ id: 3, type: 'NONE', label: 'Never' },
 			{ id: 4, type: 'INTERVAL', label: 'Interval' },
 			{ id: 5, type: 'ON_TS_CHANGE', label: 'Ts Change' },
-		]
-	}
-}
+		],
+	},
+};
 
 const modules = {
 	systemSettings,

@@ -11,8 +11,8 @@ import PointPropLogging from '@/views/DataPointDetails/PointProperties/PointProp
 import dataPointMock from '../../mocks/objects/DataPointMock';
 
 const modules = {
-    dataPoint
-}
+	dataPoint,
+};
 
 const store = new Vuex.Store({ modules, state: mainStore.state });
 
@@ -34,8 +34,8 @@ const mountFunction = (options) => {
 };
 
 describe('Point Properties Tests - Logging properties', () => {
-    let wrapper
-    
+	let wrapper;
+
 	beforeEach(() => {
 		wrapper = mountFunction({
 			propsData: {
@@ -47,19 +47,20 @@ describe('Point Properties Tests - Logging properties', () => {
 	it('Initialize Component', () => {
 		const items = wrapper.find('.v-select:first-of-type').props('items');
 		expect(items.length).to.equal(5);
-        expect(wrapper.vm.data.intervalLoggingType).to.equal(1);
-        expect(wrapper.get('.row[style="display: none;"]').html()).to.contain('Interval logging period every');
+		expect(wrapper.vm.data.intervalLoggingType).to.equal(1);
+		expect(wrapper.get('.row[style="display: none;"]').html()).to.contain(
+			'Interval logging period every',
+		);
 	});
 
-    it('Change to "Interval" property', async () => {
-        wrapper.vm.data.intervalLoggingType = 4;
-        await wrapper.vm.$nextTick();
-        expect(wrapper.text()).contains('logging period');
-    })
+	it('Change to "Interval" property', async () => {
+		wrapper.vm.data.intervalLoggingType = 4;
+		await wrapper.vm.$nextTick();
+		expect(wrapper.text()).contains('logging period');
+	});
 
-    it('Clear DataPoint cache', async () => {
-        await wrapper.vm.clearCache();
-        expect(wrapper.vm.response.status).to.equal(true);
-    })
-
+	it('Clear DataPoint cache', async () => {
+		await wrapper.vm.clearCache();
+		expect(wrapper.vm.response.status).to.equal(true);
+	});
 });

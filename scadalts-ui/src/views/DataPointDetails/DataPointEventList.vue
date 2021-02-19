@@ -2,9 +2,12 @@
 	<v-card>
 		<v-card-title v-if="hideSkeleton">
 			<v-row>
-				<v-col cols="8"> {{$t('datapointDetails.eventList.title')}} </v-col>
+				<v-col cols="8"> {{ $t('datapointDetails.eventList.title') }} </v-col>
 				<v-col cols="4">
-					<v-text-field v-model="eventLimit" :label="$t('datapointDetails.eventList.controls.latest')">
+					<v-text-field
+						v-model="eventLimit"
+						:label="$t('datapointDetails.eventList.controls.latest')"
+					>
 						<template v-slot:append-outer>
 							<v-btn
 								icon
@@ -85,7 +88,8 @@
 								{{ new Date(e.activeTs).toLocaleString() }}
 							</span>
 							<span v-if="!!e.ackTs">
-								- {{$t('datapointDetails.eventList.acknowledged')}} {{ new Date(e.ackTs).toLocaleString() }} by
+								- {{ $t('datapointDetails.eventList.acknowledged') }}
+								{{ new Date(e.ackTs).toLocaleString() }} by
 								{{ e.username }}
 							</span>
 						</v-list-item-subtitle>
@@ -157,17 +161,14 @@
 				<v-list-item>
 					<v-list-item-content>
 						<v-list-item-title>
-							{{$t('datapointDetails.eventList.empty')}}
+							{{ $t('datapointDetails.eventList.empty') }}
 						</v-list-item-title>
 					</v-list-item-content>
 				</v-list-item>
 			</v-list>
 		</v-card-text>
-		<v-skeleton-loader v-else
-          type="article"
-    	></v-skeleton-loader>
+		<v-skeleton-loader v-else type="article"></v-skeleton-loader>
 	</v-card>
-	
 </template>
 <script>
 export default {

@@ -1,7 +1,7 @@
 <template>
 	<v-card>
 		<v-card-title v-if="hideSkeleton">
-			{{$t('datapointDetails.valueHistory.title')}}
+			{{ $t('datapointDetails.valueHistory.title') }}
 			<v-spacer> </v-spacer>
 			<v-dialog v-model="dialog" width="800">
 				<template v-slot:activator="{ on, attrs }">
@@ -11,11 +11,17 @@
 				</template>
 
 				<v-card>
-					<v-card-title> {{$t('datapointDetails.valueHistory.subtitle')}} </v-card-title>
+					<v-card-title>
+						{{ $t('datapointDetails.valueHistory.subtitle') }}
+					</v-card-title>
 					<v-card-text>
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="timePeriod" :label="$t('common.timeperiod.title')" dense>
+								<v-text-field
+									v-model="timePeriod"
+									:label="$t('common.timeperiod.title')"
+									dense
+								>
 								</v-text-field>
 							</v-col>
 							<v-col cols="6">
@@ -34,8 +40,8 @@
 							<template v-slot:default>
 								<thead>
 									<tr>
-										<th>{{$t('datapointDetails.valueHistory.table.value')}}</th>
-										<th>{{$t('datapointDetails.valueHistory.table.date')}}</th>
+										<th>{{ $t('datapointDetails.valueHistory.table.value') }}</th>
+										<th>{{ $t('datapointDetails.valueHistory.table.date') }}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -65,7 +71,11 @@
 				</v-col>
 				<v-col cols="2"> </v-col>
 				<v-col cols="3">
-					<v-text-field v-model="timePeriod" :label="$t('datapointDetails.valueHistory.stats.timeperiod')" dense>
+					<v-text-field
+						v-model="timePeriod"
+						:label="$t('datapointDetails.valueHistory.stats.timeperiod')"
+						dense
+					>
 					</v-text-field>
 				</v-col>
 				<v-col cols="3">
@@ -94,59 +104,61 @@
 			<v-row>
 				<v-col cols="5" v-if="data.pointLocator.dataTypeId === 3">
 					<v-row>
-						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.max')}} </v-col>
+						<v-col cols="6"> {{ $t('datapointDetails.valueHistory.stats.max') }} </v-col>
 						<v-col cols="6">
 							{{ maxValue.value }}
 						</v-col>
-						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.min')}} </v-col>
+						<v-col cols="6"> {{ $t('datapointDetails.valueHistory.stats.min') }} </v-col>
 						<v-col cols="6">
 							{{ minValue.value }}
 						</v-col>
-						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.avg')}} </v-col>
+						<v-col cols="6"> {{ $t('datapointDetails.valueHistory.stats.avg') }} </v-col>
 						<v-col cols="6">
 							{{ avgValue }}
 						</v-col>
-						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.sum')}} </v-col>
+						<v-col cols="6"> {{ $t('datapointDetails.valueHistory.stats.sum') }} </v-col>
 						<v-col cols="6">
 							{{ sumValue }}
 						</v-col>
-						<v-col cols="6"> {{$t('datapointDetails.valueHistory.stats.count')}} </v-col>
+						<v-col cols="6">
+							{{ $t('datapointDetails.valueHistory.stats.count') }}
+						</v-col>
 						<v-col cols="6">
 							{{ countValue }}
 						</v-col>
 					</v-row>
 				</v-col>
-                <v-col cols="5" v-else>
-                    <v-row>
-                        <v-col cols="4">
-                            {{$t('datapointDetails.valueHistory.table.value')}}
-                        </v-col>
-                        <v-col cols="4">
-                            {{$t('datapointDetails.valueHistory.table.count')}}
-                        </v-col>
-                        <v-col cols="4">
-                            {{$t('datapointDetails.valueHistory.table.runtime')}}
-                        </v-col>
-                    </v-row>
-                    <v-row v-for="el in statArray" :key="el">
-                        <v-col cols="4">
-                            {{el.value}}
-                        </v-col>
-                        <v-col cols="4">
-                            {{el.count}}
-                        </v-col>
-                        <v-col cols="4">
-                            {{el.runtime}}
-                        </v-col>
-                    </v-row>
-                </v-col>
+				<v-col cols="5" v-else>
+					<v-row>
+						<v-col cols="4">
+							{{ $t('datapointDetails.valueHistory.table.value') }}
+						</v-col>
+						<v-col cols="4">
+							{{ $t('datapointDetails.valueHistory.table.count') }}
+						</v-col>
+						<v-col cols="4">
+							{{ $t('datapointDetails.valueHistory.table.runtime') }}
+						</v-col>
+					</v-row>
+					<v-row v-for="el in statArray" :key="el">
+						<v-col cols="4">
+							{{ el.value }}
+						</v-col>
+						<v-col cols="4">
+							{{ el.count }}
+						</v-col>
+						<v-col cols="4">
+							{{ el.runtime }}
+						</v-col>
+					</v-row>
+				</v-col>
 				<v-col cols="7">
 					<v-simple-table dense fixed-header height="150px">
 						<template v-slot:default>
 							<thead>
 								<tr>
-									<th>{{$t('datapointDetails.valueHistory.table.value')}}</th>
-									<th>{{$t('datapointDetails.valueHistory.table.date')}}</th>
+									<th>{{ $t('datapointDetails.valueHistory.table.value') }}</th>
+									<th>{{ $t('datapointDetails.valueHistory.table.date') }}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -161,9 +173,7 @@
 			</v-row>
 		</v-card-text>
 
-		<v-skeleton-loader v-else
-          type="article"
-    	></v-skeleton-loader>
+		<v-skeleton-loader v-else type="article"></v-skeleton-loader>
 	</v-card>
 </template>
 <script>
@@ -185,11 +195,11 @@ export default {
 			countValue: 0,
 			sumValue: 0,
 			avgValue: 0,
-            statArray: [],
-            temp: {
-                ts: null,
-                value: null,
-            }
+			statArray: [],
+			temp: {
+				ts: null,
+				value: null,
+			},
 		};
 	},
 
@@ -221,7 +231,7 @@ export default {
 			});
 			this.valueList = response.values;
 			this.calculateStatistics();
-            this.valueList.reverse();
+			this.valueList.reverse();
 			this.fetchingData = false;
 		},
 
@@ -262,37 +272,38 @@ export default {
 				this.avgValue = Math.round(this.avgValue * precision) / precision;
 				this.sumValue = Math.round(this.sumValue * precision) / precision;
 			} else {
-                this.valueList.forEach((v) => {
-                    let index = this.statArray.findIndex(x => x.value === v.value);
-                    if(index < 0) {
-                        this.statArray.push({
-                            value: v.value,
-                            ts: v.ts,
-                            count: 1,
-                            duration: 0
-                        });
-                        if(this.temp.value === null) {
-                            this.temp.ts = v.ts;
-                        } else {
-                            let index2 = this.statArray.findIndex(x2 => x2.value === this.temp.value);
-                            this.statArray[index2].duration += (v.ts - this.statArray[index2].ts);
-                        }
-                    } else {
-                        let index2 = this.statArray.findIndex(x2 => x2.value === this.temp.value);
-                        this.statArray[index].count += 1;
-                        this.statArray[index].ts = v.ts;
-                        this.statArray[index2].duration += (v.ts - this.statArray[index2].ts);
-                    }
-                    this.temp.value = v.value;
+				this.valueList.forEach((v) => {
+					let index = this.statArray.findIndex((x) => x.value === v.value);
+					if (index < 0) {
+						this.statArray.push({
+							value: v.value,
+							ts: v.ts,
+							count: 1,
+							duration: 0,
+						});
+						if (this.temp.value === null) {
+							this.temp.ts = v.ts;
+						} else {
+							let index2 = this.statArray.findIndex((x2) => x2.value === this.temp.value);
+							this.statArray[index2].duration += v.ts - this.statArray[index2].ts;
+						}
+					} else {
+						let index2 = this.statArray.findIndex((x2) => x2.value === this.temp.value);
+						this.statArray[index].count += 1;
+						this.statArray[index].ts = v.ts;
+						this.statArray[index2].duration += v.ts - this.statArray[index2].ts;
+					}
+					this.temp.value = v.value;
 				});
-                let time = new Date().getTime();
-                let since = time - this.temp.ts;
-                let index = this.statArray.findIndex(x => x.value === this.temp.value);
-                this.statArray[index].duration = this.statArray[index].duration + (time - this.statArray[index].ts);
-                this.statArray.forEach(v => {
-                    v.runtime = `${Math.round((v.duration / since) * 100)}%`;
-                });
-            }
+				let time = new Date().getTime();
+				let since = time - this.temp.ts;
+				let index = this.statArray.findIndex((x) => x.value === this.temp.value);
+				this.statArray[index].duration =
+					this.statArray[index].duration + (time - this.statArray[index].ts);
+				this.statArray.forEach((v) => {
+					v.runtime = `${Math.round((v.duration / since) * 100)}%`;
+				});
+			}
 		},
 
 		restoreStatistics() {
@@ -301,15 +312,17 @@ export default {
 			this.avgValue = 0;
 			this.maxValue.value = -Infinity;
 			this.minValue.value = Infinity;
-            this.statArray = [];
-            this.temp.ts = null;
-            this.temp.value = null;
+			this.statArray = [];
+			this.temp.ts = null;
+			this.temp.value = null;
 		},
 
-        isInArray(element) {
-            this.statArray.forEach(e => { return element === e.value });
-            return -1;
-        }
+		isInArray(element) {
+			this.statArray.forEach((e) => {
+				return element === e.value;
+			});
+			return -1;
+		},
 	},
 };
 </script>

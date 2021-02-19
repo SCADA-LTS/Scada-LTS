@@ -72,7 +72,7 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoint/getAll`);
 		},
 
-		getAllDataPointsTable({dispatch}) {
+		getAllDataPointsTable({ dispatch }) {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
@@ -91,9 +91,11 @@ const storeDataPoint = {
 			});
 		},
 
-		getDataPointValueFromTimeperiod({dispatch}, payload) {
-			return dispatch('requestGet', 
-				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`);
+		getDataPointValueFromTimeperiod({ dispatch }, payload) {
+			return dispatch(
+				'requestGet',
+				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`,
+			);
 		},
 
 		saveDataPointDetails({ dispatch }, payload) {
@@ -135,16 +137,19 @@ const storeDataPoint = {
 			});
 		},
 
-		addUserComment({dispatch}, payload) {
+		addUserComment({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/utils/userComment/${payload.typeId}/${payload.refId}`,
 				data: payload.comment,
 			});
 		},
 
-		delUserComment({dispatch}, payload) {
-			return dispatch('requestDelete', `/utils/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`);
-		}
+		delUserComment({ dispatch }, payload) {
+			return dispatch(
+				'requestDelete',
+				`/utils/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
+			);
+		},
 	},
 
 	getters: {},
