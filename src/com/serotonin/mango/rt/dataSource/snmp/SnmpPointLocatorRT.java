@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +44,7 @@ import com.serotonin.util.StringUtils;
 
 /**
  * @author Matthew Lohbihler
- * 
+ *
  */
 public class SnmpPointLocatorRT extends PointLocatorRT {
     private static final Log LOG = LogFactory.getLog(SnmpPointLocatorRT.class);
@@ -72,25 +72,25 @@ public class SnmpPointLocatorRT extends PointLocatorRT {
 
     public MangoValue variableToValue(Variable variable) {
         switch (vo.getDataTypeId()) {
-        case DataTypes.BINARY:
-            return new BinaryValue(StringUtils.isEqual(variable.toString(), vo.getBinary0Value()));
+            case DataTypes.BINARY:
+                return new BinaryValue(StringUtils.isEqual(variable.toString(), vo.getBinary0Value()));
 
-        case DataTypes.MULTISTATE:
-            return new MultistateValue(variable.toInt());
+            case DataTypes.MULTISTATE:
+                return new MultistateValue(variable.toInt());
 
-        case DataTypes.NUMERIC:
-            if (variable instanceof OctetString) {
-                try {
-                    return NumericValue.parseNumeric(variable.toString());
+            case DataTypes.NUMERIC:
+                if (variable instanceof OctetString) {
+                    try {
+                        return NumericValue.parseNumeric(variable.toString());
+                    }
+                    catch (NumberFormatException e) {
+                        // no op
+                    }
                 }
-                catch (NumberFormatException e) {
-                    // no op
-                }
-            }
-            return new NumericValue(variable.toInt());
+                return new NumericValue(variable.toInt());
 
-        case DataTypes.ALPHANUMERIC:
-            return new AlphanumericValue(variable.toString());
+            case DataTypes.ALPHANUMERIC:
+                return new AlphanumericValue(variable.toString());
 
         }
 
@@ -103,38 +103,38 @@ public class SnmpPointLocatorRT extends PointLocatorRT {
 
     public static Variable valueToVariableImpl(MangoValue value, int setType) {
         switch (setType) {
-        case SnmpPointLocatorVO.SetTypes.INTEGER_32:
-            if (value instanceof NumericValue)
-                return new Integer32(value.getIntegerValue());
-            if (value instanceof BinaryValue)
-                return new Integer32(value.getBooleanValue() ? 1 : 0);
+            case SnmpPointLocatorVO.SetTypes.INTEGER_32:
+                if (value instanceof NumericValue)
+                    return new Integer32(value.getIntegerValue());
+                if (value instanceof BinaryValue)
+                    return new Integer32(value.getBooleanValue() ? 1 : 0);
 
-            LOG.warn("Can't convert value '" + value + "' (" + value.getDataType() + ") to Integer32");
-            return new Integer32(0);
+                LOG.warn("Can't convert value '" + value + "' (" + value.getDataType() + ") to Integer32");
+                return new Integer32(0);
 
-        case SnmpPointLocatorVO.SetTypes.OCTET_STRING:
-            return new OctetString(DataTypes.valueToString(value));
+            case SnmpPointLocatorVO.SetTypes.OCTET_STRING:
+                return new OctetString(DataTypes.valueToString(value));
 
-        case SnmpPointLocatorVO.SetTypes.OID:
-            return new OID(DataTypes.valueToString(value));
+            case SnmpPointLocatorVO.SetTypes.OID:
+                return new OID(DataTypes.valueToString(value));
 
-        case SnmpPointLocatorVO.SetTypes.IP_ADDRESS:
-            return new IpAddress(DataTypes.valueToString(value));
+            case SnmpPointLocatorVO.SetTypes.IP_ADDRESS:
+                return new IpAddress(DataTypes.valueToString(value));
 
-        case SnmpPointLocatorVO.SetTypes.COUNTER_32:
-            return new Counter32((long) value.getDoubleValue());
+            case SnmpPointLocatorVO.SetTypes.COUNTER_32:
+                return new Counter32((long) value.getDoubleValue());
 
-        case SnmpPointLocatorVO.SetTypes.GAUGE_32:
-            return new Gauge32((long) value.getDoubleValue());
+            case SnmpPointLocatorVO.SetTypes.GAUGE_32:
+                return new Gauge32((long) value.getDoubleValue());
 
-        case SnmpPointLocatorVO.SetTypes.TIME_TICKS:
-            return new TimeTicks((long) value.getDoubleValue());
+            case SnmpPointLocatorVO.SetTypes.TIME_TICKS:
+                return new TimeTicks((long) value.getDoubleValue());
 
-        case SnmpPointLocatorVO.SetTypes.OPAQUE:
-            return new Opaque(DataTypes.valueToString(value).getBytes());
+            case SnmpPointLocatorVO.SetTypes.OPAQUE:
+                return new Opaque(DataTypes.valueToString(value).getBytes());
 
-        case SnmpPointLocatorVO.SetTypes.COUNTER_64:
-            return new Counter64((long) value.getDoubleValue());
+            case SnmpPointLocatorVO.SetTypes.COUNTER_64:
+                return new Counter64((long) value.getDoubleValue());
         }
 
         throw new ShouldNeverHappenException("Unknown set type id: " + setType);

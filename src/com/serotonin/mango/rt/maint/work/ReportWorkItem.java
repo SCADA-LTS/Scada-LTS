@@ -217,15 +217,11 @@ public class ReportWorkItem implements WorkItem {
 				postEmail = new Runnable[] { deleteTempFile };
 			}
 
-			try {
-				LocalizableMessage lm = new LocalizableMessage(
-						"ftl.scheduledReport", reportConfig.getName());
-				EmailWorkItem
-						.queueEmail(toAddrs, lm.getLocalizedMessage(bundle),
-								emailContent, postEmail);
-			} catch (AddressException e) {
-				LOG.error(e);
-			}
+			LocalizableMessage lm = new LocalizableMessage(
+					"ftl.scheduledReport", reportConfig.getName());
+			EmailWorkItem
+					.queueEmail(toAddrs, lm.getLocalizedMessage(bundle),
+							emailContent, postEmail);
 
 			// Delete the report instance.
 			// reportDao.deleteReportInstance(reportInstance.getId(),
