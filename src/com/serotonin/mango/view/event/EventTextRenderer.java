@@ -39,41 +39,17 @@ public interface EventTextRenderer extends Serializable {
 
     String UNKNOWN_VALUE = "(n/a)";
 
-    String getShortText();
+    String getText();
 
-    String getShortText(boolean value);
+    String getText(boolean value);
 
-    String getShortText(int value);
+    String getText(int value);
 
-    String getShortText(double value);
+    String getText(double value);
 
-    String getShortText(MangoValue value);
+    String getText(MangoValue value);
 
-    String getLongText();
-
-    String getLongText(boolean value);
-
-    String getLongText(int value);
-
-    String getLongText(double value);
-
-    String getLongText(MangoValue value);
-
-    String getMetaShortText();
-
-    String getMetaLongText();
-
-    String getColour();
-
-    String getColour(MangoValue value);
-
-    String getColour(double value);
-
-    String getColour(int value);
-
-    String getColour(boolean value);
-
-    String getColour(String value);
+    String getMetaText();
 
     String getTypeName();
 

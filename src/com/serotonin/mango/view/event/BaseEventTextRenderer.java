@@ -69,80 +69,26 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
         return result;
     }
 
-    public String getShortText(MangoValue value) {
+    public String getText(MangoValue value) {
         if (value == null)
-            return getShortText();
-        return getShortTextImpl(value);
+            return getText();
+        return getTextImpl(value);
     }
 
-    abstract protected String getShortTextImpl(MangoValue value);
+    abstract protected String getTextImpl(MangoValue value);
 
-    public String getShortText() {
+    public String getText() {
         return UNKNOWN_VALUE;
     }
 
-    public String getShortText(boolean value) { return null; }
+    public String getText(boolean value) { return null; }
 
-    public String getShortText(int value) { return null; }
+    public String getText(int value) { return null; }
 
-    public String getShortText(double value) { return null; }
-
-    public String getLongText() {
-        return UNKNOWN_VALUE;
-    }
-
-    public String getLongText(boolean value) { return null; }
-
-    public String getLongText(int value) { return null; }
-
-    public String getLongText(double value) { return null; }
-
-    public String getLongText(MangoValue value) {
-        if (value == null)
-            return getLongText();
-        return getLongTextImpl(value);
-    }
-
-    abstract protected String getLongTextImpl(MangoValue value);
+    public String getText(double value) { return null; }
 
     @Override
-    public String getMetaShortText() {
-        return null;
-    }
-
-    @Override
-    public String getMetaLongText() {
-        return null;
-    }
-
-    //
-    // / Colours
-    //
-    public String getColour() {
-        return null;
-    }
-
-    public String getColour(MangoValue value) {
-        if (value == null)
-            return getColour();
-        return getColourImpl(value);
-    }
-
-    abstract protected String getColourImpl(MangoValue value);
-
-    public String getColour(double value) {
-        return null;
-    }
-
-    public String getColour(int value) {
-        return null;
-    }
-
-    public String getColour(boolean value) {
-        return null;
-    }
-
-    public String getColour(String value) {
+    public String getMetaText() {
         return null;
     }
 

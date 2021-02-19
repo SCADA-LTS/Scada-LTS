@@ -59,14 +59,14 @@ public class DataPointEditDwr extends BaseDwr {
     // Set event text renderer
     //
 
-    public void setBinaryEventTextRenderer(String zeroShortValue, String zeroLongValue, String zeroColour, String oneShortValue, String oneLongValue, String oneColour) {
-        setEventTextRenderer(new BinaryEventTextRenderer(zeroShortValue, zeroLongValue, zeroColour, oneShortValue, oneLongValue, oneColour));
+    public void setBinaryEventTextRenderer(String zeroValue, String oneValue) {
+        setEventTextRenderer(new BinaryEventTextRenderer(zeroValue, oneValue));
     }
 
     public void setMultistateEventRenderer(List<MultistateEventValue> values) {
         MultistateEventRenderer r = new MultistateEventRenderer();
         for (MultistateEventValue v : values)
-            r.addMultistateEventValue(v.getKey(), v.getShortText(), v.getLongText(), v.getColour());
+            r.addMultistateEventValue(v.getKey(), v.getText());
         setEventTextRenderer(r);
     }
 
@@ -77,7 +77,7 @@ public class DataPointEditDwr extends BaseDwr {
     public void setRangeEventRenderer(List<RangeEventValue> values) {
         RangeEventRenderer r = new RangeEventRenderer();
         for (RangeEventValue v : values)
-            r.addRangeEventValues(v.getFrom(), v.getTo(), v.getShortText(), v.getLongText(), v.getColour());
+            r.addRangeEventValues(v.getFrom(), v.getTo(), v.getText());
         setEventTextRenderer(r);
     }
 

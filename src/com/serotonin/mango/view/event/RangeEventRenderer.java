@@ -57,8 +57,8 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         // no op
     }
 
-    public void addRangeEventValues(double from, double to, String shortText, String longText, String colour) {
-        rangeEventValues.add(new RangeEventValue(from, to, shortText, longText, colour));
+    public void addRangeEventValues(double from, double to, String text) {
+        rangeEventValues.add(new RangeEventValue(from, to, text));
     }
 
     public List<RangeEventValue> getRangeEventValues() {
@@ -70,48 +70,18 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value) {
+    protected String getTextImpl(MangoValue value) {
         if (!(value instanceof NumericValue))
             return null;
-        return getShortText(value.getDoubleValue());
+        return getText(value.getDoubleValue());
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value) {
-        if (!(value instanceof NumericValue))
-            return null;
-        return getLongText(value.getDoubleValue());
-    }
-
-    @Override
-    public String getShortText(double value) {
+    public String getText(double value) {
         RangeEventValue range = getRangeEventValue(value);
         if (range == null)
             return null;
-        return range.getShortText();
-    }
-
-    @Override
-    public String getLongText(double value) {
-        RangeEventValue range = getRangeEventValue(value);
-        if (range == null)
-            return null;
-        return range.getLongText();
-    }
-
-    @Override
-    protected String getColourImpl(MangoValue value) {
-        if (!(value instanceof NumericValue))
-            return null;
-        return getColour(value.getDoubleValue());
-    }
-
-    @Override
-    public String getColour(double value) {
-        RangeEventValue range = getRangeEventValue(value);
-        if (range == null)
-            return null;
-        return range.getColour();
+        return range.getText();
     }
 
     private RangeEventValue getRangeEventValue(double value) {

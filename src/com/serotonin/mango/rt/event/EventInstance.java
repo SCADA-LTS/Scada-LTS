@@ -79,7 +79,7 @@ public class EventInstance {
     /**
      * Configuration field. The message associated with the event.
      */
-    private EventMessages messages;
+    private final EventMessages messages;
 
     /**
      * User comments on the event. Added in the events interface after the event has been raised.

@@ -185,15 +185,8 @@
                            $(currentEventTextRenderer)
                        );
                        if (properties.eventTextRenderer.def.name == "eventTextRendererBinary") {
-                           jQuery("#eventTextRendererBinaryZeroShort").val(properties.eventTextRenderer.zeroShortLabel);
-                           jQuery("#eventTextRendererBinaryZeroLong").val(properties.eventTextRenderer.zeroLongLabel);
-                           dojo.widget.byId("eventTextRendererBinaryZeroColour").selectedColour = properties.eventTextRenderer.zeroColour;
-                           jQuery("#eventTextRendererBinaryZero").css('color', properties.eventTextRenderer.zeroColour);
-                           jQuery("#eventTextRendererBinaryOneShort").val(properties.eventTextRenderer.oneShortLabel);
-                           jQuery("#eventTextRendererBinaryOneLong").val(properties.eventTextRenderer.oneLongLabel);
-                           jQuery("#eventTextRendererBinaryOne").css('color', properties.eventTextRenderer.oneColour);
-                           dojo.widget.byId("eventTextRendererBinaryOneColour").selectedColour = properties.eventTextRenderer.oneColour;
-
+                           jQuery("#eventTextRendererBinaryZero").val(properties.eventTextRenderer.zeroLabel);
+                           jQuery("#eventTextRendererBinaryOne").val(properties.eventTextRenderer.oneLabel);
                        }
 
                        if (properties.eventTextRenderer.def.name == "eventTextRendererMultistate") {
@@ -207,9 +200,7 @@
                                    for (var multistate in properties.eventTextRenderer.multistateEventValues) {
                                        eventTextRendererEditor.addMultistateEventValue(
                                            String( properties.eventTextRenderer.multistateValues[multistate].key ),
-                                           String( properties.eventTextRenderer.multistateValues[multistate].shortText ),
-                                           String( properties.eventTextRenderer.multistateValues[multistate].longText ),
-                                           String( properties.eventTextRenderer.multistateValues[multistate].colour ));
+                                           String( properties.eventTextRenderer.multistateValues[multistate].text ));
                                    }
                                } catch (err) {
                                    console.log(err);
@@ -220,9 +211,7 @@
                                for (var multistate in properties.eventTextRenderer.multistateEventValues) {
                                    eventTextRendererEditor.addMultistateEventValue(
                                        String( properties.eventTextRenderer.multistateValues[multistate].key ),
-                                       String( properties.eventTextRenderer.multistateValues[multistate].shortText ),
-                                       String( properties.eventTextRenderer.multistateValues[multistate].longText ),
-                                       String( properties.eventTextRenderer.multistateValues[multistate].colour ));
+                                       String( properties.eventTextRenderer.multistateValues[multistate].text ));
                                }
                            }
                        }
@@ -239,9 +228,7 @@
                                        eventTextRendererEditor.addRangeEventValue(
                                            String( properties.eventTextRenderer.rangeEventValues[range].from ),
                                            String( properties.eventTextRenderer.rangeEventValues[range].to ),
-                                           String( properties.eventTextRenderer.rangeEventValues[range].shortText ),
-                                           String( properties.eventTextRenderer.rangeEventValues[range].longText ),
-                                           String( properties.eventTextRenderer.rangeEventValues[range].colour ));
+                                           String( properties.eventTextRenderer.rangeEventValues[range].text ));
                                    }
                                } catch( err ) {
                                    console.log(err);
@@ -254,9 +241,7 @@
                                    eventTextRendererEditor.addRangeEventValue(
                                        String( properties.eventTextRenderer.rangeEventValues[range].from ),
                                        String( properties.eventTextRenderer.rangeEventValues[range].to ),
-                                       String( properties.eventTextRenderer.rangeEventValues[range].shortText ),
-                                       String( properties.eventTextRenderer.rangeEventValues[range].longText ),
-                                       String( properties.eventTextRenderer.rangeEventValues[range].colour ));
+                                       String( properties.eventTextRenderer.rangeEventValues[range].text ));
                                }
                            }
 
@@ -651,8 +636,8 @@
                           eventTextRenderer = ""
                               + "<li>Event text renderer properties: Binary"
                               + "<ul class='scada-swal-ul2'>"
-                              + "<li>zero short: " + properties.eventTextRenderer.zeroShortLabel + " + zero long: " + properties.eventTextRenderer.zeroLongLabel + " color:" + properties.eventTextRenderer.zeroColour + "</li>"
-                              + "<li>one: " +  properties.eventTextRenderer.oneLabel +  " color:" + properties.eventTextRenderer.oneColour + "</li></ul></li>";
+                              + "<li>zero: " + properties.eventTextRenderer.zeroLabel + "</li>"
+                              + "<li>one: " +  properties.eventTextRenderer.oneLabel + "</li></ul></li>";
                       }
 
                       if (properties.def.name == "eventTextRendererMultistate") {
@@ -663,9 +648,7 @@
 
                           for (var multistate in properties.eventTextRenderer.multistateValues) {
                               eventTextRenderer = eventTextRenderer + "<li>key: " + properties.eventTextRenderer.multistateValues[multistate].key
-                                  + " short text: " + properties.eventTextRenderer.multistateValues[multistate].shortText
-                                  + " long text: " + properties.eventTextRenderer.multistateValues[multistate].longText
-                                  + " color: " + properties.eventTextRenderer.multistateValues[multistate].colour + "</li>";
+                                  + " text: " + properties.eventTextRenderer.multistateValues[multistate].text + "</li>";
                           }
 
                           eventTextRenderer = eventTextRenderer + "</ul></li>";
@@ -681,9 +664,7 @@
 
                               eventTextRenderer = eventTextRenderer + "<li>from: " + properties.eventTextRenderer.rangeEventValues[range].from
                                   + " to: " + properties.eventTextRenderer.rangeEventValues[range].to
-                                  + " short text: " + properties.eventTextRenderer.rangeEventValues[range].shortText
-                                  + " long text: " + properties.eventTextRenderer.rangeEventValues[range].longText
-                                  + " color: " + properties.eventTextRenderer.rangeEventValues[range].colour + "</li>";
+                                  + " text: " + properties.eventTextRenderer.rangeEventValues[range].text + "</li>";
 
                           }
 

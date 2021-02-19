@@ -28,9 +28,7 @@ import com.serotonin.util.SerializationHelper;
 public class RangeEventValue implements Serializable {
     private double from;
     private double to;
-    private String shortText;
-    private String longText;
-    private String colour;
+    private String text;
 
     /**
      * Required by DWR. Should not be used otherwise.
@@ -49,19 +47,8 @@ public class RangeEventValue implements Serializable {
     /**
      * Required by DWR. Should not be used otherwise.
      */
-    public void setShortText(String shortText) {
-        this.shortText = shortText;
-    }
-
-    public void setLongText(String longText) {
-        this.longText = longText;
-    }
-
-    /**
-     * Required by DWR. Should not be used otherwise.
-     */
-    public void setColour(String colour) {
-        this.colour = colour;
+    public void setText(String text) {
+        this.text = text;
     }
 
     /**
@@ -71,12 +58,10 @@ public class RangeEventValue implements Serializable {
         this.to = to;
     }
 
-    public RangeEventValue(double from, double to, String shortText, String longText, String colour) {
+    public RangeEventValue(double from, double to, String text) {
         this.from = from;
         this.to = to;
-        this.shortText = shortText;
-        this.longText = longText;
-        this.colour = colour;
+        this.text = text;
     }
 
     boolean contains(double d) {
@@ -87,20 +72,12 @@ public class RangeEventValue implements Serializable {
         return from;
     }
 
-    public String getShortText() {
-        return shortText;
-    }
-
-    public String getLongText() {
-        return longText;
+    public String getText() {
+        return text;
     }
 
     public double getTo() {
         return to;
-    }
-
-    public String getColour() {
-        return colour;
     }
 
     //
@@ -115,9 +92,7 @@ public class RangeEventValue implements Serializable {
         out.writeInt(version);
         out.writeDouble(from);
         out.writeDouble(to);
-        SerializationHelper.writeSafeUTF(out, shortText);
-        SerializationHelper.writeSafeUTF(out, longText);
-        SerializationHelper.writeSafeUTF(out, colour);
+        SerializationHelper.writeSafeUTF(out, text);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -127,9 +102,7 @@ public class RangeEventValue implements Serializable {
         if (ver == 1) {
             from = in.readDouble();
             to = in.readDouble();
-            shortText = SerializationHelper.readSafeUTF(in);
-            longText = SerializationHelper.readSafeUTF(in);
-            colour = SerializationHelper.readSafeUTF(in);
+            text = SerializationHelper.readSafeUTF(in);
         }
     }
 }

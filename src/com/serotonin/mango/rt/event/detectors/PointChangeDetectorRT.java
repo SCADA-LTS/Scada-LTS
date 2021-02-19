@@ -36,16 +36,16 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
     protected LocalizableMessage getMessage() {
         String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
         return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(), description,
-                formatValue(oldValue), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getLongText(newValue));
+                formatValue(oldValue), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
     }
 
     @Override
     public LocalizableMessage getSmsMessage() {
         String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
         if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
-            if (vo.njbGetDataPoint().getEventTextRenderer().getShortText(newValue) != null)
+            if (vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null)
                 return new LocalizableMessage("event.detector.messageSms", vo.njbGetDataPoint().getName(),
-                    vo.njbGetDataPoint().getEventTextRenderer().getShortText(newValue));
+                    vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
             else
                 return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
                         description, formatValue(oldValue), formatValue(newValue), "");

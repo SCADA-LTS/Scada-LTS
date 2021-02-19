@@ -42,18 +42,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="formLabel"><fmt:message key="pointEdit.text.short"/></td>
-            <td valign="top"><input id="eventTextRendererBinaryZeroShort" type="text"/></td>
-            <td width="10"></td>
-            <td valign="top" rowspan="2" align="center">
-              <div dojoType="ColorPalette" palette="3x4" id="eventTextRendererBinaryZeroColour"></div>
-              <a href="#" onclick="eventTextRendererEditor.handlerBinaryZeroColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="formLabel"><fmt:message key="pointEdit.text.long"/></td>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZeroLong" type="text"/></td>
-            <td width="10"></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryZero" type="text"/></td>
           </tr>
         </table>
       </td>
@@ -63,18 +52,7 @@
       <td class="formField">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="formLabel"><fmt:message key="pointEdit.text.short"/></td>
-            <td valign="top"><input id="eventTextRendererBinaryOneShort" type="text"/></td>
-            <td width="10"></td>
-            <td valign="top" rowspan="2" align="center">
-              <div dojoType="ColorPalette" palette="3x4" id="eventTextRendererBinaryOneColour"></div>
-              <a href="#" onclick="eventTextRendererEditor.handlerBinaryOneColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="formLabel"><fmt:message key="pointEdit.text.long"/></td>
-            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOneLong" type="text"/></td>
-            <td width="10"></td>
+            <td valign="top"><input class="formLong" id="eventTextRendererBinaryOne" type="text"/></td>
           </tr>
         </table>
       </td>
@@ -86,26 +64,15 @@
         <table>
           <tr>
             <th><fmt:message key="pointEdit.text.key"/></th>
-            <th colspan="2"><fmt:message key="pointEdit.text.text"/></th>
-            <th><fmt:message key="pointEdit.text.colour"/></th>
+            <th><fmt:message key="pointEdit.text.text"/></th>
             <td></td>
           </tr>
           <tr>
             <td valign="top"><input type="text" id="eventTextRendererMultistateKey" value="" class="formVeryShort"/></td>
-            <td class="formLabel"><fmt:message key="pointEdit.text.short"/></td>
-            <td valign="top"><input type="text" id="eventTextRendererMultistateTextShort"/></td>
-            <td valign="top" rowspan="2" align="center">
-              <div dojoType="ColorPalette" palette="3x4" id="eventTextRendererMultistateColour"></div>
-              <a href="#" onclick="eventTextRendererEditor.handlerMultistateColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
-            </td>
+            <td valign="top"><input class="formLong" type="text" id="eventTextRendererMultistateText"/></td>
             <td valign="top">
               <tag:img png="add" title="common.add" onclick="return eventTextRendererEditor.addMultistateEventValue();"/>
             </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td class="formLabel"><fmt:message key="pointEdit.text.long"/></td>
-            <td valign="top"><input class="formLong" type="text" id="eventTextRendererMultistateTextLong"/></td>
           </tr>
           <tbody id="eventTextRendererMultistateTable"></tbody>
         </table>
@@ -121,28 +88,16 @@
           <tr>
             <th><fmt:message key="pointEdit.text.from"/></th>
             <th><fmt:message key="pointEdit.text.to"/></th>
-            <th colspan="2"><fmt:message key="pointEdit.text.text"/></th>
-            <th><fmt:message key="pointEdit.text.colour"/></th>
+            <th><fmt:message key="pointEdit.text.text"/></th>
             <td></td>
           </tr>
           <tr>
             <td valign="top"><input type="text" id="eventTextRendererRangeFrom" value="" class="formVeryShort"/></td>
             <td valign="top"><input type="text" id="eventTextRendererRangeTo" value="" class="formVeryShort"/></td>
-            <td class="formLabel"><fmt:message key="pointEdit.text.short"/></td>
-            <td valign="top"><input type="text" id="eventTextRendererRangeTextShort" value=""/></td>
-            <td valign="top" rowspan="2" align="center">
-              <div dojoType="ColorPalette" palette="3x4" id="eventTextRendererRangeColour"></div>
-              <a href="#" onclick="eventTextRendererEditor.handlerRangeColour(null); return false;">(<fmt:message key="pointEdit.text.default"/>)</a>
-            </td>
+            <td valign="top"><input class="formLong" type="text" id="eventTextRendererRangeText" value=""/></td>
             <td valign="top">
               <tag:img png="add" title="common.add" onclick="return eventTextRendererEditor.addRangeEventValue();"/>
             </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td class="formLabel"><fmt:message key="pointEdit.text.long"/></td>
-            <td valign="top"><input class="formLong" type="text" id="eventTextRendererRangeTextLong" value=""/></td>
           </tr>
           <tbody id="eventTextRendererRangeTable"></tbody>
         </table>
@@ -161,37 +116,23 @@
     var rangeEventValues = new Array();
 
     this.init = function() {
-      // Colour handler events
-      dojo.event.connect(dojo.widget.byId("eventTextRendererRangeColour"), 'onColorSelect', this,
-              'handlerRangeColour');
-      dojo.event.connect(dojo.widget.byId("eventTextRendererMultistateColour"), 'onColorSelect', this,
-              'handlerMultistateColour');
-      dojo.event.connect(dojo.widget.byId("eventTextRendererBinaryZeroColour"), 'onColorSelect', this,
-              'handlerBinaryZeroColour');
-      dojo.event.connect(dojo.widget.byId("eventTextRendererBinaryOneColour"), 'onColorSelect', this,
-              'handlerBinaryOneColour');
 
       // Figure out which fields to populate with data.
       <c:choose>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererBinary"}'>
-      $set("eventTextRendererBinaryZeroShort", "${form.eventTextRenderer.zeroShortLabel}");
-      $set("eventTextRendererBinaryZeroLong", "${form.eventTextRenderer.zeroLongLabel}");
-      eventTextRendererEditor.handlerBinaryZeroColour("${form.eventTextRenderer.zeroColour}");
-      $set("eventTextRendererBinaryOneShort", "${form.eventTextRenderer.oneShortLabel}");
-      $set("eventTextRendererBinaryOneLong", "${form.eventTextRenderer.oneLongLabel}");
-      eventTextRendererEditor.handlerBinaryOneColour("${form.eventTextRenderer.oneColour}");
+      $set("eventTextRendererBinaryZero", "${form.eventTextRenderer.zeroLabel}");
+      $set("eventTextRendererBinaryOne", "${form.eventTextRenderer.oneLabel}");
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererMultistate"}'>
       <c:forEach items="${form.eventTextRenderer.multistateEventValues}" var="msValue">
-      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "${msValue.shortText}", "${msValue.longText}", "${msValue.colour}");
+      eventTextRendererEditor.addMultistateEventValue("${msValue.key}", "${msValue.text}");
       </c:forEach>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererNone"}'>
       </c:when>
       <c:when test='${form.eventTextRenderer.typeName == "eventTextRendererRange"}'>
       <c:forEach items="${form.eventTextRenderer.rangeEventValues}" var="rgValue">
-      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.shortText}", "${rgValue.longText}",
-              "${rgValue.colour}");
+      eventTextRendererEditor.addRangeEventValue("${rgValue.from}", "${rgValue.to}", "${rgValue.text}");
       </c:forEach>
       </c:when>
       <c:otherwise>
@@ -212,9 +153,7 @@
     this.save = function(callback) {
       var typeName = $get("eventTextRendererSelect");
       if (typeName == "eventTextRendererBinary")
-        DataPointEditDwr.setBinaryEventTextRenderer($get("eventTextRendererBinaryZeroShort"), $get("eventTextRendererBinaryZeroLong"),
-                dojo.widget.byId("eventTextRendererBinaryZeroColour").selectedColour, $get("eventTextRendererBinaryOneShort"),
-                $get("eventTextRendererBinaryOneLong"), dojo.widget.byId("eventTextRendererBinaryOneColour").selectedColour, callback);
+        DataPointEditDwr.setBinaryEventTextRenderer($get("eventTextRendererBinaryZero"), $get("eventTextRendererBinaryOne"), callback);
       else if (typeName == "eventTextRendererMultistate")
         DataPointEditDwr.setMultistateEventRenderer(multistateEventValues, callback);
       else if (typeName == "eventTextRendererNone")
@@ -229,22 +168,18 @@
     // List objects
     this.MultistateEventValue = function() {
       this.key;
-      this.shortText;
-      this.longText;
-      this.colour;
+      this.text;
     };
 
     this.RangeEventValue = function() {
       this.from;
       this.to;
-      this.shortText;
-      this.longText;
-      this.colour;
+      this.text;
     };
 
     //
     // Multistate list manipulation
-    this.addMultistateEventValue = function(theKey, shortText, longText, colour) {
+    this.addMultistateEventValue = function(theKey, text) {
       if (!theKey)
         theKey = $get("eventTextRendererMultistateKey");
       var theNumericKey = parseInt(theKey);
@@ -261,18 +196,10 @@
 
       var theValue = new this.MultistateEventValue();
       theValue.key = theNumericKey;
-      if (shortText)
-        theValue.shortText = shortText;
+      if (text)
+        theValue.text = text;
       else
-        theValue.shortText = $get("eventTextRendererMultistateTextShort");
-      if (longText)
-        theValue.longText = longText;
-      else
-        theValue.longText = $get("eventTextRendererMultistateTextLong");
-      if (colour)
-        theValue.colour = colour;
-      else
-        theValue.colour = dojo.widget.byId("eventTextRendererMultistateColour").selectedColour;
+        theValue.text = $get("eventTextRendererMultistateText");
       multistateEventValues[multistateEventValues.length] = theValue;
       this.sortMultistateEventValues();
       this.refreshMultistateEventList();
@@ -299,14 +226,7 @@
       dwr.util.addRows("eventTextRendererMultistateTable", multistateEventValues, [
         function(data) { return data.key; },
         function(data) {
-          if (data.colour)
-            return "<span style='color:"+ data.colour +"'>"+ data.shortText +"</span>";
-          return data.shortText;
-        },
-        function(data) {
-          if (data.colour)
-            return "<span style='color:"+ data.colour +"'>"+ data.longText +"</span>";
-          return data.longText;
+          return data.text;
         },
         function(data) {
           return "<a href='#' onclick='return eventTextRendererEditor.removeMultistateEventValue("+ data.key +
@@ -318,7 +238,7 @@
 
     //
     // Range list manipulation
-    this.addRangeEventValue = function(theFrom, theTo, shortText, longText, colour) {
+    this.addRangeEventValue = function(theFrom, theTo, text) {
       if (!theFrom)
         theFrom = parseFloat($get("eventTextRendererRangeFrom"));
       if (isNaN(theFrom)) {
@@ -348,18 +268,10 @@
       var theValue = new this.RangeEventValue();
       theValue.from = theFrom;
       theValue.to = theTo;
-      if (shortText)
-        theValue.shortText = shortText;
+      if (text)
+        theValue.text = text;
       else
-        theValue.shortText = $get("eventTextRendererRangeTextShort");
-      if (longText)
-        theValue.longText = longText;
-      else
-        theValue.longText = $get("eventTextRendererRangeTextLong");
-      if (colour)
-        theValue.colour = colour;
-      else
-        theValue.colour = dojo.widget.byId("eventTextRendererRangeColour").selectedColour;
+        theValue.text = $get("eventTextRendererRangeText");
       rangeEventValues[rangeEventValues.length] = theValue;
       this.sortRangeEventValues();
       this.refreshRangeList();
@@ -391,14 +303,7 @@
         function(data) { return data.from; },
         function(data) { return data.to; },
         function(data) {
-          if (data.colour)
-            return "<span style='color:"+ data.colour +"'>"+ data.shortText +"</span>";
-          return data.shortText;
-        },
-        function(data) {
-          if (data.colour)
-            return "<span style='color:"+ data.colour +"'>"+ data.longText +"</span>";
-          return data.longText;
+          return data.text;
         },
         function(data) {
           return "<a href='#' onclick='return eventTextRendererEditor.removeRangeEventValue("+
@@ -406,29 +311,6 @@
                   "height='16' border='0' title='<fmt:message key="common.delete"/>'/><\/a>";
         }
       ], null);
-    };
-
-    //
-    // Color handling
-    this.handlerRangeColour = function(colour) {
-      dojo.widget.byId("eventTextRendererRangeColour").selectedColour = colour;
-      $("eventTextRendererRangeTextShort").style.color = colour;
-      $("eventTextRendererRangeTextLong").style.color = colour;
-    };
-    this.handlerMultistateColour = function(colour) {
-      dojo.widget.byId("eventTextRendererMultistateColour").selectedColour = colour;
-      $("eventTextRendererMultistateTextShort").style.color = colour;
-      $("eventTextRendererMultistateTextLong").style.color = colour;
-    };
-    this.handlerBinaryZeroColour = function(colour) {
-      dojo.widget.byId("eventTextRendererBinaryZeroColour").selectedColour = colour;
-      $("eventTextRendererBinaryZeroShort").style.color = colour;
-      $("eventTextRendererBinaryZeroLong").style.color = colour;
-    };
-    this.handlerBinaryOneColour = function(colour) {
-      dojo.widget.byId("eventTextRendererBinaryOneColour").selectedColour = colour;
-      $("eventTextRendererBinaryOneShort").style.color = colour;
-      $("eventTextRendererBinaryOneLong").style.color = colour;
     };
   }
   var eventTextRendererEditor = new EventTextRendererEditor();
