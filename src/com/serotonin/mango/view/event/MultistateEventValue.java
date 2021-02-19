@@ -27,9 +27,7 @@ import com.serotonin.util.SerializationHelper;
 
 public class MultistateEventValue implements Serializable {
     private int key;
-    private String shortText;
-    private String longText;
-    private String colour;
+    private String text;
 
     /**
      * Required by DWR. Should not be used otherwise.
@@ -48,43 +46,23 @@ public class MultistateEventValue implements Serializable {
     /**
      * Required by DWR. Should not be used otherwise.
      */
-    public void setShortText(String shortText) {
-        this.shortText = shortText;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public void setLongText(String longText) {
-        this.longText = longText;
-    }
-
-    /**
-     * Required by DWR. Should not be used otherwise.
-     */
-    public void setColour(String colour) {
-        this.colour = colour;
-    }
-
-    public MultistateEventValue(int key, String shortText, String longText, String colour) {
+    public MultistateEventValue(int key, String text) {
         this.key = key;
-        this.shortText = shortText;
-        this.longText = longText;
-        this.colour = colour;
+        this.text = text;
     }
 
     public int getKey() {
         return key;
     }
 
-    public String getShortText() {
-        return shortText;
+    public String getText() {
+        return text;
     }
 
-    public String getLongText() {
-        return longText;
-    }
-
-    public String getColour() {
-        return colour;
-    }
 
     //
     // /
@@ -97,9 +75,7 @@ public class MultistateEventValue implements Serializable {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
         out.writeInt(key);
-        SerializationHelper.writeSafeUTF(out, shortText);
-        SerializationHelper.writeSafeUTF(out, longText);
-        SerializationHelper.writeSafeUTF(out, colour);
+        SerializationHelper.writeSafeUTF(out, text);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -108,9 +84,7 @@ public class MultistateEventValue implements Serializable {
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1) {
             key = in.readInt();
-            shortText = SerializationHelper.readSafeUTF(in);
-            longText = SerializationHelper.readSafeUTF(in);
-            colour = SerializationHelper.readSafeUTF(in);
+            text = SerializationHelper.readSafeUTF(in);
         }
     }
 }

@@ -815,7 +815,7 @@ public final class APIUtils {
 					.getScheduledEvent(scheduleId).getAlias());
 		} else {
 			event.setEventType(EventType.SYSTEM_EVENT);
-			event.setAlias(eventInstance.getMessage().getKey());
+			event.setAlias(eventInstance.getMessages().getMessage().getKey());
 		}
 
 		return event;

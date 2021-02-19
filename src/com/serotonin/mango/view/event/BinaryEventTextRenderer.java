@@ -55,124 +55,47 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
     }
 
     @JsonRemoteProperty
-    private String zeroShortLabel;
+    private String zeroLabel;
     @JsonRemoteProperty
-    private String zeroLongLabel;
-    @JsonRemoteProperty
-    private String zeroColour;
-    @JsonRemoteProperty
-    private String oneShortLabel;
-    @JsonRemoteProperty
-    private String oneLongLabel;
-    @JsonRemoteProperty
-    private String oneColour;
+    private String oneLabel;
 
     public BinaryEventTextRenderer() {
         // no op
     }
 
-    public BinaryEventTextRenderer(String zeroShortValue, String zeroLongValue, String zeroColour, String oneShortValue, String oneLongValue, String oneColour) {
-        zeroShortLabel = zeroShortValue;
-        zeroLongLabel = zeroLongValue;
-        this.zeroColour = zeroColour;
-        oneShortLabel = oneShortValue;
-        oneLongLabel = oneLongValue;
-        this.oneColour = oneColour;
+    public BinaryEventTextRenderer(String zeroValue, String oneValue) {
+        zeroLabel = zeroValue;
+        oneLabel = oneValue;
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value, int hint) {
+    protected String getTextImpl(MangoValue value) {
         if (!(value instanceof BinaryValue))
             return null;
-        return getShortText(value.getBooleanValue(), hint);
+        return getText(value.getBooleanValue());
+    }
+
+    public String getZeroLabel() {
+        return zeroLabel;
+    }
+
+    public void setZeroLabel(String zeroLabel) {
+        this.zeroLabel = zeroLabel;
+    }
+
+    public String getOneLabel() {
+        return oneLabel;
+    }
+
+    public void setOneLabel(String oneLabel) {
+        this.oneLabel = oneLabel;
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value, int hint) {
-        if (!(value instanceof BinaryValue))
-            return null;
-        return getLongText(value.getBooleanValue(), hint);
-    }
-
-    @Override
-    protected String getColourImpl(MangoValue value) {
-        if (!(value instanceof BinaryValue))
-            return null;
-        return getColour(value.getBooleanValue());
-    }
-
-    @Override
-    public String getColour(boolean value) {
+    public String getText(boolean value) {
         if (value)
-            return oneColour;
-        return zeroColour;
-    }
-
-    public String getZeroShortLabel() {
-        return zeroShortLabel;
-    }
-
-    public void setZeroShortLabel(String zeroShortLabel) {
-        this.zeroShortLabel = zeroShortLabel;
-    }
-
-    public String getZeroLongLabel() {
-        return zeroLongLabel;
-    }
-
-    public void setZeroLongLabel(String zeroLongLabel) {
-        this.zeroLongLabel = zeroLongLabel;
-    }
-
-    public String getOneShortLabel() {
-        return oneShortLabel;
-    }
-
-    public void setOneShortLabel(String oneShortLabel) {
-        this.oneShortLabel = oneShortLabel;
-    }
-
-    public String getOneLongLabel() {
-        return oneLongLabel;
-    }
-
-    public void setOneLongLabel(String oneLongLabel) {
-        this.oneLongLabel = oneLongLabel;
-    }
-
-    public String getOneColour() {
-        return oneColour;
-    }
-
-    public void setOneColour(String oneColour) {
-        this.oneColour = oneColour;
-    }
-
-    public String getZeroColour() {
-        return zeroColour;
-    }
-
-    public void setZeroColour(String zeroColour) {
-        this.zeroColour = zeroColour;
-    }
-
-
-    @Override
-    public String getShortText(boolean value, int hint) {
-        if (hint == EventTextRenderer.HINT_RAW)
-            return value ? "1" : "0";
-        if (value)
-            return oneShortLabel;
-        return zeroShortLabel;
-    }
-
-    @Override
-    public String getLongText(boolean value, int hint) {
-        if (hint == EventTextRenderer.HINT_RAW)
-            return value ? "1" : "0";
-        if (value)
-            return oneLongLabel;
-        return zeroLongLabel;
+            return oneLabel;
+        return zeroLabel;
     }
 
     //
@@ -185,12 +108,8 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
-        SerializationHelper.writeSafeUTF(out, zeroShortLabel);
-        SerializationHelper.writeSafeUTF(out, zeroLongLabel);
-        SerializationHelper.writeSafeUTF(out, zeroColour);
-        SerializationHelper.writeSafeUTF(out, oneShortLabel);
-        SerializationHelper.writeSafeUTF(out, oneLongLabel);
-        SerializationHelper.writeSafeUTF(out, oneColour);
+        SerializationHelper.writeSafeUTF(out, zeroLabel);
+        SerializationHelper.writeSafeUTF(out, oneLabel);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -198,12 +117,8 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
 
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1) {
-            zeroShortLabel = SerializationHelper.readSafeUTF(in);
-            zeroLongLabel = SerializationHelper.readSafeUTF(in);
-            zeroColour = SerializationHelper.readSafeUTF(in);
-            oneShortLabel = SerializationHelper.readSafeUTF(in);
-            oneLongLabel = SerializationHelper.readSafeUTF(in);
-            oneColour = SerializationHelper.readSafeUTF(in);
+            zeroLabel = SerializationHelper.readSafeUTF(in);
+            oneLabel = SerializationHelper.readSafeUTF(in);
         }
     }
 }

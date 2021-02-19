@@ -51,7 +51,7 @@ public class EventCsvStreamer {
             data[0] = Integer.toString(event.getId());
             data[1] = AlarmLevels.getAlarmLevelMessage(event.getAlarmLevel()).getLocalizedMessage(bundle);
             data[2] = event.getFullPrettyActiveTimestamp();
-            data[3] = event.getMessage().getLocalizedMessage(bundle);
+            data[3] = event.getMessages().getMessage().getLocalizedMessage(bundle);
 
             if (event.isActive())
                 data[4] = I18NUtils.getMessage(bundle, "common.active");

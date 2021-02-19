@@ -23,13 +23,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -88,6 +84,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_RTN_CAUSE = "rtnCause";
 	private static final String COLUMN_NAME_ALARM_LEVEL = "alarmLevel";
 	private static final String COLUMN_NAME_MESSAGE = "message";
+	private static final String COLUMN_NAME_MESSAGE_SMS = "messageSms";
 	private static final String COLUMN_NAME_ACT_TS = "ackTs";
 	private static final String COLUMN_NAME_ACT_USER_ID = "ackUserId";
 	private static final String COLUMN_NAME_USER_NAME = "username";
@@ -140,6 +137,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 				+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 				+ "e."+COLUMN_NAME_MESSAGE+", "
+				+ "e."+COLUMN_NAME_MESSAGE_SMS+", "
 				+ "e."+COLUMN_NAME_ACT_TS+", "
 				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 				+ "u."+COLUMN_NAME_USER_NAME+","
@@ -160,6 +158,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 			+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 			+ "e."+COLUMN_NAME_MESSAGE+", "
+			+ "e."+COLUMN_NAME_MESSAGE_SMS+", "
 			+ "e."+COLUMN_NAME_ACT_TS+", "
 			+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+" "
@@ -190,11 +189,12 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ COLUMN_NAME_RTN_CAUSE + ","
 				+ COLUMN_NAME_ALARM_LEVEL + ","
 				+ COLUMN_NAME_MESSAGE + ","
+				+ COLUMN_NAME_MESSAGE_SMS + ","
 				+ COLUMN_NAME_ACT_TS 
 				// userId ?
 				// ack_source ?
 			+") "
-			+ "values (?,?,?,?,?,?,?,?,?,?)";
+			+ "values (?,?,?,?,?,?,?,?,?,?,?)";
 	
 	private static final String EVENT_UPDATE = ""
 			+ "update "
@@ -235,6 +235,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 				+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 				+ "e."+COLUMN_NAME_MESSAGE+", "
+				+ "e."+COLUMN_NAME_MESSAGE_SMS+", "
 				+ "e."+COLUMN_NAME_ACT_TS+", "
 				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 				+ "u."+COLUMN_NAME_USER_NAME+","
@@ -485,20 +486,28 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			EventType type = createEventType(rs, 2);
 			
 			LocalizableMessage message;
+			LocalizableMessage messageSms;
 			try {
 				//TODO to remove
-				message = LocalizableMessage.deserialize(rs.getString(10));
+				message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE));
+				if (rs.getString(COLUMN_NAME_MESSAGE_SMS) == null)
+					messageSms = new LocalizableMessage("common.noMessage");
+				else
+					messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE_SMS));
 			} catch (LocalizableMessageParseException e) {
 				message = new LocalizableMessage("common.default",
-						rs.getString(10));
+						rs.getString(COLUMN_NAME_MESSAGE));
+				messageSms = new LocalizableMessage("common.default",
+						rs.getString(COLUMN_NAME_MESSAGE_SMS));
 			}
 
+			EventMessages messages = new EventMessages(message, messageSms);
 			EventInstance event = new EventInstance(
 					type, 
 					rs.getLong(COLUMN_NAME_ACTIVE_TS), 
 					DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)), 
 					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
-					message, 
+					messages,
 					null);
 			
 			event.setId(rs.getInt(COLUMN_NAME_ID));
@@ -674,7 +683,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 						(!entity.isActive() ? entity.getRtnTimestamp():0),
 				 						(!entity.isActive() ? entity.getRtnCause():0),
 				 						entity.getAlarmLevel(),
-				 						entity.getMessage().serialize(),
+				 						entity.getMessages().getMessage().serialize(),
+										entity.getMessages().getMessageSms().serialize(),
 				 						(!entity.isAlarm() ? entity.getAcknowledgedTimestamp():0)
 				 				}).setValues(ps);
 				 				return ps;
@@ -823,7 +833,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						// it in the result. Otherwise ignore.
 						StringBuilder text = new StringBuilder();
 						//TODO
-						text.append(e.getMessage().getLocalizedMessage(bundle));
+						text.append(e.getMessages().getMessage().getLocalizedMessage(bundle));
 						for (UserComment comment : e.getEventComments())
 							text.append(' ').append(comment.getComment());
 
@@ -945,7 +955,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						// Do the text search. If the instance has a match, put
 						// it in the result. Otherwise ignore.
 						StringBuilder text = new StringBuilder();
-						text.append(e.getMessage().getLocalizedMessage(bundle));
+						text.append(e.getMessages().getMessage().getLocalizedMessage(bundle));
 						for (UserComment comment : e.getEventComments())
 							text.append(' ').append(comment.getComment());
 

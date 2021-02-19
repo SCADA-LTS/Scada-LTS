@@ -860,7 +860,7 @@ paths:
                           type: object
                         chartColour:
                           type: string
-  /api/point_properties/getProperties/{xid}:
+  /point_properties/getProperties/{xid}:
     get:
       tags:
         - PointPropertiesAPI
@@ -877,7 +877,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
-  /api/point_properties/getPropertiesBaseOnId/{id}:
+  /point_properties/getPropertiesBaseOnId/{id}:
     get:
       tags:
         - PointPropertiesAPI
@@ -964,7 +964,7 @@ paths:
                 properties:
                   enabled:
                     type: string
-  /api/point_properties/updateProperties:
+  /point_properties/updateProperties:
     put:
       tags:
         - PointPropertiesAPI
@@ -1026,6 +1026,50 @@ paths:
         '200':
           description: "Put successful"
           headers: { }
+  /point_properties/getPointDescription:
+    get:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'xid'
+          in: 'query'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonDescription'
+  /point_properties/getBinaryEventRenderer:
+    get:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'xid'
+          in: 'query'
+          schema:
+            type: string
+        - name: 'value'
+          in: 'query'
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonBinaryEventTextRenderer'
 
   /check-time-reactivation/{idDs}:
     get:
@@ -2310,6 +2354,20 @@ components:
           type: string
         lastLogin:
           type: number
+    JsonDescription:
+      type: object
+      properties:
+        description:
+          type: string
+    JsonBinaryEventTextRenderer:
+      type: object
+      properties:
+        shortLabel:
+          type: string
+        longLabel:
+          type: string
+        colour:
+          type: string
   parameters:
     Authorization:
       name: Authorization

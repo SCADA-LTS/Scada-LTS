@@ -24,6 +24,7 @@ import java.util.Map;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointListener;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -42,13 +43,17 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
     }
 
     protected void raiseEvent(long time, Map<String, Object> context) {
-        LocalizableMessage msg;
-        if (!StringUtils.isEmpty(vo.getAlias()))
-            msg = new LocalizableMessage("common.default", vo.getAlias());
-        else
-            msg = getMessage();
+        EventMessages messages = new EventMessages();
+        if (!StringUtils.isEmpty(vo.getAlias())) {
+            LocalizableMessage msg = new LocalizableMessage("common.default", vo.getAlias());
+            messages.setMessage(msg);
+            messages.setMessageSms(msg);
+        } else {
+            messages.setMessage(getMessage());
+            messages.setMessageSms(getSmsMessage());
+        }
 
-        Common.ctx.getEventManager().raiseEvent(getEventType(), time, vo.isRtnApplicable(), vo.getAlarmLevel(), msg,
+        Common.ctx.getEventManager().raiseEvent(getEventType(), time, vo.isRtnApplicable(), vo.getAlarmLevel(), messages,
                 context);
         fireEventDetectorStateChanged(time);
     }
@@ -66,6 +71,8 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
     }
 
     abstract protected LocalizableMessage getMessage();
+
+    abstract protected LocalizableMessage getSmsMessage();
 
     public String getEventDetectorKey() {
         return vo.getEventDetectorKey();

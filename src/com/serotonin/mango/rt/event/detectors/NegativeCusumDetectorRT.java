@@ -65,6 +65,16 @@ public class NegativeCusumDetectorRT extends TimeDelayedEventDetectorRT {
         return new LocalizableMessage("event.detector.negCusumPeriod", name, prettyLimit, durationDescription);
     }
 
+    @Override
+    protected LocalizableMessage getSmsMessage() {
+        String name = vo.njbGetDataPoint().getName();
+        String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
+        LocalizableMessage durationDescription = getDurationDescription();
+        if (durationDescription == null)
+            return new LocalizableMessage("event.detector.negCusum", name, prettyLimit);
+        return new LocalizableMessage("event.detector.negCusumPeriod", name, prettyLimit, durationDescription);
+    }
+
     public boolean isEventActive() {
         return eventActive;
     }

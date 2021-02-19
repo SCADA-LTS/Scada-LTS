@@ -19,7 +19,10 @@
 package com.serotonin.mango.rt.publish.pachube;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -152,9 +155,11 @@ public class PachubeSenderRT extends PublisherRT<PachubePointVO> {
                 if (failureMessage == null)
                     failureMessage = message;
 
-                if (failureCount == MAX_FAILURES + 1)
+                if (failureCount == MAX_FAILURES + 1) {
+                    EventMessages msgs = new EventMessages(failureMessage, failureMessage);
                     Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
-                            AlarmLevels.URGENT, failureMessage, createEventContext());
+                            AlarmLevels.URGENT, msgs, createEventContext());
+                }
 
                 return permanentFailure;
             }

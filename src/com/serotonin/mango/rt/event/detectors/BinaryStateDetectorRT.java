@@ -41,6 +41,18 @@ public class BinaryStateDetectorRT extends StateDetectorRT {
     }
 
     @Override
+    protected LocalizableMessage getSmsMessage() {
+        String name = vo.njbGetDataPoint().getName();
+        String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.isBinaryState(),
+                TextRenderer.HINT_SPECIFIC);
+        LocalizableMessage durationDescription = getDurationDescription();
+
+        if (durationDescription == null)
+            return new LocalizableMessage("event.detector.state", name, prettyText);
+        return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription);
+    }
+
+    @Override
     protected boolean stateDetected(PointValueTime newValue) {
         boolean newBinary = newValue.getBooleanValue();
         return newBinary == vo.isBinaryState();

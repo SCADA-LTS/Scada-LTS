@@ -19,11 +19,14 @@
 package com.serotonin.mango.rt.event.compound;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.rt.event.EventDetectorListener;
+import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.type.CompoundDetectorEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -52,8 +55,10 @@ public class CompoundEventDetectorRT implements EventDetectorListener, ILifecycl
     }
 
     private void raiseEvent(long time) {
+        LocalizableMessage msg = new LocalizableMessage("event.compound.activated", vo.getName());
+        EventMessages messages = new EventMessages(msg, msg);
         Common.ctx.getEventManager().raiseEvent(eventType, time, vo.isReturnToNormal(), vo.getAlarmLevel(),
-                new LocalizableMessage("event.compound.activated", vo.getName()), null);
+                messages, null);
     }
 
     private void returnToNormal(long time) {

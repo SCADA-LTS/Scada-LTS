@@ -19,11 +19,13 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
@@ -56,6 +58,7 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_RTN_COUSE = "rtnCause";
 	private final static String  COLUMN_NAME_EVENT_ALARM_LEVEL = "alarmLevel";
 	private final static String  COLUMN_NAME_EVENT_MESSAGE = "message";
+	private final static String  COLUMN_NAME_EVENT_MESSAGE_SMS = "messageSms";
 	private final static String  COLUMN_NAME_EVENT_ACK_TS = "ackTs";
 	private final static String  COLUMN_NAME_EVENT_ACK_USER_ID = "ackUserId";
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
@@ -167,14 +170,19 @@ public class PendingEventsDAO {
 		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
 
 		LocalizableMessage message;
+		LocalizableMessage messageSms;
 		try {
 			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+			messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE_SMS));
 		} catch (LocalizableMessageParseException e) {
 			message = new LocalizableMessage("common.default",
 				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+			messageSms = new LocalizableMessage("common.default",
+					rs.getString(COLUMN_NAME_EVENT_MESSAGE_SMS));
 		}
 
-		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
+		EventMessages messages = new EventMessages(message, messageSms);
+		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, messages, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
 		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);

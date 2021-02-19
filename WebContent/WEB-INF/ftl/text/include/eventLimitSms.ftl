@@ -17,4 +17,4 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
 
-<@fmt message=evt.message/> - <@fmt key="ftl.activeAt"/> ${evt.prettyActiveTimestamp}
+<@fmt message=evt.messages.message/> - <@fmt key="ftl.activeAt"/> ${evt.prettyActiveTimestamp}

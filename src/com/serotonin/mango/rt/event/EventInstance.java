@@ -79,7 +79,7 @@ public class EventInstance {
     /**
      * Configuration field. The message associated with the event.
      */
-    private final LocalizableMessage message;
+    private final EventMessages messages;
 
     /**
      * User comments on the event. Added in the events interface after the event has been raised.
@@ -105,15 +105,16 @@ public class EventInstance {
     private final Map<String, Object> context;
 
     public EventInstance(EventType eventType, long activeTimestamp, boolean rtnApplicable, int alarmLevel,
-            LocalizableMessage message, Map<String, Object> context) {
+                         EventMessages messages, Map<String, Object> context) {
         this.eventType = eventType;
         this.activeTimestamp = activeTimestamp;
         this.rtnApplicable = rtnApplicable;
         this.alarmLevel = alarmLevel;
-        if (message == null)
-            this.message = new LocalizableMessage("common.noMessage");
+        if (messages == null) {
+            this.messages = new EventMessages(new LocalizableMessage("common.noMessage"), new LocalizableMessage("common.noMessage"));
+        }
         else
-            this.message = message;
+            this.messages = messages;
         this.context = context;
     }
 
@@ -236,8 +237,8 @@ public class EventInstance {
         return rtnTimestamp;
     }
 
-    public LocalizableMessage getMessage() {
-        return message;
+    public EventMessages getMessages() {
+        return messages;
     }
 
     public boolean isRtnApplicable() {
@@ -335,7 +336,7 @@ public class EventInstance {
 		result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
 		result = prime * result + ((handlers == null) ? 0 : handlers.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + ((messages == null) ? 0 : messages.hashCode());
 		result = prime * result + (rtnApplicable ? 1231 : 1237);
 		result = prime * result + rtnCause;
 		result = prime * result + (int) (rtnTimestamp ^ (rtnTimestamp >>> 32));
@@ -390,10 +391,10 @@ public class EventInstance {
 			return false;
 		if (id != other.id)
 			return false;
-		if (message == null) {
-			if (other.message != null)
+		if (messages == null) {
+			if (other.messages != null)
 				return false;
-		} else if (!message.equals(other.message))
+		} else if (!messages.equals(other.messages))
 			return false;
 		if (rtnApplicable != other.rtnApplicable)
 			return false;
@@ -409,7 +410,7 @@ public class EventInstance {
 	}
 
 	public EventInstance copyWithContext(Map<String, Object> context) {
-        EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, message, context);
+        EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, messages, context);
         eventInstance.setId(id);
         eventInstance.setAcknowledgedByUserId(acknowledgedByUserId);
         eventInstance.setAcknowledgedByUsername(acknowledgedByUsername);

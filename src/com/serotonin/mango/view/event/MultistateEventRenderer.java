@@ -50,8 +50,8 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
     @JsonRemoteProperty(innerType = MultistateEventValue.class)
     private List<MultistateEventValue> multistateEventValues = new ArrayList<MultistateEventValue>();
 
-    public void addMultistateEventValue(int key, String shortText, String longText, String colour) {
-        multistateEventValues.add(new MultistateEventValue(key, shortText, longText, colour));
+    public void addMultistateEventValue(int key, String text) {
+        multistateEventValues.add(new MultistateEventValue(key, text));
     }
 
     public List<MultistateEventValue> getMultistateEventValues() {
@@ -63,54 +63,18 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
     }
 
     @Override
-    protected String getShortTextImpl(MangoValue value, int hint) {
+    protected String getTextImpl(MangoValue value) {
         if (!(value instanceof com.serotonin.mango.rt.dataImage.types.MultistateValue))
             return null;
-        return getShortText(value.getIntegerValue(), hint);
+        return getText(value.getIntegerValue());
     }
 
     @Override
-    protected String getLongTextImpl(MangoValue value, int hint) {
-        if (!(value instanceof com.serotonin.mango.rt.dataImage.types.MultistateValue))
-            return null;
-        return getLongText(value.getIntegerValue(), hint);
-    }
-
-    @Override
-    public String getShortText(int value, int hint) {
-        if (hint == HINT_RAW)
-            return Integer.toString(value);
-
-        MultistateEventValue mv = getMultistateEventValue(value);
-        if (mv == null)
-            return Integer.toString(value);
-        return mv.getShortText();
-    }
-
-    @Override
-    public String getLongText(int value, int hint) {
-        if (hint == HINT_RAW)
-            return Integer.toString(value);
-
-        MultistateEventValue mv = getMultistateEventValue(value);
-        if (mv == null)
-            return Integer.toString(value);
-        return mv.getLongText();
-    }
-
-    @Override
-    protected String getColourImpl(MangoValue value) {
-        if (!(value instanceof com.serotonin.mango.rt.dataImage.types.MultistateValue))
-            return null;
-        return getColour(value.getIntegerValue());
-    }
-
-    @Override
-    public String getColour(int value) {
+    public String getText(int value) {
         MultistateEventValue mv = getMultistateEventValue(value);
         if (mv == null)
             return null;
-        return mv.getColour();
+        return mv.getText();
     }
 
     private MultistateEventValue getMultistateEventValue(int value) {

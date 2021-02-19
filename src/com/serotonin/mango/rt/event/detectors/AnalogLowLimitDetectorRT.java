@@ -71,6 +71,17 @@ public class AnalogLowLimitDetectorRT extends TimeDelayedEventDetectorRT {
         return new LocalizableMessage("event.detector.lowLimitPeriod", name, prettyLimit, durationDescription);
     }
 
+    @Override
+    protected LocalizableMessage getSmsMessage() {
+        LocalizableMessage durationDescription = getDurationDescription();
+        String name = vo.njbGetDataPoint().getName();
+        String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
+
+        if (durationDescription == null)
+            return new LocalizableMessage("event.detector.lowLimit", name, prettyLimit);
+        return new LocalizableMessage("event.detector.lowLimitPeriod", name, prettyLimit, durationDescription);
+    }
+
     public boolean isEventActive() {
         return eventActive;
     }

@@ -486,4 +486,5 @@ public class WatchListDwr extends BaseDwr {
 		DataExportDefinition def = new DataExportDefinition(pointIds, from, to);
 		Common.getUser().setDataExportDefinition(def);
 	}
+
 }

@@ -2,7 +2,10 @@ package com.serotonin.mango.rt.event.maintenance;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.serotonin.mango.rt.event.EventMessages;
 import org.joda.time.DateTime;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -35,7 +38,8 @@ public class MaintenanceEventRT implements ModelTimeoutClient<Boolean> {
 
     private void raiseEvent(long time) {
         if (!eventActive) {
-            Common.ctx.getEventManager().raiseEvent(eventType, time, true, vo.getAlarmLevel(), getMessage(), null);
+            EventMessages messages = new EventMessages(getMessage(), getMessage());
+            Common.ctx.getEventManager().raiseEvent(eventType, time, true, vo.getAlarmLevel(), messages, null);
             eventActive = true;
         }
     }
