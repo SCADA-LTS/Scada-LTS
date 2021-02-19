@@ -894,7 +894,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
-  /api/point_properties/{id}/purge:
+  /point_properties/{id}/purge:
     patch:
       tags:
         - PointPropertiesAPI
@@ -926,7 +926,7 @@ paths:
                 properties:
                   deleted:
                     type: number
-  /api/point_properties/{id}/clearcache:
+  /point_properties/{id}/clearcache:
     patch:
       tags:
         - PointPropertiesAPI
@@ -944,7 +944,7 @@ paths:
               schema:
                 type: string
 
-  /api/point_properties/{id}/toggle:
+  /point_properties/{id}/toggle:
     patch:
       tags:
         - PointPropertiesAPI

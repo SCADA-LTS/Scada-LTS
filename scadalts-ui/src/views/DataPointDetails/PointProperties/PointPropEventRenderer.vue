@@ -17,78 +17,39 @@
 		<v-col cols="12">
 			<!-- BINARY EVENT RENDERER -->
 			<v-row v-if="selected === 1" dense>
-				<v-col cols="1">
-					<v-menu offset-y>
-						<template v-slot:activator="{ on }">
-							<v-btn :color="data.eventTextRenderer.zeroColour" v-on="on" block> </v-btn>
-						</template>
-						<v-color-picker v-model="data.eventTextRenderer.zeroColour"> </v-color-picker>
-					</v-menu>
-				</v-col>
-				<v-col cols="4">
+				
+				<v-col cols="6">
 					<v-text-field
-						v-model="data.eventTextRenderer.zeroShortLabel"
-						:label="$t('datapointDetails.pointProperties.eventRenderer.label.short.zero')"
+						v-model="data.eventTextRenderer.zeroLabel"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.zero')"
 						dense
 					>
 					</v-text-field>
 				</v-col>
-				<v-col cols="7">
+
+				
+				<v-col cols="6">
 					<v-text-field
-						v-model="data.eventTextRenderer.zeroLongLabel"
-						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long.zero')"
+						v-model="data.eventTextRenderer.oneLabel"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.one')"
 						dense
 					>
 					</v-text-field>
 				</v-col>
-				<v-col cols="1">
-					<v-menu offset-y>
-						<template v-slot:activator="{ on }">
-							<v-btn :color="data.eventTextRenderer.oneColour" v-on="on" block> </v-btn>
-						</template>
-						<v-color-picker v-model="data.eventTextRenderer.oneColour"> </v-color-picker>
-					</v-menu>
-				</v-col>
-				<v-col cols="4">
-					<v-text-field
-						v-model="data.eventTextRenderer.oneShortLabel"
-						:label="$t('datapointDetails.pointProperties.eventRenderer.label.short.one')"
-						dense
-					>
-					</v-text-field>
-				</v-col>
-				<v-col cols="7">
-					<v-text-field
-						v-model="data.eventTextRenderer.oneLongLabel"
-						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long.one')"
-						dense
-					>
-					</v-text-field>
-				</v-col>
+				
 			</v-row>
 
 			<!-- MULTISTATE RENDERER PROPERTIES -->
 			<v-row v-if="selected === 2" dense>
-				<v-col cols="1">
-					<v-menu offset-y>
-						<template v-slot:activator="{ on }">
-							<v-btn :color="multistateRenderer.colour" v-on="on" block> </v-btn>
-						</template>
-						<v-color-picker v-model="multistateRenderer.colour"> </v-color-picker>
-					</v-menu>
-				</v-col>
 				<v-col cols="2">
 					<v-text-field v-model="multistateRenderer.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense>
 					</v-text-field>
 				</v-col>
-				<v-col cols="3">
-					<v-text-field v-model="multistateRenderer.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
-					</v-text-field>
-				</v-col>
-				<v-col cols="6">
+
+				<v-col cols="10">
 					<v-text-field
-						v-model="multistateRenderer.longText"
-						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
+						v-model="multistateRenderer.text"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 						dense
 						append-outer-icon="mdi-plus-circle"
 						@click:append-outer="addMultistateValue"
@@ -99,24 +60,16 @@
 				<v-divider></v-divider>
 
 				<v-col cols="12" v-if="data.eventTextRenderer.multistateEventValues">
-					<v-row v-for="e in data.eventTextRenderer.multistateEventValues" :key="e" dense>
-						<v-col cols="1">
-							<v-btn :color="e.colour" block> </v-btn>
-						</v-col>
+					<v-row v-for="e in data.eventTextRenderer.multistateEventValues" :key="e.key" dense>
 
 						<v-col cols="2">
 							<v-text-field v-model="e.key" :label="$t('datapointDetails.pointProperties.eventRenderer.label.key')" dense> </v-text-field>
 						</v-col>
 
-						<v-col cols="3">
-							<v-text-field v-model="e.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
-							</v-text-field>
-						</v-col>
-
-						<v-col cols="6">
+						<v-col cols="10">
 							<v-text-field
-								v-model="e.longText"
-								:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
+								v-model="e.text"
+								:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 								dense
 								append-outer-icon="mdi-close-circle-outline"
 								@click:append-outer="delMultistateValue(e)"
@@ -129,28 +82,18 @@
 
 			<!-- RANGE RENDERER PROPERTIES -->
 			<v-row v-if="selected === 4" dense>
-				<v-col cols="1">
-					<v-menu offset-y>
-						<template v-slot:activator="{ on }">
-							<v-btn :color="rangeRenderer.colour" v-on="on" block> </v-btn>
-						</template>
-						<v-color-picker v-model="rangeRenderer.colour"> </v-color-picker>
-					</v-menu>
-				</v-col>
+				
 				<v-col cols="2">
 					<v-text-field v-model="rangeRenderer.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
 				</v-col>
 				<v-col cols="2">
 					<v-text-field v-model="rangeRenderer.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
 				</v-col>
-				<v-col cols="3">
-					<v-text-field v-model="rangeRenderer.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
-					</v-text-field>
-				</v-col>
-				<v-col cols="4">
+
+				<v-col cols="8">
 					<v-text-field
-						v-model="rangeRenderer.longText"
-						:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
+						v-model="rangeRenderer.text"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 						dense
 						append-outer-icon="mdi-plus-circle"
 						@click:append-outer="addRangeValue"
@@ -161,25 +104,19 @@
 				<v-divider></v-divider>
 
 				<v-col cols="12">
-					<v-row v-for="e in data.eventTextRenderer.rangeEventValues" :key="e" dense>
-						<v-col cols="1">
-							<v-btn :color="e.colour" block></v-btn>
-						</v-col>
-
+					<v-row v-for="e in data.eventTextRenderer.rangeEventValues" :key="e.from" dense>
+						
 						<v-col cols="2">
 							<v-text-field v-model="e.from" :label="$t('datapointDetails.pointProperties.eventRenderer.label.from')" dense> </v-text-field>
 						</v-col>
 						<v-col cols="2">
 							<v-text-field v-model="e.to" :label="$t('datapointDetails.pointProperties.eventRenderer.label.to')" dense> </v-text-field>
 						</v-col>
-						<v-col cols="3">
-							<v-text-field v-model="e.shortText" :label="$t('datapointDetails.pointProperties.eventRenderer.label.short')" dense>
-							</v-text-field>
-						</v-col>
-						<v-col cols="4">
+
+						<v-col cols="8">
 							<v-text-field
-								v-model="e.longText"
-								:label="$t('datapointDetails.pointProperties.eventRenderer.label.long')"
+								v-model="e.text"
+								:label="$t('datapointDetails.pointProperties.textRenderer.label.text')"
 								dense
 								append-outer-icon="mdi-close-circle-outline"
 								@click:append-outer="delRangeValue(e)"
@@ -201,8 +138,8 @@ export default {
 	data() {
 		return {
 			selected: undefined,
-			rangeRenderer: { from: 0, to: 0, shortText: '', longText: '', colour: '#458e23' },
-			multistateRenderer: { key: 0, shortText: '', longText: '', colour: '#458e23' },
+			rangeRenderer: { from: 0, to: 0, text: ''},
+			multistateRenderer: { key: 0, text: ''},
 		};
 	},
 
@@ -281,15 +218,13 @@ export default {
 			this.rangeRenderer = {
 				from: 0,
 				to: 0,
-				shortText: '',
-				longText: '',
-				colour: '#458e23',
+				text: ''
 			};
 		},
 		delRangeValue(val) {
 			this.data.eventTextRenderer.rangeEventValues = this.data.eventTextRenderer.rangeEventValues.filter(
 				(e) => {
-					return e.longText !== val.longText;
+					return e.text !== val.text;
 				},
 			);
 		},
@@ -298,7 +233,7 @@ export default {
 			this.data.eventTextRenderer.multistateEventValues.push(
 				Object.assign({}, this.multistateRenderer),
 			);
-			this.rangeRenderer = { key: 0, shortText: '', longText: '', colour: '#458e23' };
+			this.rangeRenderer = { key: 0, text: '' };
 		},
 		delMultistateValue(val) {
 			this.data.eventTextRenderer.multistateEventValues = this.data.eventTextRenderer.multistateEventValues.filter(

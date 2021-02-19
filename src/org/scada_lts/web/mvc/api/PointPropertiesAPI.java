@@ -693,7 +693,7 @@ public class PointPropertiesAPI {
         }
     }
 
-    @PatchMapping(value = "/api/point_properties/{id}/purge")
+    @PatchMapping(value = "/{id}/purge")
     public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id, @RequestParam Map<String, String> query, HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
@@ -720,7 +720,7 @@ public class PointPropertiesAPI {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PatchMapping(value = "/api/point_properties/{id}/clearcache")
+    @PatchMapping(value = "/{id}/clearcache")
     public ResponseEntity<String> clearDataPointCache(@PathVariable("id") int id, HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
@@ -741,7 +741,7 @@ public class PointPropertiesAPI {
         }
     }
 
-    @PatchMapping(value = "/api/point_properties/{id}/toggle")
+    @PatchMapping(value = "/{id}/toggle")
     public ResponseEntity<String> toggleDataPoint(@PathVariable("id") int id, HttpServletRequest request) {
         try {
             User user = Common.getUser(request);

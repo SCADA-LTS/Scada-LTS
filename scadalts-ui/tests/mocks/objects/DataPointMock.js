@@ -10,7 +10,7 @@ export const dataPointMock = {
 	"loggingType": 4,
 	"intervalLoggingPeriodType": 2,
 	"intervalLoggingPeriod": 15,
-	"intervalLoggingType": 4,
+	"intervalLoggingType": 1,
 	"tolerance": 0.0,
 	"purgeType": 7,
 	"purgePeriod": 1,

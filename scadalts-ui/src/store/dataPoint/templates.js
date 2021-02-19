@@ -131,12 +131,8 @@ export const chartRenderersTemplates = [
 export const eventRenderersTemplates = [
 	{},
 	{
-		zeroShortLabel: '',
-		zeroLongLabel: '',
-		zeroColour: '#000000',
-		oneShortLabel: '',
-		oneLongLabel: '',
-		oneColour: '#000000',
+		zeroLabel: '',
+		oneLabel: '',
 		typeName: 'eventTextRendererBinary',
 		def: {
 			id: 0,
@@ -145,9 +141,7 @@ export const eventRenderersTemplates = [
 			nameKey: 'textRenderer.binary',
 			supportedDataTypes: [1],
 		},
-		colour: null,
-		metaShortText: null,
-		metaLongText: null,
+		text: null,
 	},
 	{
 		multistateEventValues: [],
@@ -159,9 +153,7 @@ export const eventRenderersTemplates = [
 			nameKey: 'textRenderer.multistate',
 			supportedDataTypes: [2],
 		},
-		colour: null,
-		metaShortText: null,
-		metaLongText: null,
+		text: null,
 	},
 	{},
 	{
@@ -174,9 +166,7 @@ export const eventRenderersTemplates = [
 			nameKey: 'textRenderer.range',
 			supportedDataTypes: [3],
 		},
-		colour: null,
-		metaShortText: null,
-		metaLongText: null,
+		text: null,
 	},
 ];
 

@@ -4,10 +4,15 @@ import { expect } from 'chai';
 import { createLocalVue, mount } from '@vue/test-utils';
 import i18n from '@/i18n';
 
-import modules from '../../mocks/store/dataPointMock';
+import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointProperties from '@/views/DataPointDetails/PointProperties'
 import dataPointMock from '../../mocks/objects/DataPointMock';
+
+
+const modules = {
+    dataPoint
+}
 
 const store = new Vuex.Store({ modules });
 

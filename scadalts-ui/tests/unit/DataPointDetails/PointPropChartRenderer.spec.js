@@ -4,10 +4,14 @@ import { expect } from 'chai';
 import { createLocalVue, mount } from '@vue/test-utils';
 import i18n from '@/i18n';
 
-import modules from '../../mocks/store/dataPointMock';
+import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointPropChartRenderer from '@/views/DataPointDetails/PointProperties/PointPropChartRenderer'
 import dataPointMock from '../../mocks/objects/DataPointMock';
+
+const modules = {
+    dataPoint
+}
 
 const store = new Vuex.Store({ modules });
 
@@ -37,7 +41,7 @@ describe('Point Properties Tests --- Chart Renderer', () => {
 		expect(wrapper.name()).to.equal('PointPropChartRenderer');
         expect(wrapper.vm.data.id).to.equal(1);
         expect(wrapper.vm.data.chartRenderer).to.equal(null);
-        expect(wrapper.vm.selected).to.equal(undefined);
+        expect(wrapper.vm.selected).to.equal(-1);
 	});
 
     it('Select has 4 Items', () => {
