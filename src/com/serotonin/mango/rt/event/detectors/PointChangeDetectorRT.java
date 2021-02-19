@@ -40,20 +40,14 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
     }
 
     @Override
-    public LocalizableMessage getSmsMessage() {
-        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
-        if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
-            if (vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null)
-                return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
-                        vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
-            else
-                return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                        formatValue(oldValue), formatValue(newValue), description, "");
+    public LocalizableMessage getShortMessage() {
+        if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone") &&
+                (vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null)) {
+            return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
+                    vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
         } else {
-            return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                    formatValue(oldValue), formatValue(newValue), description,  "");
+            return getMessage();
         }
-
     }
 
     private String formatValue(MangoValue value) {

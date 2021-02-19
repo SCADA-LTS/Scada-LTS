@@ -50,14 +50,14 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
 
     @Override
     public LocalizableMessage getMessage() {
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                vo.getChangeCount(), getDurationDescription());
+        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        return new LocalizableMessage("event.detector.change", vo.njbGetDataPoint().getName(),
+                vo.getChangeCount(), getDurationDescription(), description);
     }
 
     @Override
-    protected LocalizableMessage getSmsMessage() {
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                vo.getChangeCount(), getDurationDescription());
+    protected LocalizableMessage getShortMessage() {
+        return getMessage();
     }
 
     public boolean isEventActive() {

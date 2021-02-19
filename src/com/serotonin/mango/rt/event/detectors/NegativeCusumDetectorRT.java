@@ -66,7 +66,7 @@ public class NegativeCusumDetectorRT extends TimeDelayedEventDetectorRT {
     }
 
     @Override
-    protected LocalizableMessage getSmsMessage() {
+    protected LocalizableMessage getShortMessage() {
         String name = vo.njbGetDataPoint().getName();
         String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();

@@ -49,6 +49,8 @@ public interface EventTextRenderer extends Serializable {
 
     String getText(MangoValue value);
 
+    String getText(String value);
+
     String getMetaText();
 
     String getTypeName();

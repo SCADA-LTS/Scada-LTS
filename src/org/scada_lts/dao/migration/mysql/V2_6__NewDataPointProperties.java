@@ -27,6 +27,7 @@ public class V2_6__NewDataPointProperties extends BaseJavaMigration {
         updateDataPointsTable(jdbcTmp);
 
         jdbcTmp.execute("ALTER TABLE events ADD shortMessage LONGTEXT;");
+        jdbcTmp.update("UPDATE events SET message = CONCAT(message, '||') WHERE typeId = 1;");
 
     }
 
