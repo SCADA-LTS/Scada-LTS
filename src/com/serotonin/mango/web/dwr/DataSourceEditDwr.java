@@ -1291,6 +1291,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
                                                        int updatePeriods, int updatePeriodType, String url,
+                                                       String username, String password,
                                                        int timeoutSeconds, int retries, boolean stop) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
@@ -1300,6 +1301,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setUpdatePeriods(updatePeriods);
         ds.setUpdatePeriodType(updatePeriodType);
         ds.setUrl(url);
+        ds.setUsername(username);
+        ds.setPassword(password);
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
@@ -1310,6 +1313,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
                                                                               int updatePeriods, int updatePeriodType, String url,
+                                                                              String username, String password,
                                                                               int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
@@ -1319,6 +1323,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setUpdatePeriods(updatePeriods);
         ds.setUpdatePeriodType(updatePeriodType);
         ds.setUrl(url);
+        ds.setUsername(username);
+        ds.setPassword(password);
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
@@ -1347,10 +1353,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     @MethodFilter
-    public String testHttpRetrieverValueParams(String url, int timeoutSeconds,
+    public String testHttpRetrieverValueParams(String url, String username, String password, int timeoutSeconds,
                                                int retries, String valueRegex, int dataTypeId, String valueFormat) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
+            String data = HttpRetrieverDataSourceRT.getData(url, username, password,
                     timeoutSeconds, retries);
 
             Pattern valuePattern = Pattern.compile(valueRegex);
@@ -1369,10 +1375,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     }
 
     @MethodFilter
-    public String testHttpRetrieverTimeParams(String url, int timeoutSeconds,
+    public String testHttpRetrieverTimeParams(String url, String username, String password, int timeoutSeconds,
                                               int retries, String timeRegex, String timeFormat) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
+            String data = HttpRetrieverDataSourceRT.getData(url, username, password,
                     timeoutSeconds, retries);
 
             Pattern timePattern = Pattern.compile(timeRegex);

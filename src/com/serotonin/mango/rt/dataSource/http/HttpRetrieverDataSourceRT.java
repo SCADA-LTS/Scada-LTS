@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.rt.dataSource.http;
 
+import java.util.Base64;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -41,11 +43,13 @@ import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.ds.reactivation.ReactivationConnectHttpRetriever;
 import org.scada_lts.ds.state.SleepStateDs;
 import org.scada_lts.ds.state.StopChangeEnableStateDs;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 /**
  * @author Matthew Lohbihler
  */
 public class HttpRetrieverDataSourceRT extends PollingDataSource {
+    
     private static final int READ_LIMIT = 1024 * 1024; // One MB
 
     public static final int DATA_RETRIEVAL_FAILURE_EVENT = 1;
@@ -74,7 +78,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     protected void doPoll(long time) {
         String data;
         try {
-            data = getData(vo.getUrl(), vo.getTimeoutSeconds(), vo.getRetries(), vo.isStop(), vo.getReactivation());
+            data = getData(vo.getUrl(), vo.getUsername(), vo.getPassword(), vo.getTimeoutSeconds(), vo.getRetries(), vo.isStop(), vo.getReactivation());
         } catch (Exception e) {
             LocalizableMessage lm;
             if (e instanceof LocalizableException)
@@ -121,15 +125,29 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         else
             returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
+    
+    private static GetMethod createMethodForClient(String url, String username, String password) {
+	GetMethod method = new GetMethod(url);
+	// Enable authentication if username and password are present
+	if (!(StringUtils.isEmpty(username) || StringUtils.isEmpty(password))) {
+	    // Enable authentication
+	    method.setDoAuthentication(true);
+	    // Add authorization header
+	    byte[] credentials = (username + ':' + password).getBytes();
+	    String headerValue = "Basic " + Base64.getEncoder().encodeToString(credentials);
+	    method.addRequestHeader("Authorization", headerValue);
+	}
+	return method;
+    }
 
-    public static boolean testConnection(String url, int timeoutSeconds, int retries) {
+    public static boolean testConnection(String url, String username, String password, int timeoutSeconds, int retries) {
         String data = "";
         for (int i = 0; i <= retries; i++) {
             HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
             GetMethod method = null;
             LocalizableMessage message;
             try {
-                method = new GetMethod(url);
+                method = createMethodForClient(url, username, password);
                 int responseCode = client.executeMethod(method);
                 if (responseCode == HttpStatus.SC_OK) {
                     data = HttpUtils.readResponseBody(method, READ_LIMIT);
@@ -146,14 +164,14 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         return false;
     }
 
-    public String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r) throws LocalizableException {
+    public String getData(String url, String username, String password, int timeoutSeconds, int retries, boolean stop, ReactivationDs r) throws LocalizableException {
         String data = "";
         for (int i = 0; i <= retries; i++) {
             HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
             GetMethod method = null;
             LocalizableMessage message;
             try {
-                method = new GetMethod(url);
+                method = createMethodForClient(url, username, password);
                 int responseCode = client.executeMethod(method);
                 if (responseCode == HttpStatus.SC_OK) {
                     data = HttpUtils.readResponseBody(method, READ_LIMIT);
@@ -182,18 +200,17 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         }
         return data;
     }
-
+    
     @Deprecated
-    public static String getData(String url, int timeoutSeconds, int retries) throws LocalizableException {
-        // Try to get the data.
-        String data;
-        while (true) {
-            HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
+    public static String getData(String url, String username, String password, int timeoutSeconds, int retries) throws LocalizableException {
+	String data;
+	while (true) {
+	    HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
             GetMethod method = null;
             LocalizableMessage message;
 
             try {
-                method = new GetMethod(url);
+                method = createMethodForClient(url, username, password);
                 int responseCode = client.executeMethod(method);
                 if (responseCode == HttpStatus.SC_OK) {
                     data = HttpUtils.readResponseBody(method, READ_LIMIT);
@@ -220,8 +237,8 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
             catch (InterruptedException e) {
                 // no op
             }
-        }
-
-        return data;
+	}
+	return data;
     }
+
 }

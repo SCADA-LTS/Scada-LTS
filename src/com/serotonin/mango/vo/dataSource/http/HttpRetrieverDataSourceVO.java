@@ -46,50 +46,55 @@ import org.scada_lts.ds.model.ReactivationDs;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSourceVO> implements ICheckReactivation{
+public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSourceVO> implements ICheckReactivation {
     public static final Type TYPE = Type.HTTP_RETRIEVER;
 
     @Override
     protected void addEventTypes(List<EventTypeVO> ets) {
-        ets.add(createEventType(HttpRetrieverDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, new LocalizableMessage(
-                "event.ds.dataRetrieval")));
-        ets.add(createEventType(HttpRetrieverDataSourceRT.PARSE_EXCEPTION_EVENT, new LocalizableMessage(
-                "event.ds.dataParse")));
+	ets.add(createEventType(HttpRetrieverDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT,
+		new LocalizableMessage("event.ds.dataRetrieval")));
+	ets.add(createEventType(HttpRetrieverDataSourceRT.PARSE_EXCEPTION_EVENT,
+		new LocalizableMessage("event.ds.dataParse")));
     }
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
     static {
-        EVENT_CODES.addElement(HttpRetrieverDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, "DATA_RETRIEVAL_FAILURE");
-        EVENT_CODES.addElement(HttpRetrieverDataSourceRT.PARSE_EXCEPTION_EVENT, "PARSE_EXCEPTION");
+	EVENT_CODES.addElement(HttpRetrieverDataSourceRT.DATA_RETRIEVAL_FAILURE_EVENT, "DATA_RETRIEVAL_FAILURE");
+	EVENT_CODES.addElement(HttpRetrieverDataSourceRT.PARSE_EXCEPTION_EVENT, "PARSE_EXCEPTION");
     }
 
     @Override
     public ExportCodes getEventCodes() {
-        return EVENT_CODES;
+	return EVENT_CODES;
     }
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        return new LocalizableMessage("common.default", StringUtils.truncate(url, 30, " ..."));
+	return new LocalizableMessage("common.default", StringUtils.truncate(url, 30, " ..."));
     }
 
     @Override
     public Type getType() {
-        return TYPE;
+	return TYPE;
     }
 
     @Override
     public DataSourceRT createDataSourceRT() {
-        return new HttpRetrieverDataSourceRT(this);
+	return new HttpRetrieverDataSourceRT(this);
     }
 
     @Override
     public HttpRetrieverPointLocatorVO createPointLocator() {
-        return new HttpRetrieverPointLocatorVO();
+	return new HttpRetrieverPointLocatorVO();
     }
 
     @JsonRemoteProperty
     private String url;
+    @JsonRemoteProperty
+    private String username;
+    @JsonRemoteProperty
+    private String password;
+    @JsonRemoteProperty
     private int updatePeriodType = Common.TimePeriods.MINUTES;
     @JsonRemoteProperty
     private int updatePeriods = 5;
@@ -97,104 +102,124 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
     private int timeoutSeconds = 30;
     @JsonRemoteProperty
     private int retries = 2;
-
     @JsonRemoteProperty
     private boolean stop = false;
-
     @JsonRemoteProperty
     private ReactivationDs reactivation = new ReactivationDs();
 
     public String getUrl() {
-        return url;
+	return url;
     }
 
     public void setUrl(String url) {
-        this.url = url;
+	this.url = url;
+    }
+
+    public String getUsername() {
+	return username;
+    }
+
+    public void setUsername(String username) {
+	this.username = username;
+    }
+
+    public String getPassword() {
+	return password;
+    }
+
+    public void setPassword(String password) {
+	this.password = password;
     }
 
     public int getUpdatePeriodType() {
-        return updatePeriodType;
+	return updatePeriodType;
     }
 
     public void setUpdatePeriodType(int updatePeriodType) {
-        this.updatePeriodType = updatePeriodType;
+	this.updatePeriodType = updatePeriodType;
     }
 
     public int getUpdatePeriods() {
-        return updatePeriods;
+	return updatePeriods;
     }
 
     public void setUpdatePeriods(int updatePeriods) {
-        this.updatePeriods = updatePeriods;
+	this.updatePeriods = updatePeriods;
     }
 
     public int getTimeoutSeconds() {
-        return timeoutSeconds;
+	return timeoutSeconds;
     }
 
     public void setTimeoutSeconds(int timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
+	this.timeoutSeconds = timeoutSeconds;
     }
 
     public int getRetries() {
-        return retries;
+	return retries;
     }
 
     public void setRetries(int retries) {
-        this.retries = retries;
+	this.retries = retries;
     }
 
     public boolean isStop() {
-        return stop;
+	return stop;
     }
 
     public void setStop(boolean stop) {
-        this.stop = stop;
+	this.stop = stop;
     }
 
     public ReactivationDs getReactivation() {
-        return reactivation;
+	return reactivation;
     }
 
     public void setReactivation(ReactivationDs reactivation) {
-        this.reactivation = reactivation;
+	this.reactivation = reactivation;
     }
 
     @Override
     public void validate(DwrResponseI18n response) {
-        super.validate(response);
-        if (StringUtils.isEmpty(url))
-            response.addContextualMessage("url", "validate.required");
-        if (!Common.TIME_PERIOD_CODES.isValidId(updatePeriodType))
-            response.addContextualMessage("updatePeriodType", "validate.invalidValue");
-        if (updatePeriods <= 0)
-            response.addContextualMessage("updatePeriods", "validate.greaterThanZero");
-        if (timeoutSeconds <= 0)
-            response.addContextualMessage("updatePeriods", "validate.greaterThanZero");
-        if (retries < 0)
-            response.addContextualMessage("retries", "validate.cannotBeNegative");
+	super.validate(response);
+	if (StringUtils.isEmpty(url))
+	    response.addContextualMessage("url", "validate.required");
+	if (!StringUtils.isEmpty(username) && StringUtils.isEmpty(password))
+	    response.addContextualMessage("password", "validate.required");
+	if (!Common.TIME_PERIOD_CODES.isValidId(updatePeriodType))
+	    response.addContextualMessage("updatePeriodType", "validate.invalidValue");
+	if (updatePeriods <= 0)
+	    response.addContextualMessage("updatePeriods", "validate.greaterThanZero");
+	if (timeoutSeconds <= 0)
+	    response.addContextualMessage("timeoutSeconds", "validate.greaterThanZero");
+	if (retries < 0)
+	    response.addContextualMessage("retries", "validate.cannotBeNegative");
     }
 
     @Override
     protected void addPropertiesImpl(List<LocalizableMessage> list) {
-        AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
-        AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.url", url);
-        AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.timeout", timeoutSeconds);
-        AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.retries", retries);
-        AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.stop", stop );
-        AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.reactivation", reactivation );
+	AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.url", url);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.username", username);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.password", password);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.timeout", timeoutSeconds);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.retries", retries);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.stop", stop);
+	AuditEventType.addPropertyMessage(list, "dsEdit.httpRetriever.reactivation", reactivation);
     }
 
     @Override
     protected void addPropertyChangesImpl(List<LocalizableMessage> list, HttpRetrieverDataSourceVO from) {
-        AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
-                from.updatePeriods, updatePeriodType, updatePeriods);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.url", from.url, url);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.timeout", from.timeoutSeconds,
-                timeoutSeconds);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.retries", from.retries, retries);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.stop", from.stop, stop);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.reactivation", from.stop, stop);
+	AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
+		from.updatePeriods, updatePeriodType, updatePeriods);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.url", from.url, url);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.username", from.username, username);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.password", from.password, password);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.timeout", from.timeoutSeconds,
+		timeoutSeconds);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.retries", from.retries, retries);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.stop", from.stop, stop);
+	AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.reactivation", from.stop, stop);
     }
 
     //
@@ -203,58 +228,81 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 1;
+    private static final int version = 2;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(version);
-        SerializationHelper.writeSafeUTF(out, url);
-        out.writeInt(updatePeriodType);
-        out.writeInt(updatePeriods);
-        out.writeInt(timeoutSeconds);
-        out.writeInt(retries);
-        out.writeBoolean(stop);
-        out.writeObject(reactivation);
+	out.writeInt(version);
+	SerializationHelper.writeSafeUTF(out, url);
+	SerializationHelper.writeSafeUTF(out, username);
+	SerializationHelper.writeSafeUTF(out, password);
+	out.writeInt(updatePeriodType);
+	out.writeInt(updatePeriods);
+	out.writeInt(timeoutSeconds);
+	out.writeInt(retries);
+	out.writeBoolean(stop);
+	out.writeObject(reactivation);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
-        int ver = in.readInt();
+	int ver = in.readInt();
 
-        // Switch on the version of the class so that version changes can be elegantly handled.
-        if (ver == 1) {
-            url = SerializationHelper.readSafeUTF(in);
-            updatePeriodType = in.readInt();
-            updatePeriods = in.readInt();
-            timeoutSeconds = in.readInt();
-            ;
-            retries = in.readInt();
-            try {
-                stop = in.readBoolean();
-            } catch (Exception e) {
-                stop = false;
-            }
-            try {
-                reactivation = (ReactivationDs) in.readObject();
-            } catch (Exception e) {
-                reactivation = new ReactivationDs(false, (short) 1,(short) 1);
-            }
-        }
+	// Switch on the version of the class so that version changes can be elegantly
+	// handled.
+	switch (ver) {
+	case 1:
+	    url = SerializationHelper.readSafeUTF(in);
+	    updatePeriodType = in.readInt();
+	    updatePeriods = in.readInt();
+	    timeoutSeconds = in.readInt();
+	    retries = in.readInt();
+	    try {
+		stop = in.readBoolean();
+	    } catch (Exception e) {
+		stop = false;
+	    }
+	    try {
+		reactivation = (ReactivationDs) in.readObject();
+	    } catch (Exception e) {
+		reactivation = new ReactivationDs(false, (short) 1, (short) 1);
+	    }
+	    break;
+	case 2:
+	    url = SerializationHelper.readSafeUTF(in);
+	    username = SerializationHelper.readSafeUTF(in);
+	    password = SerializationHelper.readSafeUTF(in);
+	    updatePeriodType = in.readInt();
+	    updatePeriods = in.readInt();
+	    timeoutSeconds = in.readInt();
+	    retries = in.readInt();
+	    try {
+		stop = in.readBoolean();
+	    } catch (Exception e) {
+		stop = false;
+	    }
+	    try {
+		reactivation = (ReactivationDs) in.readObject();
+	    } catch (Exception e) {
+		reactivation = new ReactivationDs(false, (short) 1, (short) 1);
+	    }
+	    break;
+	}
     }
 
     @Override
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
-        super.jsonDeserialize(reader, json);
-        Integer value = deserializeUpdatePeriodType(json);
-        if (value != null)
-            updatePeriodType = value;
+	super.jsonDeserialize(reader, json);
+	Integer value = deserializeUpdatePeriodType(json);
+	if (value != null)
+	    updatePeriodType = value;
     }
 
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        super.jsonSerialize(map);
-        serializeUpdatePeriodType(map, updatePeriodType);
+	super.jsonSerialize(map);
+	serializeUpdatePeriodType(map, updatePeriodType);
     }
 
     public boolean checkToTrayEnable() {
-        return isEnabled() || isStop() || reactivation.isSleep();
+	return isEnabled() || isStop() || reactivation.isSleep();
     }
 }

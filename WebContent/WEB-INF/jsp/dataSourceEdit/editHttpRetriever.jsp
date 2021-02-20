@@ -48,7 +48,7 @@
   function testValueParams() {
       startImageFader("valueTestImg", true);
       hide("valueTestRow");
-      DataSourceEditDwr.testHttpRetrieverValueParams($get("url"), $get("timeoutSeconds"), $get("retries"),
+      DataSourceEditDwr.testHttpRetrieverValueParams($get("url"), $get("username"), $get("password"), $get("timeoutSeconds"), $get("retries"),
               $get("valueRegex"), $get("dataTypeId"), $get("valueFormat"), testValueParamsCB);
   }
   
@@ -61,7 +61,7 @@
   function testTimeParams() {
       startImageFader("timeTestImg", true);
       hide("timeTestRow");
-      DataSourceEditDwr.testHttpRetrieverTimeParams($get("url"), $get("timeoutSeconds"), $get("retries"),
+      DataSourceEditDwr.testHttpRetrieverTimeParams($get("url"), $get("username"), $get("password"), $get("timeoutSeconds"), $get("retries"),
               $get("timeRegex"), $get("timeFormat"), testTimeParamsCB);
   }
   
@@ -71,13 +71,6 @@
       $set("timeTestResult", result);
   }
 
-  function saveDataSourceImplOld(){
-  DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
-                $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
-                $get("stop"),
-                saveDataSourceCB);
-  }
-
   function saveDataSourceImpl() {
       DataSourceEditDwr.saveHttpRetrieverDataSourceWithReactivationOptions(
                   $get("dataSourceName"),
@@ -85,6 +78,8 @@
                   $get("updatePeriods"),
                   $get("updatePeriodType"),
                   $get("url"),
+                  $get("username"),
+                  $get("password"),
                   $get("timeoutSeconds"),
                   $get("retries"),
                   editDSNewUI.stop,
@@ -93,6 +88,17 @@
                   editDSNewUI.reactivation.value,
                   saveDataSourceCB
       );
+  }
+  
+  function openURL() {
+  	var url = $get('url');
+  	if ($get("username") && $get("password")) {
+  		var urlParts = url.split("://", 2);
+  		if (urlParts.length === 2) {
+  			url = urlParts[0] + "://" + $get("username") + ":" + $get("password") + "@" + urlParts[1];
+  		}
+  	}
+  	window.open(url, 'httpRetrieverTarget');
   }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -156,7 +162,7 @@
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.updatePeriod"/></td>
           <td class="formField">
-            <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
+            <input type="number" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort"/>
             <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
               <tag:timePeriodOptions sst="true" ms="true" s="true" min="true" h="true"/>
             </sst:select>
@@ -167,7 +173,15 @@
           <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.url"/></td>
           <td class="formField">
             <input id="url" type="text" value="${dataSource.url}" class="formLong"/>
-            <tag:img png="bullet_go" onclick="window.open($get('url'), 'httpRetrieverTarget')" title="dsEdit.httpRetriever.openUrl"/>
+            <tag:img png="bullet_go" onclick="openURL()" title="dsEdit.httpRetriever.openUrl"/>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.credentials"/></td>
+          <td class="formField">
+            <fmt:message key="dsEdit.httpRetriever.username"/> <input type="text" id="username" class="formShort"/>
+            <fmt:message key="dsEdit.httpRetriever.password"/> <input type="password" id="password" class="formShort"/>
           </td>
         </tr>
         
