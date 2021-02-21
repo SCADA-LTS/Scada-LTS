@@ -244,7 +244,7 @@
           points[points.length] = {dataPointId: selectedPoints[i].id, parameterName: selectedPoints[i].parameterName,
                   includeTimestamp: selectedPoints[i].includeTimestamp};
       
-      PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true", 
+      PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("username"), $get("password"), $get("useJSON"), $get("usePost") == "true", 
     		  staticHeaderList, staticParameterList, cacheWarningSize, changesOnly, $get("raiseResultWarning"),
     		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
   }
@@ -253,7 +253,7 @@
       showMessage("httpSendTestMessage", "<fmt:message key="publisherEdit.httpSender.sending"/>");
       showMessage("httpSendTestData");
       httpSendTestButtons(true);
-      PublisherEditDwr.httpSenderTest($get("url"), $get("usePost") == "true", staticHeaderList, staticParameterList,
+      PublisherEditDwr.httpSenderTest($get("url"), $get("username"), $get("password"), $get("useJSON"), $get("usePost") == "true", staticHeaderList, staticParameterList,
     		  httpSendTestCB);
   }
   
@@ -313,12 +313,26 @@
           </tr>
           
           <tr>
+            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.useJSON"/></td>
+            <td class="formField"><sst:checkbox id="useJSON"
+                    selectedValue="${publisher.useJSON}"/></td>
+          </tr>
+          
+          <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.url"/></td>
             <td class="formField">
               <input type="text" id="url" value="${publisher.url}" class="formLong"/>
               <div id="urlMsg" class="formError" style="display:none;"></div>
             </td>
           </tr>
+          
+          <tr>
+	        <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.credentials"/></td>
+	        <td class="formField">
+	          <fmt:message key="publisherEdit.httpSender.username"/> <input type="text" id="username" class="formShort"/>
+	          <fmt:message key="publisherEdit.httpSender.password"/> <input type="password" id="password" class="formShort"/>
+	        </td>
+	      </tr>
           
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticHeaders"/></td>

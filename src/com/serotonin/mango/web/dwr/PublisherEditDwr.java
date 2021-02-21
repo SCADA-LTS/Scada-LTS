@@ -82,7 +82,7 @@ public class PublisherEditDwr extends BaseDwr {
     // HTTP sender stuff
     //
     public DwrResponseI18n saveHttpSender(String name, String xid, boolean enabled, List<HttpPointVO> points,
-            String url, boolean usePost, List<KeyValuePair> staticHeaders, List<KeyValuePair> staticParameters,
+            String url, String username, String password, boolean useJSON, boolean usePost, List<KeyValuePair> staticHeaders, List<KeyValuePair> staticParameters,
             int cacheWarningSize, boolean changesOnly, boolean raiseResultWarning, int dateFormat,
             boolean sendSnapshot, int snapshotSendPeriods, int snapshotSendPeriodType) {
         HttpSenderVO p = (HttpSenderVO) Common.getUser().getEditPublisher();
@@ -92,6 +92,9 @@ public class PublisherEditDwr extends BaseDwr {
         p.setEnabled(enabled);
         p.setPoints(points);
         p.setUrl(url);
+        p.setUsername(username);
+        p.setPassword(password);
+        p.setUseJSON(useJSON);
         p.setUsePost(usePost);
         p.setStaticHeaders(staticHeaders);
         p.setStaticParameters(staticParameters);
@@ -106,9 +109,9 @@ public class PublisherEditDwr extends BaseDwr {
         return trySave(p);
     }
 
-    public void httpSenderTest(String url, boolean usePost, List<KeyValuePair> staticHeaders,
-            List<KeyValuePair> staticParameters) {
-        Common.getUser().setTestingUtility(new HttpSenderTester(url, usePost, staticHeaders, staticParameters));
+    public void httpSenderTest(String url, String username, String password, boolean useJSON, boolean usePost, 
+	    List<KeyValuePair> staticHeaders, List<KeyValuePair> staticParameters) {
+        Common.getUser().setTestingUtility(new HttpSenderTester(url, username, password, useJSON, usePost, staticHeaders, staticParameters));
     }
 
     public String httpSenderTestUpdate() {

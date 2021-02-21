@@ -104,6 +104,12 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
     @JsonRemoteProperty
     private String url;
     @JsonRemoteProperty
+    private String username;
+    @JsonRemoteProperty
+    private String password;
+    @JsonRemoteProperty
+    private boolean useJSON;
+    @JsonRemoteProperty
     private boolean usePost;
     @JsonRemoteProperty(innerType = KeyValuePair.class)
     private List<KeyValuePair> staticHeaders = new ArrayList<KeyValuePair>();
@@ -119,6 +125,30 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public boolean isUseJSON() {
+        return useJSON;
+    }
+
+    public void setUseJSON(boolean useJSON) {
+        this.useJSON = useJSON;
     }
 
     public boolean isUsePost() {
@@ -167,6 +197,12 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
 
         if (StringUtils.isEmpty(url))
             response.addContextualMessage("url", "validate.required");
+        
+        if (!StringUtils.isEmpty(username) && StringUtils.isEmpty(password))
+            response.addContextualMessage("password", "validate.required");
+        
+        if (useJSON && !usePost)
+            response.addContextualMessage("usePost", "publisherEdit.httpSender.mustUsePOSTWithJSON");
 
         for (HttpPointVO point : points) {
             if (StringUtils.isEmpty(point.getParameterName())) {
@@ -185,11 +221,14 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 3;
+    private static final int version = 4;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
         SerializationHelper.writeSafeUTF(out, url);
+        SerializationHelper.writeSafeUTF(out, username);
+        SerializationHelper.writeSafeUTF(out, password);
+        out.writeBoolean(useJSON);
         out.writeBoolean(usePost);
         out.writeObject(staticHeaders);
         out.writeObject(staticParameters);
@@ -220,6 +259,16 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
         }
         else if (ver == 3) {
             url = SerializationHelper.readSafeUTF(in);
+            usePost = in.readBoolean();
+            staticHeaders = (List<KeyValuePair>) in.readObject();
+            staticParameters = (List<KeyValuePair>) in.readObject();
+            raiseResultWarning = in.readBoolean();
+            dateFormat = in.readInt();
+        } else if (ver == 4) {
+            url = SerializationHelper.readSafeUTF(in);
+            username = SerializationHelper.readSafeUTF(in);
+            password = SerializationHelper.readSafeUTF(in);
+            useJSON = in.readBoolean();
             usePost = in.readBoolean();
             staticHeaders = (List<KeyValuePair>) in.readObject();
             staticParameters = (List<KeyValuePair>) in.readObject();

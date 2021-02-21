@@ -18,33 +18,44 @@
  */
 package com.serotonin.mango.web.dwr.beans;
 
+import java.util.Base64;
 import java.util.List;
 
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.publish.httpSender.HttpSenderRT;
+import com.serotonin.util.StringUtils;
 import com.serotonin.web.http.HttpUtils;
 
 /**
  * @author Matthew Lohbihler
  */
 public class HttpSenderTester extends Thread implements TestingUtility {
+    
     private final String url;
+    private final String username;
+    private final String password;
+    private final boolean useJSON;
     private final boolean usePost;
     private final List<KeyValuePair> staticHeaders;
     private final List<KeyValuePair> staticParameters;
 
     private String result;
 
-    public HttpSenderTester(String url, boolean usePost, List<KeyValuePair> staticHeaders,
+    public HttpSenderTester(String url, String username, String password, boolean useJSON, boolean usePost, List<KeyValuePair> staticHeaders,
             List<KeyValuePair> staticParameters) {
         this.url = url;
+        this.username = username;
+        this.password = password;
+        this.useJSON = useJSON;
         this.usePost = usePost;
         this.staticHeaders = staticHeaders;
         this.staticParameters = staticParameters;
@@ -57,12 +68,29 @@ public class HttpSenderTester extends Thread implements TestingUtility {
         if (usePost) {
             PostMethod post = new PostMethod(url);
             post.addParameters(convertToNVPs(staticParameters));
+            if (useJSON) {
+        	try {
+        	    post.setRequestEntity(new StringRequestEntity("{}", "application/json", "utf-8"));
+        	} catch (Exception e) {
+        	    result = "ERROR: " + e.getMessage();
+        	    return;
+        	}
+            }
             method = post;
         }
         else {
             GetMethod get = new GetMethod(url);
             get.setQueryString(convertToNVPs(staticParameters));
             method = get;
+        }
+        
+        // Add authentication
+        if (!(StringUtils.isEmpty(username) || StringUtils.isEmpty(password))) {
+        	byte[] authBytes = (username + ':' + password).getBytes();
+        	String authHeaderValue = "Basic " + Base64.getEncoder().encodeToString(authBytes);
+        	
+        	method.setDoAuthentication(true);
+        	method.addRequestHeader("Authorization", authHeaderValue);
         }
 
         // Add a recognizable header

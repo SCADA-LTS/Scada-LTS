@@ -18,14 +18,22 @@
  */
 package com.serotonin.mango.rt.publish.httpSender;
 
+
 import java.util.*;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.scada_lts.mango.adapter.MangoDataPoint;
+import org.scada_lts.mango.adapter.MangoPointValues;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
@@ -121,18 +129,35 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
         @SuppressWarnings("synthetic-access")
         private boolean send(List<PublishQueueEntry<HttpPointVO>> list) {
             // Prepare the message
-            NameValuePair[] params = createNVPs(vo.getStaticParameters(), list);
+            NameValuePair[] params = createNVPs(vo.getStaticParameters(), list, vo.isUseJSON());
 
             HttpMethodBase method;
             if (vo.isUsePost()) {
                 PostMethod post = new PostMethod(vo.getUrl());
                 post.addParameters(params);
+                if (vo.isUseJSON()) {
+                    try {
+                	post.setRequestEntity(getJSONRequestEntity(list));
+                    } catch (Exception e) {
+                	Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
+                                AlarmLevels.URGENT, new LocalizableMessage("common.default", e.getMessage()), createEventContext());
+                    }
+                }
                 method = post;
             }
             else {
                 GetMethod get = new GetMethod(vo.getUrl());
                 get.setQueryString(params);
                 method = get;
+            }
+            
+            // Add authentication
+            if (!(StringUtils.isEmpty(vo.getUsername()) || StringUtils.isEmpty(vo.getPassword()))) {
+        	byte[] authBytes = (vo.getUsername() + ':' + vo.getPassword()).getBytes();
+        	String authHeaderValue = "Basic " + Base64.getEncoder().encodeToString(authBytes);
+        	
+        	method.setDoAuthentication(true);
+        	method.addRequestHeader("Authorization", authHeaderValue);
             }
 
             // Add a recognizable header
@@ -189,11 +214,15 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
         }
     }
 
-    NameValuePair[] createNVPs(List<KeyValuePair> staticParameters, List<PublishQueueEntry<HttpPointVO>> list) {
+    NameValuePair[] createNVPs(List<KeyValuePair> staticParameters, List<PublishQueueEntry<HttpPointVO>> list, boolean useJSON) {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
         for (KeyValuePair kvp : staticParameters)
             nvps.add(new NameValuePair(kvp.getKey(), kvp.getValue()));
+        
+        // Early return if using JSON
+        if (useJSON)
+            return nvps.toArray(new NameValuePair[nvps.size()]);
 
         for (PublishQueueEntry<HttpPointVO> e : list) {
             HttpPointVO pvo = e.getVo();
@@ -222,5 +251,51 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
         }
 
         return nvps.toArray(new NameValuePair[nvps.size()]);
+    }
+    
+    private Object getJSONPointValue(PointValueTime pvt) {
+	switch (pvt.getValue().getDataType()) {
+	case DataTypes.ALPHANUMERIC:
+	    return pvt.getValue().getStringValue();
+	case DataTypes.BINARY:
+	    return pvt.getValue().getBooleanValue();
+	case DataTypes.NUMERIC:
+	    return pvt.getValue().getDoubleValue();
+	default:
+            throw new ShouldNeverHappenException("Unknown point value time type: " + pvt.getValue().getDataType());
+	}
+    }
+    
+    private RequestEntity getJSONRequestEntity(List<PublishQueueEntry<HttpPointVO>> list) throws JsonProcessingException, UnsupportedEncodingException {
+	Map<String,Object> jsonObject = new HashMap<>();
+    	for (PublishQueueEntry<HttpPointVO> point : list) {
+    	    HttpPointVO pvo = point.getVo();
+    	    PointValueTime pvt = point.getPvt();
+    	    
+    	    if (pvo.isIncludeTimestamp()) {
+    		Map<String,Object> pointJsonObject = new HashMap<>();
+    		pointJsonObject.put("value", getJSONPointValue(pvt));
+    		switch (vo.getDateFormat()) {
+                case HttpSenderVO.DATE_FORMAT_BASIC:
+                    pointJsonObject.put("timestamp",HttpDataSourceServlet.BASIC_SDF_CACHE.getObject().format(new Date(pvt.getTime())));
+                    break;
+                case HttpSenderVO.DATE_FORMAT_TZ:
+                    pointJsonObject.put("timestamp",HttpDataSourceServlet.TZ_SDF_CACHE.getObject().format(new Date(pvt.getTime())));
+                    break;
+                case HttpSenderVO.DATE_FORMAT_UTC:
+                    pointJsonObject.put("timestamp",Long.toString(pvt.getTime()));
+                    break;
+                default:
+                    throw new ShouldNeverHappenException("Unknown date format type: " + vo.getDateFormat());
+                }
+    		jsonObject.put(pvo.getParameterName(), pointJsonObject);
+    	    } else {
+    		jsonObject.put(pvo.getParameterName(), getJSONPointValue(pvt));
+    	    }
+    	}
+    	ObjectMapper jsonMapper = new ObjectMapper();
+    	String jsonReq = jsonMapper.writeValueAsString(jsonObject);
+    	System.out.println(jsonReq);
+	return new StringRequestEntity(jsonReq, "application/json", "utf-8");
     }
 }
