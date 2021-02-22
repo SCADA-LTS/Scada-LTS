@@ -79,7 +79,7 @@ public final class EmailContentUtils {
                     && evt.getMessages().getMessage() != null) {
                 LocalizableMessage subjectMsg;
                 if (notificationType instanceof EmailToSmsHandlerRT.SmsNotificationType) {
-                    subjectMsg = evt.getMessages().getMessageSms();
+                    subjectMsg = evt.getMessages().getShortMessage();
                 } else {
                     subjectMsg = evt.getMessages().getMessage();
                 }

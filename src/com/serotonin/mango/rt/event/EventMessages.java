@@ -4,11 +4,11 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class EventMessages {
     private LocalizableMessage message;
-    private LocalizableMessage messageSms;
+    private LocalizableMessage shortMessage;
 
-    public EventMessages(LocalizableMessage message, LocalizableMessage messageSms) {
+    public EventMessages(LocalizableMessage message, LocalizableMessage shortMessage) {
         this.message = message;
-        this.messageSms = messageSms;
+        this.shortMessage = shortMessage;
     }
 
     public EventMessages() {
@@ -22,11 +22,11 @@ public class EventMessages {
         this.message = message;
     }
 
-    public LocalizableMessage getMessageSms() {
-        return messageSms;
+    public LocalizableMessage getShortMessage() {
+        return shortMessage;
     }
 
-    public void setMessageSms(LocalizableMessage messageSms) {
-        this.messageSms = messageSms;
+    public void setShortMessage(LocalizableMessage shortMessage) {
+        this.shortMessage = shortMessage;
     }
 }

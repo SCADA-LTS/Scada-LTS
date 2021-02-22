@@ -87,6 +87,10 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
 
     public String getText(double value) { return null; }
 
+    public String getText(String value) {
+        return value;
+    }
+
     @Override
     public String getMetaText() {
         return null;

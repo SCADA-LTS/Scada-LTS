@@ -34,26 +34,23 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
 
     @Override
     protected LocalizableMessage getMessage() {
-        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
-        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(), description,
-                formatValue(oldValue), formatValue(newValue), vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
+        String description = (vo.njbGetDataPoint().getDescription() == null || vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(newValue);
+        return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
+                formatValue(oldValue), formatValue(newValue), description, eventRendererText);
     }
 
     @Override
-    public LocalizableMessage getSmsMessage() {
-        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
-        if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone")) {
-            if (vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null)
-                return new LocalizableMessage("event.detector.messageSms", vo.njbGetDataPoint().getName(),
-                    vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
-            else
-                return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                        description, formatValue(oldValue), formatValue(newValue), "");
+    public LocalizableMessage getShortMessage() {
+        if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
+                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone") &&
+                (!vo.njbGetDataPoint().getEventTextRenderer().getText(newValue).equals(""))) {
+            String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(newValue);
+            return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
+                    eventRendererText);
         } else {
-            return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                    description, formatValue(oldValue), formatValue(newValue), "");
+            return getMessage();
         }
-
     }
 
     private String formatValue(MangoValue value) {

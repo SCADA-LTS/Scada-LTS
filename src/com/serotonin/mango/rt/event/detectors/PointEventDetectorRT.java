@@ -47,10 +47,10 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
         if (!StringUtils.isEmpty(vo.getAlias())) {
             LocalizableMessage msg = new LocalizableMessage("common.default", vo.getAlias());
             messages.setMessage(msg);
-            messages.setMessageSms(msg);
+            messages.setShortMessage(msg);
         } else {
             messages.setMessage(getMessage());
-            messages.setMessageSms(getSmsMessage());
+            messages.setShortMessage(getShortMessage());
         }
 
         Common.ctx.getEventManager().raiseEvent(getEventType(), time, vo.isRtnApplicable(), vo.getAlarmLevel(), messages,
@@ -72,7 +72,7 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
 
     abstract protected LocalizableMessage getMessage();
 
-    abstract protected LocalizableMessage getSmsMessage();
+    abstract protected LocalizableMessage getShortMessage();
 
     public String getEventDetectorKey() {
         return vo.getEventDetectorKey();

@@ -84,7 +84,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_RTN_CAUSE = "rtnCause";
 	private static final String COLUMN_NAME_ALARM_LEVEL = "alarmLevel";
 	private static final String COLUMN_NAME_MESSAGE = "message";
-	private static final String COLUMN_NAME_MESSAGE_SMS = "messageSms";
+	private static final String COLUMN_NAME_SHORT_MESSAGE = "shortMessage";
 	private static final String COLUMN_NAME_ACT_TS = "ackTs";
 	private static final String COLUMN_NAME_ACT_USER_ID = "ackUserId";
 	private static final String COLUMN_NAME_USER_NAME = "username";
@@ -137,7 +137,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 				+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 				+ "e."+COLUMN_NAME_MESSAGE+", "
-				+ "e."+COLUMN_NAME_MESSAGE_SMS+", "
+				+ "e."+COLUMN_NAME_SHORT_MESSAGE+", "
 				+ "e."+COLUMN_NAME_ACT_TS+", "
 				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 				+ "u."+COLUMN_NAME_USER_NAME+","
@@ -158,7 +158,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 			+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 			+ "e."+COLUMN_NAME_MESSAGE+", "
-			+ "e."+COLUMN_NAME_MESSAGE_SMS+", "
+			+ "e."+COLUMN_NAME_SHORT_MESSAGE+", "
 			+ "e."+COLUMN_NAME_ACT_TS+", "
 			+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 			+ "e."+COLUMN_NAME_ALTERNATE_ACK_SOURCE+" "
@@ -189,7 +189,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ COLUMN_NAME_RTN_CAUSE + ","
 				+ COLUMN_NAME_ALARM_LEVEL + ","
 				+ COLUMN_NAME_MESSAGE + ","
-				+ COLUMN_NAME_MESSAGE_SMS + ","
+				+ COLUMN_NAME_SHORT_MESSAGE + ","
 				+ COLUMN_NAME_ACT_TS 
 				// userId ?
 				// ack_source ?
@@ -235,7 +235,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				+ "e."+COLUMN_NAME_RTN_CAUSE+", "
 				+ "e."+COLUMN_NAME_ALARM_LEVEL+", "
 				+ "e."+COLUMN_NAME_MESSAGE+", "
-				+ "e."+COLUMN_NAME_MESSAGE_SMS+", "
+				+ "e."+COLUMN_NAME_SHORT_MESSAGE+", "
 				+ "e."+COLUMN_NAME_ACT_TS+", "
 				+ "e."+COLUMN_NAME_ACT_USER_ID+", "
 				+ "u."+COLUMN_NAME_USER_NAME+","
@@ -486,22 +486,22 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			EventType type = createEventType(rs, 2);
 			
 			LocalizableMessage message;
-			LocalizableMessage messageSms;
+			LocalizableMessage shortMessage;
 			try {
 				//TODO to remove
 				message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE));
-				if (rs.getString(COLUMN_NAME_MESSAGE_SMS) == null)
-					messageSms = new LocalizableMessage("common.noMessage");
+				if (rs.getString(COLUMN_NAME_SHORT_MESSAGE) == null)
+					shortMessage = new LocalizableMessage("common.noMessage");
 				else
-					messageSms = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE_SMS));
+					shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_SHORT_MESSAGE));
 			} catch (LocalizableMessageParseException e) {
 				message = new LocalizableMessage("common.default",
 						rs.getString(COLUMN_NAME_MESSAGE));
-				messageSms = new LocalizableMessage("common.default",
-						rs.getString(COLUMN_NAME_MESSAGE_SMS));
+				shortMessage = new LocalizableMessage("common.default",
+						rs.getString(COLUMN_NAME_SHORT_MESSAGE));
 			}
 
-			EventMessages messages = new EventMessages(message, messageSms);
+			EventMessages messages = new EventMessages(message, shortMessage);
 			EventInstance event = new EventInstance(
 					type, 
 					rs.getLong(COLUMN_NAME_ACTIVE_TS), 
@@ -684,7 +684,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 						(!entity.isActive() ? entity.getRtnCause():0),
 				 						entity.getAlarmLevel(),
 				 						entity.getMessages().getMessage().serialize(),
-										entity.getMessages().getMessageSms().serialize(),
+										entity.getMessages().getShortMessage().serialize(),
 				 						(!entity.isAlarm() ? entity.getAcknowledgedTimestamp():0)
 				 				}).setValues(ps);
 				 				return ps;

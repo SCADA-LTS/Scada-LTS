@@ -34,22 +34,27 @@ public class BinaryStateDetectorRT extends StateDetectorRT {
         String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.isBinaryState(),
                 TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
+        String description = (vo.njbGetDataPoint().getDescription() == null || vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState());
 
         if (durationDescription == null)
-            return new LocalizableMessage("event.detector.state", name, prettyText);
-        return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription);
+            return new LocalizableMessage("event.detector.state", name, prettyText, description,
+                    eventRendererText);
+        return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription,
+                description, eventRendererText);
     }
 
     @Override
-    protected LocalizableMessage getSmsMessage() {
-        String name = vo.njbGetDataPoint().getName();
-        String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.isBinaryState(),
-                TextRenderer.HINT_SPECIFIC);
-        LocalizableMessage durationDescription = getDurationDescription();
-
-        if (durationDescription == null)
-            return new LocalizableMessage("event.detector.state", name, prettyText);
-        return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription);
+    protected LocalizableMessage getShortMessage() {
+        if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
+                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone") &&
+                (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState()).equals(""))) {
+            String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState());
+            return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
+                    eventRendererText);
+        } else {
+            return getMessage();
+        }
     }
 
     @Override

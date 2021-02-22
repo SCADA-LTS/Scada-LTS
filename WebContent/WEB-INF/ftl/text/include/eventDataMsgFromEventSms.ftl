@@ -1,1 +1,1 @@
-${evt.prettyActiveTimestamp} - <@fmt message=evt.messages.messageSms/>
+${evt.prettyActiveTimestamp} - <@fmt message=evt.messages.shortMessage/>
