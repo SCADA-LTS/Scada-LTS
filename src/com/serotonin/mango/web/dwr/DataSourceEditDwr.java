@@ -391,7 +391,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             for (EventInstance event : events)
                 beans.add(new EventInstanceBean(event.isActive(), event
                         .getAlarmLevel(), DateFunctions.getTime(event
-                        .getActiveTimestamp()), getMessage(event.getMessage())));
+                        .getActiveTimestamp()), getMessage(event.getMessages().getMessage())));
         }
         return beans;
     }
