@@ -421,7 +421,7 @@
     <listener-class>com.serotonin.mango.MangoContextListener</listener-class>
   </listener>
   <session-config>
-    <session-timeout>30</session-timeout>
+    <session-timeout>0</session-timeout>
   </session-config>
   <welcome-file-list>
     <welcome-file>home.jsp</welcome-file>
