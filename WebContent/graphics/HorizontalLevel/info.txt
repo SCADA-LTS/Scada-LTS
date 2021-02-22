@@ -1,4 +1,6 @@
 name=Horizontal level
 type=dynamic
+width=99
+height=20
 text.x=100
 text.y=1

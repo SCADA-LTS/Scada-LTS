@@ -1,0 +1,6 @@
+name=Scada-LTS-Fan
+type=imageSet
+width=56
+height=56
+text.x=19
+text.y=50

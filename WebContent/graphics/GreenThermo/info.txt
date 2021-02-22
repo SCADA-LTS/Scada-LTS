@@ -1,6 +1,6 @@
 name=Thermometer
 type=imageSet
-#width=57
-#height=134
+width=57
+height=134
 text.x=5
 text.y=115
