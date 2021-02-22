@@ -15,6 +15,9 @@ User Interface subproject to display ScadaLTS content.
 - To build the fornt-end application type: `npm run-script prettier && npm run-script build`  
   _This code runs prettier and then builds the application to dist directory_
 
+## Cypress Testing
+Before starting the Cypress Tests make sure that you are using blank Database to ensure the TestingSuite the clear Scada-LTS application otherwise more tests may fail
+
 ## Creators
 
 Developers from Scada-LTS project:
