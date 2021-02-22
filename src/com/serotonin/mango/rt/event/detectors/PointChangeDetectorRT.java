@@ -34,17 +34,20 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
 
     @Override
     protected LocalizableMessage getMessage() {
-        String description = (vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String description = (vo.njbGetDataPoint().getDescription() == null || vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(newValue);
         return new LocalizableMessage("event.detector.changeCount", vo.njbGetDataPoint().getName(),
-                formatValue(oldValue), formatValue(newValue), description, vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
+                formatValue(oldValue), formatValue(newValue), description, eventRendererText);
     }
 
     @Override
     public LocalizableMessage getShortMessage() {
-        if (!vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone") &&
-                (vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null)) {
+        if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
+                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone") &&
+                (!vo.njbGetDataPoint().getEventTextRenderer().getText(newValue).equals(""))) {
+            String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(newValue);
             return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
-                    vo.njbGetDataPoint().getEventTextRenderer().getText(newValue));
+                    eventRendererText);
         } else {
             return getMessage();
         }
