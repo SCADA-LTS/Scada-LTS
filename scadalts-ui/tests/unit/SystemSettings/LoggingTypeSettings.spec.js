@@ -10,7 +10,8 @@ import i18n from '@/i18n';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
-localVue.use(Vuetify);
+// localVue.use(Vuetify);
+const vuetify = Vuetify;
 
 const systemSettings = {
 	state: {
@@ -61,6 +62,7 @@ describe('SystemSettings - LoggingType Settings Tests', () => {
 	const wrapper = mount(DefaultLoggingTypeSettingsComponent, {
 		store,
 		localVue,
+		vuetify,
 		i18n,
 		stubs: ['VSelect', 'VIcon'],
 	});

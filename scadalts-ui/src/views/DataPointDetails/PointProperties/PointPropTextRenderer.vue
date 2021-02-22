@@ -3,7 +3,7 @@
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.textRenderer.title') }}</h3>
 		</v-col>
-		<v-col cols="12" v-if="textRenderesList">
+		<v-col cols="12" v-if="textRenderesList" id="text-renderer-selector">
 			<v-select
 				v-model="selected"
 				:items="textRenderesList"
@@ -15,8 +15,7 @@
 		</v-col>
 
 		<v-col cols="12">
-			<!-- ANALOG RENDERER PROPERTIES -->
-			<v-row v-if="selected === 0" dense>
+			<v-row v-if="selected === 0" dense id="renderer-analog">
 				<v-col cols="6">
 					<v-text-field
 						v-model="data.textRenderer.format"
@@ -35,8 +34,7 @@
 				</v-col>
 			</v-row>
 
-			<!-- BINARY RENDERER PROPERTIES -->
-			<v-row v-if="selected === 1" dense>
+			<v-row v-if="selected === 1" dense id="renderer-binary">
 				<v-col cols="1">
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
@@ -71,8 +69,7 @@
 				</v-col>
 			</v-row>
 
-			<!-- MULTISTATE RENDERER PROPERTIES -->
-			<v-row v-if="selected === 2" dense>
+			<v-row v-if="selected === 2" dense id="renderer-multistate">
 				<v-col cols="1">
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
@@ -102,7 +99,7 @@
 
 				<v-divider></v-divider>
 
-				<v-row v-for="e in data.textRenderer.multistateValues" :key="e" dense>
+				<v-row v-for="e in data.textRenderer.multistateValues" :key="e.key" dense>
 					<v-col cols="1">
 						<v-btn :color="e.colour" block> </v-btn>
 					</v-col>
@@ -129,8 +126,7 @@
 				</v-row>
 			</v-row>
 
-			<!-- PLAIN RENDERER PROPERTIES -->
-			<v-row v-if="selected === 3" dense>
+			<v-row v-if="selected === 3" dense id="renderer-plain">
 				<v-col cols="12">
 					<v-text-field
 						v-model="data.textRenderer.format"
@@ -140,8 +136,7 @@
 				</v-col>
 			</v-row>
 
-			<!-- RANGE RENDERER PROPERTIES -->
-			<v-row v-if="selected === 4" dense>
+			<v-row v-if="selected === 4" dense id="renderer-range">
 				<v-col cols="1">
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
@@ -179,7 +174,7 @@
 
 				<v-divider></v-divider>
 
-				<v-row v-for="e in data.textRenderer.rangeValues" :key="e" dense>
+				<v-row v-for="e in data.textRenderer.rangeValues" :key="e.text" dense>
 					<v-col cols="1">
 						<v-btn :color="e.colour" block></v-btn>
 					</v-col>
@@ -213,8 +208,7 @@
 				</v-row>
 			</v-row>
 
-			<!-- TIME RENDERER PROPERTIES -->
-			<v-row v-if="selected === 5" dense>
+			<v-row v-if="selected === 5" dense id="renderer-time">
 				<v-col cols="12">
 					<v-text-field
 						v-model="data.textRenderer.format"
@@ -236,6 +230,19 @@
 	</v-row>
 </template>
 <script>
+/**
+ * Text Renderer for Point Properties
+ * 
+ * A text renderer's purpose is to convert a raw value into a form 
+ * that is more recognizable and informative to a human user. 
+ * The ways to render raw values depend upon the data type 
+ * of value to be rendered. 
+ * 
+ * @param {Object} data - Point Details object with data. 
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl> 
+ * @version 1.0
+ */
 export default {
 	name: 'PointPropTextRenderer',
 

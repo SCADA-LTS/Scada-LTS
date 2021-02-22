@@ -1,12 +1,14 @@
 import {
 	chartRenderersTemplates,
 	eventRenderersTemplates,
+	textRenderesTemplates,
 } from '../../../src/store/dataPoint/templates';
 
 export const dataPoint = {
 	state: {
 		chartRenderersTemplates: chartRenderersTemplates,
 		eventRenderersTemplates: eventRenderersTemplates,
+		textRenderesTemplates: textRenderesTemplates,
 
 		textRenderesList: [
 			{ id: 0, label: 'Analog' },

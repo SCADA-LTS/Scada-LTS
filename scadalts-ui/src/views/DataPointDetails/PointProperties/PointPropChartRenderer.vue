@@ -55,6 +55,17 @@
 	</v-row>
 </template>
 <script>
+/**
+ * Chart Renderer for Point Properties
+ * 
+ * A chart renderer is used to provide the aggregate historical state 
+ * of a point over either some period of time or some number of values. 
+ * 
+ * @param {Object} data - Point Details object with data. 
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl> 
+ * @version 1.0
+ */
 export default {
 	name: 'PointPropChartRenderer',
 

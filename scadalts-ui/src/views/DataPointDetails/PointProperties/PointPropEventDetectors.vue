@@ -282,6 +282,18 @@
 import CreateEventDetectorDialog from '@/layout/dialogs/CreateEventDetectorDialog';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
+/**
+ * Event Detectors for Point Properties
+ * 
+ * An event detector's purpose is to determine if the value of a point satisfies 
+ * one or more related conditions, and if so, to become "active" and raise an 
+ * event that can be appropriately handled. 
+ * 
+ * @param {Object} data - Point Details object with data. 
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl> 
+ * @version 1.0
+ */
 export default {
 	name: 'PointPropEventDetectors',
 

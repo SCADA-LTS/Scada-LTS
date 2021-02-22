@@ -54,6 +54,17 @@
 	</v-menu>
 </template>
 <script>
+/**
+ * Data Point User Comment
+ * 
+ * Component that provide the comment feature for Data Point Details page.
+ * User can add, delete and browse the comments that are related to specific DP.
+ * 
+ * @param {Object[]} data - Point Details object with data. 
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl> 
+ * @version 1.0
+ */
 export default {
 	name: 'DataPointComment',
 

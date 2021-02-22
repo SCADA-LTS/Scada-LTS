@@ -177,6 +177,18 @@
 	</v-card>
 </template>
 <script>
+/**
+ * Value History List for Data Point
+ * 
+ * Display history values from specific data point.
+ * Present the statiscics from given time period and allow user 
+ * to set a new value for that Data Point.
+ * 
+ * @param {number} data - Point Details object with data. 
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl> 
+ * @version 1.0
+ */
 export default {
 	name: 'DataPointValueHistory',
 
