@@ -173,7 +173,10 @@ public class PendingEventsDAO {
 		LocalizableMessage shortMessage;
 		try {
 			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-			shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
+			if (rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE) == null)
+				shortMessage = new LocalizableMessage("common.noMessage");
+			else
+				shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		} catch (LocalizableMessageParseException e) {
 			message = new LocalizableMessage("common.default",
 				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
