@@ -618,14 +618,16 @@ public class PointPropertiesAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                DataPointVO dataPointVO;
                 if(query.containsKey("id")) {
-                    dataPointService.savePointProperties(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))), body);
-                    return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
                 } else if (query.containsKey("xid")) {
-                    dataPointService.savePointProperties(dataPointService.getDataPoint(query.get("xid")), body);
-                    return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
                 } else
                     return new ResponseEntity<>("no param id or xid", HttpStatus.BAD_REQUEST);
+                dataPointService.savePointProperties(dataPointVO, body);
+                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
