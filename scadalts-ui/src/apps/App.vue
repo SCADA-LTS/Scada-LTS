@@ -28,6 +28,14 @@
 						$t('datapointDetails.pointList.title')
 					}}</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/recipient-list" v-if="isUserRoleAdmin">
+					<v-list-item-icon>
+						<v-icon>mdi-book-account</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>
+						Recipient List
+					</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-tune</v-icon>
