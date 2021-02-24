@@ -37,7 +37,7 @@ import com.serotonin.mango.view.ImplDefinition;
 })
 public interface EventTextRenderer extends Serializable {
 
-    String UNKNOWN_VALUE = "(n/a)";
+    String UNKNOWN_VALUE = "";
 
     String getText();
 

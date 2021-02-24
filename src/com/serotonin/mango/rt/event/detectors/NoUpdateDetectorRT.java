@@ -19,6 +19,7 @@
 package com.serotonin.mango.rt.event.detectors;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -26,6 +27,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 public class NoUpdateDetectorRT extends DifferenceDetectorRT {
+    private MangoValue newValue;
+
     public NoUpdateDetectorRT(PointEventDetectorVO vo) {
         this.vo = vo;
     }
@@ -33,13 +36,15 @@ public class NoUpdateDetectorRT extends DifferenceDetectorRT {
     @Override
     public void pointUpdated(PointValueTime newValue) {
         pointData();
+        this.newValue = newValue.getValue();
     }
 
     @Override
     public LocalizableMessage getMessage() {
         String description = (vo.njbGetDataPoint().getDescription() == null || vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(newValue);
         return new LocalizableMessage("event.detector.noUpdate", vo.njbGetDataPoint().getName(),
-                getDurationDescription(), description);
+                getDurationDescription(), description, eventRendererText);
     }
 
     @Override
