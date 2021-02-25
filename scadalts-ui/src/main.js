@@ -168,6 +168,7 @@ if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
 
 if (window.document.getElementById('sms-domain') != undefined) {
 	new Vue({
+		vuetify,
 		render: (h) => h(SMSDomain),
 	}).$mount('#sms-domain');
 }
