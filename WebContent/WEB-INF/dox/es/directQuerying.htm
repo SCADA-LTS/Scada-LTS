@@ -1,80 +1,51 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+<!--
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>Scada-LTS ofrece la posibilidad de acceso directo a la base de datos del sistema, tanto para consultarla como para actualizarla. Esta función está destinada principalmente a la solución de problemas o a la reparación del sistema. No es adecuado para su uso regular debido al riesgo de corrupción de datos.</p>
+<p>Sólo se pueden enviar declaraciones SQL individuales válidas. No termines tus declaraciones con caracteres ";".</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<p>El ScadaBR tiene la capacidad de acceder directamente a la Base de Datos del Sistema, tanto para consultas, como para actualizaciones. Esta capacidad est&aacute; dise&ntildeada; principalmente para solucionar problemas del sistema o repararlo. Utilizar esta capacidad para su uso regular puede ocasionar corrupci&oacute;n del sistema.</p>
-<p>S&oacute;lo utilice expresiones v&aacute;lidas de SQL. No finalice las declaraciones con el car&aacute;cter ';'.</p>
-
-<h1>Tablas Disponibles</h1>
-<p>La Base de Datos del ScadaBR est&aacute; conformada por las siguientes tablas:</p>
+<h1>Tablas disponibles</h1>
+<p>Aquí hay una lista de todas las tablas de la base de datos de Scada-LTS:</p>
 <ul>
-  <li>compoundEventDetectors</li>
-  <li>dataPoints</li>
-  <li>dataPointUsers</li>
-  <li>dataSources</li>
-  <li>dataSourceUsers</li>
-  <li>eventHandlers</li>
-  <li>events</li>
-  <li>mailingListInactive</li>
-  <li>mailingListMembers</li>
-  <li>mailingLists</li>
-  <li>maintenanceEvents</li>
-  <li>mangoViews</li>
-  <li>mangoViewUsers</li>
-  <li>pointEventDetectors</li>
-  <li>pointHierarchy</li>
-  <li>pointLinks</li>
-  <li>pointValueAnnotations</li>
-  <li>pointValues</li>
-  <li>publishers</li>
-  <li>reportInstanceData</li>
-  <li>reportInstanceDataAnnotations</li>
-  <li>reportInstanceEvents</li>
-  <li>reportInstancePoints</li>
-  <li>reportInstanceUserComments</li>
-  <li>reportInstances</li>
-  <li>reports</li>
-  <li>silencedEvents</li>
-  <li>scheduledEvents</li>
-  <li>systemSettings</li>
-  <li>users</li>
-  <li>userComments</li>
-  <li>watchListPoints</li>
-  <li>watchLists</li>
+  <li>Detectores de eventos compuestos</li>
+  <li>Puntos de datos</li>
+  <li>Los usuarios de los puntos de datos</li>
+  <li>Fuentes de datos.</li>
+  <li>Fuente de datos Users</li>
+  <li>Gestores de eventos.</li>
+  <li>Eventos.</li>
+  <li>Lista de correo inactiva.</li>
+  <li>Miembros de la lista de correo.</li>
+  <li>Listas de correo.</li>
+  <li>Eventos de mantenimiento.</li>
+  <li>Puntos de vista de Scada-LTS.</li>
+  <li>Puntos de vista de los usuarios de Scada-LTS</li>
+  <li>punto Detectores de Evento.</li>
+  <li>Punto de la jerarquía.</li>
+  <li>Punto de enlace.</li>
+  <li> valor de punto Anotaciones</li>
+  <li>valores puntuales</li>
+  <li>editores.</li>
+  <li>li> informe Datos de instancia</li>
+  <li>li>informe Anotaciones de la Instancia datos</li>
+  <li>El informe de los eventos del Foro.</li>
+  <li>Informe de puntos de sustancia.</li>
+  <li>Informe Comentarios de los usuarios de la instancia</li>
+  <li>El informe de la Instancia.</li>
+  <li>Informes.</li>
+  <li>Informe Comentarios de los usuarios de la instancia</li>
+  <li>Eventos planeados.</li>
+  <li>Configuración del sistema.</li>
+  <li>Usuarios.</li>
+  <li>Comentarios de los usuarios.</li>
+  <li>Ver la lista de puntos.</li>
+  <li>Lista de vigilancia.</li>
 </ul>
 

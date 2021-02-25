@@ -1,50 +1,15 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+    Mango- M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La fuente de datos del VMStat se utiliza para monitorear varios aspectos del desempeño de un huésped *nix. Cuando se inicia la fuente de datos, se inicia un proceso que ejecuta el programa vmstat, y se monitoriza la salida de este proceso.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-<h1>Descripci&oacute;n General</h1>
-<p>
-  La fuente de datos VMStat es utilizada para monitorear aspectos de rendimiento de servidores tipo *nix.
- Cuando la fuente de datos se inicia esta lanza un proceso que ejecuta el programa vmstat, y su salida es monitoreada.
-</p>
-
-<h1>Configuraci&oacute;n</h1>
-<p>
-  Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripci&oacute;n. La configuraci&oacute;n de <b>Segundos entre encuesta</b> determina
- cu&aacute;n frecuentemente el proceso vmstat reportar&aacute; de regreso la informaci&oacute;n al Scada. La configuraci&oacute;n de <b>Fuera de escala</b> puede ajustarse autom&aacute;ticamente
- ajustada en diferentes escalas de valores medidos en byte: bytes, k, KB, m, y MB.
-</p>
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. El parámetro <b>Segundos de encuesta</b> determina la frecuencia con la que el proceso vmstat reportará los datos a Scada-LTS. El parámetro <b>Escala de salida</b> puede ser ajustado automáticamente para ajustar los valores de los bytes a diferentes escalas, incluyendo bytes, k, KB, m y MB.</p>
