@@ -603,6 +603,9 @@
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="com.serotonin.mango.vo.SerializeDataPointTest" haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>
