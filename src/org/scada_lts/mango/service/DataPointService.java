@@ -592,9 +592,9 @@ public class DataPointService implements MangoDataPoint {
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
 		JsonBinaryEventTextRenderer json = new JsonBinaryEventTextRenderer();
 		if (value == 0) {
-			json.setShortLabel(dataPointVO.getEventTextRenderer().getText(false));
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(false));
 		} else if (value == 1) {
-			json.setShortLabel(dataPointVO.getEventTextRenderer().getText(true));
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(true));
 		}
 		return json;
 	}

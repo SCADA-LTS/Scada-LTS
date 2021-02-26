@@ -2362,11 +2362,7 @@ components:
     JsonBinaryEventTextRenderer:
       type: object
       properties:
-        shortLabel:
-          type: string
-        longLabel:
-          type: string
-        colour:
+        eventText:
           type: string
   parameters:
     Authorization:
