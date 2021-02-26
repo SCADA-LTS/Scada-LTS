@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 <template>
+
+	<!--<v-app>-->
 	<div>
 		<div class="cmp-flex-container">
 			<div id="cmp">
@@ -102,16 +104,22 @@
 
 						<hr />
 						<!--<btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>-->
-						<p class="cmp-small-info">v0.0.6</p>
-						<btn size="xs" type="primary" @click="openModalWithHistory = true"
+						<p class="cmp-small-info">v0.0.7</p>
+						<!-- <btn size="xs" type="primary" @click="openModalWithHistory = true"
 							>History</btn
-						>
-						<modal v-model="openModalWithHistory" title="History" auto-focus>
+						> -->
+
+						<!-- <btn size="xs" type="primary" @click="history()"
+							>History - </btn
+						> -->
+
+						<div>
 							<HistoryCMP
-								v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp"
-								v-model="openModalWithHistory"
+									v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp" v-bind:value="historyChange"
 							></HistoryCMP>
-						</modal>
+						</div>
+					   
+						
 					</section>
 				</div>
 			</collapse>
@@ -127,7 +135,7 @@
 				</div>
 			</collapse>
 		</div>
-	</div>
+	<!--</v-app> -->
 </template>
 
 <script>
@@ -219,7 +227,8 @@ export default {
 	props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp'],
 	data() {
 		return {
-			openModalWithHistory: false,
+			open: false,
+			historyChange: false,
 			show: false,
 			errors: [],
 			newErrors: [],
@@ -243,6 +252,19 @@ export default {
 		};
 	},
 	methods: {
+		history() {
+
+			//this.dialog = true;
+
+			this.$swal.fire({
+			//title: '<strong>HTML <u>history</u></strong>',
+			//icon: 'info',
+			html:'<p>test</p><HistoryCMP v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp" v-model="openModalWithHistory"></HistoryCMP>',
+			showCloseButton: true,
+			focusConfirm: false,
+			})
+
+		},
 		endChecking() {
 			this.insideState = this.config.state.analiseInOrder[
 				this.counterForAnaliseInOrder
@@ -382,6 +404,8 @@ export default {
 						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
 							this.show = false;
+							this.historyChange = false;
+							this.historyChange = true;
 						})
 						.catch((er) => {
 							this.setErrorAndNotification(er.message);
@@ -409,6 +433,9 @@ export default {
 		close() {
 			this.show = false;
 		},
+		callback (msg) {
+        	this.$notify(`Modal dismissed with msg '${msg}'.`)
+      	},
 	},
 	created() {
 		try {
