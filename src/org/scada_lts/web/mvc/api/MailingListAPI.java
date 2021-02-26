@@ -102,6 +102,21 @@ public class MailingListAPI {
         }
     }
 
+    @GetMapping(value = "/generateUniqueXid")
+    public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
+        LOG.info("/api/mailingList/generateUniqueXid");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(mailingListService.generateUniqueXid(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping(value = "", produces = "application/json")
     public ResponseEntity<String> createMailingList(@RequestBody MailingList mailingList, HttpServletRequest request) {
         LOG.info("POST:/api/mailingList");

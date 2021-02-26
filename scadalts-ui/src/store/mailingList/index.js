@@ -16,6 +16,10 @@ const storeMailingList = {
 			return dispatch('requestGet', `/mailingList/get/id/${mailingListId}`);
 		},
 
+		getUniqueMailingListXid({dispatch}) {
+			return dispatch('requestGet', '/mailingList/generateUniqueXid');
+		},
+
 		deleteMailingList({dispatch}, mailingListId) {
 			return dispatch('requestDelete', `/mailingList/${mailingListId}`);
 		},

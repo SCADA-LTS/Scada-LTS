@@ -33,7 +33,7 @@
 						<v-icon>mdi-book-account</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>
-						Recipient List
+						{{$t('recipientlist.title')}}
 					</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">

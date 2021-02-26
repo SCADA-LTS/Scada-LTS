@@ -1,28 +1,32 @@
 <template>
 	<v-row v-if="recipientList">
-		<v-col cols="5">
+		<v-col md="5" sm="12" xs="12" id="section-mail-details">
 			<v-row>
 				<v-col cols="12">
-					<h2>Mailing list details</h2>
+					<h2>{{$t('recipientlistDetails.title')}}</h2>
 				</v-col>
-				<v-col cols="6">
-					<v-text-field v-model="recipientList.xid" label="Export Id" dense>
+
+				<v-col cols="8">
+					<v-text-field v-model="recipientList.name" :label="$t('common.name')" dense>
 					</v-text-field>
 				</v-col>
-				<v-col cols="6">
-					<v-text-field v-model="recipientList.name" label="Name" dense> </v-text-field>
+				<v-col cols="4">
+					<v-text-field v-model="recipientList.xid" :label="$t('common.xid')" dense>
+					</v-text-field>
 				</v-col>
-				<v-col cols="12">
+
+				<v-col md="8" sm="12" xs="12">
 					<v-switch
 						v-model="recipientList.collectInactiveEmails"
-						label="Collect inactive messages"
+						:label="$t('recipientlistDetails.properties.collinactmsg')"
 						dense
 					></v-switch>
 				</v-col>
-				<v-col cols="12">
+
+				<v-col md="4" sm="12" xs="12">
 					<v-text-field
 						v-model="recipientList.cronPattern"
-						label="Cron Pattern"
+						:label="$t('recipientlistDetails.properties.cron')"
 						:disabled="!recipientList.collectInactiveEmails"
 						dense
 					>
@@ -30,37 +34,72 @@
 				</v-col>
 
 				<v-col cols="12" class="heading-action-buttons">
-					<h3>Entries</h3>
+					<h3>{{$t('recipientlistDetails.entries.title')}}</h3>
 					<v-spacer></v-spacer>
-					<v-btn fab elevation="0" small @click="addUserRecipient()" class="small-margin">
-						<v-icon>mdi-account-plus</v-icon>
-					</v-btn>
-					<v-btn fab elevation="0" small @click="addPlainRecipient()" class="small-margin">
-						<v-icon>mdi-email-plus</v-icon>
-					</v-btn>
-                    <v-btn fab elevation="0" small @click="addPlainRecipient()" class="small-margin">
-						<v-icon>mdi-phone-plus</v-icon>
-					</v-btn>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn
+								fab
+								elevation="0"
+								small
+								@click="prepareRecipientDialog(TYPE_USER)"
+								class="small-margin"
+								v-bind="attrs"
+								v-on="on"
+								><v-icon>mdi-account-plus</v-icon></v-btn
+							>
+						</template>
+						<span>{{$t('recipientlistDetails.entries.add.user')}}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn
+								fab
+								elevation="0"
+								small
+								@click="prepareRecipientDialog(TYPE_MAIL)"
+								class="small-margin"
+								v-bind="attrs"
+								v-on="on"
+								><v-icon>mdi-email-plus</v-icon></v-btn
+							>
+						</template>
+						<span>{{$t('recipientlistDetails.entries.add.mail')}}</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn
+								fab
+								elevation="0"
+								small
+								@click="prepareRecipientDialog(TYPE_SMS)"
+								class="small-margin"
+								v-bind="attrs"
+								v-on="on"
+								><v-icon>mdi-phone-plus</v-icon></v-btn
+							>
+						</template>
+						<span>{{$t('recipientlistDetails.entries.add.sms')}}</span>
+					</v-tooltip>
 				</v-col>
 
 				<v-col cols="12">
 					<v-list>
 						<v-list-item v-for="entry in recipientList.entries" :key="entry">
 							<v-list-item-icon>
-								<v-icon v-show="entry.recipientType === 2">mdi-account </v-icon>
-								<v-icon v-show="entry.recipientType === 3">mdi-email </v-icon>
+								<v-icon v-show="entry.recipientType === TYPE_USER">mdi-account </v-icon>
+								<v-icon v-show="entry.recipientType === TYPE_MAIL">mdi-email </v-icon>
 							</v-list-item-icon>
 							<v-list-item-content>
 								<v-list-item-title>
-									<span v-if="entry.recipientType === 2">
+									<span v-if="entry.recipientType === TYPE_USER">
 										{{ entry.user.username }}
-										{{ entry.user.name }}
 									</span>
 									<span v-else>
 										{{ entry.referenceAddress }}
 									</span>
 								</v-list-item-title>
-								<v-list-item-subtitle v-if="entry.recipientType === 2">
+								<v-list-item-subtitle v-if="entry.recipientType === TYPE_USER">
 									<span>
 										{{ entry.user.email }}
 									</span>
@@ -74,10 +113,10 @@
 				</v-col>
 			</v-row>
 		</v-col>
-		<v-col cols="7" v-if="inactiveTime" id="section-active-time">
+		<v-col md="7" sm="12" xs="12" v-if="inactiveTime" id="section-active-time">
 			<v-row @mousedown="startSelecting">
 				<v-col cols="12" class="heading-action-buttons">
-					<h3>Active time</h3>
+					<h3>{{$t('recipientlistDetails.activetime.title')}}</h3>
 					<v-spacer></v-spacer>
 					<v-btn fab elevation="2" color="primary" small v-if="!edit" @click="save()">
 						<v-icon>mdi-content-save</v-icon>
@@ -85,14 +124,14 @@
 				</v-col>
 				<v-col cols="12">
 					<div class="day">
-						<div>Time</div>
-						<div>Mon</div>
-						<div>Tue</div>
-						<div>Wed</div>
-						<div>Thr</div>
-						<div>Fri</div>
-						<div>Sat</div>
-						<div>Sun</div>
+						<div>{{$t('recipientlistDetails.activetime.table.time')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.monday')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.tuesday')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.wednesday')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.thursday')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.friday')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.saturday')}}</div>
+						<div>{{$t('recipientlistDetails.activetime.table.day.sunday')}}</div>
 					</div>
 					<div v-for="h in 24" :key="h" class="day">
 						{{ formatHours(h) }}
@@ -113,41 +152,75 @@
 				</v-col>
 			</v-row>
 		</v-col>
+
 		<v-dialog v-model="showRecipientDialog" max-width="300">
 			<v-card v-if="entry">
-				<v-card-title> Add recipient </v-card-title>
-				<v-card-text>
-					<v-row>
-						<v-col cols="12" v-if="entry.recipientType === 2">
-							<v-select
-								v-model="userRecipient"
-								:items="userList"
-								item-value="id"
-								item-text="name"
-								return-object
-								dense
-							></v-select>
-						</v-col>
-						<v-col cols="12" v-if="entry.recipientType === 3">
-							<v-text-field autofocus v-model="plainRecipient" label="Add address" dense>
-							</v-text-field>
-						</v-col>
-					</v-row>
-				</v-card-text>
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<v-btn text @click="showRecipientDialog = false">{{
-						$t('common.cancel')
-					}}</v-btn>
-					<v-btn text color="success" @click="addRecipient()">{{
-						$t('common.ok')
-					}}</v-btn>
-				</v-card-actions>
+				<v-form ref="form" v-model="valid">
+					<v-card-title> {{$t('recipientlistDetails.dialog.recipient.title')}} </v-card-title>
+					<v-card-text>
+						<v-row>
+							<v-col cols="12" v-if="entry.recipientType === TYPE_USER">
+								<v-select
+									v-model="userRecipient"
+									:items="userList"
+									:rules="[(v) => !!v || $t('recipientlistDetails.dialog.recipient.required.item')]"
+									item-value="id"
+									item-text="username"
+									return-object
+									required
+									dense
+								></v-select>
+							</v-col>
+							<v-col cols="12" v-if="entry.recipientType === TYPE_MAIL">
+								<v-text-field
+									autofocus
+									v-model="plainRecipient"
+									:rules="emailRules"
+									:label="$t('recipientlistDetails.dialog.recipient.label.mail')"
+									required
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="12" v-if="entry.recipientType === TYPE_SMS">
+								<v-text-field
+									autofocus
+									v-model="plainRecipient"
+									:rules="phoneRules"
+									:label="$t('recipientlistDetails.dialog.recipient.label.phone')"
+									required
+									dense
+								></v-text-field>
+							</v-col>
+						</v-row>
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn text @click="showRecipientDialog = false">{{
+							$t('common.cancel')
+						}}</v-btn>
+						<v-btn :disabled="!valid" text color="success" @click="addRecipient()">{{
+							$t('common.ok')
+						}}</v-btn>
+					</v-card-actions>
+				</v-form>
 			</v-card>
 		</v-dialog>
 	</v-row>
 </template>
 <script>
+/**
+ * Recipient List Details
+ *
+ * Provide all required specification for that Recipient List.
+ * Setup the Inactive Interval or extend the entries list with
+ * additional recipients.
+ *
+ * @param recipientList Object - Reciepent List detailed object
+ * @param edit boolean - Enabled "edit" mode
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
 export default {
 	name: 'RecipientListDetails',
 
@@ -163,6 +236,9 @@ export default {
 
 	data() {
 		return {
+			TYPE_USER: 2,
+			TYPE_MAIL: 3,
+			TYPE_SMS: 4,
 			showRecipientDialog: false,
 			entry: undefined,
 			userList: undefined,
@@ -170,12 +246,25 @@ export default {
 			plainRecipient: '',
 			mouseSelecting: false,
 			inactiveTime: [[], [], [], [], [], [], []],
+			valid: true,
+			emailRules: [
+				(v) =>
+					/.+@.+\..+/.test(v) ||
+					this.$t('recipientlistDetails.dialog.recipient.valid.mail'),
+			],
+			phoneRules: [
+				(v) =>
+					/\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/.test(
+						v
+					) || this.$t('recipientlistDetails.dialog.recipient.valid.phone'),
+			],
 		};
 	},
 
 	mounted() {
 		this.fetchUserList();
 		this.clearInactiveIntervals();
+		this.convertInactiveIntervals(this.recipientList.inactiveIntervals);
 
 		window.addEventListener('mouseup', this.endSelecting);
 	},
@@ -186,34 +275,30 @@ export default {
 			console.log(this.userList);
 		},
 
-		addPlainRecipient() {
+		// Adding and deleting recipients methods
+		prepareRecipientDialog(type) {
 			this.showRecipientDialog = true;
+			this.plainRecipient = '';
 			this.entry = {
-				recipientType: 3,
+				recipientType: type,
 			};
-			console.debug('Adding mail/sms recipient');
-		},
-
-		addUserRecipient() {
-			this.showRecipientDialog = true;
-			this.entry = {
-				recipientType: 2,
-			};
-			console.debug('Adding user recipient');
 		},
 
 		addRecipient() {
-			if (this.entry.recipientType === 2) {
+			if (this.entry.recipientType === this.TYPE_USER) {
 				this.entry = {
-					recipientType: 2,
+					recipientType: this.TYPE_USER,
 					referenceAddress: '',
 					referenceId: this.userRecipient.id,
 					user: Object.assign({}, this.userRecipient),
 					userId: this.userRecipient.id,
 				};
-			} else if (this.entry.recipientType === 3) {
+			} else if (
+				this.entry.recipientType === this.TYPE_MAIL ||
+				this.entry.recipientType === this.TYPE_SMS
+			) {
 				this.entry = {
-					recipientType: 3,
+					recipientType: this.TYPE_MAIL,
 					referenceAddress: this.plainRecipient,
 					referenceId: 0,
 					address: this.plainRecipient,
@@ -230,17 +315,13 @@ export default {
 			});
 		},
 
+		// Inactive Period methods
 		startSelecting() {
 			this.mouseSelecting = true;
 		},
 
 		endSelecting() {
 			this.mouseSelecting = false;
-		},
-
-		changeActiveRL() {
-			this.clearInactiveIntervals();
-			this.convertInactiveIntervals(this.recipientList.inactiveIntervals);
 		},
 
 		toggle(day, hour, quarter) {
@@ -261,6 +342,38 @@ export default {
 			);
 		},
 
+		/**
+		 * Prepare Save
+		 *
+		 * While creating a new Recipient List
+		 * perform the convertion from 3-dimensional inactiveTime array
+		 * to 1 dimension InactiveInterval property
+		 */
+		preSave() {
+			this.recipientList.inactiveIntervals = this.convertInactiveIntervals(
+				this.inactiveTime
+			);
+		},
+
+		/**
+		 * Save Recipient List
+		 *
+		 * After saving emit the event for parent component to handle
+		 * the result of that operation
+		 */
+		async save() {
+			this.preSave();
+			let resp = await this.$store.dispatch('updateMailingList', this.recipientList);
+			this.$emit('saved', resp);
+			// console.log(this.convertInactiveIntervals(this.inactiveTime));
+		},
+
+		/**
+		 * Clear Inactive Intervals
+		 *
+		 * Prepare the reactive propery for new data.
+		 * Initialize the inactive time array.
+		 */
 		clearInactiveIntervals() {
 			this.inactiveTime = [[], [], [], [], [], [], []];
 			for (let d = 0; d < 7; d++) {
@@ -310,19 +423,9 @@ export default {
 			}
 		},
 
-		preSave() {
-			this.recipientList.inactiveIntervals = this.convertInactiveIntervals(this.inactiveTime);
-		},
-
-		save() {
-			this.preSave();
-			console.log(this.recipientList);
-			this.$store.dispatch('updateMailingList', this.recipientList);
-			// console.log(this.convertInactiveIntervals(this.inactiveTime));
-		},
-
 		/**
 		 * Format Hours time range label
+		 *
 		 * @private
 		 */
 		formatHours(hour) {
@@ -333,8 +436,6 @@ export default {
 			}
 		},
 	},
-
-	//emit('saved')
 };
 </script>
 
