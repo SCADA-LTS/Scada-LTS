@@ -21,6 +21,7 @@ package com.serotonin.mango.vo.mailingList;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.joda.time.DateTime;
 
 import com.serotonin.json.JsonException;
@@ -34,6 +35,7 @@ import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserEntry extends EmailRecipient {
     private int userId;
     private User user;
