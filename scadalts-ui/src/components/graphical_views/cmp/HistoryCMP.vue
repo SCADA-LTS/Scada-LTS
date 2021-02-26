@@ -17,16 +17,20 @@ import moment from 'moment';
 
 export default {
 	name: 'history-cmp',
-    props: ['pxIdViewAndIdCmp','value'],
+    props: ['pxIdViewAndIdCmp'],
 	data() {
 		return {
 			xIdViewAndIdCmp: this.pxIdViewAndIdCmp,
             nData: [],
             columns: [{name: 'user name'}, {name: 'time'}, {name: 'interpreted state'}],
-            loadData() {
+		};
+    },
+    methods: {
+        loadData: function() {
                 let rowData = [];
                 store.dispatch('getHisotryCMP', this.xIdViewAndIdCmp).then((ret) => {
                     rowData = this._.orderBy(ret.data.history, ['unixTime'], ['desc']);
+                    this.nData = []
                     for (let i=0;i<rowData.length; i++) {
                         this.nData.push( {
                             "user name": rowData[i].userName, 
@@ -34,21 +38,11 @@ export default {
                             "interpreted state":rowData[i].interpretedState });
                     }
                 });
-            }
-		};
-	},
+        },
+    },
 	created() {
        this.loadData()
-    },
-    watch: {
-         value: function (val, oldVal) {
-              if (val == true) {
-                  this.loadData();
-            } else {
-                 this.nData = null;
-              }
-          },
-      },
+    }
 };
 </script>
 

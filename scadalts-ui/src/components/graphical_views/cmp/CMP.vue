@@ -104,18 +104,13 @@
 
 						<hr />
 						<!--<btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>-->
-						<p class="cmp-small-info">v0.0.7</p>
-						<!-- <btn size="xs" type="primary" @click="openModalWithHistory = true"
-							>History</btn
-						> -->
-
-						<!-- <btn size="xs" type="primary" @click="history()"
-							>History - </btn
-						> -->
-
+						<p class="cmp-small-info">v0.0.9</p>
+						<btn size="xs" type="primary" v-on:click="refreshHistory()" class="cmp-small-info">refresh history</btn>
+			
 						<div>
 							<HistoryCMP
-									v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp" v-bind:value="historyChange"
+								ref="refHistoryCMP"
+								v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp"
 							></HistoryCMP>
 						</div>
 					   
@@ -228,7 +223,6 @@ export default {
 	data() {
 		return {
 			open: false,
-			historyChange: false,
 			show: false,
 			errors: [],
 			newErrors: [],
@@ -252,18 +246,8 @@ export default {
 		};
 	},
 	methods: {
-		history() {
-
-			//this.dialog = true;
-
-			this.$swal.fire({
-			//title: '<strong>HTML <u>history</u></strong>',
-			//icon: 'info',
-			html:'<p>test</p><HistoryCMP v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp" v-model="openModalWithHistory"></HistoryCMP>',
-			showCloseButton: true,
-			focusConfirm: false,
-			})
-
+		refreshHistory() {
+			this.$refs.refHistoryCMP.loadData()
 		},
 		endChecking() {
 			this.insideState = this.config.state.analiseInOrder[
@@ -320,6 +304,7 @@ export default {
 		},
 		setActionLeve0(action) {
 			// get action by name action
+			
 			let foundLevel = _.findWhere(this.controlsLevel0, { name: action });
 			let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu;
 
@@ -339,6 +324,7 @@ export default {
 					new ApiCMP()
 						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
+							refreshHistory()
 							// rxjs
 							let found = _.findWhere(this.controlsLevel0, { name: action });
 							if (found.toChange != undefined) {
@@ -352,6 +338,7 @@ export default {
 						})
 						.catch((er) => {
 							this.setErrorAndNotification(er.message);
+							refreshHistory()
 						});
 				}
 			} else {
@@ -370,6 +357,7 @@ export default {
 			}
 		},
 		setActionLevel1(action) {
+			refreshHistory()
 			if (this.selectActionLevel1 == action) {
 				this.selectActionLevel1 = '';
 			} else {
@@ -404,8 +392,6 @@ export default {
 						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
 							this.show = false;
-							this.historyChange = false;
-							this.historyChange = true;
 						})
 						.catch((er) => {
 							this.setErrorAndNotification(er.message);
