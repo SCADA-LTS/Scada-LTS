@@ -29,6 +29,7 @@ import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
@@ -426,7 +427,7 @@ public class RuntimeManager {
 		if (point.getEventTextRenderer() != null
 				&& !point.getEventTextRenderer().getDef().supports(dataType))
 			// Return to a default renderer
-			point.setEventTextRenderer(null);
+			point.setEventTextRenderer(new NoneEventRenderer());
 
 		// Chart renderer
 		if (point.getChartRenderer() != null
