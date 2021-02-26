@@ -87,16 +87,16 @@ return p.value + 1;
   El objeto <b>Estadísticas analógicas</b> es devuelto por puntos numéricos. Contiene las siguientes propiedades:
 </p>
 <ul>
-  <li><b>mínimo</b>: (flotante) el valor mínimo del punto alcanzado durante el período</li>
-  <li><b>mínimo tiempo</b>: (entero) el momento en que se alcanzó el valor mínimo</li>
-  <li><b>máximo</b>: (flotante) el valor máximo del punto alcanzado durante el período</li>
-  <li><b>máximo tiempo</b>: (entier) l'heure à laquelle la valeur maximale a été atteinte</li>
-  <li><b>average</b>: (flotante) el valor medio del punto durante el período</li>
-  <li><b>sum</b>: (flotante) Suma de todas las actualizaciones de valores durante el período (útil para el recuento de pulsos)</li>
-  <li><b>count</b>: (Todo) el número de actualizaciones durante el período</li>
-  <li><b>noData</b>: (Booleano) Si el período no contiene datos ( verdadero si el período precede al primer valor conocido del punto)</li>
-  <li><b>realStart</b>: (Entero) La hora de inicio real utilizada en los cálculos (en caso de que la hora de inicio preceda al primer valor conocido del punto)</li>
-  <li><b>end</b>: El tiempo final utilizado en los cálculos</li>
+  <li><b>minimum</b>: (float) el valor mínimo del punto alcanzado durante el período</li>
+  <li><b>minimum time</b>: (integer) el momento en que se alcanzó el valor mínimo</li>
+  <li><b>maximum</b>: (float) el valor máximo del punto alcanzado durante el período</li>
+  <li><b>maximum time</b>: (integer) l'heure à laquelle la valeur maximale a été atteinte</li>
+  <li><b>average</b>: (float) el valor medio del punto durante el período</li>
+  <li><b>sum</b>: (float) Suma de todas las actualizaciones de valores durante el período (útil para el recuento de pulsos)</li>
+  <li><b>count</b>: (integer) el número de actualizaciones durante el período</li>
+  <li><b>noData</b>: (boolean) Si el período no contiene datos (verdadero si el período precede al primer valor conocido del punto)</li>
+  <li><b>realStart</b>: (integer) La hora de inicio real utilizada en los cálculos (en caso de que la hora de inicio preceda al primer valor conocido del punto)</li>
+  <li><b>end</b>: (integer) El tiempo final utilizado en los cálculos</li>
 </ul>
 <p>
   Por ejemplo, el siguiente guión devuelve el valor mínimo de 'n' para la última hora:
@@ -107,17 +107,17 @@ return p.value + 1;
   El objeto <b>StartsAndRuntimeList</b> es devuelto por los puntos binarios y multiestatales. Contiene las siguientes propiedades:
 </p>
 <ul>
-  <li><b>realStart</b>: (entero) La hora de inicio real utilizada en los cálculos (en caso de que la hora de inicio preceda al primer valor conocido del punto)</li>
-  <li><b>end</b>: El tiempo final utilizado en los cálculos</li>
-  <li><b>data</b>: la lista de objetos individuales de StartAndRuntime.</li>
+  <li><b>realStart</b>: (integer) La hora de inicio real utilizada en los cálculos (en caso de que la hora de inicio preceda al primer valor conocido del punto)</li>
+  <li><b>end</b>: (integer) El tiempo final utilizado en los cálculos</li>
+  <li><b>data</b>: (array) la lista de objetos individuales de StartAndRuntime.</li>
 </ul>
 Cada objeto StartAndRuntime tiene las siguientes propiedades:
 <ul>
-  <li><b>valor</b>: (bola para binario, entero para multiestado) Estado del punto al que se aplican las siguientes propiedades</li>
-  <li><b>comienzos</b>: (número entero) El número de veces que se ha alcanzado el estado durante el período</li>
-  <li><b>tiempo de ejecución</b>: El tiempo en milisegundos que el punto estuvo en el estado</li>
-  <li><b>proporción</b>: (flotación) La proporción del período en el que el punto estaba en el estado (tiempo de ejecución / duración real)</li>
-  <li><b>pourcentage</b>: Proporción (flotante) * 100</li>
+  <li><b>value</b>: (boolean para binario, integer para multiestado) Estado del punto al que se aplican las siguientes propiedades</li>
+  <li><b>starts</b>: (integer) El número de veces que se ha alcanzado el estado durante el período</li>
+  <li><b>runtime</b>: (integer) El tiempo en milisegundos que el punto estuvo en el estado</li>
+  <li><b>proportion</b>: (float) La proporción del período en el que el punto estaba en el estado (runtime / real duration)</li>
+  <li><b>percentage</b>: (float) (float) proportion * 100</li>
 </ul>
 
 <p>

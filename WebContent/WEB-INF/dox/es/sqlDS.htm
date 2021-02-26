@@ -42,13 +42,13 @@
 <div><pre style="overflow : auto ; width : 95% ;">seleccionar el estado de la retransmisión</pre></div>
 <p> Para transponer tal tabla con el fin de recuperar los valores en una sola línea, se podría proceder de la siguiente manera (suponiendo 3 relevos):</p>
 <div><pre style="overflow : auto ; width : 95% ;">select
-  r1.status comme r1status,
-  r2.status comme r2status,
-  r3.status comme r3status
-des relais r1, r2, r3
-où r1.relayId = 'relais1'.
-  et r2.relayId = "relay2".
-  et r3.relayId = "relay3".
+  r1.status as r1status,
+  r2.status as r2status,
+  r3.status as r3status
+from relays r1, relays r2, relays r3
+where r1.relayId = 'relay1'
+  and r2.relayId = 'relay2'
+  and r3.relayId = 'relay3'
 </pre></div>
 <p>Tenga en cuenta que los ejemplos anteriores se proporcionan sólo a título informativo y de conveniencia. Su base de datos específica puede requerir soluciones muy diferentes.</p>
 
