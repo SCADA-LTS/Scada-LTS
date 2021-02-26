@@ -34,6 +34,7 @@ import org.scada_lts.dao.mailingList.MailingListMemberDAO;
 import org.scada_lts.mango.adapter.MangoMailingList;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelType;
+import org.scada_lts.web.mvc.api.json.JsonMailingList;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -102,6 +103,10 @@ public class MailingListService implements MangoMailingList {
 		List<MailingList> lists = mailingListDAO.getMailingLists();
 		setRelationalData(lists);
 		return lists;
+	}
+
+	public List<JsonMailingList> getSimpleMailingLists() {
+		return mailingListDAO.getSimpleMailingLists();
 	}
 
 	@Override

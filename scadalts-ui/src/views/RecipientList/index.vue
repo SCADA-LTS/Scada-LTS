@@ -26,7 +26,7 @@
 								<v-list-item-content>
 									<v-list-item-title>
 										<v-fab-transition>
-											<v-btn color="primary" dark absolute bottom center x-small fab @click="createRecipientList()">
+											<v-btn color="primary" dark absolute bottom right x-small fab @click="createRecipientList()">
 												<v-icon> mdi-plus </v-icon>
 											</v-btn>
 										</v-fab-transition>
@@ -60,6 +60,7 @@
 				</v-card-title>
 				<v-card-text class="dialog-card-text">
 					<RecipientListDetails
+						ref="recipientListDialog"
 						:recipientList="blankRecipientList"
 						:edit="true"
 					></RecipientListDetails>
@@ -109,7 +110,9 @@ export default {
 			this.$refs.recipientListDetails.changeActiveRL();
 		},
 
-		deleteRecipientList(item) {
+		async deleteRecipientList(item) {
+			await this.$store.dispatch('deleteMailingList', item.id);
+			this.fetchRecipeintLists();
 			//TODO: Add Confirmation dialog
 		},
 
@@ -119,11 +122,11 @@ export default {
 			this.blankRecipientList = JSON.parse(JSON.stringify(this.$store.state.storeMailingList.mailingListTemplate));
 		},
 
-		addRecipientList() {
-			this.showRLCreationDialog = false;
+		addRecipientList() {			
+			this.$refs.recipientListDialog.preSave();
 			this.$store.dispatch('createMailingList', this.blankRecipientList);
 			this.recipeintLists.push(this.blankRecipientList);
-
+			this.showRLCreationDialog = false;
 		},
 	},
 };

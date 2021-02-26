@@ -8,8 +8,5 @@ export const mailingListTemplate = {
 	dailyLimitSentEmailsNumber: 0,
 	dailyLimitSentEmails: false,
 	inactiveIntervals: [],
-	recipientType: 1,
-	referenceId: 1,
-	referenceAddress: null,
 };
 export default mailingListTemplate;

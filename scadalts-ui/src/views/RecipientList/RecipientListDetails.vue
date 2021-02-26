@@ -124,6 +124,7 @@
 								:items="userList"
 								item-value="id"
 								item-text="name"
+								return-object
 								dense
 							></v-select>
 						</v-col>
@@ -309,10 +310,12 @@ export default {
 			}
 		},
 
+		preSave() {
+			this.recipientList.inactiveIntervals = this.convertInactiveIntervals(this.inactiveTime);
+		},
+
 		save() {
-			this.recipientList.inactiveIntervals = this.convertInactiveIntervals(
-				this.inactiveTime
-			);
+			this.preSave();
 			console.log(this.recipientList);
 			this.$store.dispatch('updateMailingList', this.recipientList);
 			// console.log(this.convertInactiveIntervals(this.inactiveTime));

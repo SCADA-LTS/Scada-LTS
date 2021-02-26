@@ -9,26 +9,31 @@ const storeMailingList = {
 
 	actions: {
 		getSimpleMailingLists({ dispatch }) {
-			console.debug('Simple Mailing List');
-			return dispatch('requestGet', '/mailingList/getAll');
-			// TODO: Create simpler API with just ML id, xid and name as below
-			// let data = [
-			//     {id: 1, xid: 'ML_00001', name: 'Example Mailing List'},
-			//     {id: 2, xid: 'ML_00002', name: 'Example ML Test'}, ...
-			// ];
+			return dispatch('requestGet', '/mailingList/getAllSimple');
 		},
 
 		getMailingList({ dispatch }, mailingListId) {
 			return dispatch('requestGet', `/mailingList/get/id/${mailingListId}`);
 		},
 
+		deleteMailingList({dispatch}, mailingListId) {
+			return dispatch('requestDelete', `/mailingList/${mailingListId}`);
+		},
+
 		createMailingList({ dispatch }, mailingList) {
-			console.log('CREATED', mailingList);
+			return dispatch('requestPost', {
+				url: `/mailingList`,
+				data: mailingList
+			})
 		},
 
 		updateMailingList({ dispatch }, mailingList) {
-			console.log('UPDATED', mailingList);
+			return dispatch('requestPut', {
+				url: `/mailingList`,
+				data: mailingList
+			})
 		},
+
 	},
 
 	getters: {},
