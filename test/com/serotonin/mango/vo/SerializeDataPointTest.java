@@ -27,7 +27,6 @@ import utils.SerializeDataPointTestUtils;
 
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -221,7 +220,7 @@ public class SerializeDataPointTest {
     }
 
     @Test
-    @Ignore("The field settable in DataPointVO not serailized.")
+    @Ignore("The field settable from DataPointVO not serailized.")
     public void test_isSettable() {
         
         //then:
@@ -463,7 +462,7 @@ public class SerializeDataPointTest {
     }
 
     @Test
-    @Ignore("No serialized in PointEventDetectorVO: id, limit, alphanumericState, eventDetectorKey, typeKey, duration," +
+    @Ignore("No serialized from PointEventDetectorVO: id, limit, alphanumericState, eventDetectorKey, typeKey, duration," +
             "changeCount, weight, description, eventType, durationDescription.")
     public void test_getEventDetectorsNotSerialized() {
 
@@ -492,7 +491,7 @@ public class SerializeDataPointTest {
     }
 
     @Test
-    @Ignore("No serialized in PointEventDetectorVO: def.")
+    @Ignore("No serialized from PointEventDetectorVO: def.")
     public void test_getEventDetectorsDef() {
         //then:
         assertThat(json, containsString("eventDetectors"));
