@@ -101,8 +101,6 @@ export default {
 						allData: this.purgeAll,
 					})
 					.then((resp) => {
-						console.log(resp);
-						console.log(resp.deleted);
 						if (resp.deleted) {
 							this.$emit('result', true);
 						} else {

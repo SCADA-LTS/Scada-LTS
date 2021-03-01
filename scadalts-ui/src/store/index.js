@@ -94,7 +94,6 @@ export default new Vuex.Store({
 		 */
 		async getUserInfo({ state, dispatch }) {
 			state.loggedUser = await dispatch('requestGet', '/auth/user');
-			console.log('VUEX::GET_USER_INFO::', state.loggedUser);
 		},
 
 		/**
