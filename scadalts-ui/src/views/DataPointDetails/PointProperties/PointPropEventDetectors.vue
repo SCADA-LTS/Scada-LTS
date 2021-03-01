@@ -304,7 +304,6 @@ export default {
 
 	filters: {
 		detectorType: (value) => {
-			console.log(value);
 			let detectorsList = [
 				'High Limit',
 				'Low Limit',

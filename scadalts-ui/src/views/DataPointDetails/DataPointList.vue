@@ -97,7 +97,6 @@ export default {
 		},
 
 		open(item, item2) {
-			console.log(item, item2);
 			this.$router.push({ name: 'datapoint-details', params: { id: item.id } });
 			this.$router.go();
 		},
