@@ -292,6 +292,10 @@ public class EventService implements MangoEvent {
 	}
 
 	public List<EventHandlerPlcDTO> getPlcEventHandlers() { return eventDAO.getPlcEventHandlers(); }
+
+	public List<EventHandlerPlcDTO> getEventHandlersByDatapointId(int datapointId) {
+		return eventDAO.getEventHandlersByDatapointId(datapointId);
+	}
 	
 	@Override
 	public EventHandlerVO getEventHandler(int eventHandlerId) {

@@ -1,0 +1,1 @@
+${evt.prettyActiveTimestamp} - <@fmt message=evt.message/>

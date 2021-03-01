@@ -324,6 +324,20 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"FROM " +
 			"eventHandlers ";
 
+	private static final String EVENT_HANDLER_SELECT_PLC_BY_DPID= "" +
+			"SELECT " +
+			COLUMN_NAME_EVENT_HANDLER_ID+", " +
+			COLUMN_NAME_EVENT_HANDLER_XID+", " +
+			COLUMN_NAME_EVENT_HANDLER_ALIAS+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_ID+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+", " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+", " +
+			COLUMN_NAME_EVENT_HANDLER_DATA+" " +
+			"FROM " +
+			"eventHandlers " +
+			"WHERE " + COLUMN_NAME_EVENT_HANDLER_TYPE_ID + "=1 AND " +
+			COLUMN_NAME_EVENT_HANDLER_TYPE_REF1 + "=?";
+
 	private static final String EVENT_HANDLER_FILTER= " "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+"=? and "
@@ -473,7 +487,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 	
-	
 	//TODO to rewrite - User have event not event have user silenced;
 	private class UserEventRowMapper extends EventRowMapper {
 		@Override
@@ -606,6 +619,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			LOG.error(e);
 		}
 		return null;
+	}
+
+	public List<EventHandlerPlcDTO> getEventHandlersByDatapointId(int datapointId) {
+		return (List<EventHandlerPlcDTO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT_PLC_BY_DPID, new Object[]{datapointId}, new PlcEventHandlerRowMapper());
 	}
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

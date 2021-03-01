@@ -34,15 +34,14 @@ import org.snmp4j.smi.UdpAddress;
  */
 abstract public class Version {
     public static Version getVersion(int version, String community, String securityName, String authProtocol,
-            String authPassphrase, String privProtocol, String privPassphrase, String engineId, String contextEngineId,
+            String authPassphrase, String privProtocol, String privPassphrase, int securityLevel,
             String contextName) {
         if (version == SnmpConstants.version1)
             return new Version1(community);
         else if (version == SnmpConstants.version2c)
             return new Version2c(community);
         else if (version == SnmpConstants.version3)
-            return new Version3(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase, engineId,
-                    contextEngineId, contextName);
+            return new Version3(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase, securityLevel, contextName);
         else
             throw new IllegalArgumentException("Invalid version value: " + version);
     }
@@ -59,6 +58,7 @@ abstract public class Version {
         Target target = getTarget();
 
         Address address = new UdpAddress(InetAddress.getByName(host), port);
+        target.setVersion(getVersionId());
         target.setAddress(address);
         target.setRetries(retries);
         target.setTimeout(timeout);
