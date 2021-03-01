@@ -34,16 +34,16 @@
 <p>
 Les demandes sont livrées en utilisant des formats de demande HTTP paramétrés normaux. Lorsque vous utilisez la méthode GET, le format est "http://&lt;nom de domaine et port&gt;/&lt;chemin optionnel&gt;/httpds?param1=valeur1&amp;param2=valeur2". Les demandes envoyées avec la méthode POST nécessitent généralement un client spécialisé ; veuillez vous référer à la documentation du client si vous souhaitez utiliser POST.</p>
 <p>
-Les valeurs ponctuelles peuvent être spécifiées de deux façons. La première est le format "pointName=pointValue". La seconde consiste à fournir la clé et la valeur sous la forme de deux paramètres distincts en utilisant les préfixes de clé "__point" et "__valeur". Par exemple, "__pointFoo=nomdupoint&amp;__valeurFoo=valeurdupoint" (rassemblé en faisant correspondre le "Foo" qui suit le préfixe) a le même effet que "nomdupoint=valeurdupoint".</p>
+Les valeurs ponctuelles peuvent être spécifiées de deux façons. La première est le format "pointName=pointValue". La seconde consiste à fournir la clé et la valeur sous la forme de deux paramètres distincts en utilisant les préfixes de clé "__point" et "__value". Par exemple, '__pointFoo=pointName&amp;__valueFoo=pointValue' (rassemblé en faisant correspondre le "Foo" qui suit le préfixe) a le même effet que "nomdupoint=valeurdupoint".</p>
 <p>L'ordre dans lequel les paramètres sont fournis dans la demande n'est pas significatif.</p>
 <p>Les clés de paramètres spéciales suivantes sont reconnues. Notez que toutes commencent par deux traits de soulignement. Elles sont toutes facultatives.</p>
 <p>
   Les horodatages peuvent être représentés de multiples façons. Si un horodatage est détecté (c'est-à-dire qu'il n'est pas vide), Mango tentera de l'analyser d'abord au format "aaaaMMddHHmmss", puis "aaay-MM-dd'T'HH:mm:ss 'Z'", et enfin en tant que décompte en millisecondes UTC depuis minuit le 1er janvier 1970. (Voir la documentation "Formats de date/heure" pour plus d'informations.)</p>
 <ul>
-  <li><b>__dispositif</b> &ndash; l'identifiant du dispositif de l'expéditeur</li>
-  <li><b>__temps</b> &ndash; le dépassement du temps</li>
+  <li><b>__device</b> &ndash; l'identifiant du dispositif de l'expéditeur</li>
+  <li><b>__time</b> &ndash; le dépassement du temps</li>
   <li><b>__point</b> &ndash; le préfixe qui fournit une méthode alternative pour fournir un nom de point. Les caractères qui suivent le préfixe doivent correspondre aux caractères qui suivent un préfixe de paramètre "__valeur". Les caractères qui suivent le préfixe ne sont utilisés que pour la correspondance et sont autrement insignifiants.</li>
-  <li><b>__valeur</b> &ndash; le préfixe qui fournit la valeur correspondante pour une clé donnée avec un préfixe "__point".</li>
+  <li><b>__value</b> &ndash; le préfixe qui fournit la valeur correspondante pour une clé donnée avec un préfixe "__point".</li>
 </ul>
 
 <h1>Test avec l'auditeur du récepteur HTTP</h1>
@@ -74,12 +74,12 @@ Les valeurs ponctuelles peuvent être spécifiées de deux façons. La première
     Clé non consommée" indiquant que la clé de paramètre donnée n'a été utilisée par aucun point de données du récepteur HTTP.
   </li>
   <li>
-    Valeur non trouvée pour la clé de point appariée" indiquant qu'une clé de paramètre spécifiée à l'aide de la "__point/__valeur". n'était pas assortie d'une valeur. Le paramètre n'aura pas été inclus dans le traitement de la demande.
+    Valeur non trouvée pour la clé de point appariée" indiquant qu'une clé de paramètre spécifiée à l'aide de la "__point/__value". n'était pas assortie d'une valeur. Le paramètre n'aura pas été inclus dans le traitement de la demande.
   </li>
 </ul>
 <p>
   Par défaut, seuls les messages d'erreur ou d'avertissement ci-dessus sont renvoyés dans la réponse HTTP. Si vous souhaitez que du contenu supplémentaire soit renvoyé, vous pouvez spécifier un contenu statique comme le prologue (écrit avant les messages d'erreur et d'avertissement) et l'épilogue (écrit après les messages d'erreur et d'avertissement). Utilisez les instructions d'insertion suivantes (ou des instructions de mise à jour analogues si les clés existent déjà) pour spécifier votre contenu personnalisé:</p>
 <pre>
-  insérer dans systemSettings (settingName, settingValue) des valeurs ('httpdsPrologue', 'my prologue content') 
-  insérer dans systemSettings (settingName, settingValue) des valeurs ('httpdsEpilogue', 'my epilogue content')
+  insert into systemSettings (settingName, settingValue) values ('httpdsPrologue', 'my prologue content')
+  insert into systemSettings (settingName, settingValue) values ('httpdsEpilogue', 'my epilogue content')
 </pre>

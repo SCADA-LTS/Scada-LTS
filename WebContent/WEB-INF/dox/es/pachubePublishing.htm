@@ -1,67 +1,22 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>El editor de Pachube envía cada actualización (o cambio, según sea el caso) a Pachube usando la clave API, el ID de flujo y el ID de flujo de datos dado como una solicitud HTTP separada.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<h1>Propriédad</h1>
+<p>La <b>API Key</b> es necesaria para actualizar los datos privados. Lo encontrarás en el área de "mi configuración" cuando entres en tu cuenta de Pachube. Los ajustes <b>Tiempo muerto</b> y <b>Reintento</b> se usan para manejar las fallas.</p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<h1>Respuestas del HTTP</h1>
+<p>Cualquier código de respuesta que no sea "200 OK" se considera un error, y se disparará una alarma. Ten en cuenta que, dependiendo de tu cuenta de Pachube, pueden aplicarse restricciones a las solicitudes de la API. Ver <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a> para más detalles.</p>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<h1>Descripci&oacute;n General</h1>
-<p>
-  El publicador Pachube env&iacute;a cada actualizaci&oacute;n del punto (o su cambio) a Pachube utilizando la clave API ingresada, el Id del feed,
-  y el ID del flujo de datos como solicitudes separadas de HTTP.
-</p>
-
-<h1>Propiedades</h1>
-<p>
-  La <b>Clave API</b> es necesaria para actualizar datos confidenciales. En el &aacute;rea de "mi configuraci&oacute;n" se define cuando iniciar&aacute; sesi&oacute;n en su cuenta 
-  Pachube. Los par&aacute;metros <b>tiempo de espera</b> y <b>reintentos</b> son utilizados para manejar fallas.
-</p>
-
-<h1>respuesta HTTP (HTTP response)</h1>
-<p>
-  Cualquier c&oacute;digo de respuesta diferente a "200 OK" es considerado como un error, y se levantar&aacute; una alarma. Note que - dependiendo de su cuenta en 
-  Pachube - pueden aplicar algunas restricciones en las solicitudes API. Vea <a href="http://community.pachube.com/api#rate_limit">http://community.pachube.com/api#rate_limit</a> para m&aacute;s detalles.
-</p>
-
-<h1>Puntos Publicados</h1>
-<p>
-  La secci&oacute;n de <b>Puntos</b> lista los puntos a ser publicados. Un punto publicado puede ser habilitado (<img src="images/brick_go.png"/>) o
-  deshabilitado (<img src="images/brick_stop.png"/>). El deshabilitar un punto permite que no sea utilizado sin necesidad de eliminarlo. 
-  Los valores de <b>Id de Feed</b> y de <b>Id de flujo</b> determina el flujo de datos que ser&aacute; actualizado.
-</p>
-<p>
-  Para agregar un punto a la lista de puntos, selecci&oacute;nelo en la lista de puntos y haga clic en el icono <img src="images/icon_comp_add.png"/> 
-  Para eliminar un punto existente utilice el icono <img src="images/bullet_delete.png"/> a su lado.
-</p>
+<h1>Artículos publicados</h1>
+<p>La sección <b>Puntos</b> enumera los puntos que se publicarán. Los puntos de publicación pueden ser habilitados (<img src="images/brick_go.png"/>) o deshabilitados (<img src="images/brick_stop.png"/>). Desactivar un punto permite no usarlo sin tener que borrarlo explícitamente. Los valores <b>ID de la alimentación</b> y <b>ID del flujo de datos</b> determinan el flujo de datos que se actualizará.</p>
+<p>Para añadir un punto a la lista de puntos, selecciónalo en la lista de puntos y haz clic en el icono <img src="images/icon_comp_add.png"/>. Para eliminar un punto existente, haga clic en el icono <img src="images/icon_comp_add.png"/> asociado a él.</p>
