@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.jfree.util.Log;
@@ -247,6 +248,7 @@ public class DataPointService implements MangoDataPoint {
 		dataPoint.setPurgePeriod(jsonPointProperties.getPurgePeriod());
 		dataPoint.setEventTextRenderer(jsonPointProperties.getEventTextRenderer());
 		dataPoint.setTextRenderer(jsonPointProperties.getTextRenderer());
+		dataPoint.setEventTextRenderer(jsonPointProperties.getEventTextRenderer());
 		dataPoint.setChartRenderer(jsonPointProperties.getChartRenderer());
 		dataPoint.setDefaultCacheSize(jsonPointProperties.getDefaultCacheSize());
 		dataPoint.setDiscardExtremeValues(jsonPointProperties.isDiscardExtremeValues());
@@ -300,6 +302,11 @@ public class DataPointService implements MangoDataPoint {
 		//Create default text renderer
 		if (dp.getTextRenderer() == null) {
 			dp.defaultTextRenderer();
+		}
+
+		//Create default event text renderer
+		if (dp.getEventTextRenderer() == null) {
+			dp.setEventTextRenderer(new NoneEventRenderer());
 		}
 
 		dp.setId(dataPointDAO.insert(dp));
