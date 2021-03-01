@@ -32,9 +32,13 @@ const storeMailingList = {
 		},
 
 		updateMailingList({ dispatch }, mailingList) {
+			let requestPayload = Object.assign({}, mailingList);
+			requestPayload.entries.forEach(e => {
+				delete e.user
+			});
 			return dispatch('requestPut', {
 				url: `/mailingList`,
-				data: mailingList
+				data: requestPayload
 			})
 		},
 

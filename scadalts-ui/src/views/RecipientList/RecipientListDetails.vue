@@ -1,5 +1,5 @@
 <template>
-	<v-row v-if="recipientList">
+	<v-row v-if="!!recipientList">
 		<v-col md="5" sm="12" xs="12" id="section-mail-details">
 			<v-row>
 				<v-col cols="12">
@@ -84,8 +84,8 @@
 				</v-col>
 
 				<v-col cols="12">
-					<v-list>
-						<v-list-item v-for="entry in recipientList.entries" :key="entry">
+					<v-list v-if="!!recipientList.entries">
+						<v-list-item v-for="(entry, index) in recipientList.entries" :key="`${entry}-${index}`">
 							<v-list-item-icon>
 								<v-icon v-show="entry.recipientType === TYPE_USER">mdi-account </v-icon>
 								<v-icon v-show="entry.recipientType === TYPE_MAIL">mdi-email </v-icon>
@@ -122,7 +122,7 @@
 						<v-icon>mdi-content-save</v-icon>
 					</v-btn>
 				</v-col>
-				<v-col cols="12">
+				<v-col cols="12" v-if="!loadingInactiveTime">
 					<div class="day">
 						<div>{{$t('recipientlistDetails.activetime.table.time')}}</div>
 						<div>{{$t('recipientlistDetails.activetime.table.day.monday')}}</div>
@@ -149,6 +149,9 @@
 							</span>
 						</div>
 					</div>
+				</v-col>
+				<v-col cols="12" v-else>
+					<v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
 				</v-col>
 			</v-row>
 		</v-col>
@@ -245,6 +248,7 @@ export default {
 			userRecipient: undefined,
 			plainRecipient: '',
 			mouseSelecting: false,
+			loadingInactiveTime: true,
 			inactiveTime: [[], [], [], [], [], [], []],
 			valid: true,
 			emailRules: [
@@ -375,6 +379,7 @@ export default {
 		 * Initialize the inactive time array.
 		 */
 		clearInactiveIntervals() {
+			this.loadingInactiveTime = true;
 			this.inactiveTime = [[], [], [], [], [], [], []];
 			for (let d = 0; d < 7; d++) {
 				this.$set(this.inactiveTime, d, new Array(24));
@@ -382,6 +387,7 @@ export default {
 					this.$set(this.inactiveTime[d], h, new Array(4).fill(false));
 				}
 			}
+			this.loadingInactiveTime = false;
 		},
 
 		/**
