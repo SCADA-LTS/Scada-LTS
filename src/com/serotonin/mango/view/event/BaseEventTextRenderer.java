@@ -125,6 +125,9 @@ abstract public class BaseEventTextRenderer implements EventTextRenderer, JsonSe
     public static class Factory implements TypeFactory {
         @Override
         public Class<?> getType(JsonValue jsonValue) throws JsonException {
+            if (jsonValue.isNull())
+                return null;
+
             JsonObject json = jsonValue.toJsonObject();
 
             String type = json.getString("type");
