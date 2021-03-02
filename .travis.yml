@@ -17,7 +17,6 @@ before_script:
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
 - npm install
-- npm run-script test:unit
 - npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH
 - cd ../
 language: java
@@ -31,7 +30,6 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^feature/#1533.*$/"
 notifications:
   email: false
 env:
