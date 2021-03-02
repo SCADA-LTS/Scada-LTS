@@ -150,9 +150,9 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
             pointDisabledEventActive = foundDisabledPoint;
                 if (pointDisabledEventActive) {
                     // A published point has been terminated, was never enabled, or no longer exists.
-                    EventMessages messages = new EventMessages(new LocalizableMessage("event.publish.pointMissing"), new LocalizableMessage("event.publish.pointMissing"));
+                    LocalizableMessage message = new LocalizableMessage("event.publish.pointMissing");
                     Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
-                            AlarmLevels.URGENT, messages, createEventContext());
+                            AlarmLevels.URGENT, message, message, createEventContext());
                 }
             else
                 // Everything is good
@@ -161,9 +161,9 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     }
 
     void fireQueueSizeWarningEvent() {
-        EventMessages messages = new EventMessages(new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()), new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize()));
+        LocalizableMessage message = new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize());
         Common.ctx.getEventManager().raiseEvent(queueSizeWarningEventType, System.currentTimeMillis(), true,
-                AlarmLevels.URGENT, messages,
+                AlarmLevels.URGENT, message, message,
                 createEventContext());
     }
 

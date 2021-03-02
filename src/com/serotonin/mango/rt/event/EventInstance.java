@@ -77,9 +77,10 @@ public class EventInstance {
     private final int alarmLevel;
 
     /**
-     * Configuration field. The message associated with the event.
+     * Configuration field. The messages associated with the event.
      */
-    private final EventMessages messages;
+    private final LocalizableMessage message;
+    private final LocalizableMessage shortMessage;
 
     /**
      * User comments on the event. Added in the events interface after the event has been raised.
@@ -105,16 +106,33 @@ public class EventInstance {
     private final Map<String, Object> context;
 
     public EventInstance(EventType eventType, long activeTimestamp, boolean rtnApplicable, int alarmLevel,
-                         EventMessages messages, Map<String, Object> context) {
+                         LocalizableMessage message, Map<String, Object> context) {
         this.eventType = eventType;
         this.activeTimestamp = activeTimestamp;
         this.rtnApplicable = rtnApplicable;
         this.alarmLevel = alarmLevel;
-        if (messages == null) {
-            this.messages = new EventMessages(new LocalizableMessage("common.noMessage"), new LocalizableMessage("common.noMessage"));
-        }
+        if (message == null)
+            this.message = new LocalizableMessage("common.noMessage");
         else
-            this.messages = messages;
+            this.message = message;
+        this.context = context;
+        shortMessage = new LocalizableMessage("common.noMessage");
+    }
+
+    public EventInstance(EventType eventType, long activeTimestamp, boolean rtnApplicable, int alarmLevel,
+                         LocalizableMessage message, LocalizableMessage shortMessage, Map<String, Object> context) {
+        this.eventType = eventType;
+        this.activeTimestamp = activeTimestamp;
+        this.rtnApplicable = rtnApplicable;
+        this.alarmLevel = alarmLevel;
+        if (message == null)
+            this.message = new LocalizableMessage("common.noMessage");
+        else
+            this.message = message;
+        if (shortMessage == null)
+            this.shortMessage = new LocalizableMessage("common.noMessage");
+        else
+            this.shortMessage = shortMessage;
         this.context = context;
     }
 
@@ -237,8 +255,12 @@ public class EventInstance {
         return rtnTimestamp;
     }
 
-    public EventMessages getMessages() {
-        return messages;
+    public LocalizableMessage getMessage() {
+        return message;
+    }
+
+    public LocalizableMessage getShortMessage() {
+        return shortMessage;
     }
 
     public boolean isRtnApplicable() {
@@ -336,7 +358,8 @@ public class EventInstance {
 		result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
 		result = prime * result + ((handlers == null) ? 0 : handlers.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((messages == null) ? 0 : messages.hashCode());
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + ((shortMessage == null) ? 0 : shortMessage.hashCode());
 		result = prime * result + (rtnApplicable ? 1231 : 1237);
 		result = prime * result + rtnCause;
 		result = prime * result + (int) (rtnTimestamp ^ (rtnTimestamp >>> 32));
@@ -391,11 +414,16 @@ public class EventInstance {
 			return false;
 		if (id != other.id)
 			return false;
-		if (messages == null) {
-			if (other.messages != null)
-				return false;
-		} else if (!messages.equals(other.messages))
-			return false;
+        if (message == null) {
+            if (other.message != null)
+                return false;
+        } else if (!message.equals(other.message))
+            return false;
+        if (shortMessage == null) {
+            if (other.shortMessage != null)
+                return false;
+        } else if (!shortMessage.equals(other.shortMessage))
+            return false;
 		if (rtnApplicable != other.rtnApplicable)
 			return false;
 		if (rtnCause != other.rtnCause)
@@ -410,7 +438,7 @@ public class EventInstance {
 	}
 
 	public EventInstance copyWithContext(Map<String, Object> context) {
-        EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, messages, context);
+        EventInstance eventInstance = new EventInstance(eventType, activeTimestamp, rtnApplicable, alarmLevel, message, shortMessage, context);
         eventInstance.setId(id);
         eventInstance.setAcknowledgedByUserId(acknowledgedByUserId);
         eventInstance.setAcknowledgedByUsername(acknowledgedByUsername);

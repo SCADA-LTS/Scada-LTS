@@ -148,9 +148,8 @@ public class AuditEventType extends EventType {
         AuditEventType type = new AuditEventType(auditEventTypeId, o.getId());
         type.setRaisingUser(user);
 
-        EventMessages messages = new EventMessages(message, message);
         Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), false,
-                getEventType(type.getAuditEventTypeId()).getAlarmLevel(), messages, null);
+                getEventType(type.getAuditEventTypeId()).getAlarmLevel(), message, message, null);
     }
 
     //

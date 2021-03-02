@@ -151,10 +151,10 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                     if (vo.isRaiseResultWarning()) {
                         String result = HttpUtils.readResponseBody(method, 1024);
                         if (!StringUtils.isEmpty(result)) {
-                            EventMessages messages = new EventMessages(new LocalizableMessage("common.default", result), new LocalizableMessage("common.default", result));
+                            LocalizableMessage msg = new LocalizableMessage("common.default", result);
                             Common.ctx.getEventManager().raiseEvent(resultWarningsEventType,
                                     System.currentTimeMillis(), false, AlarmLevels.INFORMATION,
-                                    messages, createEventContext());
+                                    msg, msg, createEventContext());
                         }
                     }
                 }
@@ -175,9 +175,8 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                     failureMessage = message;
 
                 if (failureCount == MAX_FAILURES + 1) {
-                    EventMessages msgs = new EventMessages(failureMessage, failureMessage);
                     Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
-                            AlarmLevels.URGENT, msgs, createEventContext());
+                            AlarmLevels.URGENT, failureMessage, failureMessage, createEventContext());
                 }
 
                 return false;

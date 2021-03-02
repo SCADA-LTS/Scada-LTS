@@ -61,7 +61,7 @@ public class EventManager implements ILifecycle {
 	// Basic event management.
 	//
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
-			int alarmLevel, EventMessages messages,
+			int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
 			Map<String, Object> context) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
@@ -71,7 +71,7 @@ public class EventManager implements ILifecycle {
 			if (dh == EventType.DuplicateHandling.DO_NOT_ALLOW) {
 				// Create a log error...
 				log.error("An event was raised for a type that is already active: type="
-						+ type + ", message=" + messages.getMessage());
+						+ type + ", message=" + message);
 				// ... but ultimately just ignore the thing.
 				return;
 			}
@@ -85,7 +85,7 @@ public class EventManager implements ILifecycle {
 				// of this type with different messages,
 				// so look through them all for a match.
 				for (EventInstance e : getAll(type)) {
-					if (e.getMessages().getMessage().equals(messages.getMessage()))
+					if (e.getMessage().equals(message))
 						return;
 				}
 			}
@@ -97,7 +97,7 @@ public class EventManager implements ILifecycle {
 		boolean suppressed = isSuppressed(type);
 
 		EventInstance evt = new EventInstance(type, time, rtnApplicable,
-				alarmLevel, messages, context);
+				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
@@ -162,7 +162,7 @@ public class EventManager implements ILifecycle {
 
 			if (log.isDebugEnabled())
 				log.debug("Event raised: type=" + type + ", message="
-						+ messages.getMessage().getLocalizedMessage(Common.getBundle()));
+						+ message.getLocalizedMessage(Common.getBundle()));
 		}
 	}
 

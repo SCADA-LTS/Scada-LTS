@@ -184,8 +184,7 @@ public class PendingEventsDAO {
 					rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		}
 
-		EventMessages messages = new EventMessages(message, shortMessage);
-		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, messages, null);
+		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, shortMessage, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
 		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);

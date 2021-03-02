@@ -74,7 +74,7 @@
         <td>
           <table cellspacing="0" cellpadding="0" width="100%">
             <tr>
-              <td colspan="2"><b><sst:i18n message="${event.messages.message}"/></b></td>
+              <td colspan="2"><b><sst:i18n message="${event.message}"/></b></td>
               <td align="right">
                 <tag:img png="comment_add" title="notes.addNote"
                         onclick="openCommentDialog(${applicationScope['constants.UserComment.TYPE_EVENT']}, ${event.id})"/>

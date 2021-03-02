@@ -156,9 +156,8 @@ public class PachubeSenderRT extends PublisherRT<PachubePointVO> {
                     failureMessage = message;
 
                 if (failureCount == MAX_FAILURES + 1) {
-                    EventMessages msgs = new EventMessages(failureMessage, failureMessage);
                     Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
-                            AlarmLevels.URGENT, msgs, createEventContext());
+                            AlarmLevels.URGENT, failureMessage, failureMessage, createEventContext());
                 }
 
                 return permanentFailure;

@@ -38,8 +38,7 @@ public class MaintenanceEventRT implements ModelTimeoutClient<Boolean> {
 
     private void raiseEvent(long time) {
         if (!eventActive) {
-            EventMessages messages = new EventMessages(getMessage(), getMessage());
-            Common.ctx.getEventManager().raiseEvent(eventType, time, true, vo.getAlarmLevel(), messages, null);
+            Common.ctx.getEventManager().raiseEvent(eventType, time, true, vo.getAlarmLevel(), getMessage(), getMessage(), null);
             eventActive = true;
         }
     }

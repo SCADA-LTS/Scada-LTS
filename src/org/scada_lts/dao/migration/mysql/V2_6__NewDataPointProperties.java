@@ -6,6 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.SerializationData;
+import org.scada_lts.utils.PlcAlarmsUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -49,6 +51,10 @@ public class V2_6__NewDataPointProperties extends BaseJavaMigration {
             boolean isNull = dataPoints.stream().anyMatch(Objects::isNull);
             if (isNull) {
                 throw new IllegalStateException("DataPointVO is null!");
+            }
+
+            for (DataPointVO dataPoint : dataPoints) {
+                jdbcTmp.update("UPDATE dataPoints set data = ?", new SerializationData().writeObject(dataPoint));
             }
 
         } catch (EmptyResultDataAccessException empty) {

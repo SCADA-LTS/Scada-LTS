@@ -43,18 +43,18 @@ abstract public class PointEventDetectorRT extends SimpleEventDetector implement
     }
 
     protected void raiseEvent(long time, Map<String, Object> context) {
-        EventMessages messages = new EventMessages();
+        LocalizableMessage msg;
+        LocalizableMessage shortMsg;
         if (!StringUtils.isEmpty(vo.getAlias())) {
-            LocalizableMessage msg = new LocalizableMessage("common.default", vo.getAlias());
-            messages.setMessage(msg);
-            messages.setShortMessage(msg);
+            msg = new LocalizableMessage("common.default", vo.getAlias());
+            shortMsg = new LocalizableMessage("common.default", vo.getAlias());
         } else {
-            messages.setMessage(getMessage());
-            messages.setShortMessage(getShortMessage());
+            msg = getMessage();
+            shortMsg = getShortMessage();
         }
 
-        Common.ctx.getEventManager().raiseEvent(getEventType(), time, vo.isRtnApplicable(), vo.getAlarmLevel(), messages,
-                context);
+        Common.ctx.getEventManager().raiseEvent(getEventType(), time, vo.isRtnApplicable(), vo.getAlarmLevel(), msg,
+                shortMsg, context);
         fireEventDetectorStateChanged(time);
     }
 

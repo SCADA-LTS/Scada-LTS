@@ -130,9 +130,8 @@ public class SystemEventType extends EventType {
 			LocalizableMessage message) {
 		EventTypeVO vo = getEventType(type.getSystemEventTypeId());
 		int alarmLevel = vo.getAlarmLevel();
-		EventMessages messages = new EventMessages(message, message);
 		Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
-				messages, null);
+				message, message, null);
 	}
 
 	public static void returnToNormal(SystemEventType type, long time) {
