@@ -157,7 +157,7 @@
 		</v-col>
 
 		<v-dialog v-model="showRecipientDialog" max-width="300">
-			<v-card v-if="entry">
+			<v-card v-if="entry" id="dialog-recipient-add">
 				<v-form ref="form" v-model="valid">
 					<v-card-title> {{$t('recipientlistDetails.dialog.recipient.title')}} </v-card-title>
 					<v-card-text>
@@ -276,7 +276,6 @@ export default {
 	methods: {
 		async fetchUserList() {
 			this.userList = await this.$store.dispatch('getAllUsers');
-			console.log(this.userList);
 		},
 
 		// Adding and deleting recipients methods
@@ -476,7 +475,4 @@ export default {
 .small-margin {
 	margin: 0 5px;
 }
-/* .active-time {
-	
-} */
 </style>
