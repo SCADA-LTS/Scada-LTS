@@ -54,7 +54,8 @@ public class V2_6__NewDataPointProperties extends BaseJavaMigration {
             }
 
             for (DataPointVO dataPoint : dataPoints) {
-                jdbcTmp.update("UPDATE dataPoints set data = ?", new SerializationData().writeObject(dataPoint));
+                jdbcTmp.update("UPDATE dataPoints set data = ? WHERE id = ?",
+                        new SerializationData().writeObject(dataPoint), dataPoint.getId());
             }
 
         } catch (EmptyResultDataAccessException empty) {
