@@ -1,43 +1,33 @@
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
-import i18n from '@/i18n';
 
 import dataPoint from '../../mocks/store/dataPointMock';
-import mainStore from '../../mocks/store/index';
 
 import PointPropChartRenderer from '@/views/DataPointDetails/PointProperties/PointPropChartRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+
+import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
 };
 
-const store = new Vuex.Store({ modules, state: mainStore.state });
+/**
+ * @private
+ * Initialize VueWrapper for local testing
+ * Prepare wrapper wiht all required stubs and props.
+ */
+function initWrapper(props = dataPointMock) {
+	return prepareMountWrapper(
+		PointPropChartRenderer, 
+		modules,
+		{data: props}
+	);
+}
 
 describe('Point Properties Tests --- Chart Renderer', () => {
-	const localVue = createLocalVue();
-	localVue.use(i18n);
-	localVue.use(Vuex);
-	const vuetify = Vuetify;
-
-	const mountFunction = (options) => {
-		return mount(PointPropChartRenderer, {
-			store,
-			localVue,
-			vuetify,
-			i18n,
-			...options,
-		});
-	};
 
 	it('Initialize Component', () => {
-		const wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
+		const wrapper = initWrapper();
 		expect(wrapper.name()).to.equal('PointPropChartRenderer');
 		expect(wrapper.vm.data.id).to.equal(1);
 		expect(wrapper.vm.data.chartRenderer).to.equal(null);
@@ -45,32 +35,20 @@ describe('Point Properties Tests --- Chart Renderer', () => {
 	});
 
 	it('Select has 4 Items', () => {
-		const wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
+		const wrapper = initWrapper();
 		const items = wrapper.find('.v-select:first-of-type').props('items');
 		expect(items.length).to.equal(4);
 	});
 
 	it('Select type Table', () => {
-		const wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
+		const wrapper = initWrapper();
 		wrapper.vm.watchChartRendererChange(0);
 		expect(wrapper.vm.data.chartRenderer.limit).to.equal(2);
 		expect(wrapper.vm.data.chartRenderer.def.exportName).to.equal('TABLE');
 	});
 
 	it('Select type Image', async () => {
-		const wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
+		const wrapper = initWrapper();
 		wrapper.vm.watchChartRendererChange(1);
 		expect(wrapper.vm.data.chartRenderer.timePeriod).to.equal(2);
 		expect(wrapper.vm.data.chartRenderer.numberOfPeriods).to.equal(1);
@@ -78,11 +56,7 @@ describe('Point Properties Tests --- Chart Renderer', () => {
 	});
 
 	it('Select type Statistics', () => {
-		const wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
+		const wrapper = initWrapper();
 		wrapper.vm.watchChartRendererChange(2);
 		expect(wrapper.vm.data.chartRenderer.timePeriod).to.equal(2);
 		expect(wrapper.vm.data.chartRenderer.numberOfPeriods).to.equal(1);
@@ -96,11 +70,7 @@ describe('Point Properties Tests --- Chart Renderer', () => {
 			{},
 			modules.dataPoint.state.chartRenderersTemplates[1],
 		);
-		const wrapper = mountFunction({
-			propsData: {
-				data: complexDataPointMock,
-			},
-		});
+		const wrapper = initWrapper(complexDataPointMock);
 		expect(wrapper.vm.data.chartRenderer).to.not.equal(null);
 		expect(wrapper.vm.selected).to.equal(1);
 		expect(wrapper.vm.data.chartRenderer.def.exportName).to.equal('IMAGE');

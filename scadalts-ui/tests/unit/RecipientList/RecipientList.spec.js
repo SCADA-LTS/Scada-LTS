@@ -1,50 +1,36 @@
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
-import i18n from '@/i18n';
 
 import storeMailingList from '../../mocks/store/recipientListMock';
 import storeUsersMock from '../../mocks/store/usersMock';
 
 import RecipientList from '@/views/RecipientList'
+import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
     storeMailingList,
     storeUsersMock,
 };
 
-const store = new Vuex.Store({ modules });
-
 global.requestAnimationFrame = (cb) => cb();
 global.cancelAnimationFrame = (cb) => cb();
 
 describe('Recipient List Tests', () => {
-	const localVue = createLocalVue();
-	localVue.use(i18n);
-	localVue.use(Vuex);
-	const vuetify = Vuetify;
-
-	const mountFunction = (options) => {
-		return mount(RecipientList, {
-			store,
-			localVue,
-			vuetify,
-			i18n,
-			stubs: [ ],
-			...options,
-		});
-	};
 
 	it('Initialize Component', () => {
-		const wrapper = mountFunction();
+        const wrapper = prepareMountWrapper(
+			RecipientList, 
+			modules,
+		);
         expect(wrapper.get('h1').text()).to.equal('Recipient List');
 		expect(wrapper.get('h3').text()).to.equal('Select a recipient list to see details');
         expect(wrapper.get('.v-skeleton-loader')).to.exist;
 	});
 
     it('Load recipient lists', async () => {
-		const wrapper = mountFunction();
+        const wrapper = prepareMountWrapper(
+			RecipientList, 
+			modules,
+		);
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.recipeintLists.length).to.equal(3);
         expect(wrapper.vm.recipeintListsLoaded).to.equal(true);
@@ -55,7 +41,10 @@ describe('Recipient List Tests', () => {
 	});
 
     it('Select recipient list', async () => {
-        const wrapper = mountFunction();
+        const wrapper = prepareMountWrapper(
+			RecipientList, 
+			modules,
+		);
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         wrapper.find('#recipientListSection .v-list-item:first-of-type').trigger('click');
@@ -64,14 +53,20 @@ describe('Recipient List Tests', () => {
     });
 
     it('Create recipient list', async () => {
-        const wrapper = mountFunction();
+        const wrapper = prepareMountWrapper(
+			RecipientList, 
+			modules,
+		);
         wrapper.find('.v-list-item .mdi-plus').trigger('click');
         await wrapper.vm.$nextTick();
         expect(wrapper.get('.v-card__title').text()).to.equal('Create Recipient List');
     });
 
     it('Delete recipient list', async () => {
-        const wrapper = mountFunction();
+        const wrapper = prepareMountWrapper(
+			RecipientList, 
+			modules,
+		);
         await wrapper.vm.$nextTick();
         await wrapper.vm.$nextTick();
         wrapper.find('#recipientListSection .v-list-item:first-of-type .mdi-minus-circle').trigger('click');

@@ -1,46 +1,27 @@
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
-import i18n from '@/i18n';
 
 import storeMailingList from '../../mocks/store/recipientListMock';
 import storeUsersMock from '../../mocks/store/usersMock';
 import mlMock from '../../mocks/objects/MailingListObjectMock';
 
 import RecipientListDetails from '@/views/RecipientList/RecipientListDetails';
+import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	storeMailingList,
 	storeUsersMock,
 };
 
-const store = new Vuex.Store({ modules });
-
 global.requestAnimationFrame = (cb) => cb();
 
 describe('Recipient List Details Tests', () => {
-	const localVue = createLocalVue();
-	localVue.use(i18n);
-	localVue.use(Vuex);
-	const vuetify = Vuetify;
-
-	const mountFunction = (options) => {
-		return mount(RecipientListDetails, {
-			store,
-			localVue,
-			vuetify,
-			i18n,
-			propsData: {
-				recipientList: mlMock,
-				edit: false,
-			},
-			...options,
-		});
-	};
-
+	
 	it('Initialize Component', async () => {
-		const wrapper = mountFunction();
+		const wrapper = prepareMountWrapper(
+			RecipientListDetails, 
+			modules,
+			{recipientList: mlMock, edit: false}
+		);
 		await wrapper.vm.$nextTick();
 		expect(wrapper.get('h2').text()).to.equal('Recipient list details');
 		expect(
@@ -81,7 +62,11 @@ describe('Recipient List Details Tests', () => {
 	});
 
 	it('Create Recipient User Test', async () => {
-		const wrapper = mountFunction();
+		const wrapper = prepareMountWrapper(
+			RecipientListDetails, 
+			modules,
+			{recipientList: mlMock, edit: false}
+		);
 		await wrapper.vm.$nextTick();
 		await wrapper.find('.heading-action-buttons .mdi-account-plus').trigger('click');
 		expect(wrapper.find('#dialog-recipient-add').isVisible()).to.equal(true);
@@ -95,7 +80,11 @@ describe('Recipient List Details Tests', () => {
 	});
 
 	it('Create Recipient Mail Test', async () => {
-		const wrapper = mountFunction();
+		const wrapper = prepareMountWrapper(
+			RecipientListDetails, 
+			modules,
+			{recipientList: mlMock, edit: false}
+		);
 		await wrapper.vm.$nextTick();
 
 		await wrapper.find('.heading-action-buttons .mdi-email-plus').trigger('click');
@@ -131,7 +120,11 @@ describe('Recipient List Details Tests', () => {
 	});
 
 	it('Create Recipient Phone Test', async () => {
-		const wrapper = mountFunction();
+		const wrapper = prepareMountWrapper(
+			RecipientListDetails, 
+			modules,
+			{recipientList: mlMock, edit: false}
+		);
 		await wrapper.vm.$nextTick();
 
 		await wrapper.find('.heading-action-buttons .mdi-phone-plus').trigger('click');
@@ -167,7 +160,11 @@ describe('Recipient List Details Tests', () => {
 	});
 
 	it('Check the InactiveInterval convertion', () => {
-		const wrapper = mountFunction();
+		const wrapper = prepareMountWrapper(
+			RecipientListDetails, 
+			modules,
+			{recipientList: mlMock, edit: false}
+		);
 		// Initialization tests
 		expect(wrapper.vm.recipientList.inactiveIntervals.length).to.equal(4);
 		expect(wrapper.vm.inactiveTime.length).to.equal(7);

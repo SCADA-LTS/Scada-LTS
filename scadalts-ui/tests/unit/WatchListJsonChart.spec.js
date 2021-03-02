@@ -1,51 +1,33 @@
-import { createLocalVue, mount } from '@vue/test-utils';
 import WatchListJsonChart from '@/components/watch_list/WatchListJsonChart';
-import Vuetify from '@/plugins/vuetify';
-import i18n from '@/i18n';
-import * as uiv from 'uiv';
+
 import { expect } from 'chai';
+import { prepareMountWrapper, LocalStorageMock } from '../utils/testing-utils';
 
-class LocalStorageMock {
-	constructor() {
-		this.store = {};
-	}
+const WATCHLIST_NAME = 'UnitTestWL';
 
-	clear() {
-		this.store = {};
-	}
-
-	getItem(key) {
-		return this.store[key] || null;
-	}
-
-	setItem(key, value) {
-		this.store[key] = JSON.stringify(value);
-	}
-
-	removeItem(key) {
-		delete this.store[key];
-	}
-}
-
-global.localStorage = new LocalStorageMock();
-
-const localVue = createLocalVue();
-localVue.use(uiv);
-localVue.use(Vuetify);
-
-describe('WatchListJsonChart.vue Test', () => {
-	const WATCHLIST_NAME = 'UnitTestWL';
-
-	const wrapper = mount(WatchListJsonChart, {
-		localVue,
-		i18n,
-		propsData: {
+/**
+ * @private
+ * Initialize VueWrapper for local testing
+ * Prepare wrapper wiht all required stubs and props.
+ */
+function initWrapper() {
+	return prepareMountWrapper(
+		WatchListJsonChart, 
+		{},
+		{
 			pointId: '1',
 			watchlistName: WATCHLIST_NAME,
 			width: 600,
 		},
-		stubs: ['VApp'],
-	});
+		{stubs: ['VApp']}
+	);
+}
+
+global.localStorage = new LocalStorageMock();
+
+describe('WatchListJsonChart.vue Test', () => {
+
+	const wrapper = initWrapper();
 
 	it('Initialize blank JsonChart', () => {
 		expect(wrapper.name()).to.equal('WatchListJsonChart');
