@@ -88,7 +88,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 10;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		
 		eventService.saveEvent(e);
 	
@@ -107,7 +107,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		long currentTime = System.currentTimeMillis();
@@ -126,7 +126,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		long currentTime = System.currentTimeMillis();
@@ -146,7 +146,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null,null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null,null);
 		eventService.saveEvent(e);
 		List<Integer> userIds = new ArrayList<Integer>();
 		
@@ -165,7 +165,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null,null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null,null);
 		
 		// Add User comments
 		DAO.getInstance().getJdbcTemp().update("INSERT userComments (`userId`,`commentType`,`typeKey`,`ts`,`commentText`) VALUES (1,1,1,1,'test')");
@@ -184,7 +184,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = false;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		List<EventInstance> lstAckEvents = eventService.getActiveEvents();
@@ -192,7 +192,7 @@ public class EventServiceTest extends TestDAO {
 		
 		assertEquals(true, checkLstAckEvents);
 		
-		EventInstance e1 = new EventInstance(type, activeTS, true, alarmLevel, null, null,null);
+		EventInstance e1 = new EventInstance(type, activeTS, true, alarmLevel, null,null);
 		eventService.saveEvent(e1);
 		List<EventInstance> lstAckEventsNext = eventService.getActiveEvents();
 		boolean checkLstAckEventsNext = lstAckEventsNext.size()==1;
@@ -241,7 +241,7 @@ public class EventServiceTest extends TestDAO {
 		boolean applicable = false;
 		int alarmLevel = 3;
 		
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		UserEvent userEvent = new UserEvent();
 		
@@ -324,7 +324,7 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		
 		eventService.saveEvent(e);
 		
@@ -350,13 +350,13 @@ public class EventServiceTest extends TestDAO {
 		long activeTS = 0;
 		boolean applicable = true;
 		int alarmLevel = 3;
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
-		EventInstance e1 = new EventInstance(type, activeTS+1,	applicable, alarmLevel, null, null, null);
+		EventInstance e1 = new EventInstance(type, activeTS+1,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e1);
 		
-		EventInstance e2 = new EventInstance(type, activeTS+2,	applicable, alarmLevel, null, null, null);
+		EventInstance e2 = new EventInstance(type, activeTS+2,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e2);
 		
 		eventService.purgeEventsBefore(activeTS+1);
@@ -376,7 +376,7 @@ public class EventServiceTest extends TestDAO {
 		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
 		
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		UserEvent userEvent = new UserEvent();
@@ -405,7 +405,7 @@ public class EventServiceTest extends TestDAO {
 		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
 		
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		UserEvent userEvent = new UserEvent();
@@ -434,7 +434,7 @@ public class EventServiceTest extends TestDAO {
 		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
 		
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		UserEvent userEvent = new UserEvent();
@@ -465,7 +465,7 @@ public class EventServiceTest extends TestDAO {
 		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
 		
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		EventHandlerVO handler = new EventHandlerVO();
@@ -530,7 +530,7 @@ public class EventServiceTest extends TestDAO {
 		//AlarmLevel.CRITICAL 
 		int alarmLevel = 3;
 		
-		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+		EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 		eventService.saveEvent(e);
 		
 		UserEvent userEvent = new UserEvent();

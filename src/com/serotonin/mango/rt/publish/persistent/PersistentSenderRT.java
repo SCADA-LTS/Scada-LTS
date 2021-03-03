@@ -146,11 +146,11 @@ public class PersistentSenderRT extends PublisherRT<PersistentPointVO> {
 
     void raiseConnectionEvent(EventType type, LocalizableMessage lm) {
         Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), true, AlarmLevels.URGENT,
-                lm, lm, createEventContext());
+                lm, createEventContext());
     }
 
     void raiseSyncCompletionEvent(LocalizableMessage lm) {
         Common.ctx.getEventManager().raiseEvent(syncCompletionEventType, System.currentTimeMillis(), false,
-                AlarmLevels.NONE, lm, lm, createEventContext());
+                AlarmLevels.NONE, lm, createEventContext());
     }
 }

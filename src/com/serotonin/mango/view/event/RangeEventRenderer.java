@@ -50,6 +50,8 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "eventTextRendererRange";
+
     @JsonRemoteProperty(innerType = RangeEventValue.class)
     private List<RangeEventValue> rangeEventValues = new ArrayList<RangeEventValue>();
 

@@ -61,7 +61,7 @@ public class ScheduledEventRT extends SimpleEventDetector implements ModelTimeou
 
     private void raiseEvent(long time) {
         Common.ctx.getEventManager().raiseEvent(eventType, time, vo.isReturnToNormal(), vo.getAlarmLevel(),
-                getMessage(), getMessage(), null);
+                getMessage(), null);
         eventActive = true;
         fireEventDetectorStateChanged(time);
     }

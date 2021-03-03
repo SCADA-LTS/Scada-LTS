@@ -54,6 +54,8 @@ public class BinaryTextRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererBinary";
+
     @JsonRemoteProperty
     private String zeroLabel;
     @JsonRemoteProperty

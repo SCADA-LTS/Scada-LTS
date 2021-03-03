@@ -45,6 +45,8 @@ public class StatisticsChartRenderer extends TimePeriodChartRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "chartRendererStats";
+
     public String getTypeName() {
         return definition.getName();
     }

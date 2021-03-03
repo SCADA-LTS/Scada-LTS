@@ -40,6 +40,8 @@ public class TableChartRenderer extends BaseChartRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "chartRendererTable";
+
     public String getTypeName() {
         return definition.getName();
     }

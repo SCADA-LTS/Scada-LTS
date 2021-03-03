@@ -57,7 +57,7 @@ public class CompoundEventDetectorRT implements EventDetectorListener, ILifecycl
     private void raiseEvent(long time) {
         LocalizableMessage msg = new LocalizableMessage("event.compound.activated", vo.getName());
         Common.ctx.getEventManager().raiseEvent(eventType, time, vo.isReturnToNormal(), vo.getAlarmLevel(),
-                msg, msg, null);
+                msg, null);
     }
 
     private void returnToNormal(long time) {

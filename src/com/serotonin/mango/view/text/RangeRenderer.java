@@ -50,6 +50,8 @@ public class RangeRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererRange";
+
     @JsonRemoteProperty
     private String format;
     @JsonRemoteProperty(innerType = RangeValue.class)

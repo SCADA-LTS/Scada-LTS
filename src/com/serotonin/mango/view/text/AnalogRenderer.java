@@ -48,6 +48,8 @@ public class AnalogRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererAnalog";
+
     @JsonRemoteProperty
     private String format;
     @JsonRemoteProperty

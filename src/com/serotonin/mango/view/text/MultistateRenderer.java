@@ -47,6 +47,8 @@ public class MultistateRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererMultistate";
+
     @JsonRemoteProperty(innerType = MultistateValue.class)
     private List<MultistateValue> multistateValues = new ArrayList<MultistateValue>();
 

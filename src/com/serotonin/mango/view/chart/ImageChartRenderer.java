@@ -37,6 +37,8 @@ public class ImageChartRenderer extends TimePeriodChartRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "chartRendererImage";
+
     public String getTypeName() {
         return definition.getName();
     }

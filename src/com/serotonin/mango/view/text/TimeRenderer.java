@@ -49,6 +49,8 @@ public class TimeRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererTime";
+
     @JsonRemoteProperty
     private String format;
     @JsonRemoteProperty

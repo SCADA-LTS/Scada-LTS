@@ -43,6 +43,8 @@ public class ImageFlipbookRenderer extends BaseChartRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "chartRendererImageFlipbook";
+
     public String getTypeName() {
         return definition.getName();
     }

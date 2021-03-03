@@ -44,6 +44,8 @@ public class NoneEventRenderer extends BaseEventTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "eventTextRendererNone";
+
     public NoneEventRenderer() {
         // no op
     }

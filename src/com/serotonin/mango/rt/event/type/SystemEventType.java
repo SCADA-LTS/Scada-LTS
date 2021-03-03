@@ -131,7 +131,7 @@ public class SystemEventType extends EventType {
 		EventTypeVO vo = getEventType(type.getSystemEventTypeId());
 		int alarmLevel = vo.getAlarmLevel();
 		Common.ctx.getEventManager().raiseEvent(type, time, rtn, alarmLevel,
-				message, message, null);
+				message, null);
 	}
 
 	public static void returnToNormal(SystemEventType type, long time) {

@@ -35,6 +35,7 @@ import com.serotonin.mango.view.chart.BaseChartRenderer;
 import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
 import com.serotonin.mango.view.event.EventTextRenderer;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.view.text.BaseTextRenderer;
 import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.view.text.PlainRenderer;
@@ -185,6 +186,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardLowLimit = -Double.MAX_VALUE;
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        eventTextRenderer = new NoneEventRenderer();
     }
 
     public DataPointVO(int loggingType) {
@@ -201,6 +203,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardLowLimit = -Double.MAX_VALUE;
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        eventTextRenderer = new NoneEventRenderer();
     }
 
 
@@ -245,7 +248,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     public String getExtendedName() {
         if (description != null) {
-            if (!description.equals(""))
+            if (!description.isEmpty())
                 return deviceName + " - " + name + " - " + description;
         }
         return deviceName + " - " + name;

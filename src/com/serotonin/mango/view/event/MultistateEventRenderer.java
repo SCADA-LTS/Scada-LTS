@@ -47,6 +47,8 @@ public class MultistateEventRenderer extends BaseEventTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "eventTextRendererMultistate";
+
     @JsonRemoteProperty(innerType = MultistateEventValue.class)
     private List<MultistateEventValue> multistateEventValues = new ArrayList<MultistateEventValue>();
 

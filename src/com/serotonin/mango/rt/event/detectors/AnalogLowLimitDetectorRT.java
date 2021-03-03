@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.rt.event.detectors;
 
+import com.serotonin.mango.util.PointEventDetectorUtils;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,7 +66,7 @@ public class AnalogLowLimitDetectorRT extends TimeDelayedEventDetectorRT {
     public LocalizableMessage getMessage() {
         String name = vo.njbGetDataPoint().getName();
         String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
-        String description = (vo.njbGetDataPoint().getDescription() == null || vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String description = PointEventDetectorUtils.getDescription(vo);
         String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit());
         LocalizableMessage durationDescription = getDurationDescription();
         if (durationDescription == null)
@@ -75,7 +77,7 @@ public class AnalogLowLimitDetectorRT extends TimeDelayedEventDetectorRT {
     @Override
     protected LocalizableMessage getShortMessage() {
         if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
-                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals("eventTextRendererNone") &&
+                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
                 (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit()).equals(""))) {
             String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit());
             return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),

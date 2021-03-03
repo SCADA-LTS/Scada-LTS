@@ -54,6 +54,8 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "eventTextRendererBinary";
+
     @JsonRemoteProperty
     private String zeroLabel;
     @JsonRemoteProperty

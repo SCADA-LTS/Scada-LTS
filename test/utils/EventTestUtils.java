@@ -44,7 +44,7 @@ public final class EventTestUtils {
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage,
                                                                   EventType eventType) {
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                localizableMessage, localizableMessage, Collections.emptyMap());
+                localizableMessage, Collections.emptyMap());
         event.setId(id);
         return event;
     }
@@ -53,14 +53,14 @@ public final class EventTestUtils {
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage) {
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                localizableMessage, localizableMessage, Collections.emptyMap());
+                localizableMessage, Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, EventType eventType) {
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                new LocalizableMessage("com.test"), new LocalizableMessage("com.test"), Collections.emptyMap());
+                new LocalizableMessage("com.test"), Collections.emptyMap());
         event.setId(id);
         return event;
     }
@@ -68,7 +68,7 @@ public final class EventTestUtils {
     public static EventInstance createEventCriticalWithActiveTimeAndDataPointEventType(int id, DateTime activeTime) {
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL, new LocalizableMessage("com.test"),
-                new LocalizableMessage("com.test"), Collections.emptyMap());
+                Collections.emptyMap());
         event.setId(id);
         return event;
     }

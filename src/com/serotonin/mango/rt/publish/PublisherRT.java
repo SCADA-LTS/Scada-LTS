@@ -152,7 +152,7 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
                     // A published point has been terminated, was never enabled, or no longer exists.
                     LocalizableMessage message = new LocalizableMessage("event.publish.pointMissing");
                     Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
-                            AlarmLevels.URGENT, message, message, createEventContext());
+                            AlarmLevels.URGENT, message, createEventContext());
                 }
             else
                 // Everything is good
@@ -163,7 +163,7 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
     void fireQueueSizeWarningEvent() {
         LocalizableMessage message = new LocalizableMessage("event.publish.queueSize", vo.getCacheWarningSize());
         Common.ctx.getEventManager().raiseEvent(queueSizeWarningEventType, System.currentTimeMillis(), true,
-                AlarmLevels.URGENT, message, message,
+                AlarmLevels.URGENT, message,
                 createEventContext());
     }
 

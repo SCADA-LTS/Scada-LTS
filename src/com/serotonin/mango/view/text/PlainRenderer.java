@@ -47,6 +47,8 @@ public class PlainRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererPlain";
+
     @JsonRemoteProperty
     private String suffix;
 

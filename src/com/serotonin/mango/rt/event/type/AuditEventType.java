@@ -149,7 +149,7 @@ public class AuditEventType extends EventType {
         type.setRaisingUser(user);
 
         Common.ctx.getEventManager().raiseEvent(type, System.currentTimeMillis(), false,
-                getEventType(type.getAuditEventTypeId()).getAlarmLevel(), message, message, null);
+                getEventType(type.getAuditEventTypeId()).getAlarmLevel(), message, null);
     }
 
     //

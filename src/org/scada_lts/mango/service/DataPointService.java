@@ -304,10 +304,10 @@ public class DataPointService implements MangoDataPoint {
 			dp.defaultTextRenderer();
 		}
 
-		//Create default event text renderer
-		if (dp.getEventTextRenderer() == null) {
-			dp.setEventTextRenderer(new NoneEventRenderer());
-		}
+//		//Create default event text renderer
+//		if (dp.getEventTextRenderer() == null) {
+//			dp.setEventTextRenderer(new NoneEventRenderer());
+//		}
 
 		dp.setId(dataPointDAO.insert(dp));
 		saveEventDetectors(dp);

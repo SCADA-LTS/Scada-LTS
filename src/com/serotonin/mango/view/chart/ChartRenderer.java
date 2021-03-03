@@ -28,13 +28,14 @@ import com.serotonin.mango.vo.DataPointVO;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "typeName"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ImageChartRenderer.class, name = "chartRendererImage"),
-        @JsonSubTypes.Type(value = ImageFlipbookRenderer.class, name = "chartRendererImageFlipbook"),
-        @JsonSubTypes.Type(value = StatisticsChartRenderer.class, name = "chartRendererStats"),
-        @JsonSubTypes.Type(value = TableChartRenderer.class, name = "chartRendererTable"),
+        @JsonSubTypes.Type(value = ImageChartRenderer.class, name = ImageChartRenderer.TYPE_NAME),
+        @JsonSubTypes.Type(value = ImageFlipbookRenderer.class, name = ImageFlipbookRenderer.TYPE_NAME),
+        @JsonSubTypes.Type(value = StatisticsChartRenderer.class, name = StatisticsChartRenderer.TYPE_NAME),
+        @JsonSubTypes.Type(value = TableChartRenderer.class, name = TableChartRenderer.TYPE_NAME),
 })
 public interface ChartRenderer extends Serializable {
     public static final int TYPE_NONE = 1;

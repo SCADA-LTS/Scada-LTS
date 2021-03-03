@@ -61,8 +61,22 @@ public class EventManager implements ILifecycle {
 	// Basic event management.
 	//
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
-			int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
-			Map<String, Object> context) {
+						   int alarmLevel, LocalizableMessage message,
+						   Map<String, Object> context) {
+		isAlreadyActive(type, message);
+		EventInstance evt = new EventInstance(type, time, rtnApplicable, alarmLevel, message, context);
+		raiseEvent(evt, type, time, alarmLevel, message);
+	}
+
+	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
+						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
+						   Map<String, Object> context) {
+		isAlreadyActive(type, message);
+		EventInstance evt = new EventInstance(type, time, rtnApplicable, alarmLevel, message, shortMessage, context);
+		raiseEvent(evt, type, time, alarmLevel, message);
+	}
+
+	private void isAlreadyActive(EventType type, LocalizableMessage message) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
 		if (dup != null) {
@@ -92,12 +106,13 @@ public class EventManager implements ILifecycle {
 
 			// Otherwise we just continue...
 		}
+	}
+
+	private void raiseEvent(EventInstance evt, EventType type, long time,
+							 int alarmLevel, LocalizableMessage message) {
 
 		// Determine if the event should be suppressed.
 		boolean suppressed = isSuppressed(type);
-
-		EventInstance evt = new EventInstance(type, time, rtnApplicable,
-				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
@@ -117,7 +132,7 @@ public class EventManager implements ILifecycle {
 
 			if (Permissions.hasEventTypePermission(user, type)) {
 				eventUserIds.add(user.getId());
-				if( !suppressed && evt.isAlarm() ) 
+				if( !suppressed && evt.isAlarm() )
 					notifyEventRaise(evt.getId(), user.getId(), evt.getAlarmLevel());
 				if (evt.isAlarm() && user.getReceiveAlarmEmails() > 0
 						&& alarmLevel >= user.getReceiveAlarmEmails())

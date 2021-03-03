@@ -44,6 +44,8 @@ public class NoneRenderer extends BaseTextRenderer {
         return definition;
     }
 
+    public static final String TYPE_NAME = "textRendererNone";
+
     public NoneRenderer() {
         // no op
     }
