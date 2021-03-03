@@ -42,6 +42,8 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.ws.WebSocketEndpointListener;
+import org.scada_lts.web.ws.config.WebsocketApplicationListener;
 
 /**
  * @author Matthew Lohbihler
@@ -50,11 +52,13 @@ public class EventManager implements ILifecycle {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
 	private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
+	private final List<WebSocketEndpointListener> webSocketEndpointListeners = new CopyOnWriteArrayList<WebSocketEndpointListener>();
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
 	private EventDao eventDao;
 	private UserDao userDao;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
+	private static final String WS_MESSAGE = "Event Raised";
 
 	//
 	//
@@ -104,6 +108,7 @@ public class EventManager implements ILifecycle {
 
 		// Get id from database by inserting event immediately.
 		eventDao.saveEvent(evt);
+		notifyWsEndpointObservers(WS_MESSAGE);
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<Integer>();
@@ -445,6 +450,20 @@ public class EventManager implements ILifecycle {
 		for( UserHighestAlarmLevelListener listener: userHighestAlarmLevelListeners) {
 			listener.onEventToggle(eventId, userId, isSilenced);
 		}
+	}
+
+	private void notifyWsEndpointObservers(String message) {
+		webSocketEndpointListeners.forEach(observer -> {
+			observer.sendWebSocketMessage(message);
+		});
+	}
+
+	public void addWsEndpointObserver(WebSocketEndpointListener l) {
+		webSocketEndpointListeners.add(l);
+	}
+
+	public void removeWsEndpointObserver(WebSocketEndpointListener l) {
+		webSocketEndpointListeners.remove(l);
 	}
 
 }

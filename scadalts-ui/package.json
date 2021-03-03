@@ -35,6 +35,7 @@
 		"css-loader": "3.2.0",
 		"moment": "2.22.2",
 		"roboto-fontface": "*",
+		"sockjs-client": "^1.5.0",
 		"uiv": "^0.27.0",
 		"util": "^0.12.3",
 		"vue": "2.6.10",
@@ -50,7 +51,8 @@
 		"vuejs-datepicker": "1.6.2",
 		"vuejs-logger": "1.5.3",
 		"vuetify": "^2.4.4",
-		"vuex": "3.0.1"
+		"vuex": "3.0.1",
+		"webstomp-client": "^1.2.6"
 	},
 	"devDependencies": {
 		"@intlify/vue-i18n-loader": "^1.0.0",

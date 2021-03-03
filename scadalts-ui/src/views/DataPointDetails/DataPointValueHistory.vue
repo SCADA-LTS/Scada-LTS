@@ -177,17 +177,20 @@
 	</v-card>
 </template>
 <script>
+import SockJS from 'sockjs-client';
+import Stomp from 'webstomp-client';
 /**
  * Value History List for Data Point
  * 
  * Display history values from specific data point.
  * Present the statiscics from given time period and allow user 
  * to set a new value for that Data Point.
+ * Using Web-Sockets user is informed about all changes without polling.
  * 
  * @param {number} data - Point Details object with data. 
  * 
  * @author Radoslaw Jajko <rjajko@softq.pl> 
- * @version 1.0
+ * @version 1.1
  */
 export default {
 	name: 'DataPointValueHistory',
@@ -212,6 +215,8 @@ export default {
 				ts: null,
 				value: null,
 			},
+			stompClient: undefined,
+			socket: undefined,
 		};
 	},
 
@@ -226,9 +231,40 @@ export default {
 	mounted() {
 		this.fetchData();
 		this.hideSkeleton = true;
+		this.connect();
+	},
+
+	destroyed() {
+		this.disconnect();
 	},
 
 	methods: {
+		
+		connect() {
+			let headers = {
+		 		login: 'admin',
+		 		passcode: 'passcode',
+		 		client_id: '564389'
+ 			}
+			this.socket = new SockJS(this.$store.state.webSocketUrl);
+			this.stompClient = Stomp.over(this.socket);
+			this.stompClient.debug = () => {};
+			this.stompClient.connect(headers, () => {
+				this.stompClient.subscribe(`/ws/datapoint/${this.data.id}/value`, () => {});
+				this.stompClient.subscribe(`/topic/datapoint/${this.data.id}/value`, tick => {
+					this.pointValue = tick.body;
+					this.fetchData();
+				});
+			})
+		},
+
+		disconnect() {
+			if(!!this.stompClient) {
+				this.stompClient.send(`/ws/datapoint/${this.data.id}/value/unsub`)
+				this.stompClient.disconnect();
+			}
+		},
+
 		async fetchData() {
 			this.fetchingData = true;
 			let from = await this.$store.dispatch('convertSinceTimePeriodToTimestamp', {

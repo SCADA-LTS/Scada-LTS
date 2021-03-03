@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +49,7 @@ import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.util.ObjectUtils;
+import org.scada_lts.web.ws.WebSocketEndpointListener;
 
 public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
@@ -70,6 +72,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	private List<IValueTime> averagingValues;
 	private final Object intervalLoggingLock = new Object();
 	private TimerTask intervalLoggingTask;
+
+	// WebSocket notification
+	private final List<WebSocketEndpointListener> webSocketEndpointListeners = new CopyOnWriteArrayList<WebSocketEndpointListener>();
 
 	/**
 	 * This is the value around which tolerance decisions will be made when
@@ -288,8 +293,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 			logValue = false;
 		}
 
-		if (saveValue)
+		if (saveValue){
+			this.notifyWsEndpointObservers(newValue.getValue().toString());
 			valueCache.savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
+		}
+
 
 		// Ignore historical values.
 		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
@@ -562,5 +570,22 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 
 	public void terminateHistorical() {
 		terminateIntervalLogging();
+	}
+
+	private void notifyWsEndpointObservers(String message) {
+		if(!webSocketEndpointListeners.isEmpty()) {
+			webSocketEndpointListeners.forEach(observer -> {
+				observer.sendWebSocketRefMessage(this.vo.getId(), message);
+			});
+		}
+
+	}
+
+	public void addWsEndpointObserver(WebSocketEndpointListener l) {
+		webSocketEndpointListeners.add(l);
+	}
+
+	public void removeWsEndpointObserver(WebSocketEndpointListener l) {
+		webSocketEndpointListeners.remove(l);
 	}
 }
