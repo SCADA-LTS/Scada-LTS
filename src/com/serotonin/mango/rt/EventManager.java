@@ -63,20 +63,12 @@ public class EventManager implements ILifecycle {
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
 						   int alarmLevel, LocalizableMessage message,
 						   Map<String, Object> context) {
-		isAlreadyActive(type, message);
-		EventInstance evt = new EventInstance(type, time, rtnApplicable, alarmLevel, message, context);
-		raiseEvent(evt, type, time, alarmLevel, message);
+		raiseEvent(type, time, rtnApplicable, alarmLevel, message, message, context);
 	}
 
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
 						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
 						   Map<String, Object> context) {
-		isAlreadyActive(type, message);
-		EventInstance evt = new EventInstance(type, time, rtnApplicable, alarmLevel, message, shortMessage, context);
-		raiseEvent(evt, type, time, alarmLevel, message);
-	}
-
-	private void isAlreadyActive(EventType type, LocalizableMessage message) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
 		if (dup != null) {
@@ -85,7 +77,7 @@ public class EventManager implements ILifecycle {
 			if (dh == EventType.DuplicateHandling.DO_NOT_ALLOW) {
 				// Create a log error...
 				log.error("An event was raised for a type that is already active: type="
-						+ type + ", message=" + message);
+						+ type + ", message=" + message.getKey());
 				// ... but ultimately just ignore the thing.
 				return;
 			}
@@ -106,13 +98,12 @@ public class EventManager implements ILifecycle {
 
 			// Otherwise we just continue...
 		}
-	}
-
-	private void raiseEvent(EventInstance evt, EventType type, long time,
-							 int alarmLevel, LocalizableMessage message) {
 
 		// Determine if the event should be suppressed.
 		boolean suppressed = isSuppressed(type);
+
+		EventInstance evt = new EventInstance(type, time, rtnApplicable,
+				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
@@ -180,6 +171,7 @@ public class EventManager implements ILifecycle {
 						+ message.getLocalizedMessage(Common.getBundle()));
 		}
 	}
+
 
 	public void returnToNormal(EventType type, long time) {
 		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL);

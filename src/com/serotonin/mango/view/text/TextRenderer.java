@@ -27,7 +27,9 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.view.ImplDefinition;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "typeName"
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BinaryTextRenderer.class, name = BinaryTextRenderer.TYPE_NAME),
