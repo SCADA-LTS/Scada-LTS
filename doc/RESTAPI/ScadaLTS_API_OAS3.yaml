@@ -121,11 +121,13 @@ paths:
         - name: 'id'
           description: 'DataPoint ID'
           in: 'query'
+          required: false
           schema:
             type: number
         - name: 'xid'
           description: 'DataPoint Export ID'
           in: 'query'
+          required: false
           schema:
             type: string
       responses:
@@ -971,10 +973,12 @@ paths:
       parameters:
         - name: 'id'
           in: 'query'
+          required: false
           schema:
             type: number
         - name: 'xid'
           in: 'query'
+          required: false
           schema:
             type: string
       requestBody:
@@ -1033,10 +1037,12 @@ paths:
       parameters:
         - name: 'id'
           in: 'query'
+          required: false
           schema:
             type: number
         - name: 'xid'
           in: 'query'
+          required: false
           schema:
             type: string
       responses:
@@ -1053,10 +1059,12 @@ paths:
       parameters:
         - name: 'id'
           in: 'query'
+          required: false
           schema:
             type: number
         - name: 'xid'
           in: 'query'
+          required: false
           schema:
             type: string
         - name: 'value'

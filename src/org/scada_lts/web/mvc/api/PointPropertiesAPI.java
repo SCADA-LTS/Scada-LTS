@@ -614,17 +614,20 @@ public class PointPropertiesAPI {
     }
 
     @PutMapping(value = "/updateProperties")
-    public ResponseEntity<String> updatePointProperties(@RequestParam Map<String, String> query, HttpServletRequest request, @RequestBody JsonPointProperties body) {
+    public ResponseEntity<String> updatePointProperties(@RequestParam(required = false) Integer id,
+                                                        @RequestParam(required = false) String xid,
+                                                        HttpServletRequest request,
+                                                        @RequestBody JsonPointProperties body) {
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 DataPointVO dataPointVO;
-                if(query.containsKey("id")) {
-                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
-                } else if (query.containsKey("xid")) {
-                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
+                if(id != null) {
+                    dataPointVO = dataPointService.getDataPoint(id);
+                } else if (xid != null){
+                    dataPointVO = dataPointService.getDataPoint(xid);
                 } else
-                    return new ResponseEntity<>("no param id or xid", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 dataPointService.savePointProperties(dataPointVO, body);
                 Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
@@ -637,17 +640,19 @@ public class PointPropertiesAPI {
     }
 
     @GetMapping(value = "/getPointDescription", produces = "application/json")
-    public ResponseEntity<String> getPointDescription(@RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<String> getPointDescription(@RequestParam(required = false) Integer id,
+                                                      @RequestParam(required = false) String xid,
+                                                      HttpServletRequest request) {
         LOG.info("/api/point_properties/getPointDescription");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 DataPointVO dataPointVO;
-                if (query.containsKey("id"))
-                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
-                else if (query.containsKey("xid"))
-                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
-                else
+                if(id != null) {
+                    dataPointVO = dataPointService.getDataPoint(id);
+                } else if (xid != null){
+                    dataPointVO = dataPointService.getDataPoint(xid);
+                } else
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
                 Map<String, String> response = new HashMap<>();
@@ -670,20 +675,23 @@ public class PointPropertiesAPI {
     }
 
     @GetMapping(value = "/getBinaryEventRenderer", produces = "application/json")
-    public ResponseEntity<JsonBinaryEventTextRenderer> getBinaryEventRenderer(@RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<JsonBinaryEventTextRenderer> getBinaryEventRenderer(@RequestParam(required = false) Integer id,
+                                                                              @RequestParam(required = false) String xid,
+                                                                              @RequestParam Integer value,
+                                                                              HttpServletRequest request) {
         LOG.info("/api/point_properties/getBinaryEventRenderer");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 DataPointVO dataPointVO;
-                if (query.containsKey("id"))
-                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
-                else if (query.containsKey("xid"))
-                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
-                else
+                if(id != null) {
+                    dataPointVO = dataPointService.getDataPoint(id);
+                } else if (xid != null){
+                    dataPointVO = dataPointService.getDataPoint(xid);
+                } else
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                if(query.containsKey("value"))
-                    return new ResponseEntity<>(dataPointService.getBinaryEventTextRenderer(dataPointVO, Integer.parseInt(query.get("value"))), HttpStatus.OK);
+                if(value != null)
+                    return new ResponseEntity<>(dataPointService.getBinaryEventTextRenderer(dataPointVO, value), HttpStatus.OK);
                 else
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
@@ -696,21 +704,25 @@ public class PointPropertiesAPI {
     }
 
     @PatchMapping(value = "/{id}/purge")
-    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id, @RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id,
+                                                       @RequestParam(required = false) Boolean all,
+                                                       @RequestParam(required = false) Integer type,
+                                                       @RequestParam(required = false) Integer period,
+                                                       HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
                 DataPointVO point = dataPointService.getDataPoint(id);
                 RuntimeManager rm = Common.ctx.getRuntimeManager();
                 Long count;
-                if(query.containsKey("all")) {
-                    if(query.get("all").equals("true")) {
+                if(all != null) {
+                    if(all) {
                         count = rm.purgeDataPointValues(point.getId());
                         return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
                     }
                 }
-                if(query.containsKey("type") && query.containsKey("period")) {
-                    count = rm.purgeDataPointValues(point.getId(), Integer.parseInt(query.get("type")), Integer.parseInt(query.get("period")));
+                if(type != null && period != null) {
+                    count = rm.purgeDataPointValues(point.getId(), type, period);
                     return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
                 }
             } else {

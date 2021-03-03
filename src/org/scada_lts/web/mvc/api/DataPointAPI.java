@@ -50,14 +50,16 @@ public class DataPointAPI {
     DataPointService dataPointService = new DataPointService();
 
     @GetMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) Integer id,
+                                                    @RequestParam(required = false) String xid,
+                                                    HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(query.containsKey("id")) {
-                    return new ResponseEntity<>(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))), HttpStatus.OK);
-                } else if (query.containsKey("xid")){
-                    return new ResponseEntity<>(dataPointService.getDataPoint(query.get("xid")), HttpStatus.OK);
+                if(id != null) {
+                    return new ResponseEntity<>(dataPointService.getDataPoint(id), HttpStatus.OK);
+                } else if (xid != null){
+                    return new ResponseEntity<>(dataPointService.getDataPoint(xid), HttpStatus.OK);
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
