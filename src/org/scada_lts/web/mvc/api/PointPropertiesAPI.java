@@ -12,10 +12,8 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.event.EventTextRenderer;
-import com.serotonin.mango.view.event.NoneEventRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
@@ -623,7 +621,6 @@ public class PointPropertiesAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                body = setDefaultValues(body);
                 if (body.getName() == null || body.getName().isEmpty())
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 else {
@@ -644,20 +641,6 @@ public class PointPropertiesAPI {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }
-
-    private JsonPointProperties setDefaultValues(JsonPointProperties body) {
-        if (body.getLoggingType() == 0)
-            body.setLoggingType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.DEFAULT_LOGGING_TYPE));
-        if (body.getIntervalLoggingPeriodType() == 0)
-            body.setIntervalLoggingPeriodType(Common.TimePeriods.MINUTES);
-        if (body.getIntervalLoggingType() == 0)
-            body.setIntervalLoggingType(DataPointVO.IntervalLoggingTypes.INSTANT);
-        if (body.getPurgeType() == 0)
-            body.setPurgeType(Common.TimePeriods.YEARS);
-        if (body.getEventTextRenderer() == null)
-            body.setEventTextRenderer(new NoneEventRenderer());
-        return body;
     }
 
     @GetMapping(value = "/getPointDescription", produces = "application/json")

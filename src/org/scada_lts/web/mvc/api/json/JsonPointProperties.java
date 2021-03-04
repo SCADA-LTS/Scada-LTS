@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.json;
 import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 import java.io.Serializable;
@@ -31,6 +32,20 @@ public class JsonPointProperties implements Serializable {
     private String chartColour;
 
     public JsonPointProperties() {
+        DataPointVO defaultValues = new DataPointVO();
+        this.loggingType = defaultValues.getLoggingType();
+        this.intervalLoggingPeriodType = defaultValues.getIntervalLoggingPeriodType();
+        this.intervalLoggingPeriod = defaultValues.getIntervalLoggingPeriod();
+        this.intervalLoggingType = defaultValues.getIntervalLoggingType();
+        this.tolerance = defaultValues.getTolerance();
+        this.purgeType = defaultValues.getPurgeType();
+        this.purgePeriod = defaultValues.getPurgePeriod();
+        this.defaultCacheSize = defaultValues.getDefaultCacheSize();
+        this.discardExtremeValues = defaultValues.isDiscardExtremeValues();
+        this.discardLowLimit = defaultValues.getDiscardLowLimit();
+        this.discardHighLimit = defaultValues.getDiscardHighLimit();
+        this.engineeringUnits = defaultValues.getEngineeringUnits();
+        this.eventTextRenderer = defaultValues.getEventTextRenderer();
     }
 
     public JsonPointProperties(String name, String description, boolean enabled, int loggingType, int intervalLoggingPeriodType, int intervalLoggingPeriod, int intervalLoggingType, double tolerance, int purgeType, int purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, List<PointEventDetectorVO> eventDetectors, int defaultCacheSize, boolean discardExtremeValues, double discardLowLimit, double discardHighLimit, int engineeringUnits, String chartColour) {
