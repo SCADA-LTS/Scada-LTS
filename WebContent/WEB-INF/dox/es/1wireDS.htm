@@ -1,0 +1,19 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La fuente de datos de 1 cable se utiliza para recoger datos de una LAN de 1 cable, accesible a través de la comunicación RS232 o RS485 (requiere un adaptador). Es una fuente de datos de consulta.</p>
+<p>La fuente de datos es capaz de tolerar reconfiguraciones físicas de la red. Cuando se detectan cambios en la topografía de una red, se realiza una reexaminación automática. Si todos los puntos siguen localizados después del escaneo, no se plantean eventos.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un nombre, que puede ser cualquier descripción. Seleccionando <b>Port</b> se obtiene una lista de todos los puertos serie disponibles en el hardware del host. Esto corresponde al puerto al que está conectado el 1-cableado. La selección <b>Período de actualización</b> determina la frecuencia con la que la red es interrogada por los datos.</p>
+
+<h1>Escáner de red</h1>
+<p>Las redes pueden ser escaneadas para detectar dispositivos usando la utilidad de escaneo. Esta característica escanea las rutas conectadas por los acopladores para localizar todos los dispositivos de la red. Los resultados se muestran en una tabla que proporciona la dirección de un cable y una descripción del dispositivo. Para añadir rápidamente un dispositivo como punto, haga clic en el icono asociado <img src="images/icon_comp_add.png"/>. Se creará un nuevo punto con los atributos del dispositivo predeterminado.</p>

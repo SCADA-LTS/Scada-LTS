@@ -1,0 +1,77 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>
+ La fuente de datos del receptor HTTP se utiliza para aceptar los datos suministrados al sistema por los métodos HTTP GET o POST. Los datos pueden ser entregados por cualquier cosa que pueda actuar como cliente HTTP, el ejemplo más obvio es un navegador web, aunque hay muchos otros.</p>
+<p>
+ Es posible configurar múltiples fuentes de datos del receptor HTTP, cada una de las cuales escucha datos diferentes (por ejemplo, las identificaciones de los dispositivos o las direcciones IP de las fuentes).</p>
+<p>
+  Los datos se reciben en el camino <b>httpds</b>. Por ejemplo, si se puede acceder a su sistema en "http://localhost/", los datos deben dirigirse a "http://localhost/httpds". <a href="httpds?testKey=testValue" target="_blank">intenta ahora</a>. Este enlace envía un parámetro llamado "testKey" con el valor "testValue". Como es probable que ningún receptor escuche este nombre de parámetro, probablemente verá el mensaje "Clave no usada: clave de prueba". Esto es normal; el mensaje es una forma conveniente de hacer saber a los usuarios que se están enviando datos pero no se están utilizando.</p>
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción.</p>
+<p>La <b>Lista Blanca de Direcciones IP Remotas</b> es una característica de seguridad que instruye a la fuente de datos a ignorar las solicitudes cuya dirección IP de origen no coincida con ninguna de las máscaras de dirección IP dadas. Véase más abajo más información sobre las máscaras de formato.</p>
+<p>La <b> lista blanca de la identificación del dispositivo </b> proporciona seguridad adicional y enrutamiento de datos permitiendo la especificación de los dispositivos que esta fuente de datos escucha. La identificación del dispositivo no distingue entre mayúsculas y minúsculas. Además, el asterisco (*) puede usarse para terminar una máscara de identificación de dispositivo. Por ejemplo, la máscara "site10*" coincidirá con las identificaciones de los dispositivos "site10", "SITE10temp", "site10HUM", etc. El ID del dispositivo se especifica en la petición HTTP con el nombre del parámetro <b>dispositivo</b> (con dos guiones bajos). Para más información sobre otros parámetros de la solicitud, véase los parámetros de la solicitud que figuran a continuación</p>
+<p>Las "listas blancas", que son listas de artículos que deben ser autorizados, se utilizan porque son inherentemente más seguras que las "listas negras", que son listas de artículos que no deben ser autorizados. Para añadir un valor a una lista blanca, introdúzcalo en el cuadro de texto correspondiente y haga clic en el icono <img src="images/add.png"/> que lo acompaña. Para eliminar un valor, haz clic en el icono <img src="images/bullet_delete.png"/> junto al valor.</p>
+<h1>Máscara de dirección IP</h1>
+<p>Una "máscara" es una dirección IP que puede incluir comodines ("*") o series de números. Las direcciones IP se especifican utilizando el formato IPv4, que consiste en cuatro valores separados por un punto, siendo cada uno de ellos un número entre 0 y 255 (por ejemplo, "192.168.0.10"). Cada una de las cuatro partes de la máscara puede ser un número específico que debe ser emparejado, un "*" que indica que cualquier número es un emparejamiento, o un rango dado de números en forma de dos números válidos separados por un "-". Por ejemplo, una máscara válida es "192.168.10-15.*", lo que significa que el primer dígito debe ser 192, el segundo 168, el tercero cualquier número entre 10 y 15 inclusive, y el cuarto cualquier número (entre 0 y 255). La máscara por defecto de "*.*.*" significa que se acepta cualquier dirección IP.</p>
+<h1>Solicitud de parámetros</h1>
+<p>
+Las solicitudes se entregan utilizando los formatos de solicitud normales configurados por HTTP. Cuando se utiliza el método GET, el formato es "http://&lt;nombre del dominio y puerto&gt;/&lt;camino opcional&gt;/httpds?param1=valor1&amp;param2=valor2". Las solicitudes enviadas con el método POST suelen requerir un cliente especializado; por favor, consulte la documentación del cliente si desea utilizar el método POST.</p>
+<p>
+Los valores de los puntos pueden especificarse de dos maneras. El primero es el formato 'pointName=pointValue'. El segundo es proporcionar la clave y el valor como dos parámetros separados utilizando los prefijos de clave '__point' y '__value'. Por ejemplo, '__pointFoo=pointName&amp;__valueFoo=pointValue' (recogido al hacer coincidir el "Foo" que sigue al prefijo) tiene el mismo efecto que 'pointName=pointValue'.</p>
+<p>El orden en que se proporcionan los parámetros en la aplicación no es significativo.</p>
+<p>Se reconocen las siguientes claves de parámetros especiales. Observe que todos comienzan con dos subrayados. Todos son opcionales.</p>
+<p>
+  Los sellos de tiempo pueden ser representados de muchas maneras. Si se detecta una marca de tiempo (es decir, no está vacía), Mango intentará analizarla primero como "yyyyMMddHHmmss", luego como "yyyy-MM-dd'T'HH:mm:ss'Z'", y finalmente como una cuenta atrás en milisegundos UTC desde la medianoche del 1 de enero de 1970. (Véase la documentación "Formatos de fecha y hora" para más información).</p>
+<ul>
+  <li><b>__device</b> &ndash; la identificación del dispositivo del remitente</li>
+  <li><b>__time</b> &ndash; el tiempo sobrepasa</li>
+  <li><b>__point</b> &ndash; el prefijo que proporciona un método alternativo de proporcionar un nombre de punto. Los caracteres que siguen al prefijo deben coincidir con los caracteres que siguen al prefijo del parámetro "__valor". Los caracteres que siguen el prefijo sólo se utilizan para la correspondencia y, por lo demás, son insignificantes.</li>
+  <li><b>__value</b> &ndash; el prefijo que proporciona el valor correspondiente a una clave dada con un prefijo de "punto _".
+</ul>
+
+<h1>Prueba con el receptor de escucha HTTP</h1>
+<p> Puede revisar los datos que recibe su sistema haciendo clic en el botón "Escuchar datos HTTP". Tenga en cuenta que la configuración actual de la lista blanca se utilizará para filtrar las solicitudes; para ver todos los datos entrantes, añada la máscara de dirección IP '*.*.*.*' y la máscara de identificación del dispositivo '*'.</p>
+<p>A medida que se reciben los datos, sus detalles se muestran en la caja de escucha. La primera línea de resultados proporciona la dirección IP de origen (que puede utilizarse en la lista blanca de direcciones IP, si procede). La segunda línea muestra el ID del dispositivo, o "(ninguno)" si el parámetro no estaba presente.</p>
+<p>La tercera línea indica la hora de la solicitud. El tiempo se ajusta por defecto al tiempo del sistema, pero puede ser anulado por el parámetro <b>__tiempo</b>.</p>
+<p>Las otras líneas de datos especifican las claves y los valores de los parámetros individuales que se han recibido, en el formato "clave=valor".</p>
+<p>El oyente seguirá escuchando las peticiones hasta que se pulse "Cancelar" o se descargue la página.</p>
+
+<h1>Ejemplos </h1>
+<p>Los nombres de dominio se han omitido en aras de la brevedad.</p>
+<p>
+  <b>httpds?__device=boilerA&amp;temp=215.5&amp;hum=77.4&amp;state=running</b> <br/>a le même résultat que<br/> <b>httpds?__device=boilerA&amp;__point1=temp&amp;__value1=215.5&amp;__pointFoo=hum&amp;__valueFoo=77.4&amp;__pointBar=state&amp;__valueBar=running</b>
+</p>
+<p>
+  <b>httpds?presents=true&amp;__time=20071225073000</b>
+</p>
+
+<h1>Respuestas HTTP</h1>
+<p>
+  Las solicitudes aceptadas que se envíen al destinatario recibirán una respuesta de "200 OK". Las solicitudes que den lugar a errores o advertencias recibirán los siguientes posibles mensajes de error o advertencia en el contenido de la respuesta HTTP:
+</p>
+<ul>
+  <li>
+    Error de análisis de cancelación de tiempo" que indica que la cancelación de tiempo no ha sido formateada correctamente. La solicitud se procesó utilizando la hora del sistema.
+  </li>
+  <li>
+    Clave no consumida" que indica que la clave de parámetros dada no ha sido utilizada por ningún punto de datos del receptor HTTP.
+  </li>
+  <li>
+    Valor no encontrado para clave de punto coincidente" que indica que una clave de parámetro especificada mediante el valor '__point/__value'. no se ha correspondido con un valor. El parámetro no se habrá incluido en la tramitación de la solicitud.
+  </li>
+</ul>
+<p>
+  Por defecto, sólo los mensajes de error o de advertencia anteriores se devuelven en la respuesta HTTP. Si desea que se devuelva contenido adicional, puede especificar contenido estático como el prólogo (escrito antes de los mensajes de error y de advertencia) y el epílogo (escrito después de los mensajes de error y de advertencia). Utilice las siguientes instrucciones de inserción (o instrucciones de actualización similares si las claves ya existen) para especificar su contenido personalizado:</p>
+<pre>
+  insert into systemSettings (settingName, settingValue) values ('httpdsPrologue', 'my prologue content')
+  insert into systemSettings (settingName, settingValue) values ('httpdsEpilogue', 'my epilogue content')
+</pre>
