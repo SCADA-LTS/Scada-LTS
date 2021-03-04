@@ -20,14 +20,17 @@ package org.scada_lts.web.mvc.api;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.service.UtilsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,6 +46,8 @@ public class UtilsAPI {
 
 	@Resource
 	private UtilsService utilsService;
+	@Resource
+	private UserCommentService userCommentService;
 	
 
 	@RequestMapping(value = "/api/utils/getTs", method = RequestMethod.GET)
@@ -60,4 +65,64 @@ public class UtilsAPI {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 	}
+
+	/**
+	 * Create User Comment
+	 *
+	 * @param request HTTP request
+	 * @param body UserComment object
+	 * @param typeId UserComment type (1 - Event or 2 - Point)
+	 * @param refId Reference ID of the object
+	 *
+	 * @return Status
+	 */
+	@PostMapping(value = "/api/utils/userComment/{typeId}/{refId}")
+	public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody UserComment body, @PathVariable("typeId") int typeId, @PathVariable("refId") int refId) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				int result = userCommentService.setUserComment(body, typeId, refId);
+				if(result != 0) {
+					return new ResponseEntity<>(String.valueOf(result), HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(String.valueOf(result), HttpStatus.BAD_REQUEST);
+				}
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Delete User Comment
+	 *
+	 * @param request HTTP request
+	 * @param typeId UserComment type (1 - Event or 2 - Point)
+	 * @param refId Id of the object
+	 * @param userId Author User Id
+	 * @param ts Timestamp
+	 *
+	 * @return Status
+	 */
+	@DeleteMapping(value = "/api/utils/userComment/{typeId}/{refId}/{userId}/{ts}")
+	public ResponseEntity<String> createUserComment(HttpServletRequest request, @PathVariable("typeId") int typeId, @PathVariable("refId") int refId, @PathVariable("userId") int userId , @PathVariable("ts") long ts)  {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				int result = userCommentService.deleteUserComment(userId, typeId, refId, ts);
+				if(result != 0) {
+					return new ResponseEntity<>(String.valueOf(result), HttpStatus.OK);
+				} else {
+					return new ResponseEntity<>(String.valueOf(result), HttpStatus.BAD_REQUEST);
+				}
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 }

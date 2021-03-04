@@ -1,0 +1,19 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La fuente de datos Spinwave se utiliza para recopilar datos de los dispositivos Spinwave conectados a una puerta de enlace local, y accesibles a través de la comunicación RS232 o RS485 (requiere un adaptador). Esta fuente de datos recibe actualizaciones regulares de los dispositivos conectados; no contamina.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. Seleccionando <b> Puerto</b> se obtiene una lista de todos los puertos serie disponibles en el hardware del host. Esto corresponde al puerto en el que se conecta la puerta de enlace de la Onda Espinosa. La selección de <b>Mensaje</b> depende del hardware que esté usando. Consulte la documentación de su Onda Giratoria para más detalles.</p>
+<p><b>Las direcciones de los sensores </b> se encuentran normalmente usando la función de escucha de sensores descrita a continuación, aunque si conoce las direcciones únicas de su hardware, puede introducirlas manualmente. Después de introducir el valor de la dirección, haga clic en el icono <img src="images/add.png"/> para añadirlo a la lista de direcciones conocidas.</p>
+
+<h1>El sensor de onda esponjosa escucha</h1>
+<p>Una vez que la puerta de enlace de Spinwave ha sido conectada al anfitrión, es posible lanzar un oyente esperando que lleguen los mensajes. En general, los dispositivos están configurados para enviar mensajes cada 21 segundos, pero son posibles otros ajustes. Para añadir las direcciones de todos los dispositivos que han sido escuchados a la lista de direcciones de los sensores, haga clic en el botón "Añadir sensores encontrados a la lista".</p>

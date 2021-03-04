@@ -1,0 +1,23 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La fuente de datos BACnet I/P se utiliza para recoger datos de los dispositivos compatibles con BACnet I/P a los que se puede acceder a través de una red I/P. Los dispositivos pueden estar ubicados en una red de área local o en una intranet, o pueden estar ubicados en cualquier lugar de la Internet. Esta fuente de datos utiliza tanto encuestas como suscripciones de Cambio de Valor (COV) para actualizar según sea necesario.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. El <b>Período de Actualización</b> determina la frecuencia con la que el equipo de BACnet es encuestado para obtener datos. El sondeo sólo se usa si el objeto deseado no soporta suscripciones de COV. El dispositivo es consultado automáticamente por los servicios que soporta para hacer esta determinación.</p>
+<p>El <b> ID del dispositivo </b> es el identificador que Mango proporcionará a otros dispositivos en su mensaje IAm. Se envía automáticamente un mensaje de IAm cuando la fuente de datos se pone en marcha para declarar su presencia en la red, y también se envía en respuesta a las solicitudes apropiadas del WhoIs.</p>
+<p>La <b>Dirección de emisión</b> es la dirección IP de los mensajes de emisión. El administrador de la red le proporcionará un valor apropiado para utilizarlo. El <b>Puerto</b> es el número de puerto en el que Mango escuchará los mensajes entrantes. Tengan en cuenta que Mango admite situaciones en las que otros equipos de la red BACnet están escuchando en otros puertos, pero los mensajes de difusión sólo se enviarán al número de puerto en el que Mango está escuchando.</p>
+<p>Los valores <b>Tiempo de espera</b>, <b>Tempo de inactividade do segmento</b>, <b>Segmento de ventana</b>, y <b>Reintentos</b> son atributos de mensajería de BACnet. En la mayoría de los casos, los valores predeterminados dados deben ser apropiados. Consulte la documentación de BACnet I/P o su administrador de red para determinar si se deben utilizar otros valores para su red..</p>
+<p>El <b>Tiempo de alquiler del COV</b> es el número de minutos que le tomará a Mango mantener un contrato de arrendamiento de VOC. Mango intentará renovar automáticamente sus suscripciones a los COV después de la mitad del tiempo dado. Por ejemplo, si el tiempo más corto es de 60 minutos, Mango pedirá al aparato que cumpla el contrato de arrendamiento durante 60 minutos, y se volverá a suscribir después de 30 minutos.</p>
+<p>Cuando no hay suscripciones de COV, se utiliza la boleta de la tarifa correspondiente. Los dispositivos son encuestados individualmente. Los dispositivos que admiten solicitudes de propiedades de lectura múltiple reciben este mensaje, dividido para contener no más de 200 propiedades en una sola solicitud si es necesario. De lo contrario, las solicitudes individuales de propiedad de lectura se envían.</p>
+
+<h1>Descubrimiento de BACnet I/P</h1>
+<p>Las redes de BACnet I/P pueden ser descubiertas automáticamente mediante la difusión de mensajes WhoIs. Los dispositivos deben responder con un mensaje IAm, que contiene alguna información básica sobre el dispositivo. Para probar los ajustes de configuración y determinar qué dispositivos están disponibles para los puntos, introduzca el número <b>Puerto</b> para emitir y haga clic en el botón "Send WhoIs". (Si no se proporciona el número de puerto, se utiliza el valor de configuración). Sólo se enviará un mensaje del WhoIs, entonces el dispositivo escuchará los mensajes del IAm indefinidamente. (Al hacer clic en "Cancelar" se detendrá la escucha.) A medida que se reciban los mensajes IAm, la información del dispositivo se mostrará en la siguiente tabla. Esta información puede ser usada para crear puntos.</p>

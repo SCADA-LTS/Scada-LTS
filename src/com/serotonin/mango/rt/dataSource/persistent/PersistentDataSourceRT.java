@@ -510,9 +510,11 @@ public class PersistentDataSourceRT extends EventDataSource implements Runnable 
         private void updatePoint(DataPointVO oldDpvo, DataPointVO newDpvo) {
             if (PersistentDataSourceRT.this.vo.isAcceptPointUpdates()) {
                 oldDpvo.setName(newDpvo.getName());
+                oldDpvo.setDescription(newDpvo.getDescription());
                 oldDpvo.setDeviceName(newDpvo.getDeviceName());
                 oldDpvo.setEngineeringUnits(newDpvo.getEngineeringUnits());
                 oldDpvo.setTextRenderer(newDpvo.getTextRenderer());
+                oldDpvo.setEventTextRenderer(newDpvo.getEventTextRenderer());
                 oldDpvo.setChartRenderer(newDpvo.getChartRenderer());
                 oldDpvo.setChartColour(newDpvo.getChartColour());
                 Common.ctx.getRuntimeManager().saveDataPoint(oldDpvo);
