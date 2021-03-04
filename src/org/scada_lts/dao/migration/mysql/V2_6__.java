@@ -7,7 +7,6 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
-import org.scada_lts.utils.PlcAlarmsUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -17,9 +16,9 @@ import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Objects;
 
-public class V2_6__NewDataPointProperties extends BaseJavaMigration {
+public class V2_6__ extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_6__NewDataPointProperties.class);
+    private static final Log LOG = LogFactory.getLog(V2_6__.class);
 
     @Override
     public void migrate(Context context) throws Exception {
