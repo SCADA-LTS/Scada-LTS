@@ -177,8 +177,8 @@
 	</v-card>
 </template>
 <script>
-import SockJS from 'sockjs-client';
-import Stomp from 'webstomp-client';
+import { initWebSocket } from '@/web-socket.js'
+
 /**
  * Value History List for Data Point
  * 
@@ -241,21 +241,18 @@ export default {
 	methods: {
 		
 		connect() {
-			let headers = {
-		 		login: 'admin',
-		 		passcode: 'passcode',
-		 		client_id: '564389'
- 			}
-			this.socket = new SockJS(this.$store.state.webSocketUrl);
-			this.stompClient = Stomp.over(this.socket);
-			this.stompClient.debug = () => {};
-			this.stompClient.connect(headers, () => {
+			let callback = () => {
 				this.stompClient.subscribe(`/ws/datapoint/${this.data.id}/value`, () => {});
 				this.stompClient.subscribe(`/topic/datapoint/${this.data.id}/value`, tick => {
 					this.pointValue = tick.body;
 					this.fetchData();
 				});
-			})
+			}
+			
+			this.stompClient = initWebSocket(
+				this.$store.state.webSocketUrl,
+				callback,
+			);
 		},
 
 		disconnect() {

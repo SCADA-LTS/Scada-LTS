@@ -171,8 +171,7 @@
 	</v-card>
 </template>
 <script>
-import SockJS from 'sockjs-client';
-import Stomp from 'webstomp-client';
+import { initWebSocket } from '@/web-socket.js'
 /**
  * Event List for Data Point
  * 
@@ -213,21 +212,18 @@ export default {
 
 	methods: {
 		connect() {
-			let headers = {
-		 		login: 'admin',
-		 		passcode: 'passcode',
-		 		client_id: '564389'
- 			}
-			this.socket = new SockJS(this.$store.state.webSocketUrl);
-			this.stompClient = Stomp.over(this.socket);
-			this.stompClient.debug = () => {};
-			this.stompClient.connect(headers, () => {
+			let callback = () => {
 				this.stompClient.subscribe("/topic/alarm", tick => {
 					if(tick.body === "Event Raised") {
 						this.fetchDataPointEvents();
 					}
-				})
-			})
+				});
+			}
+
+			this.stompClient = initWebSocket(
+				this.$store.state.webSocketUrl,
+				callback,
+			);
 		},
 
 		refresh() {
