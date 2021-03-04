@@ -3,52 +3,35 @@ package org.scada_lts.web.mvc.api.json;
 import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class JsonPointProperties implements Serializable {
 
     private String name;
     private String description;
-    private boolean enabled;
-    private int loggingType;
-    private int intervalLoggingPeriodType;
-    private int intervalLoggingPeriod;
-    private int intervalLoggingType;
-    private double tolerance;
-    private int purgeType;
-    private int purgePeriod;
+    private Boolean enabled;
+    private Integer loggingType;
+    private Integer intervalLoggingPeriodType;
+    private Integer intervalLoggingPeriod;
+    private Integer intervalLoggingType;
+    private Double tolerance;
+    private Integer purgeType;
+    private Integer purgePeriod;
     private EventTextRenderer eventTextRenderer;
     private TextRenderer textRenderer;
     private ChartRenderer chartRenderer;
-    private int defaultCacheSize;
-    private boolean discardExtremeValues;
-    private double discardLowLimit;
-    private double discardHighLimit;
-    private int engineeringUnits;
+    private Integer defaultCacheSize;
+    private Boolean discardExtremeValues;
+    private Double discardLowLimit;
+    private Double discardHighLimit;
+    private Integer engineeringUnits;
     private String chartColour;
 
     public JsonPointProperties() {
-        DataPointVO defaultValues = new DataPointVO();
-        this.loggingType = defaultValues.getLoggingType();
-        this.intervalLoggingPeriodType = defaultValues.getIntervalLoggingPeriodType();
-        this.intervalLoggingPeriod = defaultValues.getIntervalLoggingPeriod();
-        this.intervalLoggingType = defaultValues.getIntervalLoggingType();
-        this.tolerance = defaultValues.getTolerance();
-        this.purgeType = defaultValues.getPurgeType();
-        this.purgePeriod = defaultValues.getPurgePeriod();
-        this.defaultCacheSize = defaultValues.getDefaultCacheSize();
-        this.discardExtremeValues = defaultValues.isDiscardExtremeValues();
-        this.discardLowLimit = defaultValues.getDiscardLowLimit();
-        this.discardHighLimit = defaultValues.getDiscardHighLimit();
-        this.engineeringUnits = defaultValues.getEngineeringUnits();
-        this.eventTextRenderer = defaultValues.getEventTextRenderer();
     }
 
-    public JsonPointProperties(String name, String description, boolean enabled, int loggingType, int intervalLoggingPeriodType, int intervalLoggingPeriod, int intervalLoggingType, double tolerance, int purgeType, int purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, List<PointEventDetectorVO> eventDetectors, int defaultCacheSize, boolean discardExtremeValues, double discardLowLimit, double discardHighLimit, int engineeringUnits, String chartColour) {
+    public JsonPointProperties(String name, String description, Boolean enabled, Integer loggingType, Integer intervalLoggingPeriodType, Integer intervalLoggingPeriod, Integer intervalLoggingType, Double tolerance, Integer purgeType, Integer purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, Integer defaultCacheSize, Boolean discardExtremeValues, Double discardLowLimit, Double discardHighLimit, Integer engineeringUnits, String chartColour) {
         this.name = name;
         this.description = description;
         this.enabled = enabled;
@@ -86,67 +69,67 @@ public class JsonPointProperties implements Serializable {
         this.description = description;
     }
 
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public int getLoggingType() {
+    public Integer getLoggingType() {
         return loggingType;
     }
 
-    public void setLoggingType(int loggingType) {
+    public void setLoggingType(Integer loggingType) {
         this.loggingType = loggingType;
     }
 
-    public int getIntervalLoggingPeriodType() {
+    public Integer getIntervalLoggingPeriodType() {
         return intervalLoggingPeriodType;
     }
 
-    public void setIntervalLoggingPeriodType(int intervalLoggingPeriodType) {
+    public void setIntervalLoggingPeriodType(Integer intervalLoggingPeriodType) {
         this.intervalLoggingPeriodType = intervalLoggingPeriodType;
     }
 
-    public int getIntervalLoggingPeriod() {
+    public Integer getIntervalLoggingPeriod() {
         return intervalLoggingPeriod;
     }
 
-    public void setIntervalLoggingPeriod(int intervalLoggingPeriod) {
+    public void setIntervalLoggingPeriod(Integer intervalLoggingPeriod) {
         this.intervalLoggingPeriod = intervalLoggingPeriod;
     }
 
-    public int getIntervalLoggingType() {
+    public Integer getIntervalLoggingType() {
         return intervalLoggingType;
     }
 
-    public void setIntervalLoggingType(int intervalLoggingType) {
+    public void setIntervalLoggingType(Integer intervalLoggingType) {
         this.intervalLoggingType = intervalLoggingType;
     }
 
-    public double getTolerance() {
+    public Double getTolerance() {
         return tolerance;
     }
 
-    public void setTolerance(double tolerance) {
+    public void setTolerance(Double tolerance) {
         this.tolerance = tolerance;
     }
 
-    public int getPurgeType() {
+    public Integer getPurgeType() {
         return purgeType;
     }
 
-    public void setPurgeType(int purgeType) {
+    public void setPurgeType(Integer purgeType) {
         this.purgeType = purgeType;
     }
 
-    public int getPurgePeriod() {
+    public Integer getPurgePeriod() {
         return purgePeriod;
     }
 
-    public void setPurgePeriod(int purgePeriod) {
+    public void setPurgePeriod(Integer purgePeriod) {
         this.purgePeriod = purgePeriod;
     }
 
@@ -174,43 +157,43 @@ public class JsonPointProperties implements Serializable {
         this.chartRenderer = chartRenderer;
     }
 
-    public int getDefaultCacheSize() {
+    public Integer getDefaultCacheSize() {
         return defaultCacheSize;
     }
 
-    public void setDefaultCacheSize(int defaultCacheSize) {
+    public void setDefaultCacheSize(Integer defaultCacheSize) {
         this.defaultCacheSize = defaultCacheSize;
     }
 
-    public boolean isDiscardExtremeValues() {
+    public Boolean getDiscardExtremeValues() {
         return discardExtremeValues;
     }
 
-    public void setDiscardExtremeValues(boolean discardExtremeValues) {
+    public void setDiscardExtremeValues(Boolean discardExtremeValues) {
         this.discardExtremeValues = discardExtremeValues;
     }
 
-    public double getDiscardLowLimit() {
+    public Double getDiscardLowLimit() {
         return discardLowLimit;
     }
 
-    public void setDiscardLowLimit(double discardLowLimit) {
+    public void setDiscardLowLimit(Double discardLowLimit) {
         this.discardLowLimit = discardLowLimit;
     }
 
-    public double getDiscardHighLimit() {
+    public Double getDiscardHighLimit() {
         return discardHighLimit;
     }
 
-    public void setDiscardHighLimit(double discardHighLimit) {
+    public void setDiscardHighLimit(Double discardHighLimit) {
         this.discardHighLimit = discardHighLimit;
     }
 
-    public int getEngineeringUnits() {
+    public Integer getEngineeringUnits() {
         return engineeringUnits;
     }
 
-    public void setEngineeringUnits(int engineeringUnits) {
+    public void setEngineeringUnits(Integer engineeringUnits) {
         this.engineeringUnits = engineeringUnits;
     }
 

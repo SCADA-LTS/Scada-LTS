@@ -12,9 +12,12 @@ import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.event.EventTextRenderer;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 import org.springframework.http.HttpStatus;
@@ -621,7 +624,8 @@ public class PointPropertiesAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                if (body.getName() == null || body.getName().isEmpty())
+                body = setDefaultValues(body);
+                if (StringUtils.isEmpty(body.getName()))
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 else {
                     DataPointVO dataPointVO;
@@ -641,6 +645,42 @@ public class PointPropertiesAPI {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private JsonPointProperties setDefaultValues(JsonPointProperties body) {
+        DataPointVO defaultValues = new DataPointVO();
+        if (body.getLoggingType() == null)
+            body.setLoggingType(defaultValues.getLoggingType());
+        if (body.getIntervalLoggingPeriodType() == null)
+            body.setIntervalLoggingPeriodType(defaultValues.getIntervalLoggingPeriodType());
+        if (body.getIntervalLoggingPeriod() == null)
+            body.setIntervalLoggingPeriod(defaultValues.getIntervalLoggingPeriod());
+        if (body.getIntervalLoggingType() == null)
+            body.setIntervalLoggingType(defaultValues.getIntervalLoggingType());
+        if (body.getTolerance() == null)
+            body.setTolerance(defaultValues.getTolerance());
+        if (body.getPurgeType() == null)
+            body.setPurgeType(defaultValues.getPurgeType());
+        if (body.getPurgePeriod() == null)
+            body.setPurgePeriod(defaultValues.getPurgePeriod());
+        if (body.getDefaultCacheSize() == null)
+            body.setDefaultCacheSize(defaultValues.getDefaultCacheSize());
+        if (body.getDiscardExtremeValues() == null)
+            body.setDiscardExtremeValues(defaultValues.isDiscardExtremeValues());
+        if (body.getDiscardLowLimit() == null)
+            body.setDiscardLowLimit(defaultValues.getDiscardLowLimit());
+        if (body.getDiscardHighLimit() == null)
+            body.setDiscardHighLimit(defaultValues.getDiscardHighLimit());
+        if (body.getEngineeringUnits() == null)
+            body.setEngineeringUnits(defaultValues.getEngineeringUnits());
+        if (body.getEventTextRenderer() == null)
+            body.setEventTextRenderer(defaultValues.getEventTextRenderer());
+        return body;
+    }
+
+    private boolean areTypesValid(JsonPointProperties body){
+        // TODO
+        return false;
     }
 
     @GetMapping(value = "/getPointDescription", produces = "application/json")
