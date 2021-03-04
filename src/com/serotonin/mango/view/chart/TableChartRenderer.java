@@ -33,7 +33,7 @@ import com.serotonin.mango.vo.DataPointVO;
 
 @JsonRemoteEntity
 public class TableChartRenderer extends BaseChartRenderer {
-    private static ImplDefinition definition = new ImplDefinition("chartRendererTable", "TABLE", "chartRenderer.table",
+    private static ImplDefinition definition = new ImplDefinition(TableChartRenderer.TYPE_NAME, "TABLE", "chartRenderer.table",
             new int[] { DataTypes.ALPHANUMERIC, DataTypes.BINARY, DataTypes.MULTISTATE, DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {

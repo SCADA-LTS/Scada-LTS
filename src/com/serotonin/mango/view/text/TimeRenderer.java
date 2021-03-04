@@ -34,7 +34,7 @@ import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
 public class TimeRenderer extends BaseTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("textRendererTime", "TIME", "textRenderer.time",
+    private static ImplDefinition definition = new ImplDefinition(TimeRenderer.TYPE_NAME, "TIME", "textRenderer.time",
             new int[] { DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {

@@ -39,7 +39,7 @@ import com.serotonin.util.SerializationHelper;
  */
 @JsonRemoteEntity
 public class BinaryTextRenderer extends BaseTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("textRendererBinary", "BINARY",
+    private static ImplDefinition definition = new ImplDefinition(BinaryTextRenderer.TYPE_NAME, "BINARY",
             "textRenderer.binary", new int[] { DataTypes.BINARY });
 
     public static ImplDefinition getDefinition() {
