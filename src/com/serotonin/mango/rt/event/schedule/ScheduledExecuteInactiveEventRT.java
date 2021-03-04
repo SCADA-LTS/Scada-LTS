@@ -2,7 +2,6 @@ package com.serotonin.mango.rt.event.schedule;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;

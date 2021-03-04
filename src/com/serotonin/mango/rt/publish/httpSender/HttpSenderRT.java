@@ -20,7 +20,6 @@ package com.serotonin.mango.rt.publish.httpSender;
 
 import java.util.*;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -150,12 +149,10 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                 if (code == HttpStatus.SC_OK) {
                     if (vo.isRaiseResultWarning()) {
                         String result = HttpUtils.readResponseBody(method, 1024);
-                        if (!StringUtils.isEmpty(result)) {
-                            LocalizableMessage msg = new LocalizableMessage("common.default", result);
+                        if (!StringUtils.isEmpty(result))
                             Common.ctx.getEventManager().raiseEvent(resultWarningsEventType,
                                     System.currentTimeMillis(), false, AlarmLevels.INFORMATION,
-                                    msg, createEventContext());
-                        }
+                                    new LocalizableMessage("common.default", result), createEventContext());
                     }
                 }
                 else
@@ -174,10 +171,9 @@ public class HttpSenderRT extends PublisherRT<HttpPointVO> {
                 if (failureMessage == null)
                     failureMessage = message;
 
-                if (failureCount == MAX_FAILURES + 1) {
+                if (failureCount == MAX_FAILURES + 1)
                     Common.ctx.getEventManager().raiseEvent(sendExceptionEventType, System.currentTimeMillis(), true,
                             AlarmLevels.URGENT, failureMessage, createEventContext());
-                }
 
                 return false;
             }

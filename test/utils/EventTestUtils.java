@@ -2,7 +2,6 @@ package utils;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -12,8 +11,6 @@ import org.joda.time.DateTime;
 import org.scada_lts.service.CommunicationChannelTypable;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import static org.mockito.Mockito.mock;

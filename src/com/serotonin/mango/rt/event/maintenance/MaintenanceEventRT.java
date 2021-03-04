@@ -2,10 +2,7 @@ package com.serotonin.mango.rt.event.maintenance;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import org.joda.time.DateTime;
 
 import com.serotonin.ShouldNeverHappenException;

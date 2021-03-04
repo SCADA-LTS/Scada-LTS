@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 

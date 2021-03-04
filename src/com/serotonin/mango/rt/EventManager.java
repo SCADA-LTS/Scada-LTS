@@ -21,7 +21,6 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.UserHighestAlarmLevelListener;
@@ -171,7 +170,6 @@ public class EventManager implements ILifecycle {
 						+ message.getLocalizedMessage(Common.getBundle()));
 		}
 	}
-
 
 	public void returnToNormal(EventType type, long time) {
 		returnToNormal(type, time, EventInstance.RtnCauses.RETURN_TO_NORMAL);
