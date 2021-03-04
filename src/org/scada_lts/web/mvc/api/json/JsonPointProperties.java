@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.json;
 import com.serotonin.mango.view.chart.ChartRenderer;
 import com.serotonin.mango.view.event.EventTextRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
+import com.serotonin.mango.vo.DataPointVO;
 
 import java.io.Serializable;
 
@@ -51,6 +52,38 @@ public class JsonPointProperties implements Serializable {
         this.discardHighLimit = discardHighLimit;
         this.engineeringUnits = engineeringUnits;
         this.chartColour = chartColour;
+    }
+
+    public static void defaultValues(JsonPointProperties body) {
+        DataPointVO defaultValues = new DataPointVO();
+        if (body.getLoggingType() == null)
+            body.setLoggingType(defaultValues.getLoggingType());
+        if (body.getIntervalLoggingPeriodType() == null)
+            body.setIntervalLoggingPeriodType(defaultValues.getIntervalLoggingPeriodType());
+        if (body.getIntervalLoggingPeriod() == null)
+            body.setIntervalLoggingPeriod(defaultValues.getIntervalLoggingPeriod());
+        if (body.getIntervalLoggingType() == null)
+            body.setIntervalLoggingType(defaultValues.getIntervalLoggingType());
+        if (body.getTolerance() == null)
+            body.setTolerance(defaultValues.getTolerance());
+        if (body.getPurgeType() == null)
+            body.setPurgeType(defaultValues.getPurgeType());
+        if (body.getPurgePeriod() == null)
+            body.setPurgePeriod(defaultValues.getPurgePeriod());
+        if (body.getDefaultCacheSize() == null)
+            body.setDefaultCacheSize(defaultValues.getDefaultCacheSize());
+        if (body.getDiscardExtremeValues() == null)
+            body.setDiscardExtremeValues(defaultValues.isDiscardExtremeValues());
+        if (body.getDiscardLowLimit() == null)
+            body.setDiscardLowLimit(defaultValues.getDiscardLowLimit());
+        if (body.getDiscardHighLimit() == null)
+            body.setDiscardHighLimit(defaultValues.getDiscardHighLimit());
+        if (body.getEngineeringUnits() == null)
+            body.setEngineeringUnits(defaultValues.getEngineeringUnits());
+        if (body.getEventTextRenderer() == null)
+            body.setEventTextRenderer(defaultValues.getEventTextRenderer());
+        if (body.getEnabled() == null)
+            body.setEnabled(defaultValues.isEnabled());
     }
 
     public String getName() {

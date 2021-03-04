@@ -238,7 +238,7 @@ public class DataPointService implements MangoDataPoint {
 	public void savePointProperties(DataPointVO dataPoint, JsonPointProperties jsonPointProperties) {
 		dataPoint.setName(jsonPointProperties.getName());
 		dataPoint.setDescription(jsonPointProperties.getDescription());
-		dataPoint.setEnabled(jsonPointProperties.isEnabled());
+		dataPoint.setEnabled(jsonPointProperties.getEnabled());
 		dataPoint.setLoggingType(jsonPointProperties.getLoggingType());
 		dataPoint.setIntervalLoggingPeriodType(jsonPointProperties.getIntervalLoggingPeriodType());
 		dataPoint.setIntervalLoggingPeriod(jsonPointProperties.getIntervalLoggingPeriod());
@@ -251,7 +251,7 @@ public class DataPointService implements MangoDataPoint {
 		dataPoint.setEventTextRenderer(jsonPointProperties.getEventTextRenderer());
 		dataPoint.setChartRenderer(jsonPointProperties.getChartRenderer());
 		dataPoint.setDefaultCacheSize(jsonPointProperties.getDefaultCacheSize());
-		dataPoint.setDiscardExtremeValues(jsonPointProperties.isDiscardExtremeValues());
+		dataPoint.setDiscardExtremeValues(jsonPointProperties.getDiscardExtremeValues());
 		dataPoint.setDiscardLowLimit(jsonPointProperties.getDiscardLowLimit());
 		dataPoint.setDiscardHighLimit(jsonPointProperties.getDiscardHighLimit());
 		dataPoint.setEngineeringUnits(jsonPointProperties.getEngineeringUnits());
