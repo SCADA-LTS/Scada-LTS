@@ -9,9 +9,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorBinaryStateDTO;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorChangeDTO;
-import org.scada_lts.web.mvc.api.dto.eventDetector.EventDetectorDTO;
+import org.scada_lts.web.mvc.api.dto.EventDetectorDTO;
 import org.scada_lts.web.mvc.api.json.JsonPointEventDetector;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,23 +66,13 @@ public class EventDetectorAPI {
         }
     }
 
-    @PostMapping(value = "/set/binary/state/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> createBinaryStateEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
+    @PostMapping(value = "/set/{datapointId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<JsonPointEventDetector> createEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
         return createEventDetectorType(datapointId, body, request);
     }
 
-    @PostMapping(value = "/set/change/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> createChangeEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
-        return createEventDetectorType(datapointId, body, request);
-    }
-
-    @PutMapping(value = "/update/binary/state/{datapointId}/{id}", consumes = "application/json")
-    public ResponseEntity<String> updateBinaryStateEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorBinaryStateDTO body) {
-        return updateEventDetectorType(datapointId, id, body, request);
-    }
-
-    @PutMapping(value = "/update/change/{datapointId}/{id}", consumes = "application/json")
-    public ResponseEntity<String> updateChangeEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorChangeDTO body) {
+    @PutMapping(value = "/update/{datapointId}/{id}", consumes = "application/json")
+    public ResponseEntity<String> updateEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
         return updateEventDetectorType(datapointId, id, body, request);
     }
 
@@ -138,21 +126,25 @@ public class EventDetectorAPI {
         }
     }
 
-    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO pointEventDetectorVO) {
+    private JsonPointEventDetector createEventDetector(DataPointVO dataPointVO, PointEventDetectorVO ped) {
 
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty())  {
-            for (PointEventDetectorVO ped : peds) {
-                if (ped.getXid().equals(pointEventDetectorVO.getXid())) {
-                    return new JsonPointEventDetector(ped.getId(), ped.getXid(), ped.getAlias());
+            for (PointEventDetectorVO _ped : peds) {
+                if (_ped.getXid().equals(ped.getXid())) {
+                    return new JsonPointEventDetector(_ped.getId(), _ped.getXid(), _ped.getAlias(), _ped.getDetectorType(),
+                            _ped.getAlarmLevel(), _ped.getLimit(), _ped.getDuration(), _ped.getDurationType(), _ped.isBinaryState(),
+                            _ped.getMultistateState(), _ped.getChangeCount(), _ped.getAlphanumericState(), _ped.getWeight());
                 }
             }
         }
-        dataPointVO.getEventDetectors().add(pointEventDetectorVO);
+        dataPointVO.getEventDetectors().add(ped);
         dataPointService.saveEventDetectors(dataPointVO);
         Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
-        int pedID = dataPointService.getDetectorId(pointEventDetectorVO.getXid(), dataPointVO.getId());
-        return new JsonPointEventDetector(pedID, pointEventDetectorVO.getXid(), pointEventDetectorVO.getAlias());
+        int pedID = dataPointService.getDetectorId(ped.getXid(), dataPointVO.getId());
+        return new JsonPointEventDetector(pedID, ped.getXid(), ped.getAlias(), ped.getDetectorType(), ped.getAlarmLevel(),
+                ped.getLimit(), ped.getDuration(), ped.getDurationType(), ped.isBinaryState(), ped.getMultistateState(),
+                ped.getChangeCount(), ped.getAlphanumericState(), ped.getWeight());
     }
 
 

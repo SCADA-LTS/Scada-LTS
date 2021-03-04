@@ -143,6 +143,7 @@
     <convert converter="bean" match="com.serotonin.mango.view.component.*"/>
     <convert converter="bean" match="br.org.scadabr.view.component.*"/>
     <convert converter="bean" match="com.serotonin.mango.view.text.*"/>
+    <convert converter="bean" match="com.serotonin.mango.view.event.*"/>
     <convert converter="bean" match="com.serotonin.mango.view.DynamicImage"/>
     <convert converter="bean" match="com.serotonin.mango.view.ImageSet"/>
     <convert converter="bean" match="com.serotonin.mango.view.ImplDefinition"/>
@@ -251,10 +252,14 @@
       import com.serotonin.mango.web.dwr.DataPointEditDwr;
       import com.serotonin.mango.view.text.RangeValue;
       import com.serotonin.mango.view.text.MultistateValue;
+      import com.serotonin.mango.view.event.RangeEventValue;
+      import com.serotonin.mango.view.event.MultistateEventValue;
       import com.serotonin.mango.vo.permission.DataPointAccess;
       
       DataPointEditDwr.setRangeRenderer(String, List<RangeValue>);
+      DataPointEditDwr.setRangeEventRenderer(List<RangeEventValue>);
       DataPointEditDwr.setMultistateRenderer(List<MultistateValue>);
+      DataPointEditDwr.setMultistateEventRenderer(List<MultistateEventValue>);
       
       import com.serotonin.mango.web.dwr.MailingListsDwr;
       import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;

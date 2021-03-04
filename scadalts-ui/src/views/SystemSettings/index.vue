@@ -282,6 +282,10 @@
 			<h2>Not allowed to see that page</h2>
 			<v-spacer></v-spacer>
 		</v-container>
+
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -338,6 +342,11 @@ export default {
 				{ value: 'de', text: 'Deutsch' },
 				{ value: 'en', text: 'English' },
 			],
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
 	},
 	mounted() {
@@ -384,11 +393,16 @@ export default {
 			});
 		},
 		generateNotification(type, content) {
-			this.$notify({
-				placement: 'bottom-right',
-				type,
-				content,
-			});
+			this.response = {
+				status: true,
+				message: content,
+				color: type
+			};
+			// this.$notify({
+			// 	placement: 'bottom-right',
+			// 	type,
+			// 	content,
+			// });
 		},
 		async loadClock() {
 			let result = await store.dispatch('getSystemStartupTime');
