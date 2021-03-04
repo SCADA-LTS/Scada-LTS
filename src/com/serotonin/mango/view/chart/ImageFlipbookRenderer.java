@@ -36,7 +36,7 @@ import com.serotonin.mango.vo.DataPointVO;
  */
 @JsonRemoteEntity
 public class ImageFlipbookRenderer extends BaseChartRenderer {
-    private static ImplDefinition definition = new ImplDefinition(ImageChartRenderer.TYPE_NAME, "FLIPBOOK",
+    private static ImplDefinition definition = new ImplDefinition(ImageFlipbookRenderer.TYPE_NAME, "FLIPBOOK",
             "chartRenderer.flipbook", new int[] { DataTypes.IMAGE });
 
     public static ImplDefinition getDefinition() {
