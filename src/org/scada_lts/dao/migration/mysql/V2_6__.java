@@ -29,6 +29,24 @@ public class V2_6__ extends BaseJavaMigration {
 
         jdbcTmp.execute("ALTER TABLE events ADD shortMessage LONGTEXT;");
         jdbcTmp.update("UPDATE events SET message = CONCAT(message, '||') WHERE typeId = 1;");
+      
+        String corectHistoryAlarms = ""+
+          "CREATE OR REPLACE VIEW " +
+          " historyAlarms AS " +
+          " SELECT " +
+          "  func_fromats_date(activeTime) AS 'activeTime', " +
+          "  func_fromats_date(inactiveTime) AS 'inactiveTime', " +
+          "  func_fromats_date(acknowledgeTime) AS 'acknowledgeTime', " +
+          "  level, " +
+          "  dataPointName AS 'name', " +
+          "  dataPointId AS dataPointId " +
+          "FROM plcAlarms " +
+          "ORDER BY " +
+          " inactiveTime = 0 DESC, " +
+          " inactiveTime DESC, " +
+          " id DESC;";
+
+        jdbcTmp.execute(corectHistoryAlarms);
 
     }
 
@@ -60,6 +78,6 @@ public class V2_6__ extends BaseJavaMigration {
         } catch (EmptyResultDataAccessException empty) {
             LOG.warn(empty);
         }
-
     }
+    
 }
