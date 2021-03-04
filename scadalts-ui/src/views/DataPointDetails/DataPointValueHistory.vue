@@ -242,8 +242,10 @@ export default {
 				endTs: new Date().getTime(),
 			});
 			this.valueList = response.values;
-			this.calculateStatistics();
-			this.valueList.reverse();
+			if(this.valueList.length > 0) {
+				this.calculateStatistics();
+				this.valueList.reverse();
+			}
 			this.fetchingData = false;
 		},
 
