@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-event-renderer">
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.eventRenderer.title') }}</h3>
 		</v-col>
@@ -180,8 +180,9 @@ export default {
 
 	computed: {
 		eventRenderersList() {
+			let renderers = [{ id: -1, label: 'None' }];
 			if (!!this.data) {
-				let renderers = [{ id: -1, label: 'None' }];
+				
 				if (this.data.pointLocator.dataTypeId === 1) {
 					// Binary datapoint
 					renderers.push(
@@ -204,8 +205,8 @@ export default {
 						})[0],
 					);
 				}
-				return renderers;
 			}
+			return renderers;
 		},
 	},
 

@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-logging">
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.logging.title') }}</h3>
 		</v-col>

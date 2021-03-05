@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-event-detecotrs">
 		<v-col cols="12">
 			<v-row justify="space-between" align="center">
 				<v-col>
