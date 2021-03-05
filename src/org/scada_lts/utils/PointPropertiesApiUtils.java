@@ -1,6 +1,8 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.vo.DataPointVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
@@ -11,27 +13,29 @@ import java.util.function.Predicate;
 
 public class PointPropertiesApiUtils {
 
+    private static final Log LOG = LogFactory.getLog(PointPropertiesApiUtils.class);
+
     public static Optional<DataPointVO> getDataPointByIdOrXid(Integer id, String xid, DataPointService dataPointService) {
-        DataPointVO dataPointVO = null;
-        if (id != null) {
-            dataPointVO = dataPointService.getDataPoint(id);
-        } else if (xid != null) {
-            dataPointVO = dataPointService.getDataPoint(xid);
+        try {
+            DataPointVO dataPointVO = null;
+            if (id != null) {
+                dataPointVO = dataPointService.getDataPoint(id);
+            } else if (xid != null) {
+                dataPointVO = dataPointService.getDataPoint(xid);
+            }
+            return Optional.ofNullable(dataPointVO);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
         }
-        return Optional.ofNullable(dataPointVO);
     }
 
     public static String validPointProperties(Integer id, String xid, JsonPointProperties body) {
 
         StringBuilder msg = new StringBuilder();
 
-        if (id == null && StringUtils.isEmpty(xid)) {
-            msg.append("Correct id and xid;");
-        }
-
-        if(StringUtils.isEmpty(body.getName())) {
-            msg.append("Correct name;");
-        }
+        msg.append(validId(id, xid));
+        msg.append(validName(body));
 
         JsonPointProperties.defaultValues(body);
 
@@ -49,6 +53,20 @@ public class PointPropertiesApiUtils {
         msg.append(msgIfError("PurgeType does no exist for value {0}", body.getPurgeType(),
                 a -> !DataPointVO.validPurgeType(a)));
         return msg.toString();
+    }
+
+    public static String validName(JsonPointProperties body) {
+        if(StringUtils.isEmpty(body.getName())) {
+            return "Correct name;";
+        }
+        return "";
+    }
+
+    public static String validId(Integer id, String xid) {
+        if (id == null && StringUtils.isEmpty(xid)) {
+            return "Correct id and xid;";
+        }
+        return "";
     }
 
     private static <T> String msgIfError(String msg, T value, Predicate<T> errorIf) {
