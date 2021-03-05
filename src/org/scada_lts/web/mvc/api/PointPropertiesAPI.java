@@ -30,7 +30,7 @@ import com.serotonin.mango.vo.User;
 import static org.scada_lts.utils.PointPropertiesApiUtils.getDataPointByIdOrXid;
 import static org.scada_lts.utils.PointPropertiesApiUtils.validId;
 import static org.scada_lts.utils.PointPropertiesApiUtils.validPointProperties;
-
+import static org.scada_lts.utils.PointPropertiesApiUtils.updateValuePointProperties;
 
 /**
  * Helper class
@@ -629,9 +629,10 @@ public class PointPropertiesAPI {
                     return ResponseEntity.badRequest().body("{\"errors\": \"" + error + "\"}");
                 }
 
-                return getDataPointByIdOrXid(id, xid, dataPointService).map(dataPointVO -> {
-                    dataPointService.savePointProperties(dataPointVO, body);
-                    Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+                return getDataPointByIdOrXid(id, xid, dataPointService).map(dataPoint -> {
+                    updateValuePointProperties(dataPoint, body);
+                    dataPointService.updateDataPoint(dataPoint);
+                    Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
                     return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
                 }).orElse(new ResponseEntity<>(ERRORS_DATA_POINT_NOT_FOUND, HttpStatus.NOT_FOUND));
 
