@@ -170,7 +170,7 @@ public class DataPointAPI {
 
                 List<DatapointJSON> lst = new ArrayList<>();
                 for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid());
+                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDescription());
                     lst.add(dpJ);
                 }
 
@@ -199,7 +199,7 @@ public class DataPointAPI {
                 List<DatapointJSON> resultList = new ArrayList<>();
                 List<DataPointVO> datapointList = dataPointService.getPlcDataPoints(datasourceId);
                 for(DataPointVO datapoint: datapointList) {
-                    DatapointJSON dp = new DatapointJSON(datapoint.getId(), datapoint.getName(), datapoint.getXid());
+                    DatapointJSON dp = new DatapointJSON(datapoint.getId(), datapoint.getName(), datapoint.getXid(), datapoint.getDescription());
                     resultList.add(dp);
                 }
                 return new ResponseEntity<>(resultList, HttpStatus.OK);
@@ -216,11 +216,13 @@ public class DataPointAPI {
         private long id;
         private String name;
         private String xid;
+        private String description;
 
-        DatapointJSON(long id, String name, String xid) {
+        DatapointJSON(long id, String name, String xid, String description) {
             this.setId(id);
             this.setName(name);
             this.setXid(xid);
+            this.setDescription(description);
         }
 
         public long getId() { return id; }
@@ -228,6 +230,7 @@ public class DataPointAPI {
         public String getName() {
             return name;
         }
+        public String getDescription() { return description; }
 
         public void setName(String name) {
             this.name = name;
@@ -238,6 +241,7 @@ public class DataPointAPI {
         public void setXid(String xid) {
             this.xid = xid;
         }
+        public void setDescription(String description) { this.description = description; }
     }
 }
 

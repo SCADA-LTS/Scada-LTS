@@ -29,7 +29,6 @@ import java.util.Map;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.jfree.util.Log;
@@ -50,6 +49,7 @@ import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
@@ -236,7 +236,8 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	public void savePointProperties(DataPointVO dataPoint, JsonPointProperties jsonPointProperties) {
-		dataPoint.setName(jsonPointProperties.getName());
+		if(!StringUtils.isEmpty(jsonPointProperties.getName()))
+			dataPoint.setName(jsonPointProperties.getName());
 		dataPoint.setDescription(jsonPointProperties.getDescription());
 		dataPoint.setEnabled(jsonPointProperties.getEnabled());
 		dataPoint.setLoggingType(jsonPointProperties.getLoggingType());

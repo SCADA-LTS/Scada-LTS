@@ -35,7 +35,6 @@ public class PointPropertiesApiUtils {
         StringBuilder msg = new StringBuilder();
 
         msg.append(validId(id, xid));
-        msg.append(validName(body));
 
         JsonPointProperties.defaultValues(body);
 
@@ -53,13 +52,6 @@ public class PointPropertiesApiUtils {
         msg.append(msgIfError("PurgeType does no exist for value {0}", body.getPurgeType(),
                 a -> !DataPointVO.validPurgeType(a)));
         return msg.toString();
-    }
-
-    public static String validName(JsonPointProperties body) {
-        if(StringUtils.isEmpty(body.getName())) {
-            return "Correct name;";
-        }
-        return "";
     }
 
     public static String validId(Integer id, String xid) {
