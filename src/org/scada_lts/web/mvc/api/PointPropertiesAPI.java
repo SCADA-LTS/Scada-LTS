@@ -631,7 +631,7 @@ public class PointPropertiesAPI {
 
                 return getDataPointByIdOrXid(id, xid, dataPointService).map(dataPoint -> {
                     updateValuePointProperties(dataPoint, body);
-                    dataPointService.updateDataPointShallow(dataPoint);
+                    dataPointService.updateDataPoint(dataPoint);
                     Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
                     return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
                 }).orElse(new ResponseEntity<>(ERRORS_DATA_POINT_NOT_FOUND, HttpStatus.NOT_FOUND));
