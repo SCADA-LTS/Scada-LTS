@@ -51,6 +51,13 @@ const storeDataPoint = {
 		eventRenderersTemplates: eventRenderersTemplates,
 
 		datapointSimpleList: undefined,
+
+		valueTypeList: [
+			{ id: 1, label: i18n.t('pointEdit.logging.value.instant')},
+			{ id: 2, label: i18n.t('pointEdit.logging.value.maximum')},
+			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum')},
+			{ id: 4, label: i18n.t('pointEdit.logging.value.average')},
+		],
 	},
 
 	mutations: {},

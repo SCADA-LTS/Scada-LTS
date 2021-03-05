@@ -5,7 +5,7 @@
 		</v-col>
 		<v-col cols="12">
 			<v-select
-				v-model="data.intervalLoggingType"
+				v-model="data.loggingType"
 				:items="loggingTypeList"
 				item-value="id"
 				item-text="label"
@@ -13,7 +13,7 @@
 			></v-select>
 		</v-col>
 		<v-col cols="12">
-			<v-row v-show="data.intervalLoggingType === 4" dense>
+			<v-row v-show="data.loggingType === 4" dense>
 				<v-col cols="6">
 					{{ $t('datapointDetails.pointProperties.logging.interval.label') }}
 				</v-col>
@@ -31,7 +31,14 @@
 				</v-col>
 				<v-row v-if="data.pointLocator.dataTypeId === 3" dense>
 					<v-col cols="12">
-						<v-select v-model="data.loggingType" dense></v-select>
+						<v-select 
+						v-model="data.intervalLoggingType"
+						:items="valueTypeList"
+						item-value="id"
+						item-text="label"
+						:label="$t('datapointDetails.pointProperties.logging.valueType')"
+						dense
+					></v-select>
 					</v-col>
 				</v-row>
 			</v-row>
@@ -144,6 +151,9 @@ export default {
 		loggingTypeList() {
 			return this.$store.state.dataPoint.loggingTypeList;
 		},
+		valueTypeList() {
+			return this.$store.state.dataPoint.valueTypeList;
+		}
 	},
 
 	methods: {
