@@ -270,6 +270,80 @@
 							</v-select>
 						</v-col>
 					</v-row>
+
+					<v-row v-if="e.detectorType === 10" id="ped-cusum-positive-settings">
+						<v-col cols="1"></v-col>
+						<v-col cols="3">
+							<v-text-field
+								:label="
+									$t('datapointDetails.pointProperties.eventDetectors.positiveLimit')
+								"
+								v-model="e.limit"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="2">
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.weight')"
+								v-model="e.weight"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="2">
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="4">
+							<v-select
+								v-model="e.durationType"
+								:items="timePeriods"
+								item-value="id"
+								item-text="label"
+								dense
+							>
+							</v-select>
+						</v-col>
+					</v-row>
+
+					<v-row v-if="e.detectorType === 11" id="ped-cusum-negative-settings">
+						<v-col cols="1"></v-col>
+						<v-col cols="3">
+							<v-text-field
+								:label="
+									$t('datapointDetails.pointProperties.eventDetectors.negativeLimit')
+								"
+								v-model="e.limit"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="2">
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.weight')"
+								v-model="e.weight"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="2">
+							<v-text-field
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+								v-model="e.duration"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="4">
+							<v-select
+								v-model="e.durationType"
+								:items="timePeriods"
+								item-value="id"
+								item-text="label"
+								dense
+							>
+							</v-select>
+						</v-col>
+					</v-row>
 				</v-col>
 			</v-row>
 			<v-snackbar v-model="response.status">
@@ -284,14 +358,14 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
 /**
  * Event Detectors for Point Properties
- * 
- * An event detector's purpose is to determine if the value of a point satisfies 
- * one or more related conditions, and if so, to become "active" and raise an 
- * event that can be appropriately handled. 
- * 
- * @param {Object} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * An event detector's purpose is to determine if the value of a point satisfies
+ * one or more related conditions, and if so, to become "active" and raise an
+ * event that can be appropriately handled.
+ *
+ * @param {Object} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {
@@ -314,6 +388,8 @@ export default {
 				'No Change Detector',
 				'No Update Detector',
 				'Alphanumeric State Detector',
+				'Positive CUSUM',
+				'Negative CUSUM'
 			];
 			return detectorsList[value - 1];
 		},

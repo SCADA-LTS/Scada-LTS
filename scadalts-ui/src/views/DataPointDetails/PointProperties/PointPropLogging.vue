@@ -31,14 +31,14 @@
 				</v-col>
 				<v-row v-if="data.pointLocator.dataTypeId === 3" dense>
 					<v-col cols="12">
-						<v-select 
-						v-model="data.intervalLoggingType"
-						:items="valueTypeList"
-						item-value="id"
-						item-text="label"
-						:label="$t('datapointDetails.pointProperties.logging.valueType')"
-						dense
-					></v-select>
+						<v-select
+							v-model="data.intervalLoggingType"
+							:items="valueTypeList"
+							item-value="id"
+							item-text="label"
+							:label="$t('datapointDetails.pointProperties.logging.valueType')"
+							dense
+						></v-select>
 					</v-col>
 				</v-row>
 			</v-row>
@@ -106,21 +106,21 @@
 <script>
 /**
  * Logging for Point Properties
- * 
+ *
  * ScadaLTS supports four types of point value logging
- * - When point value changes is the default logging setting. 
- * - The All data setting causes every point update to be saved to the database. 
- * - The Do not log setting prevents any historical data for the point 
- * from being stored in the database. 
- * - The Interval setting allows the collection of data via the data source 
- * to be separated from its logging. 
- * - The When point timestamp changes setting. This is similar in behaviour 
- * to the on value change setting, but the timestamp of the sample 
+ * - When point value changes is the default logging setting.
+ * - The All data setting causes every point update to be saved to the database.
+ * - The Do not log setting prevents any historical data for the point
+ * from being stored in the database.
+ * - The Interval setting allows the collection of data via the data source
+ * to be separated from its logging.
+ * - The When point timestamp changes setting. This is similar in behaviour
+ * to the on value change setting, but the timestamp of the sample
  * is compared instead of the value.
- * 
- * @param {Object} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * @param {Object} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {
@@ -153,7 +153,7 @@ export default {
 		},
 		valueTypeList() {
 			return this.$store.state.dataPoint.valueTypeList;
-		}
+		},
 	},
 
 	methods: {

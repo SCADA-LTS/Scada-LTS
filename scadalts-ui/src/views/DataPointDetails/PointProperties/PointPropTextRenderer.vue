@@ -232,15 +232,15 @@
 <script>
 /**
  * Text Renderer for Point Properties
- * 
- * A text renderer's purpose is to convert a raw value into a form 
- * that is more recognizable and informative to a human user. 
- * The ways to render raw values depend upon the data type 
- * of value to be rendered. 
- * 
- * @param {Object} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * A text renderer's purpose is to convert a raw value into a form
+ * that is more recognizable and informative to a human user.
+ * The ways to render raw values depend upon the data type
+ * of value to be rendered.
+ *
+ * @param {Object} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {
