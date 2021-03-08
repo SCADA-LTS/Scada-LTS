@@ -24,7 +24,7 @@
 				</v-col>
 			</v-row>
 		</v-col>
-		<v-col cols="12">
+		<v-col cols="12" id="point-prop-event-detecotrs-list">
 			<v-row v-for="e in data.eventDetectors" :key="e.id">
 				<hr class="v-divider theme--light ped-divider" />
 

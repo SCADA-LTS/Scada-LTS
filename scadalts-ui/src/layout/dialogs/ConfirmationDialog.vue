@@ -3,7 +3,7 @@
 		<template v-if="btnvisible" v-slot:activator="{ on, attrs }">
 			<v-btn v-bind="attrs" v-on="on"> Open </v-btn>
 		</template>
-		<v-card>
+		<v-card class="dialog-confirmation">
 			<v-card-title class="headline">
 				{{ title }}
 			</v-card-title>

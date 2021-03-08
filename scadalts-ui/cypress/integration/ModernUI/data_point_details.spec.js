@@ -307,9 +307,9 @@ context('Scenario - Data Point Properties validation', () => {
         it('Is State Event Detector rendered properly', () => {
             cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
             cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(3)').trigger('click');
-            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
-            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
-            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text > .row:nth-of-type(2) > .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text > .row:nth-of-type(2) > .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text > .row:nth-of-type(2) > .col:nth-of-type(4) label').contains('Alias');
             cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('State change count');
             cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Duration');
             cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) .v-select').should('exist');
@@ -390,6 +390,61 @@ context('Scenario - Data Point Properties validation', () => {
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(3) button').should('have.css', 'background-color', 'rgb(255, 0, 0)')
 
         })
+    })
+
+    describe('Test - Check the Behaviour of Point Event Detectors', () => {
+
+        it('Is Binary Event Detector created properly', () => {
+            cy.get('#point-prop-event-detecotrs  button').trigger('click');
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(1)').trigger('click');
+
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) input').clear().type('PED_TEST_0001');
+            cy.get('#dialog-create-event-detector  .v-card__text > .row:nth-of-type(2) > .col:nth-of-type(3) .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text > .row:nth-of-type(2) > .col:nth-of-type(4) input').type('Test Alias for Binary PED');
+
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) > .col:nth-of-type(5) > .row > .col:nth-of-type(2) .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) > .col:nth-of-type(5) > .row > .col:nth-of-type(3) input').clear().type('5');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) > .col:nth-of-type(5) > .row > .col:nth-of-type(4) .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+
+            cy.restLogin();
+            cy.get('#dialog-create-event-detector .v-card__actions > button:last-of-type').trigger('click');
+
+            cy.get('.v-snack__wrapper .v-snack__content').contains('Added successful!');
+            cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
+            
+            cy.get('#point-prop-event-detecotrs-list > .row > .col:nth-of-type(1)').contains('PED_TEST_0001');
+        });
+
+        it('Is Binary Event Detector updated properly', () => {
+            cy.get('#point-prop-event-detecotrs-list > .row > .col:nth-of-type(7) > .row > .col:nth-of-type(2)').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(1)').trigger('click');
+            cy.get('#point-prop-event-detecotrs-list > .row > .col:nth-of-type(7) > .row > .col:nth-of-type(3) input').clear().type('10');
+            cy.get('#point-prop-event-detecotrs-list > .row > .col:nth-of-type(7) > .row > .col:nth-of-type(4)').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(1)').trigger('click');
+
+            cy.restLogin();
+            cy.get('#point-prop-event-detecotrs-list > .row > .col:nth-of-type(2) button').trigger('click');
+
+            cy.get('.v-snack__wrapper .v-snack__content').contains('Updated successful!');
+            cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
+        });
+
+        it('Is Binary Event Detector deleted properly', () => {
+            cy.restLogin();
+            cy.get('#point-prop-event-detecotrs-list > .row > .col:nth-of-type(3) button').trigger('click');
+            cy.get('.v-dialog:last-of-type > .dialog-confirmation > .v-card__actions > button.success--text').last().trigger('click');
+
+            cy.get('.v-snack__wrapper .v-snack__content').contains('Deleted successful!');
+            cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
+
+            cy.get('#point-prop-event-detecotrs-list > .row ').should('not.exist');
+        });
+
+
     })
 
 })
@@ -506,6 +561,30 @@ context('Scenario - Numeric Data Point Properties validation', () => {
             cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('Low limit');
             cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Duration');
             cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) .v-select').should('exist');
+        })
+
+        it('Is Positive CUSUM Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(6)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('Positive Limit');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Weight');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(5) .v-select').should('exist');
+        })
+
+        it('Is Negative CUSUM Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(7)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('Negative Limit');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Weight');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(5) .v-select').should('exist');
         })
 
     })
