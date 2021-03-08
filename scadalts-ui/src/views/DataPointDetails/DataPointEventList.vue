@@ -173,13 +173,13 @@
 <script>
 /**
  * Event List for Data Point
- * 
+ *
  * Display events that are related to specific data point.
  * Allow user to acknowlede them and to browse the historical events.
- * 
- * @param {number} datapointId - Point Detail Id 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * @param {number} datapointId - Point Detail Id
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {

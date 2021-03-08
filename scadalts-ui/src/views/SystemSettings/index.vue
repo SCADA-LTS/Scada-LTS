@@ -396,7 +396,7 @@ export default {
 			this.response = {
 				status: true,
 				message: content,
-				color: type
+				color: type,
 			};
 			// this.$notify({
 			// 	placement: 'bottom-right',

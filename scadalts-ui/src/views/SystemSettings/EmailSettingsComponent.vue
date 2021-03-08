@@ -151,16 +151,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.email'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 
@@ -234,17 +234,19 @@ export default {
 					if (resp) {
 						this.response = {
 							status: true,
-							message: `${this.$t('systemsettings.notification.send.email')} ${resp.recipient}`,
-							color: 'success'
-						}
+							message: `${this.$t('systemsettings.notification.send.email')} ${
+								resp.recipient
+							}`,
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 	},
