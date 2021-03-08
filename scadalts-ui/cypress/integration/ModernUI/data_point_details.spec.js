@@ -186,8 +186,6 @@ context("Scenario - Data Point Details validation", () => {
             openPointPropertiesDialog();
             cy.get('h3').contains(' Point properties ')
         })
-
-
     })
 })
 
@@ -278,20 +276,85 @@ context('Scenario - Data Point Properties validation', () => {
         });        
     });
 
+    describe('Test - Validate Event Detectors', () => {
+
+        it('Is Event Detectors Select rendered properly', () => {
+            cy.get('#point-prop-event-detecotrs  button').trigger('click');
+            cy.get('#dialog-create-event-detector .v-card__title').contains('Create Event Detector');
+            cy.get('#dialog-create-event-detector .v-card__text .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div').should('have.length', 5);
+        })
+
+        it('Is Binary Event Detector rendered properly', () => {
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(1)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) .v-select').should('exist');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) .v-select').should('exist');
+        })
+
+        it('Is Point Change Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row').should('not.exist');
+        })
+
+        it('Is State Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(3)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('State change count');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) .v-select').should('exist');
+        })
+
+        it('Is No Change Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(4)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) .v-select').should('exist');
+        })
+
+        it('Is No Update Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(5)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) .v-select').should('exist');
+        })
+
+        after(() => {
+            cy.get('#dialog-create-event-detector .v-card__actions > button:first-of-type').trigger('click');
+        })  
+
+    })
+
     describe('Test - Check the Behaviour of Point Properties elements', () => {
 
         it('Is Data Point name changing', () => {
 
             cy.restLogin()
             cy.get('.point-properties-box .col-6:nth-of-type(1) > .row:nth-of-type(1) .col-12:nth-of-type(2) input').clear().type('Cypress Datapoint');
-            cy.get('.v-card__actions > .primary--text > .v-btn__content').click();
+            cy.get('#dialog-point-properties > .v-card__actions > .primary--text > .v-btn__content').click();
             cy.get('.v-snack__wrapper .v-snack__content').contains(' Updated successful! ');
             cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
             cy.get('h1').should('contain', 'Cypress Datapoint');
             openPointPropertiesDialog();
 
             cy.get('.point-properties-box .col-6:nth-of-type(1) > .row:nth-of-type(1) .col-12:nth-of-type(2) input').clear().type('Test Binary DP 01');
-            cy.get('.v-card__actions > .primary--text > .v-btn__content').click();
+            cy.get('#dialog-point-properties > .v-card__actions > .primary--text > .v-btn__content').click();
             cy.get('.v-snack__wrapper .v-snack__content').contains(' Updated successful! ');
             cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
             cy.get('h1').should('contain', 'Test Binary DP 01');
@@ -302,7 +365,7 @@ context('Scenario - Data Point Properties validation', () => {
             
             const DESCRIPTION_TEXT = 'Example datapoint long description';
             cy.get('.point-properties-box .col-6:nth-of-type(1) > .row:nth-of-type(1) .col-12:nth-of-type(4) input').clear().type(DESCRIPTION_TEXT);
-            cy.get('.v-card__actions > .primary--text > .v-btn__content').click();
+            cy.get('#dialog-point-properties > .v-card__actions > .primary--text > .v-btn__content').click();
             cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
             cy.get('.small-description').should('contain', DESCRIPTION_TEXT);
             openPointPropertiesDialog();
@@ -330,6 +393,125 @@ context('Scenario - Data Point Properties validation', () => {
     })
 
 })
+
+context('Scenario - Numeric Data Point Properties validation', () => {
+
+    before(() => {
+        cy.restLogin();
+        cy.visit('/app.shtm#/datapoint-list');
+        cy.get('tbody > tr:nth-of-type(3) > td:nth-of-type(1)').click()
+        openPointPropertiesDialog();
+    });
+
+    describe('Test - Validate Point Properties components', () => {
+
+        it('Is Numeric Logging Properties rendered properly', () => {
+            cy.get('#point-prop-logging h3').contains('Logging properties');
+            cy.get('#point-prop-logging > .col:nth-of-type(2) > .v-select').should('be.visible');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(1) .v-select').should('not.be.visible')
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(2) .col:nth-of-type(1)').contains('Tolerance');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(2) .col:nth-of-type(3) .v-input--switch label').contains('Discard extreme values');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(2) .col:nth-of-type(4) .v-input label').contains('Discard low limit');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(2) .col:nth-of-type(5) .v-input label').contains('Discard high limit');
+
+            cy.get('#point-prop-logging > .col:nth-of-type(4)').contains('Purge after');
+            cy.get('#point-prop-logging > .col:nth-of-type(5) .v-input').should('exist');
+            cy.get('#point-prop-logging > .col:nth-of-type(7)').contains('Default cache size');
+            cy.get('#point-prop-logging > .col:nth-of-type(8) .v-input').should('exist');
+
+            cy.get('#point-prop-logging > .col:nth-of-type(2) > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content > div[role="listbox"] > div:nth-of-type(4)').trigger('click');
+
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(1) .col:nth-of-type(1)').contains('Interval logging period every');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(1) .col:nth-of-type(3) .v-select').should('be.visible')
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(1) .col:nth-of-type(4) .v-select').should('be.visible')
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(1) .col:nth-of-type(4) .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div').should('have.length', 4);
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(3)').trigger('click');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) .row:nth-of-type(1) .col:nth-of-type(4) .v-select .v-select__selection').contains('Minimum');
+
+        });
+
+        it('Is Text Renderer rendered properly', () => {
+            cy.get('#point-prop-text-renderer h3').contains('Text renderer properties');
+
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div').should('have.length', 4);
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(1)').trigger('click');
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select .v-select__selection').contains('Analog');
+            cy.get('#point-prop-text-renderer #renderer-analog .col:nth-of-type(1) .v-input').should('be.visible');
+            cy.get('#point-prop-text-renderer #renderer-analog .col:nth-of-type(1) .v-input label').contains('Format');
+            cy.get('#point-prop-text-renderer #renderer-analog .col:nth-of-type(2) .v-input').should('be.visible');
+            cy.get('#point-prop-text-renderer #renderer-analog .col:nth-of-type(2) .v-input label').contains('Suffix');
+
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select .v-select__selection').contains('Plain');
+            cy.get('#point-prop-text-renderer #renderer-plain .col:nth-of-type(1) .v-input label').contains('Suffix');
+
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(3)').trigger('click');
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select .v-select__selection').contains('Range');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(1) button').should('have.css', 'background-color', 'rgb(69, 142, 35)');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(2) .v-input label').contains('From');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(3) .v-input label').contains('To');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(4) .v-input label').contains('Text');
+
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(4)').trigger('click');
+            cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select .v-select__selection').contains('Time');
+            cy.get('#point-prop-text-renderer #renderer-time .col:nth-of-type(1) .v-input label').contains('Format');
+            cy.get('#point-prop-text-renderer #renderer-time .col:nth-of-type(2) .v-input label').contains('Conversion exponent');
+
+        });
+
+        it('Is Event Renderer rendered properly', () => {
+            cy.get('#point-prop-event-renderer h3').contains('Event renderer properties');
+            cy.get('#point-prop-event-renderer  > .col:nth-of-type(2) > .v-select').should('be.visible');
+            cy.get('#point-prop-event-renderer  > .col:nth-of-type(2) > .v-select .v-select__selection').contains('None');
+
+            cy.get('#point-prop-event-renderer  > .col:nth-of-type(2) > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div').should('have.length', 2);
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+            cy.get('#point-prop-event-renderer  > .col:nth-of-type(2) > .v-select .v-select__selection').contains('Range');
+        });
+
+    })
+
+    describe('Test - Validate Numeric Event Detectors', () => {
+
+        it('Is Event Detectors Select rendered properly', () => {
+            cy.get('#point-prop-event-detecotrs  button').trigger('click');
+            cy.get('#dialog-create-event-detector .v-card__title').contains('Create Event Detector');
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div').should('have.length', 7);
+        })
+
+        it('Is High Limit Event Detector rendered properly', () => {
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(1)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('High limit');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) .v-select').should('exist');
+        })
+
+        it('Is Low Limit Event Detector rendered properly', () => {
+            cy.get('#dialog-create-event-detector .v-card__text > .row:first-of-type .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(2)').trigger('click');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(1) label').contains('Export ID');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(3) label').contains('Alarm Level');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(4) label').contains('Alias');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(2) label').contains('Low limit');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(3) label').contains('Duration');
+            cy.get('#dialog-create-event-detector  .v-card__text .row:nth-of-type(2) .col:nth-of-type(5) .row .col:nth-of-type(4) .v-select').should('exist');
+        })
+
+    })
+
+});
+
 
 function openPointPropertiesDialog() {
     cy.get('.row > .v-btn i.mdi-pencil').click();

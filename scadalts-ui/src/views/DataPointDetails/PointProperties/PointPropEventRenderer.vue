@@ -213,6 +213,9 @@ export default {
 	mounted() {
 		if (!!this.data.eventTextRenderer) {
 			switch (this.data.eventTextRenderer.def.exportName) {
+				case 'EVENT_NONE':
+					this.selected = -1;
+					break;
 				case 'EVENT_BINARY':
 					this.selected = 1;
 					break;

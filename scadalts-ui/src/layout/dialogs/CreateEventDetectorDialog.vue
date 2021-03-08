@@ -6,7 +6,7 @@
 			</v-btn>
 		</template>
 
-		<v-card>
+		<v-card id="dialog-create-event-detector">
 			<v-card-title> {{ $t('eventDetector.dialog.create.title') }} </v-card-title>
 			<v-card-text>
 				<v-row>

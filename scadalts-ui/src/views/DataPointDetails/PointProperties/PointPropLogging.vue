@@ -29,9 +29,8 @@
 						dense
 					></v-select>
 				</v-col>
-				<v-row v-if="data.pointLocator.dataTypeId === 3" dense>
-					<v-col cols="12">
-						<v-select 
+				<v-col cols="12" v-if="data.pointLocator.dataTypeId === 3" dense>
+					<v-select 
 						v-model="data.intervalLoggingType"
 						:items="valueTypeList"
 						item-value="id"
@@ -39,8 +38,7 @@
 						:label="$t('datapointDetails.pointProperties.logging.valueType')"
 						dense
 					></v-select>
-					</v-col>
-				</v-row>
+				</v-col>
 			</v-row>
 
 			<v-row v-if="data.pointLocator.dataTypeId === 3" dense>

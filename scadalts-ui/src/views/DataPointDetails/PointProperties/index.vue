@@ -13,7 +13,7 @@
 			</v-btn>
 		</template>
 
-		<v-card>
+		<v-card id="dialog-point-properties">
 			<v-card-title></v-card-title>
 			<v-card-text class="point-properties-box">
 				<v-row>
