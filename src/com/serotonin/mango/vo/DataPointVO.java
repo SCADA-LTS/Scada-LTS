@@ -1016,4 +1016,32 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         }
     }
+
+    public static boolean validLoggingType(int loggingType) {
+        return LOGGING_TYPE_CODES.isValidId(loggingType);
+    }
+
+    public static boolean validPurgeType(int purgeType) {
+        switch (purgeType) {
+            case PurgeTypes.DAYS:
+            case PurgeTypes.WEEKS:
+            case PurgeTypes.MONTHS:
+            case PurgeTypes.YEARS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean validIntervalLoggingType(int intervalLoggingType) {
+        return INTERVAL_LOGGING_TYPE_CODES.isValidId(intervalLoggingType);
+    }
+
+    public static boolean validEngineeringUnit(int engineeringUnit) {
+        return ENGINEERING_UNITS_CODES.isValidId(engineeringUnit);
+    }
+
+    public static boolean validIntervalLoggingPeriodType(int intervalLoggingPeriodType) {
+        return Common.TIME_PERIOD_CODES.isValidId(intervalLoggingPeriodType);
+    }
 }
