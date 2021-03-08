@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.scada_lts.utils.EventDetectorApiUtils.*;
+
+
 /**
  * Controller for EventDetector
  *
@@ -67,12 +70,12 @@ public class EventDetectorAPI {
     }
 
     @PostMapping(value = "/set/{datapointId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<JsonPointEventDetector> createEventDetector(@PathVariable int datapointId, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
+    public ResponseEntity<JsonPointEventDetector> createEventDetector(@PathVariable Integer datapointId, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
         return createEventDetectorType(datapointId, body, request);
     }
 
     @PutMapping(value = "/update/{datapointId}/{id}", consumes = "application/json")
-    public ResponseEntity<String> updateEventDetector(@PathVariable int datapointId, @PathVariable int id, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
+    public ResponseEntity<String> updateEventDetector(@PathVariable Integer datapointId, @PathVariable Integer id, HttpServletRequest request, @RequestBody EventDetectorDTO body) {
         return updateEventDetectorType(datapointId, id, body, request);
     }
 
@@ -108,7 +111,7 @@ public class EventDetectorAPI {
         }
     }
 
-    private ResponseEntity<JsonPointEventDetector> createEventDetectorType(int datapointId, EventDetectorDTO body, HttpServletRequest request){
+    private ResponseEntity<JsonPointEventDetector> createEventDetectorType(Integer datapointId, EventDetectorDTO body, HttpServletRequest request){
         LOG.info("/api/eventDetector/set/.../" + datapointId);
         try {
             User user = Common.getUser(request);
@@ -148,22 +151,24 @@ public class EventDetectorAPI {
     }
 
 
-    private ResponseEntity<String> updateEventDetectorType(int datapointId, int id, EventDetectorDTO body, HttpServletRequest request) {
+    private ResponseEntity<String> updateEventDetectorType(Integer datapointId, Integer id, EventDetectorDTO body, HttpServletRequest request) {
         LOG.info("/api/eventDetector/update/.../" + datapointId + "/" + id);
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
-                pointEventDetectorVO.setId(id);
-                List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
-                if (!peds.isEmpty())  {
-                    peds.removeIf(ped -> ped.getId() == id);
+                String error = validEventDetector(datapointId, id, body);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body("{\"errors\": \"" + error + "\"}");
                 }
-                dataPointVO.getEventDetectors().add(pointEventDetectorVO);
-                dataPointService.saveEventDetectors(dataPointVO);
-                Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
-                return new ResponseEntity<>(HttpStatus.OK);
+                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
+                PointEventDetectorVO toUpdate = getEventDetector(dataPointVO, id);
+                if (toUpdate != null) {
+                    updateValueEventDetector(toUpdate, body);
+                    dataPointService.saveEventDetectors(dataPointVO);
+                    Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

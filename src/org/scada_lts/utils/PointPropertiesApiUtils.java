@@ -88,7 +88,7 @@ public class PointPropertiesApiUtils {
         return "";
     }
 
-    private static <T> String msgIfValueNotNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
+    public static <T> String msgIfValueNotNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
         if(value == null)
             return "";
         if(invalidIf.test(value)) {
