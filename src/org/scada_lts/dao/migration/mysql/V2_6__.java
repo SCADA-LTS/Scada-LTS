@@ -1,5 +1,6 @@
 package org.scada_lts.dao.migration.mysql;
 
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,6 +59,10 @@ public class V2_6__ extends BaseJavaMigration {
                      ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                     DataPointVO dataPointVO = (DataPointVO) objectInputStream.readObject();
                     dataPointVO.setId(resultSet.getInt("id"));
+                    if (dataPointVO.getEventTextRenderer() == null)
+                        dataPointVO.setEventTextRenderer(new NoneEventRenderer());
+                    if (dataPointVO.getDescription() == null)
+                        dataPointVO.setDescription("");
                     return dataPointVO;
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();

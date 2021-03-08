@@ -53,6 +53,7 @@ public class AlphanumericStateDetectorRT extends StateDetectorRT {
     protected LocalizableMessage getShortMessage() {
         if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
                 !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getAlphanumericState()) != null &&
                 (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getAlphanumericState()).equals(""))) {
             String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getAlphanumericState());
             return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),

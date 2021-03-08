@@ -50,6 +50,7 @@ public class BinaryStateDetectorRT extends StateDetectorRT {
     protected LocalizableMessage getShortMessage() {
         if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
                 !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState()) != null &&
                 (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState()).equals(""))) {
             String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState());
             return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
