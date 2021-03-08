@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static org.scada_lts.utils.EventDetectorApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+import static org.scada_lts.utils.ValidationUtils.validXid;
 
 
 /**
@@ -161,11 +162,12 @@ public class EventDetectorAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                return getDataPointById(dataPointId, dataPointService)
-                        .map(datapoint -> getEventDetector(datapoint, id)
-                                        .map(toUpdate -> updateEventDetector(body, datapoint, toUpdate))
-                                        .orElse(new ResponseEntity<>(formatErrorsJson("eventDetector not found"), HttpStatus.NOT_FOUND)))
-                        .orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
+                return getDataPointById(dataPointId, dataPointService).map(datapoint -> {
+                    String err = validXid(datapoint.getXid(), body.getXid());
+                    if(!err.isEmpty())
+                        return ResponseEntity.badRequest().body(formatErrorsJson(err));
+                    return findAndUpdateEventDetector(id, body, datapoint);
+                }).orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -174,6 +176,12 @@ public class EventDetectorAPI {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private ResponseEntity<String> findAndUpdateEventDetector(Integer id, EventDetectorDTO body, DataPointVO datapoint) {
+        return getEventDetector(datapoint, id)
+                .map(toUpdate -> updateEventDetector(body, datapoint, toUpdate))
+                .orElse(new ResponseEntity<>(formatErrorsJson("eventDetector not found"), HttpStatus.NOT_FOUND));
     }
 
     private ResponseEntity<String> updateEventDetector(EventDetectorDTO body, DataPointVO datapoint, PointEventDetectorVO toUpdate) {

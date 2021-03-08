@@ -1,5 +1,4 @@
 package org.scada_lts.utils;
-
 import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.text.MessageFormat;
@@ -11,14 +10,18 @@ public final class ValidationUtils {
     private ValidationUtils() {}
 
     public static String validId(Integer id) {
-        return msgIfNull(id, "Correct id;");
+        return msgIfNull("Correct id;", id);
+    }
+
+    public static String validXid(String xidExpected, String xid) {
+        return msgIfNonNullAndInvalid("Correct xid", xid, a -> !StringUtils.isEmpty(a) && !a.equals(xidExpected));
     }
 
     public static String validId(Integer id, String xid) {
         return msgIfNullAndInvalid("Correct id or xid;", id, a -> StringUtils.isEmpty(xid));
     }
 
-    static <T> String msgIfNull(T value, String msg) {
+    static <T> String msgIfNull(String msg, T value) {
         return msgIfNullOrInvalid(msg, value, a -> false);
     }
 

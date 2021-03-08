@@ -13,9 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
-import static org.scada_lts.utils.ValidationUtils.msgIfNonNullAndInvalid;
-import static org.scada_lts.utils.ValidationUtils.validId;
-import static org.scada_lts.utils.ValidationUtils.msgIfNull;
+import static org.scada_lts.utils.ValidationUtils.*;
 
 public final class EventDetectorApiUtils {
 
@@ -54,10 +52,9 @@ public final class EventDetectorApiUtils {
                                             EventDetectorDTO body) {
 
         StringBuilder msg = new StringBuilder();
-
         msg.append(validId(eventDetectorId));
 
-        msg.append(msgIfNull(dataPointId, "Correct dataPointId"));
+        msg.append(msgIfNull( "Correct dataPointId", dataPointId));
         msg.append(msgIfNonNullAndInvalid("AlarmLevel does no exist for value {0}", body.getAlarmLevel(),
                 a -> !PointEventDetectorVO.validAlarmLevel(a)));
         msg.append(msgIfNonNullAndInvalid("DetectorType does no exist for value {0}", body.getDetectorType(),
