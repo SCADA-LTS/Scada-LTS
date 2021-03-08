@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.scada_lts.utils.EventDetectorApiUtils.*;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 
 
 /**
@@ -151,24 +152,21 @@ public class EventDetectorAPI {
     }
 
 
-    private ResponseEntity<String> updateEventDetectorType(Integer datapointId, Integer id, EventDetectorDTO body, HttpServletRequest request) {
-        LOG.info("/api/eventDetector/update/.../" + datapointId + "/" + id);
+    private ResponseEntity<String> updateEventDetectorType(Integer dataPointId, Integer id, EventDetectorDTO body, HttpServletRequest request) {
+        LOG.info("/api/eventDetector/update/.../" + dataPointId + "/" + id);
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                String error = validEventDetector(datapointId, id, body);
+                String error = validEventDetector(dataPointId, id, body);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body("{\"errors\": \"" + error + "\"}");
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                PointEventDetectorVO toUpdate = getEventDetector(dataPointVO, id);
-                if (toUpdate != null) {
-                    updateValueEventDetector(toUpdate, body);
-                    dataPointService.saveEventDetectors(dataPointVO);
-                    Common.ctx.getRuntimeManager().saveDataPoint(dataPointVO);
-                    return new ResponseEntity<>(HttpStatus.OK);
-                } else
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return getDataPointById(dataPointId, dataPointService)
+                        .map(datapoint -> getEventDetector(datapoint, id)
+                                        .map(toUpdate -> updateEventDetector(body, datapoint, toUpdate))
+                                        .orElse(new ResponseEntity<>(formatErrorsJson("eventDetector not found"), HttpStatus.NOT_FOUND)))
+                        .orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
+
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -176,6 +174,13 @@ public class EventDetectorAPI {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private ResponseEntity<String> updateEventDetector(EventDetectorDTO body, DataPointVO datapoint, PointEventDetectorVO toUpdate) {
+        updateValueEventDetector(toUpdate, body);
+        dataPointService.saveEventDetectors(datapoint);
+        Common.ctx.getRuntimeManager().saveDataPoint(datapoint);
+        return new ResponseEntity<>("update", HttpStatus.OK);
     }
 
 }

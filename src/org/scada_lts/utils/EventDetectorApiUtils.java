@@ -1,29 +1,38 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.vo.DataPointVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.dto.EventDetectorDTO;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Optional;
 
-import static org.scada_lts.utils.PointPropertiesApiUtils.msgIfValueNotNullAndInvalid;
+import static org.scada_lts.utils.UpdateValueUtils.setIf;
+import static org.scada_lts.utils.ValidationUtils.msgIfNonNullAndInvalid;
+import static org.scada_lts.utils.ValidationUtils.validId;
+import static org.scada_lts.utils.ValidationUtils.msgIfNull;
 
-public class EventDetectorApiUtils {
+public final class EventDetectorApiUtils {
 
-    public static PointEventDetectorVO getEventDetector(DataPointVO dataPointVO, int pedId) {
+    private static final Log LOG = LogFactory.getLog(EventDetectorApiUtils.class);
+
+    private EventDetectorApiUtils() {}
+
+    public static Optional<PointEventDetectorVO> getEventDetector(DataPointVO dataPointVO, int eventDetectorId) {
         List<PointEventDetectorVO> peds = dataPointVO.getEventDetectors();
         if (!peds.isEmpty()) {
             for (PointEventDetectorVO ped : peds) {
-                if (ped.getId() == pedId) {
-                    return ped;
+                if (ped != null && ped.getId() == eventDetectorId) {
+                    return Optional.of(ped);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public static void updateValueEventDetector(PointEventDetectorVO toUpdate, EventDetectorDTO source) {
@@ -41,40 +50,32 @@ public class EventDetectorApiUtils {
         setIf(source.getWeight(), toUpdate::setWeight, Objects::nonNull);
     }
 
-    public static String validEventDetector(Integer datapointId, Integer id, EventDetectorDTO body) {
+    public static String validEventDetector(Integer dataPointId, Integer eventDetectorId,
+                                            EventDetectorDTO body) {
 
         StringBuilder msg = new StringBuilder();
 
-        msg.append(validDatapointId(datapointId));
-        msg.append(validId(id));
+        msg.append(validId(eventDetectorId));
 
-        msg.append(msgIfValueNotNullAndInvalid("AlarmLevel does no exist for value {0}", body.getAlarmLevel(),
+        msg.append(msgIfNull(dataPointId, "Correct dataPointId"));
+        msg.append(msgIfNonNullAndInvalid("AlarmLevel does no exist for value {0}", body.getAlarmLevel(),
                 a -> !PointEventDetectorVO.validAlarmLevel(a)));
-        msg.append(msgIfValueNotNullAndInvalid("DetectorType does no exist for value {0}", body.getDetectorType(),
+        msg.append(msgIfNonNullAndInvalid("DetectorType does no exist for value {0}", body.getDetectorType(),
                 a -> !PointEventDetectorVO.validDetectorType(a)));
-        msg.append(msgIfValueNotNullAndInvalid("DurationType does no exist for value {0}", body.getDurationType(),
+        msg.append(msgIfNonNullAndInvalid("DurationType does no exist for value {0}", body.getDurationType(),
                 a -> !PointEventDetectorVO.validDurationType(a)));
-        msg.append(msgIfValueNotNullAndInvalid("Correct duration, it must be >= 0, value {0}", body.getDuration(), a -> a < 0));
-        msg.append(msgIfValueNotNullAndInvalid("Correct changeCount, it must be >= 0, value {0}", body.getChangeCount(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct duration, it must be >= 0, value {0}", body.getDuration(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 0, value {0}", body.getChangeCount(), a -> a < 0));
         return msg.toString();
     }
 
-    public static String validId(Integer id) {
-        if (id == null) {
-            return "Correct id;";
+    public static Optional<DataPointVO> getDataPointById(int id, DataPointService dataPointService) {
+        try {
+            DataPointVO dataPointVO = dataPointService.getDataPoint(id);
+            return Optional.ofNullable(dataPointVO);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
         }
-        return "";
-    }
-
-    public static String validDatapointId(Integer datapointId) {
-        if (datapointId == null) {
-            return "Correct datapointId;";
-        }
-        return "";
-    }
-
-    private static <T> void setIf(T value, Consumer<T> setter, Predicate<T> setIf) {
-        if(setIf.test(value))
-            setter.accept(value);
     }
 }

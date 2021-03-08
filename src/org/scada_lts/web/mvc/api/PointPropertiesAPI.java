@@ -28,9 +28,10 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
 import static org.scada_lts.utils.PointPropertiesApiUtils.getDataPointByIdOrXid;
-import static org.scada_lts.utils.PointPropertiesApiUtils.validId;
 import static org.scada_lts.utils.PointPropertiesApiUtils.validPointProperties;
 import static org.scada_lts.utils.PointPropertiesApiUtils.updateValuePointProperties;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+import static org.scada_lts.utils.ValidationUtils.validId;
 
 /**
  * Helper class
@@ -626,7 +627,7 @@ public class PointPropertiesAPI {
             if (user != null) {
                 String error = validPointProperties(id, xid, body);
                 if (!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body("{\"errors\": \"" + error + "\"}");
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
 
                 return getDataPointByIdOrXid(id, xid, dataPointService).map(dataPoint -> {
@@ -634,7 +635,7 @@ public class PointPropertiesAPI {
                     dataPointService.updateDataPoint(dataPoint);
                     Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
                     return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
-                }).orElse(new ResponseEntity<>(ERRORS_DATA_POINT_NOT_FOUND, HttpStatus.NOT_FOUND));
+                }).orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -655,7 +656,7 @@ public class PointPropertiesAPI {
             if (user != null && user.isAdmin()) {
                 String error = validId(id, xid);
                 if(!error.isEmpty()) {
-                    return ResponseEntity.badRequest().body("{\"errors\": \"" + error + "\"}");
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
                 return getPointDescription(id, xid);
             } else {
@@ -775,7 +776,7 @@ public class PointPropertiesAPI {
         getDataPointByIdOrXid(id, xid, dataPointService)
                 .ifPresent(a -> response.put("description", a.getDescription()));
         if(response.isEmpty()) {
-            return new ResponseEntity<>(ERRORS_DATA_POINT_NOT_FOUND,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
