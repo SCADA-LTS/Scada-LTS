@@ -75,4 +75,8 @@ public final class EventDetectorApiUtils {
             return Optional.empty();
         }
     }
+
+    public static String validEventDetectorXid(PointEventDetectorVO eventDetector, EventDetectorDTO body) {
+        return validXid(eventDetector.getXid(), body.getXid());
+    }
 }

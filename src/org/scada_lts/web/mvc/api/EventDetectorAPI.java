@@ -24,7 +24,6 @@ import java.util.Map;
 
 import static org.scada_lts.utils.EventDetectorApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
-import static org.scada_lts.utils.ValidationUtils.validXid;
 
 
 /**
@@ -153,21 +152,18 @@ public class EventDetectorAPI {
     }
 
 
-    private ResponseEntity<String> updateEventDetectorType(Integer dataPointId, Integer id, EventDetectorDTO body, HttpServletRequest request) {
-        LOG.info("/api/eventDetector/update/.../" + dataPointId + "/" + id);
+    private ResponseEntity<String> updateEventDetectorType(Integer dataPointId, Integer eventDetectorId, EventDetectorDTO body, HttpServletRequest request) {
+        LOG.info("/api/eventDetector/update/.../" + dataPointId + "/" + eventDetectorId);
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                String error = validEventDetector(dataPointId, id, body);
+                String error = validEventDetector(dataPointId, eventDetectorId, body);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                return getDataPointById(dataPointId, dataPointService).map(datapoint -> {
-                    String err = validXid(datapoint.getXid(), body.getXid());
-                    if(!err.isEmpty())
-                        return ResponseEntity.badRequest().body(formatErrorsJson(err));
-                    return findAndUpdateEventDetector(id, body, datapoint);
-                }).orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
+                return getDataPointById(dataPointId, dataPointService)
+                        .map(datapoint -> findAndUpdateEventDetector(eventDetectorId, body, datapoint))
+                        .orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -178,10 +174,14 @@ public class EventDetectorAPI {
         }
     }
 
-    private ResponseEntity<String> findAndUpdateEventDetector(Integer id, EventDetectorDTO body, DataPointVO datapoint) {
-        return getEventDetector(datapoint, id)
-                .map(toUpdate -> updateEventDetector(body, datapoint, toUpdate))
-                .orElse(new ResponseEntity<>(formatErrorsJson("eventDetector not found"), HttpStatus.NOT_FOUND));
+    private ResponseEntity<String> findAndUpdateEventDetector(int eventDetectorId, EventDetectorDTO eventDetectorBody, DataPointVO datapoint) {
+        return getEventDetector(datapoint, eventDetectorId)
+                .map(toUpdate -> {
+                    String error = validEventDetectorXid(toUpdate, eventDetectorBody);
+                    if(!error.isEmpty())
+                        return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    return updateEventDetector(eventDetectorBody, datapoint, toUpdate);
+                }).orElse(new ResponseEntity<>(formatErrorsJson("eventDetector not found"), HttpStatus.NOT_FOUND));
     }
 
     private ResponseEntity<String> updateEventDetector(EventDetectorDTO body, DataPointVO datapoint, PointEventDetectorVO toUpdate) {
