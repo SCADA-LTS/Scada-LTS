@@ -507,10 +507,11 @@ context('Scenario - Numeric Data Point Properties validation', () => {
             cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select').trigger('click');
             cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(3)').trigger('click');
             cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select .v-select__selection').contains('Range');
-            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(1) button').should('have.css', 'background-color', 'rgb(69, 142, 35)');
-            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(2) .v-input label').contains('From');
-            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(3) .v-input label').contains('To');
-            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(4) .v-input label').contains('Text');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(1) .v-input label').contains('Format');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(2) button').should('have.css', 'background-color', 'rgb(69, 142, 35)');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(3) .v-input label').contains('From');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(4) .v-input label').contains('To');
+            cy.get('#point-prop-text-renderer #renderer-range .col:nth-of-type(5) .v-input label').contains('Text');
 
             cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select').trigger('click');
             cy.get('.v-application > .v-menu__content.v-menu__content--fixed.menuable__content__active > div[role="listbox"] > div:nth-of-type(4)').trigger('click');
