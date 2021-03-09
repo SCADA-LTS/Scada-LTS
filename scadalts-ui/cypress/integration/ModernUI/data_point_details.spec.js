@@ -182,6 +182,31 @@ context("Scenario - Data Point Details validation", () => {
             cy.get('.v-menu__content .v-list-item__icon > i').should('not.be.visible');
         });
 
+        it('Is Data Point User Comments adding correctly', () => {
+            cy.restLogin();
+            cy.get('.v-badge > .v-btn').click();
+            cy.get('#menu-data-point-comment .v-list-item__content input').clear().type("Example Comment");
+            cy.get('#menu-data-point-comment .v-list-item__content button').trigger("click");
+
+            cy.get('#menu-data-point-comment > .v-list > .v-list-item > .v-list-item__content > .v-list-item__title').contains('Example Comment');
+            cy.get('#menu-data-point-comment > .v-list > .v-list-item > .v-list-item__content > .v-list-item__subtitle').contains('admin,');
+
+            cy.get('.v-main__wrap > :nth-child(1)').click();
+            cy.get('.v-menu__content .v-list-item__icon > i').should('not.be.visible');
+            cy.get('.v-badge__wrapper > span[aria-label="Badge"]').contains('1');
+        });
+
+        it('Is Data Point User Comments deleting correctly', () => {
+            cy.restLogin();
+            cy.get('.v-badge > .v-btn').click();
+
+            cy.get('#menu-data-point-comment  .mdi-minus-circle').trigger('click');
+
+            cy.get('.v-main__wrap > :nth-child(1)').click();
+            cy.get('.v-menu__content .v-list-item__icon > i').should('not.be.visible');
+            cy.get('.v-badge__wrapper > span[aria-label="Badge"]').should('not.be.visible');
+        });
+
         it('Is Point Properties dialog opening correctly', () => {
             openPointPropertiesDialog();
             cy.get('h3').contains(' Point properties ')
