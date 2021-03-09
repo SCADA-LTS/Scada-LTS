@@ -74,24 +74,6 @@ export default {
 	data() {
 		return {
 			selected: undefined,
-			chartRenderersList: [
-				{
-					id: -1,
-					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.none'),
-				},
-				{
-					id: 0,
-					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.table'),
-				},
-				{
-					id: 1,
-					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.image'),
-				},
-				{
-					id: 2,
-					label: this.$t('datapointDetails.pointProperties.chartRenderer.type.stats'),
-				},
-			],
 		};
 	},
 
@@ -101,6 +83,20 @@ export default {
 				return !(e.id === 0 || e.id === 8 || e.id === 7);
 			});
 		},
+
+		chartRenderersList() {
+			if(!!this.data) {
+				if(this.data.pointLocator.dataTypeId === 4) {
+					return this.$store.state.dataPoint.chartRenderersList.filter((e) => {
+						return e.id !== 1;
+					});
+				} else {
+					return this.$store.state.dataPoint.chartRenderersList;
+				}
+			}
+			return null;
+		}
+
 	},
 
 	mounted() {

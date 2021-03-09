@@ -137,6 +137,14 @@
 			</v-row>
 
 			<v-row v-if="selected === 4" dense id="renderer-range">
+				<v-col cols="12">
+					<v-text-field
+						v-model="data.textRenderer.format"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.format')"
+						dense
+					>
+					</v-text-field>
+				</v-col>
 				<v-col cols="1">
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
