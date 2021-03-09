@@ -91,7 +91,7 @@
 		<v-col cols="6">
 			<v-text-field v-model="data.defaultCacheSize" dense>
 				<template v-slot:append-outer>
-					<v-btn text block @click="clearCache">
+					<v-btn text block @click="clearCache" disabled>
 						<v-icon>mdi-delete-sweep</v-icon>
 						<span> {{ $t('datapointDetails.pointProperties.logging.cache.clear') }}</span>
 					</v-btn>
