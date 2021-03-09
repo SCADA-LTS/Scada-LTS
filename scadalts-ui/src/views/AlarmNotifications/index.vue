@@ -159,7 +159,7 @@ export default {
 					dp[i].id,
 				);
 				let itemName = dp[i].name;
-				if(!!dp[i].description) {
+				if (!!dp[i].description) {
 					itemName = itemName + ` - ${dp[i].description}`;
 				}
 				let datapoint = this.prepareDataPoint(dp[i].id, itemName, configuration);

@@ -16,6 +16,7 @@ User Interface subproject to display ScadaLTS content.
   _This code runs prettier and then builds the application to dist directory_
 
 ## Cypress Testing
+
 Before starting the Cypress Tests make sure that you are using blank Database to ensure the TestingSuite the clear Scada-LTS application otherwise more tests may fail
 
 ## Creators

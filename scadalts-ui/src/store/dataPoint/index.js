@@ -44,6 +44,25 @@ const storeDataPoint = {
 			{ id: 5, label: i18n.t('textRenderer.time') },
 		],
 
+		chartRenderersList: [
+			{
+				id: -1,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.none'),
+			},
+			{
+				id: 0,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.table'),
+			},
+			{
+				id: 1,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.image'),
+			},
+			{
+				id: 2,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.stats'),
+			},
+		],
+
 		textRenderesTemplates: textRenderesTemplates,
 
 		chartRenderersTemplates: chartRenderersTemplates,
@@ -53,10 +72,10 @@ const storeDataPoint = {
 		datapointSimpleList: undefined,
 
 		valueTypeList: [
-			{ id: 1, label: i18n.t('pointEdit.logging.value.instant')},
-			{ id: 2, label: i18n.t('pointEdit.logging.value.maximum')},
-			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum')},
-			{ id: 4, label: i18n.t('pointEdit.logging.value.average')},
+			{ id: 1, label: i18n.t('pointEdit.logging.value.instant') },
+			{ id: 2, label: i18n.t('pointEdit.logging.value.maximum') },
+			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum') },
+			{ id: 4, label: i18n.t('pointEdit.logging.value.average') },
 		],
 	},
 
@@ -101,7 +120,7 @@ const storeDataPoint = {
 		getDataPointValueFromTimeperiod({ dispatch }, payload) {
 			return dispatch(
 				'requestGet',
-				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`,
+				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`
 			);
 		},
 
@@ -154,7 +173,7 @@ const storeDataPoint = {
 		delUserComment({ dispatch }, payload) {
 			return dispatch(
 				'requestDelete',
-				`/utils/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
+				`/utils/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`
 			);
 		},
 	},

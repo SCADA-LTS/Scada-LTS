@@ -258,8 +258,10 @@
 							<v-col cols="1"></v-col>
 							<v-col cols="3">
 								<v-text-field
-									:label="$t('datapointDetails.pointProperties.eventDetectors.positiveLimit')"
-									v-model="eventDetector.positiveLimit"
+									:label="
+										$t('datapointDetails.pointProperties.eventDetectors.positiveLimit')
+									"
+									v-model="eventDetector.limit"
 									dense
 								></v-text-field>
 							</v-col>
@@ -293,8 +295,10 @@
 							<v-col cols="1"></v-col>
 							<v-col cols="3">
 								<v-text-field
-									:label="$t('datapointDetails.pointProperties.eventDetectors.negativeLimit')"
-									v-model="eventDetector.negativeLimit"
+									:label="
+										$t('datapointDetails.pointProperties.eventDetectors.negativeLimit')
+									"
+									v-model="eventDetector.limit"
 									dense
 								></v-text-field>
 							</v-col>
@@ -323,7 +327,6 @@
 								</v-select>
 							</v-col>
 						</v-row>
-						
 					</v-col>
 				</v-row>
 			</v-card-text>

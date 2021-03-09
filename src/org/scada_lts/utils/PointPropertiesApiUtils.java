@@ -7,15 +7,18 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 
-import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public class PointPropertiesApiUtils {
+import static org.scada_lts.utils.UpdateValueUtils.setIf;
+import static org.scada_lts.utils.ValidationUtils.msgIfNonNullAndInvalid;
+import static org.scada_lts.utils.ValidationUtils.validId;
+
+public final class PointPropertiesApiUtils {
 
     private static final Log LOG = LogFactory.getLog(PointPropertiesApiUtils.class);
+
+    private PointPropertiesApiUtils() {}
 
     public static void updateValuePointProperties(DataPointVO toUpdate, JsonPointProperties source) {
         setIf(source.getName(), toUpdate::setName, a -> !StringUtils.isEmpty(a));
@@ -39,11 +42,6 @@ public class PointPropertiesApiUtils {
         setIf(source.getChartColour(), toUpdate::setChartColour, Objects::nonNull);
     }
 
-    private static <T> void setIf(T value, Consumer<T> setter, Predicate<T> setIf) {
-        if(setIf.test(value))
-            setter.accept(value);
-    }
-
     public static Optional<DataPointVO> getDataPointByIdOrXid(Integer id, String xid, DataPointService dataPointService) {
         try {
             DataPointVO dataPointVO = null;
@@ -65,35 +63,19 @@ public class PointPropertiesApiUtils {
 
         msg.append(validId(id, xid));
 
-        msg.append(msgIfValueNotNullAndInvalid("Correct intervalLoggingPeriod, it must be >= 0, value {0}", body.getIntervalLoggingPeriod(), a -> a < 0));
-        msg.append(msgIfValueNotNullAndInvalid("Correct defaultCacheSize, it must be >= 0, value {0}", body.getDefaultCacheSize(), a -> a < 0));
-        msg.append(msgIfValueNotNullAndInvalid("Correct purgePeriod, it must be >= 0, value {0}", body.getPurgePeriod(), a -> a < 0));
-        msg.append(msgIfValueNotNullAndInvalid("EngineeringUnit does no exist for value {0}", body.getEngineeringUnits(),
+        msg.append(msgIfNonNullAndInvalid("Correct intervalLoggingPeriod, it must be >= 0, value {0}", body.getIntervalLoggingPeriod(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct defaultCacheSize, it must be >= 0, value {0}", body.getDefaultCacheSize(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct purgePeriod, it must be >= 0, value {0}", body.getPurgePeriod(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("EngineeringUnit does no exist for value {0}", body.getEngineeringUnits(),
                 a -> !DataPointVO.validEngineeringUnit(a)));
-        msg.append(msgIfValueNotNullAndInvalid("IntervalLoggingType does no exist for value {0}", body.getIntervalLoggingType(),
+        msg.append(msgIfNonNullAndInvalid("IntervalLoggingType does no exist for value {0}", body.getIntervalLoggingType(),
                 a -> !DataPointVO.validIntervalLoggingType(a)));
-        msg.append(msgIfValueNotNullAndInvalid("IntervalLoggingPeriodType does no exist for value {0}", body.getIntervalLoggingPeriodType(),
+        msg.append(msgIfNonNullAndInvalid("IntervalLoggingPeriodType does no exist for value {0}", body.getIntervalLoggingPeriodType(),
                 a -> !DataPointVO.validIntervalLoggingPeriodType(a)));
-        msg.append(msgIfValueNotNullAndInvalid("LoggingType does no exist for value {0}", body.getLoggingType(),
+        msg.append(msgIfNonNullAndInvalid("LoggingType does no exist for value {0}", body.getLoggingType(),
                 a -> !DataPointVO.validLoggingType(a)));
-        msg.append(msgIfValueNotNullAndInvalid("PurgeType does no exist for value {0}", body.getPurgeType(),
+        msg.append(msgIfNonNullAndInvalid("PurgeType does no exist for value {0}", body.getPurgeType(),
                 a -> !DataPointVO.validPurgeType(a)));
         return msg.toString();
-    }
-
-    public static String validId(Integer id, String xid) {
-        if (id == null && StringUtils.isEmpty(xid)) {
-            return "Correct id and xid;";
-        }
-        return "";
-    }
-
-    private static <T> String msgIfValueNotNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
-        if(value == null)
-            return "";
-        if(invalidIf.test(value)) {
-            return MessageFormat.format(msg, String.valueOf(value));
-        }
-        return "";
     }
 }

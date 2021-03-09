@@ -124,15 +124,15 @@ import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
 /**
  * Point Properties
- * 
+ *
  * Point properties it is a dialog that provide editable settings
  * of specific data point. User can change the name, and oter sub-settings.
- * Main configuration is provided by this component but it also can be 
- * extended using additional PointProp componentes. 
- * 
- * @param {Object} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ * Main configuration is provided by this component but it also can be
+ * extended using additional PointProp componentes.
+ *
+ * @param {Object} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {
