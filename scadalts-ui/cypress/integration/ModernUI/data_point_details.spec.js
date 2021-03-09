@@ -373,7 +373,24 @@ context('Scenario - Data Point Properties validation', () => {
 
         })
 
-        it('Is Text Renderer color-picker working', () => {
+        it('Is Logging Properties changing', () => {
+            
+            cy.get('#point-prop-logging > .col:nth-of-type(2) > .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content > div[role="listbox"] > div:nth-of-type(4)').last().trigger('click', {force: true});
+
+            cy.get('#point-prop-logging > .col:nth-of-type(3) > .row > .col:nth-of-type(2) input').clear().type('5');
+            cy.get('#point-prop-logging > .col:nth-of-type(3) > .row > .col:nth-of-type(3) .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content > div[role="listbox"] > div:nth-of-type(3)').last().trigger('click', {force: true});
+
+            cy.get('#point-prop-logging > .col:nth-of-type(5) input').clear().type('2');
+            cy.get('#point-prop-logging > .col:nth-of-type(6) .v-select').trigger('click');
+            cy.get('.v-application > .v-menu__content > div[role="listbox"] > div:nth-of-type(1)').last().trigger('click', {force: true});
+
+            cy.get('#point-prop-logging > .col:nth-of-type(8) input').clear().type('3');
+
+        });
+
+        it('Is Binary Text Renderer changing', () => {
             
             cy.get('#point-prop-text-renderer > #text-renderer-selector > .v-select .v-select__selection').contains('Binary');
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(1) button').trigger("click");
@@ -382,12 +399,58 @@ context('Scenario - Data Point Properties validation', () => {
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(1) button').trigger("click");
             cy.get('.v-menu__content > .v-color-picker canvas').should("not.be.visible");
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(1) button').should('have.css', 'background-color', 'rgb(255, 0, 0)')
+            cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(2) input').clear().type('0-Label')
 
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(3) button').trigger("click");
             cy.get('.v-menu__content > .v-color-picker canvas').should("be.visible");
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(3) button').trigger("click");
             cy.get('.v-menu__content > .v-color-picker canvas').should("not.be.visible");
             cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(3) button').should('have.css', 'background-color', 'rgb(255, 0, 0)')
+            cy.get('#point-prop-text-renderer  #renderer-binary > .col:nth-of-type(4) input').clear().type('1-Label')
+
+        })
+
+        it('Is Binary Event Renderer changing', () => {
+            
+            cy.get('#point-prop-event-renderer > .col:nth-of-type(2) .v-select').trigger("click");
+            cy.get('.v-application > .v-menu__content > div[role="listbox"] > div:nth-of-type(2)').last().trigger('click', {force: true});
+            cy.get('#point-prop-event-renderer #renderer-binary > .col:nth-of-type(1) input').clear().type('0-Event-Label');
+            cy.get('#point-prop-event-renderer #renderer-binary > .col:nth-of-type(2) input').clear().type('1-Event-Label');
+
+        })
+
+        it('Is Chart Renderer changing', () => {
+            cy.get('#point-prop-chart-renderer > .col:nth-of-type(2) .v-select').trigger("click");
+            cy.get('.v-application > .v-menu__content > div[role="listbox"] > div:nth-of-type(2)').last().trigger('click', {force: true});
+            cy.get('#point-prop-chart-renderer > .col:nth-of-type(3) > .row > .col:nth-of-type(1) input').clear().type('5');
+        })
+
+        it('Save and validate with classic UI', () => {
+            cy.restLogin();
+            cy.get('#dialog-point-properties > .v-card__actions > .primary--text > .v-btn__content').click();
+            cy.get('.v-snack__wrapper .v-snack__content').contains(' Updated successful! ');
+            cy.get('.v-snack__wrapper .v-snack__content').should('be.visible');
+            cy.visit('/data_sources.shtm');
+            cy.get('img[src="images/arrow_out.png"]').trigger('click');
+            cy.get('[colspan="5"] table > tbody > tr:nth-of-type(3) > td:nth-of-type(5) img').trigger('click');
+
+            //Check the classic UI settings
+            cy.get('#intervalLoggingSection > tr > td:nth-of-type(2) input').should('have.value', '5');
+            cy.get('input#purgePeriod').should('have.value', '2');
+            cy.get('input#defaultCacheSize').should('have.value', '3');
+            cy.get('#eventTextRendererBinary input#eventTextRendererBinaryZero').should('have.value', '0-Event-Label');
+            cy.get('#eventTextRendererBinary input#eventTextRendererBinaryOne').should('have.value', '1-Event-Label');
+            cy.get('#textRendererBinaryZero').should('have.value', '0-Label');
+            cy.get('#textRendererBinaryOne').should('have.value', '1-Label');
+            cy.get('#chartRendererStatsNumberOfPeriods').should('have.value', '5');
+
+            cy.restLogin();
+            cy.visit('/app.shtm#/datapoint-list');
+            cy.get('tbody > tr:nth-of-type(1) > td:nth-of-type(1)').click()
+
+
+
+            openPointPropertiesDialog();
 
         })
     })
