@@ -85,6 +85,7 @@ Cypress.Commands.add("loadConfiguration", (configuration) => {
     cy.get('#emportData', {log: false}).then($input => {
         $input.text(JSON.stringify(configuration))
         cy.get('#importJsonBtn', {log: false}).click({log: false});
+        cy.wait(5000);
         cy.get('#alternateMessage', {log: false}).contains('Import complete');
     }).then(() => {
         log.snapshot('after');
