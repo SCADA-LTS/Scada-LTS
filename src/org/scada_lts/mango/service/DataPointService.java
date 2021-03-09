@@ -463,6 +463,10 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
+	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(eventDetector);
+	}
+
 	public void deleteEventDetector(DataPointVO dataPoint, int id){
 		pointEventDetectorDAO.delete(dataPoint.getId(), id);
 	}

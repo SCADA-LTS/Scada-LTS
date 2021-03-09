@@ -1,5 +1,6 @@
 package org.scada_lts.utils;
 
+import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,6 +12,7 @@ import org.scada_lts.web.mvc.api.dto.EventDetectorDTO;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
@@ -48,21 +50,21 @@ public final class EventDetectorApiUtils {
         setIf(source.getWeight(), toUpdate::setWeight, Objects::nonNull);
     }
 
-    public static String validEventDetector(Integer dataPointId, Integer eventDetectorId,
-                                            EventDetectorDTO body) {
+    public static String validEventDetectorBody(Integer dataPointId, Integer eventDetectorId,
+                                                EventDetectorDTO body) {
 
         StringBuilder msg = new StringBuilder();
         msg.append(validId(eventDetectorId));
 
         msg.append(msgIfNull( "Correct dataPointId", dataPointId));
-        msg.append(msgIfNonNullAndInvalid("AlarmLevel does no exist for value {0}", body.getAlarmLevel(),
+        msg.append(msgIfNonNullAndInvalid("AlarmLevel does no exist for value {0};", body.getAlarmLevel(),
                 a -> !PointEventDetectorVO.validAlarmLevel(a)));
-        msg.append(msgIfNonNullAndInvalid("DetectorType does no exist for value {0}", body.getDetectorType(),
+        msg.append(msgIfNonNullAndInvalid("DetectorType does no exist for value {0};", body.getDetectorType(),
                 a -> !PointEventDetectorVO.validDetectorType(a)));
-        msg.append(msgIfNonNullAndInvalid("DurationType does no exist for value {0}", body.getDurationType(),
+        msg.append(msgIfNonNullAndInvalid("DurationType does no exist for value {0};", body.getDurationType(),
                 a -> !PointEventDetectorVO.validDurationType(a)));
-        msg.append(msgIfNonNullAndInvalid("Correct duration, it must be >= 0, value {0}", body.getDuration(), a -> a < 0));
-        msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 0, value {0}", body.getChangeCount(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
         return msg.toString();
     }
 
@@ -76,7 +78,27 @@ public final class EventDetectorApiUtils {
         }
     }
 
-    public static String validEventDetectorXid(PointEventDetectorVO eventDetector, EventDetectorDTO body) {
-        return validXid(eventDetector.getXid(), body.getXid());
+    public static String validEventDetector(PointEventDetectorVO eventDetector, DataPointVO dataPoint,
+                                            EventDetectorDTO body) {
+        return validXid(eventDetector.getXid(), body.getXid()) +
+                validEventDetectorType(dataPoint, body);
+    }
+
+    private static String validEventDetectorType(DataPointVO dataPoint, EventDetectorDTO body) {
+        PointEventDetectorVO eventDetector = body.createPointEventDetectorVO(dataPoint);
+        int dataTypeId = dataPoint.getPointLocator().getDataTypeId();
+        if(!eventDetector.getDef().supports(dataTypeId)) {
+            return "DetectorType not supported for dataPointType: " + dataTypeId + ". Supported: " + toString(PointEventDetectorVO.getImplementations(dataTypeId)) + " ;";
+        }
+        return "";
+    }
+
+    private static String toString(List<ImplDefinition> definitions) {
+        return definitions.stream()
+                .map(ImplDefinition::getId)
+                .distinct()
+                .sorted()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
     }
 }

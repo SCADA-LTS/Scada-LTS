@@ -63,18 +63,18 @@ public final class PointPropertiesApiUtils {
 
         msg.append(validId(id, xid));
 
-        msg.append(msgIfNonNullAndInvalid("Correct intervalLoggingPeriod, it must be >= 0, value {0}", body.getIntervalLoggingPeriod(), a -> a < 0));
-        msg.append(msgIfNonNullAndInvalid("Correct defaultCacheSize, it must be >= 0, value {0}", body.getDefaultCacheSize(), a -> a < 0));
-        msg.append(msgIfNonNullAndInvalid("Correct purgePeriod, it must be >= 0, value {0}", body.getPurgePeriod(), a -> a < 0));
-        msg.append(msgIfNonNullAndInvalid("EngineeringUnit does no exist for value {0}", body.getEngineeringUnits(),
+        msg.append(msgIfNonNullAndInvalid("Correct intervalLoggingPeriod, it must be >= 0, value {0};", body.getIntervalLoggingPeriod(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct defaultCacheSize, it must be >= 0, value {0};", body.getDefaultCacheSize(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct purgePeriod, it must be >= 0, value {0};", body.getPurgePeriod(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("EngineeringUnit does no exist for value {0};", body.getEngineeringUnits(),
                 a -> !DataPointVO.validEngineeringUnit(a)));
-        msg.append(msgIfNonNullAndInvalid("IntervalLoggingType does no exist for value {0}", body.getIntervalLoggingType(),
+        msg.append(msgIfNonNullAndInvalid("IntervalLoggingType does no exist for value {0};", body.getIntervalLoggingType(),
                 a -> !DataPointVO.validIntervalLoggingType(a)));
-        msg.append(msgIfNonNullAndInvalid("IntervalLoggingPeriodType does no exist for value {0}", body.getIntervalLoggingPeriodType(),
+        msg.append(msgIfNonNullAndInvalid("IntervalLoggingPeriodType does no exist for value {0};", body.getIntervalLoggingPeriodType(),
                 a -> !DataPointVO.validIntervalLoggingPeriodType(a)));
-        msg.append(msgIfNonNullAndInvalid("LoggingType does no exist for value {0}", body.getLoggingType(),
+        msg.append(msgIfNonNullAndInvalid("LoggingType does no exist for value {0};", body.getLoggingType(),
                 a -> !DataPointVO.validLoggingType(a)));
-        msg.append(msgIfNonNullAndInvalid("PurgeType does no exist for value {0}", body.getPurgeType(),
+        msg.append(msgIfNonNullAndInvalid("PurgeType does no exist for value {0};", body.getPurgeType(),
                 a -> !DataPointVO.validPurgeType(a)));
         return msg.toString();
     }
