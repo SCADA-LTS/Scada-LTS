@@ -10,8 +10,7 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserService;
 
-import static org.scada_lts.utils.ValidationUtils.msgIfNonNullAndInvalid;
-import static org.scada_lts.utils.ValidationUtils.msgIfNullOrInvalid;
+import static org.scada_lts.utils.ValidationUtils.*;
 
 public final class UserCommentApiUtils {
 
@@ -19,10 +18,12 @@ public final class UserCommentApiUtils {
 
     public static String validUserComment(Integer typeId, Integer refId, UserComment body) {
         String msg = validTypeIdAndRefId(typeId, refId);
-        msg += msgIfNonNullAndInvalid("User does not exist for id {0};", body.getUserId(),
+        msg += msgIfNullOrInvalid("User does not exist for id {0};", body.getUserId(),
                 a -> !validUserId(a));
-        msg += msgIfNonNullAndInvalid("User does not exist for username {0};", body.getUsername(),
+        msg += msgIfNullOrInvalid("User does not exist for username {0};", body.getUsername(),
                 a -> !validUserUsername(a));
+        msg += msgIfNullOrInvalid("Correct ts, it must be >= 0, value {0};", body.getTs(), a -> a < 0);
+        msg += msgIfNull("Correct comment", body.getComment());
         return msg;
     }
 
@@ -30,7 +31,7 @@ public final class UserCommentApiUtils {
         String msg = validTypeIdAndRefId(typeId, refId);
         msg += msgIfNullOrInvalid("User does not exist for id {0};", userId,
                 a -> !validUserId(a));
-        msg += msgIfNullOrInvalid("Correct ts, it must be >= 0, value {0};", ts, a -> a < 0);
+        msg += msgIfNullOrInvalid("Correct ts, it must be > 0, value {0};", ts, a -> a <= 0);
         return msg;
     }
 
@@ -70,6 +71,8 @@ public final class UserCommentApiUtils {
 
     private static boolean validUserId(Integer id){
         try {
+            if (id == 0)
+                return false;
             UserService userService = new UserService();
             User user = userService.getUser(id);
             return user != null;
