@@ -55,6 +55,7 @@ public class DataPointUserDAO {
 	// @formatter:off
 	private static final String DATA_POINT_USER_SELECT_WHERE_DP_ID = ""
 			+ "select "
+				+ COLUMN_NAME_DP_ID + ", "
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_PERMISSION + " "
 			+ "from dataPointUsers where "
@@ -62,6 +63,7 @@ public class DataPointUserDAO {
 
 	private static final String DATA_POINT_USER_SELECT_WHERE_USER_ID = ""
 			+ "select "
+				+ COLUMN_NAME_DP_ID + ", "
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_PERMISSION + " "
 			+ "from dataPointUsers where "
@@ -106,7 +108,7 @@ public class DataPointUserDAO {
 			@Override
 			public DataPointAccess mapRow(ResultSet rs, int rowNum) throws SQLException {
 				DataPointAccess dataPointAccess = new DataPointAccess();
-				dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_USER_ID));
+				dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DP_ID));
 				dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
 				return dataPointAccess;
 			}
