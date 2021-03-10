@@ -29,24 +29,20 @@ public class V2_6__ extends BaseJavaMigration {
 
         jdbcTmp.execute("ALTER TABLE events ADD shortMessage LONGTEXT;");
         jdbcTmp.update("UPDATE events SET message = CONCAT(message, '||') WHERE typeId = 1;");
-      
-        String corectHistoryAlarms = ""+
-          "CREATE OR REPLACE VIEW " +
-          " historyAlarms AS " +
-          " SELECT " +
-          "  func_fromats_date(activeTime) AS 'activeTime', " +
-          "  func_fromats_date(inactiveTime) AS 'inactiveTime', " +
-          "  func_fromats_date(acknowledgeTime) AS 'acknowledgeTime', " +
-          "  level, " +
-          "  dataPointName AS 'name', " +
-          "  dataPointId AS dataPointId " +
-          "FROM plcAlarms " +
-          "ORDER BY " +
-          " inactiveTime = 0 DESC, " +
-          " inactiveTime DESC, " +
-          " id DESC;";
 
-        jdbcTmp.execute(corectHistoryAlarms);
+        String correctLiveAlarms = ""+
+                "CREATE OR REPLACE VIEW liveAlarms AS SELECT" +
+                "  id," +
+                "  func_fromats_date(activeTime) AS 'activation-time'," +
+                "  func_fromats_date(inactiveTime) AS 'inactivation-time'," +
+                "  dataPointType AS 'level'," +
+                "  dataPointName AS 'name'," +
+                "  dataPointId AS dataPointId " +
+                "FROM plcAlarms WHERE acknowledgeTime = 0 " +
+                "  AND (inactiveTime = 0 OR (inactiveTime > UNIX_TIMESTAMP(NOW() - INTERVAL 24 HOUR) * 1000)) " +
+                "ORDER BY inactiveTime = 0 DESC, activeTime DESC, inactiveTime DESC, id DESC";
+
+        jdbcTmp.execute(correctLiveAlarms);
 
     }
 

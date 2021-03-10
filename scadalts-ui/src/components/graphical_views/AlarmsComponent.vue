@@ -23,6 +23,7 @@
 				<th v-if="showSelectToAcknowledge == 'true'"></th>
 				<th>Activation Timestamp</th>
 				<th>Inactivation Timestamp</th>
+				<th>Description</th>
 				<th>Variable name</th>
 			</tr>
 			<tr
@@ -127,7 +128,9 @@ export default {
 
 			//store.dispatch('fakeGetLiveAlarms
 			store.dispatch('getLiveAlarms', { offset: loffset, limit: llimit }).then((ret) => {
-				this.alarms = ret;
+				
+				
+
 				if (this.alarms.length >= this.maximumNumbersOfRows || page > 1) {
 					if (this.showPagination == 'false') {
 						this.hidePagination = true;
@@ -138,6 +141,24 @@ export default {
 						this.showPagination = 'false';
 					}
 				}
+				console.log(ret)
+				
+				for (let i = 0; i < ret.length; i++) {
+					console.log('id'+ret[i].dataPointId)
+
+					store.dispatch('getDescriptionForLiveAlarms', { dataPointId: ret[i].dataPointId}).then((ret1)=>{
+						console.log('desc ' + JSON.stringify(ret1))
+						if (ret1.eventText == undefined || ret1.eventText == null) {
+							ret[i].desc = ''
+						} else {
+							ret[i].desc = ret1.eventText
+						}
+					})
+					
+					
+				} 
+				
+				this.alarms = ret;
 			});
 		},
 		acknowledge() {

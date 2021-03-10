@@ -15,13 +15,25 @@ const storeAlarms = {
 		},
 	},
 	actions: {
+
+		getDescriptionForLiveAlarms({ commit }, { dataPointId }) {
+			return new Promise( (resolve, reject) => {
+
+				axios.get(`./api/point_properties/getBinaryEventRenderer?id=${dataPointId}&value=0`) // albo 1><>)
+				.then((res) => {
+					resolve(res.data)
+				})
+				.catch((err) => {
+					commit('ERR', err)
+					reject()
+				})
+			})	
+		},
 		getLiveAlarms({ commit }, { offset, limit }) {
-			return new Promise((resolve, reject) => {
-				///api/alarms/live/{offset}/{limit}
+			return new Promise( (resolve, reject) => {
 				axios
 					.get(`./api/alarms/live/${offset}/${limit}`)
 					.then((res) => {
-						console.log(`axios:res:${JSON.stringify(res)}`);
 						resolve(res.data);
 					})
 					.catch((err) => {
@@ -34,10 +46,12 @@ const storeAlarms = {
 			return new Promise((resolve, reject) => {
 				const execute = `./api/alarms/history/${dateDay}/${filterRLike}/${offset}/${limit}`;
 				console.log(execute);
+				
 				axios
 					.get(execute)
 					.then((res) => {
 						resolve(res.data);
+						//axios.all()
 					})
 					.catch((err) => {
 						commit('ERR', err);
