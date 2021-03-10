@@ -72,7 +72,7 @@ public class UserCommentAPI {
      * @return Status
      */
     @DeleteMapping(value = "/{typeId}/{refId}/{userId}/{ts}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId, @PathVariable("userId") Integer userId , @PathVariable("ts") Long ts)  {
+    public ResponseEntity<String> deleteUserComment(HttpServletRequest request, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId, @PathVariable("userId") Integer userId , @PathVariable("ts") Long ts)  {
         try {
             User user = Common.getUser(request);
             if(user != null) {

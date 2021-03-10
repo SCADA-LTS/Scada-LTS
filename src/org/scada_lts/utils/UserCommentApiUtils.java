@@ -17,19 +17,16 @@ public final class UserCommentApiUtils {
     private static final Log LOG = LogFactory.getLog(UserCommentApiUtils.class);
 
     public static String validUserComment(Integer typeId, Integer refId, UserComment body) {
-        String msg = validTypeIdAndRefId(typeId, refId);
-        msg += msgIfNullOrInvalid("User does not exist for id {0};", body.getUserId(),
-                a -> !validUserId(a));
-        msg += msgIfNullOrInvalid("User does not exist for username {0};", body.getUsername(),
+        String msg = validUserCommentWithTs(typeId, refId, body.getUserId(), body.getTs());
+        msg += msgIfNullOrInvalid("Correct username;", body.getUsername(),
                 a -> !validUserUsername(a));
-        msg += msgIfNullOrInvalid("Correct ts, it must be >= 0, value {0};", body.getTs(), a -> a < 0);
         msg += msgIfNull("Correct comment", body.getComment());
         return msg;
     }
 
     public static String validUserCommentWithTs(Integer typeId, Integer refId, Integer userId, Long ts) {
         String msg = validTypeIdAndRefId(typeId, refId);
-        msg += msgIfNullOrInvalid("User does not exist for id {0};", userId,
+        msg += msgIfNullOrInvalid("Correct userId;", userId,
                 a -> !validUserId(a));
         msg += msgIfNullOrInvalid("Correct ts, it must be > 0, value {0};", ts, a -> a <= 0);
         return msg;
