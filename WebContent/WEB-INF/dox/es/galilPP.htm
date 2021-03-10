@@ -1,0 +1,29 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La mayoría de los tipos de puntos en una fuente de datos de Galil reflejan los valores en el equipo de Galil. La excepción es el tipo de punto de control, que es más abstracto. A continuación se dan detalles.</p>
+
+<p>Todos los tipos de puntos requieren un nombre para la pantalla, que puede ser cualquier valor.</p>
+
+<h1>Ordenes</h1>
+<p>El tipo de punto de mando permite enviar comandos arbitrarios al equipo de Galil. Los comandos pueden ser introducidos en la lista de monitoreo, desde vistas gráficas o a través de manejadores de eventos de punto de ajuste. El valor del comando <i>y</i> el valor de la respuesta se registrará en el historial de puntos (uno tras otro), a menos que se produzca un error, en cuyo caso se registrará el comando y se desencadenará un evento que describa el error.</p>
+
+<h1>Entrada</h1>
+<p>Los tipos de punto de entrada usan los comandos @IN y @AN para recuperar los valores actuales. Estos puntos no son configurables. El <b>Tipo de datos </b>determina qué comando se usará para consultar el valor. El <b>Número de entrada</b> es el índice del valor a recuperar. Para los puntos numéricos, la escalada lineal del valor también se puede hacer de forma automática ajustando los valores <b>Escala</b> en consecuencia.</p>
+
+<h1>Salida</h1>
+<p>Los tipos de puntos de salida usan los comandos CB, SB y @OUT para recuperar y establecer valores de salida binarios. El número de salida <b>Salida</b> es el índice del valor a manejar.</p>
+
+<h1>Indique la posición</h1>
+<p>Los tipos de puntos de posición Tell utilizan el comando TP para recuperar la posición de un eje en particular. Estos puntos no son configurables. El <b>Axis</b> es la etiqueta del eje requerido. El escalado de los valores lineales puede hacerse automáticamente estableciendo los valores <b>Escala</b> en consecuencia. Seleccione <b>Redondear a entero</b> para redondear los valores decimales del valor de recuperación (y escalado).</p>
+
+<h1>Variable</h1>
+<p>Los tipos de punto variable utilizan el comando "Var=" para definir y recuperar los valores de las variables en el equipo. El comando <b>Nombre de la variable</b> es el nombre de la variable deseada. Los valores que se definan y reciban se convierten automáticamente según el <b>Tipo de datos</b> dado.</p>

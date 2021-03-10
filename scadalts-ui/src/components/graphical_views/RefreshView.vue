@@ -60,4 +60,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+td > select, div[id*='Content'] select, div[id*='Content'] textarea, #viewContent select {
+	background-color: rgb(221, 221, 221);
+	border: 1px solid #39B54A;
+	appearance: auto;
+}
+</style>
