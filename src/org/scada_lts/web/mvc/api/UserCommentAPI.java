@@ -38,7 +38,7 @@ public class UserCommentAPI {
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody UserComment body, @PathVariable("typeId") int typeId, @PathVariable("refId") int refId) {
+    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody UserComment body, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
@@ -72,7 +72,7 @@ public class UserCommentAPI {
      * @return Status
      */
     @DeleteMapping(value = "/{typeId}/{refId}/{userId}/{ts}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @PathVariable("typeId") int typeId, @PathVariable("refId") int refId, @PathVariable("userId") int userId , @PathVariable("ts") long ts)  {
+    public ResponseEntity<String> createUserComment(HttpServletRequest request, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId, @PathVariable("userId") Integer userId , @PathVariable("ts") Long ts)  {
         try {
             User user = Common.getUser(request);
             if(user != null) {

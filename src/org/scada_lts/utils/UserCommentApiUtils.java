@@ -11,44 +11,42 @@ import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserService;
 
 import static org.scada_lts.utils.ValidationUtils.msgIfNonNullAndInvalid;
+import static org.scada_lts.utils.ValidationUtils.msgIfNullOrInvalid;
 
 public final class UserCommentApiUtils {
 
     private static final Log LOG = LogFactory.getLog(UserCommentApiUtils.class);
 
-    public static String validUserComment(int typeId, int refId, UserComment body) {
-        StringBuilder msg = validTypeIdAndRefId(typeId, refId);
-        msg.append(msgIfNonNullAndInvalid("User doesn't exist for id {0};", body.getUserId(),
-                a -> !validUserId(a)));
-        msg.append(msgIfNonNullAndInvalid("User doesn't exist for username {0};", body.getUsername(),
-                a -> !validUserUsername(a)));
-        return msg.toString();
+    public static String validUserComment(Integer typeId, Integer refId, UserComment body) {
+        String msg = validTypeIdAndRefId(typeId, refId);
+        msg += msgIfNonNullAndInvalid("User does not exist for id {0};", body.getUserId(),
+                a -> !validUserId(a));
+        msg += msgIfNonNullAndInvalid("User does not exist for username {0};", body.getUsername(),
+                a -> !validUserUsername(a));
+        return msg;
     }
 
-    public static String validUserCommentWithTs(int typeId, int refId, int userId, long ts) {
-        StringBuilder msg = validTypeIdAndRefId(typeId, refId);
-        msg.append(msgIfNonNullAndInvalid("User doesn't exist for id {0};", userId,
-                a -> !validUserId(a)));
-        msg.append(msgIfNonNullAndInvalid("Correct ts, it must be >= 0, value {0};", ts, a -> a < 0));
-        return msg.toString();
+    public static String validUserCommentWithTs(Integer typeId, Integer refId, Integer userId, Long ts) {
+        String msg = validTypeIdAndRefId(typeId, refId);
+        msg += msgIfNullOrInvalid("User does not exist for id {0};", userId,
+                a -> !validUserId(a));
+        msg += msgIfNullOrInvalid("Correct ts, it must be >= 0, value {0};", ts, a -> a < 0);
+        return msg;
     }
 
-    private static StringBuilder validTypeIdAndRefId(int typeId, int refId) {
-        StringBuilder msg = new StringBuilder();
-        msg.append(msgIfNonNullAndInvalid("UserComment doesn't exist for type {0};", typeId,
-                a -> !UserComment.validUserCommentType(a)));
-        if (msg.toString().isEmpty()) {
-            if (typeId == UserComment.TYPE_EVENT)
-                msg.append(msgIfNonNullAndInvalid("Event doesn't exist for refId (eventId) {0};", refId,
-                        a -> !validEventRefId(a)));
-            else if (typeId == UserComment.TYPE_POINT)
-                msg.append(msgIfNonNullAndInvalid("Datapoint doesn't exist for refId (dataPointId) {0};", refId,
-                        a -> !validDataPointRefId(a)));
+    private static String validTypeIdAndRefId(Integer typeId, Integer refId) {
+        String msg = msgIfNullOrInvalid("UserComment does not exist for type {0};", typeId,
+                a -> !UserComment.validUserCommentType(a));
+        if(typeId == UserComment.TYPE_EVENT) {
+            msg += msgIfNullOrInvalid("Event does not exist for refId (eventId) {0};", refId, a -> !validEventRefId(a));
+        }
+        if(typeId == UserComment.TYPE_POINT) {
+            msg += msgIfNullOrInvalid("Datapoint does not exist for refId (dataPointId) {0};", refId, a -> !validDataPointRefId(a));
         }
         return msg;
     }
 
-    private static boolean validEventRefId(int id) {
+    private static boolean validEventRefId(Integer id) {
         try {
             EventService eventService = new EventService();
             EventInstance eventInstance = eventService.getEvent(id);
@@ -59,7 +57,7 @@ public final class UserCommentApiUtils {
         }
     }
 
-    private static boolean validDataPointRefId(int id) {
+    private static boolean validDataPointRefId(Integer id) {
         try {
             DataPointService dataPointService = new DataPointService();
             DataPointVO dataPointVO = dataPointService.getDataPoint(id);
@@ -70,7 +68,7 @@ public final class UserCommentApiUtils {
         }
     }
 
-    private static boolean validUserId(int id){
+    private static boolean validUserId(Integer id){
         try {
             UserService userService = new UserService();
             User user = userService.getUser(id);
