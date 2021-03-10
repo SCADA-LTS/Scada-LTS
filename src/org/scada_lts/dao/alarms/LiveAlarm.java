@@ -43,7 +43,6 @@ public class LiveAlarm {
     private String inactivationTime;
     private String level;
     private String name;
-    private int dataPointId;
 
     public int getId() {
         return id;
@@ -85,11 +84,4 @@ public class LiveAlarm {
         this.name = name;
     }
 
-    public int getDataPointId() {
-        return dataPointId;
-    }
-
-    public void setDataPointId(int dataPointId) {
-        this.dataPointId = dataPointId;
-    }
 }

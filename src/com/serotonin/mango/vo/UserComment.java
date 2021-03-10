@@ -68,7 +68,7 @@ public class UserComment {
         this.username = username;
     }
 
-    public static boolean validUserCommentType(int typeId) {
+    public static boolean validUserCommentType(Integer typeId) {
         return typeId == UserComment.TYPE_EVENT || typeId == UserComment.TYPE_POINT;
     }
 }

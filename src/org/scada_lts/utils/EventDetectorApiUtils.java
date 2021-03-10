@@ -57,11 +57,11 @@ public final class EventDetectorApiUtils {
         msg.append(validId(eventDetectorId));
 
         msg.append(msgIfNull( "Correct dataPointId", dataPointId));
-        msg.append(msgIfNonNullAndInvalid("AlarmLevel does no exist for value {0};", body.getAlarmLevel(),
+        msg.append(msgIfNonNullAndInvalid("AlarmLevel does not exist for value {0};", body.getAlarmLevel(),
                 a -> !PointEventDetectorVO.validAlarmLevel(a)));
-        msg.append(msgIfNonNullAndInvalid("DetectorType does no exist for value {0};", body.getDetectorType(),
+        msg.append(msgIfNonNullAndInvalid("DetectorType does not exist for value {0};", body.getDetectorType(),
                 a -> !PointEventDetectorVO.validDetectorType(a)));
-        msg.append(msgIfNonNullAndInvalid("DurationType does no exist for value {0};", body.getDurationType(),
+        msg.append(msgIfNonNullAndInvalid("DurationType does not exist for value {0};", body.getDurationType(),
                 a -> !PointEventDetectorVO.validDurationType(a)));
         msg.append(msgIfNonNullAndInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
         msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
