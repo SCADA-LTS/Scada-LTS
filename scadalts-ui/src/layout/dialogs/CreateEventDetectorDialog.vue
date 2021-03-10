@@ -415,6 +415,9 @@ export default {
 				})
 				.then((resp) => {
 					this.$emit('saved', resp);
+				})
+				.catch(() => {
+					this.$emit('savedfailed');
 				});
 			this.dialog = false;
 		},

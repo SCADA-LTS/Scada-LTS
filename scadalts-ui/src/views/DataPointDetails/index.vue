@@ -132,7 +132,7 @@ export default {
 		async fetchDataPointDetails(datapointId) {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
-				datapointId,
+				datapointId
 			);
 		},
 
@@ -145,7 +145,7 @@ export default {
 			if (e) {
 				let resp = await this.$store.dispatch(
 					'toggleDataPoint',
-					this.dataPointDetails.id,
+					this.dataPointDetails.id
 				);
 				if (!!resp) {
 					this.dataPointDetails.enabled = resp.enabled;
@@ -154,15 +154,21 @@ export default {
 		},
 
 		saveDataPointDetails() {
-			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then((resp) => {
-				if (resp === 'saved') {
-					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.success');
-				} else {
+			this.$store
+				.dispatch('saveDataPointDetails', this.dataPointDetails)
+				.then((resp) => {
+					if (resp === 'saved') {
+						this.response.status = true;
+						this.response.message = this.$t('common.snackbar.update.success');
+					} else {
+						this.response.status = true;
+						this.response.message = this.$t('common.snackbar.update.fail');
+					}
+				})
+				.catch(() => {
 					this.response.status = true;
 					this.response.message = this.$t('common.snackbar.update.fail');
-				}
-			});
+				});
 		},
 	},
 };

@@ -19,7 +19,7 @@
 					</h3>
 				</v-col>
 				<v-col class="row justify-end">
-					<CreateEventDetectorDialog :data="data" @saved="addEventDetector">
+					<CreateEventDetectorDialog :data="data" @saved="addEventDetector" @savedfailed="addEventDetectorFail">
 					</CreateEventDetectorDialog>
 				</v-col>
 			</v-row>
@@ -436,6 +436,10 @@ export default {
 			this.response.status = true;
 			this.response.message = this.$t('common.snackbar.add.success');
 		},
+		addEventDetectorFail() {
+			this.response.status = true;
+			this.response.message = this.$t('common.snackbar.add.fail');
+		},
 
 		openConfirmDialog(e) {
 			this.confirmDeleteDialog = true;
@@ -478,7 +482,10 @@ export default {
 							this.response.status = true;
 							this.response.message = this.$t('common.snackbar.delete.fail');
 						}
-					});
+					}).catch(() => {
+						this.response.status = true;
+						this.response.message = this.$t('common.snackbar.delete.fail');
+					})
 			}
 		},
 	},

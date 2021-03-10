@@ -205,7 +205,7 @@ export default {
 			location.replace(
 				`${location.protocol}//${location.host}/${
 					location.pathname.split('/')[1]
-				}/data_source_edit.shtm?dsid=${this.data.dataSourceId}&pid=${this.data.id}`,
+				}/data_source_edit.shtm?dsid=${this.data.dataSourceId}&pid=${this.data.id}`
 			);
 		},
 	},
