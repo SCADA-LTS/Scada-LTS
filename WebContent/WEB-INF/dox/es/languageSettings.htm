@@ -1,77 +1,34 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
 <p>
-  Utilice la configuraci&oacute;n de <b>Idioma del Sistema</b> para seleccionar el idioma que el sistema utilizar&aacute; cuando se encuentre una situaci&oacute;n con idioma   
-  desconocido. Por ejemplo, informes y mensajes de correo que no est&aacute;n asociados con un usuario espec&iacute;fico o con varios. Para este caso ser&aacute; tomado como 
-  idioma de comunicaci&oacute;n el configurado para el sistema.
+  Utilice el ajuste <b>Lenguaje del Sistema</b> para cambiar el idioma que el sistema usará en los casos en que el idioma es de otra manera desconocido. Por ejemplo, los informes y los correos electrónicos no están asociados a un usuario específico o están asociados a múltiples usuarios. El lenguaje del sistema se utilizará en estas situaciones.
 </p>
 
 <p>
-  NOTA: El ScadaBR utiliza gran variedad de herramientas que no est&aacute;n cubiertas en el i18n, por lo que puede recibir mensajes extra&ntilde;os en ingl&eacute;s.
+  Tenga en cuenta que Scada-LTS utiliza muchos juegos de herramientas y otros que no son i18n, por lo que todavía puede recibir mensajes raros que sólo aparecen en inglés.
 </p>
 
-<h1>Generando una nueva traducci&oacute;n</h1>
+<h1>Crear una nueva traducción</h1>
 <p>
-  El ScadaBR es un sistema con completa capacidad multilenguaje. Ahora, si el ScadaBR no contiene un idioma determinado, 
-  este puede ser f&aacute;cilmente agregado con una simple traducci&oacute;n de archivos. De esta forma tendr&aacute; la instancia del "idioma" que requiere.
-</p>
-<p>
-  Para adicionar un idioma inicie con la edici&oacute;n del archivo "WEB-INF/classes/i18n.properties" a&ntilde;adiendole la informaci&oacute;n 
-  del idioma correspondiente. El formato de su contenido corresponde a "&lt;c&oacute;digo del idioma&gt;=&lt;nombre del idioma&gt;", 
-  donde  "c&oacute;digo del idioma" es tomado del est&aacute;ndar de c&oacute;digo ISO 639-1 para idiomas, y el "nombre del idioma" es el nombre
-  como se le conoce en su propio idioma. Esta nueva l&iacute;nea agregar&aacute; el lenguaje a la lista de idiomas seleccionables del sistema. 
+  Scada-LTS es un sistema totalmente multilingüe. Si Scada-LTS no se entrega en el idioma deseado, es fácil crear un archivo de traducción para que por lo menos su instancia "hable" el idioma que necesita. Para añadir un idioma, primero hay que editar el archivo "WEB-INF/classes/i18n.properties" añadiendo la información sobre el idioma que se quiere añadir. El formato de datos es "&lt;código de idioma&gt;=&lt;nombre del idioma&gt;", donde "código de idioma" es el código ISO 639-1 del idioma, y "nombre del idioma" es el nombre del idioma tal como se conoce en su propio idioma. De esta manera, el idioma se añadirá a la lista de idiomas conocidos en el sistema.
 </p>
 
 <p>
-  Ahora, debe realizar la traducci&oacute;n de la lista mensajes del sistema. Cree un nuevo archivo en el directorio "WEB-INF/classes/" 
-  y n&oacute;mbrelo "messages_&lt;c&oacute;digo del idioma&gt;.properties". Para simplificar el proceso es &uacute;til copiar el contenido del archivo 
-  de mensajes en Ingl&eacute;s, y hacer las traducciones correspondientes.
+  Ahora tenemos que preparar una lista de traducciones literales. Crear un nuevo archivo en el directorio "WEB-INF/classes/" llamado  "messages_&lt;código de idioma&gt;.properties". Para simplificar el proceso, es útil copiar el contenido del archivo de los literales en inglés y hacer las traducciones necesarias.
 </p>
 
 <p>
-  Por &uacute;ltimo, se debe traducir la documentaci&oacute;n contextual (p.e: este documento de ayuda). Para esto cree un nuevo directorio en 
-  "WEB-INF/dox/" con el nombre del c&oacute;digo del lenguaje, y realice una versi&oacute;n traducida de todos los documentos contenidos
-  en el directorio de Idioma Ingl&eacute;s ("en").
+  Por último, es necesario traducir la documentación contextual (como el documento que está viendo actualmente). Para ello, cree un nuevo directorio bajo "WEB-INF/dox/" con el nombre del código del idioma, y haga una versión traducida de todos los documentos bajo el directorio inglés ("en").
 </p>
 
 <p>
-  Para garantizar que los archivos traducidos permanecer&aacute;n en las nuevas versiones de ScadaBR, por favor contin&uacute;e contribuyendo
-  con Serotonin Software donde lo fusionar&aacute;n en el repositorio principal.
+  Para asegurar que su archivo de traducción persista en las nuevas versiones de Scada-LTS, por favor contribuya de nuevo a Serotonin Software donde se fusionará con la fuente principal.
 </p>

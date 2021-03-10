@@ -1,0 +1,17 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Esta fuente de datos se utiliza para reunir información genérica de los correos electrónicos recibidos en un determinado buzón POP3. Los mensajes en el buzón pueden haber sido recibidos de cualquier fuente. Utilizando mecanismos similares a los de un cliente de correo, la fuente de datos se conecta al buzón POP3 y procesa los mensajes en él individualmente. Los mensajes se borran después de ser procesados. Se utilizan expresiones regulares para extraer la información deseada. Esta es una fuente de datos de encuestas.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. El <b>Período de verificación del buzón</b> determina la frecuencia con la que se revisa el buzón en busca de mensajes. Servidor <b>POP3</b> es el nombre de dominio o dirección IP del servidor que aloja el buzón. Para la conexión se utiliza el puerto estándar POP3 110. El <b>nombre de usuario del buzón </b> y el <b>contraseña del buzón </b> deben ser proporcionados para el acceso.</p>
+
+<p>El área <b>Test Content</b> es donde se puede probar una muestra de contenido de correo electrónico para comprobar el RegEx de un punto. Para más información, vea la documentación sobre "Propiedades de los puntos POP3".</p>

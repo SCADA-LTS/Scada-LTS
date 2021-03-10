@@ -1,0 +1,27 @@
+<!--
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+
+<h1>Configuración</h1>
+<p>Se puede añadir un solo punto, definiendo su índice, o <b>Añadir múltiples puntos de datos</b> definiendo los índices mínimo y máximo.</p>
+<h1>Ordenes</h1>
+<p>Para los puntos del tipo OUTPUT, debe definir al comando los parámetros que se utilizarán como predeterminados, si no se especifican durante el tiempo de ejecución. Para los puntos de tipo SALIDA ANUAL, los comandos válidos (que deben ser ejecutados en la lista de vigilancia, así como otras fuentes de datos) son:</p>
+<p>pon/poff -> pulso on/off</p>
+<p>lon/loff -> cierre encendido/apagado</p>
+<p>cerrar/viaje -> cerrar/viaje</p>
+<p>Todos los comandos pueden ser seguidos por dos parámetros, el comando TIEMPO ENCENDIDO y TIEMPO APAGADO en milisegundos. Por ejemplo:
+pon,500,200</p>
+<p>Sólo se puede introducir "1", "0", "verdadero" o "falso". En este caso, el pedido enviado será el pedido por defecto especificado en el punto.</p>
+<h1>Ejemplo</h1>
+<p>Punto binario registrado como CERRAR/VIAJE, TIEMPO DE VIGILANCIA 1000 y TIEMPO LIBRE 0</p>
+<p>1 -> el sistema enviará el comando CERRAR con TIEMPO DE VIGILANCIA 1000 y TIEMPO LIBRE 0</p>
+<p>0 -> el sistema enviará el comando TRIP con TIEMPO DE VIGILANCIA 1000 y TIEMPO LIBRE 0</p>
+<p>pon -> el sistema enviará el comando PULSE ON con TIEMPO DE VIGILANCIA 1000 y TIEMPO LIBRE 0</p>
+<p>poff,300,0 -> el sistema enviará el comando PULSE OFF con TIEMPO DE VIGILANCIA 300 y TIEMPO LIBRE 0</p>
