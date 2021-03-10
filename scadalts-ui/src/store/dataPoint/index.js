@@ -165,7 +165,7 @@ const storeDataPoint = {
 
 		addUserComment({ dispatch }, payload) {
 			return dispatch('requestPost', {
-				url: `/utils/userComment/${payload.typeId}/${payload.refId}`,
+				url: `/userComment/${payload.typeId}/${payload.refId}`,
 				data: payload.comment,
 			});
 		},
@@ -173,7 +173,7 @@ const storeDataPoint = {
 		delUserComment({ dispatch }, payload) {
 			return dispatch(
 				'requestDelete',
-				`/utils/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`
+				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`
 			);
 		},
 	},
