@@ -5,6 +5,9 @@
 	"milestone": "2.6.0",
 	"build": "1",
 	"branch": "local",
+	"commit": "5576832f3e61b3fb31fa3b914260d1ef3f33b546",
+	"pullRequestNumber": "1",
+	"pullRequestBranch": "prerelease/2.5.0",
 	"private": true,
 	"scripts": {
 		"serve": "vue-cli-service serve --port 3000",

@@ -272,6 +272,8 @@
 	"systemsettings.http.proxy.useProxy": "Proxy",
 	"systemsettings.http.proxy.username": "Benutzername",
 	"systemsettings.http.title": "Http",
+	"systemsettings.info.commit": "Build aus GitHub commit",
+	"systemsettings.info.pullrequest": "Build aus PullRequest",
 	"systemsettings.info.branch": "Build aus GitHub-Zweig",
 	"systemsettings.info.instance": "Instance description",
 	"systemsettings.info.language": "Sprache",
