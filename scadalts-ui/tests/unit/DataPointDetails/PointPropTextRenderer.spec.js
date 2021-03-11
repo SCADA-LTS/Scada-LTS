@@ -18,7 +18,7 @@ const modules = {
  */
 function initWrapper(props = dataPointMock) {
 	return prepareMountWrapper(
-		PointPropTextRenderer, 
+		PointPropTextRenderer,
 		modules,
 		{data: props}
 	);

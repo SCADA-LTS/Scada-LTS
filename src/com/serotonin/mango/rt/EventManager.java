@@ -21,7 +21,6 @@ package com.serotonin.mango.rt;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.UserHighestAlarmLevelListener;
@@ -61,8 +60,14 @@ public class EventManager implements ILifecycle {
 	// Basic event management.
 	//
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
-			int alarmLevel, EventMessages messages,
-			Map<String, Object> context) {
+						   int alarmLevel, LocalizableMessage message,
+						   Map<String, Object> context) {
+		raiseEvent(type, time, rtnApplicable, alarmLevel, message, message, context);
+	}
+
+	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
+						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
+						   Map<String, Object> context) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
 		if (dup != null) {
@@ -71,7 +76,7 @@ public class EventManager implements ILifecycle {
 			if (dh == EventType.DuplicateHandling.DO_NOT_ALLOW) {
 				// Create a log error...
 				log.error("An event was raised for a type that is already active: type="
-						+ type + ", message=" + messages.getMessage());
+						+ type + ", message=" + message.getKey());
 				// ... but ultimately just ignore the thing.
 				return;
 			}
@@ -85,7 +90,7 @@ public class EventManager implements ILifecycle {
 				// of this type with different messages,
 				// so look through them all for a match.
 				for (EventInstance e : getAll(type)) {
-					if (e.getMessages().getMessage().equals(messages.getMessage()))
+					if (e.getMessage().equals(message))
 						return;
 				}
 			}
@@ -97,7 +102,7 @@ public class EventManager implements ILifecycle {
 		boolean suppressed = isSuppressed(type);
 
 		EventInstance evt = new EventInstance(type, time, rtnApplicable,
-				alarmLevel, messages, context);
+				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
@@ -117,7 +122,7 @@ public class EventManager implements ILifecycle {
 
 			if (Permissions.hasEventTypePermission(user, type)) {
 				eventUserIds.add(user.getId());
-				if( !suppressed && evt.isAlarm() ) 
+				if( !suppressed && evt.isAlarm() )
 					notifyEventRaise(evt.getId(), user.getId(), evt.getAlarmLevel());
 				if (evt.isAlarm() && user.getReceiveAlarmEmails() > 0
 						&& alarmLevel >= user.getReceiveAlarmEmails())
@@ -162,7 +167,7 @@ public class EventManager implements ILifecycle {
 
 			if (log.isDebugEnabled())
 				log.debug("Event raised: type=" + type + ", message="
-						+ messages.getMessage().getLocalizedMessage(Common.getBundle()));
+						+ message.getLocalizedMessage(Common.getBundle()));
 		}
 	}
 

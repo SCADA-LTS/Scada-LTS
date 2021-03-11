@@ -1,64 +1,27 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<p>Se utiliza un motor de representación gráfica para proporcionar el estado histórico general de un punto a lo largo de un determinado período de tiempo o de una serie de valores. La información agregada que puede proporcionarse depende del tipo de datos de los valores que se han de rendir. Por lo tanto, sólo aquellos tipos de motor de representación que se aplican al tipo de datos del punto actual se enumeran en la selección <b>Tipo</b>.</p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<p><b>Nota!</b> La representación gráfica depende de <i> datos registrados</i>. Si su punto tiene un tipo de registro "No registrar", es posible que su herramienta de representación gráfica no se muestre como se esperaba. La posible excepción es el gráfico de la tabla, que puede utilizar valores de puntos almacenados en la memoria, pero sólo si esos valores están disponibles. Reiniciando el sistema se borran todos los puntos de valor de las cachés.</p>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
+<h1>Tablas gráficas</h1>
+<p>Este motor de representación muestra un número dado (el <b>Límite</b>) de los valores históricos más recientes para el punto. Los valores se muestran en una tabla que proporciona el valor (representado por el texto), el valor temporal y cualquier anotación aplicable. Este cuadro está disponible para todos los tipos de datos.</p>
 
+<h1>Estadísticas gráficas</h1>
+<p>Este gráfico muestra una tabla de información estadística calculada a partir de los valores de puntos históricos para el período de tiempo dado <b>Período de tiempo</b>. Los datos reales que se muestran dependen del tipo de datos del punto. Este gráfico está disponible para todos los tipos de datos.</p>
+<p><b>Binario y multiestado</b>: Estos tipos de datos producen una lista de estadísticas de "inicio y tiempo de ejecución" para cada estado que el punto ha experimentado durante el período de tiempo. Cada elemento de "inicio y tiempo de ejecución" proporciona el número de veces que se introdujo el estado ("inicios"), el tiempo total en que el punto estuvo en el estado ("tiempo de ejecución") y el porcentaje de la duración total del período que representa el tiempo de ejecución.</p>
+<p><b>Digital</b> : Los puntos numéricos producen los siguientes valores estadísticos para el período de tiempo: valor mínimo y momento de ocurrencia, valor máximo y momento de ocurrencia, media y suma (adecuado para el recuento de pulsos)..</p>
+<p><b>Alfanumérico</b> : Se indica el número de veces que el punto ha cambiado durante el período.</p>
 
-<h1>Descripci&oacute;n General</h1>
-
-<p>El Generador Gr&aacute;fico se utiliza para proporcionar un estado adicional de un punto en el hist&oacute;rico de de un per&iacute;odo de tiempo o un n&uacute;mero de valores.
- La informaci&oacute;n a agregar depender&aacute; del tipo de dato y de los valores a ser representados. Los tipos a representar deben corresponder
- a los tipos de datos que ser&aacute;n mostrados en la selecci&oacute;n del <b>Tipo</b>.</p>
-
-<p><b>NOTA!</b> El Gr&aacute;fico generado depender&aacute; de los <i>datos registrados</i>. Cuando el tipo de registro del punto se especifica como "No registrar", 
-no graficar&aacute; lo que espera. Una excepci&oacute;n a este comportamiento es la Tabla de los Hist&oacute;ricos de datos recientes, la cual mostrar&aacute; los valores 
-que est&aacute;n cargados en la memoria cach&eacute;, pero s&oacute;lo cuando estos est&aacute;n disponibles. El reinicio del sistema limpiar&aacute; la memoria cach&eacute;
-y con esto los datos que esta contenga.</p>
-
-<h1>Tabla de datos recientes</h1>
-<p>Este generador mostrar&aacute; un <b>n&uacute;mero limitado</b> de los valores m&aacute;s recientes del punto. Los valores son mostrados en una tabla conformada
-por los valores de los puntos de forma de texto , el valor de su estampa de tiempo, y cualquier anotaci&oacute;n que requiera. Este tipo de gr&aacute;fico 
-est&aacute; disponible para cualquier tipo de dato.</p>
-
-<h1>Estad&iacute;sticas</h1>
-<p>Este gr&aacute;fico muestra una tabla de informaci&oacute;n estad&iacute;stica calculada a partir de los <b>valores hist&oacute;ricos del punto para un rango de tiempo</b>. Los datos mostrados dependen del tipo de dato del punto y est&aacute; disponible para todos los tipo de datos.</p>
-<p><b>Binarios y Multiestado</b>: Para estos tipos de datos se produce una lista de estad&iacute;sticas de "inicio y tiempo de ejecuci&oacute;n" para cada estado que experimente el punto durante el rango de tiempo. Para cada valor de inicio y de tiempo de ejecuci&oacute;n se  proporcionar&aacute; el n&uacute;mero de veces que se ha entrado en el estado ("inicios"), la cantidad total de tiempo que el punto permaneci&oacute; en el estado ("tiempo de ejecuci&oacute;n"), y el porcentaje del tiempo total que el per&iacute;odo de tiempo de ejecuci&oacute;n representa.</p>
-<p><b>Num&eacute;rico</b>: Los puntos num&eacute;ricos generan valores estad&iacute;sticos (para un rango de tiempo): valor m&iacute;nimo y el momento en que se produjo, valor m&aacute;ximo y el momento en que se produjo, su promedio y su suma (utilizable para contar pulsos).</p>
-<p><b>Alfanum&eacute;rico</b>: Se proporciona el n&uacute;mero de veces que el punto ha cambiado durante un per&iacute;odo de tiempo.</p>
-
-<h1>Imagen</h1>
-<p>Este es un gr&aacute;fico de barras de los valores correspondientes a un per&iacute;odo definido. Este tipo de gr&aacute;fico est&aacute; disponible para puntos de tipo de dato num&eacute;rico o multiestado.</p>
+<h1>Gráficos de imagen</h1>
+<p>Este gráfico muestra un gráfico de barras lineales de los valores de los puntos en el período dado. Está disponible para puntos con tipos de datos numéricos o multiestatales.</p>

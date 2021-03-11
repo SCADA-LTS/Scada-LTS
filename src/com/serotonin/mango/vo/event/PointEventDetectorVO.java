@@ -671,5 +671,16 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
    			return false;
    		return true;
    	}
-    
+
+    public static boolean validAlarmLevel(int alarmLevel) {
+        return AlarmLevels.CODES.isValidId(alarmLevel);
+    }
+
+    public static boolean validDetectorType(int detectorType) {
+        return TYPE_CODES.isValidId(detectorType);
+    }
+
+    public static boolean validDurationType(int durationType) {
+        return Common.TIME_PERIOD_CODES.isValidId(durationType);
+    }
 }

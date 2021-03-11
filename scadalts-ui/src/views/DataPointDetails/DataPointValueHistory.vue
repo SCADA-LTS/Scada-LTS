@@ -179,14 +179,14 @@
 <script>
 /**
  * Value History List for Data Point
- * 
+ *
  * Display history values from specific data point.
- * Present the statiscics from given time period and allow user 
+ * Present the statiscics from given time period and allow user
  * to set a new value for that Data Point.
- * 
- * @param {number} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * @param {number} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {
@@ -242,8 +242,10 @@ export default {
 				endTs: new Date().getTime(),
 			});
 			this.valueList = response.values;
-			this.calculateStatistics();
-			this.valueList.reverse();
+			if (this.valueList.length > 0) {
+				this.calculateStatistics();
+				this.valueList.reverse();
+			}
 			this.fetchingData = false;
 		},
 

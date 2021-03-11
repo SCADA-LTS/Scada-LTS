@@ -18,7 +18,7 @@
 -->
 <tr>
   <td><#include "alarmLevel.ftl"></td>
-  <td colspan="2">${evt.prettyActiveTimestamp} - <b><@fmt message=evt.messages.message/></b></td>
+  <td colspan="2">${evt.prettyActiveTimestamp} - <b><@fmt message=evt.message/></b></td>
 </tr>
 <#if evt.eventComments??>
   <#list evt.eventComments as comment>

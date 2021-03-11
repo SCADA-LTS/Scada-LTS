@@ -1,9 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +27,11 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
+import static org.scada_lts.utils.PointPropertiesApiUtils.getDataPointByIdOrXid;
+import static org.scada_lts.utils.PointPropertiesApiUtils.validPointProperties;
+import static org.scada_lts.utils.PointPropertiesApiUtils.updateValuePointProperties;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+import static org.scada_lts.utils.ValidationUtils.validId;
 
 /**
  * Helper class
@@ -47,6 +50,7 @@ import com.serotonin.mango.vo.User;
 public class PointPropertiesAPI {
 
     private static final Log LOG = LogFactory.getLog(PointPropertiesAPI.class);
+    private static final String ERRORS_DATA_POINT_NOT_FOUND = "{\"errors\": \"dataPoint not found\"}";
 
     private DataPointService dataPointService = new DataPointService();
 
@@ -614,50 +618,47 @@ public class PointPropertiesAPI {
     }
 
     @PutMapping(value = "/updateProperties")
-    public ResponseEntity<String> updatePointProperties(@RequestParam Map<String, String> query, HttpServletRequest request, @RequestBody JsonPointProperties body) {
+    public ResponseEntity<String> updatePointProperties(@RequestParam(required = false) Integer id,
+                                                        @RequestParam(required = false) String xid,
+                                                        HttpServletRequest request,
+                                                        @RequestBody JsonPointProperties body) {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                if(query.containsKey("id")) {
-                    dataPointService.savePointProperties(dataPointService.getDataPoint(Integer.parseInt(query.get("id"))), body);
+                String error = validPointProperties(id, xid, body);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+
+                return getDataPointByIdOrXid(id, xid, dataPointService).map(dataPoint -> {
+                    updateValuePointProperties(dataPoint, body);
+                    dataPointService.updateDataPoint(dataPoint);
+                    Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
                     return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
-                } else if (query.containsKey("xid")) {
-                    dataPointService.savePointProperties(dataPointService.getDataPoint(query.get("xid")), body);
-                    return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
-                } else
-                    return new ResponseEntity<>("no param id or xid", HttpStatus.BAD_REQUEST);
+                }).orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
+
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
+            LOG.error(e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping(value = "/getPointDescription", produces = "application/json")
-    public ResponseEntity<String> getPointDescription(@RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<String> getPointDescription(@RequestParam(required = false) Integer id,
+                                                      @RequestParam(required = false) String xid,
+                                                      HttpServletRequest request) {
         LOG.info("/api/point_properties/getPointDescription");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                DataPointVO dataPointVO;
-                if (query.containsKey("id"))
-                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
-                else if (query.containsKey("xid"))
-                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
-                else
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-                Map<String, String> response = new HashMap<>();
-                response.put("description", dataPointVO.getDescription());
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(response);
-                    return new ResponseEntity<>(json, HttpStatus.OK);
-                } catch (JsonProcessingException e) {
-                    LOG.error(e);
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                String error = validId(id, xid);
+                if(!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
+                return getPointDescription(id, xid);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -668,22 +669,24 @@ public class PointPropertiesAPI {
     }
 
     @GetMapping(value = "/getBinaryEventRenderer", produces = "application/json")
-    public ResponseEntity<JsonBinaryEventTextRenderer> getBinaryEventRenderer(@RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<JsonBinaryEventTextRenderer> getBinaryEventRenderer(@RequestParam(required = false) Integer id,
+                                                                              @RequestParam(required = false) String xid,
+                                                                              @RequestParam Integer value,
+                                                                              HttpServletRequest request) {
         LOG.info("/api/point_properties/getBinaryEventRenderer");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                DataPointVO dataPointVO;
-                if (query.containsKey("id"))
-                    dataPointVO = dataPointService.getDataPoint(Integer.parseInt(query.get("id")));
-                else if (query.containsKey("xid"))
-                    dataPointVO = dataPointService.getDataPoint(query.get("xid"));
-                else
+                String error = validId(id, xid);
+                if(!error.isEmpty() || value == null) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                if(query.containsKey("value"))
-                    return new ResponseEntity<>(dataPointService.getBinaryEventTextRenderer(dataPointVO, Integer.parseInt(query.get("value"))), HttpStatus.OK);
-                else
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+
+                return getDataPointByIdOrXid(id, xid, dataPointService)
+                        .map(a -> new ResponseEntity<>(dataPointService
+                                .getBinaryEventTextRenderer(a, value), HttpStatus.OK))
+                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -694,21 +697,25 @@ public class PointPropertiesAPI {
     }
 
     @PatchMapping(value = "/{id}/purge")
-    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id, @RequestParam Map<String, String> query, HttpServletRequest request) {
+    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id,
+                                                       @RequestParam(required = false) Boolean all,
+                                                       @RequestParam(required = false) Integer type,
+                                                       @RequestParam(required = false) Integer period,
+                                                       HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
                 DataPointVO point = dataPointService.getDataPoint(id);
                 RuntimeManager rm = Common.ctx.getRuntimeManager();
                 Long count;
-                if(query.containsKey("all")) {
-                    if(query.get("all").equals("true")) {
+                if(all != null) {
+                    if(all) {
                         count = rm.purgeDataPointValues(point.getId());
                         return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
                     }
                 }
-                if(query.containsKey("type") && query.containsKey("period")) {
-                    count = rm.purgeDataPointValues(point.getId(), Integer.parseInt(query.get("type")), Integer.parseInt(query.get("period")));
+                if(type != null && period != null) {
+                    count = rm.purgeDataPointValues(point.getId(), type, period);
                     return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
                 }
             } else {
@@ -764,4 +771,20 @@ public class PointPropertiesAPI {
         }
     }
 
+    private ResponseEntity<String> getPointDescription(Integer id, String xid) {
+        Map<String, String> response = new HashMap<>();
+        getDataPointByIdOrXid(id, xid, dataPointService)
+                .ifPresent(a -> response.put("description", a.getDescription()));
+        if(response.isEmpty()) {
+            return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(response);
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            LOG.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

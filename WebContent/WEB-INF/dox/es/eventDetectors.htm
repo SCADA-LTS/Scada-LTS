@@ -1,133 +1,70 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<h1>Descripci&oacute;n General</h1>
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
 <p>
-  El prop&oacute;sito de un detector de eventos es el de determinar si el valor de un punto satisface una o m&aacute;s condiciones relacionadas con &eacute;sta,
- y de ser as&iacute;, "activarse"  y levantar un evento para que este sea manejado apropiadamente. Un punto puede tener un ilimitado n&uacute;mero de
- detectores de eventos. Las formas con las cuales puede detectarse un evento depender&aacute;n del tipo de punto, y en la lista de detectores de eventos
- solamente se listar&aacute;n los detectores de evento del punto que corresponden a su tipo, en la selecci&oacute;n <b>Tipo</b>.
+  El propósito de un detector de sucesos es determinar si el valor de un punto satisface una o más condiciones conexas y, en caso afirmativo, "activarse" y desencadenar un suceso que pueda manejarse adecuadamente. Un punto puede tener un número ilimitado de detectores de eventos. La forma en que se pueden detectar los eventos depende del tipo de datos del punto, por lo que sólo los detectores de eventos que se aplican al tipo de datos del punto actual se enumeran en la selección <b>Tipo</b>.
 </p>
 <p>
-  Los detectores de evento pueden detectar un gran n&uacute;mero de condiciones, pero &uacute;nicamente aplican a un punto simple. Cuando requiera que las condiciones
- de m&uacute;ltiples puntos o que sus condiciones incluyan eventos espec&iacute;ficos, puede utilizarse detectores de eventos compuestos. Vea la documentaci&oacute;n
- para los detectores de eventos compuestos.
+  Los detectores de eventos pueden detectar un gran número de condiciones, pero sólo se aplican a un único punto. Si se requieren condiciones multipunto o condiciones con eventos programados, pueden utilizarse detectores de eventos compuestos. Vea la documentación sobre los detectores de eventos compuestos.
 </p>
 <p>
-  Un punto puede contener tantos detectores de eventos como requiera, y puede tener m&uacute;ltiples detectores del mismo tipo.
- (p.e. m&uacute;ltiples detectores de eventos para l&iacute;mites de valores altos o bajos.)
+  Un punto puede tener tantos detectores como sea necesario, y puede tener varios detectores del mismo tipo. (es decir, varios detectores de límite alto o bajo).
 </p>
 <p>
-  Para agregar un nuevo detector, seleccione el <b>Tipo</b> deseado de la lista y haga clic en el icono <img src="images/bell_add.png"/>.
- Recuerde que debe hacer clic en el bot&oacute;n de "Guardar" para que los cambios o inclusiones en los detectores declarados del punto sean
- almacenados junto con este. Para eliminar un detector, s&oacute;lo haga clic en el icono <img src="images/bell_delete.png"/> que est&eacute;
- junto al detector que desea eliminar.
+  Para añadir un nuevo detector, seleccione el <b>Tipo</b> de la lista y haga clic en el icono <img src="images/bell_add.png"/>. Tenga en cuenta que el botón "Guardar" debe ser pulsado para que el detector se guarde realmente con el punto. Para borrar un detector existente, haga clic en el icono <img src="images/bell_delete.png"/> asociado con el detector.
 </p>
 <p>
-  Cada tipo de detector contiene un atributo de <b>Nivel de Alarma</b>. Este atributo determina si el detector generar&aacute; una alarma
- cuando se active, y cual ser&aacute; severidad de la alarma. Vea la p&aacute;gina de Ayuda General para m&aacute;s informaci&oacute;n de las Alarmas.</p>
-
-<h1>L&iacute;mite Superior</h1>
-<p>
-  Este detector aplica &uacute;nicamente a puntos num&eacute;ricos. El <b>L&iacute;mite superior</b> es el valor superior al punto en el cual el detector se activar&aacute;.
- El detector puede, adicionalmente, ser configurado con una <b>Duraci&oacute;n</b>; esto permite que el valor del punto pueda estar
- sobre el valor configurado un tiempo inferior al establecido en la duraci&oacute;n, antes de activar el detector. Los eventos que son
- levantados por ese detector regresar&aacute;n de forma autom&aacute;tica a su condici&oacute;n normal cuando la condici&oacute;n ya no sea cumplida.
+  Cada tipo de detector tiene un atributo <b>Nivel de alarma</b>. Este atributo determina si el detector dispara una alarma cuando está activo, y si es así, la gravedad de la alarma. Consulte la página de ayuda general para obtener información sobre las alarmas.
 </p>
 
-<h1>L&iacute;mite inferior</h1>
+<h1>Límite superior</h1>
 <p>
-  Este detector aplica &uacute;nicamente a puntos num&eacute;ricos. El <b>L&iacute;mite inferior</b> es el valor inferior al punto en el cual el detector se activar&aacute;.
- El detector puede, adicionalmente, ser configurado con una <b>Duraci&oacute;n</b>; esto permite que el valor del punto pueda estar
- bajo el valor configurado un tiempo inferior al establecido en la duraci&oacute;n, antes de activar el detector. Los eventos que son
- levantados por ese detector regresar&aacute;n de forma autom&aacute;tica a su condici&oacute;n normal cuando la condici&oacute;n ya no sea cumplida.
+  Este detector se aplica sólo a los puntos numéricos. El <b>Límite Alto</b> es el valor por encima del cual el detector se activa. El detector puede configurarse opcionalmente con un <b>Duración</b>; el valor del punto debe permanecer por encima del límite superior durante al menos el tiempo dado antes de que el detector se active. Los eventos desencadenados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.
 </p>
 
-<h1>Cambio</h1>
+<h1>Límite inferior</h1>
 <p>
-    Este detector aplica para todos los tipos de puntos. Cuando el valor cambie se generar&aacute; un evento. Los eventos levantados por este detector no
- regresan autom&aacute;ticamente a normal.
+  Este detector se aplica sólo a los puntos numéricos. El <b>Límite inferior</b> es el valor por debajo del cual el detector se activa. El detector puede configurarse opcionalmente con un <b>Duración</b>; el valor del punto debe permanecer por debajo del límite inferior durante al menos el tiempo dado antes de que el detector se active. Los eventos desencadenados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.</p>
+
+<h1>Cambiar</h1>
+<p>
+  Este detector es aplicable a todo tipo de datos. Desencadena un evento cada vez que cambia el valor del punto. Los eventos activados por este detector no vuelven automáticamente a la normalidad.
 </p>
 
-<h1>Sin cambios</h1>
+<h1>No hay cambios.</h1>
 <p>
-  Este detector aplica para todos los tipos de puntos. Cuando el valor no ha cambiado dentro de la <b>Duraci&oacute;n</b> establecida se generar&aacute; un evento.
- Esto puede ser &uacute;til para detectar si un equipo est&aacute; funcionando mal. Los eventos que son levantados por ese detector regresar&aacute;n de forma autom&aacute;tica
- a su condici&oacute;n normal cuando la condici&oacute;n ya no sea cumplida.
+  Este detector es aplicable a todo tipo de datos. Desencadena un evento cuando el valor no ha cambiado dentro de los límites de los datos <b>Duración</b>. Esto puede ser útil para detectar un mal funcionamiento del equipo. Los eventos activados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.
 </p>
 
-<h1>Sin actualizaci&oacute;n</h1>
+<h1>No hay actualizaciones</h1>
 <p>
-  Este detector aplica para todos los tipos de puntos. Cuando el valor no ha sido actualizado dentro de la <b>Duraci&oacute;n</b> establecida
- se generar&aacute; un evento.(Para que se considere que el valor de un punto cambi&oacute;, este debe tomar un nuevo valor. Una actualizaci&oacute;n de un valor
- de un punto s&oacute;lo requiere que su estampa de tiempo cambie; aunque el valor permanezca igual.)  Esto puede ser &uacute;til para detectar
- si un equipo est&aacute; funcionando mal. Los eventos que son levantados por ese detector regresar&aacute;n de forma autom&aacute;tica a su condici&oacute;n normal
- cuando la condici&oacute;n ya no sea cumplida.
+  Este detector es aplicable a todo tipo de datos. Se desencadena un evento cuando el valor no ha sido actualizado en el período de datos <b>Duración</b>. (Un cambio en el valor del punto requiere que el nuevo valor del punto sea diferente del anterior. Una actualización del valor puntual sólo requiere el tiempo para que el valor puntual cambie; el valor en sí mismo puede permanecer igual). Esto puede ser útil para detectar un mal funcionamiento del equipo. Los eventos activados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.
 </p>
 
 <h1>Estado</h1>
 <p>
-  Este detector aplica a puntos Binarios, Multiestados, y Alfanum&eacute;ricos, y se activa cuando el punto toma un <b>Estado</b> definido.
- El detector puede opcionalmente configurarse con una <b>Duraci&oacute;n</b>; el punto debe permanecer en el estado definido durante
- un tiempo establecido antes que el detector se active. El evento levantado por este detector regresar&aacute; automaticamente a normal
- cuando la condici&oacute;n que lo activ&oacute; ya no est&eacute; presente.
+  Este detector se aplica a puntos binarios, multiestatales y alfanuméricos. Se activa tan pronto como el punto entra en el estado <b> dado </b>. El detector puede configurarse opcionalmente con un <b>Duración</b>; el punto debe permanecer en el estado dado durante al menos la duración dada antes de que el detector se active. Los eventos desencadenados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.
 </p>
 
-<h1>Contador de cambio de estados </h1>
+<h1>Este detector se aplica a puntos binarios, multiestatales y alfanuméricos. Se activa tan pronto como el punto entra en el estado <b> dado </b>. El detector puede configurarse opcionalmente con un <b>Duración</b>; el punto debe permanecer en el estado dado durante al menos la duración dada antes de que el detector se active. Los eventos desencadenados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.</h1>
 <p>
-  Este detector aplica a puntos Binarios, Multiestados, y Alfanum&eacute;ricos, y se activa cuando el valor del punto cambia
- tantas veces como el <b>Contador de cambios</b> de estado con una <b>Duraci&oacute;n</b> de tiempo establecida. El evento levantado
- por este detector regresar&aacute; automaticamente a normal cuando la condici&oacute;n que lo activ&oacute; ya no est&eacute; presente.
+  Este detector se aplica sólo a los puntos binarios, multiestatales y alfanuméricos. Se activa cuando el valor del punto cambia por lo menos <b>Cuenta de cambio</b> veces dentro del período <b>Duración</b> dado. Los eventos desencadenados por este detector vuelven automáticamente a la normalidad cuando la condición ya no se cumple.
 </p>
 
-<h1>Suma Acumulada Positiva (CUSUM Positiva)</h1>
+<h1>CUSUM positivo</h1>
 <p>
- Este detector aplica s&oacute;lo a punto num&eacute;ricos. El <b>L&iacute;mite Positivo</b> es la CUSUM con la cual el detector se activar&aacute;,
- y el <b>Peso</b> es el valor de la constante para realizar el c&aacute;lculo del CUSUM. Opcionalmente se le puede configurar al detector
- una <b>Duraci&oacute;n</b> m&iacute;nima; la CUSUM debe mantenerse sobre su l&iacute;mite durante un tiempo determinado antes que el detector se active.
- Los eventos levantados por este detector regresar&aacute;n automaticamente a normal cuando la condici&oacute;n que los activ&oacute; ya no est&eacute; presente.
+  Este detector se aplica sólo a los puntos numéricos. El <b>Límite Positivo</b> es el CUSUM por encima del cual el detector se activa, y el <b>Pesos</b> es el valor de peso constante a utilizar para el cálculo del CUSUM. El detector puede configurarse opcionalmente con un <b>Duración</b>; el CUSUM debe permanecer por encima del límite durante al menos el tiempo dado antes de que el detector se active. Los eventos desencadenados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.
 </p>
 
-<h1>Suma Acumulada Negativa (CUSUM Negativa)</h1>
+<h1>CUSUM Negativo</h1>
 <p>
- Este detector aplica s&oacute;lo a punto num&eacute;ricos. El <b>L&iacute;mite Negativo</b> es la CUSUM con la cual el detector se activar&aacute;,
- y el <b>Peso</b> es el valor de la constante para realizar el c&aacute;lculo del CUSUM. Opcionalmente se le puede configurar al detector
- una <b>Duraci&oacute;n</b> m&iacute;nima; la CUSUM debe mantenerse por debajo su l&iacute;mite durante un tiempo determinado antes que el detector se active.
- Los eventos levantados por este detector regresar&aacute;n automaticamente a normal cuando la condici&oacute;n que los activ&oacute; ya no est&eacute; presente.
+  Este detector se aplica sólo a los puntos numéricos. El <b>Límite Negativo</b> es el CUSUM por debajo del cual el detector se activa, y el <b>Pesos</b> es el valor de peso constante a utilizar para el cálculo del CUSUM. El detector puede configurarse opcionalmente con un <b>Duración</b>; el CUSUM debe permanecer por debajo del límite durante al menos el tiempo dado antes de que el detector se active. Los eventos desencadenados por este detector volverán automáticamente a la normalidad cuando la condición ya no se cumpla.
 </p>

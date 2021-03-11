@@ -30,12 +30,14 @@ import com.serotonin.mango.vo.DataPointVO;
 
 @JsonRemoteEntity
 public class ImageChartRenderer extends TimePeriodChartRenderer {
-    private static ImplDefinition definition = new ImplDefinition("chartRendererImage", "IMAGE", "chartRenderer.image",
+    private static ImplDefinition definition = new ImplDefinition(ImageChartRenderer.TYPE_NAME, "IMAGE", "chartRenderer.image",
             new int[] { DataTypes.BINARY, DataTypes.MULTISTATE, DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "chartRendererImage";
 
     public String getTypeName() {
         return definition.getName();

@@ -156,13 +156,13 @@
 <script>
 /**
  * Event Text Renderer for Point Properties
- * 
- * An event text renderer's purpose is to display a specific 
- * message related to the raw value of data point in several places. 
- * 
- * @param {Object} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * An event text renderer's purpose is to display a specific
+ * message related to the raw value of data point in several places.
+ *
+ * @param {Object} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {

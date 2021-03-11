@@ -2,7 +2,6 @@ package utils;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -12,8 +11,6 @@ import org.joda.time.DateTime;
 import org.scada_lts.service.CommunicationChannelTypable;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import static org.mockito.Mockito.mock;
@@ -43,35 +40,32 @@ public final class EventTestUtils {
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage,
                                                                   EventType eventType) {
-        EventMessages messages = new EventMessages(localizableMessage, localizableMessage);
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                messages, Collections.emptyMap());
+                localizableMessage, Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, LocalizableMessage localizableMessage) {
-        EventMessages messages = new EventMessages(localizableMessage, localizableMessage);
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
                 activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                messages, Collections.emptyMap());
+                localizableMessage, Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
     public static EventInstance createEventCriticalWithActiveTime(int id, DateTime activeTime, EventType eventType) {
-        EventMessages messages = new EventMessages(new LocalizableMessage("com.test"), new LocalizableMessage("com.test"));
         EventInstance event = new EventInstance(eventType, activeTime.getMillis(), false, AlarmLevels.CRITICAL,
-                messages, Collections.emptyMap());
+                new LocalizableMessage("com.test"), Collections.emptyMap());
         event.setId(id);
         return event;
     }
 
     public static EventInstance createEventCriticalWithActiveTimeAndDataPointEventType(int id, DateTime activeTime) {
-        EventMessages messages = new EventMessages(new LocalizableMessage("com.test"), new LocalizableMessage("com.test"));
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
-                activeTime.getMillis(), false, AlarmLevels.CRITICAL, messages, Collections.emptyMap());
+                activeTime.getMillis(), false, AlarmLevels.CRITICAL, new LocalizableMessage("com.test"),
+                Collections.emptyMap());
         event.setId(id);
         return event;
     }

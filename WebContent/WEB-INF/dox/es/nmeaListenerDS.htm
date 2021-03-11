@@ -1,0 +1,19 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La fuente de datos del auditor de la NMEA se utiliza para recibir mensajes del equipo que cumple con la NMEA 0183. Los dispositivos se conectan a través de los puertos RS232 o RS485 (requiere un adaptador). Esta fuente de datos recibe actualizaciones periódicas de los dispositivos conectados y no es contaminante.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. Seleccionando <b>Port</b> se obtiene una lista de todos los puertos serie disponibles en el hardware del host. Esto corresponde al puerto al que está conectado el dispositivo NMEA. La selección <b>Tasa de audición</b> es la velocidad a la que su dispositivo puede comunicar sus mensajes. Típicamente, este valor es 4800, pero otros valores son posibles. Consulte la documentación de la NMEA para más detalles. Los valores de la suma de comprobación se validan si se incluyen en el mensaje. Si la validación de la suma de control falla, el mensaje es ignorado.</p>
+
+<h1>El auricular del mensaje NMEA</h1>
+<p>Una vez que el equipo de NMEA se ha conectado al anfitrión, es posible iniciar una escucha esperando que lleguen los mensajes. La velocidad de llegada de los mensajes depende del equipo. Los mensajes se mostrarán excluyendo el mensaje de "sobre", es decir, el indicador de inicio "$", el indicador de fin de CRLF, y el valor "*" y la suma de comprobación si está presente.</p>
+<p>Los mensajes mostrados pueden ser copiados y pegados en el <b>Mensaje de prueba de la caja regex</b> para ser probados contra la regex de sus puntos.</p>

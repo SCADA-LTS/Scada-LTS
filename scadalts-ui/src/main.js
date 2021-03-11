@@ -301,6 +301,7 @@ if (window.document.getElementById('live-alarms') != undefined) {
 
 	new Vue({
 		store,
+		vuetify,
 		render: (h) =>
 			h(LiveAlarms, {
 				props: {

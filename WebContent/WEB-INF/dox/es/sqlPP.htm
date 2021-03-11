@@ -1,0 +1,18 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>Los atributos utilizados para configurar los puntos de origen de los datos SQL difieren ligeramente dependiendo de si la consulta se basa en filas o columnas. En ambos casos, el tipo de datos <b>Tipo de datos</b> determina el tipo de datos del punto de datos Scada-LTS. Los valores del conjunto de resultados se convierten automáticamente a este tipo. </p>
+
+<p>En las consultas basadas en filas, el identificador de fila <b>Identificador de fila</b> se compara con la primera columna del conjunto de resultados para encontrar la(s) fila(s) que contiene(n) valores (la segunda columna) para ese punto. Los rebasamientos de tiempo se toman de la tercera columna si existe.</p>
+
+<p>En las consultas basadas en columnas, el <b>Nombre de la columna </b> es el nombre de la columna del conjunto de resultados de la que se obtiene el valor del punto. La columna <b>Undo Time </b> (opcional) especifica la columna que se usará como punto de deshacer el tiempo. Tenga en cuenta que varios puntos pueden utilizar el mismo tiempo de anulación si es necesario.</p>
+
+<h1>Actualización de las declaraciones</h1>
+<p>Una <b>Declaración de actualización </b> puede ser definida posiblemente para un punto, lo que determina cómo el valor del punto puede ser establecido en la base de datos. Esta es una declaración SQL estándar que utiliza "actualizar" o "insertar". Si no se define esta declaración, el punto se considerará como no fijable.</p>

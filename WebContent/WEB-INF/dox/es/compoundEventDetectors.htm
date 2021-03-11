@@ -1,92 +1,33 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Los detectores de eventos compuestos se utilizan para detectar condiciones entre varios eventos al mismo tiempo. En lugar de limitarse a anotar cuando un valor es demasiado alto o demasiado bajo, si un dispositivo se encuentra en un estado o un día determinado de la semana, los detectores compuestos permiten definir relaciones lógicas entre todos estos elementos. Por ejemplo, se pueden detectar situaciones en las que un valor es demasiado alto o demasiado bajo y otro dispositivo se encuentra en un estado determinado, pero no en un día concreto de la semana.</p>
+<p>Los detectores compuestos actúan como detectores de condición lógica entre los detectores simples existentes. Por lo tanto, todos los detectores simples entre los que se quiere establecer relaciones deben existir ya. Vea Detectores de eventos y Eventos programados para más información.</p>
+<p>Obsérvese que, aunque hay muchos tipos de eventos, en la construcción de detectores de eventos compuestos sólo pueden utilizarse detectores de eventos simples y eventos programados.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<h1>Lista de detectores compuestos</h1>
+<p>Para añadir un nuevo detector de compuestos, haga clic en el icono <img src="images/multi_bell_add.png"/>. Para modificar un detector existente, haga clic en el nombre del detector en la lista "Detectores de eventos compuestos".</p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<h1>Edición de los detalles de los detectores de compuestos</h1>
+<p>El <b>nombre del detector</b> se utiliza para referirse visualmente al detector en caso de alarma, o como fuente para un manejador de eventos. Se recomienda utilizar un nombre único para cada detector, pero no es obligatorio.</p>
+<p>El <b>Nivel de alarma</b> determina si el detector dispara una alarma cuando está activo, y si es así, la severidad de la alarma. Consulte la página de Ayuda General para obtener información sobre las alarmas.</p>
+<p>Seleccionando <b>Volver a la normalidad</b> se determina si la alarma disparada cuando el detector está activo se vuelve automáticamente a la normalidad cuando el detector se vuelve inactivo. Si no se selecciona el retorno a la normalidad, cualquier alarma que se active tendrá que ser reconocida manualmente...</p>
+<p>Un detector de compuestos puede ser <b>apagado</b> para que no funcione. Esto puede ser útil si no quieres borrar el detector, pero también si no quieres que se active en este momento. Además, el sistema puede desactivar automáticamente un detector si los detectores de punto o los eventos programados de los que depende son eliminados o desactivados.</p>
+<p>Para registrar un detector compuesto, haga clic en el icono <img src="images/save.png"/> en la esquina superior derecha. Para borrar un detector existente, haz clic en el icono <img src="images/delete.png">.</p>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
+<h1>Condiciones del edificio</h1>
+<p>Las condiciones son declaraciones lógicas construidas a partir de detectores únicos existentes (es decir, detectores puntuales o eventos programados). Los operadores lógicos típicos se usan para definir la condición general, incluyendo y (&amp;&amp;), o (|), no (!). Se utilizan símbolos en lugar de palabras para evitar la ambigüedad. Se pueden utilizar paréntesis para agrupar las secciones de la declaración.</p>
+<p>Los detectores puntuales y los eventos programados se referencian mediante una abreviatura derivada de un indicador de tipo ("P" para detector puntual, "S" para evento programado), y el número de identificación interno del elemento. Para su conveniencia, se proporciona una lista de todos los detectores simples disponibles en un árbol debajo de los detalles de los detectores compuestos. Los nombres de los detectores van seguidos de un breve número de identificación que se utilizará. Al hacer clic en el nombre del detector se insertará el identificador en la declaración de la condición en la ubicación actual del cursor.</p>
+<p>Al hacer clic en el icono <img src="images/accept.png"/> se valida la declaración de la condición.</p>
 
-<h1>Descripci&oacute;n General</h1>
-<p>Los detectores de eventos compuesto son utilizados para detectar condiciones sobre la ocurrencia de m&uacute;ltiples eventos simult&aacute;neamente.
- En lugar de &uacute;nicamente observar cuando un valor es muy alto o bajo, o que un dispositivo est&aacute; en un estado determinado, o si es un d&iacute;a determinado
- de la semana, los detectores de eventos compuestos permiten definir relaciones l&oacute;gicas entre todas estos casos. Por ejemplo: puede detectar situaciones
- cuando un valor es muy alto o bajo y conjuntamente un dispositivo presenta una condici&oacute;n dada, pero no ocurre en un d&iacute;a determinado de la semana.
-</p>
-<p>Los detectores compuestos act&uacute;an como detectores de condiciones l&oacute;gicas sobre detectores simples ya existentes. As&iacute;, puede construir relaciones ente
- todos los detectores simples que existan. Vea los detectores de eventos y la programaci&oacute;n de eventos para m&aacute;s informaci&oacute;n.
-</p>
-<p>Note que que, aunque hay muchos tipos de eventos, se requieren detectores de eventos y de los eventos programados de cada punto para construir
- los de detectores de eventos compuestos.
-</p>
-
-<h1>Lista de detectores de eventos compuestos</h1>
-<p>Para agregar un nuevo detector, haga clic en el icono <img src="images/multi_bell_add.png"/>. Para editar un detector existente, haga clic en el nombre
- del detector en la lista de "Detectores de eventos compuestos".</p>
-
-<h1>Editando los detalles de los detectores de evento compuesto</h1>
-<p>El <b>nombre</b> del detector es utilizado como referencia visual de &eacute;ste durante condiciones de alarma, o como fuente de un manejador de eventos.
- Se recomienda utilizar un &uacute;nico nombre para cada detector, pero no es obligatorio.
-</p>
-<p>El <b>Nivel de Alarma</b> determina si el detector generar&aacute; una alarma cuando se active, y en ese caso su severidad. Vea la p&aacute;gina general de ayuda
- para m&aacute;s informaci&oacute;n de las alarmas
-</p>Seleccionando la opci&oacute;n <b>Regreso a Normal</b> determina si la alarma levantada cuando el detector se activa regresa autom&aacute;ticamente a normal
- cuando el detector se convierte en inactivo. Cuando  esta casilla no es seleccionada, es necesario que cada alarma levantada sea reconocida manualmente.
-</p>
-<p>Un detector compuesto puede ser <b>Deshabilitado</b> para que &eacute;ste no se ejecute. Esto puede ser &uacute;til 
- cuando prefiera conservar el detector en lugar de eliminarlo y que este s&oacute;lo requiere ser habilitado para utilizarlo.
- Igualmente, el sistema autom&aacute;ticamente deshabilitar&aacute; un detector cuando los detectores de eventos y os eventos programados del punto de los cuales depende
- han sido eliminados o deshabilitados.
-</p>
-<p>Para guardar un detector de evento compuesto, haga clic en el icono <img src="images/save.png"/> en la parte superior derecha. Para eliminar un detector
- existente, haga clic en el icono <img src="images/delete.png"/>.</p>
-
-<h1>Construcci&oacute;n de las condiciones</h1>
-<p>
- Las condiciones son sentencias l&oacute;gicas construidas desde detectores simples (p.e. detectores de eventos de punto o eventos programados). 
- Los operadores l&oacute;gicos t&iacute;picos son utilizados para definir la condici&oacute;n, estos incluyen al and (&amp;&amp;), or (||), y el not (!). 
- En las declaraciones se utilizan s&iacute;mbolos en lugar de las palabras para evitar ambigüedades. Puede utilizar par&eacute;ntesis para agrupar en secciones
- las sentencias.
-</p>
-<p>Los detectores de puntos y los eventos programados son referidos utilizando una referencia corta que es tomada del tipo del indicador
- ("P" para detectores de puntos, "S" para eventos programados), y un n&uacute;mero de identificaci&oacute;n interno del &iacute;tem. Por comodidad, una lista de
- todos los detectores simples est&aacute; disponible en forma de una jerarqu&iacute;a de &aacute;rbol bajo los detalles del detector compuesto.
- Se utilizar&aacute; como nombre del detector El sufijo conformado por las referencias cortas de cada ID. Haciendo clic en el nombre del detector
- insertar&aacute; el identificador del detector dentro del recuadro con la sentencia donde se encuentre ubicado el cursor.
-</p>
-<p>Para validar las sentencias declaradas, haga clic en icono <img src="images/accept.png"/>.</p>
-
-<h1>Orden de prioridad de los operadores</h1>
-<p>Los operadores l&oacute;gicos tienen el siguiente orden de prioridad: Par&eacute;ntesis, not, and, or. Para m&aacute;s informaci&oacute;n sobre las reglas de estas prioridades,
- vea la secci&oacute;n de "Mathematical precedence" en <a href="http://en.wikipedia.org/wiki/Order_of_operations" target="_blank">aqu&iacute;</a>.</p>
+<h1>Prioridad del operador</h1>
+<p>Los operadores lógicos tienen el siguiente orden de precedencia: paréntesis, pasos, y, o. Para más información sobre las reglas de prioridad, ver la sección "Prioridad matemática" <a href="http://en.wikipedia.org/wiki/Order_of_operations" target="_blank">aquí</a>.</p>
 

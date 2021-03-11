@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -501,13 +500,13 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						rs.getString(COLUMN_NAME_SHORT_MESSAGE));
 			}
 
-			EventMessages messages = new EventMessages(message, shortMessage);
 			EventInstance event = new EventInstance(
 					type, 
 					rs.getLong(COLUMN_NAME_ACTIVE_TS), 
 					DAO.charToBool(rs.getString(COLUMN_NAME_RTN_APPLICABLE)), 
 					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
-					messages,
+					message,
+					shortMessage,
 					null);
 			
 			event.setId(rs.getInt(COLUMN_NAME_ID));
@@ -683,8 +682,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				 						(!entity.isActive() ? entity.getRtnTimestamp():0),
 				 						(!entity.isActive() ? entity.getRtnCause():0),
 				 						entity.getAlarmLevel(),
-				 						entity.getMessages().getMessage().serialize(),
-										entity.getMessages().getShortMessage().serialize(),
+				 						entity.getMessage().serialize(),
+										entity.getShortMessage().serialize(),
 				 						(!entity.isAlarm() ? entity.getAcknowledgedTimestamp():0)
 				 				}).setValues(ps);
 				 				return ps;
@@ -833,7 +832,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						// it in the result. Otherwise ignore.
 						StringBuilder text = new StringBuilder();
 						//TODO
-						text.append(e.getMessages().getMessage().getLocalizedMessage(bundle));
+						text.append(e.getMessage().getLocalizedMessage(bundle));
 						for (UserComment comment : e.getEventComments())
 							text.append(' ').append(comment.getComment());
 
@@ -955,7 +954,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 						// Do the text search. If the instance has a match, put
 						// it in the result. Otherwise ignore.
 						StringBuilder text = new StringBuilder();
-						text.append(e.getMessages().getMessage().getLocalizedMessage(bundle));
+						text.append(e.getMessage().getLocalizedMessage(bundle));
 						for (UserComment comment : e.getEventComments())
 							text.append(' ').append(comment.getComment());
 

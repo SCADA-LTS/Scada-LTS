@@ -157,16 +157,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.misc'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 
@@ -224,8 +224,8 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.purgedata'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				});
 			});

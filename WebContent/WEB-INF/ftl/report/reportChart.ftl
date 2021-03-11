@@ -230,7 +230,7 @@
             </td>
             <td>${event.fullPrettyActiveTimestamp}</td>
             <td>
-              <b><@fmt message=event.messages.message/></b>
+              <b><@fmt message=event.message/></b>
               <#if event.eventComments??>
                 <table cellspacing="0" cellpadding="0">
                   <#list event.eventComments as comment>

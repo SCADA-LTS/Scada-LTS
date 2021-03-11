@@ -27,17 +27,18 @@ import com.serotonin.mango.view.ImplDefinition;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "typeName"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = BinaryEventTextRenderer.class, name = "eventTextRendererBinary"),
-        @JsonSubTypes.Type(value = MultistateEventRenderer.class, name = "eventTextRendererMultistate"),
-        @JsonSubTypes.Type(value = RangeEventRenderer.class, name = "eventTextRendererRange"),
-        @JsonSubTypes.Type(value = NoneEventRenderer.class, name = "eventTextRendererNone"),
+        @JsonSubTypes.Type(value = BinaryEventTextRenderer.class, name = BinaryEventTextRenderer.TYPE_NAME),
+        @JsonSubTypes.Type(value = MultistateEventRenderer.class, name = MultistateEventRenderer.TYPE_NAME),
+        @JsonSubTypes.Type(value = RangeEventRenderer.class, name = RangeEventRenderer.TYPE_NAME),
+        @JsonSubTypes.Type(value = NoneEventRenderer.class, name = NoneEventRenderer.TYPE_NAME)
 })
 public interface EventTextRenderer extends Serializable {
 
-    String UNKNOWN_VALUE = "(n/a)";
+    String UNKNOWN_VALUE = "";
 
     String getText();
 

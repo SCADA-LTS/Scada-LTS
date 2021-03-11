@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
@@ -173,7 +172,10 @@ public class PendingEventsDAO {
 		LocalizableMessage shortMessage;
 		try {
 			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
-			shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
+			if (rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE) == null)
+				shortMessage = new LocalizableMessage("common.noMessage");
+			else
+				shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		} catch (LocalizableMessageParseException e) {
 			message = new LocalizableMessage("common.default",
 				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
@@ -181,8 +183,7 @@ public class PendingEventsDAO {
 					rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		}
 
-		EventMessages messages = new EventMessages(message, shortMessage);
-		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, messages, null);
+		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, shortMessage, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
 		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);

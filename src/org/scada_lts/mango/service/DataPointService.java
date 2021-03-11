@@ -52,7 +52,6 @@ import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
-import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -232,29 +231,6 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
 		Permissions.ensureDataPointSetPermission(user, dpvo);
 		setPointImpl(dpvo, value, user);
-	}
-
-	public void savePointProperties(DataPointVO dataPoint, JsonPointProperties jsonPointProperties) {
-		dataPoint.setName(jsonPointProperties.getName());
-		dataPoint.setDescription(jsonPointProperties.getDescription());
-		dataPoint.setEnabled(jsonPointProperties.isEnabled());
-		dataPoint.setLoggingType(jsonPointProperties.getLoggingType());
-		dataPoint.setIntervalLoggingPeriodType(jsonPointProperties.getIntervalLoggingPeriodType());
-		dataPoint.setIntervalLoggingPeriod(jsonPointProperties.getIntervalLoggingPeriod());
-		dataPoint.setIntervalLoggingType(jsonPointProperties.getIntervalLoggingType());
-		dataPoint.setTolerance(jsonPointProperties.getTolerance());
-		dataPoint.setPurgeType(jsonPointProperties.getPurgeType());
-		dataPoint.setPurgePeriod(jsonPointProperties.getPurgePeriod());
-		dataPoint.setEventTextRenderer(jsonPointProperties.getEventTextRenderer());
-		dataPoint.setTextRenderer(jsonPointProperties.getTextRenderer());
-		dataPoint.setChartRenderer(jsonPointProperties.getChartRenderer());
-		dataPoint.setDefaultCacheSize(jsonPointProperties.getDefaultCacheSize());
-		dataPoint.setDiscardExtremeValues(jsonPointProperties.isDiscardExtremeValues());
-		dataPoint.setDiscardLowLimit(jsonPointProperties.getDiscardLowLimit());
-		dataPoint.setDiscardHighLimit(jsonPointProperties.getDiscardHighLimit());
-		dataPoint.setEngineeringUnits(jsonPointProperties.getEngineeringUnits());
-		dataPoint.setChartColour(jsonPointProperties.getChartColour());
-		dataPointDAO.update(dataPoint);
 	}
 
 	private void setPointImpl(DataPointVO point, String valueStr, SetPointSource source) {
@@ -487,6 +463,10 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
+	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(eventDetector);
+	}
+
 	public void deleteEventDetector(DataPointVO dataPoint, int id){
 		pointEventDetectorDAO.delete(dataPoint.getId(), id);
 	}
@@ -592,9 +572,9 @@ public class DataPointService implements MangoDataPoint {
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
 		JsonBinaryEventTextRenderer json = new JsonBinaryEventTextRenderer();
 		if (value == 0) {
-			json.setShortLabel(dataPointVO.getEventTextRenderer().getText(false));
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(false));
 		} else if (value == 1) {
-			json.setShortLabel(dataPointVO.getEventTextRenderer().getText(true));
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(true));
 		}
 		return json;
 	}

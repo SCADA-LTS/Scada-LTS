@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.event.detectors;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.serotonin.mango.util.PointEventDetectorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,7 +51,7 @@ public class StateChangeCountDetectorRT extends TimeoutDetectorRT {
 
     @Override
     public LocalizableMessage getMessage() {
-        String description = (vo.njbGetDataPoint().getDescription() == null || vo.njbGetDataPoint().getDescription().equals("")) ? "" : " (" + vo.njbGetDataPoint().getDescription() + ")";
+        String description = PointEventDetectorUtils.getDescription(vo);
         return new LocalizableMessage("event.detector.change", vo.njbGetDataPoint().getName(),
                 vo.getChangeCount(), getDurationDescription(), description);
     }
