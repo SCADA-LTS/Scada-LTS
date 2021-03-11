@@ -26,8 +26,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.permissions.ACLConfig;
-import org.scada_lts.permissions.PermissionViewACL;
 import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
 import org.springframework.web.servlet.ModelAndView;
@@ -82,7 +82,10 @@ public class WatchListController extends ParameterizableViewController {
 				}
 				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
 				// ACL end;
-			}
+			} else {
+				WatchListService watchListService = new WatchListService();
+				watchLists = watchListService.getWatchLists(user.getId(), user.getUserProfile());
+            }
 
 		} else {
 			watchLists = watchListDao.getWatchLists();
