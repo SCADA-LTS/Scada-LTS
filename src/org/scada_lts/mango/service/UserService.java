@@ -46,6 +46,7 @@ public class UserService implements MangoUser {
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
+	private UsersProfileService usersProfileService = new UsersProfileService();
 
 	@Override
 	public User getUser(int id) {
@@ -84,6 +85,7 @@ public class UserService implements MangoUser {
 		if (user != null) {
 			user.setDataSourcePermissions(dataSourceService.getDataSourceId(user.getId()));
 			user.setDataPointPermissions(dataPointService.getDataPointAccessList(user.getId()));
+			usersProfileService.getUsersProfileByUser(user).ifPresent(user::setUserProfile);
 		}
 	}
 
