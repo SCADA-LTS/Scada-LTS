@@ -106,6 +106,8 @@ public interface MangoEvent {
 	boolean toggleSilence(int eventId, int userId);
 	
 	int getHighestUnsilencedAlarmLevel(int userId);
+
+	EventInstance getEvent(int eventId);
 	
 
 }

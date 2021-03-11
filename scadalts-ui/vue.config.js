@@ -6,6 +6,9 @@ const version = packageJson.version || 0;
 const milestone = packageJson.milestone || 0;
 const build = packageJson.build || 0;
 const branch = packageJson.branch || 'local';
+const commit = packageJson.commit || 'N/A';
+const pullRequestNumber = packageJson.pullRequestNumber || 'false';
+const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
 	filenameHashing: false,
 	configureWebpack: {
@@ -18,6 +21,9 @@ module.exports = {
 					SCADA_LTS_MILESTONE: '"' + milestone + '"',
 					SCADA_LTS_BUILD: '"' + build + '"',
 					SCADA_LTS_BRANCH: '"' + branch + '"',
+					SCADA_LTS_COMMIT: '"' + commit + '"',
+					SCADA_LTS_PULLREQUEST_NUMBER: '"' + pullRequestNumber + '"',
+					SCADA_LTS_PULLREQUEST_BRANCH: '"' + pullRequestBranch + '"',
 				},
 			}),
 		],

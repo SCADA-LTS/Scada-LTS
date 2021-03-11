@@ -3,7 +3,7 @@
 		<v-card>
 			<v-card-title>
 				{{ $t('systemsettings.loggingtype.title') }}
-				<span v-if="isLoggingTypeSettingsEdited">*</span>
+				<span v-if="isDefaultLoggingTypeEdited">*</span>
 			</v-card-title>
 			<v-card-text>
 				<v-select
@@ -16,6 +16,9 @@
 				></v-select>
 			</v-card-text>
 		</v-card>
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</v-col>
 </template>
 <script>
@@ -26,27 +29,20 @@ export default {
 			defaultLoggingType: undefined,
 			defaultLoggingTypeStore: undefined,
 			isDefaultLoggingTypeEdited: false,
-			loggingTypeList: [
-				{
-					id: 1,
-					type: 'ON_CHANGE',
-					label: this.$t('pointEdit.logging.type.change'),
-				},
-				{ id: 2, type: 'ALL', label: this.$t('pointEdit.logging.type.all') },
-				{ id: 3, type: 'NONE', label: this.$t('pointEdit.logging.type.never') },
-				{
-					id: 4,
-					type: 'INTERVAL',
-					label: this.$t('pointEdit.logging.type.interval'),
-				},
-				{
-					id: 5,
-					type: 'ON_TS_CHANGE',
-					label: this.$t('pointEdit.logging.type.tsChange'),
-				},
-			],
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
 	},
+
+	computed: {
+		loggingTypeList() {
+			return this.$store.state.dataPoint.loggingTypeList;
+		},
+	},
+
 	mounted() {
 		this.fetchData();
 	},
@@ -64,24 +60,25 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.$notify({
-							placement: 'top-right',
-							type: 'success',
-							content: this.$t('systemsettings.notification.save.logging'),
-						});
+						this.response = {
+							status: true,
+							message: this.$t('systemsettings.notification.save.logging'),
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
-					this.$notify({
-						placement: 'top-right',
-						type: 'danger',
-						content: this.$t('systemsettings.notification.fail'),
-					});
+					this.response = {
+						status: true,
+						message: this.$t('systemsettings.notification.fail'),
+						color: 'danger',
+					};
 				});
 		},
 		restoreData() {
 			this.fetchData();
 			this.defaultLoggingType = null;
+			this.isDefaultLoggingTypeEdited = false;
 		},
 		copyDataFromStore() {
 			return JSON.parse(

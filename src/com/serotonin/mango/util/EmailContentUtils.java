@@ -3,6 +3,7 @@ package com.serotonin.mango.util;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.vo.DataPointVO;
@@ -71,12 +72,15 @@ public final class EmailContentUtils {
     private static String getSubject(EventInstance evt, NotificationType notificationType, String alias, ResourceBundle bundle) {
 
         if(evt.getEventType() instanceof DataPointEventType) {
-            DataPointVO dataPoint;
             Map<String, Object> context = evt.getContext();
-            if(context != null && (dataPoint = (DataPointVO)context.get("point")) != null && dataPoint.getName() != null
-                && PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()) != AlarmLevels.NONE
-                    && evt.getMessage() != null) {
-                LocalizableMessage subjectMsg = evt.getMessage();
+            DataPointVO dataPoint = (DataPointVO) context.get("point");
+            if(isDataPointName(context, dataPoint) && isPlcAlarm(dataPoint) && evt.getMessage() != null) {
+                LocalizableMessage subjectMsg;
+                if (notificationType instanceof EmailToSmsHandlerRT.SmsNotificationType) {
+                    subjectMsg = evt.getShortMessage();
+                } else {
+                    subjectMsg = evt.getMessage();
+                }
                 return evt.getPrettyActiveTimestamp() + " - "  + subjectMsg.getLocalizedMessage(bundle);
             }
         }
@@ -97,5 +101,13 @@ public final class EmailContentUtils {
         }
 
         return subjectMsg.getLocalizedMessage(bundle);
+    }
+
+    private static boolean isDataPointName(Map<String, Object> context, DataPointVO dataPoint) {
+        return context != null && dataPoint != null && dataPoint.getName() != null;
+    }
+
+    private static boolean isPlcAlarm(DataPointVO dataPoint) {
+        return PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()) != AlarmLevels.NONE;
     }
 }
