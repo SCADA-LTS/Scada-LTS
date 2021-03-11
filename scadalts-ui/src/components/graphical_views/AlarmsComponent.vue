@@ -23,6 +23,7 @@
 				<th v-if="showSelectToAcknowledge == 'true'"></th>
 				<th>Activation Timestamp</th>
 				<th>Inactivation Timestamp</th>
+				<th>Description</th>
 				<th>Variable name</th>
 			</tr>
 			<tr
@@ -61,6 +62,7 @@
 				</td>
 				<td>{{ item['activation-time'] }}</td>
 				<td>{{ item['inactivation-time'] }}</td>
+				<td>{{ item.desc}} </td>
 				<td>{{ item.name }}</td>
 			</tr>
 		</table>
@@ -125,9 +127,7 @@ export default {
 			let loffset = String(recordsCount * (page - 1));
 			let llimit = String(recordsCount);
 
-			//store.dispatch('fakeGetLiveAlarms
 			store.dispatch('getLiveAlarms', { offset: loffset, limit: llimit }).then((ret) => {
-				this.alarms = ret;
 				if (this.alarms.length >= this.maximumNumbersOfRows || page > 1) {
 					if (this.showPagination == 'false') {
 						this.hidePagination = true;
@@ -137,6 +137,23 @@ export default {
 					if (this.hidePagination == true) {
 						this.showPagination = 'false';
 					}
+				}
+								
+				for (let i = 0; i < ret.length; i++) {
+				    let myactive = 0
+					if ( ((ret[i]['activation-time'] == undefined) || (ret[i]['activation-time'] == null)) ) {
+					 	myactive = 1
+					}
+					store.dispatch('getDescriptionForLiveAlarms', { dataPointId: ret[i].dataPointId, active: myactive }).then((ret1)=>{
+						if (ret1.eventText == undefined || ret1.eventText == null) {
+							ret[i].desc = 'not defined'
+						} else {
+							ret[i].desc = ret1.eventText
+						}
+						if (i == (ret.length-1)) {
+							this.alarms = ret;		
+						}
+					})
 				}
 			});
 		},

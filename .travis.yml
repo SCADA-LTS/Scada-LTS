@@ -32,6 +32,7 @@ branches:
   - "/^master.*$/"
   - "/^release/2.5.2.*$/"
   - "/^feature/#1532.*$/"
+  - "/^f_1545/#1565.*$/"
 notifications:
   email: false
 env:
