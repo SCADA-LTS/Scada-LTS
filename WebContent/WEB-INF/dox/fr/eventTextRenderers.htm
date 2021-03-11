@@ -1,0 +1,33 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2009 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<h1>Overview</h1>
+
+<p>An event text renderer's purpose is to give more specific information what happened when event is triggered. Each type of renderer has a text field where user can define message which is related to specific point value/state. Event text renderer value will be included in message from each type of detector (Change, BinaryState, HighLimit, etc.) and will be shown on watch list, graphical view, mail/SMS notification - in all places where event detector message is displayed. The ways to render depend upon the data type of data point. As such, only the renderer types that apply to the current point's data type are listed in the <b>Type</b> selection.</p>
+
+<h1>Binary</h1>
+<p>The <b>Binary</b> renderer allows the user to define an event text label to describe each of the two binary states. Any labels can be provided.</p>
+
+<h1>Numeric</h1>
+
+<p>The <b>Range</b> renderer allows the user to define a textual values to represent event states in various numeric from/to ranges.</p>
+
+<h1>Multistate</h1>
+
+<p>The <b>Multistate</b> renderer allows the user to define textual values to represent event states in various point states.</p>
+

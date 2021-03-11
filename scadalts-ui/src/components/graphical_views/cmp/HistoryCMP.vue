@@ -1,73 +1,53 @@
 <template>
-	<div>
-		<ag-grid-vue
-			style="height: 350px"
-			class="ag-theme-balham"
-			:columnDefs="columnDefs"
-			:rowData="rowData"
-		>
-		</ag-grid-vue>
-	</div>
+    <div>
+        <table>
+            <tr>
+                <th v-for="(column, index) in columns" :key="index">{{ column.name }} | </th>
+            </tr>
+            <tr v-for="(record, index) in nData" :key="index">
+                <td v-for="(column,indexColumn) in columns" :key="indexColumn">{{record[column.name]}} | </td>
+            </tr>
+        </table>
+    </div>
 </template>
 
 <script>
-import { AgGridVue } from 'ag-grid-vue';
-import moment from 'moment';
 import store from '../../../store';
+import moment from 'moment';
 
 export default {
 	name: 'history-cmp',
-	props: ['pxIdViewAndIdCmp', 'value'],
+    props: ['pxIdViewAndIdCmp'],
 	data() {
 		return {
-			columnDefs: null,
-			rowData: null,
 			xIdViewAndIdCmp: this.pxIdViewAndIdCmp,
+            nData: [],
+            columns: [{name: 'user name'}, {name: 'time'}, {name: 'interpreted state'}],
 		};
-	},
-	components: {
-		AgGridVue,
-	},
-	beforeMount() {
-		this.columnDefs = [
-			{ headerName: 'user', field: 'userName', width: 120, resizable: true },
-			{
-				headerName: 'time',
-				field: 'unixTime',
-				width: 200,
-				resizable: true,
-				sortable: true,
-				cellRenderer: (params) => {
-					return moment(params.value).format('Do MMMM YYYY, HH:mm:ss ');
-				},
-			},
-			{
-				headerName: 'to state',
-				field: 'interpretedState',
-				width: 120,
-				resizable: true,
-			},
-			{
-				headerName: 'values',
-				field: 'values',
-				resizable: true,
-				cellRenderer: (params) => {
-					return JSON.stringify(params.value);
-				},
-			},
-		];
-	},
-	mounted() {},
-	watch: {
-		value: function (val, oldVal) {
-			if (val == true) {
-				store.dispatch('getHisotryCMP', this.xIdViewAndIdCmp).then((ret) => {
-					this.rowData = this._.orderBy(ret.data.history, ['unixTime'], ['desc']);
-				});
-			} else {
-				this.rowData = null;
-			}
-		},
-	},
+    },
+    methods: {
+        loadData: function() {
+                let rowData = [];
+                store.dispatch('getHisotryCMP', this.xIdViewAndIdCmp).then((ret) => {
+                    rowData = this._.orderBy(ret.data.history, ['unixTime'], ['desc']);
+                    this.nData = []
+                    for (let i=0;i<rowData.length; i++) {
+                        this.nData.push( {
+                            "user name": rowData[i].userName, 
+                            "time": moment(rowData[i].unixTime).format('Do MMMM YYYY, HH:mm:ss '),
+                            "interpreted state":rowData[i].interpretedState });
+                    }
+                });
+        },
+    },
+	created() {
+       this.loadData()
+    }
 };
 </script>
+
+<style lang="scss" scoped>
+
+@import '../../../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
+
+</style>
