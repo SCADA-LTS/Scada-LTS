@@ -32,7 +32,7 @@ describe('Point Properties Tests - Logging properties', () => {
 		const wrapper = initWrapper();
 		const items = wrapper.find('.v-select:first-of-type').props('items');
 		expect(items.length).to.equal(5);
-		expect(wrapper.vm.data.intervalLoggingType).to.equal(1);
+		expect(wrapper.vm.data.loggingType).to.equal(1);
 		expect(wrapper.get('.row[style="display: none;"]').html()).to.contain(
 			'Interval logging period every',
 		);
@@ -40,7 +40,7 @@ describe('Point Properties Tests - Logging properties', () => {
 
 	it('Change to "Interval" property', async () => {
 		const wrapper = initWrapper();
-		wrapper.vm.data.intervalLoggingType = 4;
+		wrapper.vm.data.loggingType = 4;
 		await wrapper.vm.$nextTick();
 		expect(wrapper.text()).contains('logging period');
 	});

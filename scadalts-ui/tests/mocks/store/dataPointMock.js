@@ -26,6 +26,13 @@ export const dataPoint = {
 			{ id: 4, type: 'INTERVAL', label: 'Interval' },
 			{ id: 5, type: 'ON_TS_CHANGE', label: 'On Ts Change' },
 		],
+
+		chartRenderersList: [
+			{ id: -1, label: 'None' },
+			{ id: 0, label: 'Table' },
+			{ id: 1, label: 'Image' },
+			{ id: 2, label: 'Stats' },
+		],
 	},
 
 	mutations: {},

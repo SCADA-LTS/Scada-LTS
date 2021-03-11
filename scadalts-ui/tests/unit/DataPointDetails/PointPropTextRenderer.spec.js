@@ -83,12 +83,12 @@ describe('Point Properties Tests - Text Renderer Numeric', () => {
         wrapper.vm.selected=4;
 		await wrapper.vm.watchTextRendererChange(4);
         
-		wrapper.find('#renderer-range > .col:nth-of-type(2) input').element.value = '1';
-		wrapper.find('#renderer-range > .col:nth-of-type(2) input').trigger('input');
-        wrapper.find('#renderer-range > .col:nth-of-type(3) input').element.value = '5';
+		wrapper.find('#renderer-range > .col:nth-of-type(3) input').element.value = '1';
 		wrapper.find('#renderer-range > .col:nth-of-type(3) input').trigger('input');
-        wrapper.find('#renderer-range > .col:nth-of-type(4) input').element.value = 'ExampleText';
+        wrapper.find('#renderer-range > .col:nth-of-type(4) input').element.value = '5';
 		wrapper.find('#renderer-range > .col:nth-of-type(4) input').trigger('input');
+        wrapper.find('#renderer-range > .col:nth-of-type(5) input').element.value = 'ExampleText';
+		wrapper.find('#renderer-range > .col:nth-of-type(5) input').trigger('input');
 
         wrapper.find('#renderer-range .v-input__icon--append-outer button').trigger('click');
 		

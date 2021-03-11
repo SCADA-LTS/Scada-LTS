@@ -16,7 +16,7 @@
 			</v-card-title>
 
 			<v-card-text>
-				<v-row>
+				<v-row v-if="!!miscSettings">
 					<v-col cols="12">
 						<v-select
 							@change="watchDataChange()"
