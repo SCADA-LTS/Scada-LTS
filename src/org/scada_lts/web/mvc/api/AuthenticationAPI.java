@@ -5,9 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.json.JsonUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -173,6 +175,26 @@ public class AuthenticationAPI {
 		
 		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		
+	}
+
+	@GetMapping(value = "/api/auth/user")
+	public ResponseEntity<JsonUser> getUserInfo(HttpServletRequest request) {
+		User user = Common.getUser(request);
+
+		if(user != null) {
+			try {
+				JsonUser jsonUser = new JsonUser(
+						user.getId(), user.getUsername(), user.getEmail(),
+						user.getPhone(), user.isAdmin(), user.isDisabled(),
+						user.getHomeUrl(), user.getLastLogin()
+				);
+				return new ResponseEntity<>(jsonUser, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 	}
 	
 	

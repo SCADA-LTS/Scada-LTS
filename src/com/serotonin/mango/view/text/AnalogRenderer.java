@@ -33,7 +33,7 @@ import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
 public class AnalogRenderer extends BaseTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("textRendererAnalog", "ANALOG",
+    private static ImplDefinition definition = new ImplDefinition(AnalogRenderer.TYPE_NAME, "ANALOG",
             "textRenderer.analog", new int[] { DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {
@@ -47,6 +47,8 @@ public class AnalogRenderer extends BaseTextRenderer {
     public ImplDefinition getDef() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "textRendererAnalog";
 
     @JsonRemoteProperty
     private String format;

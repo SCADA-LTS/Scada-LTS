@@ -53,6 +53,14 @@
         <c:if test="${error.name != null}"><td class="formError"><fmt:message key="${error.name}"/></td></c:if>
       </tr>
     </spring:bind>
+
+    <spring:bind path="form.description">
+      <tr>
+        <td class="formLabelRequired"><fmt:message key="pointEdit.props.description"/></td>
+        <td class="formField"><input type="text" class="formLong" name="description" value="${status.value}"/></td>
+        <c:if test="${error.description != null}"><td class="formError"><fmt:message key="${error.description}"/></td></c:if>
+      </tr>
+    </spring:bind>
     
     <tbody id="engineeringUnitsSection" style="display:none;">
       <spring:bind path="form.engineeringUnits">

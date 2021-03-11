@@ -19,6 +19,8 @@
 package com.serotonin.mango.rt.event.detectors;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.util.PointEventDetectorUtils;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -60,9 +62,25 @@ public class PositiveCusumDetectorRT extends TimeDelayedEventDetectorRT {
         String name = vo.njbGetDataPoint().getName();
         String prettyLimit = vo.njbGetDataPoint().getTextRenderer().getText(vo.getLimit(), TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
+        String description = PointEventDetectorUtils.getDescription(vo);
+        String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit());
         if (durationDescription == null)
-            return new LocalizableMessage("event.detector.posCusum", name, prettyLimit);
-        return new LocalizableMessage("event.detector.posCusumPeriod", name, prettyLimit, durationDescription);
+            return new LocalizableMessage("event.detector.posCusum", name, prettyLimit, description, eventRendererText);
+        return new LocalizableMessage("event.detector.posCusumPeriod", name, prettyLimit, durationDescription, description, eventRendererText);
+    }
+
+    @Override
+    protected LocalizableMessage getShortMessage() {
+        if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
+                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit()) != null &&
+                (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit()).equals(""))) {
+            String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit());
+            return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
+                    eventRendererText);
+        } else {
+            return getMessage();
+        }
     }
 
     public boolean isEventActive() {

@@ -60,8 +60,14 @@ public class EventManager implements ILifecycle {
 	// Basic event management.
 	//
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
-			int alarmLevel, LocalizableMessage message,
-			Map<String, Object> context) {
+						   int alarmLevel, LocalizableMessage message,
+						   Map<String, Object> context) {
+		raiseEvent(type, time, rtnApplicable, alarmLevel, message, message, context);
+	}
+
+	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
+						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
+						   Map<String, Object> context) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
 		if (dup != null) {
@@ -96,7 +102,7 @@ public class EventManager implements ILifecycle {
 		boolean suppressed = isSuppressed(type);
 
 		EventInstance evt = new EventInstance(type, time, rtnApplicable,
-				alarmLevel, message, context);
+				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
@@ -116,7 +122,7 @@ public class EventManager implements ILifecycle {
 
 			if (Permissions.hasEventTypePermission(user, type)) {
 				eventUserIds.add(user.getId());
-				if( !suppressed && evt.isAlarm() ) 
+				if( !suppressed && evt.isAlarm() )
 					notifyEventRaise(evt.getId(), user.getId(), evt.getAlarmLevel());
 				if (evt.isAlarm() && user.getReceiveAlarmEmails() > 0
 						&& alarmLevel >= user.getReceiveAlarmEmails())

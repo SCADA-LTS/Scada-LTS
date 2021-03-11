@@ -17,7 +17,7 @@ const pkgJsonPath = require.main.paths[0].split('node_modules')[0] + 'package.js
 const json = require(pkgJsonPath);
 
 // ----- PACKAGE.JSON VARIABLES ----- //
-var tag = '0.1.0';
+var tag = '0.3.0';
 var milestone = '2.6.0';
 var build = '0';
 var branch = 'local';
