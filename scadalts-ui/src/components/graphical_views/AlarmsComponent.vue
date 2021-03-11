@@ -62,6 +62,7 @@
 				</td>
 				<td>{{ item['activation-time'] }}</td>
 				<td>{{ item['inactivation-time'] }}</td>
+				<td>{{ item.desc}} </td>
 				<td>{{ item.name }}</td>
 			</tr>
 		</table>
@@ -126,11 +127,7 @@ export default {
 			let loffset = String(recordsCount * (page - 1));
 			let llimit = String(recordsCount);
 
-			//store.dispatch('fakeGetLiveAlarms
 			store.dispatch('getLiveAlarms', { offset: loffset, limit: llimit }).then((ret) => {
-				
-				
-
 				if (this.alarms.length >= this.maximumNumbersOfRows || page > 1) {
 					if (this.showPagination == 'false') {
 						this.hidePagination = true;
@@ -141,24 +138,23 @@ export default {
 						this.showPagination = 'false';
 					}
 				}
-				console.log(ret)
-				
+								
 				for (let i = 0; i < ret.length; i++) {
-					console.log('id'+ret[i].dataPointId)
-
-					store.dispatch('getDescriptionForLiveAlarms', { dataPointId: ret[i].dataPointId}).then((ret1)=>{
-						console.log('desc ' + JSON.stringify(ret1))
+				    let myactive = 0
+					if ( ((ret[i]['activation-time'] == undefined) || (ret[i]['activation-time'] == null)) ) {
+					 	myactive = 1
+					}
+					store.dispatch('getDescriptionForLiveAlarms', { dataPointId: ret[i].dataPointId, active: myactive }).then((ret1)=>{
 						if (ret1.eventText == undefined || ret1.eventText == null) {
-							ret[i].desc = ''
+							ret[i].desc = 'not defined'
 						} else {
 							ret[i].desc = ret1.eventText
 						}
+						if (i == (ret.length-1)) {
+							this.alarms = ret;		
+						}
 					})
-					
-					
-				} 
-				
-				this.alarms = ret;
+				}
 			});
 		},
 		acknowledge() {

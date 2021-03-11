@@ -16,10 +16,9 @@ const storeAlarms = {
 	},
 	actions: {
 
-		getDescriptionForLiveAlarms({ commit }, { dataPointId }) {
+		getDescriptionForLiveAlarms({ commit }, { dataPointId, active }) {
 			return new Promise( (resolve, reject) => {
-
-				axios.get(`./api/point_properties/getBinaryEventRenderer?id=${dataPointId}&value=0`) // albo 1><>)
+				axios.get(`./api/point_properties/getBinaryEventRenderer?id=${dataPointId}&value=${active}`) 
 				.then((res) => {
 					resolve(res.data)
 				})
@@ -50,8 +49,7 @@ const storeAlarms = {
 				axios
 					.get(execute)
 					.then((res) => {
-						resolve(res.data);
-						//axios.all()
+						resolve(res.data)
 					})
 					.catch((err) => {
 						commit('ERR', err);
