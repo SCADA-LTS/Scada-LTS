@@ -36,12 +36,14 @@ import com.serotonin.mango.vo.DataPointVO;
  */
 @JsonRemoteEntity
 public class ImageFlipbookRenderer extends BaseChartRenderer {
-    private static ImplDefinition definition = new ImplDefinition("chartRendererImageFlipbook", "FLIPBOOK",
+    private static ImplDefinition definition = new ImplDefinition(ImageFlipbookRenderer.TYPE_NAME, "FLIPBOOK",
             "chartRenderer.flipbook", new int[] { DataTypes.IMAGE });
 
     public static ImplDefinition getDefinition() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "chartRendererImageFlipbook";
 
     public String getTypeName() {
         return definition.getName();

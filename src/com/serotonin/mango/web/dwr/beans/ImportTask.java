@@ -54,6 +54,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.view.text.PlainRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -201,6 +202,7 @@ public class ImportTask extends ProgressiveTask {
 							vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(
 									0));
 							vo.setTextRenderer(new PlainRenderer());
+							vo.setEventTextRenderer(new NoneEventRenderer());
 
 							boolean isnew = vo.isNew();
 
@@ -514,6 +516,7 @@ public class ImportTask extends ProgressiveTask {
 					vo.setPointLocator(dsvo.createPointLocator());
 					vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 					vo.setTextRenderer(new PlainRenderer());
+					vo.setEventTextRenderer(new NoneEventRenderer());
 
 				}
 			} else

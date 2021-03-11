@@ -10,7 +10,8 @@ import i18n from '@/i18n';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
-localVue.use(Vuetify);
+// localVue.use(Vuetify);
+const vuetify = Vuetify;
 
 const systemSettings = {
 	state: {
@@ -38,8 +39,21 @@ const systemSettings = {
 	},
 };
 
+const dataPoint = {
+	state: {
+		loggingTypeList: [
+			{ id: 1, type: 'ON_CHANGE', label: 'On change' },
+			{ id: 2, type: 'ALL', label: 'All' },
+			{ id: 3, type: 'NONE', label: 'Never' },
+			{ id: 4, type: 'INTERVAL', label: 'Interval' },
+			{ id: 5, type: 'ON_TS_CHANGE', label: 'Ts Change' },
+		],
+	},
+};
+
 const modules = {
 	systemSettings,
+	dataPoint,
 };
 
 const store = new Vuex.Store({ modules });
@@ -48,6 +62,7 @@ describe('SystemSettings - LoggingType Settings Tests', () => {
 	const wrapper = mount(DefaultLoggingTypeSettingsComponent, {
 		store,
 		localVue,
+		vuetify,
 		i18n,
 		stubs: ['VSelect', 'VIcon'],
 	});

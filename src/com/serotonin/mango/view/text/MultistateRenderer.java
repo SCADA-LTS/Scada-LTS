@@ -32,7 +32,7 @@ import com.serotonin.mango.view.ImplDefinition;
 
 @JsonRemoteEntity
 public class MultistateRenderer extends BaseTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("textRendererMultistate", "MULTISTATE",
+    private static ImplDefinition definition = new ImplDefinition(MultistateRenderer.TYPE_NAME, "MULTISTATE",
             "textRenderer.multistate", new int[] { DataTypes.MULTISTATE });
 
     public static ImplDefinition getDefinition() {
@@ -46,6 +46,8 @@ public class MultistateRenderer extends BaseTextRenderer {
     public ImplDefinition getDef() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "textRendererMultistate";
 
     @JsonRemoteProperty(innerType = MultistateValue.class)
     private List<MultistateValue> multistateValues = new ArrayList<MultistateValue>();

@@ -19,7 +19,7 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     public enum SmsNotificationType implements NotificationType {
         ACTIVE("activeSms", "ftl.subject.active"),
-        MSG_FROM_EVENT("msgFormEventSms", "ftl.subject.active"),
+        MSG_FROM_EVENT("msgFromEventSms", "ftl.subject.active"),
         LIMIT("limitSms", "ftl.subject.active");
 
         String file;

@@ -30,6 +30,7 @@ branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
+  - "/^feature/#1532.*$/"
   - "/^release/2.5.3.*$/"
   - "/^bug/#1536.*$/"
 notifications:
