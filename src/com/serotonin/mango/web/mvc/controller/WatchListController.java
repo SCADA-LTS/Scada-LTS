@@ -26,6 +26,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionWatchlistACL;
@@ -83,8 +85,7 @@ public class WatchListController extends ParameterizableViewController {
 				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
 				// ACL end;
 			} else {
-				WatchListService watchListService = new WatchListService();
-				watchLists = watchListService.getWatchLists(user.getId(), user.getUserProfile());
+				watchLists = getWatchListsWithAccess(user);
             }
 
 		} else {
@@ -157,5 +158,18 @@ public class WatchListController extends ParameterizableViewController {
 		model.put(KEY_SELECTED_WATCHLIST, selected);
 
 		return model;
+	}
+
+	private List<WatchList> getWatchListsWithAccess(User user) {
+		WatchListService watchListService = new WatchListService();
+		if(user.getUserProfile() == Common.NEW_ID) {
+			UsersProfileDao usersProfileDao = new UsersProfileDao();
+			usersProfileDao.getUsersProfiles();
+			UsersProfileVO usersProfile = usersProfileDao.getUserProfileByUserId(user.getId());
+			return usersProfile == null ?
+					watchListService.getWatchListsWithAccess(user.getId()) :
+					watchListService.getWatchListsWithAccess(user.getId(), usersProfile.getId());
+		}
+		return watchListService.getWatchListsWithAccess(user.getId(), user.getUserProfile());
 	}
 }

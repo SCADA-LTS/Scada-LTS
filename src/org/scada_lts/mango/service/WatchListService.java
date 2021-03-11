@@ -60,6 +60,16 @@ public class WatchListService implements MangoWatchList {
 	public List<WatchList> getWatchLists(final int userId, int userProfile) {
 		return watchListDAO.filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ORDERY_BY_NAME, new Object[]{userId, userProfile, userId}, WatchListDAO.NO_LIMIT);
 	}
+
+	@Override
+	public List<WatchList> getWatchListsWithAccess(int userId, int usersProfileId) {
+		return watchListDAO.selectWatchListsWithAccess(userId, usersProfileId);
+	}
+
+	@Override
+	public List<WatchList> getWatchListsWithAccess(int userId) {
+		return watchListDAO.selectWatchListsWithAccess(userId);
+	}
 	
 	@Override
 	public List<WatchList> getWatchLists() {

@@ -74,6 +74,8 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	private static final String COLUMN_NAME_WLP_DATA_POINT_ID = "dataPointId";
 	private static final String COLUMN_NAME_WLP_WATCHLIST_ID = "watchListId";
 	private static final String COLUMN_NAME_WLP_SORT_ORDER = "sortOrder";
+
+	private static final String COLUMN_NAME_WLUP_PERMISSION = "permission";
 	
 	private static final int COLUMN_INDEX_WLP_WATCH_LIST_ID = 1;
 	private static final int COLUMN_INDEX_WLP_DATA_POINT_ID = 2;
@@ -137,6 +139,17 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ COLUMN_NAME_USER_ID+"=? or "
 				+ "id in (select watchListId from watchListUsersProfiles where "+COLUMN_NAME_USER_PROFILE_ID+"=?) or "
 				+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">0) "
+			+ "order by name";
+
+	public static final String WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_PERMISSION_ORDER_BY_NAME = " "
+			+ COLUMN_NAME_USER_ID+"=? or "
+			+ "id in (select watchListId from watchListUsersProfiles where "+COLUMN_NAME_USER_PROFILE_ID+"=? and " + COLUMN_NAME_WLUP_PERMISSION + ">0) or "
+			+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">0) "
+			+ "order by name";
+
+	public static final String WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
+			+ COLUMN_NAME_USER_ID+"=? or "
+			+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">0) "
 			+ "order by name";
 	
 	private static final String WATCH_LIST_USERS_SELECT_BASE_ON_WATCH_LIST_ID = ""
@@ -391,5 +404,13 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		queryBuilder.append(")");
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+	}
+
+	public List<WatchList> selectWatchListsWithAccess(final int userId, int userProfile) {
+		return filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_PERMISSION_ORDER_BY_NAME, new Object[]{userId, userProfile, userId}, WatchListDAO.NO_LIMIT);
+	}
+
+	public List<WatchList> selectWatchListsWithAccess(final int userId) {
+		return filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId, userId}, WatchListDAO.NO_LIMIT);
 	}
 }
