@@ -16,6 +16,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static org.scada_lts.utils.MailingListApiUtils.*;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+
 /**
  * Controller for MailingList
  *
@@ -123,6 +126,11 @@ public class MailingListAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                String error = validateMailingListCreate(mailingList);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                updateValueMailingList(mailingList);
                 mailingListService.saveMailingList(mailingList);
                 return new ResponseEntity<>("{\"status\":\"created\"}", HttpStatus.CREATED);
             } else {
@@ -139,6 +147,10 @@ public class MailingListAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                String error = validateMailingListUpdate(mailingList);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
                 mailingListService.saveMailingList(mailingList);
                 return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
             } else {
@@ -150,11 +162,15 @@ public class MailingListAPI {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<String> deleteMailingListById(@PathVariable int id, HttpServletRequest request) {
+    public ResponseEntity<String> deleteMailingListById(@PathVariable Integer id, HttpServletRequest request) {
         LOG.info("DELETE: /api/mailingList/{id}");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
+                String error = validateMailingListDelete(id);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
                 mailingListService.deleteMailingList(id);
                 return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
             } else {
