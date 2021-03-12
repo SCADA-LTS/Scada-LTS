@@ -6,9 +6,15 @@ import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.mango.db.dao.MaintenanceEventDao;
+import com.serotonin.mango.vo.event.MaintenanceEventVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MaintenanceEventType extends EventType {
     private int maintenanceId;
+
+    private static final Log LOG = LogFactory.getLog(MaintenanceEventType.class);
+
 
     public MaintenanceEventType() {
         // Required for reflection.
@@ -76,7 +82,16 @@ public class MaintenanceEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", new MaintenanceEventDao().getMaintenanceEvent(maintenanceId).getXid());
+        setMaintenaceEventXid(map);
+    }
+
+    private void setMaintenaceEventXid(Map<String, Object> map) {
+        try {
+            MaintenanceEventVO maintenanceEventVO = new MaintenanceEventDao().getMaintenanceEvent(maintenanceId);
+            map.put("XID", maintenanceEventVO.getXid());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     @Override

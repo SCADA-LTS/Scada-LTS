@@ -20,6 +20,7 @@ package com.serotonin.mango.rt.event.type;
 
 import java.util.Map;
 
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -126,10 +127,28 @@ public class DataPointEventType extends EventType {
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		super.jsonSerialize(map);
+		setDataPointXid(map);
+		setDetectorXid(map);
+	}
+
+	private void setDataPointXid(Map<String, Object> map) {
 		DataPointDao dataPointDao = new DataPointDao();
-		map.put("dataPointXID", dataPointDao.getDataPoint(dataPointId).getXid());
-		map.put("detectorXID",
-				dataPointDao.getDetectorXid(pointEventDetectorId));
+		DataPointVO dataPointVO = dataPointDao.getDataPoint(dataPointId);
+		if(dataPointVO != null)
+			map.put("dataPointXID", dataPointVO.getXid());
+		else {
+			LOG.error("DataPoint for id: " + dataPointId + " does not exist.");
+		}
+	}
+
+	private void setDetectorXid(Map<String, Object> map) {
+		try {
+			DataPointDao dataPointDao = new DataPointDao();
+			String xid = dataPointDao.getDetectorXid(pointEventDetectorId);
+			map.put("detectorXID", xid);
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+		}
 	}
 
 	@Override

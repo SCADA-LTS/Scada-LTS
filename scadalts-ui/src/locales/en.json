@@ -279,6 +279,8 @@
 	"systemsettings.info.systemtime": "Scada-LTS uptime",
 	"systemsettings.info.tag": "Scada-LTS latest GitHub release",
 	"systemsettings.info.title": "System Information",
+	"systemsettings.info.commit": "Build from GitHub commit",
+	"systemsettings.info.pullrequest": "Build from PullRequest",
 	"systemsettings.info.uiversion": "User Interface version",
 	"systemsettings.label.restore": "Restore",
 	"systemsettings.label.restoreall": "Restore All",

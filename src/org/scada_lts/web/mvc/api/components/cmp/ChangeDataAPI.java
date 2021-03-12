@@ -79,4 +79,38 @@ public class ChangeDataAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @RequestMapping(value = "/api/cmp/set/noadit/{xIdViewAndIdCmp}/{interpretedState}", method = RequestMethod.POST)
+    public ResponseEntity<SetValuePointDTO[]> setNoAdit(
+            @RequestBody SetValuePointDTO[] xIDsValues,
+            @PathVariable String xIdViewAndIdCmp,
+            @PathVariable String interpretedState,
+            HttpServletRequest request) {
+
+        LOG.info("/api/cmp/set pxIdViewAndIdCmp:"+xIdViewAndIdCmp+" interpretedState:"+interpretedState+" xIDSsValues:" + xIDsValues.toString());
+
+        try {
+            User user = Common.getUser(request);
+
+            if (user != null) {
+                for (SetValuePointDTO sv : xIDsValues) {
+                    try {
+                        dataPointService.saveAPI(user, sv.getValue(), sv.getXid());
+                    } catch (Exception e) {
+                        sv.setError(e.getMessage());
+                    }
+                }
+
+                return new ResponseEntity<>(xIDsValues, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        } catch (Exception e) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace(e);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
