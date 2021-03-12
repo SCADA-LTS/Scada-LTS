@@ -1,0 +1,119 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080/ScadaBR/api'
+    description: 'Scada development Server'
+    variables: {}
+info:
+  version: 2.5.3
+  title: Scada-LTS API
+  description: 'Scada-LTS OpenAPI Specification. Description contains only export config API'
+  termsOfService: ''
+  contact:
+    name: 'Kamil Jarmusik - SoftQ Developer'
+    email: 'kamil.jarmusik@gmail.com'
+  license:
+    name: 'GPL-2.0'
+paths:
+  /export/config/only-text/:
+      get:
+        tags:
+          - ExportOnlyTextConfigAPI
+        summary: 'Get zip file with configuration system without images.'
+        description: 'None of the parameters are required.'
+        operationId: 'export'
+        parameters:
+          - name: 'projectName'
+            in: 'query'
+            required: false
+            schema:
+              type: 'string'
+              default: 'From system'
+          - name: 'projectDescription'
+            in: 'query'
+            required: false
+            schema:
+              type: 'string'
+              default: ''
+          - name: 'pointValuesMax'
+            in: 'query'
+            required: false
+            schema:
+              type: 'integer'
+              default: 100
+        responses:
+          '200':
+            description: "Get successful"
+            headers: {}
+  /export/config/only-text/projectName/{projectName}:
+      get:
+        tags:
+          - ExportConfigAPI
+        summary: 'Get zip file with configuration system without images.'
+        description: 'The projectName parameter is required.'
+        operationId: 'exportProjectName'
+        parameters:
+          - name: 'projectName'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'projectDescription'
+            in: 'query'
+            required: false
+            schema:
+              type: 'string'
+              default: ''
+          - name: 'pointValuesMax'
+            in: 'query'
+            required: false
+            schema:
+              type: 'integer'
+              default: 100
+        responses:
+          '200':
+            description: "Get successful"
+            headers: {}
+  /export/config/only-text/pointValuesMax/{pointValuesMax}:
+      get:
+        tags:
+          - ExportConfigAPI
+        summary: 'Get zip file with configuration system without images.'
+        description: 'The pointValuesMax parameter is required.'
+        operationId: 'exportPointValuesMax'
+        parameters:
+          - name: 'projectName'
+            in: 'query'
+            required: false
+            schema:
+              type: 'string'
+              default: 'From system'
+          - name: 'projectDescription'
+            in: 'query'
+            required: false
+            schema:
+              type: 'string'
+              default: ''
+          - name: 'pointValuesMax'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+        responses:
+          '200':
+            description: "Get successful"
+            headers: {}
+components:
+  parameters:
+    Authorization:
+      name: Authorization
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: Basic YWRtaW46YWRtaW4=
+      description: ''
+security: []
+externalDocs:
+  url: ''
+  description: ''

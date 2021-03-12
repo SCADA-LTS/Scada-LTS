@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 
 import com.serotonin.json.JsonException;
@@ -39,6 +41,8 @@ import org.scada_lts.service.CommunicationChannelType;
 public class UserEntry extends EmailRecipient {
     private int userId;
     private User user;
+
+    private static final Log LOG = LogFactory.getLog(UserEntry.class);
 
     public UserEntry() {
     }
@@ -121,7 +125,16 @@ public class UserEntry extends EmailRecipient {
         super.jsonSerialize(map);
         if (user == null)
             user = new UserDao().getUser(userId);
-        map.put("username", user.getUsername());
+        setUsername(map);
+    }
+
+    private void setUsername(Map<String, Object> map) {
+        try {
+            User user = new UserDao().getUser(userId);
+            map.put("username", user.getUsername());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     @Override
