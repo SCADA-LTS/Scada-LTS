@@ -162,14 +162,6 @@ public class WatchListController extends ParameterizableViewController {
 
 	private List<WatchList> getWatchListsWithAccess(User user) {
 		WatchListService watchListService = new WatchListService();
-		if(user.getUserProfile() == Common.NEW_ID) {
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			usersProfileDao.getUsersProfiles();
-			UsersProfileVO usersProfile = usersProfileDao.getUserProfileByUserId(user.getId());
-			return usersProfile == null ?
-					watchListService.getWatchListsWithAccess(user.getId()) :
-					watchListService.getWatchListsWithAccess(user.getId(), usersProfile.getId());
-		}
 		return watchListService.getWatchListsWithAccess(user.getId(), user.getUserProfile());
 	}
 }
