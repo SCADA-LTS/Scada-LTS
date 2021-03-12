@@ -27,6 +27,7 @@ import mainStore from '../mocks/store/index';
  * @param  {...any} options - Additional parameters like propsData and so on...
  */
 export function prepareMountWrapper(component, storeModules, propsData = {}, ...options) {
+    addElemWithDataAppToBody();
     const localVue = createLocalVue();
     const store = new Vuex.Store({modules: storeModules, state: mainStore.state});
     const vuetify = Vuetify;
@@ -59,6 +60,7 @@ export function prepareMountWrapper(component, storeModules, propsData = {}, ...
  * @param  {...any} options - Additional parameters like propsData and so on...
  */
 export function prepareShallowMountWrapper(component, storeModules, propsData = {}, ...options) {
+    addElemWithDataAppToBody();
     const localVue = createLocalVue();
     const store = new Vuex.Store({modules: storeModules, state: mainStore.state});
     const vuetify = Vuetify;
@@ -103,3 +105,14 @@ export class LocalStorageMock {
 		delete this.store[key];
 	}
 }
+
+/**
+ * Add Waraping element to the body to make Vuetify not 
+ * complaining about missing data-app atribure.
+ * @private
+ */
+function addElemWithDataAppToBody() {
+    const app = document.createElement('div');
+    app.setAttribute('data-app', true);
+    document.body.append(app);
+  };

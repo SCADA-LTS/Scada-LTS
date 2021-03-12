@@ -13,178 +13,213 @@ const modules = {
 };
 
 global.requestAnimationFrame = (cb) => cb();
+global.cancelAnimationFrame = window.clearTimeout;
 
-describe('Recipient List Details Tests', () => {
-	
-	it('Initialize Component', async () => {
-		const wrapper = prepareMountWrapper(
-			RecipientListDetails, 
-			modules,
-			{recipientList: mlMock, edit: false}
-		);
-		await wrapper.vm.$nextTick();
-		expect(wrapper.get('h2').text()).to.equal('Recipient list details');
-		expect(
-			wrapper.get('#section-mail-details .col-8 .v-input:first-of-type input').element
-				.value
-		).to.equal('Example MailingList');
-		expect(
-			wrapper.get('#section-mail-details .col-4 .v-input:first-of-type input').element
-				.value
-		).to.equal('ML0001');
-		await wrapper.vm.$nextTick();
-		expect(wrapper.findAll('.col-12 > .v-list > .v-list-item').length).to.equal(3);
-		expect(
-			wrapper
-				.get('.col-12 > .v-list > .v-list-item:nth-of-type(1) .v-list-item__title')
-				.text()
-		).to.contain('admin');
-		expect(
-			wrapper
-				.get('.col-12 > .v-list > .v-list-item:nth-of-type(1) .v-list-item__subtitle')
-				.text()
-		).to.contain('admin@yourMangoDomain.com');
-		expect(
-			wrapper
-				.get('.col-12 > .v-list > .v-list-item:nth-of-type(2) .v-list-item__title')
-				.text()
-		).to.contain('tester');
-		expect(
-			wrapper
-				.get('.col-12 > .v-list > .v-list-item:nth-of-type(2) .v-list-item__subtitle')
-				.text()
-		).to.contain('tester@mail.com');
-		expect(
-			wrapper
-				.get('.col-12 > .v-list > .v-list-item:nth-of-type(3) .v-list-item__title')
-				.text()
-		).to.contain('mail@mail.com');
+context('💠️ Test Recipient List Details Scenario', () => {
+	let wrapper2;
+
+	before(() => {
+		wrapper2 = prepareMountWrapper(RecipientListDetails, modules, {
+			recipientList: mlMock,
+			edit: false,
+		});
 	});
 
-	it('Create Recipient User Test', async () => {
-		const wrapper = prepareMountWrapper(
-			RecipientListDetails, 
-			modules,
-			{recipientList: mlMock, edit: false}
-		);
-		await wrapper.vm.$nextTick();
-		await wrapper.find('.heading-action-buttons .mdi-account-plus').trigger('click');
-		expect(wrapper.find('#dialog-recipient-add').isVisible()).to.equal(true);
-		expect(wrapper.find('#dialog-recipient-add .v-select').isVisible()).to.equal(true);
-		expect(wrapper.find('#dialog-recipient-add .v-select').isVisible()).to.equal(true);
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.equal('disabled');
+	describe('Component Initailization', () => {
+		it('Is header and translation loaded', async () => {
+			await wrapper2.vm.$nextTick();
+			expect(wrapper2.get('h2').text()).to.equal('Recipient list details');
+		});
+
+		it('Is props test data loaded', () => {
+			expect(
+				wrapper2.get('#section-mail-details .col-8 .v-input:first-of-type input').element
+					.value
+			).to.equal('Example MailingList');
+
+			expect(
+				wrapper2.get('#section-mail-details .col-4 .v-input:first-of-type input').element
+					.value
+			).to.equal('ML0001');
+		});
+
+		it('Are 3 test recipients entries loaded correctly', () => {
+			expect(wrapper2.findAll('.col-12 > .v-list > .v-list-item').length).to.equal(3);
+		});
+
+		it('Is Admin user recipient loaded correctly', () => {
+			expect(
+				wrapper2
+					.get('.col-12 > .v-list > .v-list-item:nth-of-type(1) .v-list-item__title')
+					.text()
+			).to.contain('admin');
+			expect(
+				wrapper2
+					.get('.col-12 > .v-list > .v-list-item:nth-of-type(1) .v-list-item__subtitle')
+					.text()
+			).to.contain('admin@yourMangoDomain.com');
+		});
+
+		it('Is Tester user recipient loaded correctly', () => {
+			expect(
+				wrapper2
+					.get('.col-12 > .v-list > .v-list-item:nth-of-type(2) .v-list-item__title')
+					.text()
+			).to.contain('tester');
+			expect(
+				wrapper2
+					.get('.col-12 > .v-list > .v-list-item:nth-of-type(2) .v-list-item__subtitle')
+					.text()
+			).to.contain('tester@mail.com');
+		});
+
+		it('Is plain email recipient loaded correctly', () => {
+			expect(
+				wrapper2
+					.get('.col-12 > .v-list > .v-list-item:nth-of-type(3) .v-list-item__title')
+					.text()
+			).to.contain('mail@mail.com');
+		});
 	});
 
-	it('Create Recipient Mail Test', async () => {
-		const wrapper = prepareMountWrapper(
-			RecipientListDetails, 
-			modules,
-			{recipientList: mlMock, edit: false}
-		);
-		await wrapper.vm.$nextTick();
+	describe('Test recipient creation - type:user', () => {
+		it('Is dialog visible', async() => {
+			await wrapper2.find('.heading-action-buttons .mdi-account-plus').trigger('click');
+			expect(wrapper2.find('#dialog-recipient-add')).to.exist;
+			expect(wrapper2.find('#dialog-recipient-add .v-select')).to.exist;
+		});
 
-		await wrapper.find('.heading-action-buttons .mdi-email-plus').trigger('click');
-		expect(wrapper.find('#dialog-recipient-add').isVisible()).to.equal(true);
-		expect(wrapper.find('#dialog-recipient-add .v-input').isVisible()).to.equal(true);
-		expect(wrapper.find('#dialog-recipient-add').text()).to.contain('Add e-mail address');
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.equal('disabled');
-		wrapper
+		it('Is "add" button disabled on init', () => {
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.equal('disabled');
+		});
+	})
+
+	describe('Test recipient creation - type:clear_mail', () => {
+
+		it('Is dialog visible', async() => {
+			await wrapper2.find('.heading-action-buttons .mdi-email-plus').trigger('click');
+			expect(wrapper2.find('#dialog-recipient-add')).to.exist;
+			expect(wrapper2.find('#dialog-recipient-add .v-input')).to.exist;
+			expect(wrapper2.find('#dialog-recipient-add').text()).to.contain('Add e-mail address');
+		});
+
+		it('Is "add" button disabled on init', () => {
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.equal('disabled');
+		});
+
+		it('Test not valid input', async() => {
+			wrapper2
 			.find('#dialog-recipient-add .v-input:first-of-type input')
 			.setValue('notpropermail');
-		await wrapper.vm.$nextTick();
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.equal('disabled');
-		expect(wrapper.find('#dialog-recipient-add transition-group-stub').text()).to.equal(
-			'E-mail must be valid'
-		);
-		await wrapper
+			await wrapper2.vm.$nextTick();
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.equal('disabled');
+			expect(wrapper2.find('#dialog-recipient-add transition-group-stub').text()).to.equal(
+				'E-mail must be valid'
+			);
+		})
+
+		it('Test valid input', async() => {
+			await wrapper2
 			.find('#dialog-recipient-add .v-input:first-of-type input')
 			.setValue('proper@mail.com');
-		await wrapper.vm.$nextTick();
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.be.undefined;
-	});
+			await wrapper2.vm.$nextTick();
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.be.undefined;
+		})
 
-	it('Create Recipient Phone Test', async () => {
-		const wrapper = prepareMountWrapper(
-			RecipientListDetails, 
-			modules,
-			{recipientList: mlMock, edit: false}
-		);
-		await wrapper.vm.$nextTick();
+	})
 
-		await wrapper.find('.heading-action-buttons .mdi-phone-plus').trigger('click');
-		expect(wrapper.find('#dialog-recipient-add').isVisible()).to.equal(true);
-		expect(wrapper.find('#dialog-recipient-add .v-input').isVisible()).to.equal(true);
-		expect(wrapper.find('#dialog-recipient-add').text()).to.contain('Add phone address');
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.equal('disabled');
-		wrapper
+	describe('Test recipient creation - type:clear_sms', () => {
+
+		it('Is dialog visible', async() => {
+			await wrapper2.find('.heading-action-buttons .mdi-phone-plus').trigger('click');
+			expect(wrapper2.find('#dialog-recipient-add')).to.exist;
+			expect(wrapper2.find('#dialog-recipient-add .v-input')).to.exist;
+			expect(wrapper2.find('#dialog-recipient-add').text()).to.contain('Add phone address');
+		});
+
+		it('Is "add" button disabled on init', () => {
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.equal('disabled');
+		});
+
+		it('Test not valid input', async() => {
+			wrapper2
 			.find('#dialog-recipient-add .v-input:first-of-type input')
 			.setValue('123aeerwe');
-		await wrapper.vm.$nextTick();
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.equal('disabled');
-		expect(wrapper.find('#dialog-recipient-add transition-group-stub').text()).to.equal(
-			'Phone number must be valid'
-		);
-		await wrapper
+			await wrapper2.vm.$nextTick();
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.equal('disabled');
+			expect(wrapper2.find('#dialog-recipient-add transition-group-stub').text()).to.equal(
+				'Phone number must be valid'
+			);
+		})
+
+		it('Test valid input', async() => {
+			await wrapper2
 			.find('#dialog-recipient-add .v-input:first-of-type input')
 			.setValue('123345567');
-		await wrapper.vm.$nextTick();
-		expect(
-			wrapper
-				.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
-				.attributes().disabled
-		).to.be.undefined;
-	});
+			await wrapper2.vm.$nextTick();
+			expect(
+				wrapper2
+					.find('#dialog-recipient-add .v-card__actions > button:last-of-type')
+					.attributes().disabled
+			).to.be.undefined;
+		})
+	})
 
-	it('Check the InactiveInterval convertion', () => {
-		const wrapper = prepareMountWrapper(
-			RecipientListDetails, 
-			modules,
-			{recipientList: mlMock, edit: false}
-		);
-		// Initialization tests
-		expect(wrapper.vm.recipientList.inactiveIntervals.length).to.equal(4);
-		expect(wrapper.vm.inactiveTime.length).to.equal(7);
-		for (let x = 0; x < 4; x++) {
-			expect(wrapper.vm.inactiveTime[0][0][x]).to.equal(true);
-		}
-		for (let x = 0; x < 4; x++) {
-			expect(wrapper.vm.inactiveTime[0][1][x]).to.equal(false);
-		}
+	describe('Check the Inactive Interval', () => {
 
-		// Convert to component test
-		wrapper.vm.convertInactiveIntervals([0, 1, 2, 3, 4, 5, 6, 7]);
-		for (let y = 0; y < 2; y++) {
+		it('Validate Inactive Interval', () => {
+			expect(wrapper2.vm.recipientList.inactiveIntervals.length).to.equal(4);
+			expect(wrapper2.vm.inactiveTime.length).to.equal(7);
+		})
+
+		it('Is first hour of inactive interval equal true', () => {
 			for (let x = 0; x < 4; x++) {
-				expect(wrapper.vm.inactiveTime[0][y][x]).to.equal(true);
+				expect(wrapper2.vm.inactiveTime[0][0][x]).to.equal(true);
 			}
-		}
+		})
 
-		// Convert from component test
-		let result = wrapper.vm.convertInactiveIntervals(wrapper.vm.inactiveTime);
-		expect(result.length).to.equal(8);
-	});
+		it('Is second hour of inactive interval equal false', () => {
+			for (let x = 0; x < 4; x++) {
+				expect(wrapper2.vm.inactiveTime[0][1][x]).to.equal(false);
+			}
+		})
+
+		it('Test ConvertInactiveIntervals method 1D -> 3D', () => {
+			wrapper2.vm.convertInactiveIntervals([0, 1, 2, 3, 4, 5, 6, 7]);
+			for (let y = 0; y < 2; y++) {
+				for (let x = 0; x < 4; x++) {
+					expect(wrapper2.vm.inactiveTime[0][y][x]).to.equal(true);
+				}
+			}
+		})
+
+		it('Test ConvertInactiveIntervals method 3D -> 1D', () => {
+			let result = wrapper2.vm.convertInactiveIntervals(wrapper2.vm.inactiveTime);
+			expect(result.length).to.equal(8);
+		})
+	})
 });
