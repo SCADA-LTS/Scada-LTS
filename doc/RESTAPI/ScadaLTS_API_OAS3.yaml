@@ -172,6 +172,37 @@ paths:
                       type: string
                     xid:
                       type: string
+                    description:
+                      type: string
+  /datapoint/{datasourceId}/getAllPlc:
+    get:
+      tags:
+        - DataPointAPI
+      parameters:
+        - name: 'datasourceId'
+          description: 'DataSource ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    xid:
+                      type: string
+                    description:
+                      type: string
   /datasource/getAll:
     get:
       tags:
@@ -1842,7 +1873,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SystemScadaConfigJSON'
-                
+
+  /userComment/{typeId}/{refId}:
+    post:
+      tags:
+        - UserCommentAPI
+      parameters:
+        - name: 'typeId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'refId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      requestBody:
+        description: UserComment properties
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserComment'
+      responses:
+        '200':
+          description: ''
+  /userComment/{typeId}/{refId}/{userId}/{ts}:
+    delete:
+      tags:
+        - UserCommentAPI
+      parameters:
+        - name: 'typeId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'refId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'userId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'ts'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
 
 components:
   schemas:
@@ -2371,6 +2455,17 @@ components:
       type: object
       properties:
         eventText:
+          type: string
+    UserComment:
+      type: object
+      properties:
+        userId:
+          type: number
+        ts:
+          type: number
+        comment:
+          type: string
+        username:
           type: string
   parameters:
     Authorization:

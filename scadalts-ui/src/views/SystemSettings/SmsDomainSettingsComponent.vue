@@ -69,16 +69,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.smsdomain'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 

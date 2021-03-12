@@ -53,7 +53,7 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
-		
+
 		<v-snackbar v-model="response.status" :color="response.color">
 			{{ response.message }}
 		</v-snackbar>
@@ -101,16 +101,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.http'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 

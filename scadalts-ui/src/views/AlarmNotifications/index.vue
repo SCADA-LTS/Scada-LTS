@@ -158,7 +158,11 @@ export default {
 					'getPlcDataPointConfiguration',
 					dp[i].id,
 				);
-				let datapoint = this.prepareDataPoint(dp[i].id, dp[i].name, configuration);
+				let itemName = dp[i].name;
+				if (!!dp[i].description) {
+					itemName = itemName + ` - ${dp[i].description}`;
+				}
+				let datapoint = this.prepareDataPoint(dp[i].id, itemName, configuration);
 
 				item.children.push(datapoint);
 			}

@@ -46,6 +46,7 @@ public class PointChangeDetectorRT extends PointEventDetectorRT {
     public LocalizableMessage getShortMessage() {
         if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
                 !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                vo.njbGetDataPoint().getEventTextRenderer().getText(newValue) != null &&
                 (!vo.njbGetDataPoint().getEventTextRenderer().getText(newValue).equals(""))) {
             String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(newValue);
             return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
