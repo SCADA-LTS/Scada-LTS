@@ -18,7 +18,7 @@
 		</v-card>
 		<v-snackbar v-model="response.status" :color="response.color">
 			{{ response.message }}
-		</v-snackbar>		
+		</v-snackbar>
 	</v-col>
 </template>
 <script>
@@ -33,7 +33,7 @@ export default {
 				color: 'success',
 				status: false,
 				message: '',
-			}
+			},
 		};
 	},
 
@@ -63,16 +63,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.logging'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 		restoreData() {

@@ -100,16 +100,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.systemevent'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 

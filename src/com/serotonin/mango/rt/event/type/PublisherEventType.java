@@ -26,6 +26,8 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.vo.publish.PublisherVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
@@ -34,6 +36,8 @@ import com.serotonin.mango.vo.publish.PublisherVO;
 public class PublisherEventType extends EventType {
     private int publisherId;
     private int publisherEventTypeId;
+
+    private static final Log LOG = LogFactory.getLog(PublisherEventType.class);
 
     public PublisherEventType() {
         // Required for reflection.
@@ -112,15 +116,21 @@ public class PublisherEventType extends EventType {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         PublisherVO<?> pub = new PublisherDao().getPublisher(publisherId);
-        map.put("XID", pub.getXid());
-        map.put("publisherEventTypeId", pub.getEventCodes().getCode(publisherEventTypeId));
+        if(pub != null) {
+            map.put("XID", pub.getXid());
+            map.put("publisherEventTypeId", pub.getEventCodes().getCode(publisherEventTypeId));
+        } else {
+            LOG.error("Publisher for id: " + publisherId + " does not exist.");
+        }
     }
 
     @Override
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
         super.jsonDeserialize(reader, json);
         PublisherVO<?> pb = getPublisher(json, "XID");
-        publisherId = pb.getId();
-        publisherEventTypeId = getInt(json, "publisherEventTypeId", pb.getEventCodes());
+        if(pb != null) {
+            publisherId = pb.getId();
+            publisherEventTypeId = getInt(json, "publisherEventTypeId", pb.getEventCodes());
+        }
     }
 }

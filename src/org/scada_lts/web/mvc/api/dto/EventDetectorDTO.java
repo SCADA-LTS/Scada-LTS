@@ -3,23 +3,25 @@ package org.scada_lts.web.mvc.api.dto;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
+import static org.scada_lts.utils.EventDetectorApiUtils.updateValueEventDetector;
+
 public class EventDetectorDTO {
     private String xid;
     private String alias;
-    private int alarmLevel;
-    private int detectorType;
-    private double limit;
-    private int duration;
-    private int durationType;
-    private boolean binaryState;
-    private int multistateState;
-    private int changeCount;
+    private Integer alarmLevel;
+    private Integer detectorType;
+    private Double limit;
+    private Integer duration;
+    private Integer durationType;
+    private Boolean binaryState;
+    private Integer multistateState;
+    private Integer changeCount;
     private String alphanumericState;
-    private double weight;
+    private Double weight;
 
     public EventDetectorDTO(){ }
 
-    public EventDetectorDTO(String xid, String alias, int alarmLevel, int detectorType, double limit, int duration, int durationType, boolean binaryState, int multistateState, int changeCount, String alphanumericState, double weight) {
+    public EventDetectorDTO(String xid, String alias, Integer alarmLevel, Integer detectorType, Double limit, Integer duration, Integer durationType, Boolean binaryState, Integer multistateState, Integer changeCount, String alphanumericState, Double weight) {
         this.xid = xid;
         this.alias = alias;
         this.alarmLevel = alarmLevel;
@@ -36,19 +38,8 @@ public class EventDetectorDTO {
 
     public PointEventDetectorVO createPointEventDetectorVO(DataPointVO dataPointVO){
         PointEventDetectorVO ped = new PointEventDetectorVO();
-        ped.setDetectorType(detectorType);
+        updateValueEventDetector(ped, this);
         ped.njbSetDataPoint(dataPointVO);
-        ped.setXid(xid);
-        ped.setAlias(alias);
-        ped.setAlarmLevel(alarmLevel);
-        ped.setAlphanumericState(alphanumericState);
-        ped.setBinaryState(binaryState);
-        ped.setMultistateState(multistateState);
-        ped.setDuration(duration);
-        ped.setDurationType(durationType);
-        ped.setLimit(limit);
-        ped.setChangeCount(changeCount);
-        ped.setWeight(weight);
         return ped;
     }
 
@@ -68,67 +59,67 @@ public class EventDetectorDTO {
         this.alias = alias;
     }
 
-    public int getAlarmLevel() {
+    public Integer getAlarmLevel() {
         return alarmLevel;
     }
 
-    public void setAlarmLevel(int alarmLevel) {
+    public void setAlarmLevel(Integer alarmLevel) {
         this.alarmLevel = alarmLevel;
     }
 
-    public int getDetectorType() {
+    public Integer getDetectorType() {
         return detectorType;
     }
 
-    public void setDetectorType(int detectorType) {
+    public void setDetectorType(Integer detectorType) {
         this.detectorType = detectorType;
     }
 
-    public double getLimit() {
+    public Double getLimit() {
         return limit;
     }
 
-    public void setLimit(double limit) {
+    public void setLimit(Double limit) {
         this.limit = limit;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
-    public int getDurationType() {
+    public Integer getDurationType() {
         return durationType;
     }
 
-    public void setDurationType(int durationType) {
+    public void setDurationType(Integer durationType) {
         this.durationType = durationType;
     }
 
-    public boolean isBinaryState() {
+    public Boolean getBinaryState() {
         return binaryState;
     }
 
-    public void setBinaryState(boolean binaryState) {
+    public void setBinaryState(Boolean binaryState) {
         this.binaryState = binaryState;
     }
 
-    public int getMultistateState() {
+    public Integer getMultistateState() {
         return multistateState;
     }
 
-    public void setMultistateState(int multistateState) {
+    public void setMultistateState(Integer multistateState) {
         this.multistateState = multistateState;
     }
 
-    public int getChangeCount() {
+    public Integer getChangeCount() {
         return changeCount;
     }
 
-    public void setChangeCount(int changeCount) {
+    public void setChangeCount(Integer changeCount) {
         this.changeCount = changeCount;
     }
 
@@ -140,11 +131,11 @@ public class EventDetectorDTO {
         this.alphanumericState = alphanumericState;
     }
 
-    public double getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 }

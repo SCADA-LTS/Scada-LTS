@@ -81,7 +81,9 @@
 		</SimplePanel>
 
 		<div v-if="showAcknowledgeBtn == 'true'" class="action_bottom">
-			<button v-on:click="acknowledge()">Acknowledge Störung/Alarms</button>
+			<v-btn @click="acknowledge()">
+				Acknowledge Störung/Alarms
+			</v-btn>
 		</div>
 	</div>
 </template>

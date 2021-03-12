@@ -43,6 +43,7 @@ public class LiveAlarm {
     private String inactivationTime;
     private String level;
     private String name;
+  
     /**
     * Added pointId information so that additional information about the point can be get, e.g.:
      * 1. Point desc,
@@ -89,7 +90,7 @@ public class LiveAlarm {
     public void setName(String name) {
         this.name = name;
     }
-
+  
     public int getDataPointId() {
         return dataPointId;
     }
@@ -97,4 +98,5 @@ public class LiveAlarm {
     public void setDataPointId(int dataPointId) {
         this.dataPointId = dataPointId;
     }
+
 }

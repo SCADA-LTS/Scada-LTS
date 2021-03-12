@@ -73,6 +73,7 @@ public class NegativeCusumDetectorRT extends TimeDelayedEventDetectorRT {
     protected LocalizableMessage getShortMessage() {
         if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
                 !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit()) != null &&
                 (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit()).equals(""))) {
             String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.getLimit());
             return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),

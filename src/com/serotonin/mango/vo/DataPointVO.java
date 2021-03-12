@@ -680,7 +680,6 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
         SerializationHelper.writeSafeUTF(out, name);
-        SerializationHelper.writeSafeUTF(out, description);
         SerializationHelper.writeSafeUTF(out, deviceName);
         out.writeBoolean(enabled);
         out.writeInt(pointFolderId);
@@ -691,7 +690,6 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         out.writeDouble(tolerance);
         out.writeInt(purgeType);
         out.writeInt(purgePeriod);
-        out.writeObject(eventTextRenderer);
         out.writeObject(textRenderer);
         out.writeObject(chartRenderer);
         out.writeObject(pointLocator);
@@ -701,6 +699,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         out.writeDouble(discardHighLimit);
         out.writeInt(engineeringUnits);
         SerializationHelper.writeSafeUTF(out, chartColour);
+        SerializationHelper.writeSafeUTF(out, description);
+        out.writeObject(eventTextRenderer);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -897,7 +897,6 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         }
         else if (ver == 9) {
             name = SerializationHelper.readSafeUTF(in);
-            description = SerializationHelper.readSafeUTF(in);
             deviceName = SerializationHelper.readSafeUTF(in);
             enabled = in.readBoolean();
             pointFolderId = in.readInt();
@@ -908,7 +907,6 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             tolerance = in.readDouble();
             purgeType = in.readInt();
             purgePeriod = in.readInt();
-            eventTextRenderer = (EventTextRenderer) in.readObject();
             textRenderer = (TextRenderer) in.readObject();
             chartRenderer = (ChartRenderer) in.readObject();
             pointLocator = (PointLocatorVO) in.readObject();
@@ -918,6 +916,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             discardHighLimit = in.readDouble();
             engineeringUnits = in.readInt();
             chartColour = SerializationHelper.readSafeUTF(in);
+            description = SerializationHelper.readSafeUTF(in);
+            eventTextRenderer = (EventTextRenderer) in.readObject();
         }
 
         // Check the purge type. Weird how this could have been set to 0.
@@ -1015,5 +1015,33 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             if (engineeringUnits == -1)
                 engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         }
+    }
+
+    public static boolean validLoggingType(int loggingType) {
+        return LOGGING_TYPE_CODES.isValidId(loggingType);
+    }
+
+    public static boolean validPurgeType(int purgeType) {
+        switch (purgeType) {
+            case PurgeTypes.DAYS:
+            case PurgeTypes.WEEKS:
+            case PurgeTypes.MONTHS:
+            case PurgeTypes.YEARS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean validIntervalLoggingType(int intervalLoggingType) {
+        return INTERVAL_LOGGING_TYPE_CODES.isValidId(intervalLoggingType);
+    }
+
+    public static boolean validEngineeringUnit(int engineeringUnit) {
+        return ENGINEERING_UNITS_CODES.isValidId(engineeringUnit);
+    }
+
+    public static boolean validIntervalLoggingPeriodType(int intervalLoggingPeriodType) {
+        return Common.TIME_PERIOD_CODES.isValidId(intervalLoggingPeriodType);
     }
 }

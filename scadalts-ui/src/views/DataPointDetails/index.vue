@@ -83,12 +83,12 @@ import LineChartComponent from '@/components/amcharts/LineChartComponent';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 /**
  * Data Point Details page
- * 
+ *
  * View page for specific Data Point
- * Displays all point related information. Using 
- * aditional components users are able to modify 
- * the data point properties. 
- * 
+ * Displays all point related information. Using
+ * aditional components users are able to modify
+ * the data point properties.
+ *
  * The Point Details page can be extended using additional components.
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
