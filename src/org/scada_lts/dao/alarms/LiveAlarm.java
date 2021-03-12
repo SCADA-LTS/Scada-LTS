@@ -43,6 +43,11 @@ public class LiveAlarm {
     private String inactivationTime;
     private String level;
     private String name;
+    /**
+    * Added pointId information so that additional information about the point can be get, e.g.:
+     * 1. Point desc,
+     * 2. Event text render
+    **/
     private int dataPointId;
 
     public int getId() {
