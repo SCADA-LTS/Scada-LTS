@@ -41,7 +41,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
     compile fileTree(include: ['*.jar'], dir: System.getenv("CATALINA_HOME") + '/lib')
     
-    compileOnly group: "javax.servlet", name: "javax.servlet-api"
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api'
 }
 sourceSets {
     main {
