@@ -4,8 +4,7 @@ export default class ImageSetViewModel extends BasePointModel {
     
     constructor(defName) {
         super(defName);
-        this.imageSetId = null;
+        this.imageSetId = "unavailable";
         this.displayText = false;
     }
 }
-
