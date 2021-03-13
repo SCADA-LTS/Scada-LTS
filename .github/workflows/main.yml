@@ -1,4 +1,4 @@
-.github/workflows/build.ymlname: Build
+name: Build
 on:
   push:
     branches:
