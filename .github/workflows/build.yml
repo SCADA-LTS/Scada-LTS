@@ -6,6 +6,8 @@ jobs:
   prepare:
     name: Prepare Enviroment
     runs-on: ubuntu-latest
+    env:
+      CATALINA_HOME: /opt/tomcat/apache-tomcat-8.5.64
     steps:
       - uses: actions/checkout@v2
         with:
@@ -16,10 +18,10 @@ jobs:
           java-version: 11
       - name: Install Tomcat
         run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://apache.mirrors.tworzy.net/tomcat/tomcat-8/v8.5.64/bin/apache-tomcat-8.5.64.tar.gz; sudo tar xvzf apache-tomcat-8.5.64.tar.gz
-      - name: Setup Enviroment Varialbes
-        run: export CATALINA_HOME=/opt/tomcat/apache-tomcat-8.5.64
       - name: Back to Workdir
         run: cd /home/runner/work/Scada-LTS/Scada-LTS
+      - name: Show env variables
+        run: printenv
       - name: Build WAR file with Ant
         run: ant -noinput -buildfile build.xml war
 
