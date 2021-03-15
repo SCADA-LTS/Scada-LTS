@@ -15,26 +15,12 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 8
       - name: Install Tomcat
         run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://apache.mirrors.tworzy.net/tomcat/tomcat-8/v8.5.64/bin/apache-tomcat-8.5.64.tar.gz; sudo tar xvzf apache-tomcat-8.5.64.tar.gz
+      - name: Show Tomcat
+        run: ls $CATALINA_HOME
       - name: Back to Workdir
         run: cd /home/runner/work/Scada-LTS/Scada-LTS
-      - name: Show env variables
-        run: printenv
       - name: Build WAR file with Ant
         run: ant -noinput -buildfile build.xml war
-
-
-#  compile:
-#    name: Compile Scada-LTS
-#    runs-on: ubuntu-latest
-#    steps:
-##      - name: Cache SonarCloud packages
-##        uses: actions/cache@v1
-##        with:
-##          path: ~/.sonar/cache
-##          key: ${{ runner.os }}-sonar
-##          restore-keys: ${{ runner.os }}-sonar
-#      - name: Build WAR file with Ant
-#        run: ant -noinput -buildfile build.xml war
