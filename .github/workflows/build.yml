@@ -3,9 +3,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  compile:
-    name: Compile Scada-LTS
-    runs-on: ubuntu-latest
+  prepare:
+    name: Prepare Enviroment
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -15,12 +15,22 @@ jobs:
         with:
           java-version: 11
       - name: Install Tomcat
-        run: sudo apt-get install tomcat8
-#      - name: Cache SonarCloud packages
-#        uses: actions/cache@v1
-#        with:
-#          path: ~/.sonar/cache
-#          key: ${{ runner.os }}-sonar
-#          restore-keys: ${{ runner.os }}-sonar
+        run: sudo apt install tomcat8
+  compile:
+    name: Build Scada-LTS
+    runs-on: ubuntu-latest
+    steps:
       - name: Build WAR file with Ant
         run: ant -noinput -buildfile build.xml war
+#  compile:
+#    name: Compile Scada-LTS
+#    runs-on: ubuntu-latest
+#    steps:
+##      - name: Cache SonarCloud packages
+##        uses: actions/cache@v1
+##        with:
+##          path: ~/.sonar/cache
+##          key: ${{ runner.os }}-sonar
+##          restore-keys: ${{ runner.os }}-sonar
+#      - name: Build WAR file with Ant
+#        run: ant -noinput -buildfile build.xml war
