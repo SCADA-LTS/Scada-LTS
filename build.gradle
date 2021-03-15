@@ -45,8 +45,8 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir:"$webAppLibs")
-    providedCompile "org.apache.tomcat:tomcat-catalina:$tomcatVersion"
+    implementation fileTree(include: ['*.jar'], dir:"$webAppLibs")
+    implementation "org.apache.tomcat:tomcat-catalina:$tomcatVersion"
     
 //    providedCompile group: 'javax.servlet', name: 'javax.servlet-api'
 }
