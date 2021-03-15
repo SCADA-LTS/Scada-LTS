@@ -24,3 +24,8 @@ jobs:
         run: cd /home/runner/work/Scada-LTS/Scada-LTS
       - name: Build WAR file with Ant
         run: ant -noinput -buildfile build.xml war
+      - name: Deploy WAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Scada-LTS.war
+          path: ScadaBR.war
