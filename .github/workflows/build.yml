@@ -7,7 +7,7 @@ jobs:
     name: Prepare Enviroment
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /opt/tomcat/apache-tomcat-8.5.64
+      CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.85
     steps:
       - uses: actions/checkout@v2
         with:
@@ -15,9 +15,9 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11
       - name: Install Tomcat
-        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://apache.mirrors.tworzy.net/tomcat/tomcat-8/v8.5.64/bin/apache-tomcat-8.5.64.tar.gz; sudo tar xvzf apache-tomcat-8.5.64.tar.gz
+        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - name: Back to Workdir
