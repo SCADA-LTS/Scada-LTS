@@ -14,36 +14,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Gradle packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
-      - name: Set Gradle
-        run: gradle wrapper --distribution-type bin
-      - name: Compile
-        run: gradle build
-#      - name: Build and analyze
-#        uses: eskatos/gradle-command-action@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Install Tomcat
+        run: sudo apt-get install tomcat8
+#      - name: Cache SonarCloud packages
+#        uses: actions/cache@v1
 #        with:
-#          arguments: build sonarqube --debug
-#  build-ant:
-#    runs-on: ubuntu-18.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Set up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#      - name: Build WAR file with Ant
-#        run: ant -noinput -buildfile build.xml war
+#          path: ~/.sonar/cache
+#          key: ${{ runner.os }}-sonar
+#          restore-keys: ${{ runner.os }}-sonar
+      - name: Build WAR file with Ant
+        run: ant -noinput -buildfile build.xml war
