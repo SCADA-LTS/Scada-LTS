@@ -1,4 +1,4 @@
-name: Build
+name: Simple Scada-LTS workflow
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -57,7 +57,7 @@ jobs:
 #        run: npm run-script test:unit
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
-        run: npm run-script build-config -- 2.6.0 $GITHUB_ACTION $GITHUB_REF $GITHUB_SHA $GITHUB_BASE_REF $GITHUB_HEAD_REF
+        run: npm run-script build-config -- 2.6.0 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
       - name: Build User Interface
         working-directory: ./scadalts-ui
         run: npm run-script build
