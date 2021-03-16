@@ -29,7 +29,7 @@ jobs:
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
-          path: /opt/tomcat
+          path: /opt/tomcat/**/*
 
   buildui:
     name: Build Scada-LTS new User Interface
@@ -76,13 +76,13 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11
-      - run: mkdir /opt/tomcat;
+      - run: mkdir /opt/tomcat; mkdir /opt/tomcat/apache-tomcat-7.0.85;
       - name: Cache Tomcat
         id: cache-tomcat
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
-          path: /opt/tomcat
+          path: /opt/tomcat/**/*
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - run: ls
