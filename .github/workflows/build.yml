@@ -76,6 +76,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11
+      - run: mkdir /opt/tomcat;
       - name: Cache Tomcat
         id: cache-tomcat
         uses: actions/cache@v2
