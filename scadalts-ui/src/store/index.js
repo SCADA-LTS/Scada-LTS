@@ -109,20 +109,15 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 * @param {*} requestUrl - URL to specific resource of the Application
 		 */
-		requestGet({ state }, requestUrl) {
+		requestGet({ state, dispatch }, requestUrl) {
 			return new Promise((resolve, reject) => {
 				axios
 					.get(state.applicationUrl + requestUrl, state.requestConfig)
-					.then((r) => {
-						if (r.status === 200) {
-							resolve(r.data);
-						} else {
-							reject(false);
-						}
+					.then(async (r) => {
+						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
 					})
-					.catch((error) => {
-						console.error(error);
-						reject(false);
+					.catch(async (error) => {
+						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
 					});
 			});
 		},
@@ -133,20 +128,15 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 * @param {*} payload - {url, data} JS object with request data.
 		 */
-		requestPost({ state }, payload) {
+		requestPost({ state, dispatch }, payload) {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(state.applicationUrl + payload.url, payload.data, state.requestConfig)
-					.then((r) => {
-						if (r.status === 201 || r.status === 200) {
-							resolve(r.data);
-						} else {
-							reject(false);
-						}
+					.then(async (r) => {
+						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
 					})
-					.catch((error) => {
-						console.error(error);
-						reject(false);
+					.catch(async (error) => {
+						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
 					});
 			});
 		},
@@ -157,20 +147,15 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 * @param {*} requestUrl - URL to specific resource of the Application
 		 */
-		requestDelete({ state }, requestUrl) {
+		requestDelete({ state, dispatch }, requestUrl) {
 			return new Promise((resolve, reject) => {
 				axios
 					.delete(state.applicationUrl + requestUrl, state.requestConfig)
-					.then((r) => {
-						if (r.status === 200) {
-							resolve(r.data);
-						} else {
-							reject(false);
-						}
+					.then(async (r) => {
+						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
 					})
-					.catch((error) => {
-						console.error(error);
-						reject(false);
+					.catch(async (error) => {
+						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
 					});
 			});
 		},
@@ -181,20 +166,15 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 * @param {*} payload - {url, data} JS object with request data.
 		 */
-		requestPut({ state }, payload) {
+		requestPut({ state, dispatch }, payload) {
 			return new Promise((resolve, reject) => {
 				axios
 					.put(state.applicationUrl + payload.url, payload.data, state.requestConfig)
-					.then((r) => {
-						if (r.status === 201 || r.status === 200) {
-							resolve(r.data);
-						} else {
-							reject(false);
-						}
+					.then(async (r) => {
+						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
 					})
-					.catch((error) => {
-						console.error(error);
-						reject(false);
+					.catch(async (error) => {
+						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
 					});
 			});
 		},
@@ -205,20 +185,15 @@ export default new Vuex.Store({
 		 * @param {*} param0 - Vuex Store variables
 		 * @param {*} payload - {url, data} JS object with request data.
 		 */
-		requestPatch({ state }, payload) {
+		requestPatch({ state, dispatch }, payload) {
 			return new Promise((resolve, reject) => {
 				axios
 					.patch(state.applicationUrl + payload.url, payload.data, state.requestConfig)
-					.then((r) => {
-						if (r.status === 201 || r.status === 200) {
-							resolve(r.data);
-						} else {
-							reject(false);
-						}
+					.then(async (r) => {
+						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
 					})
-					.catch((error) => {
-						console.error(error);
-						reject(false);
+					.catch(async (error) => {
+						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
 					});
 			});
 		},
@@ -254,6 +229,34 @@ export default new Vuex.Store({
 		async getLocaleInfo({ dispatch }) {
 			let temp = await dispatch('requestGet', '/systemSettings/getSystemInfo');
 			i18n.locale = temp.language;
+		},
+
+		/**
+		 * 
+		 * Validate server response
+		 * 
+		 * Check if the response status code from server 
+		 * is one of the Successful responses. If not report
+		 * proper message in the browser console and block
+		 * the response handling and change to error handling.
+		 * It is possible to create catch chain to take 
+		 * specific action if request is failed.
+		 * 
+		 * @private
+		 * @param {HTTP Response} response - JSON Response from server
+		 * @returns true|false
+		 */
+		validateResponse({state}, response) {
+			if (response.status >= 200 && response.status < 300) {
+				return true;
+			} else if (response.status === 401) {
+				console.error('⛔️ - User is not Authorized!');
+			} else if (response.status === 400) {
+				console.error('❌️ - Bad Request! Check request data');
+			} else if (response.status === 500) {
+				console.error('🚫️ - Internal server error!\n Something went wrong!');
+			}
+			return false;
 		},
 	},
 	getters: {

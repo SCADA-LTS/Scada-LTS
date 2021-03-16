@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-event-detecotrs">
 		<v-col cols="12">
 			<v-row justify="space-between" align="center">
 				<v-col>
@@ -19,12 +19,12 @@
 					</h3>
 				</v-col>
 				<v-col class="row justify-end">
-					<CreateEventDetectorDialog :data="data" @saved="addEventDetector">
+					<CreateEventDetectorDialog :data="data" @saved="addEventDetector" @savedfailed="addEventDetectorFail">
 					</CreateEventDetectorDialog>
 				</v-col>
 			</v-row>
 		</v-col>
-		<v-col cols="12">
+		<v-col cols="12" id="point-prop-event-detecotrs-list">
 			<v-row v-for="e in data.eventDetectors" :key="e.id">
 				<hr class="v-divider theme--light ped-divider" />
 
@@ -436,6 +436,10 @@ export default {
 			this.response.status = true;
 			this.response.message = this.$t('common.snackbar.add.success');
 		},
+		addEventDetectorFail() {
+			this.response.status = true;
+			this.response.message = this.$t('common.snackbar.add.fail');
+		},
 
 		openConfirmDialog(e) {
 			this.confirmDeleteDialog = true;
@@ -478,7 +482,10 @@ export default {
 							this.response.status = true;
 							this.response.message = this.$t('common.snackbar.delete.fail');
 						}
-					});
+					}).catch(() => {
+						this.response.status = true;
+						this.response.message = this.$t('common.snackbar.delete.fail');
+					})
 			}
 		},
 	},
