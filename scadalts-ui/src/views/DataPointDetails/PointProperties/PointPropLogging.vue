@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-logging">
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.logging.title') }}</h3>
 		</v-col>
@@ -29,18 +29,16 @@
 						dense
 					></v-select>
 				</v-col>
-				<v-row v-if="data.pointLocator.dataTypeId === 3" dense>
-					<v-col cols="12">
-						<v-select
-							v-model="data.intervalLoggingType"
-							:items="valueTypeList"
-							item-value="id"
-							item-text="label"
-							:label="$t('datapointDetails.pointProperties.logging.valueType')"
-							dense
-						></v-select>
-					</v-col>
-				</v-row>
+				<v-col cols="12" v-if="data.pointLocator.dataTypeId === 3" dense>
+					<v-select
+						v-model="data.intervalLoggingType"
+						:items="valueTypeList"
+						item-value="id"
+						item-text="label"
+						:label="$t('datapointDetails.pointProperties.logging.valueType')"
+						dense
+					></v-select>
+				</v-col>
 			</v-row>
 
 			<v-row v-if="data.pointLocator.dataTypeId === 3" dense>
