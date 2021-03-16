@@ -23,7 +23,7 @@
 				<th v-if="showSelectToAcknowledge == 'true'"></th>
 				<th>Activation Timestamp</th>
 				<th>Inactivation Timestamp</th>
-				<th>Event text renderer</th>
+				<th>Event message</th>
 				<th>Variable name and description</th>
 			</tr>
 			<tr
