@@ -10,17 +10,17 @@ jobs:
     env:
       CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.85
     steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#      - name: Set up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#      - name: Install Tomcat
-#        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
-      - name: Install fake Tomcat
-        run: sudo mkdir /opt/tomcat; sudo mkdir /opt/tomcat/apache-tomcat-7.0.85; cd /opt/tomcat/apache-tomcat-7.0.85; sudo touch file.txt; sudo touch file2.txt;
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Install Tomcat
+        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
+#      - name: Install fake Tomcat
+#        run: sudo mkdir /opt/tomcat; sudo mkdir /opt/tomcat/apache-tomcat-7.0.85; cd /opt/tomcat/apache-tomcat-7.0.85; sudo touch file.txt; sudo touch file2.txt;
       - name: Show Tomcat
         run: ls $CATALINA_HOME
 #      - name: Build Scada Application with Ant
@@ -73,9 +73,9 @@ jobs:
       CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.85
     steps:
       - uses: actions/checkout@v2
-#      - uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
       - name: Cache Tomcat
         id: cache-tomcat
         uses: actions/cache@v2
@@ -85,9 +85,9 @@ jobs:
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - run: ls
-#      - name: Build Scada Application with Ant
-#        if: steps.cache-tomcat.outputs.cache-hit != 'true'
-#        run: ant -noinput -buildfile build.xml build-project
+      - name: Build Scada Application with Ant
+        if: steps.cache-tomcat.outputs.cache-hit != 'true'
+        run: ant -noinput -buildfile build.xml build-project
 #      - name: Deploy WAR artifact
 #        uses: actions/upload-artifact@v2
 #        with:
