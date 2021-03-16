@@ -25,29 +25,50 @@ jobs:
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
           path: /home/runner/tomcat
-#      - name: Build Scada Application with Ant
-#        run: ant -noinput -buildfile build.xml build-project
-#      - name: JUnit Scada Application with Ant
-#        run: ant -noinput -buildfile build.xml junit
+      - name: Build Scada Application with Ant
+        run: ant -noinput -buildfile build.xml build-project
+      - name: JUnit Scada Application with Ant
+        run: ant -noinput -buildfile build.xml junit
+      - name: Cache Scada-LTS application
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-slts-${{ github.run_id }}
+          path: ./build/
 
   buildui:
-    name: Test Scada-LTS new User Interface
+    name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-#      - name: Use Node.js
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: 12.x
-#      - name: Install dependencies
-#        working-directory: ./scadalts-ui
-#        run: npm install
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ github.run_id }}
+      - name: Install dependencies
+        working-directory: ./scadalts-ui
+        run: npm install
 #      - name: Run Frontend UnitTests
 #        working-directory: ./scadalts-ui
 #        run: npm run-script test:unit
+      - name: Prepare Application Vairables
+        working-directory: ./scadalts-ui
+        run: npm run-script build-config -- 2.6.0 $GITHUB_ACTION $GITHUB_REF $GITHUB_SHA $GITHUB_BASE_REF $GITHUB_HEAD_REF
+      - name: Build User Interface
+        working-directory: ./scadalts-ui
+        run: npm run-script build
+      - name: Cache Frontend
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-frontend-${{ github.run_id }}
+          path: ./scadalts-ui/dist
 
   deploy:
-    name: Build and Deploy Scada-LTS application
+    name: Deploy Scada-LTS application
     needs: [compile, buildui]
     runs-on: ubuntu-latest
     env:
@@ -56,28 +77,32 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-#      - name: Set up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#      - run: sudo mkdir /opt/tomcat;
-#      - run: sudo chmod -R 777 /opt/tomcat;
-      - name: Load Cache Tomcat
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Load Cached node modules
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-tomcat-${{ github.run_id }}
-          path: /home/runner/tomcat
-      - name: Show Tomcat
-        run: ls $CATALINA_HOME
-#      - name: Prepare Application Vairables
-#        working-directory: ./scadalts-ui
-#        run: npm run-script build-config -- 2.6.0 $GITHUB_ACTION $GITHUB_REF $GITHUB_SHA $GITHUB_BASE_REF $GITHUB_HEAD_REF
-#      - name: Build Scada Application with Ant
-#        run: ant -noinput -buildfile build.xml war
-#      - name: Deploy WAR artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: Scada-LTS.war
-#          path: ScadaBR.war
-
-
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ github.run_id }}
+      - name: Load Cached Scada-LTS application
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-slts-${{ github.run_id }}
+          path: ./build/
+      - name: Load Cached Frontend
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-frontend-${{ github.run_id }}
+          path: ./scadalts-ui/dist
+      - name: Install static web-dependencies
+        working-directory: ./WebContent/resources
+        run: npm install
+      - name: Build Scada Application with Ant
+        run: ant -noinput -buildfile build.xml just-war
+      - name: Deploy WAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Scada-LTS
+          path: ScadaBR.war
