@@ -20,6 +20,11 @@ jobs:
         run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
+      - name: Cache Tomcat
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-tomcat-${{ github.run_id }}
+          path: /opt/tomcat
       - name: Build Scada Application with Ant
         run: ant -noinput -buildfile build.xml build-project
       - name: JUnit Scada Application with Ant
@@ -55,8 +60,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Install Tomcat
-        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
+      - run: sudo mkdir /opt/tomcat;
+      - name: Load Cache Tomcat
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-tomcat-${{ github.run_id }}
+          path: /opt/tomcat
+      - run: ls /opt/tomcat
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - name: Prepare Application Vairables
