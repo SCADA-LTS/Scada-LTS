@@ -20,7 +20,7 @@ jobs:
 #      - name: Install Tomcat
 #        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
       - name: Install fake Tomcat
-        run: sudo mkdir /opt/tomcat/apache-tomcat-7.0.85; cd /opt/tomcat/apache-tomcat-7.0.85; sudo touch file.txt; sudo touch file2.txt;
+        run: sudo mkdir /opt/tomcat; sudo mkdir /opt/tomcat/apache-tomcat-7.0.85; cd /opt/tomcat/apache-tomcat-7.0.85; sudo touch file.txt; sudo touch file2.txt;
       - name: Show Tomcat
         run: ls $CATALINA_HOME
 #      - name: Build Scada Application with Ant
