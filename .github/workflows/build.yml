@@ -24,7 +24,7 @@ jobs:
         env:
           cache-name: cache-tomcat
         with:
-            key: ${{ runner.os }}-${{ env.cache-name }}-{{ hashFiles('$CATALINA_HOME') }}
+            key: ${{ runner.os }}-${{ github.run_id }}
             path: $CATALINA_HOME
       - name: Build WAR file with Ant
         run: ant -noinput -buildfile build.xml build-project
@@ -37,24 +37,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-      - run: echo ${{github.workspace}}
       - name: Cache node modules
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Test workdir
-        run: cd ~; pwd;
-      - run: cd ~/work/Scada-LTS/Scada-LTS/scadalts-ui/; pwd
+            ${{ runner.os }}-build-${{ github.run_id }}
       - name: Install dependencies
         working-directory: ./scadalts-ui
-        run: npm ci
+        run: npm install
       - name: Run Frontend UnitTests
         working-directory: ./scadalts-ui
         run: npm run-script test:unit
@@ -69,8 +63,8 @@ jobs:
         env:
           cache-name: cache-frontend
         with:
-          key: ${{ runner.os }}-ui-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          path: ${{runner.temp}}
+          key: ${{ runner.os }}-ui-${{ github.run_id }}
+          path: ${{github.workspace}}/scadalts-ui/dist
   deploy:
     name: Build and Deploy Scada-LTS application
     needs: [compile, buildui]
