@@ -1,46 +1,11 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<p>El <b>OID</b> representa ya sea el identificador de objeto para solicitar en el servidor, o para realizar una coincidencia en los traps
- que sean recibidos. El <b>Tipo de dato</b> es la representaci&oacute;n del valor en el Scada. La data recibida es autom&aacute;ticamente convertida 
- al tipo de dato especificado. El <b>Valor Binario 0</b> es el valor que coincide en el caso de un punto binario con valor 0.
- La <b>Configuraci&oacute;n de Tipo</b> corresponde al tipo de dato SNMP a ser utilizado con el servidor. Un valor de "(no configurable)"
- indica que el punto es &uacute;nicamente de lectura. El campo <b>Encuesta</b> determina si incluye la solicitud GET en cada ciclo,
- o si los valores s&oacute;lo reciben el trap.
-</p>
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p> <b>OID</b> representa el identificador del objeto que se solicitará en el huésped o que se emparejará en las trampas que se reciban. El tipo de datos <b>Datos</b> es la representación Scada-LTS del valor. Los datos recibidos se convierten automáticamente en el tipo de datos requerido. El valor <b>Binario 0</b> es el valor a igualar para que un punto binario reciba el valor 0. El valor <b>Set type</b> es el tipo de datos SNMP que se usará para establecer los valores en el host. Un valor de "(no configurable)" indica que el punto es de sólo lectura. El campo <b>Survey</b> determina si se incluye el valor en las consultas GET en cada ciclo de votación, o si los valores se reciben sólo mediante trampas.</p>

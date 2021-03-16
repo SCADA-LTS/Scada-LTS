@@ -4,7 +4,7 @@ import Vue from 'vue';
 import App from './apps/App.vue';
 import router from './router';
 import store from './store';
-import * as uiv from 'uiv';
+
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
 
@@ -39,6 +39,7 @@ import SMSDomain from '@/components/forms/SMSDomain';
 import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
+import * as uiv from 'uiv';
 
 library.add(
 	faCoffee,
@@ -71,7 +72,6 @@ const optionsLodash = { name: 'lodash' };
 
 Vue.use(VueLodash, optionsLodash);
 
-Vue.use(uiv);
 Vue.use(VueCookie);
 
 Vue.config.devtools = true;
@@ -83,6 +83,9 @@ new Vue({
 	vuetify,
 	render: (h) => h(App),
 }).$mount('#app');
+
+Vue.use(uiv);
+
 
 if (window.document.getElementById('app-test') != undefined) {
 	new Vue({
@@ -120,6 +123,7 @@ for (let i = 0; i < 20; i++) {
 	const cmpId = `app-cmp-${i}`;
 	if (window.document.getElementById(cmpId) != undefined) {
 		new Vue({
+			vuetify,
 			render: (h) =>
 				h(CMP, {
 					store,
@@ -302,6 +306,7 @@ if (window.document.getElementById('live-alarms') != undefined) {
 
 	new Vue({
 		store,
+		vuetify,
 		render: (h) =>
 			h(LiveAlarms, {
 				props: {
