@@ -3,29 +3,71 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  prepare:
-    name: Prepare Enviroment
+  compile:
+    name: Compile Scada-LTS application
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.85
+      CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.108-deployer
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Test
+        run: echo ${{runner.temp}}
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 11
       - name: Install Tomcat
-        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; sudo tar xvzf apache-tomcat-7.0.85.tar.gz
-      - name: Show Tomcat
-        run: ls $CATALINA_HOME
+        run: sudo mkdir /opt/tomcat; cd /opt/tomcat; sudo wget https://downloads.apache.org/tomcat/tomcat-7/v7.0.108/bin/apache-tomcat-7.0.108-deployer.tar.gz; sudo tar xvzf apache-tomcat-7.0.108-deployer.tar.gz
       - name: Back to Workdir
         run: cd /home/runner/work/Scada-LTS/Scada-LTS
       - name: Build WAR file with Ant
-        run: ant -noinput -buildfile build.xml war
-      - name: Deploy WAR artifact
-        uses: actions/upload-artifact@v2
+        run: ant -noinput -buildfile build.xml build-project
+#      - name: Deploy WAR artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: Scada-LTS.war
+#          path: ScadaBR.war
+  buildui:
+    name: Build Scada-LTS new User Interface
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 12.x ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
         with:
-          name: Scada-LTS.war
-          path: ScadaBR.war
+          node-version: ${{ matrix.node-version }}
+      - name: Test workdir
+        run: cd ~; pwd;
+      - run: cd /home/runner/work/Scada-LTS/Scada-LTS/scadalts-ui
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Frontend UnitTests
+        run: npm run-script test:unit
+      - name: Prepare Application Vairables
+        run: npm run-script build-config -- $SCADA_LTS_MILESTONE $GITHUB_ACTION $GITHUB_REF $GITHUB_SHA $GITHUB_BASE_REF $GITHUB_HEAD_REF
+      - name: Build Frontend application
+        run: npm run-script build
+      - name: Cache Frontend
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-frontend
+        with:
+          key: ${{ runner.os }}-ui-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          path: ${{runner.temp}}
