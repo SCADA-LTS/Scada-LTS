@@ -1,27 +1,13 @@
 <template>
-	<div class="panel-body">
-		<div>
-			<input
-				type="text"
-				name="url"
-				id="url"
-				placeholder="example.com"
-				pattern=".*"
-				size="30"
-				required
-				v-model="url"
-			/>
-		</div>
-		<div>
-			<btn v-if="enable_save" size="xs" type="success" v-on:click="save()">Save</btn>
-			<btn v-if="!enable_save" id="dis_btn_sms_dom" size="xs" type="light">Save</btn>
-			<tooltip
-				v-if="!enable_save"
-				text="I have nothing to write down"
-				target="#dis_btn_sms_dom"
-			/>
-		</div>
-	</div>
+	<v-app class="small-panel">
+		<v-text-field v-model="url" placeholder="example.com" class="margin-small">
+			<template v-slot:append>
+				<v-btn icon @click="save()" color="success" :disabled="!enable_save" >
+					<v-icon>mdi-content-save</v-icon>
+				</v-btn>
+			</template>
+		</v-text-field>
+	</v-app>
 </template>
 
 <script>
@@ -97,5 +83,14 @@ export default {
 }
 .format_font {
 	font-size: 12px;
+}
+.margin-small {
+	margin: 3px;
+}
+
+</style>
+<style>
+.small-panel .v-application--wrap {
+	min-height: unset;
 }
 </style>
