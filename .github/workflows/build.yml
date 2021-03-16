@@ -5,7 +5,7 @@ on:
 jobs:
   compile:
     name: Compile Scada-LTS application
-    if: false # Skip this job
+    if: 'false' # Skip this job
     runs-on: ubuntu-latest
     env:
       CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.108
@@ -74,20 +74,21 @@ jobs:
   deploy:
     name: Build and Deploy Scada-LTS application
     needs: [compile, buildui]
-    if: false # Skip this job
+    if: 'false' # Skip this job
     runs-on: ubuntu-latest
     env:
       CATALINA_HOME: /opt/tomcat/apache-tomcat-7.0.108
-    - name: Cache Tomcat
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-tomcat
-      with:
-        key: ${{ runner.os }}-${{ env.cache-name }}-{{ hashFiles('$CATALINA_HOME') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ env.cache-name }}-{{ hashFiles('$CATALINA_HOME') }}
-          ${{ runner.os }}-${{ env.cache-name }}-
-        path: $CATALINA_HOME
+    steps:
+      - name: Cache Tomcat
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-tomcat
+        with:
+          key: ${{ runner.os }}-${{ env.cache-name }}-{{ hashFiles('$CATALINA_HOME') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-{{ hashFiles('$CATALINA_HOME') }}
+            ${{ runner.os }}-${{ env.cache-name }}-
+          path: $CATALINA_HOME
 #      - name: Deploy WAR artifact
 #        uses: actions/upload-artifact@v2
 #        with:
