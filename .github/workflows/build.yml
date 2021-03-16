@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
-          path: $CATALINA_HOME
+          path: $CATALINA_HOME/
   buildui:
     name: Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
@@ -74,13 +74,15 @@ jobs:
         with:
           java-version: 11
       - name: Cache Tomcat
+        id: cache-tomcat
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-tomcat-${{ github.run_id }}
-          path: $CATALINA_HOME
+          path: $CATALINA_HOME/
       - name: Build Scada Application with Ant
+        if: steps.cache-tomcat.outputs.cache-hit != 'true'
         run: ant -noinput -buildfile build.xml build-project
 #      - name: Deploy WAR artifact
 #        uses: actions/upload-artifact@v2
