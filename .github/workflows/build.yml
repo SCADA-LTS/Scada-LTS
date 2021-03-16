@@ -55,9 +55,9 @@ jobs:
             ${{ runner.os }}-
       - name: Test workdir
         run: cd ~; pwd;
-      - run: cd ~/work/Scada-LTS/Scada-LTS/scadalts-ui/
+      - run: cd ~/work/Scada-LTS/Scada-LTS/scadalts-ui/; pwd
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       - name: Run Frontend UnitTests
         run: npm run-script test:unit
       - name: Prepare Application Vairables
