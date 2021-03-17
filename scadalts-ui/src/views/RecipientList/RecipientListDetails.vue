@@ -1,6 +1,6 @@
 <template>
-	<v-row v-if="!!recipientList">
-		<v-col md="5" sm="12" xs="12" id="section-mail-details">
+	<v-row v-if="!!recipientList" id="recipient-list-details">
+		<v-col md="5" sm="12" xs="12" id="rl-section-details">
 			<v-row>
 				<v-col cols="12">
 					<h2>{{$t('recipientlistDetails.title')}}</h2>
@@ -83,7 +83,7 @@
 					</v-tooltip>
 				</v-col>
 
-				<v-col cols="12">
+				<v-col cols="12" id="rl-section-recipients">
 					<v-list v-if="!!recipientList.entries">
 						<v-list-item v-for="(entry, index) in recipientList.entries" :key="`${entry}-${index}`">
 							<v-list-item-icon>

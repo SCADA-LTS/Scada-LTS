@@ -33,12 +33,12 @@ context('💠️ Test Recipient List Details Scenario', () => {
 
 		it('Is props test data loaded', () => {
 			expect(
-				wrapper2.get('#section-mail-details .col-8 .v-input:first-of-type input').element
+				wrapper2.get('#rl-section-details .col-8 .v-input:first-of-type input').element
 					.value
 			).to.equal('Example MailingList');
 
 			expect(
-				wrapper2.get('#section-mail-details .col-4 .v-input:first-of-type input').element
+				wrapper2.get('#rl-section-details .col-4 .v-input:first-of-type input').element
 					.value
 			).to.equal('ML0001');
 		});

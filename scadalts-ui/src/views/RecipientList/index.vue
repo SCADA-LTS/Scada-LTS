@@ -24,7 +24,7 @@
 							</v-list-item>
 						</v-list>
 						<v-skeleton-loader v-else type="list-item-two-line"></v-skeleton-loader>
-						<v-list>
+						<v-list id="recipientListCreation">
 							<v-list-item>
 								<v-list-item-content>
 									<v-list-item-title>
@@ -49,7 +49,7 @@
 						</v-list>
 					</v-col>
 					<v-divider vertical class="divider-horizontal-margin"></v-divider>
-					<v-col md="8" sm="12" xs="12">
+					<v-col md="8" sm="12" xs="12" id="recipientListDetails">
 						<RecipientListDetails
 							ref="recipientListDetails"
 							:recipientList="activeRecipientList"
