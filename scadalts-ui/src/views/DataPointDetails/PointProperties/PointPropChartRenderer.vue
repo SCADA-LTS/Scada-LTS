@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-chart-renderer">
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.chartRenderer') }}</h3>
 		</v-col>

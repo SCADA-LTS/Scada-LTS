@@ -12,7 +12,7 @@
 				</v-btn>
 			</v-badge>
 		</template>
-		<v-card>
+		<v-card id="menu-data-point-comment">
 			<v-list>
 				<v-list-item v-for="comment in data.comments" :key="comment">
 					<v-list-item-icon>
