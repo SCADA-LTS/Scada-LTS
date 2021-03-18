@@ -44,6 +44,23 @@ public class LiveAlarm {
     private String level;
     private String name;
 
+    /**
+     * Added pointId information so that additional information about the point can be get, e.g.:
+     * 1. Point desc,
+     * 2. Event text render
+     **/
+    private int dataPointId;
+
+    /**
+     * Point description
+     */
+    private String description;
+
+    /**
+     * Event text render
+     */
+    private String eventTextRender;
+
     public int getId() {
         return id;
     }
@@ -84,4 +101,27 @@ public class LiveAlarm {
         this.name = name;
     }
 
+    public int getDataPointId() {
+        return dataPointId;
+    }
+
+    public void setDataPointId(int dataPointId) {
+        this.dataPointId = dataPointId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getEventTextRender() {
+        return eventTextRender;
+    }
+
+    public void setEventTextRender(String eventTextRender) {
+        this.eventTextRender = eventTextRender;
+    }
 }

@@ -18,6 +18,11 @@
 
 package org.scada_lts.dao.alarms;
 
+import com.serotonin.mango.vo.DataPointVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.DataPointService;
+
 import java.util.List;
 
 /**
@@ -30,7 +35,10 @@ import java.util.List;
 
 class PlcAlarmsService implements AlarmsService {
 
+    private static final Log LOG = LogFactory.getLog(AlarmsService.class);
+
     private final AlarmsDAO alarmsDAO;
+    private DataPointService dataPointService = new DataPointService();
 
     public PlcAlarmsService(AlarmsDAO alarmsDAO) {
         this.alarmsDAO = alarmsDAO;
@@ -44,9 +52,20 @@ class PlcAlarmsService implements AlarmsService {
 
     @Override
     public List<LiveAlarm> getLiveAlarms(int offset, int limit) {
-        return alarmsDAO.getLiveAlarms(offset, limit);
+        List<LiveAlarm> liveAlarms = alarmsDAO.getLiveAlarms(offset, limit);
+        for (int i=0; i< liveAlarms.size(); i++) {
+            try {
+                DataPointVO dataPointVO = dataPointService.getDataPoint(liveAlarms.get(i).getDataPointId());
+                liveAlarms.get(i).setDescription(dataPointVO.getDescription());
+                boolean value = (liveAlarms.get(i).getInactivationTime().trim().equals(""));
+                String eventTextRender = dataPointVO.getEventTextRenderer().getText(value);
+                liveAlarms.get(i).setEventTextRender(eventTextRender);
+            } catch (Exception e) {
+                LOG.error(new Exception("Problem with alarms live id"+liveAlarms.get(i).toString()+" problem:"+e.getMessage()));
+            }
+        }
+        return liveAlarms;
     }
-
     @Override
     public AlarmAcknowledge acknowledge(int id) {
         long inactiveTime = alarmsDAO.getInactiveTimeMs(id).orElse(-1L);
