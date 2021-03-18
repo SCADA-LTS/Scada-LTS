@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.web.mvc.api.dto.MailingListDTO;
 import org.scada_lts.web.mvc.api.json.JsonMailingList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -130,7 +131,7 @@ public class MailingListAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                updateValueMailingList(mailingList);
+                updateValueMailingListPost(mailingList);
                 mailingListService.saveMailingList(mailingList);
                 return new ResponseEntity<>("{\"status\":\"created\"}", HttpStatus.CREATED);
             } else {
@@ -142,7 +143,7 @@ public class MailingListAPI {
     }
 
     @PutMapping(value = "", produces = "application/json")
-    public ResponseEntity<String> updateMailingList(@RequestBody MailingList mailingList, HttpServletRequest request) {
+    public ResponseEntity<String> updateMailingList(@RequestBody MailingListDTO mailingList, HttpServletRequest request) {
         LOG.info("PUT:/api/mailingList");
         try {
             User user = Common.getUser(request);
@@ -151,8 +152,7 @@ public class MailingListAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                mailingListService.saveMailingList(mailingList);
-                return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
+                return findAndUpdateMailingList(mailingList);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -179,6 +179,23 @@ public class MailingListAPI {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private ResponseEntity<String> findAndUpdateMailingList(MailingListDTO mailingListBody) {
+        return getMailingList(mailingListBody.getId(), mailingListService)
+                .map(toUpdate -> {
+                    String error = validateMailingListUpdate(mailingListBody);
+                    if (!error.isEmpty()) {
+                        return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                    }
+                    return updateMailingList(toUpdate, mailingListBody);
+                }).orElse(new ResponseEntity<>(formatErrorsJson("mailingList not found"), HttpStatus.NOT_FOUND));
+    }
+
+    private ResponseEntity<String> updateMailingList(MailingList toUpdate, MailingListDTO mailingListBody) {
+        updateValueMailingList(toUpdate, mailingListBody);
+        mailingListService.saveMailingList(toUpdate);
+        return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
     }
 
 }

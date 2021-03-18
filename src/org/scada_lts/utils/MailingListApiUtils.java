@@ -8,9 +8,15 @@ import com.serotonin.mango.vo.mailingList.UserEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.mvc.api.dto.MailingListDTO;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+import static com.serotonin.timer.CronExpression.isValidExpression;
+import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
 
 public final class MailingListApiUtils {
@@ -22,23 +28,24 @@ public final class MailingListApiUtils {
     public static String validateMailingListCreate(MailingList body) {
         String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListIsNewId(a));
         msg += msgIfNullOrInvalid("Correct xid;", body.getXid(), a -> !validMailingListXid(a));
-        msg += validateMailingListBody(body);
+        msg += validateMailingListBody(body.getName(), body.getEntries());
+        msg += msgIfNonNullAndInvalid("Correct cron", body.getCronPattern(), a -> !validateCron(body.isCollectInactiveEmails(), a));
         return msg;
     }
 
-    public static String validateMailingListUpdate(MailingList body) {
+    public static String validateMailingListUpdate(MailingListDTO body) {
         String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListId(a));
         msg += msgIfNullOrInvalid("Correct xid;",
                 body.getXid(), a -> !validMailingListXidUpdate(body.getId(), a));
-        msg += validateMailingListBody(body);
+        msg += msgIfNonNullAndInvalid("Correct cron", body.getCronPattern(), a -> !validateCronUpdate(a, body.getCollectInactiveEmails(), body.getId()));
+        msg += msgIfNonNullAndInvalid("Correct collectInactiveEmails", body.getCollectInactiveEmails(), a -> !validateCollectInactiveEmailsUpdate(a, body.getCronPattern(), body.getId()));
+        msg += validateMailingListBody(body.getName(), body.getEntries());
         return msg;
     }
 
-    private static String validateMailingListBody(MailingList body) {
-        String msg = msgIfNull("Correct name;", body.getName());
-        msg += validateEntriesList(body.getEntries());
-        msg += msgIfNonNullAndInvalid("Correct dailyLimitSentEmailsNumber, it must be >= 0, value {0};",
-                body.getDailyLimitSentEmailsNumber(), a -> a < 0);
+    private static String validateMailingListBody(String name, List<EmailRecipient> entries) {
+        String msg = msgIfNull("Correct name;", name);
+        msg += validateEntriesList(entries);
         return msg;
     }
 
@@ -66,9 +73,32 @@ public final class MailingListApiUtils {
         return msgIfNullOrInvalid("Correct id;", id, a -> !validMailingListId(a));
     }
 
-    public static void updateValueMailingList(MailingList body){
+    public static void updateValueMailingListPost(MailingList body){
         if (body.getCronPattern() == null)
             body.setCronPattern("");
+        body.setDailyLimitSentEmails(false);
+        body.setDailyLimitSentEmailsNumber(0);
+    }
+
+    public static Optional<MailingList> getMailingList(int id, MailingListService mailingListService) {
+        try {
+            MailingList mailingList = mailingListService.getMailingList(id);
+            return Optional.ofNullable(mailingList);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static void updateValueMailingList(MailingList toUpdate, MailingListDTO source) {
+        setIf(source.getXid(), toUpdate::setXid, a -> !StringUtils.isEmpty(a));
+        setIf(source.getId(), toUpdate::setId, Objects::nonNull);
+        setIf(source.getName(), toUpdate::setName, Objects::nonNull);
+        setIf(source.getEntries(), toUpdate::setEntries, Objects::nonNull);
+        setIf(source.getCronPattern(), toUpdate::setCronPattern, Objects::nonNull);
+        setIf(source.getCollectInactiveEmails(), toUpdate::setCollectInactiveEmails, Objects::nonNull);
+        toUpdate.setDailyLimitSentEmails(false);
+        toUpdate.setDailyLimitSentEmailsNumber(0);
     }
 
     private static boolean validMailingListXid(String xid){
@@ -110,5 +140,41 @@ public final class MailingListApiUtils {
 
     private static boolean validMailingListIsNewId(int id) {
         return id == Common.NEW_ID;
+    }
+
+    private static boolean validCronExpression(String cron) {
+        if (isValidExpression(cron))
+            return true;
+        else {
+            return StringUtils.isEmpty(cron);
+        }
+    }
+
+    private static boolean validateCron(boolean collectInactiveEmails, String cron) {
+        if (collectInactiveEmails)
+            return isValidExpression(cron);
+        else
+            return validCronExpression(cron);
+    }
+
+    private static boolean validateCronUpdate(String cronPattern, Boolean collectInactiveEmails, Integer id) {
+        if (collectInactiveEmails == null) {
+            MailingListService mailingListService = new MailingListService();
+            MailingList mailingList = getMailingList(id, mailingListService).orElse(null);
+            return validateCron(mailingList.isCollectInactiveEmails(), cronPattern);
+        } else
+            return validateCron(collectInactiveEmails, cronPattern);
+    }
+
+    private static boolean validateCollectInactiveEmailsUpdate(Boolean collectInactiveEmails, String cronPattern, Integer id) {
+        if (collectInactiveEmails) {
+            if (cronPattern == null) {
+                MailingListService mailingListService = new MailingListService();
+                MailingList mailingList = getMailingList(id, mailingListService).orElse(null);
+                return isValidExpression(mailingList.getCronPattern());
+            } else
+                return true;
+        } else
+            return true;
     }
 }
