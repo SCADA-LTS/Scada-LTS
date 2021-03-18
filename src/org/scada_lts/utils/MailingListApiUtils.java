@@ -28,8 +28,7 @@ public final class MailingListApiUtils {
     public static String validateMailingListCreate(MailingList body) {
         String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListIsNewId(a));
         msg += msgIfNullOrInvalid("Correct xid;", body.getXid(), a -> !validMailingListXid(a));
-        msg += validateMailingListBody(body.getName(), body.getEntries());
-        msg += msgIfNonNullAndInvalid("Correct cron", body.getCronPattern(), a -> !validateCron(body.isCollectInactiveEmails(), a));
+        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern());
         return msg;
     }
 
@@ -37,15 +36,14 @@ public final class MailingListApiUtils {
         String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListId(a));
         msg += msgIfNullOrInvalid("Correct xid;",
                 body.getXid(), a -> !validMailingListXidUpdate(body.getId(), a));
-        msg += msgIfNonNullAndInvalid("Correct cron", body.getCronPattern(), a -> !validateCronUpdate(a, body.getCollectInactiveEmails(), body.getId()));
-        msg += msgIfNonNullAndInvalid("Correct collectInactiveEmails", body.getCollectInactiveEmails(), a -> !validateCollectInactiveEmailsUpdate(a, body.getCronPattern(), body.getId()));
-        msg += validateMailingListBody(body.getName(), body.getEntries());
+        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern());
         return msg;
     }
 
-    private static String validateMailingListBody(String name, List<EmailRecipient> entries) {
+    private static String validateMailingListBody(String name, List<EmailRecipient> entries, String cronPattern) {
         String msg = msgIfNull("Correct name;", name);
         msg += validateEntriesList(entries);
+        msg += msgIfNonNullAndInvalid("Correct cron", cronPattern, a -> !isValidExpression(a));
         return msg;
     }
 
@@ -140,41 +138,5 @@ public final class MailingListApiUtils {
 
     private static boolean validMailingListIsNewId(int id) {
         return id == Common.NEW_ID;
-    }
-
-    private static boolean validCronExpression(String cron) {
-        if (isValidExpression(cron))
-            return true;
-        else {
-            return StringUtils.isEmpty(cron);
-        }
-    }
-
-    private static boolean validateCron(boolean collectInactiveEmails, String cron) {
-        if (collectInactiveEmails)
-            return isValidExpression(cron);
-        else
-            return validCronExpression(cron);
-    }
-
-    private static boolean validateCronUpdate(String cronPattern, Boolean collectInactiveEmails, Integer id) {
-        if (collectInactiveEmails == null) {
-            MailingListService mailingListService = new MailingListService();
-            MailingList mailingList = getMailingList(id, mailingListService).orElse(null);
-            return validateCron(mailingList.isCollectInactiveEmails(), cronPattern);
-        } else
-            return validateCron(collectInactiveEmails, cronPattern);
-    }
-
-    private static boolean validateCollectInactiveEmailsUpdate(Boolean collectInactiveEmails, String cronPattern, Integer id) {
-        if (collectInactiveEmails) {
-            if (cronPattern == null) {
-                MailingListService mailingListService = new MailingListService();
-                MailingList mailingList = getMailingList(id, mailingListService).orElse(null);
-                return isValidExpression(mailingList.getCronPattern());
-            } else
-                return true;
-        } else
-            return true;
     }
 }
