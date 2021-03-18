@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
@@ -30,6 +31,10 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+
+import static org.scada_lts.dao.model.point.PointValueTypeOfREST.validPointValueType;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+import static org.scada_lts.utils.ValidationUtils.msgIfNullOrInvalid;
 
 
 class ValueTime implements Serializable {
@@ -419,7 +424,7 @@ public class PointValueAPI {
 
     /**
      * @param xid       Data Point Export ID
-     * @param type      Data Point Type (0 - binary, 1 - multistate, 2 - double, 3 - string)
+     * @param type      Data Point Value Type (0 - unknown, 1 - binary, 2 - multistate, 3 - double, 4 - string)
      * @param value     Value to be saved (for binary [0,1])
      * @param request   HTTP Request with user data
      * @return value
@@ -427,7 +432,7 @@ public class PointValueAPI {
     @PostMapping(value = "/api/point_value/setValue/{xid}/{type}")
     public ResponseEntity<String> setValueV2(
             @PathVariable("xid") String xid,
-            @PathVariable("type") int type,
+            @PathVariable("type") Integer type,
             @RequestBody String value,
             HttpServletRequest request) {
         LOG.info("/api/point_value/setValue/{xid}/{type}\n - xid:" + xid + " type:" + type + " value:" + value);
@@ -435,7 +440,11 @@ public class PointValueAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(type != 3) { value = validateInputValue(value); }
+                String error = msgIfNullOrInvalid("Correct type", type, a -> !validPointValueType(a));
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                if(type != PointValueTypeOfREST.TYPE_STRING) { value = validateInputValue(value); }
                 dataPointService.save(value, xid, type);
                 return new ResponseEntity<>(value, HttpStatus.OK);
             }
