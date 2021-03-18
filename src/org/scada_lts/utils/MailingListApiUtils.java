@@ -20,14 +20,14 @@ public final class MailingListApiUtils {
     private MailingListApiUtils() {}
 
     public static String validateMailingListCreate(MailingList body) {
-        String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListId(a));
+        String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListIsNewId(a));
         msg += msgIfNullOrInvalid("Correct xid;", body.getXid(), a -> !validMailingListXid(a));
         msg += validateMailingListBody(body);
         return msg;
     }
 
     public static String validateMailingListUpdate(MailingList body) {
-        String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListIdDelete(a));
+        String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListId(a));
         msg += msgIfNullOrInvalid("Correct xid;",
                 body.getXid(), a -> !validMailingListXidUpdate(body.getId(), a));
         msg += validateMailingListBody(body);
@@ -63,7 +63,7 @@ public final class MailingListApiUtils {
     }
 
     public static String validateMailingListDelete(Integer id) {
-        return msgIfNullOrInvalid("Correct id;", id, a -> !validMailingListIdDelete(a));
+        return msgIfNullOrInvalid("Correct id;", id, a -> !validMailingListId(a));
     }
 
     public static void updateValueMailingList(MailingList body){
@@ -82,7 +82,7 @@ public final class MailingListApiUtils {
         }
     }
 
-    private static boolean validMailingListIdDelete(Integer id){
+    private static boolean validMailingListId(Integer id){
         try {
             MailingListService mailingListService = new MailingListService();
             MailingList mailingList = mailingListService.getMailingList(id);
@@ -108,7 +108,7 @@ public final class MailingListApiUtils {
             return true;
     }
 
-    private static boolean validMailingListId(int id) {
+    private static boolean validMailingListIsNewId(int id) {
         return id == Common.NEW_ID;
     }
 }
