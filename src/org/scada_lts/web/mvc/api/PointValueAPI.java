@@ -2,23 +2,12 @@ package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.IDataPoint;
-import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
-import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
-import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
-import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
@@ -27,9 +16,7 @@ import org.scada_lts.mango.service.PointValueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
@@ -403,6 +390,7 @@ public class PointValueAPI {
      * @param request
      * @return
      */
+    @Deprecated
     @RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.POST)
     public ResponseEntity<String> setValue(
             @PathVariable("xid") String xid,
@@ -428,6 +416,36 @@ public class PointValueAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * @param xid       Data Point Export ID
+     * @param type      Data Point Type (0 - binary, 1 - multistate, 2 - double, 3 - string)
+     * @param value     Value to be saved (for binary [0,1])
+     * @param request   HTTP Request with user data
+     * @return value
+     */
+    @PostMapping(value = "/api/point_value/setValue/{xid}/{type}")
+    public ResponseEntity<String> setValueV2(
+            @PathVariable("xid") String xid,
+            @PathVariable("type") int type,
+            @RequestBody String value,
+            HttpServletRequest request) {
+        LOG.info("/api/point_value/setValue/{xid}/{type}\n - xid:" + xid + " type:" + type + " value:" + value);
+
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(type != 3) { value = validateInputValue(value); }
+                dataPointService.save(value, xid, type);
+                return new ResponseEntity<>(value, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     /**
      * @param xid
@@ -540,7 +558,9 @@ public class PointValueAPI {
     }
 
     /**
-     * @param id, sts, ets - id of datapoint, start timestamp, end timestamp
+     * @param xid id of datapoint
+     * @param sts start timestamp
+     * @param ets end timestamp
      * @param request
      * @return
      */
@@ -690,6 +710,25 @@ public class PointValueAPI {
         }
 
         return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    /**
+     * Validate Input Value
+     * @param value Input value to be checked
+     * @return valid input string
+     */
+    private String validateInputValue(String value) {
+
+        String inappropriateChars = "[=\\s]";
+        String replaceComma = "%2C";
+
+        value = value.replaceAll(inappropriateChars, "");
+        value = value.replaceAll(replaceComma, ".");
+        String[] result = value.split("\\.");
+        if(result.length > 1) {
+            value = result[0] + "." + result[1];
+        }
+        return value;
     }
 
 }
