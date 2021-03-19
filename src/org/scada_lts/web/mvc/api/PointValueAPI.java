@@ -722,9 +722,9 @@ public class PointValueAPI {
     }
 
     /**
-     * Validate Input Value
-     * @param value Input value to be checked
-     * @return valid input string
+     * Convert Input Value
+     * @param value Input value to be converted
+     * @return converted input string
      */
     private String convertInputValue(String value) {
 
