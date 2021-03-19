@@ -50,6 +50,7 @@ public class ViewDao {
 		return IdNameToIntValuePair.convert(viewService.getAllViewNames());
 	}
 
+	@Deprecated
 	public List<IntValuePair> getViewNamesWithReadOrWritePermissions(
 			int userId, int userProfileId) {
 		return IdNameToIntValuePair.convert(viewService.getViewNamesWithReadOrWritePermissions(userId, userProfileId));

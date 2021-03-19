@@ -33,10 +33,6 @@ public interface MangoWatchList {
 
 	List<WatchList> getWatchLists(int userId, int userProfile);
 
-	List<WatchList> getWatchListsWithAccess(int userId, int usersProfileId);
-
-	List<WatchList> getWatchListsWithAccess(int userId);
-
 	List<WatchList> getWatchLists();
 
 	WatchList getWatchList(int watchListId);

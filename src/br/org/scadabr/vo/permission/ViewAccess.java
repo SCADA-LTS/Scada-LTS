@@ -39,4 +39,10 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		setPermission(ImportedPermission);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ViewAccess)) return false;
+		return super.equals(o);
+	}
 }

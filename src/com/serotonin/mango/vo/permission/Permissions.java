@@ -140,6 +140,8 @@ public class Permissions {
 
     private static boolean hasDataPointReadPermission(User user, int dataSourceId, int dataPointId)
             throws PermissionException {
+        if(user.isAdmin())
+            return true;
         if (hasDataSourcePermission(user, dataSourceId))
             return true;
         DataPointAccess a = getDataPointAccess(user, dataPointId);
@@ -156,6 +158,8 @@ public class Permissions {
     }
 
     public static boolean hasDataPointSetPermission(User user, DataPointVO point) throws PermissionException {
+        if(user.isAdmin())
+            return true;
         if (hasDataSourcePermission(user, point.getDataSourceId()))
             return true;
         DataPointAccess a = getDataPointAccess(user, point.getId());
@@ -219,7 +223,7 @@ public class Permissions {
     }
 
     public static void ensureWatchListEditPermission(User user, WatchList watchList) throws PermissionException {
-            if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER)
+            if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER && !user.isAdmin())
                 throw new PermissionException("User does not have permission to edit the watch list", user);
     }
 

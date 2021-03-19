@@ -189,7 +189,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 
 		profile.apply(user);
 
-		dao.updateUsersProfile(profile);
+		dao.updateUsersProfile(user, profile);
 
 		UsersProfileVO retrievedProfile = dao.getUserProfileByUserId(user
 				.getId());
@@ -213,10 +213,10 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		User user = TestUtils.createUser();
 
 		profile.apply(user);
-		dao.updateUsersProfile(profile);
+		dao.updateUsersProfile(user, profile);
 
 		profile2.apply(user);
-		dao.updateUsersProfile(profile2);
+		dao.updateUsersProfile(user, profile2);
 
 		UsersProfileVO retrievedProfile = dao.getUserProfileByUserId(user
 				.getId());
@@ -370,7 +370,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		User user = TestUtils.createUser();
 
 		profile.apply(user);
-		dao.updateUsersProfile(profile);
+		dao.updateUsersProfile(user, profile);
 
 		DataSourceVO ds = new MockDataSourceDao().insertDataSource("dsname");
 
@@ -467,7 +467,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		dao.saveUsersProfile(profile);
 
 		profile.apply(user);
-		dao.updateUsersProfile(profile);
+		dao.updateUsersProfile(user, profile);
 
 		verify(mockWatchListDao).saveWatchList(
 				profile.retrieveWatchlists().get(FIRST));
@@ -553,7 +553,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		dao.saveUsersProfile(profile);
 
 		profile.apply(user);
-		dao.updateUsersProfile(profile);
+		dao.updateUsersProfile(user, profile);
 
 		verify(mockViewDao).saveView(profile.retrieveViews().get(FIRST));
 	}
@@ -597,7 +597,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		users.add(user2.getId());
 		profile.defineUsers(users);
 		profile.apply(user2);
-		dao.updateUsersProfile(profile);
+		dao.updateUsersProfile(user2, profile);
 
 		assertEquals(user.getId(), view.getViewUsers().get(FIRST).getUserId());
 		assertEquals(ShareUser.ACCESS_SET, view.getViewUsers().get(FIRST)
@@ -634,7 +634,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		retrieviedUserProfile.setViewPermissions(newViewPermissions);
 
 		retrieviedUserProfile.apply(user);
-		dao.updateUsersProfile(retrieviedUserProfile);
+		dao.updateUsersProfile(user, retrieviedUserProfile);
 
 		assertEquals(user.getId(),
 				retrieviedUserProfile.retrieveViews().get(FIRST).getViewUsers()
@@ -676,7 +676,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		retrieviedUserProfile.setWatchlistPermissions(watchlistPermissions);
 
 		retrieviedUserProfile.apply(user);
-		dao.updateUsersProfile(retrieviedUserProfile);
+		dao.updateUsersProfile(user, retrieviedUserProfile);
 
 		assertEquals(user.getId(), retrieviedUserProfile.retrieveWatchlists()
 				.get(FIRST).getWatchListUsers().get(FIRST).getUserId());
