@@ -14,6 +14,7 @@ import org.scada_lts.web.mvc.api.dto.MailingListDTO;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.serotonin.timer.CronExpression.isValidExpression;
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
@@ -28,7 +29,7 @@ public final class MailingListApiUtils {
     public static String validateMailingListCreate(MailingList body, MailingListService mailingListService) {
         String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListIsNewId(a));
         msg += msgIfNullOrInvalid("Correct xid;", body.getXid(), a -> isMailingListPresent(a, mailingListService));
-        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern());
+        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern(), body.getInactiveIntervals());
         return msg;
     }
 
@@ -36,14 +37,15 @@ public final class MailingListApiUtils {
         String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !isMailingListPresent(a, mailingListService));
         msg += msgIfNullOrInvalid("Correct xid;",
                 body.getXid(), a -> !validMailingListXidUpdate(body.getId(), a, mailingListService));
-        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern());
+        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern(), body.getInactiveIntervals());
         return msg;
     }
 
-    private static String validateMailingListBody(String name, List<EmailRecipient> entries, String cronPattern) {
+    private static String validateMailingListBody(String name, List<EmailRecipient> entries, String cronPattern, Set<Integer> inactiveIntervals) {
         String msg = msgIfNull("Correct name;", name);
         msg += validateEntriesList(entries);
         msg += msgIfNonNullAndInvalid("Correct cron", cronPattern, a -> !isValidExpression(a));
+        msg += msgIfNonNullAndInvalid("Correct inactiveIntervals", inactiveIntervals, a -> !validInactiveIntervals(a));
         return msg;
     }
 
@@ -105,6 +107,7 @@ public final class MailingListApiUtils {
         setIf(source.getEntries(), toUpdate::setEntries, Objects::nonNull);
         setIf(source.getCronPattern(), toUpdate::setCronPattern, Objects::nonNull);
         setIf(source.getCollectInactiveEmails(), toUpdate::setCollectInactiveEmails, Objects::nonNull);
+        setIf(source.getInactiveIntervals(), toUpdate::setInactiveIntervals, Objects::nonNull);
         toUpdate.setDailyLimitSentEmails(false);
         toUpdate.setDailyLimitSentEmailsNumber(0);
     }
@@ -133,5 +136,9 @@ public final class MailingListApiUtils {
 
     private static boolean validMailingListIsNewId(int id) {
         return id == Common.NEW_ID;
+    }
+
+    private static boolean validInactiveIntervals(Set<Integer> inactiveIntervals){
+        return inactiveIntervals.stream().allMatch(i -> (i >= 0 && i < 672));
     }
 }
