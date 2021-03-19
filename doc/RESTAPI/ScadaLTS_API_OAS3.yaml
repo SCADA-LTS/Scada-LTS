@@ -598,6 +598,7 @@ paths:
     post:
       tags:
         - PointValueAPI
+      deprecated: true
       parameters:
         - name: 'xid'
           in: 'path'
@@ -605,7 +606,7 @@ paths:
           schema:
             type: string
         - name: 'type'
-          description: 'Type 0 -> binary, 1 -> Multistate, 2 -> Double, 3 -> String'
+          description: 'Type 0 -> unknown, 1 -> binary, 2 -> Multistate, 3 -> Double, 4 -> String'
           in: 'path'
           required: true
           schema:
@@ -616,6 +617,32 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: ''
+  /point_value/setValue/{xid}/{type}/:
+    post:
+      tags:
+        - PointValueAPI
+      description: 'New set value method that set up value using request body'
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'type'
+          description: 'Type [0|1|2|3|4] maps to DP type: [unknown|binary|multistate|double|string]'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          raw:
+            schema:
+              type: string
       responses:
         '200':
           description: ''
