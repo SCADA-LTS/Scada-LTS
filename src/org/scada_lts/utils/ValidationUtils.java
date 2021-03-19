@@ -7,6 +7,8 @@ import org.scada_lts.serorepl.utils.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 public final class ValidationUtils {
@@ -28,15 +30,19 @@ public final class ValidationUtils {
     }
 
     public static boolean validUserId(Integer id){
+        if (id == 0)
+            return false;
+        return getUser(id).isPresent();
+    }
+
+    public static Optional<User> getUser(int id) {
         try {
-            if (id == 0)
-                return false;
             UserService userService = new UserService();
             User user = userService.getUser(id);
-            return user != null;
+            return Optional.ofNullable(user);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            return false;
+            return Optional.empty();
         }
     }
 
@@ -44,9 +50,17 @@ public final class ValidationUtils {
         return msgIfNullOrInvalid(msg, value, a -> false);
     }
 
+    @Deprecated
     static <T> String msgIfNonNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
         if(Objects.nonNull(value) && invalidIf.test(value)) {
             return MessageFormat.format(msg, String.valueOf(value));
+        }
+        return "";
+    }
+
+    static <T, U> String msgIfInvalid(String msg, T value1, U value2, BiPredicate<T, U> invalidIf) {
+        if(invalidIf.test(value1, value2)) {
+            return MessageFormat.format(msg, String.valueOf(value1), String.valueOf(value2));
         }
         return "";
     }

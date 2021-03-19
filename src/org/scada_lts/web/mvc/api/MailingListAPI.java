@@ -127,7 +127,7 @@ public class MailingListAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateMailingListCreate(mailingList);
+                String error = validateMailingListCreate(mailingList, mailingListService);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
@@ -148,7 +148,7 @@ public class MailingListAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateMailingListUpdate(mailingList);
+                String error = validateMailingListUpdate(mailingList, mailingListService);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
@@ -167,7 +167,7 @@ public class MailingListAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateMailingListDelete(id);
+                String error = validateMailingListDelete(id, mailingListService);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
@@ -184,7 +184,7 @@ public class MailingListAPI {
     private ResponseEntity<String> findAndUpdateMailingList(MailingListDTO mailingListBody) {
         return getMailingList(mailingListBody.getId(), mailingListService)
                 .map(toUpdate -> {
-                    String error = validateMailingListUpdate(mailingListBody);
+                    String error = validateMailingListUpdate(mailingListBody, mailingListService);
                     if (!error.isEmpty()) {
                         return ResponseEntity.badRequest().body(formatErrorsJson(error));
                     }
