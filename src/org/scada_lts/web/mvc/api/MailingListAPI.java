@@ -121,7 +121,7 @@ public class MailingListAPI {
         }
     }
 
-    @PostMapping(value = "", produces = "application/json")
+    @PostMapping(value = "/", produces = "application/json")
     public ResponseEntity<String> createMailingList(@RequestBody MailingList mailingList, HttpServletRequest request) {
         LOG.info("POST:/api/mailingList");
         try {
@@ -142,7 +142,7 @@ public class MailingListAPI {
         }
     }
 
-    @PutMapping(value = "", produces = "application/json")
+    @PutMapping(value = "/", produces = "application/json")
     public ResponseEntity<String> updateMailingList(@RequestBody MailingListDTO mailingList, HttpServletRequest request) {
         LOG.info("PUT:/api/mailingList");
         try {

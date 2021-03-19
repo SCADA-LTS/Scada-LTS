@@ -26,7 +26,7 @@ const storeMailingList = {
 
 		createMailingList({ dispatch }, mailingList) {
 			return dispatch('requestPost', {
-				url: `/mailingList`,
+				url: `/mailingList/`,
 				data: mailingList
 			})
 		},
@@ -37,7 +37,7 @@ const storeMailingList = {
 				delete e.user
 			});
 			return dispatch('requestPut', {
-				url: `/mailingList`,
+				url: `/mailingList/`,
 				data: requestPayload
 			})
 		},
