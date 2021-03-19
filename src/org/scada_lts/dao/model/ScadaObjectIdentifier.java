@@ -1,14 +1,22 @@
 package org.scada_lts.dao.model;
 
-public class SimpleScadaEntity {
+/**
+ * Scada Object Identifier
+ *
+ * This class contain a simple Scada Object
+ * description that can be used in multiple
+ * places among the project where user want
+ * to list business object without details.
+ */
+public class ScadaObjectIdentifier {
 
     private int id;
     private String xid;
     private String name;
 
-    public SimpleScadaEntity() {}
+    public ScadaObjectIdentifier() {}
 
-    public SimpleScadaEntity(int id, String xid, String name) {
+    public ScadaObjectIdentifier(int id, String xid, String name) {
         this.id = id;
         this.xid = xid;
         this.name = name;

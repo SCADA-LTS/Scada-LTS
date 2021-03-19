@@ -30,7 +30,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
-import org.scada_lts.dao.model.SimpleScadaEntity;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoMailingList;
 import org.scada_lts.service.CommunicationChannelType;
 import org.springframework.stereotype.Service;
@@ -103,7 +103,7 @@ public class MailingListService implements MangoMailingList {
 		return lists;
 	}
 
-	public List<SimpleScadaEntity> getSimpleMailingLists() {
+	public List<ScadaObjectIdentifier> getSimpleMailingLists() {
 		return mailingListDAO.getSimpleMailingLists();
 	}
 
