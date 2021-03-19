@@ -65,7 +65,7 @@ public final class ValidationUtils {
         return "";
     }
 
-    static <T> String msgIfNullOrInvalid(String msg, T value, Predicate<T> invalidIf) {
+   public static <T> String msgIfNullOrInvalid(String msg, T value, Predicate<T> invalidIf) {
         if(Objects.isNull(value) || invalidIf.test(value)) {
             return MessageFormat.format(msg, String.valueOf(value));
         }
