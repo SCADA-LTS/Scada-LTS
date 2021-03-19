@@ -444,7 +444,7 @@ public class PointValueAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                if(type != PointValueTypeOfREST.TYPE_STRING) { value = validateInputValue(value); }
+                if(type != PointValueTypeOfREST.TYPE_STRING) { value = convertInputValue(value); }
                 dataPointService.save(value, xid, type);
                 return new ResponseEntity<>(value, HttpStatus.OK);
             }
@@ -726,7 +726,7 @@ public class PointValueAPI {
      * @param value Input value to be checked
      * @return valid input string
      */
-    private String validateInputValue(String value) {
+    private String convertInputValue(String value) {
 
         String inappropriateChars = "[=\\s]";
         String replaceComma = "%2C";
