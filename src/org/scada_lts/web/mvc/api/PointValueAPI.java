@@ -390,7 +390,7 @@ public class PointValueAPI {
 
     /**
      * @param xid
-     * @param type    (0 - binary, 1 - multistate, 2 - double, 3 - string)
+     * @param type    (0 - unknown, 1 - binary, 2 - multistate, 3 - double, 4 - string)
      * @param value   (for binary [0,1]
      * @param request
      * @return
