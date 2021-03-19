@@ -1,15 +1,14 @@
-package org.scada_lts.web.mvc.api.json;
+package org.scada_lts.dao.model;
 
-public class JsonMailingList {
+public class SimpleScadaEntity {
 
     private int id;
     private String xid;
     private String name;
 
-    public JsonMailingList() {
-    }
+    public SimpleScadaEntity() {}
 
-    public JsonMailingList(int id, String xid, String name) {
+    public SimpleScadaEntity(int id, String xid, String name) {
         this.id = id;
         this.xid = xid;
         this.name = name;

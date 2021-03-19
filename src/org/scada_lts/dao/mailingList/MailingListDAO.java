@@ -22,8 +22,8 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.model.SimpleScadaEntity;
 import org.scada_lts.utils.QueryUtils;
-import org.scada_lts.web.mvc.api.json.JsonMailingList;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -130,10 +130,10 @@ public class MailingListDAO {
 		}
 	}
 
-	private class SimpleMailingListRowMapper implements RowMapper<JsonMailingList> {
+	private class SimpleMailingListRowMapper implements RowMapper<SimpleScadaEntity> {
 		@Override
-		public JsonMailingList mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new JsonMailingList(
+		public SimpleScadaEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return new SimpleScadaEntity(
 					rs.getInt(COLUMN_NAME_ID),
 					rs.getString(COLUMN_NAME_XID),
 					rs.getString(COLUMN_NAME_NAME)
@@ -181,7 +181,7 @@ public class MailingListDAO {
 		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new MailingListRowMapper());
 	}
 
-	public List<JsonMailingList> getSimpleMailingLists() {
+	public List<SimpleScadaEntity> getSimpleMailingLists() {
 		String templateSelectOrderBy = MAILING_LIST_SELECT + "order by name";
 		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new SimpleMailingListRowMapper());
 	}
