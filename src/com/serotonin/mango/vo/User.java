@@ -18,16 +18,14 @@
  */
 package com.serotonin.mango.vo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -75,8 +73,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean admin;
 	@JsonRemoteProperty
 	private boolean disabled;
-	private List<Integer> dataSourcePermissions;
-	private List<DataPointAccess> dataPointPermissions;
+	private List<Integer> dataSourcePermissions = new ArrayList<>();
+	private List<DataPointAccess> dataPointPermissions = new ArrayList<>();
+	private List<WatchListAccess> watchListPermissions = new ArrayList<>();
+	private List<ViewAccess> viewPermissions = new ArrayList<>();
+	@JsonRemoteProperty
 	private int selectedWatchList;
 	@JsonRemoteProperty
 	private String homeUrl;
@@ -274,10 +275,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<Integer> getDataSourcePermissions() {
-		if (dataSourcePermissions==null) {
-			dataSourcePermissions = new LinkedList<Integer>();
-		}
-		
 		return dataSourcePermissions;
 		
 	}
@@ -287,16 +284,28 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<DataPointAccess> getDataPointPermissions() {
-		if (dataPointPermissions==null) {
-			dataPointPermissions = new LinkedList<DataPointAccess>();
-		} 
 		return dataPointPermissions;
 		
 	}
 
-	public void setDataPointPermissions(
-			List<DataPointAccess> dataPointPermissions) {
+	public void setDataPointPermissions(List<DataPointAccess> dataPointPermissions) {
 		this.dataPointPermissions = dataPointPermissions;
+	}
+
+	public List<WatchListAccess> getWatchListPermissions() {
+		return watchListPermissions;
+	}
+
+	public void setWatchListPermissions(List<WatchListAccess> watchListPermissions) {
+		this.watchListPermissions = watchListPermissions;
+	}
+
+	public List<ViewAccess> getViewPermissions() {
+		return viewPermissions;
+	}
+
+	public void setViewPermissions(List<ViewAccess> viewPermissions) {
+		this.viewPermissions = viewPermissions;
 	}
 
 	public DataSourceVO<?> getEditDataSource() {
@@ -451,6 +460,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		if (admin) {
 			dataSourcePermissions.clear();
 			dataPointPermissions.clear();
+			viewPermissions.clear();
+			watchListPermissions.clear();
 		} else {
 			JsonArray jsonDataSources = json
 					.getJsonArray("dataSourcePermissions");
@@ -503,6 +514,13 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			map.put("dataSourcePermissions", dsXids);
 
 			map.put("dataPointPermissions", dataPointPermissions);
+			map.put("watchListPermissions", watchListPermissions);
+			map.put("viewPermissions", viewPermissions);
+		} else {
+			map.put("dataSourcePermissions", Collections.emptyList());
+			map.put("dataPointPermissions", Collections.emptyList());
+			map.put("watchListPermissions", Collections.emptyList());
+			map.put("viewPermissions", Collections.emptyList());
 		}
 	}
 
@@ -540,6 +558,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setUserProfile(UsersProfileVO profile) {
 		this.userProfile = profile.getId();
+	}
+
+	public void setUserProfileId(int userProfileId) {
+		this.userProfile =userProfileId;
 	}
 
 	public int getUserProfile() {

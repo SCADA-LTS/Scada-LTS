@@ -49,6 +49,14 @@ public class DataPointAccess implements JsonSerializable {
 	private int dataPointId;
 	private int permission;
 
+	public DataPointAccess() {
+	}
+
+	public DataPointAccess(int dataPointId, int permission) {
+		this.dataPointId = dataPointId;
+		this.permission = permission;
+	}
+
 	public int getDataPointId() {
 		return dataPointId;
 	}

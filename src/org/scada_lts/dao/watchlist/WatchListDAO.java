@@ -17,13 +17,11 @@
  */
 package org.scada_lts.dao.watchlist;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import br.org.scadabr.vo.permission.WatchListAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -141,13 +139,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">0) "
 			+ "order by name";
 
-	public static final String WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_PERMISSION_ORDER_BY_NAME = " "
-			+ COLUMN_NAME_USER_ID+"=? or "
-			+ "id in (select watchListId from watchListUsersProfiles where "+COLUMN_NAME_USER_PROFILE_ID+"=? and " + COLUMN_NAME_WLUP_PERMISSION + ">0) or "
-			+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">0) "
-			+ "order by name";
-
-	public static final String WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
+	private static final String WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
 			+ COLUMN_NAME_USER_ID+"=? or "
 			+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">0) "
 			+ "order by name";
@@ -160,6 +152,27 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ "watchListUsers "
 			+ "where "
 				+ COLUMN_NAME_WLU_WATCHLIST_ID+"=?";
+
+	private static final String WATCH_LIST_USERS_SELECT_BASE_ON_USER_ID = ""
+			+"select "
+				+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
+				+ COLUMN_NAME_WLU_USER_ID+", "
+				+ COLUMN_NAME_WLU_ACCESS_TYPE+" "
+			+ "from "
+				+ "watchListUsers "
+			+ "where "
+				+ COLUMN_NAME_WLU_USER_ID+"=?";
+
+	private static final String WATCH_LIST_USERS_SELECT_BASE_ON_USER_ID_WATCH_LIST_ID = ""
+			+"select "
+				+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
+				+ COLUMN_NAME_WLU_USER_ID+", "
+				+ COLUMN_NAME_WLU_ACCESS_TYPE+" "
+			+ "from "
+				+ "watchListUsers "
+			+ "where "
+				+ COLUMN_NAME_WLU_USER_ID+"=? and "
+				+ COLUMN_NAME_WLP_WATCHLIST_ID+"=? ";
 	
 	private static final String WATCH_LIST_POINTS_SELECT_BASE_ON_WATCH_LIST_ID=" "
 			+"select "
@@ -205,6 +218,15 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ "watchListUsers "
 			+ "where "
 				+ COLUMN_NAME_WLP_WATCHLIST_ID+"=?";
+
+	private static final String WATCH_LIST_USERS_DELETE_WATCHLIST_ID_AND_USER_ID = ""
+			+"delete "
+			+ "from "
+			+ "watchListUsers "
+			+ "where "
+			+ COLUMN_NAME_WLP_WATCHLIST_ID+"=? "
+			+ "and "
+			+ COLUMN_NAME_WLU_USER_ID+"=?";
 	
 	private static final String WATCH_LIST_USERS_INSERT=""
 			+"insert watchListUsers ("
@@ -212,6 +234,14 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+COLUMN_NAME_WLU_USER_ID+","
 				+COLUMN_NAME_WLU_ACCESS_TYPE+")"
 			+ " values (?,?,?)";
+
+	private static final String WATCH_LIST_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+			+"insert watchListUsers ("
+			+COLUMN_NAME_WLU_WATCHLIST_ID+","
+			+COLUMN_NAME_WLU_USER_ID+","
+			+COLUMN_NAME_WLU_ACCESS_TYPE+")"
+			+ " values (?,?,?) ON DUPLICATE KEY UPDATE " +
+			COLUMN_NAME_WLU_ACCESS_TYPE + "=?";
 	
 	private static final String WATCH_LIST_DELETE_BASE_ON_ID = ""
 			+ "delete "
@@ -232,7 +262,16 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "delete from watchListPoints where "
 				+ COLUMN_NAME_WLP_DATA_POINT_ID + " "
 			+ "in ";
-	
+
+	private static final String WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
+			+ "select "
+			+ COLUMN_NAME_WLP_WATCHLIST_ID+ ", "
+			+ COLUMN_NAME_WLUP_PERMISSION + " "
+			+ "from "
+			+ "watchListUsersProfiles "
+			+ "where "
+			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
+
 	// @formatter:on
 	
 	//RowMapper
@@ -327,7 +366,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	public List<ShareUser> getWatchListUsers(int watchListId) {
 		return (List<ShareUser>) DAO.getInstance().getJdbcTemp().query(WATCH_LIST_USERS_SELECT_BASE_ON_WATCH_LIST_ID, new Object[] {watchListId}, new WatchListUserRowMapper());
 	}
-	
+
 	public List<Integer> getPointsWatchList(int watchListId) {
 		return (List<Integer>) DAO.getInstance().getJdbcTemp().queryForList(WATCH_LIST_POINTS_SELECT_BASE_ON_WATCH_LIST_ID, new Object[] { watchListId }, Integer.class );
 	}
@@ -349,7 +388,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	public void deleteWatchListUsers(int watchListId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_USERS_DELETE, new Object[] {watchListId});
 	}
-	
+
 	public void deleteWatchList(int watchListId) {
 		DAO.getInstance().getJdbcTemp().update(WATCH_LIST_DELETE_BASE_ON_ID, new Object[] {watchListId});
 	}
@@ -406,11 +445,65 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
-	public List<WatchList> selectWatchListsWithAccess(final int userId, int userProfile) {
-		return filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_PERMISSION_ORDER_BY_NAME, new Object[]{userId, userProfile, userId}, WatchListDAO.NO_LIMIT);
-	}
-
 	public List<WatchList> selectWatchListsWithAccess(final int userId) {
 		return filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId, userId}, WatchListDAO.NO_LIMIT);
+	}
+
+	public List<WatchListAccess> selectWatchListPermissions(final int userId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("selectWatchListPermissions(final int userId) userId:" + userId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_USERS_SELECT_BASE_ON_USER_ID, new Object[]{userId}, (rs, rowNum) -> {
+			WatchListAccess dataPointAccess = new WatchListAccess();
+			dataPointAccess.setId(rs.getInt(COLUMN_NAME_WLU_WATCHLIST_ID));
+			dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_WLU_ACCESS_TYPE));
+			return dataPointAccess;
+		});
+	}
+
+	public List<WatchListAccess> selectWatchListPermissionsByProfileId(int usersProfileId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("selectWatchListPermissionsByProfileId(int usersProfileId) usersProfileId:" + usersProfileId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+			WatchListAccess dataPointAccess = new WatchListAccess();
+			dataPointAccess.setId(rs.getInt(COLUMN_NAME_WLP_WATCHLIST_ID));
+			dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_WLUP_PERMISSION));
+			return dataPointAccess;
+		});
+
+	}
+
+	public int[] insertPermissions(int userId, List<WatchListAccess> toInsert) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertPermissions(int userId, List<WatchListAccess> toInsert) user:" + userId + "");
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER  };
+
+		List<Object[]> batchArgs = toInsert.stream()
+				.map(a -> new Object[] {a.getId(), userId, a.getPermission(), a.getPermission()})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCH_LIST_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+	}
+
+	public int[] deletePermissions(int userId, List<WatchListAccess> toDelete) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deletePermissions(int userId, List<WatchListAccess> toDelete) user:" + userId);
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+		List<Object[]> batchArgs = toDelete.stream()
+				.map(a -> new Object[] {a.getId(), userId})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCH_LIST_USERS_DELETE_WATCHLIST_ID_AND_USER_ID, batchArgs, argTypes);
 	}
 }

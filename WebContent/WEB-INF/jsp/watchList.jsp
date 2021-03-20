@@ -60,9 +60,11 @@
       var pointNames = {};
       var watchlistChangeId = 0;
       var isChartLive = false;
+      var isAdmin = false;
 
       function init() {
           WatchListDwr.init(function(data) {
+              isAdmin = data.admin;
               mango.share.users = data.shareUsers;
 
               // Create the point tree.
@@ -90,7 +92,7 @@
 
               // Add default points.
               displayWatchList(data.selectedWatchList);
-              maybeDisplayDeleteImg();
+              maybeDisplayDeleteImg(data.selectedWatchList);
           });
           WatchListDwr.getDateRangeDefaults(<c:out value="<%= Common.TimePeriods.DAYS %>"/>, 1, function(data) { setDateRange(data); });
           var handler = new TreeClickHandler();
@@ -202,7 +204,7 @@
 
           // Display controls based on access
           var iconSrc;
-          if (owner) {
+          if (owner || isAdmin) {
               show("wlEditDiv", "inline");
               //Disabled for userProfiles apply function
               hide("usersEditDiv", "inline");
@@ -245,8 +247,10 @@
           watchlistChangeId++;
           var id = watchlistChangeId;
           WatchListDwr.setSelectedWatchList($get("watchListSelect"), function(data) {
-        	  if (id == watchlistChangeId)
+        	  if (id == watchlistChangeId) {
                   displayWatchList(data);
+                  maybeDisplayDeleteImg(data);
+              }
           });
       }
 
@@ -260,7 +264,6 @@
               wlselect.options[wlselect.options.length] = new Option(watchListData.value, watchListData.key);
               $set(wlselect, watchListData.key);
               watchListChanged();
-              maybeDisplayDeleteImg();
           });
       }
 
@@ -271,12 +274,20 @@
 
           watchListChanged();
           WatchListDwr.deleteWatchList(deleteId);
-          maybeDisplayDeleteImg();
       }
 
-      function maybeDisplayDeleteImg() {
-          var wlselect = $("watchListSelect");
-          display("watchListDeleteImg", wlselect.options.length > 1);
+      function maybeDisplayDeleteImg(data) {
+          display("watchListDeleteImg", false);
+          if(isOwner(data) || isAdmin) {
+             var wlselect = $("watchListSelect");
+             display("watchListDeleteImg", wlselect.options.length > 0);
+          }
+      }
+
+      function isOwner(data) {
+          return typeof data !== typeof undefined
+          && typeof data.access !== typeof undefined
+          && (data.access == <c:out value="<%= ShareUser.ACCESS_OWNER %>"/>);
       }
 
       function showWatchListUsers() {
@@ -312,7 +323,7 @@
       //
       function addToWatchList(pointId) {
           // Check if this point is already in the watch list.
-          if ($("p"+ pointId) || !owner)
+          if ($("p"+ pointId) || !(owner || isAdmin))
               return;
           addToWatchListImpl(pointId);
           WatchListDwr.addToWatchList(pointId, mango.view.watchList.setDataImpl);
@@ -327,7 +338,7 @@
           var pointContent = createFromTemplate("p_TEMPLATE_", pointId, "watchListTable");
           pointContent.mangoName = "watchListRow";
 
-          if (owner) {
+          if (owner || isAdmin) {
               show("p"+ pointId +"MoveUp");
               show("p"+ pointId +"MoveDown");
               show("p"+ pointId +"Delete");
@@ -415,13 +426,13 @@
                   }
                   else {
                       show(rows[i].id +"BreakRow");
-                      if (owner)
+                      if (owner || isAdmin)
                           show(rows[i].id +"MoveUp");
                   }
 
                   if (i == rows.length - 1)
                       hide(rows[i].id +"MoveDown");
-                  else if (owner)
+                  else if (owner || isAdmin)
                       show(rows[i].id +"MoveDown");
               }
           }

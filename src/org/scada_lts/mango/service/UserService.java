@@ -17,19 +17,31 @@
  */
 package org.scada_lts.mango.service;
 
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
+import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.mango.adapter.MangoUser;
+import org.scada_lts.permissions.service.*;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
+
+import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
 
 /**
  * UserService
@@ -38,15 +50,20 @@ import java.util.List;
  */
 public class UserService implements MangoUser {
 
+	private static final Log LOG = LogFactory.getLog(UserService.class);
+
 	private UserDAO userDAO = new UserDAO();
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
 
-	private DataPointService dataPointService = new DataPointService();
-	private DataSourceService dataSourceService = new DataSourceService();
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
 	private UsersProfileService usersProfileService = new UsersProfileService();
+
+	private PermissionsService<WatchListAccess, WatchList> watchListPermissionsService = new WatchListPermissionsService();
+	private PermissionsService<ViewAccess, View> viewPermissionsService = new ViewPermissionsService();
+	private PermissionsService<DataPointAccess, DataPointVO> dataPointPermissionsService = new DataPointPermissionsService();
+	private PermissionsService<Integer, DataSourceVO> dataSourcePermissionsService = new DataSourcePermissionsService();
 
 	@Override
 	public User getUser(int id) {
@@ -68,6 +85,13 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
+	public List<User> getUsersWithPermissions() {
+		List<User> users = userDAO.getUsers();
+		populateUserPermissions(users);
+		return users;
+	}
+
+	@Override
 	public List<User> getActiveUsers() {
 		List<User> users = userDAO.getActiveUsers();
 		populateUserPermissions(users);
@@ -83,9 +107,11 @@ public class UserService implements MangoUser {
 	@Override
 	public void populateUserPermissions(User user) {
 		if (user != null) {
-			user.setDataSourcePermissions(dataSourceService.getDataSourceId(user.getId()));
-			user.setDataPointPermissions(dataPointService.getDataPointAccessList(user.getId()));
-			usersProfileService.getUsersProfileByUser(user).ifPresent(user::setUserProfile);
+			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
+			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
+			user.setWatchListPermissions(watchListPermissionsService.getPermissions(user));
+			user.setViewPermissions(viewPermissionsService.getPermissions(user));
+			usersProfileService.getProfileByUser(user).ifPresent(user::setUserProfile);
 		}
 	}
 
@@ -103,9 +129,9 @@ public class UserService implements MangoUser {
 		try {
 			int id = userDAO.insert(user);
 			user.setId(id);
-			saveRelationalData(user);
+			updatePermissions(user);
 		} catch (Throwable t) {
-			t.printStackTrace();
+			LOG.error(t.getMessage(), t);
 		}
 	}
 
@@ -119,17 +145,14 @@ public class UserService implements MangoUser {
 		}
 
 		userDAO.update(user);
-		saveRelationalData(user);
+		updatePermissions(user);
 	}
 
-	private void saveRelationalData(User user) {
-		// Delete existing permissions
-		dataSourceService.deleteDataSourceUser(user.getId());
-		dataPointService.deleteDataPointUser(user.getId());
-
-		//Save new
-		dataPointService.insertPermissions(user);
-		dataSourceService.insertPermissions(user);
+	private void updatePermissions(User user) {
+		updateDataSourcePermissions(user, dataSourcePermissionsService);
+		updateDataPointPermissions(user, dataPointPermissionsService);
+		updateWatchListPermissions(user, watchListPermissionsService);
+		updateViewPermissions(user, viewPermissionsService);
 	}
 
 	@Override

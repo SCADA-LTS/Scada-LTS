@@ -32,7 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DataPointUser DAO
@@ -52,6 +54,8 @@ public class DataPointUserDAO {
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final int COLUMN_INDEX_PERMISSION = 3;
 
+	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
+
 	// @formatter:off
 	private static final String DATA_POINT_USER_SELECT_WHERE_DP_ID = ""
 			+ "select "
@@ -67,7 +71,7 @@ public class DataPointUserDAO {
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_PERMISSION + " "
 			+ "from dataPointUsers where "
-				+ COLUMN_NAME_ID + "=? ";
+				+ COLUMN_NAME_USER_ID + "=? ";
 
 
 	private static final String DATA_POINT_USER_INSERT = ""
@@ -81,6 +85,33 @@ public class DataPointUserDAO {
 	private static final String DATA_POINT_USER_DELETE_WHERE_DATA_POINT_ID = ""
 			+ "delete from dataPointUsers where "
 				+ COLUMN_NAME_DP_ID + "=? ";
+
+	private static final String DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
+			+ "select "
+			+ COLUMN_NAME_DP_ID+ ", "
+			+ COLUMN_NAME_USER_PROFILE_ID+ ", "
+			+ COLUMN_NAME_PERMISSION + " "
+			+ "from "
+			+ "dataPointUsersProfiles "
+			+ "where "
+			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
+
+	private static final String DATA_POINT_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+			+"insert dataPointUsers ("
+			+COLUMN_NAME_DP_ID+","
+			+COLUMN_NAME_USER_ID+","
+			+COLUMN_NAME_PERMISSION+")"
+			+ " values (?,?,?) ON DUPLICATE KEY UPDATE " +
+			COLUMN_NAME_PERMISSION + "=?";
+
+	private static final String DATA_POINT_USERS_DELETE_DATA_POINT_ID_AND_USER_ID = ""
+			+"delete "
+			+ "from "
+			+ "dataPointUsers "
+			+ "where "
+			+ COLUMN_NAME_DP_ID+"=? "
+			+ "and "
+			+ COLUMN_NAME_USER_ID+"=?";
 
 	// @formatter:on
 
@@ -179,4 +210,52 @@ public class DataPointUserDAO {
 		DAO.getInstance().getJdbcTemp().update(DATA_POINT_USER_DELETE_WHERE_DATA_POINT_ID, new Object[]{dataPointId});
 	}
 
+	public List<DataPointAccess> selectDataPointPermissions(int userId) {
+		return getDataPointAccessList(userId);
+	}
+
+	public List<DataPointAccess> selectDataPointPermissionsByProfileId(int profileId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("selectWatchListPermissionsByProfileId(int profileId) profileId:" + profileId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
+			DataPointAccess dataPointAccess = new DataPointAccess();
+			dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DP_ID));
+			dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
+			return dataPointAccess;
+		});
+
+	}
+
+	public int[] insertPermissions(int userId, List<DataPointAccess> toInsert) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertPermissions(int userId, List<DataPointAccess> toInsert) user:" + userId + "");
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER  };
+
+		List<Object[]> batchArgs = toInsert.stream()
+				.map(a -> new Object[] {a.getDataPointId(), userId, a.getPermission(), a.getPermission()})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(DATA_POINT_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+	}
+
+	public int[] deletePermissions(int userId, List<DataPointAccess> toDelete) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deletePermissions(int userId, List<DataPointAccess> toDelete) user:" + userId);
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER};
+
+		List<Object[]> batchArgs = toDelete.stream()
+				.map(a -> new Object[] {a.getDataPointId(), userId})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(DATA_POINT_USERS_DELETE_DATA_POINT_ID_AND_USER_ID, batchArgs, argTypes);
+	}
 }

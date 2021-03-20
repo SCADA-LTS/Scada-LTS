@@ -148,6 +148,7 @@ public class UsersDwr extends BaseDwr {
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		user.setDataSourcePermissions(dataSourcePermissions);
 		user.setDataPointPermissions(dataPointPermissions);
+		user.setUserProfileId(usersProfileId);
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -180,9 +181,8 @@ public class UsersDwr extends BaseDwr {
 				UsersProfileVO profile = profilesDao
 						.getUserProfileById(usersProfileId);
 				profile.apply(user);
+				profilesDao.updateUsersProfile(user, profile);
 				userDao.saveUser(user);
-				profilesDao.resetUserProfile(user);
-				profilesDao.updateUsersProfile(profile);
 			} else {
 				profilesDao.resetUserProfile(user);
 			}

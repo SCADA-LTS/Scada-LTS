@@ -20,9 +20,13 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import br.org.scadabr.vo.permission.WatchListAccess;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
+import org.scada_lts.permissions.service.GetShareUsers;
+import org.scada_lts.permissions.service.PermissionsService;
+import org.scada_lts.permissions.service.WatchListPermissionsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,9 +46,11 @@ import com.serotonin.mango.vo.WatchList;
 public class WatchListService implements MangoWatchList {
 	
 	private WatchListDAO watchListDAO;
+	private GetShareUsers<WatchList> permissionsService;
 	
 	public WatchListService() {
-		watchListDAO = new WatchListDAO();
+		this.watchListDAO = new WatchListDAO();
+		this.permissionsService = new WatchListPermissionsService(watchListDAO);
 	}
 
 	@Override
@@ -61,16 +67,6 @@ public class WatchListService implements MangoWatchList {
 		return watchListDAO.filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ORDERY_BY_NAME, new Object[]{userId, userProfile, userId}, WatchListDAO.NO_LIMIT);
 	}
 
-	@Override
-	public List<WatchList> getWatchListsWithAccess(int userId, int usersProfileId) {
-		return watchListDAO.selectWatchListsWithAccess(userId, usersProfileId);
-	}
-
-	@Override
-	public List<WatchList> getWatchListsWithAccess(int userId) {
-		return watchListDAO.selectWatchListsWithAccess(userId);
-	}
-	
 	@Override
 	public List<WatchList> getWatchLists() {
 		return watchListDAO.findAll();
@@ -104,7 +100,7 @@ public class WatchListService implements MangoWatchList {
 	}
 	
 	private void setWatchListUsers(WatchList watchList) {
-		List<ShareUser> watchListUsers = watchListDAO.getWatchListUsers(watchList.getId());
+		List<ShareUser> watchListUsers = permissionsService.getShareUsers(watchList);
 		watchList.setWatchListUsers(watchListUsers);
 	}
 	
@@ -143,17 +139,8 @@ public class WatchListService implements MangoWatchList {
 		watchListDAO.deleteWatchListPoints(watchList.getId());
 		
 		watchListDAO.addPointsForWatchList(watchList);
-		
-		saveWatchListUsers(watchList);
-		
-	}
-	
-	void saveWatchListUsers(final WatchList watchList) {
-		// Delete anything that is currently there.
-		watchListDAO.deleteWatchListUsers(watchList.getId());
 
-		// Add in all of the entries.
-		watchListDAO.addWatchListUsers(watchList);
+		setWatchListUsers(watchList);
 	}
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

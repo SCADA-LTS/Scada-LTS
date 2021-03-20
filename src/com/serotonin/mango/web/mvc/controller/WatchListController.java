@@ -26,9 +26,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.permissions.service.GetObjectsAccess;
+import org.scada_lts.permissions.service.WatchListPermissionsService;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
@@ -85,7 +84,8 @@ public class WatchListController extends ParameterizableViewController {
 				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
 				// ACL end;
 			} else {
-				watchLists = getWatchListsWithAccess(user);
+				GetObjectsAccess<WatchList> watchListService = new WatchListPermissionsService();
+				watchLists = watchListService.getObjectsWithAccess(user);
             }
 
 		} else {
@@ -158,10 +158,5 @@ public class WatchListController extends ParameterizableViewController {
 		model.put(KEY_SELECTED_WATCHLIST, selected);
 
 		return model;
-	}
-
-	private List<WatchList> getWatchListsWithAccess(User user) {
-		WatchListService watchListService = new WatchListService();
-		return watchListService.getWatchListsWithAccess(user.getId(), user.getUserProfile());
 	}
 }

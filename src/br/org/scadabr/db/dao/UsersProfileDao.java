@@ -1,23 +1,26 @@
 package br.org.scadabr.db.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.ListIterator;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.permissions.service.DataPointPermissionsService;
+import org.scada_lts.permissions.service.DataSourcePermissionsService;
+import org.scada_lts.permissions.service.ViewPermissionsService;
+import org.scada_lts.permissions.service.WatchListPermissionsService;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
-import com.serotonin.db.spring.GenericRowMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.BaseDao;
 import com.serotonin.mango.db.dao.UserDao;
@@ -26,93 +29,85 @@ import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
-import com.serotonin.mango.vo.permission.DataPointAccess;
+
+import javax.sql.DataSource;
 
 public class UsersProfileDao extends BaseDao {
-	public Log LOG = LogFactory.getLog(UsersProfileDao.class);
+	public static final Log LOG = LogFactory.getLog(UsersProfileDao.class);
 
-	private static List<UsersProfileVO> currentProfileList = null;
+	private static Set<UsersProfileVO> currentProfileList = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private static AtomicInteger lock = new AtomicInteger();
 
-	private static final String PROFILES_SELECT = "select u.id, u.name, u.xid "
-			+ "from usersProfiles u";
+	private WatchListDao watchlistDao;
+	private ViewDao viewDao;
+	private UserDao userDao;
+	private UsersProfileService usersProfileService;
+	private WatchListPermissionsService watchListPermissionsService;
+    private DataPointPermissionsService dataPointPermissionsService;
+    private DataSourcePermissionsService dataSourcePermissionsService;
+	private ViewPermissionsService viewPermissionsService;
 
-	private static final String PROFILES_INSERT = "insert into usersProfiles (xid, name) values (?, ?)";
+    public UsersProfileDao() {
+		this.watchlistDao = new WatchListDao();
+		this.viewDao = new ViewDao();
+		this.userDao = new UserDao();
+		this.usersProfileService = new UsersProfileService();
+		this.watchListPermissionsService = new WatchListPermissionsService();
+		this.dataPointPermissionsService = new DataPointPermissionsService();
+		this.dataSourcePermissionsService = new DataSourcePermissionsService();
+		this.viewPermissionsService = new ViewPermissionsService();
+	}
 
-	private static final String PROFILES_UPDATE = "update usersProfiles set "
-			+ "  name=? " + "where id=?";
-
-	private static final String PROFILES_DELETE = "delete from usersProfiles where id = (?)";
-
-	private WatchListDao watchlistDao = new WatchListDao();
-	private ViewDao viewDao = new ViewDao();
-	private UserDao userDao = new UserDao();
+	public UsersProfileDao(DataSource dataSource, WatchListDao watchlistDao, ViewDao viewDao,
+						   UserDao userDao, UsersProfileService usersProfileService,
+						   WatchListPermissionsService watchListPermissionsService,
+						   DataPointPermissionsService dataPointPermissionsService,
+						   DataSourcePermissionsService dataSourcePermissionsService,
+						   ViewPermissionsService viewPermissionsService) {
+		super(dataSource);
+		this.watchlistDao = watchlistDao;
+		this.viewDao = viewDao;
+		this.userDao = userDao;
+		this.usersProfileService = usersProfileService;
+		this.watchListPermissionsService = watchListPermissionsService;
+		this.dataPointPermissionsService = dataPointPermissionsService;
+		this.dataSourcePermissionsService = dataSourcePermissionsService;
+		this.viewPermissionsService = viewPermissionsService;
+	}
 
 	public List<UsersProfileVO> getUsersProfiles() {
-		if (currentProfileList == null) {
-			currentProfileList = query(PROFILES_SELECT + " order by u.name",
-					new UsersProfilesRowMapper());
-			populateUserProfilePermissions(currentProfileList);
+		return getUsersProfiles(Comparator.comparing(UsersProfileVO::getName));
+	}
+
+	public List<UsersProfileVO> getUsersProfiles(Comparator<UsersProfileVO> comparator) {
+		if(currentProfileList.isEmpty()) {
+			if(lock.getAndDecrement() == 0) {
+				try {
+					usersProfileService.getProfiles(Integer.MAX_VALUE)
+							.forEach(a -> {
+								populateUserProfilePermissions(a);
+								currentProfileList.add(a);
+							});
+				} finally {
+					lock.set(0);
+				}
+			}
 		}
-		return currentProfileList;
+		return currentProfileList.stream()
+				.sorted(comparator)
+				.collect(Collectors.toList());
 	}
 
 	public UsersProfileVO getUserProfileByName(String name) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where lower(u.name)=?", new Object[] { name.toLowerCase() }, new
-		 * UsersProfilesRowMapper(), null);
-		 * 
-		 * populateUserProfilePermissions(profile); return profile;
-		 */
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getName() == name) {
-				return iterProfile;
-			}
-		}
-		LOG.debug("Profile not Found!");
-		return null;
+		return getUsersProfile(a -> !StringUtils.isEmpty(name) && name.equals(a.getName()));
 	}
 
 	public UsersProfileVO getUserProfileById(int id) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where u.id=?", new Object[] { id }, new UsersProfilesRowMapper(),
-		 * null); populateUserProfilePermissions(profile); return profile;
-		 */
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getId() == id) {
-				return iterProfile;
-			}
-		}
-		LOG.debug("Profile not Found!");
-		return null;
+		return getUsersProfile(a -> id != Common.NEW_ID && a.getId() == id);
 	}
 
 	public UsersProfileVO getUserProfileByXid(String xid) {
-		/*
-		 * UsersProfileVO profile = queryForObject(PROFILES_SELECT +
-		 * " where u.xid=?", new Object[] { xid }, new UsersProfilesRowMapper(),
-		 * null); populateUserProfilePermissions(profile); return profile;
-		 */
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getXid() == xid) {
-				return iterProfile;
-			}
-		}
-		LOG.debug("Profile not Found!");
-		return null;
+		return getUsersProfile(a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid()));
 	}
 
 	public void saveUsersProfile(UsersProfileVO profile) throws DAOException {
@@ -148,91 +143,37 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public void updateProfile(UsersProfileVO profile) {
-
-		ejt.update(PROFILES_UPDATE,
-				new Object[] { profile.getName(), profile.getId() });
-
-		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
-				+ " where u.userProfileId=?", new Object[] { profile.getId() },
-				Integer.class);
-
-		UserDao userDao = new UserDao();
+		usersProfileService.setProfileName(profile.getName(), profile);
+		List<Integer> usersIds = usersProfileService.getUsersByProfile(profile);
 
 		for (Integer userId : usersIds) {
 			User profileUser = userDao.getUser(userId);
 			profile.apply(profileUser);
+			updateUsersProfile(profileUser, profile);
 			userDao.saveUser(profileUser);
-			this.updateUsersProfile(profile);
 		}
 
-		saveRelationalData(profile);
+		usersProfileService.saveRelationalData(profile);
 
 	}
 
-	public void updateUsersProfile(UsersProfileVO profile) {
-		if (profile.retrieveLastAppliedUser() != null) {
-			ejt.update("delete from usersUsersProfiles where userId=?",
-					new Object[] { profile.retrieveLastAppliedUser().getId() });
-
-			ejt.update(
-					"insert into usersUsersProfiles (userProfileId, userId) values (?,?)",
-					new Object[] { profile.getId(),
-							profile.retrieveLastAppliedUser().getId() });
+	public void updateUsersProfile(User user, UsersProfileVO profile) {
+		if (user != null) {
+			usersProfileService.getProfileByUser(user)
+					.ifPresent(a -> usersProfileService.removeUserProfile(user));
+			usersProfileService.createUserProfile(user, profile);
 		}
-
-		for (WatchList watchlist : profile.retrieveWatchlists()) {
-			watchlistDao.saveWatchList(watchlist);
-		}
-
-		for (View view : profile.retrieveViews()) {
-			viewDao.saveView(view);
-		}
-
-		ListIterator<UsersProfileVO> iterator = currentProfileList
-				.listIterator();
-		while (iterator.hasNext()) {
-			UsersProfileVO iterProfile = iterator.next();
-			LOG.debug(iterProfile.getName() + ' ' + iterProfile.getXid());
-			if (iterProfile.getId() == profile.getId()) {
-				iterator.set(profile);
-			}
-		}
-
-	}
-
-	private void insertProfile(UsersProfileVO profile) {
-
-		profile.setId(doInsert(PROFILES_INSERT, new Object[] {
-				profile.getXid(), profile.getName() }));
-
-		setViews(profile);
-		saveRelationalData(profile);
-
 		currentProfileList.add(profile);
 	}
 
-	private class UsersProfilesRowMapper implements
-			GenericRowMapper<UsersProfileVO> {
+	private void insertProfile(UsersProfileVO profile) {
+		profile.setId(usersProfileService.createProfile(profile.getXid(), profile.getName()));
 
-		public UsersProfilesRowMapper() {
-		};
+		setViews(profile);
+		usersProfileService.saveRelationalData(profile);
 
-		public UsersProfileVO mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
-			UsersProfileVO edt = new UsersProfileVO();
-			edt.setId(rs.getInt(1));
-			edt.setName(rs.getString(2));
-			edt.setXid(rs.getString(3));
-			return edt;
-		}
+		currentProfileList.add(profile);
 	}
-
-	private static final String SELECT_DATA_SOURCE_PERMISSIONS = "select dataSourceId from dataSourceUsersProfiles where userProfileId=?";
-	private static final String SELECT_DATA_POINT_PERMISSIONS = "select dataPointId, permission from dataPointUsersProfiles where userProfileId=?";
-	private static final String SELECT_WATCHLIST_PERMISSIONS = "select watchlistId, permission from watchListUsersProfiles where userProfileId=?";
-	private static final String SELECT_VIEW_PERMISSIONS = "select viewId, permission from viewUsersProfiles where userProfileId=?";
-	private static final String USERS_PROFILES_SELECT = "select userProfileId, userId from usersUsersProfiles u";
-	private static final String USERS_PROFILES_USERS_SELECT = "select userId from usersUsersProfiles u";
 
 	private void populateUserProfilePermissions(UsersProfileVO profile) {
 		if (profile == null) {
@@ -254,22 +195,11 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void populateUsers(UsersProfileVO profile) {
-		profile.defineUsers(queryForList(USERS_PROFILES_USERS_SELECT
-				+ " where userProfileId=?", new Object[] { profile.getId() },
-				Integer.class));
+		profile.defineUsers(usersProfileService.getUsersByProfile(profile));
 	}
 
 	private void populateWatchlists(UsersProfileVO profile) {
-		profile.setWatchlistPermissions(query(SELECT_WATCHLIST_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<WatchListAccess>() {
-					public WatchListAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						WatchListAccess a = new WatchListAccess(rs.getInt(1),
-								rs.getInt(2));
-						return a;
-					}
-				}));
+		profile.setWatchlistPermissions(watchListPermissionsService.getPermissionsByProfile(profile));
 
 		WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> allwatchlists = watchListDao.getWatchLists();
@@ -278,36 +208,15 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void populateDatapoints(UsersProfileVO profile) {
-		profile.setDataPointPermissions(query(SELECT_DATA_POINT_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<DataPointAccess>() {
-					public DataPointAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						DataPointAccess a = new DataPointAccess();
-						a.setDataPointId(rs.getInt(1));
-						a.setPermission(rs.getInt(2));
-						return a;
-					}
-				}));
+        profile.setDataPointPermissions(dataPointPermissionsService.getPermissionsByProfile(profile));
 	}
 
 	private void populateDataSources(UsersProfileVO profile) {
-		profile.setDataSourcePermissions(queryForList(
-				SELECT_DATA_SOURCE_PERMISSIONS,
-				new Object[] { profile.getId() }, Integer.class));
+        profile.setDataSourcePermissions(dataSourcePermissionsService.getPermissionsByProfile(profile));
 	}
 
 	private void populateViews(UsersProfileVO profile) {
-		profile.setViewPermissions(query(SELECT_VIEW_PERMISSIONS,
-				new Object[] { profile.getId() },
-				new GenericRowMapper<ViewAccess>() {
-					public ViewAccess mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						ViewAccess a = new ViewAccess(rs.getInt(1), rs
-								.getInt(2));
-						return a;
-					}
-				}));
+		profile.setViewPermissions(viewPermissionsService.getPermissionsByProfile(profile));
 
 		setViews(profile);
 	}
@@ -317,113 +226,15 @@ public class UsersProfileDao extends BaseDao {
 		profile.defineViews(allviews);
 	}
 
-	private void populateUserProfilePermissions(List<UsersProfileVO> profiles) {
-		for (UsersProfileVO profile : profiles) {
-			LOG.debug("start");
-			populateUserProfilePermissions(profile);
-			LOG.debug("end");
-		}
-	}
-
-	private void saveRelationalData(final UsersProfileVO usersProfile) {
-		ejt.update("delete from dataSourceUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from dataPointUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from watchListUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-		ejt.update("delete from viewUsersProfiles where userProfileId=?",
-				new Object[] { usersProfile.getId() });
-
-		ejt.batchUpdate(
-				"insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getDataSourcePermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getDataSourcePermissions()
-								.get(i));
-						ps.setInt(2, usersProfile.getId());
-					}
-				});
-		ejt.batchUpdate(
-				"insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getDataPointPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getDataPointPermissions()
-								.get(i).getDataPointId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getDataPointPermissions()
-								.get(i).getPermission());
-					}
-				});
-
-		ejt.batchUpdate(
-				"insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getWatchlistPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getWatchlistPermissions()
-								.get(i).getId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getWatchlistPermissions()
-								.get(i).getPermission());
-					}
-				});
-
-		ejt.batchUpdate(
-				"insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
-				new BatchPreparedStatementSetter() {
-					public int getBatchSize() {
-						return usersProfile.getViewPermissions().size();
-					}
-
-					public void setValues(PreparedStatement ps, int i)
-							throws SQLException {
-						ps.setInt(1, usersProfile.getViewPermissions().get(i)
-								.getId());
-						ps.setInt(2, usersProfile.getId());
-						ps.setInt(3, usersProfile.getViewPermissions().get(i)
-								.getPermission());
-					}
-				});
-	}
-
-	public UsersProfileVO getUserProfileByUserId(int userid) {
-		UsersProfileVO profile = queryForObject(USERS_PROFILES_SELECT
-				+ " where u.userId=?", new Object[] { userid },
-				new GenericRowMapper<UsersProfileVO>() {
-					public UsersProfileVO mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						UsersProfileVO edt = new UsersProfileVO();
-						edt.setId(rs.getInt(1));
-						return edt;
-					}
-				}, null);
-
-		if (profile != null) {
-			profile = this.getUserProfileById(profile.getId());
-		}
-
-		populateUserProfilePermissions(profile);
-		return profile;
+    public UsersProfileVO getUserProfileByUserId(int userid) {
+		return usersProfileService.getProfileByUserId(userid).map(profile -> {
+            populateUserProfilePermissions(profile);
+			return profile;
+		}).orElse(null);
 	}
 
 	public void grantUserAdminProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
-				new Object[] { user.getId() });
+		usersProfileService.removeUserProfile(user);
 
 		// Add user to watchLists
 		List<WatchList> watchLists = watchlistDao.getWatchLists();
@@ -441,8 +252,7 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public void resetUserProfile(User user) {
-		ejt.update("delete from usersUsersProfiles where userId=?",
-				new Object[] { user.getId() });
+		usersProfileService.removeUserProfile(user);
 
 		// Remove user from watchLists
 		List<WatchList> watchLists = watchlistDao.getWatchLists();
@@ -474,9 +284,7 @@ public class UsersProfileDao extends BaseDao {
 
 	public void deleteUserProfile(final int usersProfileId) {
 		// Get Users from Profile
-		List<Integer> usersIds = queryForList(USERS_PROFILES_USERS_SELECT
-				+ " where u.userProfileId=?", new Object[] { usersProfileId },
-				Integer.class);
+		List<Integer> usersIds = usersProfileService.getUsersByProfileId(usersProfileId);
 
 		// Reset user profile
 		for (Integer userId : usersIds) {
@@ -504,11 +312,22 @@ public class UsersProfileDao extends BaseDao {
 						// "delete from viewUsersProfiles where userProfileId=?",
 						// args);
 						// Delete the profile
-						ejt.update("delete from usersProfiles where id=?", args);
+						usersProfileService.removeProfile(usersProfileId);
 					}
 				});
-		currentProfileList.clear();
-		currentProfileList = null;
+		currentProfileList.removeIf(a -> a.getId() == usersProfileId);
 	}
 
+	private static UsersProfileVO getUsersProfile(Predicate<UsersProfileVO> filter) {
+		return currentProfileList.stream()
+				.filter(a -> {
+					LOG.debug(a.getName() + ' ' + a.getXid() + ' ' + a.getId());
+					return filter.test(a);
+				})
+				.findFirst()
+				.orElseGet(() -> {
+					LOG.warn("Profile not Found!");
+					return null;
+				});
+	}
 }

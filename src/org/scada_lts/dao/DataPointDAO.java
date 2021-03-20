@@ -67,6 +67,10 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventTypeId";
 	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventTypeRef1";
 
+	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_PERMISSION = "permission";
+	private static final String COLUMN_NAME_USER_ID = "userId";
+
 	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
 			+ "select "
@@ -126,6 +130,11 @@ public class DataPointDAO {
 				+ EventType.EventSources.DATA_POINT + " "
 			+ "and "
 				+ COLUMN_NAME_EVENT_TYPE_REF1;
+
+	private static final String DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
+			+ COLUMN_NAME_USER_ID+"=? or "
+			+ "id in (select dataPointId from dataPointUsers where "+COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_PERMISSION+">0) "
+			+ "order by name";
 
 	// @formatter:on
 
@@ -338,5 +347,9 @@ public class DataPointDAO {
 		queryBuilder.append(")");
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+	}
+
+	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
+		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId, userId}, 0);
 	}
 }

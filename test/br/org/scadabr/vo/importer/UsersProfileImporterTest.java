@@ -793,7 +793,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		profileDao.saveUsersProfile(oldProfile);
 
 		oldProfile.apply(user);
-		profileDao.updateUsersProfile(oldProfile);
+		profileDao.updateUsersProfile(user, oldProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(PROFILE_NAME);
@@ -1004,7 +1004,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		profileDao.saveUsersProfile(oldProfile);
 
 		oldProfile.apply(user);
-		profileDao.updateUsersProfile(oldProfile);
+		profileDao.updateUsersProfile(user, oldProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(sameName);

@@ -149,7 +149,7 @@ public class EmportDwr extends BaseDwr {
 		if (pointLinks)
 			data.put(POINT_LINKS, new PointLinkDao().getPointLinks());
 		if (users)
-			data.put(USERS, new UserDao().getUsers());
+			data.put(USERS, new UserDao().getUsersWithPermissions());
 		if (mailingLists)
 			data.put(MAILING_LISTS, new MailingListDao().getMailingLists());
 		if (publishers)

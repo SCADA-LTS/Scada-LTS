@@ -38,4 +38,11 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 		setId(importedId);
 		setPermission(ImportedPermission);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof WatchListAccess)) return false;
+		return super.equals(o);
+	}
 }

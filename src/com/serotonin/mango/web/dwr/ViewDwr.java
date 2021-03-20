@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,6 +91,9 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.dao.model.IdName;
+import org.scada_lts.mango.convert.IdNameToIntValuePair;
+import org.scada_lts.permissions.service.ViewPermissionsService;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -128,12 +132,12 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		ViewDao viewDao = new ViewDao();
+		ViewPermissionsService viewPermissionsService = new ViewPermissionsService();
 		User user = Common.getUser();
-
-		List<IntValuePair> views = viewDao.getViewNames(user.getId(), user.getUserProfile());
-
-		return views;
+		return viewPermissionsService.getObjectsWithAccess(user).stream()
+				.map(a -> new IdName(a.getId(), a.getName()))
+				.map(IdNameToIntValuePair::convert)
+				.collect(Collectors.toList());
 	}
 
 	@MethodFilter
