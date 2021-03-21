@@ -1,46 +1,36 @@
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
-import i18n from '@/i18n';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointPropEventRenderer from '@/views/DataPointDetails/PointProperties/PointPropEventRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
 
+import { prepareMountWrapper } from '../../utils/testing-utils';
+
 const modules = {
 	dataPoint,
 };
 
-const store = new Vuex.Store({ modules });
+/**
+ * @private
+ * Initialize VueWrapper for local testing
+ * Prepare wrapper wiht all required stubs and props.
+ */
+function initWrapper(props = dataPointMock) {
+	return prepareMountWrapper(
+		PointPropEventRenderer, 
+		modules,
+		{data: props}
+	);
+}
 
 global.requestAnimationFrame = (cb) => cb();
-
-const localVue = createLocalVue();
-localVue.use(i18n);
-localVue.use(Vuex);
-const vuetify = Vuetify;
-
-const mountFunction = (options) => {
-	return mount(PointPropEventRenderer, {
-		store,
-		localVue,
-		vuetify,
-		i18n,
-		...options,
-	});
-};
 
 describe('Point Properties Tests - Event Renderer Numeric', () => {
 	let wrapper;
 
 	beforeEach(() => {
-		wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
+		wrapper = initWrapper();
 	});
 
 	it('Initialize Component with Numeric DP', () => {
@@ -86,11 +76,7 @@ describe('Point Properties Tests - Event Renderer Binary', () => {
 	beforeEach(() => {
 		let binaryDataPointMock = Object.assign({}, dataPointMock);
 		binaryDataPointMock.pointLocator.dataTypeId = 1;
-		wrapper = mountFunction({
-			propsData: {
-				data: binaryDataPointMock,
-			},
-		});
+		wrapper = initWrapper(binaryDataPointMock);
 	});
 
 	it('Initialize Component with Binary DP', () => {
@@ -121,11 +107,7 @@ describe('Point Properties Tests - Event Renderer Multistate', () => {
 	beforeEach(() => {
 		let binaryDataPointMock = Object.assign({}, dataPointMock);
 		binaryDataPointMock.pointLocator.dataTypeId = 2;
-		wrapper = mountFunction({
-			propsData: {
-				data: binaryDataPointMock,
-			},
-		});
+		wrapper = initWrapper(binaryDataPointMock);
 	});
 
 	it('Initialize Component with Multistate DP', () => {
@@ -169,11 +151,7 @@ describe('Point Properties Tests - Event Renderer None', () => {
 	beforeEach(() => {
 		let binaryDataPointMock = Object.assign({}, dataPointMock);
 		binaryDataPointMock.pointLocator.dataTypeId = 4;
-		wrapper = mountFunction({
-			propsData: {
-				data: binaryDataPointMock,
-			},
-		});
+		wrapper = initWrapper(binaryDataPointMock);
 	});
 
 	it('Initialize Component with Alphanumeric DP', () => {

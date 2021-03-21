@@ -140,7 +140,7 @@
 						</v-col>
 					</v-row>
 
-					<v-row>
+					<v-row v-if="!!systemInfoSettings">
 						<v-col cols="12">
 							<v-text-field
 								v-model="systemInfoSettings.instanceDescription"
@@ -149,9 +149,7 @@
 								dense
 							></v-text-field>
 						</v-col>
-					</v-row>
 
-					<v-row>
 						<v-col cols="12">
 							<v-select
 								@change="saveSystemInfoSettings()"
@@ -328,7 +326,6 @@ import MiscSettingsComponent from './MiscSettingsComponent';
 import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent';
 import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
-import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
 
 export default {
 	el: '#systemsettings',

@@ -1,57 +1,49 @@
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
-import i18n from '@/i18n';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointProperties from '@/views/DataPointDetails/PointProperties';
 import dataPointMock from '../../mocks/objects/DataPointMock';
 
+import { prepareMountWrapper } from '../../utils/testing-utils';
+
 const modules = {
 	dataPoint,
 };
 
-const store = new Vuex.Store({ modules });
-
 global.requestAnimationFrame = (cb) => cb();
 
-describe('Point Properties Tests', () => {
-	const localVue = createLocalVue();
-	localVue.use(i18n);
-	localVue.use(Vuex);
-	const vuetify = Vuetify;
+/**
+ * @private
+ * Initialize VueWrapper for local testing
+ * Prepare wrapper wiht all required stubs and props.
+ */
+function initWrapper() {
+	return prepareMountWrapper(
+		PointProperties, 
+		modules,
+		{data: dataPointMock },
+		{stubs: [
+			'PointPropChartRenderer',
+			'PointPropEventDetectors',
+			'PointPropEventRenderer',
+			'PointPropTextRenderer',
+			'PointPropLogging',
+			'PurgeDataDialog',
+		]}
+	);
+}
 
-	const mountFunction = (options) => {
-		return mount(PointProperties, {
-			store,
-			localVue,
-			vuetify,
-			i18n,
-			stubs: [
-				'PointPropChartRenderer',
-				'PointPropEventDetectors',
-				'PointPropEventRenderer',
-				'PointPropTextRenderer',
-				'PointPropLogging',
-				'PurgeDataDialog',
-			],
-			propsData: {
-				data: dataPointMock,
-			},
-			...options,
-		});
-	};
+describe('Point Properties Tests', () => {
 
 	it('Initialize Component', () => {
-		const wrapper = mountFunction();
+		const wrapper = initWrapper();
 		expect(wrapper.name()).to.equal('PointProperties');
 		expect(wrapper.vm.data.enabled).to.equal(true);
 	});
 
 	it('Open and Close Dialog', async () => {
-		const wrapper = mountFunction();
+		const wrapper = initWrapper();
 		expect(wrapper.find('.point-properties-box').exists()).to.equal(false);
 		await wrapper.find('i').trigger('click');
 		expect(wrapper.find('.point-properties-box').exists()).to.equal(true);
@@ -63,7 +55,7 @@ describe('Point Properties Tests', () => {
 	});
 
 	it('Open and Save Dialog', async () => {
-		const wrapper = mountFunction();
+		const wrapper = initWrapper();
 		expect(wrapper.emitted().saved).to.equal(undefined);
 		await wrapper.find('i').trigger('click');
 		expect(wrapper.get('.v-card__actions > button:last-of-type').text()).to.equal('Save');
@@ -73,7 +65,7 @@ describe('Point Properties Tests', () => {
 	});
 
 	it('Toggle Data Point', async () => {
-		const wrapper = mountFunction();
+		const wrapper = initWrapper();
 		await wrapper.vm.toggleDataPointDialog(true);
 		expect(wrapper.vm.data.enabled).to.equal(false);
 	});

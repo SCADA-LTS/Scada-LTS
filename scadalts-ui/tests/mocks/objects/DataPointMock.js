@@ -7,7 +7,7 @@ export const dataPointMock = {
 	deviceName: 'Example DataSource',
 	enabled: true,
 	pointFolderId: 0,
-	loggingType: 4,
+	loggingType: 1,
 	intervalLoggingPeriodType: 2,
 	intervalLoggingPeriod: 15,
 	intervalLoggingType: 1,

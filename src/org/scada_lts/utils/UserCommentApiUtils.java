@@ -16,6 +16,8 @@ public final class UserCommentApiUtils {
 
     private static final Log LOG = LogFactory.getLog(UserCommentApiUtils.class);
 
+    private UserCommentApiUtils() {}
+
     public static String validUserComment(Integer typeId, Integer refId, UserComment body) {
         String msg = validUserCommentWithTs(typeId, refId, body.getUserId(), body.getTs());
         msg += msgIfNullOrInvalid("Correct username;", body.getUsername(),
@@ -60,19 +62,6 @@ public final class UserCommentApiUtils {
             DataPointService dataPointService = new DataPointService();
             DataPointVO dataPointVO = dataPointService.getDataPoint(id);
             return dataPointVO != null;
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return false;
-        }
-    }
-
-    private static boolean validUserId(Integer id){
-        try {
-            if (id == 0)
-                return false;
-            UserService userService = new UserService();
-            User user = userService.getUser(id);
-            return user != null;
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             return false;

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.util.IntervalUtil;
 import com.serotonin.timer.CronExpression;
@@ -47,6 +48,7 @@ public class MailingList extends EmailRecipient {
     @JsonRemoteProperty
     private String name;
     @JsonRemoteProperty(innerType = EmailRecipient.class)
+    @JsonDeserialize(using = EmailRecipientDeserializer.class)
     private List<EmailRecipient> entries;
 
     private String cronPattern;

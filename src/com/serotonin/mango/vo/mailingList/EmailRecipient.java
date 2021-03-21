@@ -71,4 +71,8 @@ abstract public class EmailRecipient implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         map.put("recipientType", TYPE_CODES.getCode(getRecipientType()));
     }
+
+    public static boolean validEmailRecipientType(int recipientType) {
+        return TYPE_CODES.isValidId(recipientType);
+    }
 }
