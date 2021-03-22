@@ -63,7 +63,7 @@ public class UserService implements MangoUser {
 	private PermissionsService<WatchListAccess, WatchList> watchListPermissionsService = new WatchListPermissionsService();
 	private PermissionsService<ViewAccess, View> viewPermissionsService = new ViewPermissionsService();
 	private PermissionsService<DataPointAccess, DataPointVO> dataPointPermissionsService = new DataPointPermissionsService();
-	private PermissionsService<Integer, DataSourceVO> dataSourcePermissionsService = new DataSourcePermissionsService();
+	private PermissionsService<Integer, DataSourceVO<?>> dataSourcePermissionsService = new DataSourcePermissionsService();
 
 	@Override
 	public User getUser(int id) {

@@ -107,12 +107,6 @@ public class UsersDwr extends BaseDwr {
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
 			user = new UserDao().getUser(id);
-
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(usersProfileDao.getUserProfileByUserId(user
-						.getId()));
-			}
 		}
 		return user;
 
