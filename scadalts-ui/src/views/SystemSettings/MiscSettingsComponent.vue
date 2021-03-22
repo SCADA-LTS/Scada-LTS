@@ -16,7 +16,7 @@
 			</v-card-title>
 
 			<v-card-text>
-				<v-row>
+				<v-row v-if="!!miscSettings">
 					<v-col cols="12">
 						<v-select
 							@change="watchDataChange()"
@@ -91,6 +91,10 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
+
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</v-col>
 </template>
 <script>
@@ -123,6 +127,11 @@ export default {
 				{ value: 6, text: this.$t('timeperiod.months') },
 				{ value: 7, text: this.$t('timeperiod.years') },
 			],
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
 	},
 
@@ -145,21 +154,20 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.$notify({
-							placement: 'top-right',
-							type: 'success',
-							content: i18n.t('systemsettings.notification.save.misc'),
-						});
+						this.response = {
+							status: true,
+							message: this.$t('systemsettings.notification.save.misc'),
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
-					this.$notify({
-						placement: 'top-right',
-						type: 'danger',
-						content: i18n.t('systemsettings.notification.fail'),
-					});
+					this.response = {
+						status: true,
+						message: this.$t('systemsettings.notification.fail'),
+						color: 'danger',
+					};
 				});
-			// this.$store.dispatch("saveAuditEventTypes", this.auditEventTypes);
 		},
 
 		restoreData() {
@@ -208,16 +216,16 @@ export default {
 
 		purgeData() {
 			this.$confirm({
-				title: i18n.t('systemsettings.alert.purgedata.title'),
-				content: i18n.t('systemsettings.alert.purgedata'),
+				title: this.$t('systemsettings.alert.purgedata.title'),
+				content: this.$t('systemsettings.alert.purgedata'),
 			}).then(() => {
 				this.$store.dispatch('purgeData').then((resp) => {
 					if (resp === true) {
-						this.$notify({
-							placement: 'top-right',
-							type: 'success',
-							content: i18n.t('systemsettings.notification.purgedata'),
-						});
+						this.response = {
+							status: true,
+							message: this.$t('systemsettings.notification.purgedata'),
+							color: 'success',
+						};
 					}
 				});
 			});
@@ -227,23 +235,17 @@ export default {
 			if (key.includes('Type')) {
 				switch (Number(value)) {
 					case 2:
-						return i18n.t('timeperiod.minutes');
-						break;
+						return this.$t('timeperiod.minutes');
 					case 3:
-						return i18n.t('timeperiod.hours');
-						break;
+						return this.$t('timeperiod.hours');
 					case 4:
-						return i18n.t('timeperiod.days');
-						break;
+						return this.$t('timeperiod.days');
 					case 5:
-						return i18n.t('timeperiod.weeks');
-						break;
+						return this.$t('timeperiod.weeks');
 					case 6:
-						return i18n.t('timeperiod.months');
-						break;
+						return this.$t('timeperiod.months');
 					case 7:
-						return i18n.t('timeperiod.years');
-						break;
+						return this.$t('timeperiod.years');
 				}
 			}
 			return value;

@@ -17,16 +17,23 @@ const pkgJsonPath = require.main.paths[0].split('node_modules')[0] + 'package.js
 const json = require(pkgJsonPath);
 
 // ----- PACKAGE.JSON VARIABLES ----- //
-var tag = '0.1.0';
-var milestone = '2.5.0';
+var tag = '0.3.0';
+var milestone = '2.6.0';
 var build = '0';
 var branch = 'local';
+var commit = 'N/A';
+var pullRequestNumber = 'false';
+var pullRequestBranch = '';
 // ----- ---------------------- ----- //
-
-if (process.argv.length === 5) {
+if (process.argv.length === 7 || process.argv.length === 8) {
 	milestone = process.argv[2];
 	build = process.argv[3];
 	branch = process.argv[4];
+	commit = process.argv[5];
+	pullRequestNumber = process.argv[6];
+	if (process.argv.length === 8) {
+		pullRequestBranch = process.argv[7];
+	}
 }
 
 if (!json.hasOwnProperty('scripts')) {
@@ -61,9 +68,11 @@ var request = https.request(options, function (res) {
 		json.milestone = milestone;
 		json.build = build;
 		json.branch = branch;
-		console.log(json.tag);
-		console.log(`${json.milestone}.${json.build}`);
-		console.log(json.branch);
+		json.commit = commit;
+		json.pullRequestNumber = pullRequestNumber;
+		json.pullRequestBranch = pullRequestBranch;
+		printBuildInformation(json);
+
 		saveFile(pkgJsonPath, JSON.stringify(json, null, 2));
 	});
 });
@@ -71,3 +80,19 @@ request.on('error', function (e) {
 	console.log(e.message);
 });
 request.end();
+
+function printBuildInformation(buildInfo) {
+	console.log('******************************************************');
+	console.log('**** Scada-LTS System Settings Build Information  ****');
+	console.log('******************************************************');
+	console.log('ScadaLTS latest stable GitHub release:\t', buildInfo.tag);
+	console.log(
+		'ScadaLTS current build version:\t\t',
+		`${buildInfo.milestone}.${buildInfo.build}`,
+	);
+	console.log('Build form GitHub branch:\t\t', buildInfo.branch);
+	console.log('Build form GitHub commit:\t\t', buildInfo.commit);
+	console.log('GitHub PullRequest ID:\t\t\t', buildInfo.pullRequestNumber);
+	console.log('GitHub PullRequest branch:\t\t', buildInfo.pullRequestBranch);
+	console.log('******************************************************');
+}

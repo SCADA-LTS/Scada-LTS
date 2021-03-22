@@ -18,6 +18,10 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
+
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</v-col>
 </template>
 
@@ -36,6 +40,11 @@ export default {
 			domainSettings: undefined,
 			domainSettingsStore: undefined,
 			isSmsDomainSettingsEdited: false,
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
 	},
 
@@ -57,19 +66,19 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.$notify({
-							placement: 'top-right',
-							type: 'success',
-							content: this.$t('systemsettings.notification.save.smsdomain'),
-						});
+						this.response = {
+							status: true,
+							message: this.$t('systemsettings.notification.save.smsdomain'),
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
-					this.$notify({
-						placement: 'top-right',
-						type: 'danger',
-						content: this.$t('systemsettings.notification.fail'),
-					});
+					this.response = {
+						status: true,
+						message: this.$t('systemsettings.notification.fail'),
+						color: 'danger',
+					};
 				});
 		},
 

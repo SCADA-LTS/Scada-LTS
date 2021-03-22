@@ -1,20 +1,24 @@
 package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.serotonin.mango.rt.RuntimeManager;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.view.ImplDefinition;
+import com.serotonin.mango.view.event.EventTextRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
+import org.scada_lts.web.mvc.api.json.JsonPointProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
@@ -23,9 +27,14 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
+import static org.scada_lts.utils.PointPropertiesApiUtils.getDataPointByIdOrXid;
+import static org.scada_lts.utils.PointPropertiesApiUtils.validPointProperties;
+import static org.scada_lts.utils.PointPropertiesApiUtils.updateValuePointProperties;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+import static org.scada_lts.utils.ValidationUtils.validId;
 
 /**
- * Hellper class
+ * Helper class
  *
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
@@ -37,14 +46,17 @@ import com.serotonin.mango.vo.User;
  * @author Grzesiek Bylica grzegorz.bylica@gmail.com
  */
 @Controller
+@RequestMapping(path = "/api/point_properties")
 public class PointPropertiesAPI {
 
     private static final Log LOG = LogFactory.getLog(PointPropertiesAPI.class);
+    private static final String ERRORS_DATA_POINT_NOT_FOUND = "{\"errors\": \"dataPoint not found\"}";
 
     private DataPointService dataPointService = new DataPointService();
 
+    private static final String SAVED_MSG = "saved";
 
-    @RequestMapping(value = "/api/point_properties/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getPropertiesBaseOnId/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getPropertiesBaseOnId(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("/api/point_properties/getPropertiesBaseOnId/{id} id:" + id);
 
@@ -63,6 +75,7 @@ public class PointPropertiesAPI {
 
                     private static final long serialVersionUID = 1L;
 
+                    private String description;
                     private int loggingType;
                     private int intervalLoggingPeriod;
                     private int intervalLoggingPeriodType;
@@ -72,6 +85,7 @@ public class PointPropertiesAPI {
                     private int defaultCacheSize;
                     private String typeKey;
                     private TextRenderer textRenderer;
+                    private EventTextRenderer eventTextRenderer;
                     private ImplDefinition def;
                     private ChartRenderer chartRenderer;
                     private int engineeringUnits;
@@ -83,6 +97,7 @@ public class PointPropertiesAPI {
 
 
                     public PropertiesPointToJSON(
+                            String description,
                             int loggingType,
                             int intervalLoggingPeriod,
                             int intervalLoggingPeriodType,
@@ -91,6 +106,7 @@ public class PointPropertiesAPI {
                             int defaultCacheSize,
                             String typeKey,
                             TextRenderer textRenderer,
+                            EventTextRenderer eventTextRenderer,
                             ImplDefinition def,
                             ChartRenderer chartRenderer,
                             int engineeringUnits,
@@ -102,6 +118,7 @@ public class PointPropertiesAPI {
                             int dataTypeId
 
                     ) {
+                        this.description = description;
                         this.loggingType = loggingType;
                         this.intervalLoggingPeriod = intervalLoggingPeriod;
                         this.intervalLoggingPeriodType = intervalLoggingPeriodType;
@@ -110,6 +127,7 @@ public class PointPropertiesAPI {
                         this.defaultCacheSize = defaultCacheSize;
                         this.typeKey = typeKey;
                         this.textRenderer = textRenderer;
+                        this.eventTextRenderer = eventTextRenderer;
                         this.def = def;
                         this.chartRenderer = chartRenderer;
                         this.engineeringUnits = engineeringUnits;
@@ -119,6 +137,14 @@ public class PointPropertiesAPI {
                         this.discardLowLimit = discardLowLimit;
                         this.discardHighLimit = discardHighLimit;
                         this.dataTypeId = dataTypeId;
+                    }
+
+                    public String getDescription() {
+                        return description;
+                    }
+
+                    public void setDescription(String description) {
+                        this.description = description;
                     }
 
                     public int getLoggingType() {
@@ -175,6 +201,14 @@ public class PointPropertiesAPI {
 
                     public void setTextRenderer(TextRenderer textRenderer) {
                         this.textRenderer = textRenderer;
+                    }
+
+                    public EventTextRenderer getEventTextRenderer() {
+                        return eventTextRenderer;
+                    }
+
+                    public void setEventTextRenderer(EventTextRenderer eventTextRenderer) {
+                        this.eventTextRenderer = eventTextRenderer;
                     }
 
                     public ImplDefinition getDef() {
@@ -259,6 +293,7 @@ public class PointPropertiesAPI {
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
+                        dpvo.getDescription(),
                         dpvo.getLoggingType(),
                         dpvo.getIntervalLoggingPeriod(),
                         dpvo.getIntervalLoggingPeriodType(),
@@ -267,6 +302,7 @@ public class PointPropertiesAPI {
                         dpvo.getDefaultCacheSize(),
                         dpvo.getTypeKey(),
                         dpvo.getTextRenderer(),
+                        dpvo.getEventTextRenderer(),
                         dpvo.getTextRenderer().getDef(),
                         dpvo.getChartRenderer(),
                         dpvo.getEngineeringUnits(),
@@ -292,7 +328,7 @@ public class PointPropertiesAPI {
     }
 
 
-    @RequestMapping(value = "/api/point_properties/getProperties/{xid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getProperties/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getProperties(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/point_properties/getProperties/{xid} id:" + xid);
 
@@ -317,10 +353,12 @@ public class PointPropertiesAPI {
                     private String dataSourceXId;
                     private String dataTypeMessage;
                     private String deviceName;
+                    private String description;
                     private Double discardHighLimit;
                     private Double discardLowLimit;
                     private int engineeringUnits;
                     private String extendedName;
+                    private EventTextRenderer eventTextRenderer;
                     private int intervalLoggingPeriod;
                     private int intervalLoggingPeriodType;
                     private int intervalLoggingType;
@@ -332,8 +370,8 @@ public class PointPropertiesAPI {
                     private String typeKey;
 
                     public PropertiesPointToJSON(String chartColour, ChartRenderer chartRenderer, String descConfiguration, String dataSourceName, String dataSourceXId,
-                                                 String dataTypeMessage, String deviceName, Double discardHighLimit, Double discardLowLimit, int engineeringUnits, String extendedName, int intervalLoggingPeriod,
-                                                 int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey) {
+                                                 String dataTypeMessage, String deviceName, String description, Double discardHighLimit, Double discardLowLimit, int engineeringUnits, String extendedName, EventTextRenderer eventTextRenderer,
+                                                 int intervalLoggingPeriod, int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey) {
 
                         this.chartColour = chartColour;
                         this.chartRenderer = chartRenderer;
@@ -342,10 +380,12 @@ public class PointPropertiesAPI {
                         this.dataSourceXId = dataSourceXId;
                         this.dataTypeMessage = dataTypeMessage;
                         this.deviceName = deviceName;
+                        this.description = description;
                         this.discardHighLimit = discardHighLimit;
                         this.discardLowLimit = discardLowLimit;
                         this.engineeringUnits = engineeringUnits;
                         this.extendedName = extendedName;
+                        this.eventTextRenderer = eventTextRenderer;
                         this.intervalLoggingPeriod = intervalLoggingPeriod;
                         this.intervalLoggingPeriodType = intervalLoggingPeriodType;
                         this.intervalLoggingType = intervalLoggingType;
@@ -413,6 +453,14 @@ public class PointPropertiesAPI {
                         this.deviceName = deviceName;
                     }
 
+                    public String getDescription() {
+                        return description;
+                    }
+
+                    public void setDescription(String description) {
+                        this.description = description;
+                    }
+
                     public Double getDiscardHighLimit() {
                         return discardHighLimit;
                     }
@@ -443,6 +491,14 @@ public class PointPropertiesAPI {
 
                     public void setExtendedName(String extendedName) {
                         this.extendedName = extendedName;
+                    }
+
+                    public EventTextRenderer getEventTextRenderer() {
+                        return eventTextRenderer;
+                    }
+
+                    public void setEventTextRenderer(EventTextRenderer eventTextRenderer) {
+                        this.eventTextRenderer = eventTextRenderer;
                     }
 
                     public int getIntervalLoggingPeriod() {
@@ -530,10 +586,12 @@ public class PointPropertiesAPI {
 
                         dpvo.getDataTypeMessage().getLocalizedMessage(bundle),
                         dpvo.getDeviceName(),
+                        dpvo.getDescription(),
                         dpvo.getDiscardHighLimit(),
                         dpvo.getDiscardLowLimit(),
                         dpvo.getEngineeringUnits(),
                         dpvo.getExtendedName(),
+                        dpvo.getEventTextRenderer(),
                         dpvo.getIntervalLoggingPeriod(),
 
                         dpvo.getIntervalLoggingPeriodType(),
@@ -557,5 +615,176 @@ public class PointPropertiesAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PutMapping(value = "/updateProperties")
+    public ResponseEntity<String> updatePointProperties(@RequestParam(required = false) Integer id,
+                                                        @RequestParam(required = false) String xid,
+                                                        HttpServletRequest request,
+                                                        @RequestBody JsonPointProperties body) {
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                String error = validPointProperties(id, xid, body);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+
+                return getDataPointByIdOrXid(id, xid, dataPointService).map(dataPoint -> {
+                    updateValuePointProperties(dataPoint, body);
+                    dataPointService.updateDataPoint(dataPoint);
+                    Common.ctx.getRuntimeManager().saveDataPoint(dataPoint);
+                    return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+                }).orElse(new ResponseEntity<>(formatErrorsJson("dataPoint not found"), HttpStatus.NOT_FOUND));
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getPointDescription", produces = "application/json")
+    public ResponseEntity<String> getPointDescription(@RequestParam(required = false) Integer id,
+                                                      @RequestParam(required = false) String xid,
+                                                      HttpServletRequest request) {
+        LOG.info("/api/point_properties/getPointDescription");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                String error = validId(id, xid);
+                if(!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                return getPointDescription(id, xid);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/getBinaryEventRenderer", produces = "application/json")
+    public ResponseEntity<JsonBinaryEventTextRenderer> getBinaryEventRenderer(@RequestParam(required = false) Integer id,
+                                                                              @RequestParam(required = false) String xid,
+                                                                              @RequestParam Integer value,
+                                                                              HttpServletRequest request) {
+        LOG.info("/api/point_properties/getBinaryEventRenderer");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                String error = validId(id, xid);
+                if(!error.isEmpty() || value == null) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+
+                return getDataPointByIdOrXid(id, xid, dataPointService)
+                        .map(a -> new ResponseEntity<>(dataPointService
+                                .getBinaryEventTextRenderer(a, value), HttpStatus.OK))
+                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping(value = "/{id}/purge")
+    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id,
+                                                       @RequestParam(required = false) Boolean all,
+                                                       @RequestParam(required = false) Integer type,
+                                                       @RequestParam(required = false) Integer period,
+                                                       HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataPointVO point = dataPointService.getDataPoint(id);
+                RuntimeManager rm = Common.ctx.getRuntimeManager();
+                Long count;
+                if(all != null) {
+                    if(all) {
+                        count = rm.purgeDataPointValues(point.getId());
+                        return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
+                    }
+                }
+                if(type != null && period != null) {
+                    count = rm.purgeDataPointValues(point.getId(), type, period);
+                    return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PatchMapping(value = "/{id}/clearcache")
+    public ResponseEntity<String> clearDataPointCache(@PathVariable("id") int id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataPointVO point = dataPointService.getDataPoint(id);
+                DataPointRT rt = Common.ctx.getRuntimeManager().getDataPoint(point.getId());
+                if(rt != null) {
+                    rt.resetValues();
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("DataPointRT not exists", HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(value = "/{id}/toggle")
+    public ResponseEntity<String> toggleDataPoint(@PathVariable("id") int id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataPointVO point = dataPointService.getDataPoint(id);
+                RuntimeManager rm = Common.ctx.getRuntimeManager();
+                point.setEnabled(!point.isEnabled());
+                rm.saveDataPoint(point);
+
+                if(point.isEnabled()) {
+                    return new ResponseEntity<>("{\"enabled\":true}", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("{\"enabled\":false}", HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<String> getPointDescription(Integer id, String xid) {
+        Map<String, String> response = new HashMap<>();
+        getDataPointByIdOrXid(id, xid, dataPointService)
+                .ifPresent(a -> response.put("description", a.getDescription()));
+        if(response.isEmpty()) {
+            return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(response);
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            LOG.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -107,6 +107,19 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
 
+	public User() { }
+
+	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+		this.id = id;
+		this.username = username;
+		this.email = email;
+		this.phone = phone;
+		this.admin = admin;
+		this.disabled = disabled;
+		this.homeUrl = homeUrl;
+		this.lastLogin = lastLogin;
+	}
+
 	/**
 	 * Used for various display purposes.
 	 */

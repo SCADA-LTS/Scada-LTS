@@ -18,7 +18,6 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
@@ -31,8 +30,8 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoMailingList;
-import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.CommunicationChannelType;
 import org.springframework.stereotype.Service;
 
@@ -102,6 +101,10 @@ public class MailingListService implements MangoMailingList {
 		List<MailingList> lists = mailingListDAO.getMailingLists();
 		setRelationalData(lists);
 		return lists;
+	}
+
+	public List<ScadaObjectIdentifier> getSimpleMailingLists() {
+		return mailingListDAO.getSimpleMailingLists();
 	}
 
 	@Override

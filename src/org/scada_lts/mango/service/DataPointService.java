@@ -51,6 +51,7 @@ import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
+import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -462,6 +463,10 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
+	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(eventDetector);
+	}
+
 	public void deleteEventDetector(DataPointVO dataPoint, int id){
 		pointEventDetectorDAO.delete(dataPoint.getId(), id);
 	}
@@ -567,4 +572,13 @@ public class DataPointService implements MangoDataPoint {
 		dataPointUserDAO.insertPermissions(user);
 	}
 
+	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
+		JsonBinaryEventTextRenderer json = new JsonBinaryEventTextRenderer();
+		if (value == 0) {
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(false));
+		} else if (value == 1) {
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(true));
+		}
+		return json;
+	}
 }
