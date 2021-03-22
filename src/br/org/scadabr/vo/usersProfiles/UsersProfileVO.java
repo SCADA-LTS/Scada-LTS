@@ -145,6 +145,14 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		lastAppliedUser = user;
 	}
 
+	public void set(User user) {
+		dataSourcePermissions = user.getDataSourcePermissions();
+		dataPointPermissions = user.getDataPointPermissions();
+		watchlistPermissions = user.getWatchListPermissions();
+		viewPermissions = user.getViewPermissions();
+		lastAppliedUser = user;
+	}
+
 	public void jsonDeserialize(JsonReader reader, JsonObject profileJson)
 			throws JsonException {
 		// Note: data source permissions are explicitly deserialized by the

@@ -174,9 +174,9 @@ public class UsersDwr extends BaseDwr {
 				// apply profile
 				UsersProfileVO profile = profilesDao
 						.getUserProfileById(usersProfileId);
-				profile.apply(user);
+				profile.set(user);
 				profilesDao.updateUsersProfile(user, profile);
-				userDao.saveUser(user);
+				profilesDao.updateProfile(profile);
 			} else {
 				profilesDao.resetUserProfile(user);
 			}

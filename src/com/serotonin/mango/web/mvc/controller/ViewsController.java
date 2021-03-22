@@ -27,14 +27,15 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.permissions.PermissionViewACL;
-import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.permissions.service.GetObjectsAccess;
+import org.scada_lts.permissions.service.ViewPermissionsService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
@@ -56,7 +57,10 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-			views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
+		    GetObjectsAccess<View> service = new ViewPermissionsService();
+			views = service.getObjectsWithAccess(user).stream()
+					.map(a -> new IntValuePair(a.getId(), a.getName()))
+					.collect(Collectors.toList());
 
 			/* ** Disable ACL **
 			// ACL start
