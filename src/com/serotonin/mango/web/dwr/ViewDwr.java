@@ -135,8 +135,7 @@ public class ViewDwr extends BaseDwr {
 		ViewPermissionsService viewPermissionsService = new ViewPermissionsService();
 		User user = Common.getUser();
 		return viewPermissionsService.getObjectsWithAccess(user).stream()
-				.map(a -> new IdName(a.getId(), a.getName()))
-				.map(IdNameToIntValuePair::convert)
+				.map(a -> new IntValuePair(a.getId(), a.getName()))
 				.collect(Collectors.toList());
 	}
 

@@ -213,7 +213,7 @@ public class WatchListDwr extends BaseDwr {
 		watchList.getPointList().add(point);
 		new WatchListDao().saveWatchList(watchList);
 		updateSetPermission(point, watchList.getUserAccess(user),
-				new UserDao().getUser(watchList.getUserId()));
+				new UserDao().getUser(watchList.getUserId()), user);
 
 		// Return the watch list state for it.
 		return createWatchListState(request, point,
@@ -410,17 +410,17 @@ public class WatchListDwr extends BaseDwr {
 			access = watchList.getUserAccess(user);
 			User owner = new UserDao().getUser(watchList.getUserId());
 			for (DataPointVO point : watchList.getPointList())
-				updateSetPermission(point, access, owner);
+				updateSetPermission(point, access, owner, user);
 		}
 	}
 
-	private void updateSetPermission(DataPointVO point, int access, User owner) {
+	private void updateSetPermission(DataPointVO point, int access, User owner, User currentUser) {
 		// Point isn't settable
 		if (!point.getPointLocator().isSettable())
 			return;
 
 		// Read-only access
-		if (access != ShareUser.ACCESS_OWNER && access != ShareUser.ACCESS_SET)
+		if (access != ShareUser.ACCESS_OWNER && access != ShareUser.ACCESS_SET && !currentUser.isAdmin())
 			return;
 
 		// Watch list owner doesn't have set permission
