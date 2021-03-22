@@ -7,7 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.MailingListService;
-import org.scada_lts.web.mvc.api.dto.MailingListDTO;
+import org.scada_lts.web.mvc.api.dto.CreateMailingList;
+import org.scada_lts.web.mvc.api.dto.UpdateMailingList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -122,17 +123,16 @@ public class MailingListAPI {
     }
 
     @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<String> createMailingList(@RequestBody MailingList mailingList, HttpServletRequest request) {
+    public ResponseEntity<String> createMailingList(@RequestBody CreateMailingList mailingList, HttpServletRequest request) {
         LOG.info("POST:/api/mailingList");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateMailingListCreate(mailingList, mailingListService);
+                String error = validateMailingListCreate(mailingList);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                updateValueMailingListPost(mailingList);
-                mailingListService.saveMailingList(mailingList);
+                mailingListService.saveMailingList(createMailingListFromBody(mailingList));
                 return new ResponseEntity<>("{\"status\":\"created\"}", HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -143,12 +143,12 @@ public class MailingListAPI {
     }
 
     @PutMapping(value = "/", produces = "application/json")
-    public ResponseEntity<String> updateMailingList(@RequestBody MailingListDTO mailingList, HttpServletRequest request) {
+    public ResponseEntity<String> updateMailingList(@RequestBody UpdateMailingList mailingList, HttpServletRequest request) {
         LOG.info("PUT:/api/mailingList");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateMailingListUpdate(mailingList, mailingListService);
+                String error = validateMailingListUpdate(mailingList);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
@@ -167,7 +167,7 @@ public class MailingListAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateMailingListDelete(id, mailingListService);
+                String error = validateMailingListDelete(id);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
@@ -181,10 +181,10 @@ public class MailingListAPI {
         }
     }
 
-    private ResponseEntity<String> findAndUpdateMailingList(MailingListDTO mailingListBody) {
+    private ResponseEntity<String> findAndUpdateMailingList(UpdateMailingList mailingListBody) {
         return getMailingList(mailingListBody.getId(), mailingListService)
                 .map(toUpdate -> {
-                    String error = validateMailingListUpdate(mailingListBody, mailingListService);
+                    String error = validateMailingListUpdate(mailingListBody);
                     if (!error.isEmpty()) {
                         return ResponseEntity.badRequest().body(formatErrorsJson(error));
                     }
@@ -192,7 +192,7 @@ public class MailingListAPI {
                 }).orElse(new ResponseEntity<>(formatErrorsJson("mailingList not found"), HttpStatus.NOT_FOUND));
     }
 
-    private ResponseEntity<String> updateMailingList(MailingList toUpdate, MailingListDTO mailingListBody) {
+    private ResponseEntity<String> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
         updateValueMailingList(toUpdate, mailingListBody);
         mailingListService.saveMailingList(toUpdate);
         return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);

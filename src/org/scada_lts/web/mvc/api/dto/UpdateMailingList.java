@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.mailingList.EmailRecipientDeserializer;
 import java.util.List;
 import java.util.Set;
 
-public class MailingListDTO {
+public class UpdateMailingList {
 
     private Integer id;
     private String xid;
@@ -20,10 +20,10 @@ public class MailingListDTO {
 
     private Set<Integer> inactiveIntervals;
 
-    public MailingListDTO() {
+    public UpdateMailingList() {
     }
 
-    public MailingListDTO(Integer id, String xid, String name, List<EmailRecipient> entries, String cronPattern, Boolean collectInactiveEmails, Set<Integer> inactiveIntervals) {
+    public UpdateMailingList(Integer id, String xid, String name, List<EmailRecipient> entries, String cronPattern, Boolean collectInactiveEmails, Set<Integer> inactiveIntervals) {
         this.id = id;
         this.xid = xid;
         this.name = name;
