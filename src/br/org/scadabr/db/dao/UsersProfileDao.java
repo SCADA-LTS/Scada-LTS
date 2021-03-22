@@ -7,13 +7,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.permissions.service.DataPointPermissionsService;
-import org.scada_lts.permissions.service.DataSourcePermissionsService;
-import org.scada_lts.permissions.service.ViewPermissionsService;
-import org.scada_lts.permissions.service.WatchListPermissionsService;
+import org.scada_lts.permissions.service.*;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -42,10 +44,10 @@ public class UsersProfileDao extends BaseDao {
 	private ViewDao viewDao;
 	private UserDao userDao;
 	private UsersProfileService usersProfileService;
-	private WatchListPermissionsService watchListPermissionsService;
-    private DataPointPermissionsService dataPointPermissionsService;
-    private DataSourcePermissionsService dataSourcePermissionsService;
-	private ViewPermissionsService viewPermissionsService;
+	private PermissionsService<WatchListAccess, WatchList> watchListPermissionsService;
+    private PermissionsService<DataPointAccess, DataPointVO> dataPointPermissionsService;
+    private PermissionsService<Integer, DataSourceVO<?>> dataSourcePermissionsService;
+	private PermissionsService<ViewAccess, View> viewPermissionsService;
 
     public UsersProfileDao() {
 		this.watchlistDao = new WatchListDao();

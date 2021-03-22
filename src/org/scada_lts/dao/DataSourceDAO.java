@@ -188,6 +188,11 @@ public class DataSourceDAO {
 			+ "where "
 			+ COLUMN_NAME_USER_ID+"=?";
 
+	private static final String DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
+			+ COLUMN_NAME_USER_ID+"=? or "
+			+ "id in (select dataSourceId from dataSourceUsers where "+COLUMN_NAME_DS_USER_ID+"=?) "
+			+ "order by name";
+
 	// @formatter:on
 
 	private class DataSourceRowMapper implements RowMapper<DataSourceVO<?>> {
@@ -440,5 +445,23 @@ public class DataSourceDAO {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(DATA_SOURCE_USERS_DELETE_DATA_SOURCE_ID_AND_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<DataSourceVO<?>> selectDataSourcesWithAccess(final int userId) {
+		return filtered(DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId, userId}, 0);
+	}
+
+	private List<DataSourceVO<?>> filtered(String filter, Object[] argsFilter, long limit) {
+		String myLimit="";
+		Object[] args;
+		if (limit != GenericDaoCR.NO_LIMIT) {
+			myLimit = GenericDaoCR.LIMIT+" ? ";
+			args = DAO.getInstance().appendValue(argsFilter, String.valueOf(limit));
+		} else {
+			args=argsFilter;
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT+" where "+ filter + myLimit, args, new DataSourceDAO.DataSourceRowMapper());
+
 	}
 }

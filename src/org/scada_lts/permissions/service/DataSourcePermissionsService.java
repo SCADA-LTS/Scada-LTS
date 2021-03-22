@@ -6,9 +6,8 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.dao.DataSourceDAO;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class DataSourcePermissionsService implements PermissionsService<Integer, DataSourceVO> {
+public class DataSourcePermissionsService implements PermissionsService<Integer, DataSourceVO<?>> {
 
     private final DataSourceDAO dataSourceDAO;
 
@@ -41,10 +40,7 @@ public class DataSourcePermissionsService implements PermissionsService<Integer,
     }
 
     @Override
-    public List<DataSourceVO> getObjectsWithAccess(User user) {
-        List<Integer> ids = getPermissions(user);
-        return dataSourceDAO.getDataSources().stream()
-                .filter(a -> ids.contains(a.getId()))
-                .collect(Collectors.toList());
+    public List<DataSourceVO<?>> getObjectsWithAccess(User user) {
+        return dataSourceDAO.selectDataSourcesWithAccess(user.getId());
     }
 }

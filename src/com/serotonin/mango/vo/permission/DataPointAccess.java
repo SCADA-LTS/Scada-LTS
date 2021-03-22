@@ -103,4 +103,12 @@ public class DataPointAccess implements JsonSerializable {
 				.getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
+
+	@Override
+	public String toString() {
+		return "DataPointAccess{" +
+				"dataPointId=" + dataPointId +
+				", permission=" + permission +
+				'}';
+	}
 }
