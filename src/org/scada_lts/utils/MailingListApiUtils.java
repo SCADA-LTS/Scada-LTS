@@ -79,16 +79,6 @@ public final class MailingListApiUtils {
         return msgIfNull("Correct id;", id);
     }
 
-    public static Optional<MailingList> getMailingList(int id, MailingListService mailingListService) {
-        try {
-            MailingList mailingList = mailingListService.getMailingList(id);
-            return Optional.ofNullable(mailingList);
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Optional.empty();
-        }
-    }
-
     public static void updateValueMailingList(MailingList toUpdate, UpdateMailingList source) {
         setIf(source.getXid(), toUpdate::setXid, a -> !isEmpty(a));
         setIf(source.getId(), toUpdate::setId, Objects::nonNull);
@@ -116,10 +106,48 @@ public final class MailingListApiUtils {
     }
 
     private static boolean validInactiveIntervals(Set<Integer> inactiveIntervals){
+        if (inactiveIntervals.stream().anyMatch(Objects::isNull))
+            return false;
         return inactiveIntervals.stream().allMatch(i -> (i >= 0 && i < 672));
     }
 
     private static boolean hasEntries(List<EmailRecipient> entries) {
         return entries.size() > 0;
+    }
+
+    public static Optional<MailingList> getMailingList(String xid, MailingListService mailingListService) {
+        try {
+            MailingList mailingList = mailingListService.getMailingList(xid);
+            return Optional.ofNullable(mailingList);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<MailingList> getMailingList(int id, MailingListService mailingListService) {
+        try {
+            MailingList mailingList = mailingListService.getMailingList(id);
+            return Optional.ofNullable(mailingList);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static boolean isMailingListPresent(String xid, MailingListService mailingListService){
+        return getMailingList(xid, mailingListService).isPresent();
+    }
+
+    public static boolean isMailingListPresent(Integer id, MailingListService mailingListService){
+        return getMailingList(id, mailingListService).isPresent();
+    }
+
+    public static boolean isMailingListPresentUpdate(String currentXid, String newXid, MailingListService mailingListService){
+        boolean exists = isMailingListPresent(newXid, mailingListService);
+        if (exists) {
+            return currentXid.equals(newXid);
+        } else
+            return false;
     }
 }

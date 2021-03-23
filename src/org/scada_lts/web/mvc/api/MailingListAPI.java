@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static org.scada_lts.utils.ApiUtils.usersExist;
+import static org.scada_lts.utils.ApiUtils.*;
 import static org.scada_lts.utils.MailingListApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 
@@ -135,6 +135,9 @@ public class MailingListAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
+                if (isMailingListPresent(mailingList.getXid(), mailingListService)) {
+                    return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
+                }
                 if (!usersExist(mailingList.getEntries(), userService)) {
                     return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
                 }
@@ -201,6 +204,9 @@ public class MailingListAPI {
     private ResponseEntity<String> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
         if (!usersExist(mailingListBody.getEntries(), userService)) {
             return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
+        }
+        if (!isMailingListPresentUpdate(toUpdate.getXid(), mailingListBody.getXid(), mailingListService)) {
+            return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
         }
         updateValueMailingList(toUpdate, mailingListBody);
         mailingListService.saveMailingList(toUpdate);
