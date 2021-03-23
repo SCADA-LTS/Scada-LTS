@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.mvc.api.dto.CreateMailingList;
 import org.scada_lts.web.mvc.api.dto.UpdateMailingList;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class MailingListAPI {
 
     @Resource
     private MailingListService mailingListService;
+    private UserService userService = new UserService();
 
     @GetMapping(value = "/getAll", produces = "application/json")
     public ResponseEntity<List<MailingList>> getMailingLists(HttpServletRequest request) {
@@ -133,7 +135,7 @@ public class MailingListAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                if (!usersExist(mailingList.getEntries())) {
+                if (!usersExist(mailingList.getEntries(), userService)) {
                     return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
                 }
                 mailingListService.saveMailingList(createMailingListFromBody(mailingList));
@@ -197,12 +199,11 @@ public class MailingListAPI {
     }
 
     private ResponseEntity<String> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
-        if (!usersExist(mailingListBody.getEntries())) {
+        if (!usersExist(mailingListBody.getEntries(), userService)) {
             return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
         }
         updateValueMailingList(toUpdate, mailingListBody);
         mailingListService.saveMailingList(toUpdate);
         return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
     }
-
 }

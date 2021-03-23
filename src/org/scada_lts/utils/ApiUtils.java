@@ -16,13 +16,12 @@ public final class ApiUtils {
 
     public ApiUtils() { }
 
-    public static boolean userIdExists(Integer id){
-        return getUser(id).isPresent();
+    public static boolean userIdExists(Integer id, UserService userService){
+        return getUser(id, userService).isPresent();
     }
 
-    public static Optional<User> getUser(int id) {
+    public static Optional<User> getUser(int id, UserService userService) {
         try {
-            UserService userService = new UserService();
             User user = userService.getUser(id);
             return Optional.ofNullable(user);
         } catch (Exception ex) {
@@ -31,12 +30,12 @@ public final class ApiUtils {
         }
     }
 
-    public static boolean usersExist(List<EmailRecipient> entries) {
+    public static boolean usersExist(List<EmailRecipient> entries, UserService userService) {
         for (EmailRecipient recipient : entries) {
             if (recipient != null) {
                 if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
                     UserEntry userEntry = (UserEntry) recipient;
-                    if (!userIdExists(userEntry.getUserId()))
+                    if (!userIdExists(userEntry.getUserId(), userService))
                         return false;
                 }
             }
