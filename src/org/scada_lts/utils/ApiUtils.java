@@ -14,7 +14,7 @@ public final class ApiUtils {
 
     private static final Log LOG = LogFactory.getLog(ApiUtils.class);
 
-    public ApiUtils() { }
+    private ApiUtils() { }
 
     public static boolean userIdExists(Integer id, UserService userService){
         return getUser(id, userService).isPresent();
