@@ -10,6 +10,7 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -143,14 +144,30 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		user.setViewPermissions(viewPermissions);
 		user.setUserProfile(this);
 		lastAppliedUser = user;
+		update(user);
 	}
 
-	public void set(User user) {
-		dataSourcePermissions = user.getDataSourcePermissions();
-		dataPointPermissions = user.getDataPointPermissions();
-		watchlistPermissions = user.getWatchListPermissions();
-		viewPermissions = user.getViewPermissions();
-		lastAppliedUser = user;
+	public void update(User user) {
+
+		for (WatchList watchList: watchlists) {
+			watchList.getWatchListUsers().removeIf(a -> a.getUserId() == user.getId());
+			for(WatchListAccess watchListAccess: watchlistPermissions) {
+				if(watchList.getId() == watchListAccess.getId()) {
+					watchList.getWatchListUsers().add(new ShareUser(user.getId(), watchListAccess.getPermission()));
+					break;
+				}
+			}
+		}
+
+		for (View view: views) {
+			view.getViewUsers().removeIf(a -> a.getUserId() == user.getId());
+			for(ViewAccess viewAccess: viewPermissions) {
+				if(view.getId() == viewAccess.getId()) {
+					view.getViewUsers().add(new ShareUser(user.getId(), viewAccess.getPermission()));
+					break;
+				}
+			}
+		}
 	}
 
 	public void jsonDeserialize(JsonReader reader, JsonObject profileJson)

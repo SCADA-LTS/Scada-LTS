@@ -61,7 +61,7 @@ public class UpdateDataSourcePermissionsTest {
     }
 
     @Test
-    public void updateWatchListPermissions() {
+    public void updatePermissions() {
 
         //when:
         PermissionsUtils.updateDataSourcePermissions(user, permissionsService);

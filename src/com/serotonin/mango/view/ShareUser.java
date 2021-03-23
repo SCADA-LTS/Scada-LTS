@@ -19,6 +19,7 @@
 package com.serotonin.mango.view;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -50,6 +51,14 @@ public class ShareUser implements JsonSerializable {
 
     private int userId;
     private int accessType;
+
+    public ShareUser() {
+    }
+
+    public ShareUser(int userId, int accessType) {
+        this.userId = userId;
+        this.accessType = accessType;
+    }
 
     public int getUserId() {
         return userId;
@@ -91,5 +100,20 @@ public class ShareUser implements JsonSerializable {
     public void jsonSerialize(Map<String, Object> map) {
         map.put("user", new UserDao().getUser(userId).getUsername());
         map.put("accessType", ACCESS_CODES.getCode(accessType));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShareUser)) return false;
+        ShareUser shareUser = (ShareUser) o;
+        return getUserId() == shareUser.getUserId() &&
+                getAccessType() == shareUser.getAccessType();
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getUserId(), getAccessType());
     }
 }

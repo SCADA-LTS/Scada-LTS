@@ -68,7 +68,7 @@ public class UpdateDataPointPermissionsTest {
     }
 
     @Test
-    public void updateWatchListPermissions() {
+    public void updatePermissions() {
 
         //when:
         PermissionsUtils.updateDataPointPermissions(user, permissionsService);

@@ -85,31 +85,43 @@ public class UsersProfileDao extends BaseDao {
 		if(currentProfileList.isEmpty()) {
 			if(lock.getAndDecrement() == 0) {
 				try {
-					usersProfileService.getProfiles(Integer.MAX_VALUE)
-							.forEach(a -> {
-								populateUserProfilePermissions(a);
-								currentProfileList.add(a);
-							});
+					currentProfileList.addAll(usersProfileService.getProfiles(Integer.MAX_VALUE));
 				} finally {
 					lock.set(0);
 				}
 			}
 		}
 		return currentProfileList.stream()
+				.map(this::populateUsersProfile)
 				.sorted(comparator)
 				.collect(Collectors.toList());
 	}
 
 	public UsersProfileVO getUserProfileByName(String name) {
-		return getUsersProfile(a -> !StringUtils.isEmpty(name) && name.equals(a.getName()));
+		UsersProfileVO profile = getUsersProfile(a -> !StringUtils.isEmpty(name) && name.equals(a.getName()));
+		if(profile != null) {
+			populateUserProfilePermissions(profile);
+			currentProfileList.add(profile);
+		}
+		return profile;
 	}
 
 	public UsersProfileVO getUserProfileById(int id) {
-		return getUsersProfile(a -> id != Common.NEW_ID && a.getId() == id);
+    	UsersProfileVO profile = getUsersProfile(a -> id != Common.NEW_ID && a.getId() == id);
+    	if(profile != null) {
+    		populateUserProfilePermissions(profile);
+    		currentProfileList.add(profile);
+		}
+		return profile;
 	}
 
 	public UsersProfileVO getUserProfileByXid(String xid) {
-		return getUsersProfile(a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid()));
+		UsersProfileVO profile = getUsersProfile(a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid()));
+		if(profile != null) {
+			populateUserProfilePermissions(profile);
+			currentProfileList.add(profile);
+		}
+		return profile;
 	}
 
 	public void saveUsersProfile(UsersProfileVO profile) throws DAOException {
@@ -122,7 +134,7 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private boolean profileExistsWithThatName(UsersProfileVO profile) {
-		return getUserProfileByName(profile.getName()) != null;
+		return getUsersProfile(a -> !StringUtils.isEmpty(profile.getName()) && profile.getName().equals(a.getName())) != null;
 	}
 
 	public void saveUsersProfileWithoutNameConstraint(UsersProfileVO profile)
@@ -224,15 +236,12 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void setViews(UsersProfileVO profile) {
-		List<View> allviews = new ViewDao().getViews();
+		List<View> allviews = viewDao.getViews();
 		profile.defineViews(allviews);
 	}
 
     public UsersProfileVO getUserProfileByUserId(int userid) {
-		return usersProfileService.getProfileByUserId(userid).map(profile -> {
-            populateUserProfilePermissions(profile);
-			return profile;
-		}).orElse(null);
+		return usersProfileService.getProfileByUserId(userid).map(this::populateUsersProfile).orElse(null);
 	}
 
 	public void grantUserAdminProfile(User user) {
@@ -322,14 +331,17 @@ public class UsersProfileDao extends BaseDao {
 
 	private static UsersProfileVO getUsersProfile(Predicate<UsersProfileVO> filter) {
 		return currentProfileList.stream()
-				.filter(a -> {
-					LOG.debug(a.getName() + ' ' + a.getXid() + ' ' + a.getId());
-					return filter.test(a);
-				})
+                .peek(a -> LOG.debug(a.getName() + ' ' + a.getXid() + ' ' + a.getId()))
+				.filter(filter)
 				.findFirst()
 				.orElseGet(() -> {
 					LOG.warn("Profile not Found!");
 					return null;
 				});
 	}
+
+    private UsersProfileVO populateUsersProfile(UsersProfileVO profile) {
+        populateUserProfilePermissions(profile);
+        return profile;
+    }
 }

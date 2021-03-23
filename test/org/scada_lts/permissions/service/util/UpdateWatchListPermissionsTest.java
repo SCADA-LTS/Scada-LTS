@@ -67,7 +67,7 @@ public class UpdateWatchListPermissionsTest {
     }
 
     @Test
-    public void updateWatchListPermissions() {
+    public void updatePermissions() {
 
         //when:
         PermissionsUtils.updateWatchListPermissions(user, permissionsService);

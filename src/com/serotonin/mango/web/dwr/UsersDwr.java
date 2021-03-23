@@ -167,17 +167,16 @@ public class UsersDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
-			userDao.saveUser(user);
-
 			UsersProfileDao profilesDao = new UsersProfileDao();
 			if (usersProfileId != Common.NEW_ID) {
 				// apply profile
 				UsersProfileVO profile = profilesDao
 						.getUserProfileById(usersProfileId);
-				profile.set(user);
+				profile.apply(user);
 				profilesDao.updateUsersProfile(user, profile);
-				profilesDao.updateProfile(profile);
+                userDao.saveUser(user);
 			} else {
+                userDao.saveUser(user);
 				profilesDao.resetUserProfile(user);
 			}
 
