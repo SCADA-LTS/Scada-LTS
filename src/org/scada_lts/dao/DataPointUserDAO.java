@@ -124,7 +124,7 @@ public class DataPointUserDAO {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USER_SELECT_WHERE_DP_ID, new Object[]{dataPointId}, new RowMapper<Tuple<Integer, Integer>>() {
 			@Override
 			public Tuple<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new Tuple<Integer, Integer>(rs.getInt(COLUMN_NAME_DP_ID), rs.getInt(COLUMN_NAME_USER_ID));
+				return new Tuple<Integer, Integer>(rs.getInt(COLUMN_NAME_USER_ID), rs.getInt(COLUMN_NAME_PERMISSION));
 			}
 		});
 	}
