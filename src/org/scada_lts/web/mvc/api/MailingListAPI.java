@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static org.scada_lts.utils.ApiUtils.usersExist;
 import static org.scada_lts.utils.MailingListApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 
@@ -132,6 +133,9 @@ public class MailingListAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
+                if (!usersExist(mailingList.getEntries())) {
+                    return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
+                }
                 mailingListService.saveMailingList(createMailingListFromBody(mailingList));
                 return new ResponseEntity<>("{\"status\":\"created\"}", HttpStatus.CREATED);
             } else {
@@ -193,6 +197,9 @@ public class MailingListAPI {
     }
 
     private ResponseEntity<String> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
+        if (!usersExist(mailingListBody.getEntries())) {
+            return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
+        }
         updateValueMailingList(toUpdate, mailingListBody);
         mailingListService.saveMailingList(toUpdate);
         return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);

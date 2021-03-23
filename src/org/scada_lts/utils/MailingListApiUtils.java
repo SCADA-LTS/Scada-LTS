@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.serotonin.timer.CronExpression.isValidExpression;
+import static org.scada_lts.serorepl.utils.StringUtils.isEmpty;
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
 
@@ -28,7 +29,7 @@ public final class MailingListApiUtils {
     private MailingListApiUtils() {}
 
     public static String validateMailingListCreate(CreateMailingList body) {
-        String msg = msgIfNull("Correct xid;", body.getXid());
+        String msg = msgIfNullOrInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
         msg += msgIfNullOrInvalid("Correct cron;", body.getCronPattern(), a -> !isValidExpression(a));
         msg += msgIfNullOrInvalid("Correct entries;", body.getEntries(), a -> !hasEntries(a));
         msg += validateMailingListBody(body.getName(), body.getEntries(), body.getInactiveIntervals());
@@ -37,6 +38,7 @@ public final class MailingListApiUtils {
 
     public static String validateMailingListUpdate(UpdateMailingList body) {
         String msg = msgIfNull("Correct id;", body.getId());
+        msg += msgIfNonNullAndInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
         msg += msgIfNonNullAndInvalid("Correct cron;", body.getCronPattern(), a -> !isValidExpression(a));
         msg += validateMailingListBody(body.getName(), body.getEntries(), body.getInactiveIntervals());
         return msg;
@@ -88,7 +90,7 @@ public final class MailingListApiUtils {
     }
 
     public static void updateValueMailingList(MailingList toUpdate, UpdateMailingList source) {
-        setIf(source.getXid(), toUpdate::setXid, a -> !StringUtils.isEmpty(a));
+        setIf(source.getXid(), toUpdate::setXid, a -> !isEmpty(a));
         setIf(source.getId(), toUpdate::setId, Objects::nonNull);
         setIf(source.getName(), toUpdate::setName, Objects::nonNull);
         setIf(source.getEntries(), toUpdate::setEntries, Objects::nonNull);
@@ -101,7 +103,7 @@ public final class MailingListApiUtils {
 
     public static MailingList createMailingListFromBody(CreateMailingList source) {
         MailingList mailingList = new MailingList();
-        setIf(source.getXid(), mailingList::setXid, a -> !StringUtils.isEmpty(a));
+        setIf(source.getXid(), mailingList::setXid, a -> !isEmpty(a));
         setIf(source.getName(), mailingList::setName, Objects::nonNull);
         setIf(source.getEntries(), mailingList::setEntries, Objects::nonNull);
         setIf(source.getCronPattern(), mailingList::setCronPattern, Objects::nonNull);

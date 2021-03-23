@@ -26,7 +26,6 @@ public final class ValidationUtils {
         return msgIfNullOrInvalid(msg, value, a -> false);
     }
 
-    @Deprecated
     static <T> String msgIfNonNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
         if(Objects.nonNull(value) && invalidIf.test(value)) {
             return MessageFormat.format(msg, String.valueOf(value));
@@ -48,6 +47,7 @@ public final class ValidationUtils {
         return "";
     }
 
+    @Deprecated
     static <T> String msgIfNullAndInvalid(String msg, T value, Predicate<T> invalidIf) {
         if(Objects.isNull(value) && invalidIf.test(value)) {
             return MessageFormat.format(msg, String.valueOf(value));
