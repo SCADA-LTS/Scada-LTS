@@ -192,20 +192,16 @@ public class MailingListAPI {
 
     private ResponseEntity<String> findAndUpdateMailingList(UpdateMailingList mailingListBody) {
         return getMailingList(mailingListBody.getId(), mailingListService)
-                .map(toUpdate -> {
-                    String error = validateMailingListUpdate(mailingListBody);
-                    if (!error.isEmpty()) {
-                        return ResponseEntity.badRequest().body(formatErrorsJson(error));
-                    }
-                    return updateMailingList(toUpdate, mailingListBody);
-                }).orElse(new ResponseEntity<>(formatErrorsJson("mailingList not found"), HttpStatus.NOT_FOUND));
+                .map(toUpdate -> updateMailingList(toUpdate, mailingListBody)).
+                        orElse(new ResponseEntity<>(formatErrorsJson("mailingList not found"), HttpStatus.NOT_FOUND));
     }
 
     private ResponseEntity<String> updateMailingList(MailingList toUpdate, UpdateMailingList mailingListBody) {
-        if (!usersExist(mailingListBody.getEntries(), userService)) {
+        if (mailingListBody.getEntries() != null && !usersExist(mailingListBody.getEntries(), userService)) {
             return new ResponseEntity<>(formatErrorsJson("user or users not found"), HttpStatus.NOT_FOUND);
         }
-        if (!isMailingListPresentUpdate(toUpdate.getXid(), mailingListBody.getXid(), mailingListService)) {
+        if (isXidChanged(toUpdate.getXid(), mailingListBody.getXid()) &&
+                isMailingListPresent(mailingListBody.getXid(), mailingListService)){
             return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
         }
         updateValueMailingList(toUpdate, mailingListBody);

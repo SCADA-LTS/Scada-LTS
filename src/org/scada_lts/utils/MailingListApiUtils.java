@@ -53,18 +53,20 @@ public final class MailingListApiUtils {
 
     private static String validateEntriesList(List<EmailRecipient> entries) {
         StringBuilder msg = new StringBuilder();
-        for (EmailRecipient recipient : entries) {
-            msg.append(msgIfNull("Correct recipient;", recipient));
-            if (recipient != null) {
-                msg.append(msgIfNullOrInvalid("Recipient does not exist for type {0};", recipient.getRecipientType(),
-                        a -> !EmailRecipient.validEmailRecipientType(a)));
-                if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
-                    UserEntry userEntry = (UserEntry) recipient;
-                    msg.append(msgIfNullOrInvalid("Correct userId;", userEntry.getUserId(), a -> !validUserId(a)));
-                }
-                if (recipient.getRecipientType() == EmailRecipient.TYPE_ADDRESS) {
-                    AddressEntry addressEntry = (AddressEntry) recipient;
-                    msg.append(msgIfNull("Correct address;", addressEntry.getAddress()));
+        if (entries != null) {
+            for (EmailRecipient recipient : entries) {
+                msg.append(msgIfNull("Correct recipient;", recipient));
+                if (recipient != null) {
+                    msg.append(msgIfNullOrInvalid("Recipient does not exist for type {0};", recipient.getRecipientType(),
+                            a -> !EmailRecipient.validEmailRecipientType(a)));
+                    if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
+                        UserEntry userEntry = (UserEntry) recipient;
+                        msg.append(msgIfNullOrInvalid("Correct userId;", userEntry.getUserId(), a -> !validUserId(a)));
+                    }
+                    if (recipient.getRecipientType() == EmailRecipient.TYPE_ADDRESS) {
+                        AddressEntry addressEntry = (AddressEntry) recipient;
+                        msg.append(msgIfNull("Correct address;", addressEntry.getAddress()));
+                    }
                 }
             }
         }
@@ -143,11 +145,7 @@ public final class MailingListApiUtils {
         return getMailingList(id, mailingListService).isPresent();
     }
 
-    public static boolean isMailingListPresentUpdate(String currentXid, String newXid, MailingListService mailingListService){
-        boolean exists = isMailingListPresent(newXid, mailingListService);
-        if (exists) {
-            return currentXid.equals(newXid);
-        } else
-            return false;
+    public static boolean isXidChanged(String currentXid, String newXid) {
+        return !currentXid.equals(newXid);
     }
 }
