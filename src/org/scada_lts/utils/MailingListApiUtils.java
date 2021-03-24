@@ -11,6 +11,7 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.dto.CreateMailingList;
 import org.scada_lts.web.mvc.api.dto.UpdateMailingList;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 import java.util.Objects;
@@ -131,6 +132,8 @@ public final class MailingListApiUtils {
         try {
             MailingList mailingList = mailingListService.getMailingList(id);
             return Optional.ofNullable(mailingList);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             return Optional.empty();
