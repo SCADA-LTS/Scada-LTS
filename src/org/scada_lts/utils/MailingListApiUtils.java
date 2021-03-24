@@ -122,6 +122,8 @@ public final class MailingListApiUtils {
         try {
             MailingList mailingList = mailingListService.getMailingList(xid);
             return Optional.ofNullable(mailingList);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             return Optional.empty();
