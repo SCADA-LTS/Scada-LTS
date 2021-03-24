@@ -6,10 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UsersProfileDAO;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,17 +27,6 @@ public class UsersProfileService {
 
     public Optional<UsersProfileVO> getProfileByUser(User user) {
         return getProfileByUserId(user.getId());
-    }
-
-    public Optional<UsersProfileVO> getProfileByUserId2(int userId) {
-        List<UsersProfileVO> profiles = usersProfileDAO.selectUserProfileByUserId(userId);
-        if(profiles.isEmpty())
-            return Optional.empty();
-        if(profiles.size() > 1) {
-            LOG.warn(LIST_SIZE_IS_GREATER_THAN_1);
-            return Optional.empty();
-        }
-        return Optional.ofNullable(profiles.get(0));
     }
 
     public Optional<UsersProfileVO> getProfileByUserId(int userId) {
