@@ -94,6 +94,14 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_MODIFICATION_TIME+" "
 			+ "from "
 				+ "mangoViews";
+
+    private static final String VIEW_IDENTIFIER_SELECT = ""
+            +"select "
+            + COLUMN_NAME_ID+", "
+            + COLUMN_NAME_XID+", "
+            + COLUMN_NAME_NAME+" "
+            + "from "
+            + "mangoViews";
 	
 	private static final String VIEW_FILTER_BASE_ON_ID=""
 			 +COLUMN_NAME_ID+"=?";
@@ -163,16 +171,6 @@ public class ViewDAO implements GenericDAO<View> {
 			+ "mangoViewUsers "
 			+ "where "
 			+ COLUMN_NAME_MVU_USER_ID+"=?";
-
-	private static final String VIEW_USER_BASE_ON_USER_ID_VIEW_ID = ""
-			+"select "
-			+ COLUMN_NAME_MVU_VIEW_ID+", "
-			+ COLUMN_NAME_MVU_ACCESS_TYPE+" "
-			+ "from "
-			+ "mangoViewUsers "
-			+ "where "
-			+ COLUMN_NAME_MVU_USER_ID+"=?, "
-			+ COLUMN_NAME_MVU_VIEW_ID+"=?";
 	
 	public static final String VIEW_FILTERED_BASE_ON_ID = ""
 			+ COLUMN_NAME_USER_ID+"=? or "
@@ -374,10 +372,6 @@ public class ViewDAO implements GenericDAO<View> {
 	public List<IdName> getViewNames(int userId, int userProfileId) {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME + " where " + VIEW_FILTERED_BASE_ON_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE, userProfileId },new IdNameRowMapper());
 	}
-
-	public List<IdName> getViewNames(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME + " where " + VIEW_FILTERED_BASE_ON_USER_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE },new IdNameRowMapper());
-	}
 	
 	public List<IdName> getAllViewNames() {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME , new Object[] {  },new IdNameRowMapper());
@@ -434,19 +428,6 @@ public class ViewDAO implements GenericDAO<View> {
 
 	}
 
-	public List<ViewAccess> selectViewPermissions(int userId, int usersProfileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectWatchListPermissions(int userId, int usersProfileId) userId:" + userId + " usersProfileId: " + usersProfileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_USER_ID_VIEW_ID, new Object[]{userId, usersProfileId}, (rs, rowNum) -> {
-			ViewAccess viewAccess = new ViewAccess();
-			viewAccess.setId(rs.getInt(COLUMN_NAME_MVU_VIEW_ID));
-			viewAccess.setPermission(rs.getInt(COLUMN_NAME_MVU_ACCESS_TYPE));
-			return viewAccess;
-		});
-	}
-
 	public List<ViewAccess> selectViewPermissionsByProfileId(int usersProfileId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("selectViewPermissionsByUsersProfileId(final int usersProfileId) usersProfileId:" + usersProfileId);
@@ -496,13 +477,21 @@ public class ViewDAO implements GenericDAO<View> {
 	}
 
 	public List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID,
+		return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID,
                 new Object[] { userId, userId, ShareUser.ACCESS_NONE },
-                new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+                new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
 	}
 
     public List<ScadaObjectIdentifier> selectViewIdentifiers() {
-        return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{},
-                new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+        return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT, new Object[]{},
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
     }
 }

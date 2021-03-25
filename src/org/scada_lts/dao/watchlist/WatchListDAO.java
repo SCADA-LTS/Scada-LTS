@@ -164,17 +164,6 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ "watchListUsers "
 			+ "where "
 				+ COLUMN_NAME_WLU_USER_ID+"=?";
-
-	private static final String WATCH_LIST_USERS_SELECT_BASE_ON_USER_ID_WATCH_LIST_ID = ""
-			+"select "
-				+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
-				+ COLUMN_NAME_WLU_USER_ID+", "
-				+ COLUMN_NAME_WLU_ACCESS_TYPE+" "
-			+ "from "
-				+ "watchListUsers "
-			+ "where "
-				+ COLUMN_NAME_WLU_USER_ID+"=? and "
-				+ COLUMN_NAME_WLP_WATCHLIST_ID+"=? ";
 	
 	private static final String WATCH_LIST_POINTS_SELECT_BASE_ON_WATCH_LIST_ID=" "
 			+"select "
@@ -510,6 +499,12 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	}
 
     public List<ScadaObjectIdentifier> selectWatchListIdentifiersWithAccess(int userId) {
-        return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT + " where " + WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[] { userId, userId, ShareUser.ACCESS_NONE }, new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+        return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT + " where " + WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
+				new Object[] { userId, userId },
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
     }
 }

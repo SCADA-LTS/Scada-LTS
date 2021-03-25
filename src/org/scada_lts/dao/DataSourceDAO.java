@@ -77,6 +77,21 @@ public class DataSourceDAO {
 				+ COLUMN_NAME_DATA + " "
 			+ "from dataSources ";
 
+	private static final String DATA_SOURCE_DS_SELECT = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + ", "
+			+ "ds." + COLUMN_NAME_DATA + " "
+			+ "from dataSources ds ";
+
+	private static final String DATA_SOURCE_IDENTIFIER_SELECT = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + " "
+			+ "from dataSources ds ";
+
 	private static final String DATA_SOURCE_PLC_SELECT = "" +
 			"SELECT DISTINCT " +
 			"ds." + COLUMN_NAME_ID + ", " +
@@ -192,9 +207,8 @@ public class DataSourceDAO {
 			+ COLUMN_NAME_USER_ID+"=?";
 
 	private static final String DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
-			+ COLUMN_NAME_USER_ID+"=? or "
-			+ "id in (select dataSourceId from dataSourceUsers where "+COLUMN_NAME_DS_USER_ID+"=?) "
-			+ "order by name";
+			+ "ds." + COLUMN_NAME_ID + " in (select dsu." + COLUMN_NAME_DS_USER_ID +  " from dataSourceUsers dsu where dsu."+COLUMN_NAME_USER_ID+"=?) "
+			+ "order by ds." + COLUMN_NAME_NAME;
 
 	// @formatter:on
 
@@ -451,24 +465,16 @@ public class DataSourceDAO {
 	}
 
 	public List<DataSourceVO<?>> selectDataSourcesWithAccess(final int userId) {
-		return filtered(DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId, userId}, 0);
-	}
-
-	private List<DataSourceVO<?>> filtered(String filter, Object[] argsFilter, long limit) {
-		String myLimit="";
-		Object[] args;
-		if (limit != GenericDaoCR.NO_LIMIT) {
-			myLimit = GenericDaoCR.LIMIT+" ? ";
-			args = DAO.getInstance().appendValue(argsFilter, String.valueOf(limit));
-		} else {
-			args=argsFilter;
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT+" where "+ filter + myLimit, args, new DataSourceDAO.DataSourceRowMapper());
-
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT+" where "+ DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{ userId }, new DataSourceDAO.DataSourceRowMapper());
 	}
 
 	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT + " where " + DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[] { userId, userId, ShareUser.ACCESS_NONE }, new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_IDENTIFIER_SELECT + " where " + DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
+				new Object[] { userId },
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
 	}
 }

@@ -88,6 +88,15 @@ public class DataPointDAO {
 				+ "ds." + COLUMN_NAME_DS_ID + "="
 				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 
+    private static final String DATA_POINT_IDENTIFIER_SELECT = ""
+            + "select "
+            + "dp." + COLUMN_NAME_ID + ", "
+            + "dp." + COLUMN_NAME_XID + ", "
+            + "dp." + COLUMN_NAME_DATAPOINT_NAME + " "
+            + "from dataPoints dp join dataSources ds on "
+            + "ds." + COLUMN_NAME_DS_ID + "="
+            + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
+
 	private static final String DATA_POINT_SELECT_PLC = "" +
 			"SELECT " +
 			"dp." + COLUMN_NAME_ID + ", " +
@@ -135,9 +144,8 @@ public class DataPointDAO {
 				+ COLUMN_NAME_EVENT_TYPE_REF1;
 
 	private static final String DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
-			+ COLUMN_NAME_USER_ID+"=? or "
-			+ "id in (select dataPointId from dataPointUsers where "+COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_PERMISSION+">0) "
-			+ "order by name";
+			+ "dp." + COLUMN_NAME_ID + " in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">0) "
+			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
 
 	// @formatter:on
 
@@ -353,10 +361,16 @@ public class DataPointDAO {
 	}
 
 	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
-		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId, userId}, 0);
+		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId}, 0);
 	}
 
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[] { userId, userId, ShareUser.ACCESS_NONE }, new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_DATAPOINT_NAME));
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
+                new Object[] { userId },
+                new ScadaObjectIdentifierRowMapper.Builder()
+                        .idColumnName(COLUMN_NAME_ID)
+                        .xidColumnName(COLUMN_NAME_XID)
+                        .nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+                        .build());
 	}
 }

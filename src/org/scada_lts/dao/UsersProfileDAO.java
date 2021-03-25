@@ -39,18 +39,6 @@ public class UsersProfileDAO {
             "order by " +
             "up." + COLUMN_NAME_NAME;
 
-    private static final String USERS_USERS_PROFILES_SELECT_BY_ID = "" +
-            "select " +
-            "up." + COLUMN_NAME_ID + ", " +
-            "up." + COLUMN_NAME_XID + ", " +
-            "up." + COLUMN_NAME_NAME + " " +
-            "from usersUsersProfiles uup left join usersProfiles up on " +
-            "up." + COLUMN_NAME_ID + "=" +
-            "uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
-            "where uup." + COLUMN_NAME_ID + "=? " +
-            "order by " +
-            "up." + COLUMN_NAME_NAME;
-
     private static final String USERS_PROFILE_SELECT_BY_ID = "" +
             "select " +
             "up." + COLUMN_NAME_ID + ", " +
@@ -65,11 +53,6 @@ public class UsersProfileDAO {
             "where " + COLUMN_NAME_USER_ID + "=?";
 
     private static final String USERS_PROFILE_DELETE_BY_ID = "" +
-            "delete " +
-            "from usersProfiles " +
-            "where " + COLUMN_NAME_ID + "=?";
-
-    private static final String VIEW_USERS_PROFILE_DELETE_BY_ID = "" +
             "delete " +
             "from usersProfiles " +
             "where " + COLUMN_NAME_ID + "=?";
