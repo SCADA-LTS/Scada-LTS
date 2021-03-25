@@ -19,10 +19,13 @@ package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -463,5 +466,9 @@ public class DataSourceDAO {
 
 		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT+" where "+ filter + myLimit, args, new DataSourceDAO.DataSourceRowMapper());
 
+	}
+
+	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT + " where " + DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[] { userId, userId, ShareUser.ACCESS_NONE }, new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
 	}
 }

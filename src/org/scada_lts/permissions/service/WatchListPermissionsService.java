@@ -5,6 +5,7 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 
 import java.util.List;
@@ -50,5 +51,10 @@ public class WatchListPermissionsService implements PermissionsService<WatchList
     @Override
     public List<ShareUser> getShareUsers(WatchList object) {
         return watchListDAO.getWatchListUsers(object.getId());
+    }
+
+    @Override
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        return watchListDAO.selectWatchListIdentifiersWithAccess(user.getId());
     }
 }

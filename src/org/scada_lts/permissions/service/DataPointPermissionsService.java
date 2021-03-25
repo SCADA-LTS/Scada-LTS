@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataPointUserDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
 
@@ -47,5 +48,10 @@ public class DataPointPermissionsService implements PermissionsService<DataPoint
     @Override
     public List<DataPointVO> getObjectsWithAccess(User user) {
         return dataPointDAO.selectDataPointsWithAccess(user.getId());
+    }
+
+    @Override
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        return dataPointDAO.selectDataPointIdentifiersWithAccess(user.getId());
     }
 }

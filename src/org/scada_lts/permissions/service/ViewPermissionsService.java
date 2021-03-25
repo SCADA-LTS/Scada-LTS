@@ -6,19 +6,24 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.ViewService;
 
 import java.util.List;
 
 public class ViewPermissionsService implements PermissionsService<ViewAccess, View>, GetShareUsers<View> {
 
     private final ViewDAO viewDAO;
+    private final ViewService viewService;
 
     public ViewPermissionsService() {
-        viewDAO = new ViewDAO();
+        this.viewDAO = new ViewDAO();
+        this.viewService = new ViewService();
     }
 
-    public ViewPermissionsService(ViewDAO viewDAO) {
+    public ViewPermissionsService(ViewDAO viewDAO, ViewService viewService) {
         this.viewDAO = viewDAO;
+        this.viewService = viewService;
     }
 
     @Override
@@ -51,5 +56,8 @@ public class ViewPermissionsService implements PermissionsService<ViewAccess, Vi
         return viewDAO.getShareUsers(object.getId());
     }
 
-
+    @Override
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        return viewDAO.selectViewIdentifiersWithAccess(user.getId());
+    }
 }

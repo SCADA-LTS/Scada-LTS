@@ -91,8 +91,6 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
-import org.scada_lts.dao.model.IdName;
-import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.permissions.service.ViewPermissionsService;
 
 /**
@@ -134,7 +132,7 @@ public class ViewDwr extends BaseDwr {
 	public List<IntValuePair> getViews() {
 		ViewPermissionsService viewPermissionsService = new ViewPermissionsService();
 		User user = Common.getUser();
-		return viewPermissionsService.getObjectsWithAccess(user).stream()
+		return viewPermissionsService.getObjectIdentifiersWithAccess(user).stream()
 				.map(a -> new IntValuePair(a.getId(), a.getName()))
 				.collect(Collectors.toList());
 	}

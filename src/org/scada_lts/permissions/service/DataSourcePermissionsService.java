@@ -4,12 +4,16 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataSourcePermissionsService implements PermissionsService<Integer, DataSourceVO<?>> {
 
     private final DataSourceDAO dataSourceDAO;
+    private static Map<Integer, List<ScadaObjectIdentifier>> objectWithAccesses = new ConcurrentHashMap<>();
 
     public DataSourcePermissionsService() {
         this.dataSourceDAO = new DataSourceDAO();
@@ -42,5 +46,10 @@ public class DataSourcePermissionsService implements PermissionsService<Integer,
     @Override
     public List<DataSourceVO<?>> getObjectsWithAccess(User user) {
         return dataSourceDAO.selectDataSourcesWithAccess(user.getId());
+    }
+
+    @Override
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        return dataSourceDAO.selectDataSourceIdentifiersWithAccess(user.getId());
     }
 }

@@ -8,6 +8,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.db.dao.WatchListDao;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.WatchList;
 
 @JsonRemoteEntity
@@ -19,6 +20,10 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 
 	public WatchListAccess(int id, int permission) {
 		super(id, permission);
+	}
+
+	public static WatchListAccess none(int watchListId) {
+		return new WatchListAccess(watchListId, ShareUser.ACCESS_NONE);
 	}
 
 	@Override

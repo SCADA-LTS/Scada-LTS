@@ -22,6 +22,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -165,9 +166,11 @@ public class WatchListDwr extends BaseDwr {
 
 		// Allow the delete.
 		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
-				|| user.isAdmin())
+				|| user.isAdmin()) {
 			watchListDao.deleteWatchList(watchListId);
-		else
+			UsersProfileDao usersProfileDao = new UsersProfileDao();
+			usersProfileDao.updateWatchlistPermissions();
+		} else
 			watchListDao.removeUserFromWatchList(watchListId, user.getId());
 	}
 

@@ -58,7 +58,7 @@ public class ViewsController extends ParameterizableViewController {
 			model.put("views", views);
 		} else {
 		    GetObjectsAccess<View> service = new ViewPermissionsService();
-			views = service.getObjectsWithAccess(user).stream()
+			views = service.getObjectIdentifiersWithAccess(user).stream()
 					.map(a -> new IntValuePair(a.getId(), a.getName()))
 					.collect(Collectors.toList());
 

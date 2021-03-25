@@ -26,6 +26,8 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.IdName;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -219,7 +221,7 @@ public class ViewDAO implements GenericDAO<View> {
 			+ COLUMN_NAME_UP_VIEW_ID+ ", "
 			+ COLUMN_NAME_UP_PERMISSION + " "
 			+ "from "
-			+ "viewUsersProfiles "
+			+ "viewusersprofiles "
 			+ "where "
 			+ COLUMN_NAME_UP_USER_PRFILE_ID+ "=?";
 
@@ -493,4 +495,14 @@ public class ViewDAO implements GenericDAO<View> {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE },new ViewRowMapper());
 	}
 
+	public List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId) {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID,
+                new Object[] { userId, userId, ShareUser.ACCESS_NONE },
+                new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+	}
+
+    public List<ScadaObjectIdentifier> selectViewIdentifiers() {
+        return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{},
+                new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+    }
 }

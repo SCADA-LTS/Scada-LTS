@@ -20,13 +20,9 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
-import br.org.scadabr.vo.permission.WatchListAccess;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
-import org.scada_lts.permissions.service.GetShareUsers;
-import org.scada_lts.permissions.service.PermissionsService;
-import org.scada_lts.permissions.service.WatchListPermissionsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,24 +40,22 @@ import com.serotonin.mango.vo.WatchList;
  */
 @Service
 public class WatchListService implements MangoWatchList {
-	
+
 	private WatchListDAO watchListDAO;
-	private GetShareUsers<WatchList> permissionsService;
-	
+
 	public WatchListService() {
-		this.watchListDAO = new WatchListDAO();
-		this.permissionsService = new WatchListPermissionsService(watchListDAO);
+		watchListDAO = new WatchListDAO();
 	}
 
 	@Override
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(WatchList.XID_PREFIX, "watchLists");
 	}
-	
+
 	public boolean isXidUnique(String xid, int excludeId) {
 		return DAO.getInstance().isXidUnique(xid, excludeId,"watchLists");
 	}
-		
+
 	@Override
 	public List<WatchList> getWatchLists(final int userId, int userProfile) {
 		return watchListDAO.filtered(WatchListDAO.WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ORDERY_BY_NAME, new Object[]{userId, userProfile, userId}, WatchListDAO.NO_LIMIT);
@@ -76,7 +70,7 @@ public class WatchListService implements MangoWatchList {
 	public WatchList getWatchList(int watchListId) {
 		return watchListDAO.findById(new Object[] {watchListId});
 	}
-	
+
 	@Override
 	public void populateWatchlistData(List<WatchList> watchLists) {
 		for (WatchList watchList : watchLists)
@@ -90,7 +84,7 @@ public class WatchListService implements MangoWatchList {
 
 		// Get the points for each of the watch lists.
 		List<Integer> pointIds = watchListDAO.getPointsWatchList(watchList.getId());
-		
+
 		List<DataPointVO> points = watchList.getPointList();
 		DataPointDao dataPointDao = new DataPointDao();
 		for (Integer pointId : pointIds)
@@ -98,58 +92,69 @@ public class WatchListService implements MangoWatchList {
 
 		setWatchListUsers(watchList);
 	}
-	
+
 	private void setWatchListUsers(WatchList watchList) {
-		List<ShareUser> watchListUsers = permissionsService.getShareUsers(watchList);
+		List<ShareUser> watchListUsers = watchListDAO.getWatchListUsers(watchList.getId());
 		watchList.setWatchListUsers(watchListUsers);
 	}
-	
+
 	@Override
 	public WatchList getWatchList(String xid) {
 		return watchListDAO.findByXId(xid);
 	}
-	
+
 	@Override
 	public void saveSelectedWatchList(int userId, int watchListId) {
 		watchListDAO.updateUsers(userId, watchListId);
 	}
-	
+
 	@Override
 	public WatchList createNewWatchList(WatchList watchList, int userId) {
 		watchList.setUserId(userId);
 		String guxid = generateUniqueXid();
 		watchList.setXid(guxid);
-		
+
 		int id = (Integer) watchListDAO.create(watchList)[0];
 		watchList.setId(id);
 		return watchList;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void saveWatchList(final WatchList watchList) {
-		
+
 		if (watchList.getId() == Common.NEW_ID) {
 			int id = (int) watchListDAO.create(watchList)[0];
 			watchList.setId(id);
 		} else {
 			watchListDAO.update(watchList);
 		}
-		
+
 		watchListDAO.deleteWatchListPoints(watchList.getId());
-		
+
 		watchListDAO.addPointsForWatchList(watchList);
 
-		setWatchListUsers(watchList);
+        //sharing an object doesn't work
+		//saveWatchListUsers(watchList);
+
 	}
-	
+
+	void saveWatchListUsers(final WatchList watchList) {
+		// Delete anything that is currently there.
+		watchListDAO.deleteWatchListUsers(watchList.getId());
+
+        // Add in all of the entries.
+		watchListDAO.addWatchListUsers(watchList);
+	}
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteWatchList(int watchListId) {
 		watchListDAO.deleteWatchListPoints(watchListId);
 		watchListDAO.deleteWatchList(watchListId);
+
 		//TODO check why don't delete watch list for users
 	}
-	
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void removeUserFromWatchList(int watchListId, int userId) {
 		watchListDAO.deleteUserFromWatchList(watchListId, userId);

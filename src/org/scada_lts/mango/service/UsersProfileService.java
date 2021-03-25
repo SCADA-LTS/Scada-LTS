@@ -81,28 +81,9 @@ public class UsersProfileService {
     }
 
     public void saveRelationalData(final UsersProfileVO usersProfile) {
-        try {
-            usersProfileDAO.updateDataSourceUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-
-        try {
-            usersProfileDAO.updateDataPointUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-
-        try {
-            usersProfileDAO.updateWatchListUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-
-        try {
-            usersProfileDAO.updateViewUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+        usersProfileDAO.updateDataSourceUsersProfiles(usersProfile);
+        usersProfileDAO.updateDataPointUsersProfiles(usersProfile);
+        usersProfileDAO.updateWatchListUsersProfiles(usersProfile);
+        usersProfileDAO.updateViewUsersProfiles(usersProfile);
     }
 }

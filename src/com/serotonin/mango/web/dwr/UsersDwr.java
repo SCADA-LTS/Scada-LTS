@@ -216,7 +216,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setPhone(phone);
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-
+		updateUser.setUserProfileId(usersProfileId);
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
@@ -257,8 +257,11 @@ public class UsersDwr extends BaseDwr {
 			// You can't delete yourself.
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
-		else
+		else {
 			new UserDao().deleteUser(id);
+			UsersProfileDao usersProfileDao = new UsersProfileDao();
+			usersProfileDao.updatePermissions();
+		}
 
 		return response;
 	}

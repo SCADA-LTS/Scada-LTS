@@ -25,12 +25,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.IdName;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -60,7 +62,7 @@ public class ViewService {
 		}
 		return views;
 	}
-	
+
 	public List<View> getViews(int userId, int userProfileId) {
 		List<View> views = viewDAO.filtered(ViewDAO.VIEW_FILTERED_BASE_ON_ID, " order by name ", new Object[]{userId, userId, ShareUser.ACCESS_NONE, userProfileId}, ViewDAO.NO_LIMIT);
 		for (View view: views) {
@@ -182,4 +184,8 @@ public class ViewService {
 		viewDAO.deleteViewForUser(viewId, userId);
 	}
 
+
+	public List<ScadaObjectIdentifier> getSimpleViews() {
+		return viewDAO.selectViewIdentifiers();
+	}
 }

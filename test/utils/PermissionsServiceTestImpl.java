@@ -2,6 +2,7 @@ package utils;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.PermissionsService;
 
 import java.util.ArrayList;
@@ -37,11 +38,15 @@ public class PermissionsServiceTestImpl<T, R> implements PermissionsService<T, R
         permissions.putIfAbsent(user.getId(), new ArrayList<>());
         permissions.get(user.getId()).removeIf(a -> toAddOrUpdate.stream().anyMatch(b -> a.equals(b)));
         permissions.get(user.getId()).addAll(toAddOrUpdate);
-
     }
 
     @Override
     public void removePermissions(User user, List<T> toRemove) {
         permissions.get(user.getId()).removeAll(toRemove);
+    }
+
+    @Override
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        throw new UnsupportedOperationException();
     }
 }

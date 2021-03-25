@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -506,4 +508,8 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(WATCH_LIST_USERS_DELETE_WATCHLIST_ID_AND_USER_ID, batchArgs, argTypes);
 	}
+
+    public List<ScadaObjectIdentifier> selectWatchListIdentifiersWithAccess(int userId) {
+        return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT + " where " + WATCH_LIST_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[] { userId, userId, ShareUser.ACCESS_NONE }, new ScadaObjectIdentifierRowMapper(COLUMN_NAME_ID, COLUMN_NAME_XID, COLUMN_NAME_NAME));
+    }
 }

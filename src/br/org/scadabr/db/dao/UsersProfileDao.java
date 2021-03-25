@@ -85,43 +85,31 @@ public class UsersProfileDao extends BaseDao {
 		if(currentProfileList.isEmpty()) {
 			if(lock.getAndDecrement() == 0) {
 				try {
-					currentProfileList.addAll(usersProfileService.getProfiles(Integer.MAX_VALUE));
+                    usersProfileService.getProfiles(Integer.MAX_VALUE)
+                            .forEach(a -> {
+                                populateUserProfilePermissions(a);
+                                currentProfileList.add(a);
+                            });
 				} finally {
 					lock.set(0);
 				}
 			}
 		}
 		return currentProfileList.stream()
-				.map(this::populateUsersProfile)
 				.sorted(comparator)
 				.collect(Collectors.toList());
 	}
 
 	public UsersProfileVO getUserProfileByName(String name) {
-		UsersProfileVO profile = getUsersProfile(a -> !StringUtils.isEmpty(name) && name.equals(a.getName()));
-		if(profile != null) {
-			populateUserProfilePermissions(profile);
-			currentProfileList.add(profile);
-		}
-		return profile;
-	}
+		return getUsersProfile(a -> !StringUtils.isEmpty(name) && name.equals(a.getName()));
+    }
 
 	public UsersProfileVO getUserProfileById(int id) {
-    	UsersProfileVO profile = getUsersProfile(a -> id != Common.NEW_ID && a.getId() == id);
-    	if(profile != null) {
-    		populateUserProfilePermissions(profile);
-    		currentProfileList.add(profile);
-		}
-		return profile;
+		return getUsersProfile(a -> id != Common.NEW_ID && a.getId() == id);
 	}
 
 	public UsersProfileVO getUserProfileByXid(String xid) {
-		UsersProfileVO profile = getUsersProfile(a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid()));
-		if(profile != null) {
-			populateUserProfilePermissions(profile);
-			currentProfileList.add(profile);
-		}
-		return profile;
+		return getUsersProfile(a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid()));
 	}
 
 	public void saveUsersProfile(UsersProfileVO profile) throws DAOException {
@@ -156,6 +144,29 @@ public class UsersProfileDao extends BaseDao {
 		}
 	}
 
+	public void updatePermissions() {
+		updateViewPermissions();
+		updateDataPointPermissions();
+		updateWatchlistPermissions();
+		updateDataSourcePermissions();
+	}
+
+	public void updateWatchlistPermissions() {
+		currentProfileList.forEach(this::populateWatchlists);
+	}
+
+	public void updateViewPermissions() {
+		currentProfileList.forEach(this::populateViews);
+	}
+
+	public void updateDataPointPermissions() {
+		currentProfileList.forEach(this::populateDatapoints);
+	}
+
+	public void updateDataSourcePermissions() {
+		currentProfileList.forEach(this::populateDataSources);
+	}
+
 	public void updateProfile(UsersProfileVO profile) {
 		usersProfileService.setProfileName(profile.getName(), profile);
 		List<Integer> usersIds = usersProfileService.getUsersByProfile(profile);
@@ -177,6 +188,17 @@ public class UsersProfileDao extends BaseDao {
 					.ifPresent(a -> usersProfileService.removeUserProfile(user));
 			usersProfileService.createUserProfile(user, profile);
 		}
+
+		//sharing an object doesn't work
+		/*
+		for (WatchList watchlist : profile.retrieveWatchlists()) {
+			watchlistDao.saveWatchList(watchlist);
+		}
+
+		for (View view : profile.retrieveViews()) {
+			viewDao.saveView(view);
+		}*/
+
 		currentProfileList.add(profile);
 	}
 
@@ -217,7 +239,7 @@ public class UsersProfileDao extends BaseDao {
 
 		WatchListDao watchListDao = new WatchListDao();
 		List<WatchList> allwatchlists = watchListDao.getWatchLists();
-		watchListDao.populateWatchlistData(allwatchlists);
+        allwatchlists.forEach(a -> a.setWatchListUsers(watchListPermissionsService.getShareUsers(a)));
 		profile.defineWatchlists(allwatchlists);
 	}
 
@@ -236,7 +258,14 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void setViews(UsersProfileVO profile) {
-		List<View> allviews = viewDao.getViews();
+		List<View> allviews = viewDao.getSimpleViews().stream().map(a -> {
+			View view = new View();
+			view.setId(a.getId());
+			view.setXid(a.getXid());
+			view.setName(a.getName());
+			return view;
+		}).collect(Collectors.toList());
+		allviews.forEach(a -> a.setViewUsers(viewPermissionsService.getShareUsers(a)));
 		profile.defineViews(allviews);
 	}
 

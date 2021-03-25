@@ -20,6 +20,7 @@ package com.serotonin.mango.db.dao;
 
 import java.util.List;
 
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 
@@ -88,5 +89,8 @@ public class ViewDao {
 	public void removeUserFromView(int viewId, int userId) {
 		viewService.removeUserFromView(viewId, userId);
 	}
-	
+
+	public List<ScadaObjectIdentifier> getSimpleViews() {
+		return viewService.getSimpleViews();
+	}
 }
