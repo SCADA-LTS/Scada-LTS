@@ -167,6 +167,8 @@ public class UsersDwr extends BaseDwr {
 		}
 
 		if (!response.getHasMessages()) {
+			userDao.saveUser(user);
+
 			UsersProfileDao profilesDao = new UsersProfileDao();
 			if (usersProfileId != Common.NEW_ID) {
 				// apply profile
@@ -174,9 +176,8 @@ public class UsersDwr extends BaseDwr {
 						.getUserProfileById(usersProfileId);
 				profile.apply(user);
 				profilesDao.updateUsersProfile(user, profile);
-                userDao.saveUser(user);
+				userDao.updatePermissions(user);
 			} else {
-                userDao.saveUser(user);
 				profilesDao.resetUserProfile(user);
 			}
 

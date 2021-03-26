@@ -14,7 +14,11 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -25,8 +29,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -40,9 +42,9 @@ public class UsersProfileDao extends BaseDao {
 	private static Set<UsersProfileVO> currentProfileList = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private static AtomicInteger lock = new AtomicInteger();
 
-	private WatchListDao watchlistDao;
-	private ViewDao viewDao;
-	private UserDao userDao;
+	private WatchListService watchListService;
+	private ViewService viewService;
+	private UserService userService;
 	private UsersProfileService usersProfileService;
 	private PermissionsService<WatchListAccess, WatchList> watchListPermissionsService;
     private PermissionsService<DataPointAccess, DataPointVO> dataPointPermissionsService;
@@ -50,9 +52,9 @@ public class UsersProfileDao extends BaseDao {
 	private PermissionsService<ViewAccess, View> viewPermissionsService;
 
     public UsersProfileDao() {
-		this.watchlistDao = new WatchListDao();
-		this.viewDao = new ViewDao();
-		this.userDao = new UserDao();
+		this.watchListService = new WatchListService();
+		this.viewService = new ViewService();
+		this.userService = new UserService();
 		this.usersProfileService = new UsersProfileService();
 		this.watchListPermissionsService = new WatchListPermissionsService();
 		this.dataPointPermissionsService = new DataPointPermissionsService();
@@ -60,16 +62,16 @@ public class UsersProfileDao extends BaseDao {
 		this.viewPermissionsService = new ViewPermissionsService();
 	}
 
-	public UsersProfileDao(DataSource dataSource, WatchListDao watchlistDao, ViewDao viewDao,
-						   UserDao userDao, UsersProfileService usersProfileService,
+	public UsersProfileDao(DataSource dataSource, WatchListService watchListService, ViewService viewService,
+						   UserService userService, UsersProfileService usersProfileService,
 						   WatchListPermissionsService watchListPermissionsService,
 						   DataPointPermissionsService dataPointPermissionsService,
 						   DataSourcePermissionsService dataSourcePermissionsService,
 						   ViewPermissionsService viewPermissionsService) {
 		super(dataSource);
-		this.watchlistDao = watchlistDao;
-		this.viewDao = viewDao;
-		this.userDao = userDao;
+		this.watchListService = watchListService;
+		this.viewService = viewService;
+		this.userService = userService;
 		this.usersProfileService = usersProfileService;
 		this.watchListPermissionsService = watchListPermissionsService;
 		this.dataPointPermissionsService = dataPointPermissionsService;
@@ -172,10 +174,10 @@ public class UsersProfileDao extends BaseDao {
 		List<Integer> usersIds = usersProfileService.getUsersByProfile(profile);
 
 		for (Integer userId : usersIds) {
-			User profileUser = userDao.getUser(userId);
+			User profileUser = userService.getUser(userId);
 			profile.apply(profileUser);
 			updateUsersProfile(profileUser, profile);
-			userDao.saveUser(profileUser);
+			userService.updatePermissions(profileUser);
 		}
 
 		usersProfileService.saveRelationalData(profile);
@@ -258,7 +260,7 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	private void setViews(UsersProfileVO profile) {
-		List<View> allviews = viewDao.getSimpleViews().stream().map(a -> {
+		List<View> allviews = viewService.getSimpleViews().stream().map(a -> {
 			View view = new View();
 			view.setId(a.getId());
 			view.setXid(a.getXid());
@@ -277,15 +279,15 @@ public class UsersProfileDao extends BaseDao {
 		usersProfileService.removeUserProfile(user);
 
 		// Add user to watchLists
-		List<WatchList> watchLists = watchlistDao.getWatchLists();
+		List<WatchList> watchLists = watchListService.getWatchLists();
 		for (WatchList wl : watchLists) {
-			watchlistDao.removeUserFromWatchList(wl.getId(), user.getId());
+			watchListService.removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		List<View> views = viewDao.getViews();
-		for (View view : views) {
-			viewDao.removeUserFromView(view.getId(), user.getId());
+		List<ScadaObjectIdentifier> views = viewService.getSimpleViews();
+		for (ScadaObjectIdentifier view : views) {
+			viewService.removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
@@ -295,26 +297,18 @@ public class UsersProfileDao extends BaseDao {
 		usersProfileService.removeUserProfile(user);
 
 		// Remove user from watchLists
-		List<WatchList> watchLists = watchlistDao.getWatchLists();
+		List<WatchList> watchLists = watchListService.getWatchLists();
 		for (WatchList wl : watchLists) {
-			watchlistDao.removeUserFromWatchList(wl.getId(), user.getId());
+			watchListService.removeUserFromWatchList(wl.getId(), user.getId());
 		}
 
 		// Remove user from Views
-		List<View> views = viewDao.getViews();
-		for (View view : views) {
-			viewDao.removeUserFromView(view.getId(), user.getId());
+		List<ScadaObjectIdentifier> views = viewService.getSimpleViews();
+		for (ScadaObjectIdentifier view : views) {
+			viewService.removeUserFromView(view.getId(), user.getId());
 		}
 
 		user.resetUserProfile();
-	}
-
-	public void setWatchlistDao(WatchListDao dao) {
-		this.watchlistDao = dao;
-	}
-
-	public void setViewDao(ViewDao dao) {
-		this.viewDao = dao;
 	}
 
 	public boolean userProfileExists(String xid) {
@@ -328,7 +322,7 @@ public class UsersProfileDao extends BaseDao {
 
 		// Reset user profile
 		for (Integer userId : usersIds) {
-			this.resetUserProfile(userDao.getUser(userId));
+			this.resetUserProfile(userService.getUser(userId));
 		}
 
 		getTransactionTemplate().execute(

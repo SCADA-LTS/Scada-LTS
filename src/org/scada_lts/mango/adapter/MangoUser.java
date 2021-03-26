@@ -54,4 +54,6 @@ public interface MangoUser {
 	void saveHomeUrl(int userId, String homeUrl);
 
 	void insertUserComment(int typeId, int referenceId, UserComment comment);
+
+	void updatePermissions(User user);
 }

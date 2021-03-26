@@ -148,7 +148,8 @@ public class UserService implements MangoUser {
 		updatePermissions(user);
 	}
 
-	private void updatePermissions(User user) {
+	@Override
+	public void updatePermissions(User user) {
 		updateDataSourcePermissions(user, dataSourcePermissionsService);
 		updateDataPointPermissions(user, dataPointPermissionsService);
 		updateWatchListPermissions(user, watchListPermissionsService);

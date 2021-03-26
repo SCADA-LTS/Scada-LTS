@@ -345,4 +345,8 @@ public class UserDao extends BaseDao {
 	public List<User> getUsersWithPermissions() {
 		return userService.getUsersWithPermissions();
 	}
+
+	public void updatePermissions(User user) {
+		userService.updatePermissions(user);
+	}
 }

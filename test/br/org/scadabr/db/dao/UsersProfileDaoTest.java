@@ -404,7 +404,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		permissions.add(new WatchListAccess(wl.getId(), ShareUser.ACCESS_SET));
 		profile.setWatchlistPermissions(permissions);
 		dao.saveUsersProfile(profile);
-		dao.setWatchlistDao(mockWatchlistDao);
+		//dao.setWatchlistDao(mockWatchlistDao);
 
 		UsersProfileVO retrievedProfile = dao.getUserProfileByName(profileName);
 		assertEquals(wl.getId(), retrievedProfile.getWatchlistPermissions()
@@ -431,7 +431,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		permissions.add(new WatchListAccess(wl.getId(), ShareUser.ACCESS_SET));
 		profile.setWatchlistPermissions(permissions);
 		dao.saveUsersProfile(profile);
-		dao.setWatchlistDao(watchListDao);
+		//dao.setWatchlistDao(watchListDao);
 
 		UsersProfileVO retrievedProfile = dao.getUserProfileByName(profileName);
 
@@ -463,7 +463,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		profile.defineWatchlists(watchlists);
 
 		WatchListDao mockWatchListDao = mock(WatchListDao.class);
-		dao.setWatchlistDao(mockWatchListDao);
+		//dao.setWatchlistDao(mockWatchListDao);
 		dao.saveUsersProfile(profile);
 
 		profile.apply(user);
@@ -517,7 +517,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		permissions.add(new ViewAccess(view.getId(), ShareUser.ACCESS_SET));
 		profile.setViewPermissions(permissions);
 		dao.saveUsersProfile(profile);
-		dao.setViewDao(mockViewDao);
+		//dao.setViewDao(mockViewDao);
 
 		UsersProfileVO retrievedProfile = dao.getUserProfileByName(profileName);
 
@@ -549,7 +549,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		profile.defineViews(views);
 
 		ViewDao mockViewDao = mock(ViewDao.class);
-		dao.setViewDao(mockViewDao);
+		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
 		profile.apply(user);
@@ -589,7 +589,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		profile.defineViews(views);
 
 		ViewDao mockViewDao = mock(ViewDao.class);
-		dao.setViewDao(mockViewDao);
+		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
 		List<Integer> users = new ArrayList<Integer>();
@@ -620,7 +620,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		View view = viewDao.createView("view", 1, user2.getId());
 
 		ViewDao mockViewDao = mock(ViewDao.class);
-		dao.setViewDao(mockViewDao);
+		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
 		UsersProfileVO retrieviedUserProfile = dao.getUserProfileById(profile
@@ -662,7 +662,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 				user.getId());
 
 		ViewDao mockViewDao = mock(ViewDao.class);
-		dao.setViewDao(mockViewDao);
+		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
 		UsersProfileVO retrieviedUserProfile = dao.getUserProfileById(profile
