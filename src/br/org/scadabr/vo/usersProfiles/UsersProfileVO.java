@@ -1,9 +1,6 @@
 package br.org.scadabr.vo.usersProfiles;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import br.org.scadabr.vo.permission.ViewAccess;
@@ -175,6 +172,47 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 	public int hashCode() {
 
 		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString() {
+		return "\nUsersProfileVO{" +
+				"name='" + name + '\'' +
+				", id=" + id +
+				", dataSourcePermissions=" + dataSourcePermissions +
+				", dataPointPermissions=" + dataPointPermissions +
+				", watchlistPermissions=" + watchlistPermissions +
+				", viewPermissions=" + viewPermissions +
+				", xid='" + xid + '\'' +
+				", lastAppliedUser=" + lastAppliedUserId() +
+				", watchlists=" + watchListsIds(watchlists) +
+				", usersIds=" + usersIds +
+				", views=" + viewsIds(views) +
+				"}";
+	}
+
+    private Object lastAppliedUserId() {
+        return lastAppliedUser == null ?  "null" : lastAppliedUser.getId();
+    }
+
+    private List<String> watchListsIds(List<WatchList> watchLists) {
+		if(watchLists != null && !watchLists.isEmpty()) {
+			return watchLists.stream().filter(Objects::nonNull)
+                    .map(WatchList::getId)
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	private List<String> viewsIds(List<View> views) {
+		if(views != null && !views.isEmpty()) {
+			return views.stream().filter(Objects::nonNull)
+                    .map(View::getId)
+					.map(String::valueOf)
+					.collect(Collectors.toList());
+		}
+		return Collections.emptyList();
 	}
 
 	private void updateShareUsers(User user) {

@@ -50,4 +50,12 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 		if (!(o instanceof WatchListAccess)) return false;
 		return super.equals(o);
 	}
+
+	@Override
+	public String toString() {
+		return "WatchListAccess{" +
+				"permission=" + permission +
+				", id=" + id +
+				'}';
+	}
 }

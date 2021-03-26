@@ -50,4 +50,12 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		if (!(o instanceof ViewAccess)) return false;
 		return super.equals(o);
 	}
+
+	@Override
+	public String toString() {
+		return "ViewAccess{" +
+				"permission=" + permission +
+				", id=" + id +
+				'}';
+	}
 }
