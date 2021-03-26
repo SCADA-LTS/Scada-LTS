@@ -4,8 +4,10 @@ package br.org.scadabr.db.dao;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -29,7 +31,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.BaseDao;
-import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -84,20 +85,20 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public List<UsersProfileVO> getUsersProfiles(Comparator<UsersProfileVO> comparator) {
-		if(currentProfileList.isEmpty()) {
+		if(isEmpty()) {
 			if(lock.getAndDecrement() == 0) {
 				try {
                     usersProfileService.getProfiles(Integer.MAX_VALUE)
                             .forEach(a -> {
                                 populateUserProfilePermissions(a);
-                                currentProfileList.add(a);
+                                add(a);
                             });
 				} finally {
 					lock.set(0);
 				}
 			}
 		}
-		return currentProfileList.stream()
+		return stream()
 				.sorted(comparator)
 				.collect(Collectors.toList());
 	}
@@ -154,19 +155,19 @@ public class UsersProfileDao extends BaseDao {
 	}
 
 	public void updateWatchlistPermissions() {
-		currentProfileList.forEach(this::populateWatchlists);
+		forEach(this::populateWatchlists);
 	}
 
 	public void updateViewPermissions() {
-		currentProfileList.forEach(this::populateViews);
+		forEach(this::populateViews);
 	}
 
 	public void updateDataPointPermissions() {
-		currentProfileList.forEach(this::populateDatapoints);
+		forEach(this::populateDatapoints);
 	}
 
 	public void updateDataSourcePermissions() {
-		currentProfileList.forEach(this::populateDataSources);
+		forEach(this::populateDataSources);
 	}
 
 	public void updateProfile(UsersProfileVO profile) {
@@ -201,7 +202,7 @@ public class UsersProfileDao extends BaseDao {
 			viewDao.saveView(view);
 		}*/
 
-		currentProfileList.add(profile);
+		add(profile);
 	}
 
 	private void insertProfile(UsersProfileVO profile) {
@@ -210,7 +211,7 @@ public class UsersProfileDao extends BaseDao {
 		setViews(profile);
 		usersProfileService.saveRelationalData(profile);
 
-		currentProfileList.add(profile);
+		add(profile);
 	}
 
 	private void populateUserProfilePermissions(UsersProfileVO profile) {
@@ -239,8 +240,7 @@ public class UsersProfileDao extends BaseDao {
 	private void populateWatchlists(UsersProfileVO profile) {
 		profile.setWatchlistPermissions(watchListPermissionsService.getPermissionsByProfile(profile));
 
-		WatchListDao watchListDao = new WatchListDao();
-		List<WatchList> allwatchlists = watchListDao.getWatchLists();
+		List<WatchList> allwatchlists = watchListService.getWatchLists();
         allwatchlists.forEach(a -> a.setWatchListUsers(watchListPermissionsService.getShareUsers(a)));
 		profile.defineWatchlists(allwatchlists);
 	}
@@ -349,11 +349,11 @@ public class UsersProfileDao extends BaseDao {
 						usersProfileService.removeProfile(usersProfileId);
 					}
 				});
-		currentProfileList.removeIf(a -> a.getId() == usersProfileId);
+		removeIf(a -> a.getId() == usersProfileId);
 	}
 
 	private static UsersProfileVO getUsersProfile(Predicate<UsersProfileVO> filter) {
-		return currentProfileList.stream()
+		return stream()
                 .peek(a -> LOG.debug(a.getName() + ' ' + a.getXid() + ' ' + a.getId()))
 				.filter(filter)
 				.findFirst()
@@ -363,8 +363,23 @@ public class UsersProfileDao extends BaseDao {
 				});
 	}
 
-    private UsersProfileVO populateUsersProfile(UsersProfileVO profile) {
-        populateUserProfilePermissions(profile);
-        return profile;
-    }
+	public static boolean add(UsersProfileVO profileVO) {
+		return currentProfileList.add(profileVO);
+	}
+
+	public static boolean removeIf(Predicate<? super UsersProfileVO> filter) {
+		return currentProfileList.removeIf(filter);
+	}
+
+	public static Stream<UsersProfileVO> stream() {
+		return currentProfileList.stream();
+	}
+
+	public static void forEach(Consumer<? super UsersProfileVO> action) {
+		currentProfileList.forEach(action);
+	}
+
+	public static boolean isEmpty() {
+		return currentProfileList.isEmpty();
+	}
 }
