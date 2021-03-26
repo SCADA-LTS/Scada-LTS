@@ -68,6 +68,19 @@ public final class UserCommentApiUtils {
         }
     }
 
+    private static boolean validUserId(Integer id){
+        try {
+            if (id == 0)
+                return false;
+            UserService userService = new UserService();
+            User user = userService.getUser(id);
+            return user != null;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return false;
+        }
+    }
+
     private static boolean validUserUsername(String username){
         try {
             UserService userService = new UserService();
