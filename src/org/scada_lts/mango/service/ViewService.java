@@ -149,8 +149,9 @@ public class ViewService {
 		} else {
 			viewDAO.update(view);
 		}
-						
-		saveViewUsers(view);
+
+		//sharing an object doesn't work
+		//saveViewUsers(view);
 		
 		//TODO why don't update
 		usersPermissions.clear();

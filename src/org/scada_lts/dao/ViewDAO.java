@@ -219,7 +219,7 @@ public class ViewDAO implements GenericDAO<View> {
 			+ COLUMN_NAME_UP_VIEW_ID+ ", "
 			+ COLUMN_NAME_UP_PERMISSION + " "
 			+ "from "
-			+ "viewusersprofiles "
+			+ "viewUsersProfiles "
 			+ "where "
 			+ COLUMN_NAME_UP_USER_PRFILE_ID+ "=?";
 

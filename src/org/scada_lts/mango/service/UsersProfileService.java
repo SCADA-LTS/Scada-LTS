@@ -8,7 +8,9 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UsersProfileDAO;
 
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UsersProfileService {
@@ -37,7 +39,9 @@ public class UsersProfileService {
         if(profiles.size() > 1) {
             LOG.warn(MessageFormat.format(LIST_SIZE_IS_GREATER_THAN_1, userId, profiles));
         }
-        return Optional.ofNullable(profiles.get(0));
+        return profiles.stream()
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(UsersProfileVO::getId));
     }
 
     public List<UsersProfileVO> getProfiles(int limit) {
