@@ -272,7 +272,7 @@ public class UsersProfileDao extends BaseDao {
 	}
 
     public UsersProfileVO getUserProfileByUserId(int userid) {
-		return usersProfileService.getProfileByUserId(userid).map(this::populateUsersProfile).orElse(null);
+		return usersProfileService.getProfileByUserId(userid).orElse(null);
 	}
 
 	public void grantUserAdminProfile(User user) {
