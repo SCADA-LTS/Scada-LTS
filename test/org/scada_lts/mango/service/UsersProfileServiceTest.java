@@ -1,11 +1,17 @@
 package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.utils.TestUtils;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Before;
 import org.junit.Test;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.permissions.service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +30,16 @@ public class UsersProfileServiceTest {
     @Before
     public void config() {
         this.usersProfileDAOMock = mock(UsersProfileDAO.class);
-        this.usersProfileService = new UsersProfileService(usersProfileDAOMock);
+        DAO daoMock = mock(DAO.class);
+        UserDAO userDAOMock = mock(UserDAO.class);
+
+        PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService = mock(PermissionsService.class);
+        PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService = mock(PermissionsService.class);
+        PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService = mock(PermissionsService.class);
+        PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService = mock(PermissionsService.class);
+
+        this.usersProfileService = new UsersProfileService(usersProfileDAOMock, daoMock, userDAOMock,
+                watchListPermissionsService, dataPointPermissionsService, dataSourcePermissionsService, viewPermissionsService);
         this.user = TestUtils.newUser(123);
     }
 

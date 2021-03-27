@@ -23,6 +23,8 @@ import java.util.List;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
+import org.scada_lts.permissions.service.GetShareUsers;
+import org.scada_lts.permissions.service.WatchListGetShareUsers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,9 +44,16 @@ import com.serotonin.mango.vo.WatchList;
 public class WatchListService implements MangoWatchList {
 
 	private WatchListDAO watchListDAO;
+	private GetShareUsers<WatchList> getShareUsers;
 
 	public WatchListService() {
 		watchListDAO = new WatchListDAO();
+		getShareUsers = new WatchListGetShareUsers();
+	}
+
+	public WatchListService(WatchListDAO watchListDAO, GetShareUsers<WatchList> getShareUsers) {
+		this.watchListDAO = watchListDAO;
+		this.getShareUsers = getShareUsers;
 	}
 
 	@Override
@@ -94,7 +103,7 @@ public class WatchListService implements MangoWatchList {
 	}
 
 	private void setWatchListUsers(WatchList watchList) {
-		List<ShareUser> watchListUsers = watchListDAO.getWatchListUsers(watchList.getId());
+		List<ShareUser> watchListUsers = new WatchListGetShareUsers().getShareUsersWithProfile(watchList);
 		watchList.setWatchListUsers(watchListUsers);
 	}
 
@@ -136,7 +145,6 @@ public class WatchListService implements MangoWatchList {
 
         //sharing an object doesn't work
 		//saveWatchListUsers(watchList);
-
 	}
 
 	void saveWatchListUsers(final WatchList watchList) {

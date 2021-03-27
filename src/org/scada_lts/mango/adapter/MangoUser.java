@@ -55,5 +55,4 @@ public interface MangoUser {
 
 	void insertUserComment(int typeId, int referenceId, UserComment comment);
 
-	void updatePermissions(User user);
 }

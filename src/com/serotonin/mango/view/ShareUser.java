@@ -98,7 +98,13 @@ public class ShareUser implements JsonSerializable {
 
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        map.put("user", new UserDao().getUser(userId).getUsername());
+        User user = new UserDao().getUser(userId);
+        if(user != null) {
+            map.put("user", user.getUsername());
+        } else {
+            map.put("user", "");
+            map.put("userId", userId);
+        }
         map.put("accessType", ACCESS_CODES.getCode(accessType));
     }
 

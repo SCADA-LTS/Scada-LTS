@@ -2,11 +2,8 @@ package org.scada_lts.permissions.service.util;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
-import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.DataPointVO;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.WatchList;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,29 +20,39 @@ public final class PermissionsUtils {
 
     private PermissionsUtils() {}
 
-    public static void updateWatchListPermissions(User user, PermissionsService<WatchListAccess, WatchList> service) {
-        List<WatchListAccess> permissionsFromUser = user.getWatchListPermissions();
-        update(user, permissionsFromUser, service, Comparator.comparing(WatchListAccess::getId));
+    public static void updateWatchListPermissions(UsersProfileVO profile, PermissionsService<WatchListAccess, UsersProfileVO> service) {
+        List<WatchListAccess> permissionsFromUser = profile.getWatchlistPermissions();
+        update(profile, permissionsFromUser, service, Comparator.comparing(WatchListAccess::getId));
     }
 
-    public static void updateViewPermissions(User user, PermissionsService<ViewAccess, View> service) {
-        List<ViewAccess> permissionsFromUser = user.getViewPermissions();
-        update(user, permissionsFromUser, service, Comparator.comparing(ViewAccess::getId));
+    public static void updateViewPermissions(UsersProfileVO profile, PermissionsService<ViewAccess, UsersProfileVO> service) {
+        List<ViewAccess> permissionsFromUser = profile.getViewPermissions();
+        update(profile, permissionsFromUser, service, Comparator.comparing(ViewAccess::getId));
     }
 
-    public static void updateDataPointPermissions(User user, PermissionsService<DataPointAccess, DataPointVO> service) {
+    public static void updateDataPointPermissions(UsersProfileVO profile, PermissionsService<DataPointAccess, UsersProfileVO> service) {
+        List<DataPointAccess> permissionsFromUser = profile.getDataPointPermissions();
+        update(profile, permissionsFromUser, service, Comparator.comparing(DataPointAccess::getDataPointId));
+    }
+
+    public static void updateDataSourcePermissions(UsersProfileVO profile, PermissionsService<Integer, UsersProfileVO> service) {
+        List<Integer> permissionsFromUser = profile.getDataSourcePermissions();
+        update(profile, permissionsFromUser, service, Integer::compareTo);
+    }
+
+    public static void updateDataPointPermissions(User user, PermissionsService<DataPointAccess, User> service) {
         List<DataPointAccess> permissionsFromUser = user.getDataPointPermissions();
         update(user, permissionsFromUser, service, Comparator.comparing(DataPointAccess::getDataPointId));
 
     }
 
-    public static void updateDataSourcePermissions(User user, PermissionsService<Integer, DataSourceVO<?>> service) {
+    public static void updateDataSourcePermissions(User user, PermissionsService<Integer, User> service) {
         List<Integer> permissionsFromUser = user.getDataSourcePermissions();
         update(user, permissionsFromUser, service, Integer::compareTo);
     }
 
-    private static <T, R> void updatePermissions(User user, List<T> accessesFromUser,
-                                                    PermissionsService<T, R> service,
+    private static <T, U> void updatePermissions(U user, List<T> accessesFromUser,
+                                                    PermissionsService<T, U> service,
                                                  Comparator<T> comparator) {
         List<T> accessesFromDatabase = service.getPermissions(user);
         if(!sortEquals(accessesFromUser, accessesFromDatabase, comparator)) {
@@ -62,9 +69,9 @@ public final class PermissionsUtils {
         }
     }
 
-    private static <T, R> void update(User user,
+    private static <T, U> void update(U user,
                                       List<T> permissionsFromUser,
-                                      PermissionsService<T, R> service,
+                                      PermissionsService<T, U> service,
                                       Comparator<T> comparator) {
         updatePermissions(user, permissionsFromUser, service, comparator);
         List<T> permissionsFromDatabase = service.getPermissions(user);

@@ -8,7 +8,6 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
@@ -136,13 +135,12 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 	}
 
 	public void apply(User user) {
-		user.setDataSourcePermissions(dataSourcePermissions);
-		user.setDataPointPermissions(dataPointPermissions);
-		user.setWatchListPermissions(watchlistPermissions);
-		user.setViewPermissions(viewPermissions);
+		user.setDataSourceProfilePermissions(dataSourcePermissions);
+		user.setDataPointProfilePermissions(dataPointPermissions);
+		user.setWatchListProfilePermissions(watchlistPermissions);
+		user.setViewProfilePermissions(viewPermissions);
 		user.setUserProfile(this);
 		lastAppliedUser = user;
-		updateShareUsers(user);
 	}
 
 	public void jsonDeserialize(JsonReader reader, JsonObject profileJson)
@@ -213,83 +211,5 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 					.collect(Collectors.toList());
 		}
 		return Collections.emptyList();
-	}
-
-	private void updateShareUsers(User user) {
-		for (View view: views) {
-			if(viewPermissions.isEmpty()) {
-				for(Integer userId: usersIds) {
-					updateShareUsersForView(userId, view, ViewAccess.none(view.getId()));
-				}
-			} else {
-				for (ViewAccess viewAccess : viewPermissions) {
-					if (view.getId() == viewAccess.getId()) {
-						updateShareUsersForView(user.getId(), view, viewAccess);
-					}
-				}
-			}
-		}
-
-		for (WatchList watchList: watchlists) {
-			if(watchlistPermissions.isEmpty()) {
-				for(Integer userId: usersIds) {
-					updateShareUsersForWatchList(userId, watchList, WatchListAccess.none(watchList.getUserId()));
-				}
-			} else {
-				for (WatchListAccess watchListAccess : watchlistPermissions) {
-					if (watchList.getId() == watchListAccess.getId()) {
-						updateShareUsersForWatchList(user.getId(), watchList, watchListAccess);
-					}
-				}
-			}
-		}
-	}
-
-	private static void updateShareUsersForWatchList(int userId, WatchList watchList, WatchListAccess watchListAccess) {
-		List<ShareUser> shareUsers = watchList.getWatchListUsers().stream()
-				.filter(a -> a.getUserId() == userId)
-				.collect(Collectors.toList());
-		if(shareUsers.isEmpty()) {
-			addShareUser(userId, watchList, watchListAccess);
-		} else {
-			updateShareUsers(watchList, watchListAccess, shareUsers);
-		}
-	}
-
-	private static void updateShareUsersForView(int userId, View view, ViewAccess viewAccess) {
-		List<ShareUser> shareUsers = view.getViewUsers().stream()
-				.filter(a -> a.getUserId() == userId)
-				.collect(Collectors.toList());
-		if(shareUsers.isEmpty()) {
-			addShareUser(userId, view, viewAccess);
-		} else {
-			updateShareUsers(view, viewAccess, shareUsers);
-		}
-	}
-
-	private static void updateShareUsers(View view, ViewAccess viewAccess, List<ShareUser> shareUsers) {
-		for (ShareUser su : shareUsers) {
-			view.getViewUsers().remove(su);
-			su.setAccessType(viewAccess.getPermission());
-			view.getViewUsers().add(su);
-		}
-	}
-
-	private static void updateShareUsers(WatchList watchList, WatchListAccess watchListAccess, List<ShareUser> shareUsers) {
-		for (ShareUser su : shareUsers) {
-			watchList.getWatchListUsers().remove(su);
-			su.setAccessType(watchListAccess.getPermission());
-			watchList.getWatchListUsers().add(su);
-		}
-	}
-
-	private static void addShareUser(int userId, View view, ViewAccess viewAccess) {
-		ShareUser shareUser = new ShareUser(userId, viewAccess.getPermission());
-		view.getViewUsers().add(shareUser);
-	}
-
-	private static void addShareUser(int userId, WatchList watchList, WatchListAccess watchListAccess) {
-		ShareUser shareUser = new ShareUser(userId, watchListAccess.getPermission());
-		watchList.getWatchListUsers().add(shareUser);
 	}
 }

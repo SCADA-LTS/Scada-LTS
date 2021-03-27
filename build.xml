@@ -611,10 +611,6 @@
 		  	<test name="org.scada_lts.permissions.service.util.PermissionsTestsSuite"
 				haltonfailure="yes">
 		  	</test>
-
-			<test name="br.org.scadabr.vo.usersProfiles.UsersProfileVOTest"
-				  haltonfailure="yes">
-			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>
