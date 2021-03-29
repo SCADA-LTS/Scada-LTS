@@ -28,6 +28,14 @@
 						$t('datapointDetails.pointList.title')
 					}}</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/recipient-list" v-if="isUserRoleAdmin">
+					<v-list-item-icon>
+						<v-icon>mdi-book-account</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>
+						{{$t('recipientlist.title')}}
+					</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-tune</v-icon>
@@ -134,8 +142,9 @@ td > select,
 td > textarea {
 	border-style: solid;
 }
-td > select {
+td > select, div[id*='Content'] select, div[id*='Content'] textarea, #viewContent select {
 	background-color: rgb(221, 221, 221);
+	border: 1px solid #39B54A;
 	appearance: auto;
 }
 </style>

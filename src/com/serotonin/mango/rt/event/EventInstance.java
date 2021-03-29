@@ -111,12 +111,14 @@ public class EventInstance {
         this.activeTimestamp = activeTimestamp;
         this.rtnApplicable = rtnApplicable;
         this.alarmLevel = alarmLevel;
-        if (message == null)
+        if (message == null) {
             this.message = new LocalizableMessage("common.noMessage");
-        else
+            this.shortMessage = new LocalizableMessage("common.noMessage");
+        } else {
             this.message = message;
+            this.shortMessage = message;
+        }
         this.context = context;
-        shortMessage = new LocalizableMessage("common.noMessage");
     }
 
     public EventInstance(EventType eventType, long activeTimestamp, boolean rtnApplicable, int alarmLevel,

@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.rt.dataSource;
 
-import com.serotonin.mango.rt.event.EventMessages;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 
@@ -141,7 +140,7 @@ abstract public class DataSourceRT implements ILifecycle {
         DataSourceEventType dset = new DataSourceEventType(vo.getId(), vo.getId(), urgentAlarmLevel, 0);
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
-        Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, message, context);
+        Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
     }
 
     protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
@@ -151,7 +150,7 @@ abstract public class DataSourceRT implements ILifecycle {
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("dataSource", vo);
 
-        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, message, context);
+        Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
     protected void returnToNormal(int eventId, long time) {

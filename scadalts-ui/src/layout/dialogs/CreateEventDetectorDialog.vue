@@ -6,7 +6,7 @@
 			</v-btn>
 		</template>
 
-		<v-card>
+		<v-card id="dialog-create-event-detector">
 			<v-card-title> {{ $t('eventDetector.dialog.create.title') }} </v-card-title>
 			<v-card-text>
 				<v-row>
@@ -253,6 +253,80 @@
 								</v-select>
 							</v-col>
 						</v-row>
+
+						<v-row v-if="selected === 10" id="ped-cusum-positive-settings">
+							<v-col cols="1"></v-col>
+							<v-col cols="3">
+								<v-text-field
+									:label="
+										$t('datapointDetails.pointProperties.eventDetectors.positiveLimit')
+									"
+									v-model="eventDetector.limit"
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="3">
+								<v-text-field
+									:label="$t('datapointDetails.pointProperties.eventDetectors.weight')"
+									v-model="eventDetector.weight"
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="2">
+								<v-text-field
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="3">
+								<v-select
+									v-model="eventDetector.durationType"
+									:items="timePeriods"
+									item-value="id"
+									item-text="label"
+									dense
+								>
+								</v-select>
+							</v-col>
+						</v-row>
+
+						<v-row v-if="selected === 11" id="ped-cusum-negative-settings">
+							<v-col cols="1"></v-col>
+							<v-col cols="3">
+								<v-text-field
+									:label="
+										$t('datapointDetails.pointProperties.eventDetectors.negativeLimit')
+									"
+									v-model="eventDetector.limit"
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="3">
+								<v-text-field
+									:label="$t('datapointDetails.pointProperties.eventDetectors.weight')"
+									v-model="eventDetector.weight"
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="2">
+								<v-text-field
+									:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
+									v-model="eventDetector.duration"
+									dense
+								></v-text-field>
+							</v-col>
+							<v-col cols="3">
+								<v-select
+									v-model="eventDetector.durationType"
+									:items="timePeriods"
+									item-value="id"
+									item-text="label"
+									dense
+								>
+								</v-select>
+							</v-col>
+						</v-row>
 					</v-col>
 				</v-row>
 			</v-card-text>
@@ -341,6 +415,9 @@ export default {
 				})
 				.then((resp) => {
 					this.$emit('saved', resp);
+				})
+				.catch(() => {
+					this.$emit('savedfailed');
 				});
 			this.dialog = false;
 		},

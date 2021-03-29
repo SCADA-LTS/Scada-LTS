@@ -12,7 +12,7 @@
 				</v-btn>
 			</v-badge>
 		</template>
-		<v-card>
+		<v-card id="menu-data-point-comment">
 			<v-list>
 				<v-list-item v-for="comment in data.comments" :key="comment">
 					<v-list-item-icon>
@@ -56,13 +56,13 @@
 <script>
 /**
  * Data Point User Comment
- * 
+ *
  * Component that provide the comment feature for Data Point Details page.
  * User can add, delete and browse the comments that are related to specific DP.
- * 
- * @param {Object[]} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * @param {Object[]} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {

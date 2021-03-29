@@ -39,7 +39,7 @@ import com.serotonin.util.SerializationHelper;
  */
 @JsonRemoteEntity
 public class BinaryEventTextRenderer extends BaseEventTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("eventTextRendererBinary", "EVENT_BINARY",
+    private static ImplDefinition definition = new ImplDefinition(BinaryEventTextRenderer.TYPE_NAME, "EVENT_BINARY",
             "textRenderer.binary", new int[] { DataTypes.BINARY });
 
     public static ImplDefinition getDefinition() {
@@ -53,6 +53,8 @@ public class BinaryEventTextRenderer extends BaseEventTextRenderer {
     public ImplDefinition getDef() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "eventTextRendererBinary";
 
     @JsonRemoteProperty
     private String zeroLabel;

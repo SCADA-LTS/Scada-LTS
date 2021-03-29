@@ -274,7 +274,7 @@ export const eventDetectorTemplates = [
 		duration: 0,
 		durationType: 1,
 		weight: 0,
-		positiveLimit: 1,
+		limit: 1,
 	},
 	{
 		id: -1,
@@ -286,6 +286,6 @@ export const eventDetectorTemplates = [
 		duration: 0,
 		durationType: 1,
 		weight: 0,
-		negativeLimit: 1,
+		limit: 1,
 	},
 ];

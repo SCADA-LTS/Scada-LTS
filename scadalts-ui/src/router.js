@@ -5,6 +5,7 @@ import About from './views/About';
 import HistoricalAlarms from './views/HistoricalAlarms';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
+import RecipientList from './views/RecipientList';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
 
@@ -43,6 +44,11 @@ export default new Router({
 			path: '/alarm-notifications',
 			name: 'alarm-notifications',
 			component: AlarmNotifications,
+		},
+		{
+			path: '/recipient-list',
+			name: 'recipient-list',
+			component: RecipientList,
 		},
 		{
 			path: '/datapoint-list',

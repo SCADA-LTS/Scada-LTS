@@ -186,10 +186,10 @@ import { initWebSocket } from '@/web-socket.js'
  * Present the statiscics from given time period and allow user 
  * to set a new value for that Data Point.
  * Using Web-Sockets user is informed about all changes without polling.
- * 
- * @param {number} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * @param {number} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.1
  */
 export default {
@@ -239,7 +239,7 @@ export default {
 	},
 
 	methods: {
-		
+
 		connect() {
 			let callback = () => {
 				this.stompClient.subscribe(`/ws/datapoint/${this.data.id}/value`, () => {});
@@ -248,7 +248,7 @@ export default {
 					this.fetchData();
 				});
 			}
-			
+
 			this.stompClient = initWebSocket(
 				this.$store.state.webSocketUrl,
 				callback,
@@ -275,8 +275,10 @@ export default {
 				endTs: new Date().getTime(),
 			});
 			this.valueList = response.values;
-			this.calculateStatistics();
-			this.valueList.reverse();
+			if (this.valueList.length > 0) {
+				this.calculateStatistics();
+				this.valueList.reverse();
+			}
 			this.fetchingData = false;
 		},
 

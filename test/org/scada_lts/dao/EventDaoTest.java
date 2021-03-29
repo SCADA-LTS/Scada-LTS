@@ -48,7 +48,7 @@ public class EventDaoTest extends TestDAO {
 			boolean applicable = true;
 			int alarmLevel = 3;
 						
-			EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null, null);
+			EventInstance e = new EventInstance(type, activeTS,	applicable, alarmLevel, null, null);
 						
 			// end populate data
 			

@@ -1,50 +1,35 @@
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
-import i18n from '@/i18n';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointPropTextRenderer from '@/views/DataPointDetails/PointProperties/PointPropTextRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
 
+import { prepareMountWrapper } from '../../utils/testing-utils';
+
 const modules = {
 	dataPoint,
 };
 
-const store = new Vuex.Store({ modules });
+/**
+ * @private
+ * Initialize VueWrapper for local testing
+ * Prepare wrapper wiht all required stubs and props.
+ */
+function initWrapper(props = dataPointMock) {
+	return prepareMountWrapper(
+		PointPropTextRenderer,
+		modules,
+		{data: props}
+	);
+}
 
 global.requestAnimationFrame = (cb) => cb();
 
-const localVue = createLocalVue();
-localVue.use(i18n);
-localVue.use(Vuex);
-const vuetify = Vuetify;
-
-const mountFunction = (options) => {
-	return mount(PointPropTextRenderer, {
-		store,
-		localVue,
-		vuetify,
-		i18n,
-		...options,
-	});
-};
-
-
 describe('Point Properties Tests - Text Renderer Alphanumeric', () => {
-	let wrapper;
-
-	beforeEach(() => {
-		wrapper = mountFunction({
-			propsData: {
-				data: dataPointMock,
-			},
-		});
-	});
 
 	it('Initialize Component with Alphanumeric DP', () => {
+		const wrapper = initWrapper();
 		const items = wrapper.find('.v-select:first-of-type').props('items');
 		expect(items.length).to.equal(1);
 		expect(items[0].label).contains('Plain');
@@ -58,11 +43,7 @@ describe('Point Properties Tests - Text Renderer Numeric', () => {
 	beforeEach(() => {
         let numericDataPointMock = Object.assign({}, dataPointMock);
 		numericDataPointMock.pointLocator.dataTypeId = 3;
-		wrapper = mountFunction({
-			propsData: {
-				data: numericDataPointMock,
-			},
-		});
+		wrapper = initWrapper(numericDataPointMock);
 	});
 
 	it('Initialize Component with Numeric DP', () => {
@@ -102,12 +83,12 @@ describe('Point Properties Tests - Text Renderer Numeric', () => {
         wrapper.vm.selected=4;
 		await wrapper.vm.watchTextRendererChange(4);
         
-		wrapper.find('#renderer-range > .col:nth-of-type(2) input').element.value = '1';
-		wrapper.find('#renderer-range > .col:nth-of-type(2) input').trigger('input');
-        wrapper.find('#renderer-range > .col:nth-of-type(3) input').element.value = '5';
+		wrapper.find('#renderer-range > .col:nth-of-type(3) input').element.value = '1';
 		wrapper.find('#renderer-range > .col:nth-of-type(3) input').trigger('input');
-        wrapper.find('#renderer-range > .col:nth-of-type(4) input').element.value = 'ExampleText';
+        wrapper.find('#renderer-range > .col:nth-of-type(4) input').element.value = '5';
 		wrapper.find('#renderer-range > .col:nth-of-type(4) input').trigger('input');
+        wrapper.find('#renderer-range > .col:nth-of-type(5) input').element.value = 'ExampleText';
+		wrapper.find('#renderer-range > .col:nth-of-type(5) input').trigger('input');
 
         wrapper.find('#renderer-range .v-input__icon--append-outer button').trigger('click');
 		
@@ -128,11 +109,7 @@ describe('Point Properties Tests - Text Renderer Binary', () => {
 	beforeEach(() => {
         let binaryDataPointMock = Object.assign({}, dataPointMock);
 		binaryDataPointMock.pointLocator.dataTypeId = 1;
-		wrapper = mountFunction({
-			propsData: {
-				data: binaryDataPointMock,
-			},
-		});
+		wrapper = initWrapper(binaryDataPointMock);
 	});
 
 	it('Initialize Component with Binary DP', () => {
@@ -164,11 +141,7 @@ describe('Point Properties Tests - Text Renderer Multistate', () => {
 	beforeEach(() => {
         let multistateDataPointMock = Object.assign({}, dataPointMock);
 		multistateDataPointMock.pointLocator.dataTypeId = 2;
-		wrapper = mountFunction({
-			propsData: {
-				data: multistateDataPointMock,
-			},
-		});
+		wrapper = initWrapper(multistateDataPointMock);
 	});
 
 	it('Initialize Component with Multistate DP', () => {

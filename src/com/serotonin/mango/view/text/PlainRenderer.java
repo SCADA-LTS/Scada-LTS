@@ -32,7 +32,7 @@ import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
 public class PlainRenderer extends BaseTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("textRendererPlain", "PLAIN", "textRenderer.plain",
+    private static ImplDefinition definition = new ImplDefinition(PlainRenderer.TYPE_NAME, "PLAIN", "textRenderer.plain",
             new int[] { DataTypes.BINARY, DataTypes.ALPHANUMERIC, DataTypes.MULTISTATE, DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {
@@ -46,6 +46,8 @@ public class PlainRenderer extends BaseTextRenderer {
     public ImplDefinition getDef() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "textRendererPlain";
 
     @JsonRemoteProperty
     private String suffix;

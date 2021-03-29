@@ -2,7 +2,6 @@ package com.serotonin.mango.rt.event.schedule;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.EventMessages;
 import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
@@ -157,7 +156,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         LocalizableMessage dailyLimitExceededMsg = new LocalizableMessage("mailingLists.dailyLimitExceeded");
         EventType eventType = new DataPointEventType();
         EventInstance event = new EventInstance(eventType, fireTime,false,
-                AlarmLevels.INFORMATION, dailyLimitExceededMsg, dailyLimitExceededMsg, Collections.emptyMap());
+                AlarmLevels.INFORMATION, dailyLimitExceededMsg, Collections.emptyMap());
         CommunicationChannelTypable type = communicationChannel.getType();
 
         boolean sent = type.sendLimit(event, addresses,"Limit");

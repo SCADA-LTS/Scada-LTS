@@ -1,5 +1,5 @@
 <template>
-	<v-row>
+	<v-row id="point-prop-text-renderer">
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.textRenderer.title') }}</h3>
 		</v-col>
@@ -137,6 +137,14 @@
 			</v-row>
 
 			<v-row v-if="selected === 4" dense id="renderer-range">
+				<v-col cols="12">
+					<v-text-field
+						v-model="data.textRenderer.format"
+						:label="$t('datapointDetails.pointProperties.textRenderer.label.format')"
+						dense
+					>
+					</v-text-field>
+				</v-col>
 				<v-col cols="1">
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
@@ -232,15 +240,15 @@
 <script>
 /**
  * Text Renderer for Point Properties
- * 
- * A text renderer's purpose is to convert a raw value into a form 
- * that is more recognizable and informative to a human user. 
- * The ways to render raw values depend upon the data type 
- * of value to be rendered. 
- * 
- * @param {Object} data - Point Details object with data. 
- * 
- * @author Radoslaw Jajko <rjajko@softq.pl> 
+ *
+ * A text renderer's purpose is to convert a raw value into a form
+ * that is more recognizable and informative to a human user.
+ * The ways to render raw values depend upon the data type
+ * of value to be rendered.
+ *
+ * @param {Object} data - Point Details object with data.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0
  */
 export default {

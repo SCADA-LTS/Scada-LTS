@@ -44,6 +44,25 @@ const storeDataPoint = {
 			{ id: 5, label: i18n.t('textRenderer.time') },
 		],
 
+		chartRenderersList: [
+			{
+				id: -1,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.none'),
+			},
+			{
+				id: 0,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.table'),
+			},
+			{
+				id: 1,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.image'),
+			},
+			{
+				id: 2,
+				label: i18n.t('datapointDetails.pointProperties.chartRenderer.type.stats'),
+			},
+		],
+
 		textRenderesTemplates: textRenderesTemplates,
 
 		chartRenderersTemplates: chartRenderersTemplates,
@@ -51,6 +70,13 @@ const storeDataPoint = {
 		eventRenderersTemplates: eventRenderersTemplates,
 
 		datapointSimpleList: undefined,
+
+		valueTypeList: [
+			{ id: 1, label: i18n.t('pointEdit.logging.value.instant') },
+			{ id: 2, label: i18n.t('pointEdit.logging.value.maximum') },
+			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum') },
+			{ id: 4, label: i18n.t('pointEdit.logging.value.average') },
+		],
 	},
 
 	mutations: {},
@@ -86,15 +112,15 @@ const storeDataPoint = {
 
 		setDataPointValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
-				url: `/point_value/setValue/${payload.xid}/${payload.type}/${payload.value}`,
-				data: null,
+				url: `/point_value/setValue/${payload.xid}/${payload.type}`,
+				data: payload.value,
 			});
 		},
 
 		getDataPointValueFromTimeperiod({ dispatch }, payload) {
 			return dispatch(
 				'requestGet',
-				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`,
+				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`
 			);
 		},
 
@@ -139,7 +165,7 @@ const storeDataPoint = {
 
 		addUserComment({ dispatch }, payload) {
 			return dispatch('requestPost', {
-				url: `/utils/userComment/${payload.typeId}/${payload.refId}`,
+				url: `/userComment/${payload.typeId}/${payload.refId}`,
 				data: payload.comment,
 			});
 		},
@@ -147,7 +173,7 @@ const storeDataPoint = {
 		delUserComment({ dispatch }, payload) {
 			return dispatch(
 				'requestDelete',
-				`/utils/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
+				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`
 			);
 		},
 	},

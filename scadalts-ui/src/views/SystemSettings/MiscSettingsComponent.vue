@@ -16,7 +16,7 @@
 			</v-card-title>
 
 			<v-card-text>
-				<v-row>
+				<v-row v-if="!!miscSettings">
 					<v-col cols="12">
 						<v-select
 							@change="watchDataChange()"
@@ -157,16 +157,16 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.save.misc'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
 					this.response = {
 						status: true,
 						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger'
-					}
+						color: 'danger',
+					};
 				});
 		},
 
@@ -224,8 +224,8 @@ export default {
 						this.response = {
 							status: true,
 							message: this.$t('systemsettings.notification.purgedata'),
-							color: 'success'
-						}
+							color: 'success',
+						};
 					}
 				});
 			});

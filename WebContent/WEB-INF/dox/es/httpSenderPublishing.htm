@@ -1,0 +1,40 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>
+  El editor de envío HTTP envía cada actualización (o cambio, según el caso) de puntos a una determinada URL de destino.
+</p>
+
+<h1>HTTP propriétés de l'expéditeur</h1>
+<p>
+  La selección <b>Método</b> determina el tipo de método HTTP que se utilizará para proporcionar los datos. Los datos enviados son idénticos en ambos casos; la diferencia es una cuestión de estructura del mensaje. La selección <b>URL</b> define el recurso al que enviar los datos. Los esquemas válidos son "http" y "https". El servidor puede ser un nombre de dominio o una dirección IP. Las rutas y las cadenas de consulta también son válidas.
+</p>
+<p>
+  También se puede añadir una lista de <b>Cabezas estáticas</b> y <b>Configuraciones estáticas</b>. Estos datos se incluyen en cada solicitud enviada a la URL. Por consiguiente, este es un lugar apropiado para incluir referencias de autorización u otros artefactos de identificación. Para añadir un encabezado y un parámetro estático, introduzca su clave y su valor, y luego haga clic en el icono <img src="images/add.png"/>. Para eliminar un encabezado o parámetro estático existente, haga clic en el icono <img src="images/bullet_delete.png"/> asociado a la entrada.
+</p>
+<p>
+  La selección <b>Formato de la fecha</b> determina cómo el editor dará formato a las marcas de tiempo asociadas a los valores de los puntos. El formato "básico" es de la forma "yyyyMMddHHmmss". "Zona horaria" es similar, pero incluye más información sobre la ubicación de la marca de tiempo. Es en la forma "yyyyy-MMM-dd'T'HH:mm:ss 'Z'". "UTC" utiliza un valor numérico que representa el número de milisegundos transcurridos desde la medianoche del 1 de enero de 1970.
+</p>
+
+<h1>Respuesta HTTP</h1>
+<p>
+  Cualquier código de respuesta que no sea "200 OK" se considera un error y se disparará una alarma. Además, cualquier contenido de respuesta incluido en una respuesta OK se considera información de advertencia. El ajuste <b>Resultado de la alarma </b> controla si la existencia de un contenido de respuesta provoca que se dispare una alarma de información que incluya el contenido del mensaje de evento.
+</p>
+
+<h1>Pruebas de configuración</h1>
+<p>
+  Se puede enviar una solicitud de prueba &mdash; utilizando la configuración dada pero incluyendo sólo los parámetros estáticos &mdash; haciendo clic en el botón "Enviar parámetros estáticos". El resultado del intento de envío se mostrará debajo de los botones. Para cancelar una prueba antes de que se detenga por sí misma, haga clic en el botón "Cancelar".
+</p>
+
+<h1>Artículos publicados</h1>
+<p>
+  La sección <b>Puntos</b> enumera los puntos que se publicarán. Los puntos de publicación pueden ser habilitados (<img src="images/brick_go.png"/>) o deshabilitados (<img src="images/brick_stop.png"/>). Desactivar un punto permite no usarlo sin tener que borrarlo explícitamente. El <b>nombre del parámetro</b> es la clave que se utilizará para el punto en los parámetros de la consulta. El valor será el valor actual del punto. Seleccione <b>Include timestamp</b> para incluir en la solicitud un parámetro que contenga la hora de actualización del valor. La clave de la hora será "__time", y la fecha se codificará según el valor del formato de la fecha. (Véase la documentación "Formatos de fecha y hora" para más información).
+</p>

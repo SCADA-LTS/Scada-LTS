@@ -398,6 +398,11 @@ public class EventService implements MangoEvent {
 		
 	}
 
+	@Override
+	public EventInstance getEvent(int eventId) {
+		return eventDAO.findById(new Object[]{eventId});
+	}
+
 	public void updateEventAckUserId(int userId) {
 		eventDAO.updateEventAckUserId(userId);
 	}
@@ -405,8 +410,8 @@ public class EventService implements MangoEvent {
 	public void deleteUserEvent(int userId) {
 		userEventDAO.delete(userId);
 	}
-	
-	// cache 
+
+	// cache
 
 	//
 	// /
@@ -414,11 +419,11 @@ public class EventService implements MangoEvent {
 	// /
 	// TODO rewrite
 	//
-	
+
 	private static Map<Integer, PendingEventCacheEntry> pendingEventCache = new ConcurrentHashMap<Integer, PendingEventCacheEntry>();
-	
+
 	private static final long CACHE_TTL = 300000; // 5 minutes
-	
+
 	static class PendingEventCacheEntry {
 		private final List<EventInstance> list;
 		private final long createTime;

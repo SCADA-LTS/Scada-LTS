@@ -159,15 +159,21 @@ export default {
 		},
 
 		saveDataPointDetails() {
-			this.$store.dispatch('saveDataPointDetails', this.dataPointDetails).then((resp) => {
-				if (resp === 'saved') {
-					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.success');
-				} else {
+			this.$store
+				.dispatch('saveDataPointDetails', this.dataPointDetails)
+				.then((resp) => {
+					if (resp === 'saved') {
+						this.response.status = true;
+						this.response.message = this.$t('common.snackbar.update.success');
+					} else {
+						this.response.status = true;
+						this.response.message = this.$t('common.snackbar.update.fail');
+					}
+				})
+				.catch(() => {
 					this.response.status = true;
 					this.response.message = this.$t('common.snackbar.update.fail');
-				}
-			});
+				});
 		},
 	},
 };

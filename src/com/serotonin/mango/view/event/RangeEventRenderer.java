@@ -35,7 +35,7 @@ import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
 public class RangeEventRenderer extends BaseEventTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("eventTextRendererRange", "EVENT_RANGE", "textRenderer.range",
+    private static ImplDefinition definition = new ImplDefinition(RangeEventRenderer.TYPE_NAME, "EVENT_RANGE", "textRenderer.range",
             new int[] { DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {
@@ -49,6 +49,8 @@ public class RangeEventRenderer extends BaseEventTextRenderer {
     public ImplDefinition getDef() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "eventTextRendererRange";
 
     @JsonRemoteProperty(innerType = RangeEventValue.class)
     private List<RangeEventValue> rangeEventValues = new ArrayList<RangeEventValue>();
