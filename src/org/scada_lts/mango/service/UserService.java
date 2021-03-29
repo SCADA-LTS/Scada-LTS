@@ -19,13 +19,10 @@ package org.scada_lts.mango.service;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
-import com.serotonin.mango.vo.WatchList;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
@@ -60,10 +57,13 @@ public class UserService implements MangoUser {
 	private PointValueService pointValueService = new PointValueService();
 	private UsersProfileService usersProfileService = new UsersProfileService();
 
-	private PermissionsService<WatchListAccess, WatchList> watchListPermissionsService = new WatchListPermissionsService();
-	private PermissionsService<ViewAccess, View> viewPermissionsService = new ViewPermissionsService();
-	private PermissionsService<DataPointAccess, DataPointVO> dataPointPermissionsService = new DataPointPermissionsService();
-	private PermissionsService<Integer, DataSourceVO<?>> dataSourcePermissionsService = new DataSourcePermissionsService();
+	private PermissionsService<DataPointAccess, User> dataPointPermissionsService = new DataPointUserPermissionsService();
+	private PermissionsService<Integer, User> dataSourcePermissionsService = new DataSourceUserPermissionsService();
+
+	private PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService = new DataPointProfilePermissionsService();
+	private PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService = new DataSourceProfilePermissionsService();
+	private PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService = new ViewProfilePermissionsService();
+	private PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService = new WatchListProfilePermissionsService();
 
 	@Override
 	public User getUser(int id) {
@@ -109,9 +109,14 @@ public class UserService implements MangoUser {
 		if (user != null) {
 			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
 			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
-			user.setWatchListPermissions(watchListPermissionsService.getPermissions(user));
-			user.setViewPermissions(viewPermissionsService.getPermissions(user));
-			usersProfileService.getProfileByUser(user).ifPresent(user::setUserProfile);
+
+			usersProfileService.getProfileByUser(user).ifPresent(a -> {
+				user.setUserProfileId(a.getId());
+				user.setDataPointProfilePermissions(dataPointProfilePermissionsService.getPermissions(a));
+				user.setDataSourcePermissions(dataSourceProfilePermissionsService.getPermissions(a));
+				user.setViewProfilePermissions(viewProfilePermissionsService.getPermissions(a));
+				user.setWatchListProfilePermissions(watchListProfilePermissionsService.getPermissions(a));
+			});
 		}
 	}
 
@@ -149,14 +154,6 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
-	public void updatePermissions(User user) {
-		updateDataSourcePermissions(user, dataSourcePermissionsService);
-		updateDataPointPermissions(user, dataPointPermissionsService);
-		updateWatchListPermissions(user, watchListPermissionsService);
-		updateViewPermissions(user, viewPermissionsService);
-	}
-
-	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void deleteUser(int userId) {
 		userCommentDAO.update(userId);
@@ -182,5 +179,10 @@ public class UserService implements MangoUser {
 		//TODO seroUtils
 		comment.setComment(Functions.truncate(comment.getComment(), 1024));
 		userCommentDAO.insert(comment, typeId, referenceId);
+	}
+
+	private void updatePermissions(User user) {
+		updateDataSourcePermissions(user, dataSourcePermissionsService);
+		updateDataPointPermissions(user, dataPointPermissionsService);
 	}
 }

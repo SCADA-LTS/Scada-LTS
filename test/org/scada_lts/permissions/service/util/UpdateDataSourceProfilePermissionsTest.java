@@ -1,13 +1,12 @@
 package org.scada_lts.permissions.service.util;
 
-import br.org.scadabr.db.utils.TestUtils;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.permissions.service.PermissionsService;
-import utils.PermissionsServiceTestImpl;
+import utils.PermissionsServiceProfileTestImpl;
+import utils.PermissionsServiceUserTestImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public class UpdateDataSourcePermissionsTest {
+public class UpdateDataSourceProfilePermissionsTest {
 
     @Parameterized.Parameters(name= "{index}: fromDatabase: {0}, fromUser: {1}")
     public static Object[][] primeNumbers() {
@@ -47,25 +46,26 @@ public class UpdateDataSourcePermissionsTest {
     }
 
 
-    private User user;
+    private UsersProfileVO profile;
     private List<Integer> fromUser;
-    private PermissionsService<Integer, DataSourceVO<?>> permissionsService;
+    private PermissionsService<Integer, UsersProfileVO> permissionsService;
 
-    public UpdateDataSourcePermissionsTest(List<Integer> fromDatabase, List<Integer> fromUser) {
+    public UpdateDataSourceProfilePermissionsTest(List<Integer> fromDatabase, List<Integer> fromUser) {
         this.fromUser = fromUser;
-        user = TestUtils.newUser(123);
-        user.setDataSourcePermissions(fromUser);
+        profile = new UsersProfileVO();
+        profile.setId(123);
+        profile.setDataSourcePermissions(fromUser);
         Map<Integer, List<Integer>> permissions = new HashMap<>();
-        permissions.put(user.getId(), fromDatabase);
-        permissionsService = new PermissionsServiceTestImpl<>(permissions);
+        permissions.put(profile.getId(), fromDatabase);
+        permissionsService = new PermissionsServiceProfileTestImpl<>(permissions);
     }
 
     @Test
     public void updatePermissions() {
 
         //when:
-        PermissionsUtils.updateDataSourcePermissions(user, permissionsService);
-        List<Integer> result = permissionsService.getPermissions(user);
+        PermissionsUtils.updateDataSourcePermissions(profile, permissionsService);
+        List<Integer> result = permissionsService.getPermissions(profile);
 
         //then:
         assertEquals(fromUser.size(), result.size());

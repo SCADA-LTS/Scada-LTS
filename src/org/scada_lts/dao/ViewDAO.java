@@ -177,9 +177,10 @@ public class ViewDAO implements GenericDAO<View> {
 			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
 			+ "id in (select "+COLUMN_NAME_UP_VIEW_ID+" from viewUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=?)";
 
-	public static final String VIEW_FILTERED_BASE_ON_USER_ID = ""
+	public static final String VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID = ""
 			+ COLUMN_NAME_USER_ID+"=? or "
-			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?)";
+			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
+			+ "id in (select "+COLUMN_NAME_UP_VIEW_ID+" from viewUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=? and "+COLUMN_NAME_UP_PERMISSION+">?)";
 
 	private static final String VIEW_USER_DELETE = ""
 			+ "delete "
@@ -472,13 +473,15 @@ public class ViewDAO implements GenericDAO<View> {
 				.batchUpdate(VIEW_USER_DELETE_BASE_ON_VIEW_ID_USER_ID, batchArgs, argTypes);
 	}
 
-	public List<View> selectViewWithAccess(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE },new ViewRowMapper());
+	public List<View> selectViewWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE},
+				new ViewRowMapper());
 	}
 
-	public List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID,
-                new Object[] { userId, userId, ShareUser.ACCESS_NONE },
+	public List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
+                new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE},
                 new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
 						.xidColumnName(COLUMN_NAME_XID)

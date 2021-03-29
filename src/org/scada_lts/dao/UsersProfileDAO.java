@@ -1,10 +1,13 @@
 package org.scada_lts.dao;
 
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
+import com.serotonin.mango.view.ShareUser;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +17,7 @@ import java.sql.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UsersProfileDAO {
 
@@ -26,6 +30,11 @@ public class UsersProfileDAO {
     private static final String COLUMN_NAME_XID = "xid";
     private static final String COLUMN_NAME_NAME = "name";
 
+    private static final String COLUMN_NAME_PERMISSION = "permission";
+    private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
+    private static final String COLUMN_NAME_DATA_SOURCE_ID = "dataSourceId";
+    private static final String COLUMN_NAME_VIEW_ID = "viewId";
+    private static final String COLUMN_NAME_WATCH_LIST_ID = "watchListId";
 
     private static final String USERS_USERS_PROFILES_SELECT_BY_USER_ID = "" +
             "select " +
@@ -94,8 +103,129 @@ public class UsersProfileDAO {
             COLUMN_NAME_NAME + "" +
             ") values (?, ?)";
 
+    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID = "" +
+            "select " +
+                "uup." + COLUMN_NAME_USER_ID + ", " +
+                "wlup." + COLUMN_NAME_PERMISSION + " " +
+            "from " +
+                "usersUsersProfiles uup " +
+            "left join " +
+                "watchListUsersProfiles wlup " +
+            "on " +
+                "wlup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+            "where " +
+                "wlup." + COLUMN_NAME_WATCH_LIST_ID + "=?;";
+
+    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID = "" +
+            "select " +
+                "uup." + COLUMN_NAME_USER_ID + ", " +
+                "vup." + COLUMN_NAME_PERMISSION + " " +
+            "from " +
+                "usersUsersProfiles uup " +
+            "left join " +
+                "viewUsersProfiles vup " +
+            "on " +
+                "vup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+            "where " +
+                "vup." + COLUMN_NAME_VIEW_ID + "=?;";
+
+    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID = "" +
+            "select " +
+                "uup." + COLUMN_NAME_USER_ID + ", " +
+                "dpup." + COLUMN_NAME_PERMISSION + " " +
+            "from " +
+                "usersUsersProfiles uup " +
+            "left join " +
+                "dataPointUsersProfiles dpup " +
+            "on " +
+                "dpup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+            "where " +
+                "dpup." + COLUMN_NAME_DATA_POINT_ID + "=?;";
+
+    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID = "" +
+            "select " +
+                "uup." + COLUMN_NAME_USER_ID + " " +
+            "from " +
+                "dataSourceUsersProfiles dsup " +
+            "left join " +
+                "usersUsersProfiles uup " +
+            "on " +
+                "dsup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+            "where " +
+                "dsup." + COLUMN_NAME_DATA_SOURCE_ID + "=?;";
+
+    private static final String DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+            +"insert dataPointUsersProfiles ("
+            +COLUMN_NAME_DATA_POINT_ID+","
+            +COLUMN_NAME_USER_PROFILE_ID+","
+            +COLUMN_NAME_PERMISSION+")"
+            + " values (?,?,?) ON DUPLICATE KEY UPDATE " +
+            COLUMN_NAME_PERMISSION + "=?";
+
+    private static final String DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+            +"insert dataSourceUsersProfiles ("
+            +COLUMN_NAME_DATA_SOURCE_ID+","
+            +COLUMN_NAME_USER_PROFILE_ID+""+")"
+            + " values (?,?) ON DUPLICATE KEY UPDATE " +
+            COLUMN_NAME_USER_PROFILE_ID + "=?";
+
+    private static final String VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+            +"insert viewUsersProfiles ("
+            +COLUMN_NAME_VIEW_ID+","
+            +COLUMN_NAME_USER_PROFILE_ID+","
+            +COLUMN_NAME_PERMISSION+")"
+            + " values (?,?,?) ON DUPLICATE KEY UPDATE " +
+            COLUMN_NAME_PERMISSION + "=?";
+
+    private static final String WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+            +"insert watchListUsersProfiles ("
+            +COLUMN_NAME_WATCH_LIST_ID+","
+            +COLUMN_NAME_USER_PROFILE_ID+","
+            +COLUMN_NAME_PERMISSION+")"
+            + " values (?,?,?) ON DUPLICATE KEY UPDATE " +
+            COLUMN_NAME_PERMISSION + "=?";
+
+    private static final String DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID = ""
+            +"delete "
+            + "from "
+            + "dataPointUsersProfiles "
+            + "where "
+            + COLUMN_NAME_DATA_POINT_ID+"=? "
+            + "and "
+            + COLUMN_NAME_USER_PROFILE_ID+"=?";
+
+    private static final String DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID = ""
+            +"delete "
+            + "from "
+            + "dataSourceUsersProfiles "
+            + "where "
+            + COLUMN_NAME_DATA_SOURCE_ID+"=? "
+            + "and "
+            + COLUMN_NAME_USER_PROFILE_ID+"=?";
+
+    private static final String VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID = ""
+            +"delete "
+            + "from "
+            + "viewUsersProfiles "
+            + "where "
+            + COLUMN_NAME_VIEW_ID+"=? "
+            + "and "
+            + COLUMN_NAME_USER_PROFILE_ID+"=?";
+
+    private static final String WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID = ""
+            +"delete "
+            + "from "
+            + "watchListUsersProfiles "
+            + "where "
+            + COLUMN_NAME_WATCH_LIST_ID+"=? "
+            + "and "
+            + COLUMN_NAME_USER_PROFILE_ID+"=?";
 
     private JdbcTemplate jdbcTemplate;
+
+    public UsersProfileDAO() {
+        this.jdbcTemplate = DAO.getInstance().getJdbcTemp();
+    }
 
     public UsersProfileDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -228,118 +358,184 @@ public class UsersProfileDAO {
         }
     }
 
-    public void updateViewUsersProfiles(UsersProfileVO usersProfile) {
+    public int[] insertDataPointUsersProfile(int profileId, List<DataPointAccess> toInsert) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("insertDataPointUsersProfile(int profileId, List<DataPointAccess> toInsert) profileId:" + profileId + "");
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER  };
+
+        List<Object[]> batchArgs = toInsert.stream()
+                .map(a -> new Object[] {a.getDataPointId(), profileId, a.getPermission(), a.getPermission()})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+    }
+
+    public int[] deleteDataPointUsersProfile(int profileId, List<DataPointAccess> toDelete) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("deleteDataPointUsersProfile(int profileId, List<DataPointAccess> toDelete) profileId:" + profileId);
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER};
+
+        List<Object[]> batchArgs = toDelete.stream()
+                .map(a -> new Object[] {a.getDataPointId(), profileId})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+    }
+
+    public int[] insertDataSourceUsersProfile(int profileId, List<Integer> toInsert) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("insertDataSourceUsersProfile(int profileId, List<Integer> toInsert) profileId:" + profileId + "");
+        }
+
+        int[] argTypes = { Types.INTEGER, Types.INTEGER, Types.INTEGER };
+
+        List<Object[]> batchArgs = toInsert.stream()
+                .map(a -> new Object[] {a, profileId, a})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+    }
+
+    public int[] deleteDataSourceUsersProfile(int profileId, List<Integer> toDelete) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("deleteDataSourceUsersProfile(int profileId, List<Integer> toDelete) profileId:" + profileId);
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+        List<Object[]> batchArgs = toDelete.stream()
+                .map(a -> new Object[] {a, profileId})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+    }
+
+    public int[] insertViewUsersProfile(int profileId, List<ViewAccess> toInsert) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("insertViewUsersProfile(int profileId, List<DataPointAccess> toInsert) profileId:" + profileId + "");
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER  };
+
+        List<Object[]> batchArgs = toInsert.stream()
+                .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+    }
+
+    public int[] deleteViewUsersProfile(int profileId, List<ViewAccess> toDelete) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("deleteViewUsersProfile(int profileId, List<Integer> toDelete) profileId:" + profileId);
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+        List<Object[]> batchArgs = toDelete.stream()
+                .map(a -> new Object[] {a.getId(), profileId})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+    }
+
+    public int[] insertWatchListUsersProfile(int profileId, List<WatchListAccess> toInsert) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("insertViewUsersProfile(int profileId, List<DataPointAccess> toInsert) profileId:" + profileId + "");
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER  };
+
+        List<Object[]> batchArgs = toInsert.stream()
+                .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+    }
+
+    public int[] deleteWatchListUsersProfile(int profileId, List<WatchListAccess> toDelete) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("deleteWatchListUsersProfile(int profileId, List<Integer> toDelete) profileId:" + profileId);
+        }
+
+        int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+        List<Object[]> batchArgs = toDelete.stream()
+                .map(a -> new Object[] {a.getId(), profileId})
+                .collect(Collectors.toList());
+
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+    }
+
+    public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
+        if (LOG.isTraceEnabled())
+            LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
         try {
-            _updateViewUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID,
+                    new Object[]{dataSourceId},
+                    new ShareUserRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
         }
     }
 
-    public void updateWatchListUsersProfiles(UsersProfileVO usersProfile) {
+    public List<ShareUser> selectViewShareUsers(int viewId) {
+        if (LOG.isTraceEnabled())
+            LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
         try {
-            _updateWatchListUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
+                    new Object[]{viewId},
+                    new ShareUserRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
         }
     }
 
-    public void updateDataPointUsersProfiles(UsersProfileVO usersProfile) {
+    public List<ShareUser> selectWatchListShareUsers(int watchListId) {
+        if (LOG.isTraceEnabled())
+            LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
         try {
-            _updateDataPointUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID,
+                    new Object[]{watchListId},
+                    new ShareUserRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
         }
     }
 
-    public void updateDataSourceUsersProfiles(UsersProfileVO usersProfile) {
+    public List<ShareUser> selectDataPointShareUsers(int dataPointId) {
+        if (LOG.isTraceEnabled())
+            LOG.trace("selectDataPointShareUsers(int dataPointId) dataPointId:" + dataPointId);
         try {
-            _updateDataSourceUsersProfiles(usersProfile);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID,
+                    new Object[]{dataPointId},
+                    new ShareUserRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
         }
-    }
-
-    private void _updateViewUsersProfiles(UsersProfileVO usersProfile) throws SQLException {
-        jdbcTemplate.update("delete from viewUsersProfiles where userProfileId=?",
-                new Object[] { usersProfile.getId() });
-        jdbcTemplate.batchUpdate(
-                "insert into viewUsersProfiles (viewId, userProfileId, permission) values (?,?,?)",
-                new BatchPreparedStatementSetter() {
-                    public int getBatchSize() {
-                        return usersProfile.getViewPermissions().size();
-                    }
-
-                    public void setValues(PreparedStatement ps, int i)
-                            throws SQLException {
-                        ps.setInt(1, usersProfile.getViewPermissions().get(i)
-                                .getId());
-                        ps.setInt(2, usersProfile.getId());
-                        ps.setInt(3, usersProfile.getViewPermissions().get(i)
-                                .getPermission());
-                    }
-                });
-    }
-
-    private void _updateWatchListUsersProfiles(UsersProfileVO usersProfile) throws SQLException {
-        jdbcTemplate.update("delete from watchListUsersProfiles where userProfileId=?",
-                new Object[] { usersProfile.getId() });
-        jdbcTemplate.batchUpdate(
-                "insert into watchListUsersProfiles (watchlistId, userProfileId, permission) values (?,?,?)",
-                new BatchPreparedStatementSetter() {
-                    public int getBatchSize() {
-                        return usersProfile.getWatchlistPermissions().size();
-                    }
-
-                    public void setValues(PreparedStatement ps, int i)
-                            throws SQLException {
-                        ps.setInt(1, usersProfile.getWatchlistPermissions()
-                                .get(i).getId());
-                        ps.setInt(2, usersProfile.getId());
-                        ps.setInt(3, usersProfile.getWatchlistPermissions()
-                                .get(i).getPermission());
-                    }
-                });
-    }
-
-    private void _updateDataPointUsersProfiles(UsersProfileVO usersProfile) throws SQLException {
-        jdbcTemplate.update("delete from dataPointUsersProfiles where userProfileId=?",
-                new Object[] { usersProfile.getId() });
-        jdbcTemplate.batchUpdate(
-                "insert into dataPointUsersProfiles (dataPointId, userProfileId, permission) values (?,?,?)",
-                new BatchPreparedStatementSetter() {
-                    public int getBatchSize() {
-                        return usersProfile.getDataPointPermissions().size();
-                    }
-
-                    public void setValues(PreparedStatement ps, int i)
-                            throws SQLException {
-                        ps.setInt(1, usersProfile.getDataPointPermissions()
-                                .get(i).getDataPointId());
-                        ps.setInt(2, usersProfile.getId());
-                        ps.setInt(3, usersProfile.getDataPointPermissions()
-                                .get(i).getPermission());
-                    }
-                });
-    }
-
-    private void _updateDataSourceUsersProfiles(UsersProfileVO usersProfile) throws SQLException {
-        jdbcTemplate.update("delete from dataSourceUsersProfiles where userProfileId=?",
-                new Object[] { usersProfile.getId() });
-        jdbcTemplate.batchUpdate(
-                "insert into dataSourceUsersProfiles (dataSourceId, userProfileId) values (?,?)",
-                new BatchPreparedStatementSetter() {
-                    public int getBatchSize() {
-                        return usersProfile.getDataSourcePermissions().size();
-                    }
-
-                    public void setValues(PreparedStatement ps, int i)
-                            throws SQLException {
-                        ps.setInt(1, usersProfile.getDataSourcePermissions()
-                                .get(i));
-                        ps.setInt(2, usersProfile.getId());
-                    }
-                });
     }
 
     private class UsersProfileRowMapper implements RowMapper<UsersProfileVO> {
@@ -350,6 +546,17 @@ public class UsersProfileDAO {
             profile.setId(rs.getInt(COLUMN_NAME_ID));
             profile.setXid(rs.getString(COLUMN_NAME_XID));
             profile.setName(rs.getString(COLUMN_NAME_NAME));
+            return profile;
+        }
+    }
+
+    private class ShareUserRowMapper implements RowMapper<ShareUser> {
+
+        @Override
+        public ShareUser mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ShareUser profile = new ShareUser();
+            profile.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
+            profile.setAccessType(rs.getInt(COLUMN_NAME_PERMISSION));
             return profile;
         }
     }

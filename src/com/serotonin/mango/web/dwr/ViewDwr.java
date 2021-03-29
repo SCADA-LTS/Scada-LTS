@@ -91,7 +91,8 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
-import org.scada_lts.permissions.service.ViewPermissionsService;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -130,7 +131,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		ViewPermissionsService viewPermissionsService = new ViewPermissionsService();
+		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess();
 		User user = Common.getUser();
 		return viewPermissionsService.getObjectIdentifiersWithAccess(user).stream()
 				.map(a -> new IntValuePair(a.getId(), a.getName()))

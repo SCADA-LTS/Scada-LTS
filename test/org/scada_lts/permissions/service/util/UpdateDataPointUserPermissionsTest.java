@@ -1,14 +1,13 @@
 package org.scada_lts.permissions.service.util;
 
 import br.org.scadabr.db.utils.TestUtils;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.permissions.service.PermissionsService;
-import utils.PermissionsServiceTestImpl;
+import utils.PermissionsServiceUserTestImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public class UpdateDataPointPermissionsTest {
+public class UpdateDataPointUserPermissionsTest {
 
     @Parameterized.Parameters(name= "{index}: fromDatabase: {0}, fromUser: {1}")
     public static Object[][] primeNumbers() {
@@ -56,15 +55,15 @@ public class UpdateDataPointPermissionsTest {
 
     private User user;
     private List<DataPointAccess> fromUser;
-    private PermissionsService<DataPointAccess, DataPointVO> permissionsService;
+    private PermissionsService<DataPointAccess, User> permissionsService;
 
-    public UpdateDataPointPermissionsTest(List<DataPointAccess> fromDatabase, List<DataPointAccess> fromUser) {
+    public UpdateDataPointUserPermissionsTest(List<DataPointAccess> fromDatabase, List<DataPointAccess> fromUser) {
         this.fromUser = fromUser;
         user = TestUtils.newUser(123);
         user.setDataPointPermissions(fromUser);
         Map<Integer, List<DataPointAccess>> permissions = new HashMap<>();
         permissions.put(user.getId(), fromDatabase);
-        permissionsService = new PermissionsServiceTestImpl<>(permissions);
+        permissionsService = new PermissionsServiceUserTestImpl<>(permissions);
     }
 
     @Test

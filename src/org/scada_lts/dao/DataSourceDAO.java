@@ -438,7 +438,7 @@ public class DataSourceDAO {
 			LOG.trace("insertPermissions(int userId, List<WatchListAccess> toInsert) user:" + userId + "");
 		}
 
-		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER  };
+		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER};
 
 		List<Object[]> batchArgs = toInsert.stream()
 				.map(a -> new Object[] {a, userId, a})
@@ -462,19 +462,5 @@ public class DataSourceDAO {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(DATA_SOURCE_USERS_DELETE_DATA_SOURCE_ID_AND_USER_ID, batchArgs, argTypes);
-	}
-
-	public List<DataSourceVO<?>> selectDataSourcesWithAccess(final int userId) {
-		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT+" where "+ DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{ userId }, new DataSourceDAO.DataSourceRowMapper());
-	}
-
-	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId) {
-		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_IDENTIFIER_SELECT + " where " + DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
-				new Object[] { userId },
-				new ScadaObjectIdentifierRowMapper.Builder()
-						.idColumnName(COLUMN_NAME_ID)
-						.xidColumnName(COLUMN_NAME_XID)
-						.nameColumnName(COLUMN_NAME_NAME)
-						.build());
 	}
 }

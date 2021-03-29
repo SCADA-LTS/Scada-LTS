@@ -140,8 +140,13 @@ public class UsersDwr extends BaseDwr {
 		user.setDisabled(disabled);
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-		user.setDataSourcePermissions(dataSourcePermissions);
-		user.setDataPointPermissions(dataPointPermissions);
+        if(usersProfileId == Common.NEW_ID) {
+            user.setDataSourcePermissions(dataSourcePermissions);
+            user.setDataPointPermissions(dataPointPermissions);
+        } else {
+			user.setDataSourcePermissions(new ArrayList<>());
+			user.setDataPointPermissions(new ArrayList<>());
+		}
 		user.setUserProfileId(usersProfileId);
 
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -170,15 +175,12 @@ public class UsersDwr extends BaseDwr {
 			userDao.saveUser(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
-			if (usersProfileId != Common.NEW_ID) {
-				// apply profile
-				UsersProfileVO profile = profilesDao
-						.getUserProfileById(usersProfileId);
+			if (usersProfileId == Common.NEW_ID) {
+				profilesDao.resetUserProfile(user);
+			} else {
+				UsersProfileVO profile = profilesDao.getUserProfileById(usersProfileId);
 				profile.apply(user);
 				profilesDao.updateUsersProfile(user, profile);
-				userDao.updatePermissions(user);
-			} else {
-				profilesDao.resetUserProfile(user);
 			}
 
 			// If admin grant permissions to all WL and GViews

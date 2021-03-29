@@ -75,9 +75,13 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean disabled;
 	private List<Integer> dataSourcePermissions = new ArrayList<>();
 	private List<DataPointAccess> dataPointPermissions = new ArrayList<>();
-	private List<WatchListAccess> watchListPermissions = new ArrayList<>();
-	private List<ViewAccess> viewPermissions = new ArrayList<>();
-	@JsonRemoteProperty
+
+    private List<Integer> dataSourceProfilePermissions = new ArrayList<>();
+    private List<DataPointAccess> dataPointProfilePermissions = new ArrayList<>();
+    private List<WatchListAccess> watchListProfilePermissions = new ArrayList<>();
+    private List<ViewAccess> viewProfilePermissions = new ArrayList<>();
+
+    @JsonRemoteProperty
 	private int selectedWatchList;
 	@JsonRemoteProperty
 	private String homeUrl;
@@ -305,22 +309,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.dataPointPermissions = dataPointPermissions;
 	}
 
-	public List<WatchListAccess> getWatchListPermissions() {
-		return watchListPermissions;
-	}
-
-	public void setWatchListPermissions(List<WatchListAccess> watchListPermissions) {
-		this.watchListPermissions = watchListPermissions;
-	}
-
-	public List<ViewAccess> getViewPermissions() {
-		return viewPermissions;
-	}
-
-	public void setViewPermissions(List<ViewAccess> viewPermissions) {
-		this.viewPermissions = viewPermissions;
-	}
-
 	public DataSourceVO<?> getEditDataSource() {
 		return editDataSource;
 	}
@@ -473,8 +461,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		if (admin) {
 			dataSourcePermissions.clear();
 			dataPointPermissions.clear();
-			viewPermissions.clear();
-			watchListPermissions.clear();
 		} else {
 			JsonArray jsonDataSources = json
 					.getJsonArray("dataSourcePermissions");
@@ -525,15 +511,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			for (Integer dsId : getDataSourcePermissions())
 				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
-
 			map.put("dataPointPermissions", dataPointPermissions);
-			map.put("watchListPermissions", watchListPermissions);
-			map.put("viewPermissions", viewPermissions);
 		} else {
 			map.put("dataSourcePermissions", Collections.emptyList());
 			map.put("dataPointPermissions", Collections.emptyList());
-			map.put("watchListPermissions", Collections.emptyList());
-			map.put("viewPermissions", Collections.emptyList());
 		}
 	}
 
@@ -590,4 +571,36 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// TODO Auto-generated method stub
 
 	}
+
+    public List<Integer> getDataSourceProfilePermissions() {
+        return dataSourceProfilePermissions;
+    }
+
+    public void setDataSourceProfilePermissions(List<Integer> dataSourceProfilePermissions) {
+        this.dataSourceProfilePermissions = dataSourceProfilePermissions;
+    }
+
+    public List<DataPointAccess> getDataPointProfilePermissions() {
+        return dataPointProfilePermissions;
+    }
+
+    public void setDataPointProfilePermissions(List<DataPointAccess> dataPointProfilePermissions) {
+        this.dataPointProfilePermissions = dataPointProfilePermissions;
+    }
+
+    public List<WatchListAccess> getWatchListProfilePermissions() {
+        return watchListProfilePermissions;
+    }
+
+    public void setWatchListProfilePermissions(List<WatchListAccess> watchListProfilePermissions) {
+        this.watchListProfilePermissions = watchListProfilePermissions;
+    }
+
+    public List<ViewAccess> getViewProfilePermissions() {
+        return viewProfilePermissions;
+    }
+
+    public void setViewProfilePermissions(List<ViewAccess> viewProfilePermissions) {
+        this.viewProfilePermissions = viewProfilePermissions;
+    }
 }

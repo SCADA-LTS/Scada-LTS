@@ -5,10 +5,12 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        UpdateDataPointPermissionsTest.class,
-        UpdateDataSourcePermissionsTest.class,
-        UpdateViewPermissionsTest.class,
-        UpdateWatchListPermissionsTest.class
+        UpdateDataPointUserPermissionsTest.class,
+        UpdateDataSourceUserPermissionsTest.class,
+        UpdateViewProfilePermissionsTest.class,
+        UpdateWatchListProfilePermissionsTest.class,
+        UpdateDataPointProfilePermissionsTest.class,
+        UpdateDataSourceProfilePermissionsTest.class
 })
 public class PermissionsTestsSuite {
 }

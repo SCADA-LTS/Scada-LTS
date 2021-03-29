@@ -116,14 +116,16 @@ public class Permissions {
         ensureValidUser(user);
         if (user.isAdmin())
             return true;
-        return user.getDataSourcePermissions().contains(dataSourceId);
+        return user.getDataSourcePermissions().contains(dataSourceId)
+                || user.getDataSourceProfilePermissions().contains(dataSourceId);
     }
 
     public static boolean hasDataSourcePermission(User user) throws PermissionException {
         ensureValidUser(user);
         if (user.isAdmin())
             return true;
-        return user.getDataSourcePermissions().size() > 0;
+        return !user.getDataSourcePermissions().isEmpty() ||
+                !user.getDataSourceProfilePermissions().isEmpty();
     }
 
     //
@@ -173,6 +175,10 @@ public class Permissions {
             if (a.getDataPointId() == dataPointId)
                 return a;
         }
+        for (DataPointAccess a : user.getDataPointProfilePermissions()) {
+            if (a.getDataPointId() == dataPointId)
+                return a;
+        }
         return null;
     }
 
@@ -181,7 +187,8 @@ public class Permissions {
             return DataPointAccessTypes.NONE;
         if (user.isAdmin())
             return DataPointAccessTypes.ADMIN;
-        if (user.getDataSourcePermissions().contains(point.getDataSourceId()))
+        if (user.getDataSourcePermissions().contains(point.getDataSourceId())
+                || user.getDataSourceProfilePermissions().contains(point.getDataSourceId()))
             return DataPointAccessTypes.DATA_SOURCE;
         DataPointAccess a = getDataPointAccess(user, point.getId());
         if (a == null)

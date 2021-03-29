@@ -27,8 +27,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.permissions.service.GetObjectsAccess;
-import org.scada_lts.permissions.service.ViewPermissionsService;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -57,7 +57,7 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-		    GetObjectsAccess<View> service = new ViewPermissionsService();
+		    GetObjectsWithAccess<View, User> service = new GetViewsWithAccess();
 			views = service.getObjectIdentifiersWithAccess(user).stream()
 					.map(a -> new IntValuePair(a.getId(), a.getName()))
 					.collect(Collectors.toList());
