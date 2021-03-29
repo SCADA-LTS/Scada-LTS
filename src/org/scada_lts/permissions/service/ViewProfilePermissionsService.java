@@ -2,7 +2,6 @@ package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.ViewDAO;
 

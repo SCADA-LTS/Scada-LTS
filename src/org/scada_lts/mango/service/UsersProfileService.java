@@ -65,14 +65,6 @@ public class UsersProfileService {
         this.viewPermissionsService = viewPermissionsService;
     }
 
-    public Optional<UsersProfileVO> getProfileById(int usersProfileId) {
-        return usersProfileDAO.selectProfileById(usersProfileId);
-    }
-
-    public void removeProfile(UsersProfileVO profile) {
-        removeProfile(profile.getId());
-    }
-
     public List<UsersProfileVO> getUsersProfiles() {
         return getUsersProfiles(Comparator.comparing(UsersProfileVO::getName));
     }
