@@ -234,7 +234,7 @@ export default {
 		this.connect();
 	},
 
-	destroyed() {
+	beforeDestroy() {
 		this.disconnect();
 	},
 

@@ -80,7 +80,22 @@
 					<v-list-item-content>
 						<v-list-item-title>
 							<span>
-								{{ e.message.split('|')[1] }}
+								{{ $t(e.message.split('|')[0], [e.message.split('|')[1]]) }}
+							</span>
+							<span v-if="!!e.message.split('|')[2] && e.message.split('|')[2] !== '[common.tp.description'">
+								: {{ e.message.split('|')[2] }}
+							</span>
+							<span v-if="!!e.message.split('|')[3] && e.message.split('|')[3] !== '[common.tp.description'">
+								 -> {{ e.message.split('|')[3] }}
+							</span>
+							<span v-if="!!e.message.split('|')[4] && !e.message.split('|')[4].startsWith('[common.tp.')">
+								{{ $t('event.detector.change.label') }} {{ e.message.split('|')[4] }}
+							</span>
+							<span v-if="!!e.message.split('|')[4] && e.message.split('|')[4].startsWith('[common.tp.')">
+								{{ $t(e.message.split('|')[4])}}
+							</span>
+							<span v-if="!!e.message.split('|')[5] && e.message.split('|')[5] !== ']]'">
+								{{ $t(e.message.split('|')[5])}}
 							</span>
 						</v-list-item-title>
 						<v-list-item-subtitle>
@@ -210,6 +225,10 @@ export default {
 		this.connect();
 	},
 
+	beforeDestroy() {
+		this.disconnect();
+	},
+
 	methods: {
 		connect() {
 			let callback = () => {
@@ -224,6 +243,12 @@ export default {
 				this.$store.state.webSocketUrl,
 				callback,
 			);
+		},
+
+		disconnect() {
+			if(!!this.stompClient) {
+				this.stompClient.disconnect();
+			}
 		},
 
 		refresh() {

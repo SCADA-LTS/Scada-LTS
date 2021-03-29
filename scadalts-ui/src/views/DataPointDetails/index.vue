@@ -70,7 +70,7 @@
 			</v-row>
 		</v-container>
 		<v-container fluid>
-			<LineChartComponent :pointId="this.$route.params.id"> </LineChartComponent>
+			<LineChartComponent :pointId="this.$route.params.id" :refreshRate="chartRefreshRate"> </LineChartComponent>
 		</v-container>
 		<v-snackbar v-model="response.status">
 			{{ response.message }}
@@ -117,6 +117,7 @@ export default {
 			newComment: '',
 			dataPointDetails: undefined,
 			confirmToggleDialog: false,
+			chartRefreshRate: 10000,
 			response: {
 				status: false,
 				message: '',
@@ -180,6 +181,7 @@ export default {
 </script>
 <style scoped>
 .pointDetailsCards {
+	height: 100%;
 	max-height: 52vh;
 	overflow-y: auto;
 }
