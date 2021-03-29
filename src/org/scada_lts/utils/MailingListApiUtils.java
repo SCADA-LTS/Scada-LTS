@@ -9,7 +9,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.web.mvc.api.dto.MailingListDTO;
+import org.scada_lts.web.mvc.api.dto.CreateMailingList;
+import org.scada_lts.web.mvc.api.dto.UpdateMailingList;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.serotonin.timer.CronExpression.isValidExpression;
+import static org.scada_lts.serorepl.utils.StringUtils.isEmpty;
 import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
 
@@ -26,82 +29,61 @@ public final class MailingListApiUtils {
 
     private MailingListApiUtils() {}
 
-    public static String validateMailingListCreate(MailingList body, MailingListService mailingListService) {
-        String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !validMailingListIsNewId(a));
-        msg += msgIfNullOrInvalid("Correct xid;", body.getXid(), a -> isMailingListPresent(a, mailingListService));
-        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern(), body.getInactiveIntervals());
+    public static String validateMailingListCreate(CreateMailingList body) {
+        String msg = msgIfNullOrInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
+        msg += msgIfNullOrInvalid("Correct cron;", body.getCronPattern(), a -> !isValidExpression(a));
+        msg += msgIfNullOrInvalid("Correct entries;", body.getEntries(), a -> !hasEntries(a));
+        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getInactiveIntervals());
         return msg;
     }
 
-    public static String validateMailingListUpdate(MailingListDTO body, MailingListService mailingListService) {
-        String msg = msgIfNullOrInvalid("Correct id;", body.getId(), a -> !isMailingListPresent(a, mailingListService));
-        msg += msgIfNullOrInvalid("Correct xid;",
-                body.getXid(), a -> !validMailingListXidUpdate(body.getId(), a, mailingListService));
-        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getCronPattern(), body.getInactiveIntervals());
+    public static String validateMailingListUpdate(UpdateMailingList body) {
+        String msg = msgIfNull("Correct id;", body.getId());
+        msg += msgIfNonNullAndInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
+        msg += msgIfNonNullAndInvalid("Correct cron;", body.getCronPattern(), a -> !isValidExpression(a));
+        msg += validateMailingListBody(body.getName(), body.getEntries(), body.getInactiveIntervals());
         return msg;
     }
 
-    private static String validateMailingListBody(String name, List<EmailRecipient> entries, String cronPattern, Set<Integer> inactiveIntervals) {
+    private static String validateMailingListBody(String name, List<EmailRecipient> entries, Set<Integer> inactiveIntervals) {
         String msg = msgIfNull("Correct name;", name);
         msg += validateEntriesList(entries);
-        msg += msgIfNonNullAndInvalid("Correct cron", cronPattern, a -> !isValidExpression(a));
-        msg += msgIfNonNullAndInvalid("Correct inactiveIntervals", inactiveIntervals, a -> !validInactiveIntervals(a));
+        msg += msgIfNonNullAndInvalid("Correct inactiveIntervals;", inactiveIntervals, a -> !validInactiveIntervals(a));
         return msg;
     }
 
     private static String validateEntriesList(List<EmailRecipient> entries) {
         StringBuilder msg = new StringBuilder();
-        for (EmailRecipient recipient : entries) {
-            msg.append(msgIfNull("Correct recipient;", recipient));
-            if (recipient != null) {
-                msg.append(msgIfNullOrInvalid("Recipient does not exist for type {0};", recipient.getRecipientType(),
-                        a -> !EmailRecipient.validEmailRecipientType(a)));
-                if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
-                    UserEntry userEntry = (UserEntry) recipient;
-                    msg.append(msgIfNullOrInvalid("Correct userId;", userEntry.getUserId(), a -> !validUserId(a)));
-                }
-                if (recipient.getRecipientType() == EmailRecipient.TYPE_ADDRESS) {
-                    AddressEntry addressEntry = (AddressEntry) recipient;
-                    msg.append(msgIfNull("Correct address;", addressEntry.getAddress()));
+        if (entries != null) {
+            for (EmailRecipient recipient : entries) {
+                msg.append(msgIfNull("Correct recipient;", recipient));
+                if (recipient != null) {
+                    msg.append(msgIfNullOrInvalid("Recipient does not exist for type {0};", recipient.getRecipientType(),
+                            a -> !EmailRecipient.validEmailRecipientType(a)));
+                    if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
+                        UserEntry userEntry = (UserEntry) recipient;
+                        msg.append(msgIfNullOrInvalid("Correct userId;", userEntry.getUserId(), a -> !validUserId(a)));
+                    }
+                    if (recipient.getRecipientType() == EmailRecipient.TYPE_ADDRESS) {
+                        AddressEntry addressEntry = (AddressEntry) recipient;
+                        msg.append(msgIfNull("Correct address;", addressEntry.getAddress()));
+                    }
                 }
             }
         }
         return msg.toString();
     }
 
-    public static String validateMailingListDelete(Integer id, MailingListService mailingListService) {
-        return msgIfNullOrInvalid("Correct id;", id, a -> !isMailingListPresent(a, mailingListService));
+    public static boolean validUserId(Integer id){
+        return id != 0;
     }
 
-    public static void updateValueMailingListPost(MailingList body){
-        if (body.getCronPattern() == null)
-            body.setCronPattern("");
-        body.setDailyLimitSentEmails(false);
-        body.setDailyLimitSentEmailsNumber(0);
+    public static String validateMailingListDelete(Integer id) {
+        return msgIfNull("Correct id;", id);
     }
 
-    public static Optional<MailingList> getMailingList(int id, MailingListService mailingListService) {
-        try {
-            MailingList mailingList = mailingListService.getMailingList(id);
-            return Optional.ofNullable(mailingList);
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Optional.empty();
-        }
-    }
-
-    public static Optional<MailingList> getMailingList(String xid, MailingListService mailingListService) {
-        try {
-            MailingList mailingList = mailingListService.getMailingList(xid);
-            return Optional.ofNullable(mailingList);
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Optional.empty();
-        }
-    }
-
-    public static void updateValueMailingList(MailingList toUpdate, MailingListDTO source) {
-        setIf(source.getXid(), toUpdate::setXid, a -> !StringUtils.isEmpty(a));
+    public static void updateValueMailingList(MailingList toUpdate, UpdateMailingList source) {
+        setIf(source.getXid(), toUpdate::setXid, a -> !isEmpty(a));
         setIf(source.getId(), toUpdate::setId, Objects::nonNull);
         setIf(source.getName(), toUpdate::setName, Objects::nonNull);
         setIf(source.getEntries(), toUpdate::setEntries, Objects::nonNull);
@@ -112,33 +94,63 @@ public final class MailingListApiUtils {
         toUpdate.setDailyLimitSentEmailsNumber(0);
     }
 
-    private static boolean isMailingListPresent(String xid, MailingListService mailingListService){
-        return getMailingList(xid, mailingListService).isPresent();
-    }
-
-    private static boolean isMailingListPresent(Integer id, MailingListService mailingListService){
-        return getMailingList(id, mailingListService).isPresent();
-    }
-
-    private static boolean validMailingListXidUpdate(int id, String xid, MailingListService mailingListService){
-        boolean exists = isMailingListPresent(xid, mailingListService);
-        if (exists) {
-            try {
-                MailingList mailingList = mailingListService.getMailingList(id);
-                return mailingList.getXid().equals(xid);
-            } catch (Exception ex) {
-                LOG.error(ex.getMessage(), ex);
-                return false;
-            }
-        } else
-            return true;
-    }
-
-    private static boolean validMailingListIsNewId(int id) {
-        return id == Common.NEW_ID;
+    public static MailingList createMailingListFromBody(CreateMailingList source) {
+        MailingList mailingList = new MailingList();
+        setIf(source.getXid(), mailingList::setXid, a -> !isEmpty(a));
+        setIf(source.getName(), mailingList::setName, Objects::nonNull);
+        setIf(source.getEntries(), mailingList::setEntries, Objects::nonNull);
+        setIf(source.getCronPattern(), mailingList::setCronPattern, Objects::nonNull);
+        setIf(source.getCollectInactiveEmails(), mailingList::setCollectInactiveEmails, Objects::nonNull);
+        setIf(source.getInactiveIntervals(), mailingList::setInactiveIntervals, Objects::nonNull);
+        mailingList.setId(Common.NEW_ID);
+        mailingList.setDailyLimitSentEmails(false);
+        mailingList.setDailyLimitSentEmailsNumber(0);
+        return mailingList;
     }
 
     private static boolean validInactiveIntervals(Set<Integer> inactiveIntervals){
+        if (inactiveIntervals.stream().anyMatch(Objects::isNull))
+            return false;
         return inactiveIntervals.stream().allMatch(i -> (i >= 0 && i < 672));
+    }
+
+    private static boolean hasEntries(List<EmailRecipient> entries) {
+        return entries.size() > 0;
+    }
+
+    public static Optional<MailingList> getMailingList(String xid, MailingListService mailingListService) {
+        try {
+            MailingList mailingList = mailingListService.getMailingList(xid);
+            return Optional.ofNullable(mailingList);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<MailingList> getMailingList(int id, MailingListService mailingListService) {
+        try {
+            MailingList mailingList = mailingListService.getMailingList(id);
+            return Optional.ofNullable(mailingList);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static boolean isMailingListPresent(String xid, MailingListService mailingListService){
+        return getMailingList(xid, mailingListService).isPresent();
+    }
+
+    public static boolean isMailingListPresent(Integer id, MailingListService mailingListService){
+        return getMailingList(id, mailingListService).isPresent();
+    }
+
+    public static boolean isXidChanged(String currentXid, String newXid) {
+        return !currentXid.equals(newXid);
     }
 }
