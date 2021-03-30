@@ -342,7 +342,7 @@ public class UserDao extends BaseDao {
 		userService.insertUserComment(typeId, referenceId, comment);
 	}
 
-	public List<User> getUsersWithPermissions() {
-		return userService.getUsersWithPermissions();
+	public List<User> getUsersWithProfile() {
+		return userService.getUsersWithProfile();
 	}
 }

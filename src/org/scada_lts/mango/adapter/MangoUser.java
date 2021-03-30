@@ -35,7 +35,7 @@ public interface MangoUser {
 
 	List<User> getUsers();
 
-	List<User> getUsersWithPermissions();
+	List<User> getUsersWithProfile();
 
 	List<User> getActiveUsers();
 

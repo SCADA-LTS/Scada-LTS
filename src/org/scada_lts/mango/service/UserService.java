@@ -85,9 +85,9 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
-	public List<User> getUsersWithPermissions() {
+	public List<User> getUsersWithProfile() {
 		List<User> users = userDAO.getUsers();
-		populateUserPermissions(users);
+		populateUserPermissionsWithProfile(users);
 		return users;
 	}
 
@@ -104,6 +104,12 @@ public class UserService implements MangoUser {
 		}
 	}
 
+	private void populateUserPermissionsWithProfile(List<User> users) {
+		for (User user : users) {
+			populateUserPermissionsWithProfile(user);
+		}
+	}
+
 	@Override
 	public void populateUserPermissions(User user) {
 		if (user != null) {
@@ -116,6 +122,17 @@ public class UserService implements MangoUser {
 				user.setDataSourcePermissions(dataSourceProfilePermissionsService.getPermissions(a));
 				user.setViewProfilePermissions(viewProfilePermissionsService.getPermissions(a));
 				user.setWatchListProfilePermissions(watchListProfilePermissionsService.getPermissions(a));
+			});
+		}
+	}
+
+	public void populateUserPermissionsWithProfile(User user) {
+		if (user != null) {
+			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
+			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
+
+			usersProfileService.getProfileByUser(user).ifPresent(a -> {
+				user.setUserProfileId(a.getId());
 			});
 		}
 	}
