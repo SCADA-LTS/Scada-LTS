@@ -3,6 +3,7 @@ import mailingListTemplate from "./templates";
 const storeMailingList = {
 	state: {
 		mailingListTemplate: mailingListTemplate,
+		defaultCronPattern: "1 */15 * * * ?",
 	},
 
 	mutations: {},
@@ -31,8 +32,11 @@ const storeMailingList = {
 			})
 		},
 
-		updateMailingList({ dispatch }, mailingList) {
+		updateMailingList({ state, dispatch }, mailingList) {
 			let requestPayload = Object.assign({}, mailingList);
+			if(!requestPayload.cronPattern) {
+				requestPayload.cronPattern = state.defaultCronPattern;
+			}
 			requestPayload.entries.forEach(e => {
 				delete e.user
 			});
