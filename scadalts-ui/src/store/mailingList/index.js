@@ -25,7 +25,7 @@ const storeMailingList = {
 			return dispatch('requestDelete', `/mailingList/${mailingListId}`);
 		},
 
-		createMailingList({ dispatch }, mailingList) {
+		createMailingList({ state, dispatch }, mailingList) {
 			if(!mailingList.cronPattern) {
 				mailingList.cronPattern = state.defaultCronPattern;
 			}
