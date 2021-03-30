@@ -209,8 +209,8 @@ const storeSystemSettings = {
 
 		saveSmsDomainSettings({ state, dispatch }) {
 			return dispatch('requestPost', {
-				url: `/systemSettings/saveSMSDomain/${state.smsDomainSettings}`,
-				data: null,
+				url: `/systemSettings/saveSMSDomain`,
+				data: {'domainName':state.smsDomainSettings},
 			});
 		},
 
