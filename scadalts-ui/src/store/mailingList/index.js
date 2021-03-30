@@ -26,6 +26,9 @@ const storeMailingList = {
 		},
 
 		createMailingList({ dispatch }, mailingList) {
+			if(!mailingList.cronPattern) {
+				mailingList.cronPattern = state.defaultCronPattern;
+			}
 			return dispatch('requestPost', {
 				url: `/mailingList/`,
 				data: mailingList
