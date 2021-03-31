@@ -412,20 +412,23 @@
     }
 
     function collectInactiveEmails(collectInactiveEmails) {
+        setUpDefaultCron();
         var collecting = collectInactiveEmails || document.getElementById("collectInactiveEmails").checked;
         if(collecting) {
             show("cronPatternTr");
             show("dailyLimitSentEmailsTr");
-            if(document.getElementById('cronPattern').value == '') {
-                document.getElementById('cronPattern').value = '1 */15 * * * ?';
-            }
         } else {
-            document.getElementById('cronPattern').value = '';
             document.getElementById('dailyLimitSentEmails').checked = false;
             hide("cronPatternTr");
             hide("dailyLimitSentEmailsTr");
         }
         hide("dailyLimitSentEmailsTr");
+    }
+
+    function setUpDefaultCron() {
+        if(document.getElementById('cronPattern').value == '') {
+            document.getElementById('cronPattern').value = '1 */15 * * * ?';
+        }
     }
 
     function dailyLimitSentEmails(collectInactiveEmails) {
