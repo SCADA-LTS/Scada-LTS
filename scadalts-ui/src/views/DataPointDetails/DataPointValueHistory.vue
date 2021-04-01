@@ -59,7 +59,15 @@
 
 		<v-card-text v-if="hideSkeleton">
 			<v-row align="center">
-				<v-col cols="4">
+				<v-col cols="4" v-if="data.pointLocator.dataTypeId === 1">
+					<v-btn 
+						block
+						@click="toggleValue()"
+						:color="getBinaryRendererLabel(pointValue, 'color')">
+						{{getBinaryRendererLabel(pointValue, 'label')}}
+					</v-btn>
+				</v-col>
+				<v-col cols="4" v-else>
 					<v-text-field
 						v-model="pointValue"
 						:label="$t('datapointDetails.valueHistory.stats.add')"
@@ -302,6 +310,14 @@ export default {
 			});
 		},
 
+		toggleValue() {
+			console.log(this.pointValue);
+			this.pointValue = this.pointValue === 'true' ? true : (this.pointValue === 'false' ? false : this.pointValue);
+			this.pointValue = !this.pointValue;
+			console.log(this.pointValue);
+			this.sendValue();
+		},
+
 		calculateStatistics(precision = 1000) {
 			this.restoreStatistics();
 			if (this.data.pointLocator.dataTypeId === 3) {
@@ -370,6 +386,29 @@ export default {
 			});
 			return -1;
 		},
+
+		getBinaryRendererLabel(value, type) {
+			if(!!this.data.textRenderer && this.data.textRenderer.typeName === "textRendererBinary") {
+				if(value === "false") {
+					if(type === "label") {
+						return this.data.textRenderer.zeroLabel;
+					} else {
+						return this.data.textRenderer.zeroColour;
+					}
+				} else {
+					if(type === "label") {
+						return this.data.textRenderer.oneLabel;
+					} else {
+						return this.data.textRenderer.oneColour;
+					}
+				}
+			}
+			if(type === "color") {
+				return '#f5f5f5';
+			}
+			return value;
+			
+		}
 	},
 };
 </script>

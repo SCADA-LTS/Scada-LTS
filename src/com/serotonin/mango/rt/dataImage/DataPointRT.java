@@ -49,9 +49,10 @@ import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.util.ObjectUtils;
-import org.scada_lts.web.ws.WebSocketEndpointListener;
+import org.scada_lts.web.ws.ScadaWebSocket;
+import org.scada_lts.web.ws.ScadaWebSocketListener;
 
-public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
+public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSocket<String> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
 	private static final PvtTimeComparator pvtTimeComparator = new PvtTimeComparator();
 
@@ -74,7 +75,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	private TimerTask intervalLoggingTask;
 
 	// WebSocket notification
-	private final List<WebSocketEndpointListener> webSocketEndpointListeners = new CopyOnWriteArrayList<WebSocketEndpointListener>();
+	private final List<ScadaWebSocketListener<String, Integer>> scadaWebSocketListeners = new CopyOnWriteArrayList<>();
 
 	/**
 	 * This is the value around which tolerance decisions will be made when
@@ -294,7 +295,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 
 		if (saveValue){
-			this.notifyWsEndpointObservers(newValue.getValue().toString());
+			this.notifyWebSocketListeners(newValue.getValue().toString());
 			valueCache.savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
 		}
 
@@ -478,6 +479,25 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 							backdate));
 	}
 
+	@Override
+	public void addWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.add(listener);
+	}
+
+	@Override
+	public void removeWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.remove(listener);
+	}
+
+	@Override
+	public void notifyWebSocketListeners(String message) {
+		if(!scadaWebSocketListeners.isEmpty()) {
+			scadaWebSocketListeners.forEach(observer -> {
+				observer.sendWebSocketMessage(message, this.vo.getId());
+			});
+		}
+	}
+
 	class EventNotifyWorkItem implements WorkItem {
 		private final DataPointListener listener;
 		private final PointValueTime oldValue;
@@ -572,20 +592,4 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		terminateIntervalLogging();
 	}
 
-	private void notifyWsEndpointObservers(String message) {
-		if(!webSocketEndpointListeners.isEmpty()) {
-			webSocketEndpointListeners.forEach(observer -> {
-				observer.sendWebSocketRefMessage(this.vo.getId(), message);
-			});
-		}
-
-	}
-
-	public void addWsEndpointObserver(WebSocketEndpointListener l) {
-		webSocketEndpointListeners.add(l);
-	}
-
-	public void removeWsEndpointObserver(WebSocketEndpointListener l) {
-		webSocketEndpointListeners.remove(l);
-	}
 }

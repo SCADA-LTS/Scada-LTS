@@ -41,17 +41,17 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.web.ws.WebSocketEndpointListener;
-import org.scada_lts.web.ws.config.WebsocketApplicationListener;
+import org.scada_lts.web.ws.ScadaWebSocket;
+import org.scada_lts.web.ws.ScadaWebSocketListener;
 
 /**
  * @author Matthew Lohbihler
  */
-public class EventManager implements ILifecycle {
+public class EventManager implements ILifecycle, ScadaWebSocket<String> {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
 	private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
-	private final List<WebSocketEndpointListener> webSocketEndpointListeners = new CopyOnWriteArrayList<WebSocketEndpointListener>();
+	private final List<ScadaWebSocketListener<String, Object>> scadaWebSocketListeners = new CopyOnWriteArrayList<>();
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
 	private EventDao eventDao;
 	private UserDao userDao;
@@ -113,7 +113,7 @@ public class EventManager implements ILifecycle {
 
 		// Get id from database by inserting event immediately.
 		eventDao.saveEvent(evt);
-		notifyWsEndpointObservers(WS_MESSAGE);
+		notifyWebSocketListeners(WS_MESSAGE);
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<Integer>();
@@ -457,18 +457,20 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
-	private void notifyWsEndpointObservers(String message) {
-		webSocketEndpointListeners.forEach(observer -> {
+	@Override
+	public void addWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.add(listener);
+	}
+
+	@Override
+	public void removeWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.remove(listener);
+	}
+
+	@Override
+	public void notifyWebSocketListeners(String message) {
+		scadaWebSocketListeners.forEach(observer -> {
 			observer.sendWebSocketMessage(message);
 		});
 	}
-
-	public void addWsEndpointObserver(WebSocketEndpointListener l) {
-		webSocketEndpointListeners.add(l);
-	}
-
-	public void removeWsEndpointObserver(WebSocketEndpointListener l) {
-		webSocketEndpointListeners.remove(l);
-	}
-
 }
