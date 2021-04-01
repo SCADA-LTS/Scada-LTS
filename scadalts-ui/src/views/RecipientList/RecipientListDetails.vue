@@ -134,7 +134,7 @@
 						<div>{{$t('recipientlistDetails.activetime.table.day.sunday')}}</div>
 					</div>
 					<div v-for="h in 24" :key="h" class="day">
-						{{ formatHours(h) }}
+						{{ formatHours(h-1) }}
 						<div v-for="d in 7" :key="d" class="hour">
 							<span
 								v-for="m in 4"

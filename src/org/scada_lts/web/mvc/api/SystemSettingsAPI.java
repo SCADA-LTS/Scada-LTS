@@ -7,7 +7,6 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -170,13 +169,13 @@ public class SystemSettingsAPI {
         return result;
     }
 
-    @PostMapping(value = "/saveSMSDomain", consumes = "application/json")
-    public ResponseEntity<String> saveSMSMail(HttpServletRequest request, @RequestBody JsonSettingsEmail jsonSettingsEmail) {
+    @PostMapping(value = "/saveSMSDomain", consumes = {"text/plain", "application/*"})
+    public ResponseEntity<String> saveSMSDomainPost(HttpServletRequest request, @RequestBody JsonSettingsSmsDomain smsDomain) {
         LOG.info("/api/systemSettings/saveSMSDomain");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                systemSettingsService.saveEmailSettings(jsonSettingsEmail);
+                systemSettingsService.saveSMSDomain(smsDomain.getDomainName());
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
