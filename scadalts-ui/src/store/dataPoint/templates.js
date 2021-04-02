@@ -129,7 +129,17 @@ export const chartRenderersTemplates = [
 ];
 
 export const eventRenderersTemplates = [
-	{},
+	{
+		typeName: 'eventTextRendererNone',
+		def: {
+			id: 0,
+			name: 'eventTextRendererNone',
+			exportName: 'EVENT_NONE',
+			nameKey: 'textRenderer.none',
+			supportedDataTypes: [1,2,3,4,5],
+		},
+		text: null,
+	},
 	{
 		zeroLabel: '',
 		oneLabel: '',
