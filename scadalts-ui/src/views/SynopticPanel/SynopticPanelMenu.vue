@@ -5,6 +5,7 @@
             <v-col xs="8">
                 <h1>Synoptic Panel</h1>
             </v-col>
+
             <v-col xs="2" class="row justify-end">
                 <SynopticPanelCreator @created="createSynopticPanel($event)"></SynopticPanelCreator>
                 <v-btn v-if="!!this.activePanel" elevation="0" fab @click="editSynopticPanel" class="small-margin">
@@ -14,6 +15,7 @@
                     <v-icon>mdi-minus-circle</v-icon>
                 </v-btn>
             </v-col>
+            
             <v-col xs="2">
                 <v-select
                     label="Select panel"
@@ -27,9 +29,11 @@
             </v-col>
         </v-row>
     </v-container>
+
     <v-container fluid>
         <router-view ref="panel" @loaded="loadedSynopticPanel($event)"></router-view>
     </v-container>
+
     <ConfirmationDialog
 			:btnvisible="false"
 			:dialog="deletePanelDialog"

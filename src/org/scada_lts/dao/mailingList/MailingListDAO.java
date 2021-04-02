@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.rowmappers.ScadaObjectIdRowMapper;
 import org.scada_lts.utils.QueryUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -129,17 +130,17 @@ public class MailingListDAO {
 			return mailingList;
 		}
 	}
-
-	private class SimpleMailingListRowMapper implements RowMapper<ScadaObjectIdentifier> {
-		@Override
-		public ScadaObjectIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new ScadaObjectIdentifier(
-					rs.getInt(COLUMN_NAME_ID),
-					rs.getString(COLUMN_NAME_XID),
-					rs.getString(COLUMN_NAME_NAME)
-			);
-		}
-	}
+//
+//	private class SimpleMailingListRowMapper implements RowMapper<ScadaObjectIdentifier> {
+//		@Override
+//		public ScadaObjectIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
+//			return new ScadaObjectIdentifier(
+//					rs.getInt(COLUMN_NAME_ID),
+//					rs.getString(COLUMN_NAME_XID),
+//					rs.getString(COLUMN_NAME_NAME)
+//			);
+//		}
+//	}
 
 	public MailingList getMailingList(int id) {
 
@@ -183,7 +184,7 @@ public class MailingListDAO {
 
 	public List<ScadaObjectIdentifier> getSimpleMailingLists() {
 		String templateSelectOrderBy = MAILING_LIST_SELECT + "order by name";
-		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new SimpleMailingListRowMapper());
+		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new ScadaObjectIdRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

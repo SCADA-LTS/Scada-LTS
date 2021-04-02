@@ -9,7 +9,7 @@ import RecipientList from './views/RecipientList';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
 import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
-import SynopticPanel from './views/SynopticPanel';
+import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
 
 Vue.use(Router);
 
@@ -69,7 +69,7 @@ export default new Router({
 			children: [
 				{
 					path:':id',
-					component: SynopticPanel
+					component: SynopticPanelItem
 				}
 			]
 		},

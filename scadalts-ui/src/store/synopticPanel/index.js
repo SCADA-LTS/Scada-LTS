@@ -7,31 +7,29 @@ const storeSynopticPanel = {
 
     actions: {
         fetchSynopticPanelList({dispatch}) {
-            return dispatch('requestGet', `/synoptic-panel/list`);
+            return dispatch('requestGet', `/synoptic-panels`);
         },
 
         fetchSynopticPanel({dispatch}, id) {
-            return dispatch('requestGet', `/synoptic-panel/getId/${id}`);
+            return dispatch('requestGet', `/synoptic-panels/${id}`);
         },
         
         createSynopticPanel({dispatch}, synopticPanel) {
             return dispatch('requestPost', {
-                url: `/synoptic-panel/create`,
+                url: `/synoptic-panels`,
                 data: synopticPanel
             });
         },
 
         deleteSynopticPanel({dispatch}, id) {
-            return dispatch('requestGet', `/synoptic-panel/deleteId/${id}`);
-            //TODO: change request type
+            return dispatch('requestDelete', `/synoptic-panels/${id}`);
         },
 
         updateSynopticPanel({dispatch}, synopticPanel) {
-            return dispatch('requestPost', {
-                url: `/synoptic-panel/create`,
+            return dispatch('requestPut', {
+                url: `/synoptic-panels`,
                 data: synopticPanel
             });
-            //TODO: Create separate Put Request
         },    
     }
 }

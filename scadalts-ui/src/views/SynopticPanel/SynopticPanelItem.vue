@@ -30,6 +30,7 @@ import customComponentMixin from '../../components/SynopticPanel/CustomComponent
 import SynopticPanelItemEditor from "./SynopticPanelItemEditor.vue";
 
     export default {
+        name: 'SynopticPanelItem',
 
         mixins: [customComponentMixin],
 

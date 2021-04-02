@@ -1,13 +1,13 @@
 package org.scada_lts.web.mvc.api.components.synoptic_panel;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import org.scada_lts.dao.model.synopticpanel.SynopticPanelDTO;
-import org.scada_lts.mango.service.ViewService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.SynopticPanelService;
 import org.scada_lts.service.model.SynopticPanel;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,149 +15,113 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for Synoptic Panels
+ * <p>
+ * Using the REST API best practices for naming endpoints
+ * https://nordicapis.com/10-best-practices-for-naming-api-endpoints/
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
 @Controller
+@RequestMapping(path = "/api/synoptic-panels")
 public class SynopticPanelAPI {
+
+    private static final Log LOG = LogFactory.getLog(SynopticPanelAPI.class);
+    private static final String LOG_PREFIX = "/api/synoptic-panels";
 
     @Resource
     SynopticPanelService synopticPanelService;
 
-    @RequestMapping(value = "/api/synoptic-panel/time", method = RequestMethod.GET)
-    public ResponseEntity<String> getSynopticPanel(HttpServletRequest request) {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/api/synoptic-panel/list", method = RequestMethod.GET)
-    public ResponseEntity<String> getPanelList(HttpServletRequest request) {
+    /**
+     * Use universal ScadaObjectIdentifier Class
+     * to send a list of objects without details.
+     *
+     * @param request HTTP request with user data.
+     * @return SynopticPanelList
+     */
+    @GetMapping(value = "")
+    public ResponseEntity<List<ScadaObjectIdentifier>> getSynopticPanels(HttpServletRequest request) {
+        LOG.info("GET:" + LOG_PREFIX);
         try {
             User user = Common.getUser(request);
-
-            if(user != null) {
-                List<SynopticPanel> listSynopticPanels;
-                listSynopticPanels = synopticPanelService.getPanelSelectList();
-                List<SynopticPanelListJSON> list = new ArrayList<>();
-                for(SynopticPanel sp:listSynopticPanels) {
-                    SynopticPanelListJSON splJSON = new SynopticPanelListJSON(
-                            sp.getId(), sp.getXid(), sp.getName()
-                    );
-                    list.add(splJSON);
-                }
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(list);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
-            }
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @RequestMapping(value = "/api/synoptic-panel/getId/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> getSynopticPanel(@PathVariable("id") int id, HttpServletRequest request) {
-
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                SynopticPanel sp = synopticPanelService.getSynopticPanel(id);
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(sp);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
-            }
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-//            e.printStackTrace();
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @RequestMapping(value = "/api/synoptic-panel/deleteId/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> deleteSynopticPanel(@PathVariable("id") int id, HttpServletRequest request) {
-
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                SynopticPanel synopticPanel = new SynopticPanel();
-                synopticPanel.setId(id);
-                synopticPanelService.deletePanel(synopticPanel);
-                return new ResponseEntity<String>("Done", HttpStatus.OK);
-            }
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-//            e.printStackTrace();
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-
-
-    @RequestMapping(value = "/api/synoptic-panel/create", method = RequestMethod.POST)
-    public ResponseEntity<String> createSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanelDTO synopticPanelDTO) {
-        ResponseEntity<String> result;
-
-        try {
-            User user = Common.getUser(request);
-            if(user.isAdmin()) {
-                SynopticPanel synopticPanel = new SynopticPanel();
-                synopticPanel.setId(synopticPanelDTO.getId());
-                synopticPanel.setName(synopticPanelDTO.getName());
-                synopticPanel.setXid(synopticPanelDTO.getXid());
-                synopticPanel.setVectorImage(synopticPanelDTO.getVectorImage());
-                synopticPanel.setComponentData(synopticPanelDTO.getComponentData());
-                synopticPanelService.savePanel(synopticPanel);
-                result = new ResponseEntity<String>("Done", HttpStatus.OK);
+            if (user != null) {
+                return new ResponseEntity<>(synopticPanelService.getSimpleSynopticPanelsList(), HttpStatus.OK);
             } else {
-                result = new ResponseEntity<String>("Not Logged In", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            result = new ResponseEntity<String>("Something went wrong ",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
-
-}
-
-class SynopticPanelListJSON implements Serializable {
-    private long id;
-    private String xid;
-    private String name;
-
-    SynopticPanelListJSON(long id, String xid, String name) {
-        this.setId(id);
-        this.setXid(xid);
-        this.setName(name);
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<SynopticPanel> getSynopticPanel(@PathVariable("id") int id, HttpServletRequest request) {
+        LOG.info("GET:" + LOG_PREFIX + "/" + id);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(synopticPanelService.getSynopticPanel(id), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e1) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public long getId() {
-        return id;
+    @PostMapping(value = "")
+    public ResponseEntity<SynopticPanel> createSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanel requestBody) {
+        LOG.info("POST:" + LOG_PREFIX + "/" + requestBody.getName());
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return new ResponseEntity<>(synopticPanelService.createSynopticPanel(requestBody), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @PutMapping(value = "")
+    public ResponseEntity<SynopticPanel> updateSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanel requestBody) {
+        LOG.info("PUT:" + LOG_PREFIX + "/" + requestBody.getName());
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return new ResponseEntity<>(synopticPanelService.updateSynopticPanel(requestBody), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public String getXid() {
-        return xid;
-    }
-
-    public void setXid(String xid) {
-        this.xid = xid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> deleteSynopticPanel(@PathVariable("id") int id, HttpServletRequest request) {
+        LOG.info("DELETE:" + LOG_PREFIX + "/" + id);
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(synopticPanelService.deleteSynopticPanel(id) != -1) {
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
 

@@ -1,40 +1,42 @@
 package org.scada_lts.service;
 
-import com.serotonin.mango.Common;
 import org.scada_lts.dao.SynopticPanelDAO;
-import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.model.SynopticPanel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for Synoptic Panels
+ * Handle business logic for this objects.
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
 @Service
 public class SynopticPanelService {
 
-    private SynopticPanelDAO spDAO = new SynopticPanelDAO();
+    private final SynopticPanelDAO synopticPanelDAO = new SynopticPanelDAO();
 
-    public SynopticPanelService() {
-        spDAO = new SynopticPanelDAO();
-    }
-
-    public void savePanel(final SynopticPanel synopticPanel) {
-        if (synopticPanel.getId() == Common.NEW_ID) {
-            spDAO.create(synopticPanel);
-        } else {
-            spDAO.update(synopticPanel);
-        }
-    }
-
-    public void deletePanel(final SynopticPanel synopticPanel) {
-        spDAO.delete(synopticPanel);
-    }
-
-    public List<SynopticPanel> getPanelSelectList() {
-        List<SynopticPanel> synopticPanels = spDAO.getPanelSelectList();
-        return synopticPanels;
+    public List<ScadaObjectIdentifier> getSimpleSynopticPanelsList() {
+        return synopticPanelDAO.getBriefList();
     }
 
     public SynopticPanel getSynopticPanel(int id) {
-        return spDAO.findById(new Object[] {id});
+        return synopticPanelDAO.getById(id);
     }
+
+    public SynopticPanel createSynopticPanel(SynopticPanel synopticPanel) {
+        return (SynopticPanel) synopticPanelDAO.create(synopticPanel);
+    }
+
+    public SynopticPanel updateSynopticPanel(SynopticPanel synopticPanel) {
+        return (SynopticPanel) synopticPanelDAO.update(synopticPanel);
+    }
+
+    public int deleteSynopticPanel(int id) {
+        return (Integer) synopticPanelDAO.delete(id);
+    }
+
 }

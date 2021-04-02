@@ -2,23 +2,30 @@ package org.scada_lts.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.rowmappers.ScadaObjectIdRowMapper;
 import org.scada_lts.service.model.SynopticPanel;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
+/**
+ * Synoptic Panel Database Access Object
+ *
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
 @Repository
-public class SynopticPanelDAO implements GenericDAO<SynopticPanel> {
+public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
 
     private Log LOG = LogFactory.getLog(SynopticPanelDAO.class);
 
@@ -28,13 +35,15 @@ public class SynopticPanelDAO implements GenericDAO<SynopticPanel> {
     private static final String COLUMN_NAME_SP_VECTOR_IMAGE = "vectorImage";
     private static final String COLUMN_NAME_SP_COMPONENT_DATA = "componentData";
 
+    private static final String TABLE_NAME = "synopticPanels";
+
     private static final String SP_SELECT_LIST = ""
             + "select "
             + COLUMN_NAME_SP_ID + ", "
             + COLUMN_NAME_SP_XID + ", "
             + COLUMN_NAME_SP_NAME + " "
             + "from "
-            + "synopticPanels";
+            + TABLE_NAME;
 
     private static final String SP_SELECT = ""
             + "select "
@@ -44,7 +53,7 @@ public class SynopticPanelDAO implements GenericDAO<SynopticPanel> {
             + COLUMN_NAME_SP_VECTOR_IMAGE + ", "
             + COLUMN_NAME_SP_COMPONENT_DATA + " "
             + "from "
-            + "synopticPanels";
+            + TABLE_NAME;
 
     private static final String SP_INSERT = ""
             + "insert synopticPanels("
@@ -67,94 +76,80 @@ public class SynopticPanelDAO implements GenericDAO<SynopticPanel> {
             + "delete from synopticPanels where "
             + COLUMN_NAME_SP_ID + "=?";
 
-    //create table synopticPanels (id int, xid varchar(255), name varchar(255), vectorImage TEXT, componentData TEXT);
-    // mysql> create table synopticPanels (id int NOT NULL AUTO_INCREMENT, xid varchar(255), name varchar(255), vectorImage TEXT, componentData TEXT, CONSTRAINT synopticPanels_pk PRIMARY KEY (id));
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     @Override
-    public void update(SynopticPanel entity) {
-        DAO.getInstance().getJdbcTemp().update(SP_UPDATE, new Object[]{
-                entity.getXid(),
-                entity.getName(),
-                entity.getVectorImage(),
-                entity.getComponentData(),
-                entity.getId(),
-        });
-
-    }
-
-    @Override
-    public void delete(SynopticPanel entity) {
-        DAO.getInstance().getJdbcTemp().update(SP_DELETE, new Object[] { entity.getId() });
-    }
-
-    class SynopticRowMapper implements RowMapper<SynopticPanel> {
-        public SynopticPanel mapRow(ResultSet rs, int rowNum) throws SQLException {
-            SynopticPanel sp = new SynopticPanel();
-            sp.setId(rs.getInt(COLUMN_NAME_SP_ID));
-            sp.setXid(rs.getString(COLUMN_NAME_SP_XID));
-            sp.setName(rs.getString(COLUMN_NAME_SP_NAME));
-            sp.setVectorImage(rs.getString(COLUMN_NAME_SP_VECTOR_IMAGE));
-            sp.setComponentData(rs.getString(COLUMN_NAME_SP_COMPONENT_DATA));
-            return sp;
-        }
-    }
-
-    class SynopticListRowMapper implements RowMapper<SynopticPanel> {
-        public SynopticPanel mapRow(ResultSet rs, int rowNum) throws SQLException {
-            SynopticPanel sp = new SynopticPanel();
-            sp.setId(rs.getInt(COLUMN_NAME_SP_ID));
-            sp.setXid(rs.getString(COLUMN_NAME_SP_XID));
-            sp.setName(rs.getString(COLUMN_NAME_SP_NAME));
-            return sp;
-        }
-    }
-
-    @Override
-    public List<SynopticPanel> findAllWithUserName() {
-        return null;
-    }
-
-    public List<SynopticPanel> findAll() {
-        return (List<SynopticPanel>) DAO.getInstance().getJdbcTemp().query(SP_SELECT_LIST, new Object[]{}, new SynopticRowMapper());
-    }
-
-    @Override
-    public SynopticPanel findById(Object[] pk) {
-        try {
-            return (SynopticPanel) DAO.getInstance().getJdbcTemp().queryForObject(SP_SELECT + " where " + COLUMN_NAME_SP_ID + "=?", pk, new SynopticRowMapper());
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public List<SynopticPanel> filtered(String filter, Object[] argsFilter, long limit) {
-        return null;
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    @Override
-    public Object[] create(final SynopticPanel entity) {
+    public Object create(SynopticPanel entity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        DAO.getInstance().getJdbcTemp().update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(SP_INSERT, Statement.RETURN_GENERATED_KEYS);
+            new ArgumentPreparedStatementSetter(new Object[]{
+                    entity.getXid(),
+                    entity.getName(),
+                    entity.getVectorImage(),
+                    entity.getComponentData()
+            }).setValues(ps);
+            return ps;
+        }, keyHolder);
+        entity.setId(keyHolder.getKey().intValue());
+        return entity;
+    }
 
-        DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(SP_INSERT, Statement.RETURN_GENERATED_KEYS);
-                new ArgumentPreparedStatementSetter(new Object[]{
+    @Override
+    public List<ScadaObjectIdentifier> getBriefList() {
+        return DAO.getInstance().getJdbcTemp()
+                .query(
+                        ScadaObjectIdRowMapper.selectScadaObjectIdFrom(TABLE_NAME),
+                        new ScadaObjectIdRowMapper()
+                );
+    }
+
+    @Override
+    public List<SynopticPanel> getAll() {
+        return DAO.getInstance().getJdbcTemp()
+                .query(SP_SELECT_LIST, new SynopticPanelRowMapper());
+    }
+
+    @Override
+    public SynopticPanel getById(int id) throws EmptyResultDataAccessException {
+        return DAO.getInstance().getJdbcTemp()
+                .queryForObject(
+                        SP_SELECT + " where " + COLUMN_NAME_SP_ID + "=?",
+                        new Object[]{id},
+                        new SynopticPanelRowMapper()
+                );
+    }
+
+    @Override
+    public Object update(SynopticPanel entity) {
+        DAO.getInstance().getJdbcTemp()
+                .update(
+                        SP_UPDATE,
                         entity.getXid(),
                         entity.getName(),
                         entity.getVectorImage(),
-                        entity.getComponentData()
-                }).setValues(ps);
-                return ps;
-            }
-        }, keyHolder);
-        entity.setId(keyHolder.getKey().intValue());
-        return new Object[]{keyHolder.getKey().intValue()};
+                        entity.getComponentData(),
+                        entity.getId());
+        return getById(entity.getId());
     }
 
-    public List<SynopticPanel> getPanelSelectList() {
-        return DAO.getInstance().getJdbcTemp().query(SP_SELECT_LIST, new SynopticListRowMapper());
+    @Override
+    public Object delete(int id) {
+        try {
+            DAO.getInstance().getJdbcTemp().update(SP_DELETE, id);
+            return 0;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    static class SynopticPanelRowMapper implements RowMapper<SynopticPanel> {
+        public SynopticPanel mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new SynopticPanel(
+                    rs.getInt(COLUMN_NAME_SP_ID),
+                    rs.getString(COLUMN_NAME_SP_XID),
+                    rs.getString(COLUMN_NAME_SP_NAME),
+                    rs.getString(COLUMN_NAME_SP_VECTOR_IMAGE),
+                    rs.getString(COLUMN_NAME_SP_COMPONENT_DATA)
+            );
+        }
     }
 }
