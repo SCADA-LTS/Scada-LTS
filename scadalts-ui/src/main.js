@@ -40,6 +40,7 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
 import * as uiv from 'uiv';
+import svgJS from './plugins/svg';
 
 library.add(
 	faCoffee,
@@ -73,6 +74,8 @@ const optionsLodash = { name: 'lodash' };
 Vue.use(VueLodash, optionsLodash);
 
 Vue.use(VueCookie);
+
+Vue.use(svgJS);
 
 Vue.config.devtools = true;
 

@@ -12,6 +12,7 @@ import storeUsers from './users';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
+import SynopticPanelModule from './synopticPanel';
 import axios from 'axios';
 
 import i18n from '@/i18n';
@@ -36,6 +37,7 @@ export default new Vuex.Store({
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,
+		SynopticPanelModule,
 	},
 	state: {
 		loggedUser: null,

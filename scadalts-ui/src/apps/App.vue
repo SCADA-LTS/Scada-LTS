@@ -20,6 +20,12 @@
 					</v-list-item-icon>
 					<v-list-item-title>{{ $t('plcalarms.notification') }}</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/synoptic-panel" v-if="isUserRoleAdmin">
+					<v-list-item-icon>
+						<v-icon>mdi-view-dashboard</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>Synoptic Panel</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/datapoint-list" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-database</v-icon>

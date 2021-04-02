@@ -169,6 +169,7 @@ class ValueToJSON implements Serializable {
     private String type;
     private TextRenderer textRenderer;
     private String chartColour;
+    private boolean enabled;
 
     void set(PointValueTime pvt, DataPointVO dpvo) {
         setValue(pvt.getValue());
@@ -178,6 +179,7 @@ class ValueToJSON implements Serializable {
         setTextRenderer(dpvo.getTextRenderer());
         setChartColour(dpvo.getChartColour());
         setFormattedValue(textRenderer.getText(pvt, 1) + textRenderer.getMetaText());
+        setEnabled(dpvo.isEnabled());
     }
 
     public String getValue() {
@@ -276,6 +278,14 @@ class ValueToJSON implements Serializable {
      */
     public void setFormattedValue(String formattedValue) {
         this.formattedValue = formattedValue;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
 
