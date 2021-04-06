@@ -1,37 +1,37 @@
 const storeSynopticPanel = {
-    state: { },
-    
-    getters: { },
-    
-    mutations: { },
+	state: {},
 
-    actions: {
-        fetchSynopticPanelList({dispatch}) {
-            return dispatch('requestGet', `/synoptic-panels`);
-        },
+	getters: {},
 
-        fetchSynopticPanel({dispatch}, id) {
-            return dispatch('requestGet', `/synoptic-panels/${id}`);
-        },
-        
-        createSynopticPanel({dispatch}, synopticPanel) {
-            return dispatch('requestPost', {
-                url: `/synoptic-panels`,
-                data: synopticPanel
-            });
-        },
+	mutations: {},
 
-        deleteSynopticPanel({dispatch}, id) {
-            return dispatch('requestDelete', `/synoptic-panels/${id}`);
-        },
+	actions: {
+		fetchSynopticPanelList({ dispatch }) {
+			return dispatch('requestGet', `/synoptic-panels`);
+		},
 
-        updateSynopticPanel({dispatch}, synopticPanel) {
-            return dispatch('requestPut', {
-                url: `/synoptic-panels`,
-                data: synopticPanel
-            });
-        },    
-    }
-}
+		fetchSynopticPanel({ dispatch }, id) {
+			return dispatch('requestGet', `/synoptic-panels/${id}`);
+		},
+
+		createSynopticPanel({ dispatch }, synopticPanel) {
+			return dispatch('requestPost', {
+				url: `/synoptic-panels`,
+				data: synopticPanel,
+			});
+		},
+
+		deleteSynopticPanel({ dispatch }, id) {
+			return dispatch('requestDelete', `/synoptic-panels/${id}`);
+		},
+
+		updateSynopticPanel({ dispatch }, synopticPanel) {
+			return dispatch('requestPut', {
+				url: `/synoptic-panels`,
+				data: synopticPanel,
+			});
+		},
+	},
+};
 
 export default storeSynopticPanel;

@@ -62,8 +62,8 @@
 				</td>
 				<td>{{ item['activation-time'] }}</td>
 				<td>{{ item['inactivation-time'] }}</td>
-				<td>{{ item.eventTextRender}} </td>
-				<td>{{ item.name }}&nbsp;{{item.description}}</td>
+				<td>{{ item.eventTextRender }}</td>
+				<td>{{ item.name }}&nbsp;{{ item.description }}</td>
 			</tr>
 		</table>
 
@@ -138,9 +138,8 @@ export default {
 						this.showPagination = 'false';
 					}
 				}
-								
-				this.alarms = ret;
 
+				this.alarms = ret;
 			});
 		},
 		acknowledge() {
@@ -284,8 +283,8 @@ table {
 	width: 95%;
 }
 td {
-	 padding: 2px;
-	 border: 1px solid #ddd;
+	padding: 2px;
+	border: 1px solid #ddd;
 }
 th {
 	border: 1px solid #dddddd;

@@ -127,7 +127,7 @@ const storeSystemSettings = {
 				(r) => {
 					commit('setAuditEventTypes', r);
 					return r;
-				}
+				},
 			);
 		},
 
@@ -143,7 +143,7 @@ const storeSystemSettings = {
 				(r) => {
 					commit('setSystemEventTypes', r);
 					return r;
-				}
+				},
 			);
 		},
 
@@ -210,7 +210,7 @@ const storeSystemSettings = {
 		saveSmsDomainSettings({ state, dispatch }) {
 			return dispatch('requestPost', {
 				url: `/systemSettings/saveSMSDomain`,
-				data: {'domainName':state.smsDomainSettings},
+				data: { domainName: state.smsDomainSettings },
 			});
 		},
 
@@ -226,7 +226,6 @@ const storeSystemSettings = {
 				commit('setDefaultLoggingType', r.defaultLoggingType);
 				return r.defaultLoggingType;
 			});
-			
 		},
 
 		saveDefaultLoggingType({ state, dispatch }) {

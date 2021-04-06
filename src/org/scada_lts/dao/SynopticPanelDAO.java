@@ -27,7 +27,7 @@ import java.util.List;
 @Repository
 public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
 
-    private Log LOG = LogFactory.getLog(SynopticPanelDAO.class);
+    private static final Log LOG = LogFactory.getLog(SynopticPanelDAO.class);
 
     private static final String COLUMN_NAME_SP_ID = "id";
     private static final String COLUMN_NAME_SP_XID = "xid";
@@ -137,6 +137,7 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
             DAO.getInstance().getJdbcTemp().update(SP_DELETE, id);
             return 0;
         } catch (Exception e) {
+            LOG.error(e);
             return -1;
         }
     }

@@ -89,7 +89,6 @@ new Vue({
 
 Vue.use(uiv);
 
-
 if (window.document.getElementById('app-test') != undefined) {
 	new Vue({
 		render: (h) =>

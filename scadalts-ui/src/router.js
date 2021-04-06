@@ -68,10 +68,10 @@ export default new Router({
 			component: SynopticPanelMenu,
 			children: [
 				{
-					path:':id',
-					component: SynopticPanelItem
-				}
-			]
+					path: ':id',
+					component: SynopticPanelItem,
+				},
+			],
 		},
 		{
 			path: '/example-ph',
