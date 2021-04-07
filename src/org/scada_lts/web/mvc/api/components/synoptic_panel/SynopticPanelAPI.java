@@ -34,7 +34,7 @@ public class SynopticPanelAPI {
     private static final String LOG_PREFIX = "/api/synoptic-panels";
 
     @Resource
-    SynopticPanelService synopticPanelService;
+    private SynopticPanelService synopticPanelService;
 
     /**
      * Use universal ScadaObjectIdentifier Class

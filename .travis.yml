@@ -16,7 +16,6 @@ before_script:
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
-- npm install
 - npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH $TRAVIS_COMMIT $TRAVIS_PULL_REQUEST $TRAVIS_PULL_REQUEST_BRANCH
 - cd ../
 language: java
@@ -25,12 +24,13 @@ jdk:
 services:
 - docker
 - mysql
-script: ant war && ant junit
+script: ant build && ant junit && ant deploy-war
 branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^release.*$/"
+  - "/^feature/#1607.*$/"
 notifications:
   email: false
 env:
