@@ -23,7 +23,8 @@
 				<th v-if="showSelectToAcknowledge == 'true'"></th>
 				<th>Activation Timestamp</th>
 				<th>Inactivation Timestamp</th>
-				<th>Variable name</th>
+				<th>Event message</th>
+				<th>Variable name and description</th>
 			</tr>
 			<tr
 				v-for="(item, index) in alarms"
@@ -61,7 +62,8 @@
 				</td>
 				<td>{{ item['activation-time'] }}</td>
 				<td>{{ item['inactivation-time'] }}</td>
-				<td>{{ item.name }}</td>
+				<td>{{ item.eventTextRender}} </td>
+				<td>{{ item.name }}&nbsp;{{item.description}}</td>
 			</tr>
 		</table>
 
@@ -79,7 +81,7 @@
 		</SimplePanel>
 
 		<div v-if="showAcknowledgeBtn == 'true'" class="action_bottom">
-			<button v-on:click="acknowledge()">Acknowledge Störung/Alarms</button>
+			<v-btn v-on:click="acknowledge()">Acknowledge Störung/Alarms</v-btn>
 		</div>
 	</div>
 </template>
@@ -125,9 +127,7 @@ export default {
 			let loffset = String(recordsCount * (page - 1));
 			let llimit = String(recordsCount);
 
-			//store.dispatch('fakeGetLiveAlarms
 			store.dispatch('getLiveAlarms', { offset: loffset, limit: llimit }).then((ret) => {
-				this.alarms = ret;
 				if (this.alarms.length >= this.maximumNumbersOfRows || page > 1) {
 					if (this.showPagination == 'false') {
 						this.hidePagination = true;
@@ -138,6 +138,9 @@ export default {
 						this.showPagination = 'false';
 					}
 				}
+								
+				this.alarms = ret;
+
 			});
 		},
 		acknowledge() {
@@ -280,8 +283,10 @@ table {
 	border-collapse: collapse;
 	width: 95%;
 }
-
-td,
+td {
+	 padding: 2px;
+	 border: 1px solid #ddd;
+}
 th {
 	border: 1px solid #dddddd;
 	text-align: left;

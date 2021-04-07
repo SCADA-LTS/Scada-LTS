@@ -45,6 +45,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class MailingListsDwr extends BaseDwr {
 	private final Log log = LogFactory.getLog(MailingListsDwr.class);
+	private static final String DEFAULT_CRON = "1 */15 * * * ?";
 
 	public DwrResponseI18n init() {
 		DwrResponseI18n response = new DwrResponseI18n();
@@ -75,6 +76,10 @@ public class MailingListsDwr extends BaseDwr {
 		// Validate the given information. If there is a problem, return an
 		// appropriate error message.
 		MailingList ml = createMailingList(id, xid, name, entryBeans);
+
+		if(!collectInactiveEmails && (cronPattern == null || cronPattern.trim().isEmpty())) {
+			cronPattern = DEFAULT_CRON;
+		}
 
 		ml.getInactiveIntervals().addAll(inactiveIntervals);
 		ml.setDailyLimitSentEmailsNumber(collectInactiveEmailsNumber);

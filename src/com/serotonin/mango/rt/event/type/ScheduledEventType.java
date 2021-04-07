@@ -25,6 +25,9 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
+import com.serotonin.mango.vo.event.ScheduledEventVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
@@ -34,6 +37,8 @@ import com.serotonin.mango.db.dao.ScheduledEventDao;
 public class ScheduledEventType extends EventType {
     private int scheduleId;
     private int duplicateHandling = EventType.DuplicateHandling.IGNORE;
+
+    private static final Log LOG = LogFactory.getLog(ScheduledEventType.class);
 
     public ScheduledEventType() {
         // Required for reflection.
@@ -107,7 +112,16 @@ public class ScheduledEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", new ScheduledEventDao().getScheduledEvent(scheduleId).getXid());
+        setScheduledEventXid(map);
+    }
+
+    private void setScheduledEventXid(Map<String, Object> map) {
+        try {
+            ScheduledEventVO scheduledEvent = new ScheduledEventDao().getScheduledEvent(scheduleId);
+            map.put("XID", scheduledEvent.getXid());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     @Override

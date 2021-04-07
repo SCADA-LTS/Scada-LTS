@@ -51,7 +51,7 @@ public final class SendMsgUtils {
         } catch (Exception e) {
             LOG.error(MessageFormat.format("Info about email: {0}, StackTrace: {1}",
                     getInfoEmail(evt,notificationType,alias),
-                    e.getMessage()));
+                    ExceptionUtils.getStackTrace(e)));
             return false;
         }
     }
@@ -80,7 +80,7 @@ public final class SendMsgUtils {
         } catch (Exception e) {
             LOG.error(MessageFormat.format("Info about email: {0}, StackTrace: {1}",
                     getInfoEmail(evt,notificationType,alias),
-                    e.getMessage()));
+                    ExceptionUtils.getStackTrace(e)));
             return false;
         }
     }

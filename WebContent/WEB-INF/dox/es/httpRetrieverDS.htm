@@ -1,0 +1,16 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Esta fuente de datos se utiliza para reunir información genérica de los sitios web disponibles en la Internet, o de instalaciones internas disponibles en una intranet. Mediante mecanismos similares a los de un navegador web, la fuente de datos solicita información a los dispositivos habilitados para HTTP y luego utiliza expresiones regulares para extraer la información deseada. Esta es una fuente de datos de encuestas.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. El <b>Período de Actualización</b> determina la frecuencia de la petición HTTP. La <b>URL</b> es la dirección de la página que necesita ser analizada. Usa el icono <img src="images/bullet_go.png"/> para probar la URL. (Se abre en una nueva ventana o pestaña del navegador).</p>
+<p>Los campos <b>Tiempo de espera</b> y <b>Reintenta</b> determinan cuánto tiempo hay que esperar a que el servidor web devuelva la página, y cuántas veces hay que reintentar la conexión en caso de fallo. Si se agotan todos los intentos, se desencadena un evento de excepción de la fuente de datos.</p>

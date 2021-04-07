@@ -1,77 +1,22 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>El rendimiento de la interfaz de usuario representa la capacidad de respuesta de la interfaz de usuario. Esto incluye todas las actividades que son gestionadas por el mecanismo de sondeo largo, como el indicador de nivel máximo de alarma, la actualización de la lista de vigilancia, la actualización de la lista de eventos, etc. Si el host de Mango tiene una CPU de potencia limitada, se puede configurar el rendimiento de la interfaz de usuario a un nivel inferior para evitar que los navegadores de los usuarios consuman demasiada CPU del host.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<p>Si se marca la casilla "Enviar errores a la serotonina", las excepciones que esta instancia de Mango observe serán enviadas a la serotonina para su revisión. Si está modificando la fuente de Mango para sus propios fines, por favor, ponga este valor en desmarcado. </p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<p>Utilice la configuración de "eventos de purga" para establecer la edad máxima de un evento antes de que sea purgado de la base de datos. La purga borra permanentemente el evento y cualquier comentario del usuario asociado a él.</p>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
+<p>Utilice la configuración de "Purgar instancias de informes" para definir la edad máxima de una instancia de informe antes de ser purgada de la base de datos. La purga elimina permanentemente la instancia de informe. Es preferible fijar este valor lo más bajo posible porque los informes pueden consumir potencialmente mucho espacio de almacenamiento disponible. La purga puede evitarse estableciendo el atributo "prevenir la purga" en la instancia del informe.</p>
 
 <p>
-  El rendimiento de la UI corresponde respuesta de la interfaz de usuario.  
-  Esto incluye todas las actividades que se administran por el mecanismo de encuestas largas, como el indicador de alarma de nivel m&aacute;ximo, 
-la actualizaci&oacute;n de la lista de supervisi&oacute;n, actualizaciones de la  lista de eventos, etc. Si el servidor de la aplicaci&oacute;n 
-tiene poca capacidad de procesamiento (CPU peque&ntilde;o), puede ajustar el rendimiento de la interfaz de usuario en un nivel menor 
-para disminuir el consumo producido por los navegadores clientes en el  CPU del servidor.
-</p>
+  Haga clic en el botón <b>Purgar todos los datos</b> para borrar permanentemente todas las muestras puntuales que se encuentran actualmente en la base de datos. Esto puede ser útil para dar un "nuevo comienzo" a una instancia de Mango, especialmente si existen datos erróneos en las actividades de configuración y de puesta en marcha.</p>
 
-<p>
-  Cuando la opci&oacute;n "Enviar errores a Serotonin" est&aacute; activada, las excepciones observadas por esta instancia de Mango ser&aacute;n enviadas 
-a Serotonin Software para su revisi&oacute;n. Por favor mantenga esta casilla inactiva, si est&aacute; realizando cambios en el c&oacute;digo de la aplicaci&oacute;n 
-para sus propios prop&oacute;sitos.
-</p>
-
-<p>
-  Utilice la configuraci&oacute;n de "Purgar eventos" para configurar el tiempo m&aacute;ximo de permanencia de un evento dentro de la base de datos 
-antes de ser eliminado del hist&oacute;rico. Purgar elimina los eventos de forma permanente de la base de datos, al igual que cualquier comentario 
-que haya sido ingresado por los usuarios sobre estos.
-</p>
-
-<p>
-  Utilice la configuraci&oacute;n "Purgar reporte de instancias" para configurar el tiempo m&aacute;ximo que permanecer&aacute; un reporte antes de ser eliminado 
-de la base de datos. Al purgar se elimina permanetemente el reporte de la instancia. La mejor pr&aacute;ctica es mantener este valor lo m&aacute;s bajo posible 
-ya que los reportes consumen grandes cantidades de espacio de almacenamiento en disco. La acci&oacute;n de purgar los reportes puede evitarse 
-configurando el atributo "Prevenir la purga" en la instancia del reporte.
-</p>
-
-<p>
-  Haga clic en el bot&oacute;n <b>Purgar todos los Datos</b> para eliminar todos los puntos de ejemplo que est&eacute;n en la base de datos. 
-Esto es &uacute;til cuando se quiere dar a la instalaci&oacute;n del sistema un "inicio limpio", especialmente si existen datos "no esenciales" 
-en las actividades de configuraci&oacute;n y de instalaci&oacute;n. 
-</p>
-
-<p>
- Utilice la configuraci&oacute;n "Descarte valores de puntos fechados en el futuro" para definir la cantidad m&aacute;xima de tiempo en el futuro 
-que se aceptar&aacute;n datos nuevos para los valores de los puntos. Entonces al presentarse datos con estampa de tiempo mayor a este valor se descartar&aacute;n, 
-y se escribir&aacute; un mensaje de error en el registro.
-</p>
+<p>Utilice los ajustes de "Rechazar valores de puntos en una fecha posterior" para definir el tiempo máximo en el futuro en que los puntos de datos aceptarán nuevos valores. Cualquier valor con una marca de tiempo que exceda este valor será rechazado, y se escribirá un mensaje de error en el registro.</p>

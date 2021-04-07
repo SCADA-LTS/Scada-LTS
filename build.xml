@@ -85,7 +85,7 @@
     <path id="Web App Libraries.libraryclasspath">
         <pathelement location="WebContent/WEB-INF/lib/OneWireAPI.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/RXTXcomm.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/SNMP4J.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/snmp4j-2.8.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/activation.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/axis.jar"/>
@@ -601,6 +601,10 @@
 			</test>
 
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.utils.UpdateValuePointPropertiesTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>

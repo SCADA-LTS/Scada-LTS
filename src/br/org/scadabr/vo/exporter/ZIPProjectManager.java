@@ -18,6 +18,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.web.mvc.api.json.ExportConfig;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,6 +44,8 @@ public class ZIPProjectManager {
 	private static final String uploadsFolder = "uploads" + FILE_SEPARATOR;
 	private static final String graphicsFolder = "graphics" + FILE_SEPARATOR;
 
+	private static final Log LOG = LogFactory.getLog(ZIPProjectManager.class);
+
 	private ZipFile zipFile;
 
 	private String projectName;
@@ -49,31 +55,54 @@ public class ZIPProjectManager {
 	private boolean includeUploadsFolder;
 	private boolean includeGraphicsFolder;
 
+	public ZIPProjectManager() {}
+
+	public ZIPProjectManager(ExportConfig config) {
+		this.projectName = config.getProjectName();
+		this.projectDescription = config.getProjectDescription();
+		this.includePointValues = config.isIncludePointValues();
+		this.maxPointValues = config.getPointValuesMaxZip();
+		this.includeUploadsFolder = config.isIncludeUploadsFolder();
+		this.includeGraphicsFolder = config.isIncludeGraphicsFolder();
+	}
+
 	public void exportProject(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+							  HttpServletResponse response) throws Exception {
 
 		extractExportParametersFromRequest(request);
 
 		response.setHeader("Content-Disposition", "attachment; filename="
 				+ projectName.replaceAll(" ", "") + ".zip");
 
-		List<FileToPack> filesToZip = new ArrayList<FileToPack>();
+		List<FileToPack> tempFiles = new ArrayList<>();
 
-		filesToZip.add(buildProjectDescriptionFile(projectName,
-				projectDescription));
+		tempFiles.add(buildProjectDescriptionFile(projectName, projectDescription));
+		tempFiles.add(buildJSONFile(JSON_FILE_NAME, includePointValues));
 
-		filesToZip.add(buildJSONFile(JSON_FILE_NAME, includePointValues));
-
+		List<FileToPack> filesToZip = new ArrayList<>();
 		if (includeUploadsFolder)
 			filesToZip.addAll(getUploadsFolderFiles());
 
 		if (includeGraphicsFolder)
 			filesToZip.addAll(getGraphicsFolderFiles());
 
+		filesToZip.addAll(tempFiles);
+
 		ServletOutputStream out = response.getOutputStream();
 		FileUtil.compactFiles(out,
 				filesToZip.toArray(new FileToPack[filesToZip.size()]));
 
+		deleteFiles(tempFiles);
+	}
+
+	private void deleteFiles(List<FileToPack> tempFiles) {
+		for(FileToPack file: tempFiles) {
+			try {
+				file.getFile().delete();
+			} catch (Exception ex) {
+				LOG.warn(ex.getMessage(), ex);
+			}
+		}
 	}
 
 	public ModelAndView setupToImportProject(HttpServletRequest request,
@@ -86,7 +115,7 @@ public class ZIPProjectManager {
 		try {
 			extractImportParametersFromRequest(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 			errorList.add(Common.getMessage("emport.uploadError",
 					e.getMessage()));
 			return new ModelAndView("import_result", model);
@@ -95,7 +124,7 @@ public class ZIPProjectManager {
 		try {
 			getProjectDescription(zipFile, model);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 			errorList.add(Common.getMessage("emport.invalidFile",
 					e.getMessage()));
 			return new ModelAndView("import_result", model);
@@ -171,7 +200,7 @@ public class ZIPProjectManager {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -203,8 +232,8 @@ public class ZIPProjectManager {
 		String jsonToExport = EmportDwr.createExportJSON(3, true, true, true,
 				true, true, true, true, true, true, true, true, true, true,
 				true, includePointValues, maxPointValues, true, true);
-		FileToPack file = new FileToPack(packAs, FileUtil.createTxtTempFile(
-				packAs, jsonToExport));
+		FileToPack file = new FileToPack(packAs,
+                FileUtil.createTxtTempFile(jsonToExport));
 		return file;
 	}
 
@@ -266,20 +295,30 @@ public class ZIPProjectManager {
 	}
 
 	private void extractExportParametersFromRequest(HttpServletRequest request) {
-		this.projectName = request.getParameter("projectName");
-		this.projectDescription = request.getParameter("projectDescription");
-		this.includePointValues = Boolean.parseBoolean(request
-				.getParameter("includePointValues"));
-		this.maxPointValues = Integer.parseInt(request
-				.getParameter("pointValuesMaxZip"));
+
+		if(this.projectName == null)
+			this.projectName = HttpParameterUtils.getValue("projectName", request, a -> a).orElse("");
+
+		if(this.projectDescription == null)
+			this.projectDescription = HttpParameterUtils.getValue("projectDescription", request, a -> a).orElse("");
+
+		if(this.maxPointValues <= 0)
+			this.maxPointValues = HttpParameterUtils.getValue("pointValuesMaxZip", request, Integer::valueOf)
+				.orElse(100);
 
 		System.out.println(this.maxPointValues);
-		this.includeUploadsFolder = Boolean.parseBoolean(request
-				.getParameter("includeUploadsFolder"));
-		this.includeGraphicsFolder = Boolean.parseBoolean(request
-				.getParameter("includeGraphicsFolder"));
 
+		if(!this.includePointValues)
+			this.includePointValues = HttpParameterUtils.getValue("includePointValues", request, Boolean::valueOf).orElse(false);
+
+		if(!this.includeUploadsFolder)
+			this.includeUploadsFolder = HttpParameterUtils.getValue("includeUploadsFolder", request, Boolean::valueOf).orElse(false);
+
+		if(!this.includeGraphicsFolder)
+			this.includeGraphicsFolder = HttpParameterUtils.getValue("includeGraphicsFolder", request, Boolean::valueOf).orElse(false);
 	}
+
+
 
 	private void extractImportParametersFromRequest(HttpServletRequest request)
 			throws Exception {
@@ -309,8 +348,7 @@ public class ZIPProjectManager {
 		projectName += Common.getVersion() + "\n";
 		projectName += new Date().toLocaleString();
 
-		File file = FileUtil.createTxtTempFile("tempprojectdescription",
-				projectName);
+		File file = FileUtil.createTxtTempFile(projectName);
 
 		return new FileToPack(PROJECT_DESCRIPTION_FILE_NAME, file);
 	}

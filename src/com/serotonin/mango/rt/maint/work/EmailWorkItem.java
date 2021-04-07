@@ -33,6 +33,8 @@ import com.serotonin.web.email.EmailSender;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Matthew Lohbihler
@@ -46,27 +48,32 @@ public class EmailWorkItem implements WorkItem {
         return WorkItem.PRIORITY_LOW;
     }
 
-    public static void queueEmail(String toAddr, MangoEmailContent content) throws AddressException {
+    public static void queueEmail(String toAddr, MangoEmailContent content) {
         queueEmail(new String[] { toAddr }, content);
     }
 
-    public static void queueEmail(String[] toAddrs, MangoEmailContent content) throws AddressException {
+    public static void queueEmail(String[] toAddrs, MangoEmailContent content) {
         queueEmail(toAddrs, content, null);
     }
 
-    public static void queueEmail(String[] toAddrs, MangoEmailContent content, Runnable[] postSendExecution)
-            throws AddressException {
+    public static void queueEmail(String[] toAddrs, MangoEmailContent content, Runnable[] postSendExecution) {
         queueEmail(toAddrs, content.getSubject(), content, postSendExecution);
     }
 
-    public static void queueEmail(String[] toAddrs, String subject, EmailContent content, Runnable[] postSendExecution)
-            throws AddressException {
+    public static void queueEmail(String[] toAddrs, String subject, EmailContent content, Runnable[] postSendExecution) {
         EmailWorkItem item = new EmailWorkItem();
 
-        item.toAddresses = new InternetAddress[toAddrs.length];
-        for (int i = 0; i < toAddrs.length; i++)
-            item.toAddresses[i] = new InternetAddress(toAddrs[i]);
+        Set<InternetAddress> addresses = new HashSet<>();
+        for (int i = 0; i < toAddrs.length; i++) {
+            try {
+                InternetAddress internetAddress = new InternetAddress(toAddrs[i]);
+                addresses.add(internetAddress);
+            } catch (AddressException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
 
+        item.toAddresses = addresses.toArray(new InternetAddress[]{});
         item.subject = subject;
         item.content = content;
         item.postSendExecution = postSendExecution;

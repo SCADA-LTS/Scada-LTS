@@ -41,6 +41,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -292,6 +293,10 @@ public class EventService implements MangoEvent {
 	}
 
 	public List<EventHandlerPlcDTO> getPlcEventHandlers() { return eventDAO.getPlcEventHandlers(); }
+
+	public List<EventHandlerPlcDTO> getEventHandlersByDatapointId(int datapointId) {
+		return eventDAO.getEventHandlersByDatapointId(datapointId);
+	}
 	
 	@Override
 	public EventHandlerVO getEventHandler(int eventHandlerId) {
@@ -393,6 +398,11 @@ public class EventService implements MangoEvent {
 		
 	}
 
+	@Override
+	public EventInstance getEvent(int eventId) {
+		return eventDAO.findById(new Object[]{eventId});
+	}
+
 	public void updateEventAckUserId(int userId) {
 		eventDAO.updateEventAckUserId(userId);
 	}
@@ -400,8 +410,8 @@ public class EventService implements MangoEvent {
 	public void deleteUserEvent(int userId) {
 		userEventDAO.delete(userId);
 	}
-	
-	// cache 
+
+	// cache
 
 	//
 	// /
@@ -409,11 +419,11 @@ public class EventService implements MangoEvent {
 	// /
 	// TODO rewrite
 	//
-	
+
 	private static Map<Integer, PendingEventCacheEntry> pendingEventCache = new ConcurrentHashMap<Integer, PendingEventCacheEntry>();
-	
+
 	private static final long CACHE_TTL = 300000; // 5 minutes
-	
+
 	static class PendingEventCacheEntry {
 		private final List<EventInstance> list;
 		private final long createTime;
@@ -459,6 +469,10 @@ public class EventService implements MangoEvent {
 
 	public static void clearCache() {
 		pendingEventCache.clear();
+	}
+
+	public List<EventDTO> getDataPointEventsWithLimit(int datapointId, int limit, int offset) {
+		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
 }
