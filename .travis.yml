@@ -4,7 +4,6 @@ before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
 - sudo apt-get install ant-optional
-before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
 - nvm install 12
@@ -24,7 +23,10 @@ jdk:
 services:
 - docker
 - mysql
-script: ant build && ant junit && ant deploy-war
+install:
+- ant build
+- ant junit
+- ant deploy-war
 branches:
   only:
   - "/^develop.*$/"
