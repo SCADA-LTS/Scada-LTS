@@ -26,7 +26,7 @@ services:
 install:
 - ant build
 - ant test-junit
-- ant deploy-war
+script: ant deploy-war
 branches:
   only:
   - "/^develop.*$/"
