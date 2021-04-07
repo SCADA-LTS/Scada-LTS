@@ -10,6 +10,7 @@ jobs:
   include:
     - stage: "preparation"
       name: "Prepare environment"
+      install: skip
       before_script:
         - sudo apt-get update
         - sudo apt-get install tomcat7
@@ -28,10 +29,13 @@ jobs:
         - cd ./scadalts-ui
         - npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH $TRAVIS_COMMIT $TRAVIS_PULL_REQUEST $TRAVIS_PULL_REQUEST_BRANCH
     - stage: "Testing"
+      install: skip
       script: ant test-junit
     - stage: "Building"
+      install: skip
       script: ant build
     - stage: "Deploy"
+      install: skip
       script: ant deploy-war
       after_script:
         - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz
