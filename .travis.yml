@@ -25,7 +25,6 @@ services:
   - mysql
 install:
   - ant build
-  - ant test-frontend-unit
   - ant test-junit
 script:
   - ant deploy-war
