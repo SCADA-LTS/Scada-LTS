@@ -27,6 +27,8 @@ Visit our [Wiki site](https://github.com/SCADA-LTS/Scada-LTS/wiki) to see projec
 
 Here is two of the several start options:
 
+## Installation
+
 ### To Run ScadaLTS on Docker:
 * Download and install Docker from: https://www.docker.com/
 * Download Docker Toolbox from: https://kitematic.com/
@@ -51,10 +53,33 @@ Here is two of the several start options:
 * Change config file env.properties set connection to db: `vim /var/lib/tomcat7/webapps/ScadaBR/WEB-INF/classes/env.properties`.
 * Restart tomcat7: `/etc/init.d/tomcat7 restart`
 
-
 ### What's included
-
 App ScadaBR.war
+
+## Lunching:
+### Examples of run tasks
+| Command | Explanation |
+| ---- | ---- |
+| ```ant run``` | Start Scada-LTS application using Tomcat server |
+| ```ant run-build``` | Build and start Scada-LTS application |
+| ```ant run-build-no-ui``` | Build and start Scada-LTS application without building user interface |
+| ```ant debug``` | Start Scada-LTS application in debug mode on Tomcat server |
+| ```ant debug-build``` | Build and start Scada-LTS application in debug mode |
+
+### Examples of build tasks
+| Command | Explanation |
+| ---- | ---- |
+| ```ant build``` | Build complete Scada-LTS application |
+| ```ant build-no-ui``` | Build just a core application  without Vue.js user interface |
+| ```ant update-ui``` | Update running application with latest frontend application changes |
+| ```ant deploy-war``` | Prepare WAR archive from existing resources<br/> _we suggest to perform **ant build** task before_ |
+
+### Examples of test tasks
+| Command | Explanation |
+| ---- | ---- |
+| ```ant test-junit``` | Launch Java Unit Tests |
+| ```ant test-frontend-unit``` | Launch Vue.js tests |
+
 
 ## Bugs and feature requests
 

@@ -392,7 +392,7 @@
 		<copy file="ScadaBR.war" todir="${env.CATALINA_HOME}/webapps" overwrite="true"/>
 	</target>
 
-	<target name="run-application" description="Start the Scada-LTS application">
+	<target name="run" description="Start the Scada-LTS application">
 		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
 			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
@@ -404,7 +404,7 @@
 		</exec>
 	</target>
 
-	<target name="debug-application" description="Start the Scada-LTS application in debug mode">
+	<target name="debug" description="Start the Scada-LTS application in debug mode">
 		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
 			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
@@ -432,7 +432,7 @@
 		build-ui
 	"/>
 
-	<target name="build-skip-ui" description="Build just a core application" depends="
+	<target name="build-no-ui" description="Build just a core application" depends="
 		init-core,
 		init-static-dependencies,
 		build-core"/>
@@ -445,14 +445,36 @@
 	<target name="run-build" description="Build and run application" depends="
 		build,
 		deploy,
-		run-application
+		run
+	"/>
+
+	<target name="run-build-no-ui" description="Build and run application without building frontend application" depends="
+		build-no-ui,
+		deploy,
+		run
 	"/>
 
 	<target name="debug-build" depends="
 		build,
 		deploy,
-		debug-application
+		debug
 	"/>
+
+	<target name="update-ui" depends="build-ui" description="Build and update User Interface with the latest changes inside Vue.js">
+		<copy includeemptydirs="false" todir="${env.CATALINA_HOME}/webapps/ScadaBR/resources/js-ui/app/css" taskname="copy app css">
+			<fileset dir="${src-js-ui.dir}/css/">
+				<include name="app.css"/>
+				<include name="chunk-vendors.css"/>
+			</fileset>
+		</copy>
+
+		<copy includeemptydirs="false" todir="${env.CATALINA_HOME}/webapps/ScadaBR/resources/js-ui/app/js" taskname="copy app.js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="app.js"/>
+				<include name="chunk-vendors.js"/>
+			</fileset>
+		</copy>
+	</target>
 
 	<path id="benchmark.classpath">
 		<pathelement location="lib/jmh-core-1.25.1.jar"/>

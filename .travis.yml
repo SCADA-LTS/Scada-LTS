@@ -12,7 +12,6 @@ before_install:
   - npx -v
   - node -v
   - env
-  - npm install -g @vue/cli
   - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
   - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
   - cd ./scadalts-ui
@@ -25,8 +24,8 @@ services:
   - docker
   - mysql
 install:
-  - ant test-frontend-unit
   - ant build
+  - ant test-frontend-unit
   - ant test-junit
 script:
   - ant deploy-war
