@@ -7,19 +7,19 @@
 		</template>
 
 		<v-card id="dialog-synoptic-panel-creation">
-			<v-card-title> Create Synoptic Panel </v-card-title>
+			<v-card-title> {{$t('synopticpanels.creator.title')}} </v-card-title>
 
 			<v-card-text>
 				<v-row>
 					<v-col cols="12">
-						<v-text-field label="Name" v-model="name" dense></v-text-field>
+						<v-text-field :label="$t('common.name')" v-model="name" dense></v-text-field>
 					</v-col>
 					<v-col cols="12">
-						<v-text-field label="Export ID" v-model="xid" dense></v-text-field>
+						<v-text-field :label="$t('common.xid')" v-model="xid" dense></v-text-field>
 					</v-col>
 					<v-col cols="12">
 						<v-file-input
-							label="SVG graphic file"
+							:label="$t('synopticpanels.creator.file.upload')"
 							@change="handleFileUpload($event)"
 							accept="image/svg+xml"
 						></v-file-input>
@@ -29,8 +29,8 @@
 
 			<v-card-actions>
 				<v-spacer></v-spacer>
-				<v-btn text @click="closeDialog()">Cancel</v-btn>
-				<v-btn color="primary" text @click="save()">Create!</v-btn>
+				<v-btn text @click="closeDialog()">{{$('common.cancel')}}</v-btn>
+				<v-btn color="primary" text @click="save()">{{$('common.create')}}</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>

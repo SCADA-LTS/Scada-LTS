@@ -24,6 +24,7 @@ services:
   - docker
   - mysql
 install:
+  - ant test-frontend-unit
   - ant build
   - ant test-junit
 script:

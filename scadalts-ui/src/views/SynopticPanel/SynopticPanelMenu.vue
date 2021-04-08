@@ -3,7 +3,7 @@
 		<v-container fluid id="synoptic-panel-header">
 			<v-row align="center">
 				<v-col cols="12" md="8">
-					<h1>Synoptic Panel</h1>
+					<h1>{{$t('synopticpanels.titile')}}</h1>
 				</v-col>
 
 				<v-col cols="12" md="2" class="row justify-end">
@@ -32,7 +32,7 @@
 
 				<v-col cols="12" md="2">
 					<v-select
-						label="Select panel"
+						:label="$t('synopticpanels.panel.select')"
 						v-model="activePanel"
 						@change="selectSynopticPanel"
 						:items="synopticPanelList"
@@ -55,8 +55,8 @@
 			:btnvisible="false"
 			:dialog="deletePanelDialog"
 			@result="deleteSynopticPanelResult"
-			title="Delete Synoptic panel?"
-			message="This operation cannot be undone!"
+			:title="$t('synopticpanels.dialog.delete.header')"
+			:message="$t('synopticpanels.dialog.delete.content')"
 		></ConfirmationDialog>
 
 		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">

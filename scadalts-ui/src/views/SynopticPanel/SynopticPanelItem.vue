@@ -2,7 +2,7 @@
 	<div>
 		<div id="panel-canvas"></div>
 		<div v-if="!panel">
-			<p>Nothing to show! Create your first Synoptic Panel</p>
+			<p>{{$t('synopticpanels.panel.blank')}}</p>
 		</div>
 		<div>
 			<SynopticPanelItemEditor

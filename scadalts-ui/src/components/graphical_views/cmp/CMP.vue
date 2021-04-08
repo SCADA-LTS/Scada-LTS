@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
 <template>
-
-	<!--<v-app>-->
 	<div>
 		<div class="cmp-flex-container">
 			<div id="cmp">
@@ -130,7 +128,7 @@
 				</div>
 			</collapse>
 		</div>
-	<!--</v-app> -->
+	</div>
 </template>
 
 <script>

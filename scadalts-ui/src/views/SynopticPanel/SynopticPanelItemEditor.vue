@@ -1,16 +1,16 @@
 <template>
 	<v-dialog max-width="800px" persistent v-model="dialogVisible">
 		<v-card>
-			<v-card-title class="headline"> Edit Synoptic Panel </v-card-title>
+			<v-card-title class="headline"> {{$t('synopticpanels.editor.title')}} </v-card-title>
 
 			<v-card-text>
 				<v-row>
 					<v-col cols="6">
-						<v-text-field label="Name" v-model="panel.name" dense></v-text-field>
+						<v-text-field :label="$t('common.name')" v-model="panel.name" dense></v-text-field>
 					</v-col>
 					<v-col cols="6">
 						<v-text-field
-							label="Export ID"
+							:label="$t('common.xid')"
 							v-model="panel.xid"
 							dense
 							disabled
@@ -47,8 +47,8 @@
 
 			<v-card-actions>
 				<v-spacer></v-spacer>
-				<v-btn text @click="closeDialog()">Close</v-btn>
-				<v-btn color="success" text @click="saveData()">Save</v-btn>
+				<v-btn text @click="closeDialog()">{{$t('common.cancel')}}</v-btn>
+				<v-btn color="success" text @click="saveData()">{{$t('common.save')}}</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>

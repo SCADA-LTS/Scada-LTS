@@ -213,6 +213,17 @@
 
 	</target>
 
+	<target name="test-frontend-unit" description="Test Scada-LTS Frontend application">
+		<exec dir="./scadalts-ui" executable="npm.cmd" osfamily="windows">
+			<arg value="run-script"/>
+			<arg value="test:unit"/>
+		</exec>
+		<exec dir="./scadalts-ui" executable="npm" osfamily="unix">
+			<arg value="run-script"/>
+			<arg value="test:unit"/>
+		</exec>
+	</target>
+
 	<target name="deploy-war" description="Build and deploy WAR archive.">
 		<record action="start" name="${war.log.name}"/>
 		<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>

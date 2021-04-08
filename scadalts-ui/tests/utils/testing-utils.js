@@ -10,6 +10,7 @@ import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import Vuetify from '@/plugins/vuetify';
 import i18n from '@/i18n';
+import router from '@/router.js';
 import * as uiv from 'uiv';
 
 import mainStore from '../mocks/store/index';
@@ -34,6 +35,7 @@ export function prepareMountWrapper(component, storeModules, propsData = {}, ...
 	localVue.use(i18n);
 	localVue.use(uiv);
 	localVue.use(Vuex);
+	localVue.use(router);
 
 	return mount(component, {
 		localVue,
@@ -72,6 +74,7 @@ export function prepareShallowMountWrapper(
 	localVue.use(i18n);
 	localVue.use(uiv);
 	localVue.use(Vuex);
+	localVue.use(router);
 
 	return shallowMount(component, {
 		localVue,
