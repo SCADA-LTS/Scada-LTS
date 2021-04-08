@@ -144,7 +144,7 @@
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/modbus4j-3.0.2.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar"/>
+<!--        <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar"/>-->
         <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-5.1.7-bin.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/ojdbc6.jar"/>
