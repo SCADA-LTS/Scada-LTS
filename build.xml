@@ -50,13 +50,13 @@
 		<echo message="${ant.project.name}: ${ant.file}"/>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="${build-project.src.dir}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="src"/>
-			<classpath refid="scadabr-1.1.0-RC.classpath"/>
+			<classpath refid="scada-lts.classpath"/>
 		</javac>
 		<record action="stop" name="${build-project.log.src.name}"/>
 		<record action="start" name="${build-project.log.test.name}"/>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="${build-project.test.dir}" includeantruntime="false" source="${source}" target="${target}">
 			<src path="test"/>
-			<classpath refid="scadabr-1.1.0-RC.classpath"/>
+			<classpath refid="scada-lts.classpath"/>
 			<classpath refid="test-unit.classpath"/>
 			<classpath refid="benchmark.classpath"/>
 		</javac>
@@ -98,7 +98,7 @@
 
 			<formatter type="plain" usefile="false" />
 
-			<classpath refid="scadabr-1.1.0-RC.classpath" />
+			<classpath refid="scada-lts.classpath" />
 			<classpath location="${build-project.test.dir}" />
 			<classpath refid="test-unit.classpath" />
 
@@ -236,21 +236,15 @@
 		<delete dir="${js-ui.dir}/ds"/>
 		<delete dir="${js-ui.dir}/modernWatchList"/>
 
-
-		<mkdir dir="${js-ui.dir}/app"/>
 		<mkdir dir="${js-ui.dir}/app/js"/>
 		<mkdir dir="${js-ui.dir}/app/css"/>
 		<mkdir dir="${js-ui.dir}/app/fonts"/>
-		<mkdir dir="${js-ui.dir}/views"/>
 		<mkdir dir="${js-ui.dir}/views/js"/>
 		<mkdir dir="${js-ui.dir}/views/css"/>
-		<mkdir dir="${js-ui.dir}/pointHierarchy"/>
 		<mkdir dir="${js-ui.dir}/pointHierarchy/js"/>
 		<mkdir dir="${js-ui.dir}/pointHierarchy/css"/>
-		<mkdir dir="${js-ui.dir}/ds"/>
 		<mkdir dir="${js-ui.dir}/ds/js"/>
 		<mkdir dir="${js-ui.dir}/ds/css"/>
-		<mkdir dir="${js-ui.dir}/modernWatchList"/>
 		<mkdir dir="${js-ui.dir}/modernWatchList/js"/>
 		<mkdir dir="${js-ui.dir}/modernWatchList/css"/>
 
@@ -276,38 +270,7 @@
 
 		<copy includeemptydirs="false" todir="${js-ui.dir}/app/fonts" taskname="copy app.js">
 			<fileset dir="${src-js-ui.dir}/fonts/">
-				<include name="glyphicons-halflings-regular.eot"/>
-				<include name="glyphicons-halflings-regular.ttf"/>
-				<include name="glyphicons-halflings-regular.woff"/>
-				<include name="glyphicons-halflings-regular.woff2"/>
-				<include name="materialdesignicons-webfont.eot"/>
-				<include name="materialdesignicons-webfont.ttf"/>
-				<include name="materialdesignicons-webfont.woff"/>
-				<include name="materialdesignicons-webfont.woff2"/>
-				<include name="Roboto-Black.woff"/>
-				<include name="Roboto-Black.woff2"/>
-				<include name="Roboto-BlackItalic.woff"/>
-				<include name="Roboto-BlackItalic.woff2"/>
-				<include name="Roboto-Bold.woff"/>
-				<include name="Roboto-Bold.woff2"/>
-				<include name="Roboto-BoldItalic.woff"/>
-				<include name="Roboto-BoldItalic.woff2"/>
-				<include name="Roboto-Light.woff"/>
-				<include name="Roboto-Light.woff2"/>
-				<include name="Roboto-LightItalic.woff"/>
-				<include name="Roboto-LightItalic.woff2"/>
-				<include name="Roboto-Medium.woff"/>
-				<include name="Roboto-Medium.woff2"/>
-				<include name="Roboto-MediumItalic.woff"/>
-				<include name="Roboto-MediumItalic.woff2"/>
-				<include name="Roboto-Regular.woff"/>
-				<include name="Roboto-Regular.woff2"/>
-				<include name="Roboto-ReqularItalic.woff"/>
-				<include name="Roboto-ReqularItalic.woff2"/>
-				<include name="Roboto-Thin.woff"/>
-				<include name="Roboto-Thin.woff2"/>
-				<include name="Roboto-ThinItalic.woff"/>
-				<include name="Roboto-ThinItalic.woff2"/>
+				<include name="**/*"/>
 			</fileset>
 		</copy>
 
@@ -647,7 +610,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/jna-4.1.0.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/jna-platform-4.1.0.jar"/>
 	</path>
-	<path id="scadabr-1.1.0-RC.classpath">
+	<path id="scada-lts.classpath">
 		<pathelement location="${build-project.src.dir}"/>
 		<path refid="Web App Libraries.libraryclasspath"/>
 		<path refid="EAR Libraries.libraryclasspath"/>
