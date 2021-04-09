@@ -2,11 +2,11 @@
 	<div>
 		<v-container fluid id="synoptic-panel-header">
 			<v-row align="center">
-				<v-col cols="12" md="8">
+				<v-col cols="12" xs="12" md="6" >
 					<h1>{{$t('synopticpanels.titile')}}</h1>
 				</v-col>
 
-				<v-col cols="12" md="2" class="row justify-end">
+				<v-col cols="12" xs="12" md="4" class="row justify-end">
 					<SynopticPanelCreator
 						@created="createSynopticPanel($event)"
 					></SynopticPanelCreator>
@@ -30,7 +30,7 @@
 					</v-btn>
 				</v-col>
 
-				<v-col cols="12" md="2">
+				<v-col cols="12" xs="12" md="2">
 					<v-select
 						:label="$t('synopticpanels.panel.select')"
 						v-model="activePanel"

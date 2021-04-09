@@ -81,7 +81,7 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                return new ResponseEntity<>(synopticPanelService.createSynopticPanel(requestBody), HttpStatus.OK);
+                return new ResponseEntity<>(synopticPanelService.createSynopticPanel(requestBody), HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

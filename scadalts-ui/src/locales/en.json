@@ -271,8 +271,6 @@
 	"synopticpanels.editor.title": "Edit Synoptic Panel",
 	"synopticpanels.dialog.delete.header": "Delete Synoptic Panel?",
 	"synopticpanels.dialog.delete.content": "This operation cannot be undone!",
-
-
 	"systemsettings.alert.purgedata.title": "Purge data?",
 	"systemsettings.audit.title": "Audit event alarm levels",
 	"systemsettings.database": "Using Database",

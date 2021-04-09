@@ -34,7 +34,7 @@ context('💠️ Test Synoptic Panel Menu Scenario', () => {
             expect(wrapper.find('button .mdi-plus')).to.exist;
         })
 
-        it('Is Activ Panel not defined', () => {
+        it('Is Active Panel not defined', () => {
             expect(wrapper.vm.activePanel).to.be.undefined;
         })
     })

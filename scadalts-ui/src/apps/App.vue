@@ -24,7 +24,7 @@
 					<v-list-item-icon>
 						<v-icon>mdi-view-dashboard</v-icon>
 					</v-list-item-icon>
-					<v-list-item-title>Synoptic Panel</v-list-item-title>
+					<v-list-item-title>{{$t('synopticpanels.titile')}}</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/datapoint-list" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
@@ -100,14 +100,10 @@
 				<router-view></router-view>
 			</v-container>
 		</v-main>
-
-		<v-footer app> </v-footer>
 	</v-app>
 </template>
 
 <script>
-import store from '../store';
-
 export default {
 	name: 'app',
 	components: {},
@@ -130,7 +126,7 @@ export default {
 	},
 	methods: {
 		async getUserRole() {
-			this.isUserRoleAdmin = await store.dispatch('getUserRole');
+			this.isUserRoleAdmin = await this.$store.dispatch('getUserRole');
 		},
 	},
 };

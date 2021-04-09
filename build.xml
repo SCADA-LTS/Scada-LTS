@@ -424,6 +424,7 @@
 	"/>
 
 	<target name="update-ui" depends="build-ui" description="Build and update User Interface with the latest changes inside Vue.js">
+		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
 		<copy includeemptydirs="false" todir="${env.CATALINA_HOME}/webapps/ScadaBR/resources/js-ui/app/css" taskname="copy app css">
 			<fileset dir="${src-js-ui.dir}/css/">
 				<include name="app.css"/>

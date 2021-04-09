@@ -4,17 +4,24 @@
 			<v-card-title class="headline"> {{$t('synopticpanels.editor.title')}} </v-card-title>
 
 			<v-card-text>
-				<v-row>
-					<v-col cols="6">
+				<v-row align="baseline">
+					<v-col cols="12" md="4">
 						<v-text-field :label="$t('common.name')" v-model="panel.name" dense></v-text-field>
 					</v-col>
-					<v-col cols="6">
+					<v-col cols="12" md="4">
 						<v-text-field
 							:label="$t('common.xid')"
 							v-model="panel.xid"
 							dense
 							disabled
 						></v-text-field>
+					</v-col>
+					<v-col cols="12" md="4">
+						<v-file-input
+							:label="$t('synopticpanels.creator.file.upload')"
+							@change="handleFileUpload($event)"
+							accept="image/svg+xml"
+						></v-file-input>
 					</v-col>
 				</v-row>
 
@@ -100,6 +107,26 @@ export default {
 		saveData() {
 			this.$emit('saved', this.graphicItems);
 			this.dialogVisible = false;
+		},
+
+		handleFileUpload(file) {
+			this.readFileContent(file)
+				.then((content) => {
+					this.panel.vectorImage = content;
+				})
+				.catch((e) => {
+					console.error(e);
+				});
+		},
+
+		readFileContent(file) {
+			const reader = new FileReader();
+			return new Promise((resolve, reject) => {
+				reader.onload = (event) => resolve(event.target.result);
+				reader.onerror = (error) => reject(error);
+				reader.onabort = () => reject("Canceled");
+				reader.readAsText(file, 'UTF-8');
+			});
 		},
 	},
 };

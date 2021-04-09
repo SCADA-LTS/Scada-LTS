@@ -29,8 +29,8 @@
 
 			<v-card-actions>
 				<v-spacer></v-spacer>
-				<v-btn text @click="closeDialog()">{{$('common.cancel')}}</v-btn>
-				<v-btn color="primary" text @click="save()">{{$('common.create')}}</v-btn>
+				<v-btn text @click="closeDialog()">{{$t('common.cancel')}}</v-btn>
+				<v-btn color="primary" text @click="save()">{{$t('common.create')}}</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
