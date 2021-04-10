@@ -3,57 +3,87 @@ package com.serotonin.mango.rt.maint.work;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork, AfterWork {
+abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
+        AfterWork, AfterWork.WorkSuccessFail, AfterWork.WorkFinally {
 
-    private static final Log log = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
+    private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
 
     @Override
     public final void execute() {
-        Set<Throwable> throwables = new HashSet<>();
+        Map<String, Exception> exceptions = new HashMap<>();
         try {
             try {
                 beforeWork();
-            } catch (Throwable throwable) {
-                throwables.add(throwable);
-                log.error(throwable.getMessage(), throwable);
+            } catch (Exception beforeWorkException) {
+                exceptions.put("beforeWork", beforeWorkException);
+                try {
+                    beforeWorkFail(beforeWorkException);
+                } catch (Exception beforeWorkFailException) {
+                    LOG.error(beforeWorkFailException.getMessage(), beforeWorkFailException);
+                    exceptions.put("beforeWorkFail", beforeWorkFailException);
+                }
                 return;
             }
             try {
                 work();
-            } catch (Throwable throwable) {
-                throwables.add(throwable);
-                workError(throwable);
+            } catch (Exception workException) {
+                exceptions.put("work", workException);
+                try {
+                    workFail(workException);
+                } catch (Exception workFailException) {
+                    LOG.error(workFailException.getMessage(), workFailException);
+                    exceptions.put("workFail", workFailException);
+                }
                 return;
             }
-            workSuccess();
-        } catch (Throwable throwable) {
-            log.error(throwable.getMessage(), throwable);
-            throwables.add(throwable);
+
+            try {
+                workSuccess();
+            } catch (Exception workSuccessException) {
+                exceptions.put("workSuccess", workSuccessException);
+                try {
+                    workSuccessFail(workSuccessException);
+                } catch (Exception workSuccessFailException) {
+                    LOG.error(workSuccessFailException.getMessage(), workSuccessFailException);
+                    exceptions.put("workSuccessFail", workSuccessFailException);
+                }
+            }
         } finally {
             try {
-                workFinally(throwables);
-            } catch (Throwable throwable) {
-                log.error(throwable.getMessage(), throwable);
+                workFinally(exceptions);
+            } catch (Exception workFinallyException) {
+                try {
+                    workFinallyFail(workFinallyException, exceptions);
+                } catch (Exception workFinallyFailException) {
+                    LOG.error(workFinallyFailException.getMessage(), workFinallyFailException);
+                }
             }
         }
     }
-
-    public abstract void work();
 
     @Override
     public void beforeWork() {}
 
     @Override
-    public void workError(Throwable throwable) {
-        log.error(throwable.getMessage(), throwable);
+    public void beforeWorkFail(Exception exception) {
+        LOG.error(exception.getMessage(), exception);
+    }
+
+    public abstract void work();
+
+    @Override
+    public void workSuccessFail(Exception exception) {
+        LOG.error(exception.getMessage(), exception);
     }
 
     @Override
-    public void workSuccess() {}
+    public void workFinally(Map<String, Exception> exceptions) {}
 
     @Override
-    public void workFinally(Set<Throwable> throwables) {}
+    public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
+        LOG.error(finallyException.getMessage(), finallyException);
+    }
 }

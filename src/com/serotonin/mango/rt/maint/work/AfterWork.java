@@ -1,26 +1,17 @@
 package com.serotonin.mango.rt.maint.work;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.Set;
+import java.util.Map;
 
 public interface AfterWork {
+    void workFail(Exception exception);
+    void workSuccess();
 
-    enum AfterWorkLog {
-        LOG;
-
-        private final Log log = LogFactory.getLog(AfterWork.class);
-
-        public void error(Object o, Throwable throwable) {
-            log.error(o, throwable);
-        }
+    interface WorkSuccessFail {
+        void workSuccessFail(Exception exception);
     }
 
-    default void workSuccess() {}
-    default void workFinally(Set<Throwable> throwables) {}
-
-    default void workError(Throwable throwable) {
-        AfterWorkLog.LOG.error(throwable.getMessage(), throwable);
+    interface WorkFinally {
+        void workFinally(Map<String, Exception> exceptions);
+        void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions);
     }
 }

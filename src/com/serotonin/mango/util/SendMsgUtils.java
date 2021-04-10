@@ -12,19 +12,23 @@ import com.serotonin.mango.rt.maint.work.EmailNotificationWorkItem;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import net.bull.javamelody.internal.common.LOG;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 public final class SendMsgUtils {
 
-    private SendMsgUtils() {}
-
     private static final Log LOG = LogFactory.getLog(SendMsgUtils.class);
+
+    private SendMsgUtils() {}
 
     public static boolean sendEmail(EventInstance evt, EmailHandlerRT.EmailNotificationType notificationType,
                                      Set<String> addresses, String alias, AfterWork afterWork) {
@@ -197,10 +201,16 @@ public final class SendMsgUtils {
 
     }
 
-    private static void validateConfig(String name, Object object) throws Exception {
-        if(object == null)
-            throw new IllegalStateException("Email config properties: " + name + " is null!");
-        if((object instanceof String) && ((String)object).isEmpty())
-            throw new IllegalStateException("Email config properties: " + name + " is empty!");
+    public static InternetAddress[] convertToInternetAddresses(String[] toAddresses) {
+        Set<InternetAddress> addresses = new HashSet<>();
+        for (int i = 0; i < toAddresses.length; i++) {
+            try {
+                InternetAddress internetAddress = new InternetAddress(toAddresses[i]);
+                addresses.add(internetAddress);
+            } catch (AddressException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+        return addresses.toArray(new InternetAddress[]{});
     }
 }

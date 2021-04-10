@@ -252,11 +252,11 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_createAndAddToQueueSenderMsg_fail_for_all_events_then_0_times_unscheduleEvent() {
+    public void when_scheduleTimeout_and_sendMsg_fail_for_all_events_then_0_times_unscheduleEvent() {
 
         //given:
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(), anyString(), anyObject());
 
@@ -268,11 +268,11 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_createAndAddToQueueSenderMsg_fail_for_event1_then_verify_times_unscheduleEvent_for_event2() {
+    public void when_scheduleTimeout_and_sendMsg_fail_for_event1_then_verify_times_unscheduleEvent_for_event2() {
 
         //given:
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendMsg(refEq(event1, "context"), anySet(), anyString(), anyObject());
         doAnswer(a -> {
@@ -303,7 +303,7 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
             return true;
         }).when(channelTypeMock).sendMsg(refEq(event1, "context"), anySet(), anyString(), anyObject());
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test execption"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test execption"));
             return true;
         }).when(channelTypeMock).sendMsg(refEq(event2, "context"), anySet(), anyString(), anyObject());
 
@@ -317,11 +317,11 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_createAndAddToQueueSenderMsg_fail_for_all_events_then_0_times_createAndAddToQueueSenderMsg_limit() {
+    public void when_scheduleTimeout_and_sendMsg_fail_for_all_events_then_0_times_sendLimit() {
 
         //given:
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(), anyString(), any(AfterWork.class));
 

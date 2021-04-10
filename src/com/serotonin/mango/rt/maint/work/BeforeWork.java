@@ -1,5 +1,6 @@
 package com.serotonin.mango.rt.maint.work;
 
 public interface BeforeWork {
-    default void beforeWork() {}
+    void beforeWork();
+    void beforeWorkFail(Exception exception);
 }

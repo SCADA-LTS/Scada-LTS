@@ -34,7 +34,21 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
     }
 
     @Override
-    public void scheduleEvent(EventHandlerVO eventHandler, EventInstance event) {
+    public boolean scheduleEvent(EventHandlerVO eventHandler, EventInstance event) {
+        if(event.getAlarmLevel() == AlarmLevels.NONE) {
+            log.warn("Event with alarm level NONE: event type:" + event.getEventType());
+            return false;
+        }
+        if(eventHandler.getHandlerType() != EventHandlerVO.TYPE_SMS &&
+                eventHandler.getHandlerType() != EventHandlerVO.TYPE_EMAIL) {
+            log.warn("Event handler type not supported:" + eventHandler.getClass().getSimpleName());
+            return false;
+        }
+        return schedule(eventHandler, event);
+    }
+
+    @Override
+    public void scheduleEventFail(EventHandlerVO eventHandler, EventInstance event) {
         if(event.getAlarmLevel() == AlarmLevels.NONE) {
             log.warn("Event with alarm level NONE: event type:" + event.getEventType());
             return;
@@ -44,7 +58,7 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
             log.warn("Event handler type not supported:" + eventHandler.getClass().getSimpleName());
             return;
         }
-        schedule(eventHandler, event);
+        scheduleFail(eventHandler, event);
     }
 
     @Override
@@ -66,9 +80,10 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
         }
     }
 
-    private void schedule(EventHandlerVO eventHandler, EventInstance event) {
+    private boolean schedule(EventHandlerVO eventHandler, EventInstance event) {
         List<MailingList> mailingLists = mailingListService.convertToMailingLists(eventHandler.getActiveRecipients());
 
+        boolean scheduled = false;
         for (MailingList mailingList : mailingLists) {
             if (mailingList.isCollectInactiveEmails()) {
                 ScheduledExecuteInactiveEventInstance inactiveEventInstance =
@@ -76,9 +91,27 @@ class ScheduledExecuteInactiveEventServiceImpl implements ScheduledExecuteInacti
                 if (!inactiveEventInstance.isActive()) {
                     try {
                         scheduledEventDAO.insert(inactiveEventInstance.getKey());
+                        scheduled = true;
                     } catch (Exception ex) {
                         log.error(ex.getMessage(), ex);
                     }
+                }
+            }
+        }
+        return scheduled;
+    }
+
+    private void scheduleFail(EventHandlerVO eventHandler, EventInstance event) {
+        List<MailingList> mailingLists = mailingListService.convertToMailingLists(eventHandler.getActiveRecipients());
+
+        for (MailingList mailingList : mailingLists) {
+            if (mailingList.isCollectInactiveEmails()) {
+                ScheduledExecuteInactiveEventInstance inactiveEventInstance =
+                        new ScheduledExecuteInactiveEventInstance(eventHandler, event, mailingList);
+                try {
+                    scheduledEventDAO.insert(inactiveEventInstance.getKey());
+                } catch (Exception ex) {
+                    log.error(ex.getMessage(), ex);
                 }
             }
         }

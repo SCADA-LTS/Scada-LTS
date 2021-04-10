@@ -2,13 +2,13 @@ package com.serotonin.mango.rt.maint.work;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.SendEmailConfig;
+import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.email.EmailSender;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
 
 public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
 
@@ -28,17 +28,14 @@ public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
         this.sendEmailConfig = sendEmailConfig;
     }
 
-    private static EmailNotificationWorkItem newInstance(String[] toAddrs, MangoEmailContent content,
+    private static EmailNotificationWorkItem newInstance(String[] toAddresses, MangoEmailContent content,
                                                          AfterWork afterWork,
                                                          SendEmailConfig sendEmailConfig) throws UnsupportedEncodingException, AddressException {
         InternetAddress fromAddress = new InternetAddress(sendEmailConfig.getFromAddr(),
                 sendEmailConfig.getPretty());
 
-        InternetAddress[] toAddresses = new InternetAddress[toAddrs.length];
-        for (int i = 0; i < toAddrs.length; i++)
-            toAddresses[i] = new InternetAddress(toAddrs[i]);
-
-        return new EmailNotificationWorkItem(afterWork, fromAddress, toAddresses,
+        InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddresses);
+        return new EmailNotificationWorkItem(afterWork, fromAddress, internetAddresses,
                 content, sendEmailConfig);
     }
 
@@ -58,22 +55,17 @@ public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
     }
 
     @Override
-    public void workError(Throwable throwable) {
-        afterWork.workError(throwable);
-    }
-
-    @Override
     public void workSuccess() {
         afterWork.workSuccess();
     }
 
     @Override
-    public void workFinally(Set<Throwable> throwables) {
-        afterWork.workFinally(throwables);
+    public void workFail(Exception exception) {
+        afterWork.workFail(exception);
     }
 
     @Override
     public int getPriority() {
-        return WorkItem.PRIORITY_LOW;
+        return WorkItem.PRIORITY_MEDIUM;
     }
 }

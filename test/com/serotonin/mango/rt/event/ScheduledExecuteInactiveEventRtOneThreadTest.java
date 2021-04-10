@@ -161,7 +161,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     }
 
     @Test
-    public void when_scheduleTimeout_for_createAndAddToQueueSenderMsg_success_then_verify_times_sendMsg_limit() {
+    public void when_scheduleTimeout_for_sendMsg_success_then_verify_times_sendLimit() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
@@ -182,6 +182,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
         //then:
         assertEquals(eventsNumber - invokeSendMsgTimes, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
@@ -192,17 +193,17 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     }
 
     @Test
-    public void when_scheduleTimeout_for_createAndAddToQueueSenderMsg_fail_then_verify_times_createAndAddToQueueSenderMsg_limit() {
+    public void when_scheduleTimeout_for_sendMsg_fail_then_verify_times_sendLimit() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
                 anyString(), anyObject());
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendLimit(any(EventInstance.class), anySet(), anyString(), anyObject());
 
@@ -211,10 +212,11 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
         List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
-        List<?> fromDatabase = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
+        //List<?> fromDatabase = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
 
         //then:
-        assertEquals(eventsNumber, fromDatabase.size());
+        assertEquals(eventsNumber, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
@@ -225,13 +227,13 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     }
 
     @Test
-    public void when_scheduleTimeout_for_createAndAddToQueueSenderMsg_fail_then_verify_times_createAndAddToQueueSenderMsg() {
+    public void when_scheduleTimeout_for_sendMsg_fail_then_verify_times_sendMsg() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
         String alias = eventHandler.getAlias();
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
                 anyString(), anyObject());
@@ -239,10 +241,11 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
         List<ScheduledEvent> result = inactiveEventsProvider.getScheduledEvents(Integer.MAX_VALUE);
-        List<?> fromDatabase = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
+        //List<?> fromDatabase = scheduledInactiveEventDAOMemory.select(Integer.MAX_VALUE);
 
         //then:
-        assertEquals(eventsNumber, fromDatabase.size());
+        assertEquals(eventsNumber, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
@@ -252,7 +255,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
     }
 
     @Test
-    public void when_scheduleTimeout_for_createAndAddToQueueSenderMsg_success_then_verify_times_createAndAddToQueueSenderMsg() {
+    public void when_scheduleTimeout_for_sendMsg_success_then_verify_times_sendMsg() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
@@ -270,6 +273,7 @@ public class ScheduledExecuteInactiveEventRtOneThreadTest {
 
         //then:
         assertEquals(eventsNumber - invokeSendMsgTimes, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 

@@ -40,7 +40,7 @@ import java.util.function.BiConsumer;
 
 public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boolean> {
 
-    private static final Log log = LogFactory.getLog(ScheduledExecuteInactiveEventRT.class);
+    private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventRT.class);
 
     private TimerTask task;
     private final CommunicationChannel communicationChannel;
@@ -85,7 +85,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             CronTimerTrigger activeTrigger = new CronTimerTrigger(communicationChannel.getSendingActivationCron());
             task = new ModelTimeoutTask<>(activeTrigger, this, true);
         } catch (ParseException e) {
-            log.error(e);
+            LOG.error(e);
         }
     }
 
@@ -162,22 +162,22 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 AlarmLevels.INFORMATION, dailyLimitExceededMsg, Collections.emptyMap());
         CommunicationChannelTypable type = channel.getType();
 
-        boolean added = type.sendLimit(event, addresses,"Limit", new AfterWork() {
+        boolean sent = type.sendLimit(event, addresses,"Limit", new AfterWork() {
 
             @Override
             public void workSuccess() {
-                log.info("Last message sent today for a list of addresses id: " + channel.getChannelId() + ", type: "
+                LOG.info("Last message sent today for a list of addresses id: " + channel.getChannelId() + ", type: "
                         + channel.getType());
             }
 
             @Override
-            public void workError(Throwable throwable) {
-                log.error(throwable.getMessage());
+            public void workFail(Exception exception) {
+                LOG.error(exception.getMessage());
                 communicateLimitLock.set(0);
             }
         });
 
-        if(!added) {
+        if(!sent) {
             communicateLimitLock.set(0);
         }
     }
@@ -195,7 +195,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
             String eventHandlerAlias = eventHandler.getAlias();
             String alias = eventHandlerAlias == null || eventHandlerAlias.isEmpty() ? "Delay msg" : eventHandlerAlias;
-            boolean added = type.sendMsg(toSend, addresses, alias, new AfterWork() {
+            boolean sent = type.sendMsg(toSend, addresses, alias, new AfterWork() {
 
                 @Override
                 public void workSuccess() {
@@ -204,14 +204,14 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 }
 
                 @Override
-                public void workError(Throwable throwable) {
-                    log.error(throwable.getMessage());
+                public void workFail(Exception exception) {
+                    LOG.error(exception.getMessage());
                     inactiveEventsProvider.repeat(scheduledEvent);
                     failsCounter.incrementAndGet();
                 }
             });
 
-            if(!added) {
+            if(!sent) {
                 inactiveEventsProvider.repeat(scheduledEvent);
                 failsCounter.incrementAndGet();
             }

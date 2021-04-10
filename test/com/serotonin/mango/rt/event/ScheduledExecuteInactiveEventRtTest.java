@@ -159,7 +159,7 @@ public class ScheduledExecuteInactiveEventRtTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_createAndAddToQueueSenderMsg_success_for_all_events_then_verify_times_unscheduleEvent() {
+    public void when_scheduleTimeout_and_sendMsg_success_for_all_events_then_verify_times_unscheduleEvent() {
 
         //given:
         doAnswer(a -> {
@@ -180,7 +180,7 @@ public class ScheduledExecuteInactiveEventRtTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_createAndAddToQueueSenderMsg_success_for_all_events_then_verify_times_createAndAddToQueueSenderMsg_limit() {
+    public void when_scheduleTimeout_and_sendMsg_success_for_all_events_then_verify_times_sendLimit() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
@@ -205,13 +205,13 @@ public class ScheduledExecuteInactiveEventRtTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_createAndAddToQueueSenderMsg_fail_for_all_events_then_verify_times_createAndAddToQueueSenderMsg() {
+    public void when_scheduleTimeout_and_sendMsg_fail_for_all_events_then_verify_times_sendMsg() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
         String alias = eventHandler.getAlias();
         doAnswer(a -> {
-            ((AfterWork)a.getArguments()[3]).workError(new Exception("test exception"));
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
             return true;
         }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(), anyString(), anyObject());
 
