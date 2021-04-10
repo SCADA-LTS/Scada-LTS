@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.rt.maint.work;
 
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.serotonin.mango.Common;
@@ -34,8 +33,6 @@ import com.serotonin.web.email.EmailSender;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Matthew Lohbihler
@@ -46,7 +43,7 @@ public class EmailWorkItem implements WorkItem {
     private static final Log LOG = LogFactory.getLog(EmailWorkItem.class);
 
     public int getPriority() {
-        return WorkItem.PRIORITY_LOW;
+        return WorkItem.PRIORITY_MEDIUM;
     }
 
     public static void queueEmail(String toAddr, MangoEmailContent content) {
