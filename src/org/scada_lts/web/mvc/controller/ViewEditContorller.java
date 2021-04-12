@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.form.ViewEditForm;
@@ -180,6 +181,9 @@ public class ViewEditContorller {
         form.setView(view);
 
         new ViewDao().removeView(form.getView().getId());
+
+        UsersProfileDao usersProfileDao = new UsersProfileDao();
+        usersProfileDao.updateViewPermissions();
         return getSuccessRedirectView(null);
     }
     
