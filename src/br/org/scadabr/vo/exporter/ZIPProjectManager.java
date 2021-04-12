@@ -303,8 +303,8 @@ public class ZIPProjectManager {
 			this.projectDescription = HttpParameterUtils.getValue("projectDescription", request, a -> a).orElse("");
 
 		if(this.maxPointValues <= 0)
-			this.maxPointValues = HttpParameterUtils.getValue("maxPointValues", request, Integer::valueOf)
-				.orElse(0);
+			this.maxPointValues = HttpParameterUtils.getValue("pointValuesMaxZip", request, Integer::valueOf)
+				.orElse(100);
 
 		System.out.println(this.maxPointValues);
 
