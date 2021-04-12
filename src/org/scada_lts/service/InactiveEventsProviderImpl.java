@@ -85,7 +85,7 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
         if(limit <= 0) {
             return Collections.emptyList();
         }
-        if((relations.peek() == null || blocking.size() < dataFromBaseLimit) && nonBlockingLock.getAndDecrement() == 0) {
+        if(((relations.peek() == null && blocking.size() < dataFromBaseLimit) || blocking.size() < dataFromBaseLimit) && nonBlockingLock.getAndDecrement() == 0) {
             try {
                 List<ScheduledExecuteInactiveEventInstance> events = init(eventDAO, scheduledEventDAO, communicationChannel, blocking, dataFromBaseLimit - blocking.size()).stream()
                         .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))

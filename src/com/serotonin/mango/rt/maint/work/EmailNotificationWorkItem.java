@@ -28,21 +28,19 @@ public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
         this.sendEmailConfig = sendEmailConfig;
     }
 
-    private static EmailNotificationWorkItem newInstance(String[] toAddresses, MangoEmailContent content,
+    public static EmailNotificationWorkItem newInstance(InternetAddress[] internetAddresses, MangoEmailContent content,
                                                          AfterWork afterWork,
-                                                         SendEmailConfig sendEmailConfig) throws UnsupportedEncodingException, AddressException {
+                                                         SendEmailConfig sendEmailConfig) throws UnsupportedEncodingException {
         InternetAddress fromAddress = new InternetAddress(sendEmailConfig.getFromAddr(),
                 sendEmailConfig.getPretty());
-
-        InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddresses);
         return new EmailNotificationWorkItem(afterWork, fromAddress, internetAddresses,
                 content, sendEmailConfig);
     }
 
-    public static void queueMsg(String[] toAddrs, MangoEmailContent content,
+    public static void queueMsg(InternetAddress[] internetAddresses, MangoEmailContent content,
                                 AfterWork afterWork,
-                                SendEmailConfig sendEmailConfig) throws UnsupportedEncodingException, AddressException {
-        EmailNotificationWorkItem item = EmailNotificationWorkItem.newInstance(toAddrs, content, afterWork, sendEmailConfig);
+                                SendEmailConfig sendEmailConfig) throws UnsupportedEncodingException {
+        EmailNotificationWorkItem item = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
         Common.ctx.getBackgroundProcessing().addWorkItem(item);
     }
 
@@ -66,6 +64,6 @@ public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
 
     @Override
     public int getPriority() {
-        return WorkItem.PRIORITY_MEDIUM;
+        return WorkItem.PRIORITY_HIGH;
     }
 }

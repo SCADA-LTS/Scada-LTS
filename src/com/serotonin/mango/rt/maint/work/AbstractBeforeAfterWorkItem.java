@@ -39,7 +39,6 @@ abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
                 }
                 return;
             }
-
             try {
                 workSuccess();
             } catch (Exception workSuccessException) {

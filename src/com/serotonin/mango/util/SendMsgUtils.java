@@ -12,7 +12,6 @@ import com.serotonin.mango.rt.maint.work.EmailNotificationWorkItem;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import net.bull.javamelody.internal.common.LOG;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,8 +47,12 @@ public final class SendMsgUtils {
             MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
 
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+            validateAddresses(evt, notificationType, internetAddresses, alias);
+
             // Send the email.
-            EmailNotificationWorkItem.queueMsg(toAddrs, content, afterWork, sendEmailConfig);
+            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
+            emailNotificationWorkItem.execute();
             return true;
 
         } catch (Exception e) {
@@ -77,8 +80,12 @@ public final class SendMsgUtils {
             MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
 
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+            validateAddresses(evt, notificationType, internetAddresses, alias);
+
             // Send the email.
-            EmailNotificationWorkItem.queueMsg(toAddrs, content, afterWork, sendEmailConfig);
+            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
+            emailNotificationWorkItem.execute();
             return true;
 
         } catch (Exception e) {
@@ -199,6 +206,18 @@ public final class SendMsgUtils {
             throw new Exception(getInfoEmail(evt, notificationType, alias) + messages );
         }
 
+    }
+
+    private static void validateAddresses(EventInstance evt, NotificationType notificationType,
+                                          InternetAddress[] internetAddresses, String alias) throws Exception {
+
+        String messageErrorEmails = "Don't have e-mail \n";
+        String messages = "";
+        if (internetAddresses == null || internetAddresses.length == 0) messages += messageErrorEmails;
+
+        if (!messages.isEmpty()) {
+            throw new Exception(getInfoEmail(evt, notificationType, alias) + messages );
+        }
     }
 
     public static InternetAddress[] convertToInternetAddresses(String[] toAddresses) {
