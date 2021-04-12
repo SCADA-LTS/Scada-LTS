@@ -4,6 +4,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install tomcat7
   - sudo apt-get install ant-optional
+before_script:
   - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
   - nvm ls
   - nvm install 12
@@ -15,6 +16,7 @@ before_install:
   - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
   - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
   - cd ./scadalts-ui
+  - npm install
   - npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH $TRAVIS_COMMIT $TRAVIS_PULL_REQUEST $TRAVIS_PULL_REQUEST_BRANCH
   - cd ../
 language: java
@@ -23,11 +25,7 @@ jdk:
 services:
   - docker
   - mysql
-install:
-  - ant build
-  - ant test-junit
-script:
-  - ant deploy-war
+script: ant war && ant junit
 branches:
   only:
     - "/^develop.*$/"
