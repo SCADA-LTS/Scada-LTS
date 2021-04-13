@@ -311,10 +311,8 @@ export default {
 		},
 
 		toggleValue() {
-			console.log(this.pointValue);
 			this.pointValue = this.pointValue === 'true' ? true : (this.pointValue === 'false' ? false : this.pointValue);
 			this.pointValue = !this.pointValue;
-			console.log(this.pointValue);
 			this.sendValue();
 		},
 
