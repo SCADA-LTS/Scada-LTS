@@ -185,10 +185,6 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             public void workSuccess() {
             }
         });
-
-        if (!sent) {
-            service.scheduleEventFail(getVo(), evt);
-        }
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {

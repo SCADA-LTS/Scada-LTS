@@ -86,10 +86,6 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
             @Override
             public void workSuccess() {}
         });
-
-        if(!sent) {
-            service.scheduleEventFail(getVo(), evt);
-        }
     }
 
     private Set<String> formatAddresses(Set<String> addresses) {
