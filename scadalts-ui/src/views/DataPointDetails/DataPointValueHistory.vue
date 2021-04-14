@@ -270,6 +270,11 @@ export default {
 			}
 		},
 
+		reconnect() {
+			this.disconnect();
+			this.connect();
+		},
+
 		async fetchData() {
 			this.fetchingData = true;
 			let from = await this.$store.dispatch('convertSinceTimePeriodToTimestamp', {

@@ -59,6 +59,7 @@
 					<DataPointValueHistory
 						:data="dataPointDetails"
 						class="pointDetailsCards"
+						ref="valueHistory"
 					></DataPointValueHistory>
 				</v-col>
 				<v-col md="6" sm="12" xs="12">
@@ -166,6 +167,8 @@ export default {
 					if (resp === 'saved') {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.success');
+						this.$refs.valueHistory.reconnect();
+
 					} else {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.fail');
