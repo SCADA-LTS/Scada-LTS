@@ -603,10 +603,14 @@
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
-
+      
 			<test name="org.scada_lts.utils.UpdateValuePointPropertiesTest"
 				  haltonfailure="yes">
 			</test>
+      
+		  	<test name="org.scada_lts.permissions.service.util.PermissionsTestsSuite"
+				haltonfailure="yes">
+		  	</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

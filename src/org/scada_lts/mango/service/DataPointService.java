@@ -557,14 +557,17 @@ public class DataPointService implements MangoDataPoint {
 		return counts;
 	}
 
+	@Deprecated
 	public List<DataPointAccess> getDataPointAccessList(final int userId) {
 		return dataPointUserDAO.getDataPointAccessList(userId);
 	}
 
+    @Deprecated
 	public void deleteDataPointUser(int userId) {
 		dataPointUserDAO.delete(userId);
 	}
 
+    @Deprecated
 	public void insertPermissions(User user) {
 		dataPointUserDAO.insertPermissions(user);
 	}
