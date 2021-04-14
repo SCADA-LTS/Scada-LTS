@@ -11,6 +11,7 @@ const commit = packageJson.commit || 'N/A';
 const pullRequestNumber = packageJson.pullRequestNumber || 'false';
 const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
+	publicPath: process.env.NODE_ENV === 'production' ? '/ScadaBR/' : '/',
 	filenameHashing: false,
 	configureWebpack: {
 		devtool: 'source-map',

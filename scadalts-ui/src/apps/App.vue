@@ -33,7 +33,7 @@
 						<v-icon>mdi-book-account</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>
-						{{$t('recipientlist.title')}}
+						{{ $t('recipientlist.title') }}
 					</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
@@ -94,8 +94,6 @@
 				<router-view></router-view>
 			</v-container>
 		</v-main>
-
-		<v-footer app> </v-footer>
 	</v-app>
 </template>
 
@@ -104,7 +102,7 @@ export default {
 	name: 'app',
 
 	data() {
-		return { };
+		return {};
 	},
 
 	computed: {
@@ -112,25 +110,23 @@ export default {
 			return this.$store.state.loggedUser;
 		},
 		isUserRoleAdmin() {
-			if(!!this.$store.state.loggedUser) {
+			if (!!this.$store.state.loggedUser) {
 				return this.$store.state.loggedUser.admin;
 			} else {
 				return false;
 			}
-		}
+		},
 	},
 
 	mounted() {
-		if(!user) {
-			this.$router.push({name: 'login'});
-		}
 		this.$store.dispatch('getLocaleInfo');
 	},
+	
 	methods: {
 		logout() {
-			this.$store.dispatch('logoutUser')
-			this.$router.push({name: 'login'});
-		}
+			this.$store.dispatch('logoutUser');
+			this.$router.push({ name: 'login' });
+		},
 	},
 };
 </script>
@@ -147,9 +143,12 @@ td > select,
 td > textarea {
 	border-style: solid;
 }
-td > select, div[id*='Content'] select, div[id*='Content'] textarea, #viewContent select {
+td > select,
+div[id*='Content'] select,
+div[id*='Content'] textarea,
+#viewContent select {
 	background-color: rgb(221, 221, 221);
-	border: 1px solid #39B54A;
+	border: 1px solid #39b54a;
 	appearance: auto;
 }
 </style>

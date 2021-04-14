@@ -5,7 +5,7 @@
 		</v-alert>
 		<v-card class="login-form">
 			<v-card-title>
-				<h1>Welcome to Scada-LTS!</h1>
+				<img src="@/assets/slts_logo.png" alt="Scada-LTS logo text"/>
 			</v-card-title>
 			<v-form ref="loginForm" v-model="valid">
 				<v-card-text>
@@ -13,19 +13,19 @@
 						<v-col cols="12">
 							<v-text-field
 								v-model="user.username"
-								label="Username"
-								:rules="[(v) => !!v || 'Username is required']"
+								:label="$t('loginPage.username')"
+								:rules="[(v) => !!v || $t('loginPage.validation.username')]"
 								required
 							></v-text-field>
 						</v-col>
 						<v-col cols="12">
 							<v-text-field
 								v-model="user.password"
-								:rules="[(v) => !!v || 'Password is required']"
+								:label="$t('loginPage.password')"
+								:rules="[(v) => !!v || $t('loginPage.validation.password')]"
 								:append-icon="passwordVisible ? 'mdi-eye' : 'mdi-eye-off'"
 								:type="passwordVisible ? 'text' : 'password'"
 								@click:append="passwordVisible = !passwordVisible"
-								label="Password"
 								required
 							></v-text-field>
 						</v-col>
@@ -33,7 +33,7 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn :disabled="!valid" block color="primary" @click="login()">Login</v-btn>
+					<v-btn :disabled="!valid" block color="primary" @click="login()">{{$t('loginPage.login')}}</v-btn>
 				</v-card-actions>
 			</v-form>
 		</v-card>
@@ -64,10 +64,10 @@ export default {
 					if (r) {
 						this.$router.push({ name: 'datapoint-list' });
 					} else {
-						this.errorMessage = 'User credentials are not valid!';
+						this.errorMessage = this.$t('loginPage.validation.not.valid');
 					}
 				}).catch(()=> {
-                    this.errorMessage = 'User credentials are not valid!';
+                    this.errorMessage = this.$t('loginPage.validation.not.valid');
                 });
 			}
 		},
@@ -76,13 +76,16 @@ export default {
 </script>
 <style scoped>
 .login-form {
-	margin: 0 25%;
+	margin: 0 35%;
 	margin-top: 10%;
 }
-.login-form h1 {
-	text-align: center;
+.login-form .v-card__title {
+	display: flex;
+	justify-content: center;
 }
-
+.login-form .v-card__title img {
+	max-width: 80%;
+}
 @media (max-width: 1024px) {
 	.login-form {
 		margin: 0 20%;
@@ -104,9 +107,6 @@ export default {
 	.login-form {
 		margin: 0;
 		margin-top: 10%;
-	}
-	.login-form h1 {
-		font-size: 26px;
 	}
 }
 </style>
