@@ -15,6 +15,7 @@ import systemSettings from './systemSettings';
 import axios from 'axios';
 
 import i18n from '@/i18n';
+import { doc } from 'prettier';
 
 Vue.use(Vuex);
 
@@ -50,9 +51,12 @@ export default new Vuex.Store({
 		applicationUrl: './api',
 		applicationDebug: false,
 		requestConfig: {
+			withCredentials: true,
 			timeout: 5000,
-			useCredentials: true,
-			credentials: 'same-origin',
+			// useCredentials: true,
+			// credentials: 'same-origin',
+			
+			
 		},
 
 		timePeriods: [
@@ -92,6 +96,19 @@ export default new Vuex.Store({
 						reject(error);
 					});
 			});
+		},
+
+		async loginUser({dispatch}, userdata) {
+			axios.defaults.withCredentials = true;
+			let answer = await dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`);
+			if(answer) {
+				dispatch('getUserInfo');
+			}
+			return answer;
+		},
+
+		logoutUser({state}) {
+			state.loggedUser = null;
 		},
 
 		/**
