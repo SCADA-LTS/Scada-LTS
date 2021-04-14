@@ -25,6 +25,7 @@ jdk:
 services:
 - docker
 - mysql
+install: skip
 script: ant war && ant junit
 branches:
   only:
