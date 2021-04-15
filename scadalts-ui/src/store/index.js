@@ -15,6 +15,7 @@ import systemSettings from './systemSettings';
 import axios from 'axios';
 
 import i18n from '@/i18n';
+import { doc } from 'prettier';
 
 Vue.use(Vuex);
 
@@ -50,10 +51,14 @@ export default new Vuex.Store({
 		applicationUrl: './api',
 		applicationDebug: false,
 		requestConfig: {
+			withCredentials: true,
 			timeout: 5000,
-			useCredentials: true,
-			credentials: 'same-origin',
+			// useCredentials: true,
+			// credentials: 'same-origin',
+			
+			
 		},
+		webSocketUrl: 'http://localhost:8080/ScadaBR/ws/alarmLevel',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -74,7 +79,15 @@ export default new Vuex.Store({
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
 		],
 	},
-	mutations: {},
+	mutations: {
+		updateWebSocketUrl(state) {
+			let locale = window.location.pathname.split('/')[1];
+    		let protocol = window.location.protocol;
+    		let host = window.location.host.split(":");
+
+			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}/ws/alarmLevel`;
+		}
+	},
 	actions: {
 		getUserRole() {
 			return new Promise((resolve, reject) => {
@@ -94,13 +107,27 @@ export default new Vuex.Store({
 			});
 		},
 
+		async loginUser({dispatch}, userdata) {
+			axios.defaults.withCredentials = true;
+			let answer = await dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`);
+			if(answer) {
+				dispatch('getUserInfo');
+			}
+			return answer;
+		},
+
+		logoutUser({state}) {
+			state.loggedUser = null;
+		},
+
 		/**
 		 * Fetch User Data from REST API
 		 *
 		 * @param {*} param0 - Vuex Store variables
 		 */
-		async getUserInfo({ state, dispatch }) {
+		async getUserInfo({ state, dispatch, commit }) {
 			state.loggedUser = await dispatch('requestGet', '/auth/user');
+			commit('updateWebSocketUrl');
 		},
 
 		/**
