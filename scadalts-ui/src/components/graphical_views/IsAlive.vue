@@ -22,6 +22,7 @@
 				<p>Refresh time: {{ timeRefresh }} [ms]</p>
 				<p>Time before warning: {{ timeWarningEpoch }} [ms]</p>
 				<p>Time before error: {{ timeErrorEpoch }} [ms]</p>
+				<p>My IP: {{ myip }} </p>
 			</template>
 		</popover>
 	</div>
@@ -38,17 +39,27 @@ import moment from 'moment';
  *    plabel='Is Alive'
  *    ptime-warning=7000
  *    ptime-refresh=3000
- *    ptime-error=11000/>
- *
+ *    ptime-error=11000
+ * 	  pxid-entry-point='DP12312'
+ *    pport-number=1234/>
+ * 
+ * plabel - describe
+ * ptime-warning - time of non-response when a warning is shown
+ * ptime-error - time of non-response when a error is shown
+ * pxid-entry-point - xid of point to record of last amendment
+ * pport-number - port on the localhost for sending information
+ * 
  */
 
 const DEFAULT_REFRESH_IS_ALIVE = 2000; // 2 [s]
 const REFRESH_NO_LESS_THEN_IS_ALIVE = 1000; // 1 [s]
 const MINIMAL_DATE = 1; // 1 [s] unix time
+const DEFAULT_PORT_NUMBER = 1234;
+
 
 export default {
 	name: 'is-alive',
-	props: ['plabel', 'ptimeWarning', 'ptimeError', 'ptimeRefresh'],
+	props: ['plabel', 'ptimeWarning', 'ptimeError', 'ptimeRefresh', 'pxidEntryPoint', 'pportNumber' ],
 	data() {
 		return {
 			label: '',
@@ -59,9 +70,16 @@ export default {
 			timeWarningEpoch: -1,
 			timeErrorEpoch: -1,
 
+			xidEntryPoint: -1,
+			portNumber: -1,
+
 			danger: false,
 			warning: false,
 			success: true,
+
+			myip: '',
+
+			error: ''
 		};
 	},
 	methods: {
@@ -83,6 +101,103 @@ export default {
 					this.setData();
 				});
 		},
+		getIPs(callback){
+			// https://github.com/diafygi/webrtc-ips   
+    		let ip_dups = {};
+			
+			//console.log('step 0')
+
+    		//compatibility for firefox and chrome
+    		let RTCPeerConnection = window.RTCPeerConnection
+        		|| window.mozRTCPeerConnection
+        		|| window.webkitRTCPeerConnection;
+    		let useWebKit = !!window.webkitRTCPeerConnection;
+
+			//console.log('step 1')
+
+    		//bypass naive webrtc blocking using an iframe
+    		if(!RTCPeerConnection){
+        	//NOTE: you need to have an iframe in the page right above the script tag
+        	//
+        	//<iframe id="iframe" sandbox="allow-same-origin" style="display: none"></iframe>
+        	//<script>...getIPs called in here...
+        	//
+        		let win = iframe.contentWindow;
+        			RTCPeerConnection = win.RTCPeerConnection
+            		|| win.mozRTCPeerConnection
+            		|| win.webkitRTCPeerConnection;
+        			useWebKit = !!win.webkitRTCPeerConnection;
+    		}
+
+			//console.log('step 2')
+
+    		//minimal requirements for data connection
+    		let mediaConstraints = {
+        		optional: [{RtpDataChannels: true}]
+    		};
+
+			//console.log('step 3')
+
+    		let servers = {iceServers: [{urls: "stun:stun.services.mozilla.com"}]};
+
+			//console.log('step 4')
+
+    		//construct a new RTCPeerConnection
+    		let pc = new RTCPeerConnection(servers, mediaConstraints);
+
+			//console.log('step 5')
+
+    		function handleCandidate(candidate){
+        		//match just the IP address
+        		let ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
+        		let ip_addr = ip_regex.exec(candidate)[1];
+
+        		//remove duplicates
+        		if(ip_dups[ip_addr] === undefined)
+            		callback(ip_addr);
+
+        		ip_dups[ip_addr] = true;
+    		}
+
+			//console.log('step 6')
+
+    		//listen for candidate events
+    		pc.onicecandidate = function(ice){
+        		//skip non-candidate events
+        		if(ice.candidate)
+            		handleCandidate(ice.candidate.candidate);
+    		}
+
+			//console.log('step 7')
+
+    		//create a bogus data channel
+    		pc.createDataChannel("");
+
+			//console.log('step 8')
+
+    		//create an offer sdp
+    		pc.createOffer(function(result){
+        	//trigger the stun server request
+        		pc.setLocalDescription(result, function(){}, function(){});
+
+    		}, function(){});
+
+			//console.log('step 9')
+
+    		//wait for a while to let everything done
+    		setTimeout(function(){
+        	//read candidate info from local description
+        		let lines = pc.localDescription.sdp.split('\n');
+
+        		lines.forEach(function(line){
+            		if(line.indexOf('a=candidate:') === 0)
+                		handleCandidate(line);
+        		});
+    		}, 1000);
+	}
+
+      //Test: Print the IP addresses into the console
+     //getIPs(function(ip){console.log(ip);});
 	},
 	created() {
 		this.label = this.plabel;
@@ -98,11 +213,19 @@ export default {
 			this.timeRefresh = DEFAULT_UPDATE_IS_ALIVE;
 		}
 
+
 		this.$store.dispatch('setInitIsAlive', {
 			tw: this.timeWarningEpoch,
 			te: this.timeErrorEpoch,
 			tr: this.timeRefresh,
 		});
+
+		this.getIPs(
+			function(myip) { 
+				this.myip = myip; 
+				console.log('myip'+ myip);
+			}
+		);
 	},
 	mounted() {
 		setInterval(

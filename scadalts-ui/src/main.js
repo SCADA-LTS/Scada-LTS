@@ -114,6 +114,13 @@ if (window.document.getElementById('app-isalive') != undefined) {
 					ptimeRefresh: window.document
 						.getElementById('app-isalive')
 						.getAttribute('ptime-refresh'),
+					pXidEntryPoint: window.document
+						.getElementById('app-isalive')
+						.getAttribute('pxid-entry-point'),
+					pPortNumber: window.document
+						.getElementById('app-isalive')
+						.getAttribute('pport-number'),
+						
 				},
 			}),
 	}).$mount('#app-isalive');
