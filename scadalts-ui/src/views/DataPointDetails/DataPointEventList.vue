@@ -304,7 +304,6 @@ export default {
 		prepareEventMessage(message) {
 			let response = message.replace(/[\[\]]/g,"");
 			response = response.split('|');
-			console.debug(response);
 			return response.slice(1);
 		},
 
