@@ -58,6 +58,7 @@ export default new Vuex.Store({
 			
 			
 		},
+		webSocketUrl: 'http://localhost:8080/ScadaBR/ws/alarmLevel',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -78,7 +79,15 @@ export default new Vuex.Store({
 			{ id: 4, label: i18n.t('common.alarmlevels.lifesafety') },
 		],
 	},
-	mutations: {},
+	mutations: {
+		updateWebSocketUrl(state) {
+			let locale = window.location.pathname.split('/')[1];
+    		let protocol = window.location.protocol;
+    		let host = window.location.host.split(":");
+
+			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}/ws/alarmLevel`;
+		}
+	},
 	actions: {
 		getUserRole() {
 			return new Promise((resolve, reject) => {
@@ -116,8 +125,9 @@ export default new Vuex.Store({
 		 *
 		 * @param {*} param0 - Vuex Store variables
 		 */
-		async getUserInfo({ state, dispatch }) {
+		async getUserInfo({ state, dispatch, commit }) {
 			state.loggedUser = await dispatch('requestGet', '/auth/user');
+			commit('updateWebSocketUrl');
 		},
 
 		/**
