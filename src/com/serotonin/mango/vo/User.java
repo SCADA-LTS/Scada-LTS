@@ -18,16 +18,14 @@
  */
 package com.serotonin.mango.vo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -75,8 +73,15 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean admin;
 	@JsonRemoteProperty
 	private boolean disabled;
-	private List<Integer> dataSourcePermissions;
-	private List<DataPointAccess> dataPointPermissions;
+	private List<Integer> dataSourcePermissions = new ArrayList<>();
+	private List<DataPointAccess> dataPointPermissions = new ArrayList<>();
+
+    private List<Integer> dataSourceProfilePermissions = new ArrayList<>();
+    private List<DataPointAccess> dataPointProfilePermissions = new ArrayList<>();
+    private List<WatchListAccess> watchListProfilePermissions = new ArrayList<>();
+    private List<ViewAccess> viewProfilePermissions = new ArrayList<>();
+
+    @JsonRemoteProperty
 	private int selectedWatchList;
 	@JsonRemoteProperty
 	private String homeUrl;
@@ -287,10 +292,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<Integer> getDataSourcePermissions() {
-		if (dataSourcePermissions==null) {
-			dataSourcePermissions = new LinkedList<Integer>();
-		}
-		
 		return dataSourcePermissions;
 		
 	}
@@ -300,15 +301,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<DataPointAccess> getDataPointPermissions() {
-		if (dataPointPermissions==null) {
-			dataPointPermissions = new LinkedList<DataPointAccess>();
-		} 
 		return dataPointPermissions;
 		
 	}
 
-	public void setDataPointPermissions(
-			List<DataPointAccess> dataPointPermissions) {
+	public void setDataPointPermissions(List<DataPointAccess> dataPointPermissions) {
 		this.dataPointPermissions = dataPointPermissions;
 	}
 
@@ -514,8 +511,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			for (Integer dsId : getDataSourcePermissions())
 				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
-
 			map.put("dataPointPermissions", dataPointPermissions);
+		} else {
+			map.put("dataSourcePermissions", Collections.emptyList());
+			map.put("dataPointPermissions", Collections.emptyList());
 		}
 	}
 
@@ -555,6 +554,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.userProfile = profile.getId();
 	}
 
+	public void setUserProfileId(int userProfileId) {
+		this.userProfile =userProfileId;
+	}
+
 	public int getUserProfile() {
 		return userProfile;
 	}
@@ -568,4 +571,36 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// TODO Auto-generated method stub
 
 	}
+
+    public List<Integer> getDataSourceProfilePermissions() {
+        return dataSourceProfilePermissions;
+    }
+
+    public void setDataSourceProfilePermissions(List<Integer> dataSourceProfilePermissions) {
+        this.dataSourceProfilePermissions = dataSourceProfilePermissions;
+    }
+
+    public List<DataPointAccess> getDataPointProfilePermissions() {
+        return dataPointProfilePermissions;
+    }
+
+    public void setDataPointProfilePermissions(List<DataPointAccess> dataPointProfilePermissions) {
+        this.dataPointProfilePermissions = dataPointProfilePermissions;
+    }
+
+    public List<WatchListAccess> getWatchListProfilePermissions() {
+        return watchListProfilePermissions;
+    }
+
+    public void setWatchListProfilePermissions(List<WatchListAccess> watchListProfilePermissions) {
+        this.watchListProfilePermissions = watchListProfilePermissions;
+    }
+
+    public List<ViewAccess> getViewProfilePermissions() {
+        return viewProfilePermissions;
+    }
+
+    public void setViewProfilePermissions(List<ViewAccess> viewProfilePermissions) {
+        this.viewProfilePermissions = viewProfilePermissions;
+    }
 }

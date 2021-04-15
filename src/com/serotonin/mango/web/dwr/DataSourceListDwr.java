@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -113,6 +114,8 @@ public class DataSourceListDwr extends BaseDwr {
 	public int deleteDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
 		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
+		UsersProfileDao usersProfileDao = new UsersProfileDao();
+		usersProfileDao.updateDataSourcePermissions();
 		return dataSourceId;
 	}
 

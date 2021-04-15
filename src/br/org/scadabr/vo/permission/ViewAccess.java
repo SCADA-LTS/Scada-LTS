@@ -8,6 +8,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 
 @JsonRemoteEntity
@@ -19,6 +20,10 @@ public class ViewAccess extends Permission implements JsonSerializable {
 
 	public ViewAccess(int id, int permission) {
 		super(id, permission);
+	}
+
+	public static ViewAccess none(int viewId) {
+		return new ViewAccess(viewId, ShareUser.ACCESS_NONE);
 	}
 
 	@Override
@@ -39,4 +44,18 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		setPermission(ImportedPermission);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ViewAccess)) return false;
+		return super.equals(o);
+	}
+
+	@Override
+	public String toString() {
+		return "ViewAccess{" +
+				"permission=" + permission +
+				", id=" + id +
+				'}';
+	}
 }

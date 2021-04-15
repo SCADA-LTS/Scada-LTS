@@ -35,6 +35,8 @@ public interface MangoUser {
 
 	List<User> getUsers();
 
+	List<User> getUsersWithProfile();
+
 	List<User> getActiveUsers();
 
 	void populateUserPermissions(User user);
@@ -52,4 +54,5 @@ public interface MangoUser {
 	void saveHomeUrl(int userId, String homeUrl);
 
 	void insertUserComment(int typeId, int referenceId, UserComment comment);
+
 }
