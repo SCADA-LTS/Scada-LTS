@@ -80,22 +80,10 @@
 					<v-list-item-content>
 						<v-list-item-title>
 							<span>
-								{{ $t(e.message.split('|')[0], [e.message.split('|')[1]]) }}
+								{{ $t(getEventMessageType(e.message), prepareEventMessage(e.message)) }}
 							</span>
-							<span v-if="!!e.message.split('|')[2] && e.message.split('|')[2] !== '[common.tp.description'">
-								: {{ e.message.split('|')[2] }}
-							</span>
-							<span v-if="!!e.message.split('|')[3] && e.message.split('|')[3] !== '[common.tp.description'">
-								 -> {{ e.message.split('|')[3] }}
-							</span>
-							<span v-if="!!e.message.split('|')[4] && !e.message.split('|')[4].startsWith('[common.tp.')">
-								{{ $t('event.detector.change.label') }} {{ e.message.split('|')[4] }}
-							</span>
-							<span v-if="!!e.message.split('|')[4] && e.message.split('|')[4].startsWith('[common.tp.')">
-								{{ $t(e.message.split('|')[4])}}
-							</span>
-							<span v-if="!!e.message.split('|')[5] && e.message.split('|')[5] !== ']]'">
-								{{ $t(e.message.split('|')[5])}}
+							<span v-if="getEventMessageTimePeriod(e.message)">
+								{{ $t(getEventMessageTimePeriod(e.message)) }}
 							</span>
 						</v-list-item-title>
 						<v-list-item-subtitle>
@@ -308,6 +296,28 @@ export default {
 					console.error('Not Acknowledged!');
 				});
 		},
+
+		getEventMessageType(message) {
+			return message.split('|')[0]
+		},
+
+		prepareEventMessage(message) {
+			let response = message.replace(/[\[\]]/g,"");
+			response = response.split('|');
+			console.debug(response);
+			return response.slice(1);
+		},
+
+		getEventMessageTimePeriod(message) {
+			const regex = /(?!common.tp.description)common.tp.\w+/g;
+			const found = message.match(regex);
+			if(!!found) {
+				return found[0];
+			}
+			return false
+		},
+
+		
 	},
 };
 </script>
