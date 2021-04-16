@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Alarms from './views/Alarms';
 import About from './views/About';
+import LoginPage from './views/LoginPage';
 import HistoricalAlarms from './views/HistoricalAlarms';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
@@ -11,9 +12,11 @@ import DataPointDetails from './views/DataPointDetails';
 import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
 
+import store from './store/index';
+
 Vue.use(Router);
 
-export default new Router({
+const routing = new Router({
 	mode: 'hash',
 	base: process.env.BASE_URL,
 	routes: [
@@ -21,46 +24,78 @@ export default new Router({
 			path: '/',
 			name: 'home',
 			component: Alarms,
+			meta: {
+				requiresAuth: true
+			},
+		},
+		{
+			path: '/login',
+			name: 'login',
+			component: LoginPage,
 		},
 		{
 			path: '/about',
 			name: 'about',
 			component: About,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/alarms',
 			name: 'alarms',
 			component: Alarms,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/historical-alarms',
 			name: 'historical-alarms',
 			component: HistoricalAlarms,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/system-settings',
 			name: 'system-settings',
 			component: SystemSettings,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/alarm-notifications',
 			name: 'alarm-notifications',
 			component: AlarmNotifications,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/recipient-list',
 			name: 'recipient-list',
 			component: RecipientList,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/datapoint-list',
 			name: 'datapoint-list',
 			component: DataPointList,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/datapoint-details/:id',
 			name: 'datapoint-details',
 			component: DataPointDetails,
+			meta: {
+				requiresAuth: true
+			},
 		},
 		{
 			path: '/synoptic-panel',
@@ -147,3 +182,17 @@ export default new Router({
 		},
 	],
 });
+
+routing.beforeEach((to, from, next) => {
+	if(to.meta.requiresAuth) {
+		if(!store.state.loggedUser) {
+			store.dispatch('getUserInfo')
+			.catch(() => {
+				next({ name: 'login'});
+			})
+		}
+	}
+	next();
+})
+
+export default routing;

@@ -1,6 +1,6 @@
 <template>
 	<v-app>
-		<v-navigation-drawer app dark permanent expand-on-hover color="primary">
+		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
 			<v-list nav dense>
 				<v-list-item link href="#/alarms">
 					<v-list-item-icon>
@@ -86,7 +86,7 @@
 							<span>Edit profile</span>
 							<v-icon>mdi-account-box</v-icon>
 						</v-btn>
-						<v-btn block text link href="./logout.htm">
+						<v-btn block text link @click="logout()">
 							<span>Logout</span>
 							<v-icon>mdi-logout</v-icon>
 						</v-btn>
@@ -106,27 +106,32 @@
 <script>
 export default {
 	name: 'app',
-	components: {},
+
 	data() {
-		return {
-			isUserRoleAdmin: false,
-		};
+		return {};
 	},
 
 	computed: {
 		user() {
 			return this.$store.state.loggedUser;
 		},
+		isUserRoleAdmin() {
+			if (!!this.$store.state.loggedUser) {
+				return this.$store.state.loggedUser.admin;
+			} else {
+				return false;
+			}
+		},
 	},
 
 	mounted() {
-		this.$store.dispatch('getUserInfo');
 		this.$store.dispatch('getLocaleInfo');
-		this.getUserRole();
 	},
+
 	methods: {
-		async getUserRole() {
-			this.isUserRoleAdmin = await this.$store.dispatch('getUserRole');
+		logout() {
+			this.$store.dispatch('logoutUser');
+			this.$router.push({ name: 'login' });
 		},
 	},
 };

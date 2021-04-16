@@ -411,6 +411,15 @@
             </fileset>
         </copy>
 
+		<copy todir="WebContent/img" taskname="Copy Vue.js image assets" includeemptydirs="false">
+			<fileset dir="${src-js-ui.dir}/img/">
+				<include name="**/*.png"/>
+				<include name="**/*.jpg"/>
+				<include name="**/*.jpeg"/>
+				<include name="**/*.svg"/>
+			</fileset>
+		</copy>
+
 		<!-- copy content for views -->
 		<copy includeemptydirs="false" todir="${js-ui.dir}/views/css" taskname="copy for views css">
 			<fileset dir="${src-js-ui.dir}/css/">

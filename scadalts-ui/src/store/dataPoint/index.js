@@ -117,7 +117,7 @@ const storeDataPoint = {
 		setDataPointValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/point_value/setValue/${payload.xid}/${payload.type}`,
-				data: payload.value,
+				data: `${payload.value}`,
 			});
 		},
 
