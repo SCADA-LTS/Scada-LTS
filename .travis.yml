@@ -12,6 +12,7 @@ before_install:
 - npx -v
 - node -v
 - env
+- echo Test
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
