@@ -32,6 +32,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^release.*$/"
+  - "/^test_develop_travis.*$/"
 notifications:
   email: false
 env:
