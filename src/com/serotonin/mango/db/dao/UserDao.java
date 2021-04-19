@@ -341,4 +341,8 @@ public class UserDao extends BaseDao {
 //				typeId, referenceId, comment.getTs(), comment.getComment() });
 		userService.insertUserComment(typeId, referenceId, comment);
 	}
+
+	public List<User> getUsersWithProfile() {
+		return userService.getUsersWithProfile();
+	}
 }

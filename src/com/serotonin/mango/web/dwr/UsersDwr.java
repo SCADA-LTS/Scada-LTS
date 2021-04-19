@@ -107,12 +107,6 @@ public class UsersDwr extends BaseDwr {
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
 			user = new UserDao().getUser(id);
-
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(usersProfileDao.getUserProfileByUserId(user
-						.getId()));
-			}
 		}
 		return user;
 
@@ -146,8 +140,14 @@ public class UsersDwr extends BaseDwr {
 		user.setDisabled(disabled);
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-		user.setDataSourcePermissions(dataSourcePermissions);
-		user.setDataPointPermissions(dataPointPermissions);
+        if(usersProfileId == Common.NEW_ID) {
+            user.setDataSourcePermissions(dataSourcePermissions);
+            user.setDataPointPermissions(dataPointPermissions);
+        } else {
+			user.setDataSourcePermissions(new ArrayList<>());
+			user.setDataPointPermissions(new ArrayList<>());
+		}
+		user.setUserProfileId(usersProfileId);
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -175,16 +175,12 @@ public class UsersDwr extends BaseDwr {
 			userDao.saveUser(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
-			if (usersProfileId != Common.NEW_ID) {
-				// apply profile
-				UsersProfileVO profile = profilesDao
-						.getUserProfileById(usersProfileId);
-				profile.apply(user);
-				userDao.saveUser(user);
+			if (usersProfileId == Common.NEW_ID) {
 				profilesDao.resetUserProfile(user);
-				profilesDao.updateUsersProfile(profile);
 			} else {
-				profilesDao.resetUserProfile(user);
+				UsersProfileVO profile = profilesDao.getUserProfileById(usersProfileId);
+				profile.apply(user);
+				profilesDao.updateUsersProfile(user, profile);
 			}
 
 			// If admin grant permissions to all WL and GViews
@@ -223,7 +219,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setPhone(phone);
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-
+		updateUser.setUserProfileId(usersProfileId);
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
@@ -264,8 +260,11 @@ public class UsersDwr extends BaseDwr {
 			// You can't delete yourself.
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
-		else
+		else {
 			new UserDao().deleteUser(id);
+			UsersProfileDao usersProfileDao = new UsersProfileDao();
+			usersProfileDao.updatePermissions();
+		}
 
 		return response;
 	}

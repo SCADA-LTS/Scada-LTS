@@ -211,15 +211,17 @@
             {
         		setDataSourcesNone();
             }
-            
-            for (i=0; i<dataSources.length; i++) {
-                if ($("ds"+ dataSources[i].id).checked)
-                    dsPermis[dsPermis.length] = dataSources[i].id;
-                else {
-                    for (j=0; j<dataSources[i].points.length; j++) {
-                        dpval = $get("dp"+ dataSources[i].points[j].id);
-                        if (dpval == "1" || dpval == "2")
-                            dpPermis[dpPermis.length] = {dataPointId: dataSources[i].points[j].id, permission: dpval};
+
+            if($get("usersProfileList") != <c:out value="<%= Common.NEW_ID %>"/>) {
+                for (i=0; i<dataSources.length; i++) {
+                    if ($("ds"+ dataSources[i].id).checked)
+                        dsPermis[dsPermis.length] = dataSources[i].id;
+                    else {
+                        for (j=0; j<dataSources[i].points.length; j++) {
+                            dpval = $get("dp"+ dataSources[i].points[j].id);
+                            if (dpval == "1" || dpval == "2")
+                                dpPermis[dpPermis.length] = {dataPointId: dataSources[i].points[j].id, permission: dpval};
+                        }
                     }
                 }
             }

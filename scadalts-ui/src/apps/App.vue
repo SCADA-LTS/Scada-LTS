@@ -1,6 +1,6 @@
 <template>
 	<v-app>
-		<v-navigation-drawer app dark permanent expand-on-hover color="primary">
+		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
 			<v-list nav dense>
 				<v-list-item link href="#/alarms">
 					<v-list-item-icon>
@@ -33,7 +33,7 @@
 						<v-icon>mdi-book-account</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>
-						{{$t('recipientlist.title')}}
+						{{ $t('recipientlist.title') }}
 					</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
@@ -80,7 +80,7 @@
 							<span>Edit profile</span>
 							<v-icon>mdi-account-box</v-icon>
 						</v-btn>
-						<v-btn block text link href="./logout.htm">
+						<v-btn block text link @click="logout()">
 							<span>Logout</span>
 							<v-icon>mdi-logout</v-icon>
 						</v-btn>
@@ -94,37 +94,38 @@
 				<router-view></router-view>
 			</v-container>
 		</v-main>
-
-		<v-footer app> </v-footer>
 	</v-app>
 </template>
 
 <script>
-import store from '../store';
-
 export default {
 	name: 'app',
-	components: {},
+
 	data() {
-		return {
-			isUserRoleAdmin: false,
-		};
+		return {};
 	},
 
 	computed: {
 		user() {
 			return this.$store.state.loggedUser;
 		},
+		isUserRoleAdmin() {
+			if (!!this.$store.state.loggedUser) {
+				return this.$store.state.loggedUser.admin;
+			} else {
+				return false;
+			}
+		},
 	},
 
 	mounted() {
-		this.$store.dispatch('getUserInfo');
 		this.$store.dispatch('getLocaleInfo');
-		this.getUserRole();
 	},
+	
 	methods: {
-		async getUserRole() {
-			this.isUserRoleAdmin = await store.dispatch('getUserRole');
+		logout() {
+			this.$store.dispatch('logoutUser');
+			this.$router.push({ name: 'login' });
 		},
 	},
 };
@@ -142,9 +143,12 @@ td > select,
 td > textarea {
 	border-style: solid;
 }
-td > select, div[id*='Content'] select, div[id*='Content'] textarea, #viewContent select {
+td > select,
+div[id*='Content'] select,
+div[id*='Content'] textarea,
+#viewContent select {
 	background-color: rgb(221, 221, 221);
-	border: 1px solid #39B54A;
+	border: 1px solid #39b54a;
 	appearance: auto;
 }
 </style>
