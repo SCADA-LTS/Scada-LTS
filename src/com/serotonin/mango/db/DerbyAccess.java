@@ -124,7 +124,7 @@ public class DerbyAccess extends DatabaseAccess {
 
     @Override
     protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
-        int count = ejt.queryForInt("select count(1) from sys.systables where tablename='USERS'");
+        int count = ejt.queryForInt("select count(1) from sys.systables where tablename='USERS'", 0);
         if (count == 0) {
             // The users table wasn't found, so assume that this is a new Mango instance.
             // Create the tables
