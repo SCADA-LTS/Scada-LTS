@@ -50,6 +50,12 @@
     <param-name>com.serotonin.web.taglib.ListSortTag.downImage.altKey</param-name>
     <param-value>pagination.descending</param-value>
   </context-param>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      /WEB-INF/spring/security.xml
+    </param-value>
+  </context-param>
   <!-- Enabled html escape (for example: html that contains URL etc.), gb:2015/04/11
   <context-param>
     <param-name>defaultHtmlEscape</param-name>
@@ -134,6 +140,14 @@
     <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
     <async-supported>true</async-supported>
   </filter>
+  <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   
   <!-- Loads Spring Security config file -->
   <!-- 

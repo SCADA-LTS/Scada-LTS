@@ -183,6 +183,8 @@
         <pathelement location="WebContent/WEB-INF/lib/spring-websocket-4.3.16.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-messaging-4.3.16.RELEASE.jar"/>
     	<pathelement location="WebContent/WEB-INF/lib/spring-test-4.3.16.RELEASE.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/spring-security-core-4.2.20.RELEASE.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/spring-security-web-4.2.20.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/standard.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/taglibs-log.jar"/>
