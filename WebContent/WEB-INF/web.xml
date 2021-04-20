@@ -53,6 +53,7 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
+      /WEB-INF/applicationContext.xml
       /WEB-INF/spring/security.xml
     </param-value>
   </context-param>
@@ -146,7 +147,7 @@
   </filter>
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
   
   <!-- Loads Spring Security config file -->
