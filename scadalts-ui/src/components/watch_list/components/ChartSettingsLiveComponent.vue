@@ -1,39 +1,31 @@
 <template>
-	<div class="col-xs-12">
-		<div class="col-xs-3">
-			<input
-				type="number"
-				id="live-sd"
-				v-model="startTime"
-				:placeholder="$t('modernwatchlist.settings.live.time.label')"
-				class="form-control"
-				min="1"
-				max="31"
-			/>
-		</div>
-		<div class="col-xs-3">
-			<select v-model="startTimeMultiplier" class="form-control" id="live-rrs">
-				<option
-					v-for="option in timeOptions"
-					v-bind:value="option.value"
-					v-bind:key="option.id"
-				>
-					{{ option.text }}
-				</option>
-			</select>
-		</div>
-		<div class="col-xs-6">
-			<select id="live-rr" v-model="refreshRate" class="form-control">
-				<option
-					v-for="option in performanceOptions"
-					v-bind:value="option.value"
-					v-bind:key="option.id"
-				>
-					{{ option.text }}
-				</option>
-			</select>
-		</div>
-	</div>
+<v-row>
+	<v-col xs="3">
+		<v-text-field
+			v-model="startTime"
+			:label="$t('modernwatchlist.settings.live.time.label')"
+			type="number"
+		></v-text-field>
+	</v-col>
+	
+	<v-col xs="3">
+		<v-select
+			v-model="startTimeMultiplier"
+			:items="timeOptions"
+			item-value="value"
+			item-text="text"
+		></v-select>
+	</v-col>
+
+	<v-col xs="6">
+		<v-select
+			v-model="refreshRate"
+			:items="performanceOptions"
+			item-value="value"
+			item-text="text"
+		></v-select>
+	</v-col>
+</v-row>
 </template>
 <script>
 export default {

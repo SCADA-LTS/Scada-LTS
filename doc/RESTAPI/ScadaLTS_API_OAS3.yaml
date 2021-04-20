@@ -807,7 +807,7 @@ paths:
                       type: string
                     admin:
                       type: boolean
-  /watchlist/getAll:
+  /watch-lists:
     get:
       tags:
         - WatchListAPI
@@ -827,7 +827,85 @@ paths:
                       type: string
                     name:
                       type: string
-  /watchlist/getNames:
+  /watch-lists/{id}:
+    get:
+      tags:
+        - WatchListAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  xid:
+                    type: string
+                  name:
+                    type: string
+                  userId:
+                    type: number
+                  pointList:
+                    type: array
+                    items:
+                      type: object
+                  watchListUsers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: number
+                        accessType:
+                          type: number
+/watch-lists/xid/{xid}:
+  get:
+    tags:
+      - WatchListAPI
+    parameters:
+      - name: 'xid'
+        in: 'path'
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                xid:
+                  type: string
+                name:
+                  type: string
+                userId:
+                  type: number
+                pointList:
+                  type: array
+                  items:
+                    type: object
+                watchListUsers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      userId:
+                        type: number
+                      accessType:
+                        type: number
+  /watch-lists/getNames:
     get:
       tags:
         - WatchListAPI
@@ -845,7 +923,7 @@ paths:
                       type: number
                     name:
                       type: string
-  /watchlist/getPoints/{xid}:
+  /watch-lists/getPoints/{xid}:
     get:
       tags:
         - WatchListAPI
@@ -869,7 +947,7 @@ paths:
                       type: number
                     name:
                       type: string
-  /watchlist/getChartData/{xid}/{fromData}/{toData}:
+  /watch-lists/getChartData/{xid}/{fromData}/{toData}:
     get:
       tags:
         - WatchListAPI
