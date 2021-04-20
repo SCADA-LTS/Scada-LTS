@@ -37,8 +37,8 @@ Here is two of the several start options:
 * To run Scada on Docker type in: 
 ``docker run -it -e DOCKER_HOST_IP=`docker-machine ip` -p 81:8080 scadalts/scadalts /root/start.sh``.
 * Type in: `Get-NetIPAddress` and find IPAdrress for "DockerNAT" InterfaceAlias (You need a new CLI window to do it).
-* Type in docker IP adrress in the browser with port 81 and `/ScadaLTS/` sufix. Example:
-`http://10.0.75.2:81/ScadaLTS/`
+* Type in docker IP adrress in the browser with port 81 and `/ScadaBR/` sufix. Example:
+`http://10.0.75.2:81/ScadaBR/`
 
 ### Second option:
 * [Download the latest release](https://github.com/sdtabilit/Scada-LTS/releases/download/v0.0.6-test-modbus.3.0.2/ScadaBR.war).
