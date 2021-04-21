@@ -12,10 +12,10 @@
 			<v-card-text>
 				<v-row>
 					<v-col cols="12">
-						<v-text-field :label="$t('common.name')" v-model="name" dense></v-text-field>
+						<v-text-field :label="$t('common.name')" v-model="synopticPanel.name" dense></v-text-field>
 					</v-col>
 					<v-col cols="12">
-						<v-text-field :label="$t('common.xid')" v-model="xid" dense></v-text-field>
+						<v-text-field :label="$t('common.xid')" v-model="synopticPanel.xid" dense></v-text-field>
 					</v-col>
 					<v-col cols="12">
 						<v-file-input
@@ -48,10 +48,13 @@ export default {
 	data() {
 		return {
 			dialogVisible: false,
-			name: '',
-			xid: 'SP_',
-			vectorImage: '',
-			synopticPanel: undefined,
+			synopticPanel: {
+				id: -1,
+				name: '',
+				xid: 'SP_',
+				vectorImage: '',
+				componentData: '[]',
+			},
 		};
 	},
 
@@ -59,13 +62,7 @@ export default {
 		handleFileUpload(file) {
 			this.readFileContent(file)
 				.then((content) => {
-					this.synopticPanel = {
-						id: -1,
-						name: this.name,
-						xid: this.xid,
-						vectorImage: content,
-						componentData: '[]',
-					};
+					this.synopticPanel.vectorImage = content;
 				})
 				.catch((e) => {
 					console.error(e);
@@ -74,9 +71,7 @@ export default {
 
 		closeDialog() {
 			this.dialogVisible = false;
-			this.name = '';
-			this.xid = 'SP_';
-			this.vectorImage = '';
+			this.resetToDefaults();
 		},
 
 		save() {
@@ -92,6 +87,16 @@ export default {
 				reader.readAsText(file, 'UTF-8');
 			});
 		},
+
+		resetToDefaults() {
+			this.synopticPanel = {
+				id: -1,
+				name: '',
+				xid: 'SP_',
+				vectorImage: '',
+				componentData: '[]',
+			}
+		}
 	},
 };
 </script>
