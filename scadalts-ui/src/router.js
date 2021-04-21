@@ -9,6 +9,7 @@ import AlarmNotifications from './views/AlarmNotifications';
 import RecipientList from './views/RecipientList';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
+import DataSources from './views/DataSources';
 
 import store from './store/index';
 
@@ -91,6 +92,14 @@ const routing = new Router({
 			path: '/datapoint-details/:id',
 			name: 'datapoint-details',
 			component: DataPointDetails,
+			meta: {
+				requiresAuth: true
+			},
+		},
+		{
+			path: '/datasources',
+			name: 'datasources',
+			component: DataSources,
 			meta: {
 				requiresAuth: true
 			},
