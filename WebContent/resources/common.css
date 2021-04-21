@@ -58,11 +58,19 @@ img#logo {
     height: 1px;
     background-color: transparent; }
 
-#viewContent {
-  background-color: red; }
+#viewContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #556159;
+  height: 100vh;
+}
 
 #viewBackground {
-  background-color: blue; }
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 2px 4px 8px 0px #0000006b;
+}
 
 a img {
   margin: 0;

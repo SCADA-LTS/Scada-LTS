@@ -25,6 +25,7 @@ jdk:
 services:
 - docker
 - mysql
+install: skip
 script: ant war && ant junit
 branches:
   only:
@@ -33,6 +34,7 @@ branches:
   - "/^release.*$/"
   - "/^refactor/#1495.*$/"
   - "/^bug/#1421.*$/"
+  - "/^bug/#1534.*$/"
 notifications:
   email: false
 env:
