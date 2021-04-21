@@ -273,4 +273,8 @@ public class ServletContextMock implements ServletContext {
     public void declareRoles(String... strings) {
 
     }
+
+    public String getVirtualServerName() {
+        return null;
+    }
 }
