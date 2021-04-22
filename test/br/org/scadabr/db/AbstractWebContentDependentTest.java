@@ -2,7 +2,6 @@ package br.org.scadabr.db;
 
 import static java.io.File.*;
 import static org.apache.commons.io.FileUtils.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
