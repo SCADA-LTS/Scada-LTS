@@ -242,7 +242,8 @@ public class ViewDwr extends BaseDwr {
 			if (!edit) {
 				if (pointComponent.isSettable()) {
 					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+					if ((access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+							&& Permissions.hasDataPointSetPermission(user, pointComponent.tgetDataPoint()))
 						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
 				}
 
@@ -396,7 +397,7 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
-		viewComponent.validateDataPoint(user, false);
+		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
 	}
 
@@ -423,11 +424,12 @@ public class ViewDwr extends BaseDwr {
 		else {
 			pc.tsetDataPoint(dp);
 			pc.setNameOverride(name);
-			pc.setSettableOverride(settable && Permissions.hasDataPointSetPermission(user, dp));
+			boolean settableOverride = settable && Permissions.hasDataPointSetPermission(user, dp);
+			pc.setSettableOverride(settableOverride);
 			pc.setBkgdColorOverride(bkgdColorOverride);
 			pc.setDisplayControls(displayControls);
 
-			pc.validateDataPoint(user, false);
+			pc.validateDataPoint(user, settableOverride);
 		}
 
 		return response;
