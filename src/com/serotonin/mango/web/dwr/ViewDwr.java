@@ -424,12 +424,11 @@ public class ViewDwr extends BaseDwr {
 		else {
 			pc.tsetDataPoint(dp);
 			pc.setNameOverride(name);
-			boolean settableOverride = settable && Permissions.hasDataPointSetPermission(user, dp);
-			pc.setSettableOverride(settableOverride);
+			pc.setSettableOverride(settable && Permissions.hasDataPointSetPermission(user, dp));
 			pc.setBkgdColorOverride(bkgdColorOverride);
 			pc.setDisplayControls(displayControls);
 
-			pc.validateDataPoint(user, settableOverride);
+			pc.validateDataPoint(user, false);
 		}
 
 		return response;
