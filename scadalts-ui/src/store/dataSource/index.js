@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import { reject, resolve } from 'core-js/fn/promise';
 
 const ds = {
 	state: {
@@ -20,7 +19,8 @@ const ds = {
 							id: 0,
 							enabled: true,
 							name: 'Test',
-							type: 'VDS',
+							type: 'virtualdatasource',
+							xid: 'DS_012311',
 							conn: '5 minutes',
 							descr: 'Nothing important',
 							loaded: false,
@@ -30,7 +30,8 @@ const ds = {
 							id: 1,
 							enabled: true,
 							name: 'Tes2',
-							type: 'VDS',
+							type: 'snmpdatasource',
+							xid: 'DS_01232131',
 							conn: '30 seconds',
 							descr: 'User has changed on/off status',
 							loaded: false,
@@ -41,6 +42,37 @@ const ds = {
 				}, 2000);
 				
 			});
+		},
+
+		fetchDataSourceDetails({dispatch}, dataSourceId) {
+			return new Promise((resolve) => {
+				setTimeout(() => {
+					let data;
+					if(dataSourceId === 0) {
+						data = {
+							id: 1,
+							enabled: true,
+							name: 'Tes2',
+							xid: 'DS_01232131',
+							updatePeriod: 5,
+							updatePeriodType: 1,
+						}
+					} else if(dataSourceId === 1) {
+						data = {
+							id: 2,
+							enabled: true,
+							name: 'Tes2ErSNMP',
+							xid: 'DS_01214',
+							updatePeriod: 5,
+							updatePeriodType: 1,
+							host: 'localhost',
+							port:'161',
+						}
+					}
+					
+					resolve(data)
+				}, 1000);
+			})
 		},
 
 		fetchDataPointsForDS({dispatch}, dataSourceId) {

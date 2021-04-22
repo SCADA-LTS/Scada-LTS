@@ -7,7 +7,7 @@
 						<h1>Data Sources</h1>
 					</v-col>
 					<v-col cols="6" class="row justify-end" v-if="tableLoaded">
-						<v-btn color="primary" dark fab small>
+						<v-btn color="primary" dark fab small @click="createDataSource()">
 							<v-icon> mdi-plus </v-icon>
 						</v-btn>
 					</v-col>
@@ -38,16 +38,9 @@
 					<td :colspan="headers.length" class="small-margin-top">
 						<v-row>
 							<v-col cols="12" class="flex">
-								<v-spacer> </v-spacer>
-								<v-btn icon elevation="0">
-									<v-icon> mdi-alert-decagram </v-icon>
-								</v-btn>
-								<v-btn icon elevation="0">
-									<v-icon> mdi-pencil </v-icon>
-								</v-btn>
-								<v-btn icon elevation="0">
-									<v-icon> mdi-delete </v-icon>
-								</v-btn>
+								<DataSourceDetails
+									:datasource="item"
+								></DataSourceDetails>
 							</v-col>
 						</v-row>
 						<v-divider></v-divider>
@@ -146,10 +139,20 @@
 			</v-data-table>
             <v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 		</v-container>
+		<DataSourceCreator ref="creator"></DataSourceCreator>
 	</div>
 </template>
 <script>
+import DataSourceDetails from './DataSourceDetails';
+import DataSourceCreator from './DataSourceCreator';
+
 export default {
+
+	components: {
+		DataSourceDetails,
+		DataSourceCreator
+	},
+
 	data() {
 		return {
 			tableLoaded: false,
@@ -217,6 +220,11 @@ export default {
 		createDataPoint(item) {
 			console.log(item);
 		},
+
+		createDataSource() {
+			this.$refs.creator.showDialog();
+		}
+
 	},
 };
 </script>

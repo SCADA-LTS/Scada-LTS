@@ -6,14 +6,13 @@
 				@canceled="closeEditor()"
 				@saved="onSaved($event)"
 				:datasource="ds"
-                :createMode="false"
+				:createMode="false"
 			/>
 		</template>
 
 		<v-row>
-			<v-col> Radek </v-col>
+			<v-col> Radek SNMP </v-col>
 		</v-row>
-
 	</DataSourceInfo>
 </template>
 <script>
@@ -21,12 +20,10 @@ import BaseDataSourceVue from '../BaseDataSource.vue';
 import config from './config.vue';
 
 export default {
-    extends: BaseDataSourceVue,
-	
-    components: {
-		config,
-	},
-    
+	extends: BaseDataSourceVue,
+
+	components: { config },
+
 	data() {
 		return {
 			ds: undefined,
