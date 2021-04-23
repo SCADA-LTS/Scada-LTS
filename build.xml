@@ -185,6 +185,7 @@
     	<pathelement location="WebContent/WEB-INF/lib/spring-test-4.3.16.RELEASE.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/spring-security-core-4.2.20.RELEASE.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/spring-security-web-4.2.20.RELEASE.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/spring-security-config-4.2.20.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/standard.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/taglibs-log.jar"/>
@@ -614,11 +615,11 @@
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
-      
+
 			<test name="org.scada_lts.utils.UpdateValuePointPropertiesTest"
 				  haltonfailure="yes">
 			</test>
-      
+
 		  	<test name="org.scada_lts.permissions.service.util.PermissionsTestsSuite"
 				haltonfailure="yes">
 		  	</test>
