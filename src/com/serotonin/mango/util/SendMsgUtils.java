@@ -2,33 +2,38 @@ package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
+import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.rt.maint.work.EmailNotificationWorkItem;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.email.EmailSender;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.SystemSettingsDAO;
 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 public final class SendMsgUtils {
 
-    private SendMsgUtils() {}
-
     private static final Log LOG = LogFactory.getLog(SendMsgUtils.class);
 
-    public static boolean sendEmailWithoutQueue(EventInstance evt, NotificationType notificationType,
-                                                Set<String> addresses, String alias) {
+    private SendMsgUtils() {}
+
+    public static boolean sendEmail(EventInstance evt, EmailHandlerRT.EmailNotificationType notificationType,
+                                     Set<String> addresses, String alias, AfterWork afterWork) {
         try {
 
+            SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -38,11 +43,16 @@ public final class SendMsgUtils {
                     return false;
                 }
             }
-            String[] toAddrs = addresses.toArray(new String[0]);
+
             MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
+            String[] toAddrs = addresses.toArray(new String[0]);
+
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+            validateAddresses(evt, notificationType, internetAddresses, alias);
 
             // Send the email.
-            sendEmailWithoutQueue(toAddrs, content);
+            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
+            emailNotificationWorkItem.execute();
             return true;
 
         } catch (Exception e) {
@@ -53,10 +63,11 @@ public final class SendMsgUtils {
         }
     }
 
-    public static boolean sendSmsWithoutQueue(EventInstance evt, NotificationType notificationType, Set<String> addresses,
-                                              String alias) {
+    public static boolean sendSms(EventInstance evt, EmailToSmsHandlerRT.SmsNotificationType notificationType,
+                                   Set<String> addresses, String alias, AfterWork afterWork) {
         try {
 
+            SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -66,11 +77,15 @@ public final class SendMsgUtils {
                     return false;
                 }
             }
+            MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
-            MangoEmailContent content = EmailContentUtils.createTextContent(evt, notificationType, alias);
+
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+            validateAddresses(evt, notificationType, internetAddresses, alias);
 
             // Send the email.
-            sendEmailWithoutQueue(toAddrs, content);
+            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
+            emailNotificationWorkItem.execute();
             return true;
 
         } catch (Exception e) {
@@ -123,7 +138,7 @@ public final class SendMsgUtils {
                 }
             }
 
-            MangoEmailContent content = EmailContentUtils.createTextContent(evt, notificationType, alias);
+            MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
 
             EmailWorkItem.queueEmail(toAddrs, content);
@@ -135,34 +150,6 @@ public final class SendMsgUtils {
                     ExceptionUtils.getStackTrace(e)));
             return false;
         }
-    }
-
-    private static void sendEmailWithoutQueue(String[] toAddrs, MangoEmailContent content)
-            throws Exception {
-        InternetAddress[] toAddresses = new InternetAddress[toAddrs.length];
-        for (int i = 0; i < toAddrs.length; i++)
-            toAddresses[i] = new InternetAddress(toAddrs[i]);
-
-        String addr = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS);
-        String pretty = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_NAME);
-        String host = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_HOST);
-        int port = SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_SMTP_PORT);
-        boolean authorization = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_AUTHORIZATION);
-        String username = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME);
-        String password = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD);
-        boolean tls = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_TLS);
-
-        validateConfig(SystemSettingsDAO.EMAIL_FROM_ADDRESS, addr);
-        validateConfig(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
-        if(authorization) {
-            validateConfig(SystemSettingsDAO.EMAIL_SMTP_USERNAME, username);
-            validateConfig(SystemSettingsDAO.EMAIL_SMTP_PASSWORD, password);
-        }
-
-        InternetAddress fromAddress = new InternetAddress(addr, pretty);
-        EmailSender emailSender = new EmailSender(host, port, authorization, username, password, tls);
-
-        emailSender.send(fromAddress, toAddresses, content.getSubject(), content);
     }
 
     private static String getInfoEmail(EventInstance evt, NotificationType notificationType, String alias) {
@@ -221,11 +208,28 @@ public final class SendMsgUtils {
 
     }
 
-    private static void validateConfig(String name, Object object) throws Exception {
-        if(object == null)
-            throw new IllegalStateException("Email config properties: " + name + " is null!");
-        if((object instanceof String) && ((String)object).isEmpty())
-            throw new IllegalStateException("Email config properties: " + name + " is empty!");
+    private static void validateAddresses(EventInstance evt, NotificationType notificationType,
+                                          InternetAddress[] internetAddresses, String alias) throws Exception {
+
+        String messageErrorEmails = "Don't have e-mail \n";
+        String messages = "";
+        if (internetAddresses == null || internetAddresses.length == 0) messages += messageErrorEmails;
+
+        if (!messages.isEmpty()) {
+            throw new Exception(getInfoEmail(evt, notificationType, alias) + messages );
+        }
     }
 
+    public static InternetAddress[] convertToInternetAddresses(String[] toAddresses) {
+        Set<InternetAddress> addresses = new HashSet<>();
+        for (int i = 0; i < toAddresses.length; i++) {
+            try {
+                InternetAddress internetAddress = new InternetAddress(toAddresses[i]);
+                addresses.add(internetAddress);
+            } catch (AddressException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+        return addresses.toArray(new InternetAddress[]{});
+    }
 }
