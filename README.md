@@ -49,15 +49,20 @@ Commands with their explanations are listed below:
 | ---- | ---- |
 | ```ant run``` | Start Scada-LTS application using Tomcat server |
 | ```ant run-build``` | Build and start Scada-LTS application |
+| ```ant run-build-skip-test``` | Build and start Scada-LTS application without running Tests |
 | ```ant run-build-no-ui``` | Build and start Scada-LTS application without building user interface |
+| ```ant run-build-no-ui-skip-test``` | Build and start Scada-LTS application without building user interface but without Test task |
 | ```ant debug``` | Start Scada-LTS application in debug mode on Tomcat server |
 | ```ant debug-build``` | Build and start Scada-LTS application in debug mode |
+| ```ant debug-build-skip-test``` | Build and start Scada-LTS application in debug mode without tests |
 
 ### Examples of build tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant build``` | Build complete Scada-LTS application |
+| ```ant build-skip-test``` | Build complete Scada-LTS application without testing |
 | ```ant build-no-ui``` | Build just a core application  without Vue.js user interface |
+| ```ant build-no-ui-skip-test``` | Build just a core application  without Vue.js user interface without testing |
 | ```ant update-ui``` | Update running application with latest frontend application changes |
 | ```ant create-war``` | Prepare WAR archive from existing resources<br/> _we suggest to perform **ant build** task before_ |
 

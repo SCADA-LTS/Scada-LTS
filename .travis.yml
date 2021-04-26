@@ -24,10 +24,11 @@ services:
 - docker
 - mysql
 install:
-  - ant build
+# Skipping tests because it is better to start that as another task on Travis.
+  - ant build-skip-test
   - ant test-junit
 script:
-  - ant deploy-war
+  - ant create-war
 branches:
   only:
   - "/^develop.*$/"

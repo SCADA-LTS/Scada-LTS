@@ -392,13 +392,31 @@
 		init-static-dependencies,
 		init-ui-dependencies,
 		build-core,
+		test-junit,
+		test-frontend-unit,
+		build-ui
+	"/>
+
+	<target name="build-skip-test" description="Perform project build workflow and skip tests." depends="
+		init-core,
+		init-static-dependencies,
+		init-ui-dependencies,
+		build-core,
 		build-ui
 	"/>
 
 	<target name="build-no-ui" description="Build just a core application" depends="
 		init-core,
 		init-static-dependencies,
-		build-core"/>
+		build-core,
+		test-junit
+	"/>
+
+	<target name="build-no-ui-skip-test" description="Build just a core application without tests" depends="
+		init-core,
+		init-static-dependencies,
+		build-core
+	"/>
 
 	<target name="deploy" description="Deploy application to Tomcat workdir" depends="
 		clear-tomcat,
@@ -411,14 +429,32 @@
 		run
 	"/>
 
+	<target name="run-build-skip-test" description="Build and run application and skip tests" depends="
+		build-skip-test,
+		deploy,
+		run
+	"/>
+
 	<target name="run-build-no-ui" description="Build and run application without building frontend application" depends="
 		build-no-ui,
 		deploy,
 		run
 	"/>
 
+	<target name="run-build-no-ui-skip-test" description="Build and run application without building frontend application and skipping tests" depends="
+		build-no-ui-skip-test,
+		deploy,
+		run
+	"/>
+
 	<target name="debug-build" depends="
 		build,
+		deploy,
+		debug
+	"/>
+
+	<target name="debug-build-skip-test" depends="
+		build-skip-test,
 		deploy,
 		debug
 	"/>
