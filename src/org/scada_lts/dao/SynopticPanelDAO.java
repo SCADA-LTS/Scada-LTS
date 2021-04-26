@@ -77,7 +77,7 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
             + COLUMN_NAME_SP_ID + "=?";
 
     @Override
-    public Object create(SynopticPanel entity) {
+    public SynopticPanel create(SynopticPanel entity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         DAO.getInstance().getJdbcTemp().update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SP_INSERT, Statement.RETURN_GENERATED_KEYS);
@@ -119,7 +119,7 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public Object update(SynopticPanel entity) {
+    public SynopticPanel update(SynopticPanel entity) {
         DAO.getInstance().getJdbcTemp()
                 .update(
                         SP_UPDATE,
@@ -132,7 +132,7 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public Object delete(int id) {
+    public int delete(int id) {
         try {
             DAO.getInstance().getJdbcTemp().update(SP_DELETE, id);
             return 0;

@@ -22,6 +22,7 @@
 							:label="$t('synopticpanels.creator.file.upload')"
 							@change="handleFileUpload($event)"
 							accept="image/svg+xml"
+							v-model="loadedImage"
 						></v-file-input>
 					</v-col>
 				</v-row>
@@ -48,6 +49,7 @@ export default {
 	data() {
 		return {
 			dialogVisible: false,
+			loadedImage: undefined,
 			synopticPanel: {
 				id: -1,
 				name: '',
@@ -89,6 +91,7 @@ export default {
 		},
 
 		resetToDefaults() {
+			this.loadedImage = null;
 			this.synopticPanel = {
 				id: -1,
 				name: '',

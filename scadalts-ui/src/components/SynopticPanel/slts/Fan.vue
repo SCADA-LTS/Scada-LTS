@@ -6,7 +6,7 @@
 					<v-text-field v-model="componentData.data.pointXid" label="Point XID:" />
 				</v-col>
 				<v-col cols="12" md="6">
-					<v-text-field v-model="componentData.data.label" label="Point Name:" />
+					<v-text-field v-model="componentData.data.label" label="Label:" />
 				</v-col>
 			</v-row>
 		</v-container>

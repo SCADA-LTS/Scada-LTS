@@ -33,7 +33,7 @@ public interface CrudOperations<T> {
      * @param entity Object to create
      * @return Operation result
      */
-    public Object create(T entity);
+    public T create(T entity);
 
     /**
      * Get List of ScadaObjects
@@ -69,7 +69,7 @@ public interface CrudOperations<T> {
      * @param entity Object to create
      * @return Operation result
      */
-    public Object update(T entity);
+    public T update(T entity);
 
     /**
      * Delete object
@@ -77,6 +77,6 @@ public interface CrudOperations<T> {
      * @param id - object identifier
      * @return Operation result
      */
-    public Object delete(int id);
+    public int delete(int id);
 
 }

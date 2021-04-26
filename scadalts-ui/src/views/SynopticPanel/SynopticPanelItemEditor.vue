@@ -5,10 +5,10 @@
 
 			<v-card-text>
 				<v-row align="baseline">
-					<v-col cols="12" md="4">
+					<v-col cols="12" md="5">
 						<v-text-field :label="$t('common.name')" v-model="panel.name" dense></v-text-field>
 					</v-col>
-					<v-col cols="12" md="4">
+					<v-col cols="11" md="5">
 						<v-text-field
 							:label="$t('common.xid')"
 							v-model="panel.xid"
@@ -16,9 +16,9 @@
 							disabled
 						></v-text-field>
 					</v-col>
-					<v-col cols="12" md="4">
+					<v-col cols="1" md="2">
 						<v-file-input
-							:label="$t('synopticpanels.creator.file.upload')"
+							hide-input
 							@change="handleFileUpload($event)"
 							accept="image/svg+xml"
 						></v-file-input>
