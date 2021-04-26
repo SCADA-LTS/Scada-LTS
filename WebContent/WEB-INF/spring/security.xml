@@ -4,30 +4,35 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
 
-    <http use-expressions="true">
+    <http auto-config="true" use-expressions="true">
         <intercept-url pattern="/api/datapoints" access="permitAll" />
         <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
 
-        <form-login
-                login-page="/login"
-                default-target-url="/welcome"
-                authentication-failure-url="/login?error"
-                username-parameter="username"
-                password-parameter="password" />
-        <logout logout-success-url="/login?logout"  />
-        <form-login login-page="/login" default-target-url="/"
-                    authentication-failure-url="/login?error" />
-        <csrf disabled="true"/>
+        <http-basic />
     </http>
 
     <authentication-manager>
         <authentication-provider>
-            <user-service>
-                <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_USER" />
-                <user name="user1" password="1111" authorities="ROLE_USER" />
-            </user-service>
+            <jdbc-user-service data-source-ref="dataSource"
+                               users-by-username-query=
+                                       "select username,password, 'true' as enabled from users where username=?"
+                               authorities-by-username-query=
+                                       "select username, role from users where username =?  " />
+<!--            <user-service>-->
+<!--                <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_USER" />-->
+<!--                <user name="user1" password="1111" authorities="ROLE_USER" />-->
+<!--            </user-service>-->
         </authentication-provider>
     </authentication-manager>
+
+    <b:bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+        <b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts" />
+        <b:property name="username" value="root" />
+        <b:property name="password" value="root" />
+    </b:bean>
 
 </b:beans>

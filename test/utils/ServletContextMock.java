@@ -174,6 +174,10 @@ public class ServletContextMock implements ServletContext {
         return null;
     }
 
+    public ServletRegistration.Dynamic addJspFile(String s, String s1) {
+        return null;
+    }
+
     @Override
     public <T extends Servlet> T createServlet(Class<T> aClass) throws ServletException {
         return null;
@@ -276,5 +280,29 @@ public class ServletContextMock implements ServletContext {
 
     public String getVirtualServerName() {
         return null;
+    }
+
+    public int getSessionTimeout() {
+        return 0;
+    }
+
+    public void setSessionTimeout(int i) {
+
+    }
+
+    public String getRequestCharacterEncoding() {
+        return null;
+    }
+
+    public void setRequestCharacterEncoding(String s) {
+
+    }
+
+    public String getResponseCharacterEncoding() {
+        return null;
+    }
+
+    public void setResponseCharacterEncoding(String s) {
+
     }
 }
