@@ -59,7 +59,7 @@ Commands with their explanations are listed below:
 | ```ant build``` | Build complete Scada-LTS application |
 | ```ant build-no-ui``` | Build just a core application  without Vue.js user interface |
 | ```ant update-ui``` | Update running application with latest frontend application changes |
-| ```ant deploy-war``` | Prepare WAR archive from existing resources<br/> _we suggest to perform **ant build** task before_ |
+| ```ant create-war``` | Prepare WAR archive from existing resources<br/> _we suggest to perform **ant build** task before_ |
 
 ### Examples of test tasks
 | Command | Explanation |

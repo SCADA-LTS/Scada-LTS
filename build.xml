@@ -224,7 +224,7 @@
 		</exec>
 	</target>
 
-	<target name="deploy-war" description="Build and deploy WAR archive.">
+	<target name="create-war" description="Build and deploy WAR archive.">
 		<record action="start" name="${war.log.name}"/>
 		<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>
 		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
@@ -402,7 +402,7 @@
 
 	<target name="deploy" description="Deploy application to Tomcat workdir" depends="
 		clear-tomcat,
-		deploy-war,
+		create-war,
 		deploy-tomcat"/>
 
 	<target name="run-build" description="Build and run application" depends="
@@ -424,6 +424,7 @@
 	"/>
 
 	<target name="update-ui" depends="build-ui" description="Build and update User Interface with the latest changes inside Vue.js">
+		<record action="start" name="${build-project.log.src.name}"/>
 		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
 		<copy includeemptydirs="false" todir="${env.CATALINA_HOME}/webapps/ScadaBR/resources/js-ui/app/css" taskname="copy app css">
 			<fileset dir="${src-js-ui.dir}/css/">
@@ -438,6 +439,8 @@
 				<include name="chunk-vendors.js"/>
 			</fileset>
 		</copy>
+		<record action="stop" name="${build-project.log.src.name}"/>
+
 	</target>
 
 	<path id="benchmark.classpath">
