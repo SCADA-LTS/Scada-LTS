@@ -16,6 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+:root {
+    --slts-primary: #39B54A;
+}
 html > body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 11px;
@@ -219,6 +222,7 @@ input[type="checkbox"], input[type="radio"] {
 }
 input[type="submit"], input[type="button"] {
 	overflow: visible;
+	border: 1px solid var(--slts-primary);
 }
 
 
