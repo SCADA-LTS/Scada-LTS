@@ -138,7 +138,7 @@
 	"eventDetector.dialog.create.select": "Event Detector Type",
 	"eventDetector.dialog.create.title": "Create Event Detector",
 	"eventDetector.dialog.create.xid": "Export ID",
-	"eventDetector.type.alphanumeric": "Aplhanumeric State Detector",
+	"eventDetector.type.alphanumeric": "Alphanumeric State Detector",
 	"eventDetector.type.binary": "Binary State Detector",
 	"eventDetector.type.change": "State Change Detector",
 	"eventDetector.type.cusum.negative": "Negative CUSUM",
