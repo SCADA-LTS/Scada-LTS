@@ -147,7 +147,7 @@
   </filter>
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/api/*</url-pattern>
+    <url-pattern>/api/**</url-pattern>
   </filter-mapping>
   
   <!-- Loads Spring Security config file -->
