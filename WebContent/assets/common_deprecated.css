@@ -222,7 +222,11 @@ input[type="checkbox"], input[type="radio"] {
 }
 input[type="submit"], input[type="button"] {
 	overflow: visible;
-	border: 1px solid var(--slts-primary);
+	background: silver;
+    border-width: 3px;
+    border-color: gainsboro gray gray gainsboro;
+    border-style: solid;
+    padding: 1px 5px;
 }
 
 
