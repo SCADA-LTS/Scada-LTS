@@ -23,16 +23,22 @@
 <!--                <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_USER" />-->
 <!--                <user name="user1" password="1111" authorities="ROLE_USER" />-->
 <!--            </user-service>-->
+            <password-encoder ref="customPasswordEncoderncoder" />
         </authentication-provider>
     </authentication-manager>
 
     <b:bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+    >
 
         <b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts" />
+        <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts?useSSL=false" />
         <b:property name="username" value="root" />
-        <b:property name="password" value="root" />
+        <b:property name="password" value="rootroot" />
+    </b:bean>
+
+    <b:bean id="customPasswordEncoderncoder"
+            class="org.scada_lts.spring.CustomPasswordEncoder">
     </b:bean>
 
 </b:beans>
