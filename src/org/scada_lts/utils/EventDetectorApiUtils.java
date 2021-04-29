@@ -103,26 +103,10 @@ public final class EventDetectorApiUtils {
     }
 
     public static String validChangeCountAndDurationValue(EventDetectorDTO body) {
-        return msgIfNonNullAndInvalid("ChangeCount value must be 2, for detectorType: {0}", body.getDetectorType(),
-                a -> a == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT && (body.getChangeCount() == null || body.getChangeCount() != 2)) +
-                msgIfNonNullAndInvalid("Duration value must be 1, for detectorType: {0}", body.getDetectorType(),
-                        a -> isType(a) && (body.getDuration() == null || body.getDuration() != 1));
-    }
-
-    public static void defaultValueEventDetector(EventDetectorDTO body) {
-        PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
-        setIf(pointEventDetector.getDurationType(), body::setDurationType, a -> body.getDurationType() == null);
-        setIf(pointEventDetector.getDuration(), body::setDuration, a -> body.getDuration() == null || body.getDuration() < 0);
-        setIf(pointEventDetector.getChangeCount(), body::setChangeCount, a -> body.getChangeCount() == null || body.getChangeCount() < 0);
-        if(body.getDetectorType() != null) {
-            if (body.getDetectorType() == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT) {
-                body.setChangeCount(2);
-                body.setDuration(1);
-            } else if (body.getDetectorType() == PointEventDetectorVO.TYPE_NO_CHANGE)
-                body.setDuration(1);
-            else if (body.getDetectorType() == PointEventDetectorVO.TYPE_NO_UPDATE)
-                body.setDuration(1);
-        }
+        return msgIfNonNullAndInvalid("ChangeCount value must be >= 2, for detectorType: {0}", body.getDetectorType(),
+                a -> a == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT && (body.getChangeCount() == null || body.getChangeCount() < 2)) +
+                msgIfNonNullAndInvalid("Duration value must be >= 1, for detectorType: {0}", body.getDetectorType(),
+                        a -> isType(a) && (body.getDuration() == null || body.getDuration() < 1));
     }
 
     private static String validEventDetectorType(DataPointVO dataPoint, EventDetectorDTO body) {
