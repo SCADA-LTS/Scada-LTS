@@ -50,8 +50,24 @@ public final class EventDetectorApiUtils {
         setIf(source.getWeight(), toUpdate::setWeight, Objects::nonNull);
     }
 
-    public static String validEventDetectorBody(Integer dataPointId, Integer eventDetectorId,
-                                                EventDetectorDTO body) {
+    public static void defaultValueEventDetector(EventDetectorDTO body) {
+        PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
+        setIf(pointEventDetector.getDurationType(), body::setDurationType, Objects::isNull);
+        setIf(pointEventDetector.getDuration(), body::setDuration, Objects::isNull);
+        setIf(pointEventDetector.getChangeCount(), body::setChangeCount, Objects::isNull);
+        if(body.getDetectorType() != null) {
+            if (body.getDetectorType() == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT) {
+                body.setChangeCount(2);
+                body.setDuration(1);
+            } else if (body.getDetectorType() == PointEventDetectorVO.TYPE_NO_CHANGE)
+                body.setDuration(1);
+            else if (body.getDetectorType() == PointEventDetectorVO.TYPE_NO_UPDATE)
+                body.setDuration(1);
+        }
+    }
+
+    public static String validEventDetectorBodyUpdate(Integer dataPointId, Integer eventDetectorId,
+                                                      EventDetectorDTO body) {
 
         StringBuilder msg = new StringBuilder();
         msg.append(validId(eventDetectorId));
@@ -65,6 +81,7 @@ public final class EventDetectorApiUtils {
                 a -> !PointEventDetectorVO.validDurationType(a)));
         msg.append(msgIfNonNullAndInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
         msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
+        msg.append(validChangeCountAndDurationValue(body));
         return msg.toString();
     }
 
@@ -81,7 +98,15 @@ public final class EventDetectorApiUtils {
                 a -> !PointEventDetectorVO.validDurationType(a)));
         msg.append(msgIfNullOrInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
         msg.append(msgIfNullOrInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
+        msg.append(validChangeCountAndDurationValue(body));
         return msg.toString();
+    }
+
+    public static String validChangeCountAndDurationValue(EventDetectorDTO body) {
+        return msgIfNonNullAndInvalid("ChangeCount value must be 2, for detectorType: {0}", body.getDetectorType(),
+                a -> a == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT && body.getChangeCount() != 2) +
+                msgIfNonNullAndInvalid("Duration value must be 1, for detectorType: {0}", body.getDetectorType(),
+                        a -> isType(a) && body.getDuration() != 1);
     }
 
     public static Optional<DataPointVO> getDataPointById(int id, DataPointService dataPointService) {
@@ -116,5 +141,11 @@ public final class EventDetectorApiUtils {
                 .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
+    }
+
+    private static boolean isType(int detectorType) {
+        return detectorType == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT
+                || detectorType == PointEventDetectorVO.TYPE_NO_CHANGE
+                || detectorType == PointEventDetectorVO.TYPE_NO_UPDATE;
     }
 }
