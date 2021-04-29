@@ -118,6 +118,10 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                String error = validEventDetectorBody(datapointId, Common.NEW_ID, body);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
                 DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
                 PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
                 JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, pointEventDetectorVO);
