@@ -104,9 +104,9 @@ public final class EventDetectorApiUtils {
 
     public static String validChangeCountAndDurationValue(EventDetectorDTO body) {
         return msgIfNonNullAndInvalid("ChangeCount value must be 2, for detectorType: {0}", body.getDetectorType(),
-                a -> a == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT && body.getChangeCount() != 2) +
+                a -> a == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT && (body.getChangeCount() == null || body.getChangeCount() != 2)) +
                 msgIfNonNullAndInvalid("Duration value must be 1, for detectorType: {0}", body.getDetectorType(),
-                        a -> isType(a) && body.getDuration() != 1);
+                        a -> isType(a) && (body.getDuration() == null || body.getDuration() != 1));
     }
 
     public static void defaultValueEventDetector(EventDetectorDTO body) {
