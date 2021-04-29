@@ -111,9 +111,9 @@ public final class EventDetectorApiUtils {
 
     public static void defaultValueEventDetector(EventDetectorDTO body) {
         PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
-        setIf(pointEventDetector.getDurationType(), body::setDurationType, Objects::isNull);
-        setIf(pointEventDetector.getDuration(), body::setDuration, Objects::isNull);
-        setIf(pointEventDetector.getChangeCount(), body::setChangeCount, Objects::isNull);
+        setIf(pointEventDetector.getDurationType(), body::setDurationType, a -> body.getDurationType() == null);
+        setIf(pointEventDetector.getDuration(), body::setDuration, a -> body.getDuration() == null || body.getDuration() < 0);
+        setIf(pointEventDetector.getChangeCount(), body::setChangeCount, a -> body.getChangeCount() == null || body.getChangeCount() < 0);
         if(body.getDetectorType() != null) {
             if (body.getDetectorType() == PointEventDetectorVO.TYPE_STATE_CHANGE_COUNT) {
                 body.setChangeCount(2);
