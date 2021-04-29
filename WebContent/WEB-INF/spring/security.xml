@@ -14,6 +14,7 @@
 
     <authentication-manager>
         <authentication-provider>
+            <password-encoder ref="customPasswordEncoderncoder" />
             <jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query=
                                        "select username,password, 'true' as enabled from users where username=?"
@@ -23,7 +24,6 @@
 <!--                <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_USER" />-->
 <!--                <user name="user1" password="1111" authorities="ROLE_USER" />-->
 <!--            </user-service>-->
-            <password-encoder ref="customPasswordEncoderncoder" />
         </authentication-provider>
     </authentication-manager>
 
