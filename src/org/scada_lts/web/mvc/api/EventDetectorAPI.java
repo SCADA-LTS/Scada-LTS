@@ -118,6 +118,7 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                defaultValueEventDetector(body);
                 String error = validEventDetectorBodyCreate(datapointId, body);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().build();
@@ -162,6 +163,7 @@ public class EventDetectorAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                defaultValueEventDetector(body);
                 String error = validEventDetectorBodyUpdate(dataPointId, eventDetectorId, body);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
