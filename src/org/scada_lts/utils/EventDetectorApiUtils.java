@@ -125,6 +125,9 @@ public final class EventDetectorApiUtils {
     private static String validEventDetectorType(DataPointVO dataPoint, EventDetectorDTO body) {
         PointEventDetectorVO eventDetector = body.createPointEventDetectorVO(dataPoint);
         int dataTypeId = dataPoint.getPointLocator().getDataTypeId();
+        if(eventDetector.getDef() == null) {
+            return "DetectorType is required";
+        }
         if(!eventDetector.getDef().supports(dataTypeId)) {
             return "DetectorType not supported for dataPointType: " + dataTypeId + ". Supported: " + toString(PointEventDetectorVO.getImplementations(dataTypeId)) + " ;";
         }
