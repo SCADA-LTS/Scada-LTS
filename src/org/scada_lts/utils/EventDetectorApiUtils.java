@@ -68,6 +68,22 @@ public final class EventDetectorApiUtils {
         return msg.toString();
     }
 
+    public static String validEventDetectorBodyCreate(Integer dataPointId, EventDetectorDTO body) {
+
+        StringBuilder msg = new StringBuilder();
+
+        msg.append(msgIfNull( "Correct dataPointId", dataPointId));
+        msg.append(msgIfNullOrInvalid("AlarmLevel does not exist for value {0};", body.getAlarmLevel(),
+                a -> !PointEventDetectorVO.validAlarmLevel(a)));
+        msg.append(msgIfNullOrInvalid("DetectorType does not exist for value {0};", body.getDetectorType(),
+                a -> !PointEventDetectorVO.validDetectorType(a)));
+        msg.append(msgIfNullOrInvalid("DurationType does not exist for value {0};", body.getDurationType(),
+                a -> !PointEventDetectorVO.validDurationType(a)));
+        msg.append(msgIfNullOrInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
+        msg.append(msgIfNullOrInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
+        return msg.toString();
+    }
+
     public static Optional<DataPointVO> getDataPointById(int id, DataPointService dataPointService) {
         try {
             DataPointVO dataPointVO = dataPointService.getDataPoint(id);
