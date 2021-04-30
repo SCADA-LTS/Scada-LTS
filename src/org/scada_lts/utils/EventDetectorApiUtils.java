@@ -64,7 +64,7 @@ public final class EventDetectorApiUtils {
         msg.append(msgIfNonNullAndInvalid("DurationType does not exist for value {0};", body.getDurationType(),
                 a -> !PointEventDetectorVO.validDurationType(a)));
         msg.append(msgIfNonNullAndInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
-        msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct changeCount, it must be >= 2, value {0};", body.getChangeCount(), a -> a < 2));
         msg.append(validChangeCountAndDurationValue(body));
         return msg.toString();
     }
@@ -97,14 +97,14 @@ public final class EventDetectorApiUtils {
         msg.append(msgIfNullOrInvalid("DurationType does not exist for value {0};", body.getDurationType(),
                 a -> !PointEventDetectorVO.validDurationType(a)));
         msg.append(msgIfNullOrInvalid("Correct duration, it must be >= 0, value {0};", body.getDuration(), a -> a < 0));
-        msg.append(msgIfNullOrInvalid("Correct changeCount, it must be >= 0, value {0};", body.getChangeCount(), a -> a < 0));
+        msg.append(msgIfNullOrInvalid("Correct changeCount, it must be >= 2, value {0};", body.getChangeCount(), a -> a < 2));
         msg.append(validChangeCountAndDurationValue(body));
         return msg.toString();
     }
 
     public static String validChangeCountAndDurationValue(EventDetectorDTO body) {
-        return msgIfNonNullAndInvalid("ChangeCount value must be >= 2, for detectorType: {0}", body.getDetectorType(), a -> invalidChangeCountValue(body)) +
-                msgIfNonNullAndInvalid("Duration value must be >= 1, for detectorType: {0}", body.getDetectorType(), a -> invalidDurationValue(body));
+        return msgIfNonNullAndInvalid("ChangeCount value must be >= 2, for detectorType: {0};", body.getDetectorType(), a -> invalidChangeCountValue(body)) +
+                msgIfNonNullAndInvalid("Duration value must be >= 1, for detectorType: {0};", body.getDetectorType(), a -> invalidDurationValue(body));
     }
 
     private static String validEventDetectorType(DataPointVO dataPoint, EventDetectorDTO body) {
