@@ -107,26 +107,11 @@ public final class EventDetectorApiUtils {
                 msgIfNonNullAndInvalid("Duration value must be >= 1, for detectorType: {0}", body.getDetectorType(), a -> invalidDurationValue(body));
     }
 
-    public static void defaultValueEventDetector(EventDetectorDTO body) {
-        PointEventDetectorVO pointEventDetector = new PointEventDetectorVO();
-        setIf(pointEventDetector.getDurationType(), body::setDurationType, a -> body.getDurationType() == null);
-        setIf(pointEventDetector.getDuration(), body::setDuration, a -> body.getDuration() == null || body.getDuration() < 0);
-        setIf(pointEventDetector.getChangeCount(), body::setChangeCount, a -> body.getChangeCount() == null || body.getChangeCount() < 0);
-        setIf(pointEventDetector.isBinaryState(), body::setBinaryState, a -> body.getBinaryState() == null);
-        setIf(pointEventDetector.getAlphanumericState(), body::setAlphanumericState, a -> body.getAlphanumericState() == null);
-        setIf(pointEventDetector.getAlias(), body::setAlias, a -> body.getAlias() == null);
-        setIf(pointEventDetector.getLimit(), body::setLimit, a -> body.getLimit() == null);
-        setIf(pointEventDetector.getWeight(), body::setWeight, a -> body.getWeight() == null);
-        setIf(pointEventDetector.getMultistateState(), body::setMultistateState, a -> body.getMultistateState() == null);
-        setIf(2, body::setChangeCount, a -> invalidChangeCountValue(body));
-        setIf(1, body::setDuration, a -> invalidDurationValue(body));
-    }
-
     private static String validEventDetectorType(DataPointVO dataPoint, EventDetectorDTO body) {
         PointEventDetectorVO eventDetector = body.createPointEventDetectorVO(dataPoint);
         int dataTypeId = dataPoint.getPointLocator().getDataTypeId();
         if(eventDetector.getDef() == null) {
-            return "DetectorType is required";
+            return "DetectorType is required;";
         }
         if(!eventDetector.getDef().supports(dataTypeId)) {
             return "DetectorType not supported for dataPointType: " + dataTypeId + ". Supported: " + toString(PointEventDetectorVO.getImplementations(dataTypeId)) + " ;";
