@@ -56,38 +56,62 @@
 
 
       <div class="login-box">
-        <form action="login.htm" method="post" onclick="nag()" style="margin: 0 auto; width:200px;">
+
+<%--          <form action="/ScadaBR/login" method="POST">--%>
+<%--              <label for="username">User Name:</label>--%>
+<%--              <input id="username" name="j_username" type="text"/>--%>
+<%--              <label for="password">Password:</label>--%>
+<%--              <input id="password" name="j_password" type="password"/>--%>
+<%--              <input type="submit" value="Log In"/>--%>
+<%--          </form>--%>
+
+          <form name='f' action="login" method='POST'>
+              <table>
+                  <tr>
+                      <td>User:</td>
+                      <td><input type='text' name='username' value=''></td>
+                  </tr>
+                  <tr>
+                      <td>Password:</td>
+                      <td><input type='password' name='password' /></td>
+                  </tr>
+                  <tr>
+                      <td><input name="submit" type="submit" value="submit" /></td>
+                  </tr>
+              </table>
+          </form>
+<%--        <form action="login.htm" method="post" onclick="nag()" style="margin: 0 auto; width:200px;">--%>
 
 
-              <div class="form-box">
-                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.userId"/></div>
-                <div class="formField">
-                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40" style="width: 200px; height: 20px;"/>
-                </div>
-              </div>
+<%--              <div class="form-box">--%>
+<%--                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.userId"/></div>--%>
+<%--                <div class="formField">--%>
+<%--                  <input id="username" type="text" name="username" value="${login.username}" maxlength="40" style="width: 200px; height: 20px;"/>--%>
+<%--                </div>--%>
+<%--              </div>--%>
 
-              <div class="form-box">
-                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.password"/></div>
-                <div class="formField">
-                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20" style="width: 200px; height: 20px;"/>
-                </div>
-              </div>
+<%--              <div class="form-box">--%>
+<%--                <div class="formLabelRequired" style="color: #000000; font-size: 14px;"><fmt:message key="login.password"/></div>--%>
+<%--                <div class="formField">--%>
+<%--                  <input id="password" type="password" name="password" value="${login.password}" maxlength="20" style="width: 200px; height: 20px;"/>--%>
+<%--                </div>--%>
+<%--              </div>--%>
 
-                <div class="formError">
-                  <c:forEach items="${errors}" var="error">
-                    <fmt:message key="${error}"/><br/>
-                  </c:forEach>
-                </div>
-
-
-              <div class="login-button" align="center">
-                <input type="submit" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>
-                <tag:help id="welcomeToMango"/>
-              </div>
+<%--                <div class="formError">--%>
+<%--                  <c:forEach items="${errors}" var="error">--%>
+<%--                    <fmt:message key="${error}"/><br/>--%>
+<%--                  </c:forEach>--%>
+<%--                </div>--%>
 
 
+<%--              <div class="login-button" align="center">--%>
+<%--                <input type="submit" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>--%>
+<%--                <tag:help id="welcomeToMango"/>--%>
+<%--              </div>--%>
 
-        </form>
+
+
+<%--        </form>--%>
         <br/>
       </div>
 

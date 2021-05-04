@@ -4,12 +4,29 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
 
-    <http auto-config="true" use-expressions="true">
-        <intercept-url pattern="/api/datapoints" access="permitAll" />
-        <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
+<!--    <http use-expressions="true">-->
+<!--&lt;!&ndash;        <intercept-url pattern="/api/datapoints" access="permitAll" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <intercept-url pattern="/login*" access="isAnonymous()"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <intercept-url pattern="/**" access="isFullyAuthenticated()"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <form-login&ndash;&gt;-->
+<!--&lt;!&ndash;                login-page='/login.html'&ndash;&gt;-->
+<!--&lt;!&ndash;                login-processing-url="/perform_login"&ndash;&gt;-->
+<!--&lt;!&ndash;                default-target-url="/homepage.html"&ndash;&gt;-->
+<!--&lt;!&ndash;                authentication-failure-url="/login.html?error=true"&ndash;&gt;-->
+<!--&lt;!&ndash;                always-use-default-target="true"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <http-basic />&ndash;&gt;-->
+<!--    </http>-->
 
-        <http-basic />
+    <http use-expressions="true">
+        <intercept-url pattern="/login*" access="isAnonymous()" />
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
+
+        <form-login login-page='/login.html'
+                    default-target-url="/homepage.html"
+                    authentication-failure-url="/login.html?error=true" />
+        <logout logout-success-url="/login.html" />
     </http>
 
     <authentication-manager>
