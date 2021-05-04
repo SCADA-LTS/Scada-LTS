@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataPoint from './dataPoint';
 import storeEvents from './events';
-import storeEventDetectors from './dataPoint/eventDetecotrs';
+import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
 import amcharts from './amcharts';
@@ -26,7 +26,7 @@ export default new Vuex.Store({
 	modules: {
 		dataSource,
 		dataPoint,
-		storeEventDetectors,
+		eventDetectorModule,
 		storeEvents,
 		graphicView,
 		pointHierarchy,

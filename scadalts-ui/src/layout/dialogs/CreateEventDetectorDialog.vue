@@ -382,22 +382,22 @@ export default {
 			if (!!this.data) {
 				if (this.data.pointLocator.dataTypeId === 1) {
 					// Binary Datapoint
-					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+					return this.$store.state.eventDetectorModule.eventDetectorList.filter((e) => {
 						return e.id === 3 || e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8;
 					});
 				} else if (this.data.pointLocator.dataTypeId === 2) {
 					// Multistate Datapoint
-					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+					return this.$store.state.eventDetectorModule.eventDetectorList.filter((e) => {
 						return e.id === 4 || e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8;
 					});
 				} else if (this.data.pointLocator.dataTypeId === 3) {
 					// Numeric Datapoint
-					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+					return this.$store.state.eventDetectorModule.eventDetectorList.filter((e) => {
 						return !(e.id === 3 || e.id === 4 || e.id === 6 || e.id === 9);
 					});
 				} else if (this.data.pointLocator.dataTypeId === 4) {
 					// Alphanumeric Datapoint
-					return this.$store.state.storeEventDetectors.eventDetectorList.filter((e) => {
+					return this.$store.state.eventDetectorModule.eventDetectorList.filter((e) => {
 						return e.id === 5 || e.id === 6 || e.id === 7 || e.id === 8 || e.id === 9;
 					});
 				}
@@ -427,10 +427,11 @@ export default {
 		},
 
 		watchEventDectectorChange(val) {
-			this.eventDetector = Object.assign(
-				{},
-				this.$store.state.storeEventDetectors.eventDetectorTemplates[val - 1],
-			);
+			this.eventDetector = Object.assign({}, this.$store.state.eventDetectorModule.eventDetectorTemplate);
+			this.eventDetector.detectorType = val;
+			if(val === 6 || val === 7 || val === 8) {
+				this.eventDetector.duration = 1;
+			}
 			this.eventDetector.xid = `PED_${Math.round(Math.random() * 100000)}`;
 		},
 	},
