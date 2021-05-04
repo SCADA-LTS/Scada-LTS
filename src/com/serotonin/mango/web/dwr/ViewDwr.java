@@ -91,6 +91,7 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 
@@ -112,7 +113,8 @@ public class ViewDwr extends BaseDwr {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
 			return new ArrayList<ViewComponentState>();
-		return getViewPointData(null, view, false);
+		User user = new UserService().getUser(view.getUserId());
+		return getViewPointData(user, view, false);
 	}
 
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
