@@ -10,10 +10,19 @@
 const storeAlarmsNotifications = {
 	state: {
 		pedTemplate: {
+			id: -1,
 			xid: 'PED-PLC',
 			alias: '',
 			alarmLevel: 1,
 			detectorType: 5,
+			limit: 0.0,
+			duration: 0,
+			durationType: 1,
+			binaryState: false,
+			multistateState: 0,
+			changeCount: 2,
+			alphanumericState: null,
+			weight: 0.0
 		},
 		ehTemplate: {
 			id: -1,
