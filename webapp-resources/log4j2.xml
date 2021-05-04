@@ -88,6 +88,7 @@
         <Logger name="org.springframework.web.servlet.FrameworkServlet" level="error"/>
         <Logger name="com.serotonin.db.spring.ExtendedJdbcTemplate" level="error"/>
         <Logger name="com.serotonin.mango" level="info"/>
+        <Logger name="org.scada_lts.permissions.migration" level="info"/>
 
         <Logger name="com.serotonin.modbus4j.ip.listener" level="debug">
             <AppenderRef ref="ASYNC_MODBUS"/>

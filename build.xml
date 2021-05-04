@@ -624,6 +624,10 @@
 			<test name="com.serotonin.mango.util.ViewControllerUtilsTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.permissions.migration.MigrationPermissionsUtilsTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

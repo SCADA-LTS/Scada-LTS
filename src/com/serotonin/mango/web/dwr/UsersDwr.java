@@ -140,13 +140,8 @@ public class UsersDwr extends BaseDwr {
 		user.setDisabled(disabled);
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-        if(usersProfileId == Common.NEW_ID) {
-            user.setDataSourcePermissions(dataSourcePermissions);
-            user.setDataPointPermissions(dataPointPermissions);
-        } else {
-			user.setDataSourcePermissions(new ArrayList<>());
-			user.setDataPointPermissions(new ArrayList<>());
-		}
+		user.setDataSourcePermissions(dataSourcePermissions);
+		user.setDataPointPermissions(dataPointPermissions);
 		user.setUserProfileId(usersProfileId);
 
 		DwrResponseI18n response = new DwrResponseI18n();
