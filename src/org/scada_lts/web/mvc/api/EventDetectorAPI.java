@@ -122,10 +122,15 @@ public class EventDetectorAPI {
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().build();
                 }
-                DataPointVO dataPointVO = dataPointService.getDataPoint(datapointId);
-                PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPointVO);
-                JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPointVO, pointEventDetectorVO);
-                return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
+                return EventDetectorApiUtils.getDataPointById(datapointId, dataPointService).map(dataPoint -> {
+                    boolean unique = dataPointService.isEventDetectorXidUnique(dataPoint.getId(), body.getXid(), Common.NEW_ID);
+                    if (!unique) {
+                        return new ResponseEntity<JsonPointEventDetector>(HttpStatus.BAD_REQUEST);
+                    }
+                    PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPoint);
+                    JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPoint, pointEventDetectorVO);
+                    return new ResponseEntity<>(jsonPointEventDetector, HttpStatus.OK);
+                }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
