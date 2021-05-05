@@ -19,6 +19,7 @@ import VueLodash from 'vue-lodash';
 
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent';
 import LineChartComponent from './components/amcharts/LineChartComponent';
+import RangeChartComponent from './components/amcharts/RangeChartComponent';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -253,6 +254,47 @@ for (let x = 0; x < 10; x++) {
 						refreshRate: window.document
 							.getElementById(chartId)
 							.getAttribute('refresh-rate'),
+						width: window.document.getElementById(chartId).getAttribute('width'),
+						height: window.document.getElementById(chartId).getAttribute('height'),
+						polylineStep: window.document
+							.getElementById(chartId)
+							.getAttribute('polyline-step'),
+						rangeValue: window.document
+							.getElementById(chartId)
+							.getAttribute('range-value'),
+						rangeColor: window.document
+							.getElementById(chartId)
+							.getAttribute('range-color'),
+						rangeLabel: window.document
+							.getElementById(chartId)
+							.getAttribute('range-label'),
+						showScrollbarX: window.document
+							.getElementById(chartId)
+							.getAttribute('show-scrollbar-x'),
+						showScrollbarY: window.document
+							.getElementById(chartId)
+							.getAttribute('show-scrollbar-y'),
+						showLegend: window.document
+							.getElementById(chartId)
+							.getAttribute('show-legned'),
+					},
+				}),
+		}).$mount(`#${chartId}`);
+	}
+}
+
+for (let x = 0; x < 10; x++) {
+	const chartId = `chart-range-${x}`;
+	if (window.document.getElementById(chartId) != undefined) {
+		new Vue({
+			store,
+			vuetify,
+			render: (h) =>
+				h(RangeChartComponent, {
+					props: {
+						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
+						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
+						color: window.document.getElementById(chartId).getAttribute('color'),
 						width: window.document.getElementById(chartId).getAttribute('width'),
 						height: window.document.getElementById(chartId).getAttribute('height'),
 						polylineStep: window.document
