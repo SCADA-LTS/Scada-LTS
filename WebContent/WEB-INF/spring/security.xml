@@ -4,37 +4,29 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
 
-<!--    <http use-expressions="true">-->
-<!--&lt;!&ndash;        <intercept-url pattern="/api/datapoints" access="permitAll" />&ndash;&gt;-->
-<!--&lt;!&ndash;        <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />&ndash;&gt;-->
-<!--&lt;!&ndash;        <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />&ndash;&gt;-->
-<!--&lt;!&ndash;        <intercept-url pattern="/login*" access="isAnonymous()"/>&ndash;&gt;-->
-<!--&lt;!&ndash;        <intercept-url pattern="/**" access="isFullyAuthenticated()"/>&ndash;&gt;-->
-<!--&lt;!&ndash;        <form-login&ndash;&gt;-->
-<!--&lt;!&ndash;                login-page='/login.html'&ndash;&gt;-->
-<!--&lt;!&ndash;                login-processing-url="/perform_login"&ndash;&gt;-->
-<!--&lt;!&ndash;                default-target-url="/homepage.html"&ndash;&gt;-->
-<!--&lt;!&ndash;                authentication-failure-url="/login.html?error=true"&ndash;&gt;-->
-<!--&lt;!&ndash;                always-use-default-target="true"/>&ndash;&gt;-->
-<!--&lt;!&ndash;        <http-basic />&ndash;&gt;-->
-<!--    </http>-->
-
-    <http use-expressions="true">
-        <intercept-url pattern="/login*" access="isAnonymous()" />
-        <intercept-url pattern="/**" access="isAuthenticated()"/>
-
-        <form-login login-page='/login.html'
-                    default-target-url="/homepage.html"
-                    authentication-failure-url="/login.html?error=true" />
-        <logout logout-success-url="/login.html" />
+    <http use-expressions="true" auto-config="true">
+        <intercept-url pattern="/api/datapoints" access="permitAll" />
+        <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
+        <http-basic/>
     </http>
+
+<!--    <http use-expressions="true">-->
+<!--        <intercept-url pattern="/login*" access="isAnonymous()" />-->
+<!--        <intercept-url pattern="/**" access="isAuthenticated()"/>-->
+
+<!--        <intercept-url pattern="/login.htm*" access="isAnonymous()"/>-->
+<!--        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />-->
+<!--        <form-login login-page='/login.htm' default-target-url='/watch_list.shtm'-->
+<!--                    always-use-default-target='true'/>-->
+<!--    </http>-->
 
     <authentication-manager>
         <authentication-provider>
             <password-encoder ref="customPasswordEncoderncoder" />
             <jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query=
-                                       "select username,password, 'true' as enabled from users where username=?"
+                                       "select username, password, 'true' as enabled from users where username=?"
                                authorities-by-username-query=
                                        "select username, role from users where username =?  " />
 <!--            <user-service>-->
@@ -51,7 +43,7 @@
         <b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts?useSSL=false" />
         <b:property name="username" value="root" />
-        <b:property name="password" value="rootroot" />
+        <b:property name="password" value="root" />
     </b:bean>
 
     <b:bean id="customPasswordEncoderncoder"
