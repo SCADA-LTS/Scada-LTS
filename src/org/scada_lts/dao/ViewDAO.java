@@ -202,8 +202,8 @@ public class ViewDAO implements GenericDAO<View> {
 			v.setBackgroundFilename(rs.getString(COLUMN_NAME_BACKGROUND));
 			v.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			v.setAnonymousAccess(rs.getInt(COLUMN_NAME_ANONYMOUS_ACCESS));
-			v.setHeight(rs.getInt(COLUMN_NAME_HEIGHT));
 			v.setWidth(rs.getInt(COLUMN_NAME_WIDTH));
+			v.setHeight(rs.getInt(COLUMN_NAME_HEIGHT));
 			v.setModificationTime(rs.getTimestamp(COLUMN_NAME_MODIFICATION_TIME).getTime());
 			
 			return v;
