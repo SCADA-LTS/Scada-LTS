@@ -48,6 +48,7 @@ export default {
 		'showScrollbarX',
 		'showScrollbarY',
 		'showLegend',
+		'aggregation',
 	],
 	data() {
 		return {
@@ -64,7 +65,7 @@ export default {
 		this.generateChart();
 	},
 	methods: {
-		generateChart() {
+		async generateChart() {
 			if (Number(this.polylineStep) > 1) {
 				LineChart.setPolylineStep(Number(this.polylineStep));
 			}
@@ -74,25 +75,25 @@ export default {
 				this.showScrollbarY,
 				this.showLegend
 			);
+			// Provide value aggregation mechanism to 
+			// improve the performance for huge amount of data
+			this.chartClass.aggregation = this.aggregation;
 
-			let promises = this.loadPoints();
+			const pointPromises = await Promise.all(this.loadPoints());
+			const notLoadedPointIds = pointPromises.filter((res) =>  res !== 'done');
+			this.errorMessage = `Points with index [${notLoadedPointIds.join(", ")}] has not been loaded!`;
 
-			Promise.all(promises).then((response) => {
-				for (let i = 0; i < response.length; i++) {
-					if (response[i] !== 'done') {
-						this.errorMessage = 'Point given with index [' + i + '] has not been loaded!';
-					}
-				}
-				this.chartClass.showChart(); // Display Chart
-				if (this.rangeValue !== undefined) {
-					this.chartClass.addRangeValue(
-						Number(this.rangeValue),
-						this.rangeColor,
-						this.rangeLabel
-					);
-				}
-			});
+			this.chartClass.showChart();
+
+			if (!!this.rangeValue) {
+				this.chartClass.addRangeValue(
+					Number(this.rangeValue),
+					this.rangeColor,
+					this.rangeLabel
+				);
+			}
 		},
+
 		reload() {
 			this.saveToLocalStorage();
 			this.generateChart();
@@ -107,17 +108,9 @@ export default {
 		loadPoints() {
 			this.isExportId = !!this.pointXid && !this.pointId;
 			let points = this.isExportId ? this.pointXid.split(',') : this.pointId.split(',');
-			let pointPromises = [];
-			for (let i = 0; i < points.length; i++) {
-				pointPromises.push(
-					this.chartClass.loadData(
-						points[i],
-						this.startDate,
-						this.endDate,
-						this.isExportId
-					)
-				);
-			}
+			let pointPromises = points.map((point) => {
+				return this.chartClass.loadData(point, this.startDate, this.endDate, this.isExportId);
+			});
 			return pointPromises;
 		},
 

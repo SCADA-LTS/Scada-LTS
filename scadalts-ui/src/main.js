@@ -318,6 +318,9 @@ for (let x = 0; x < 10; x++) {
 						showLegend: window.document
 							.getElementById(chartId)
 							.getAttribute('show-legned'),
+						aggregation: window.document
+							.getElementById(chartId)
+							.getAttribute('aggregation'),
 					},
 				}),
 		}).$mount(`#${chartId}`);
