@@ -1,15 +1,24 @@
 <b:beans xmlns="http://www.springframework.org/schema/security"
          xmlns:b="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:security="http://www.springframework.org/schema/security"
          xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
 
+
     <http use-expressions="true" auto-config="true">
+        <intercept-url pattern="/**" access="permitAll"/>
         <intercept-url pattern="/api/datapoints" access="permitAll" />
         <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
-        <http-basic/>
+        <custom-filter ref="myCustomFilter" before="LAST" />
+<!--        <intercept-url pattern="/**" access="permitAll" requires-channel="https"/>-->
+<!--        <http-basic/>-->
+        <form-login login-page='/login.htm'
+                    authentication-success-handler-ref="myAuthenticationSuccessHandler" />
+        <csrf disabled="true"/>
     </http>
+
 
 <!--    <http use-expressions="true">-->
 <!--        <intercept-url pattern="/login*" access="isAnonymous()" />-->
@@ -21,7 +30,7 @@
 <!--                    always-use-default-target='true'/>-->
 <!--    </http>-->
 
-    <authentication-manager>
+    <authentication-manager id="authenticationManager">
         <authentication-provider>
             <password-encoder ref="customPasswordEncoderncoder" />
             <jdbc-user-service data-source-ref="dataSource"
@@ -36,6 +45,18 @@
         </authentication-provider>
     </authentication-manager>
 
+<!--    <b:bean id="myRestFilter" class="org.scada_lts.spring.RestFilter"/>-->
+
+    <b:bean id="myCustomFilter" class="org.scada_lts.spring.CustomFilter">
+        <b:constructor-arg index="0" value="/login*"/>
+        <b:constructor-arg index="1" value="POST"/>
+        <b:property name="authenticationManager" ref="authenticationManager"/>
+    </b:bean>
+
+    <b:bean id="myAuthenticationSuccessHandler"
+                class="org.scada_lts.spring.MySimpleUrlAuthenticationSuccessHandler" />
+
+
     <b:bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
     >
@@ -43,7 +64,7 @@
         <b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts?useSSL=false" />
         <b:property name="username" value="root" />
-        <b:property name="password" value="root" />
+        <b:property name="password" value="rootroot" />
     </b:bean>
 
     <b:bean id="customPasswordEncoderncoder"
