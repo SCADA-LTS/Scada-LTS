@@ -37,7 +37,7 @@
       <c:when test="${!vc.visible}"><!-- vc ${vc.id} not visible --></c:when>
       
       <c:when test="${vc.defName == 'simpleCompound'}">
-        <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
+        <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}');">
           <tag:pointComponent vc="${vc.leadComponent}"/>
           <c:choose>
@@ -56,7 +56,7 @@
       </c:when>
       
       <c:when test="${vc.defName == 'imageChart'}">
-        <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
+        <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 10);" onmouseout="vcOut('c${vc.id}');">
           <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
           <div id="c${vc.id}Controls" class="controlContent">
@@ -68,7 +68,7 @@
       </c:when>
       
        <c:when test="${vc.defName == 'enhancedImageChart'}">
-		<div id="c${vc.id}"
+		<div id="c${vc.id}" class="viewComponent"
 			style="position:absolute;left:${vc.x}px;top:${vc.y}px;background-color:white;">
 			<tag:enhancedImageChartConfig componentId="${vc.id}"/>
 			<tag:enhancedImageChartPointConfig componentId="${vc.id}"/>
@@ -107,7 +107,7 @@
       </c:when>
       
       <c:when test="${vc.compoundComponent}">
-        <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
+        <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}');">
           ${vc.staticContent}
           <div id="c${vc.id}Controls" class="controlsDiv">

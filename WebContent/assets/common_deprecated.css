@@ -226,7 +226,7 @@ input[type="submit"], input[type="button"] {
 	border: 1px solid var(--slts-primary);
 }
 
-#viewContent button {
+#viewContent button.viewComponent {
 	overflow: visible;
 	background: silver;
     border-width: 3px;
