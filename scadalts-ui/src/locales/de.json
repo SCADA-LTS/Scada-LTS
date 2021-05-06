@@ -16,6 +16,7 @@
 	"common.ok": "Ok",
 	"common.save": "Speichern",
 	"common.search": "Serach",
+	"common.snackbar.xid.not.unique": "Export ID is not unique!",
 	"common.snackbar.add.fail": "Hinzufügen fehlgeschlagen!",
 	"common.snackbar.add.success": "Erfolgreich hinzugefügt!",
 	"common.snackbar.delete.fail": "Löschen fehlgeschlagen!",

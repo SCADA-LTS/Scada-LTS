@@ -436,9 +436,14 @@ export default {
 			this.response.status = true;
 			this.response.message = this.$t('common.snackbar.add.success');
 		},
-		addEventDetectorFail() {
+		addEventDetectorFail(error) {
 			this.response.status = true;
-			this.response.message = this.$t('common.snackbar.add.fail');
+			if(error.status === 400) {
+				this.response.message = this.$t('common.snackbar.xid.not.unique');
+			} else {
+				this.response.message = this.$t('common.snackbar.add.fail');
+			}
+			
 		},
 
 		openConfirmDialog(e) {

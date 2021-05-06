@@ -1,7 +1,7 @@
 <template>
 	<v-dialog v-model="dialog" width="600">
 		<template v-slot:activator="{ on, attrs }">
-			<v-btn icon v-bind="attrs" v-on="on">
+			<v-btn icon v-bind="attrs" v-on="on" @click="openDialog">
 				<v-icon>mdi-bell-plus</v-icon>
 			</v-btn>
 		</template>
@@ -407,6 +407,13 @@ export default {
 	},
 
 	methods: {
+		openDialog() {
+			this.dialog = true;
+			if(!!this.eventDetector) {
+				this.eventDetector.xid = this.generateRandomXid();
+			}
+		},
+
 		add() {
 			this.$store
 				.dispatch('createEventDetector', {
@@ -416,8 +423,8 @@ export default {
 				.then((resp) => {
 					this.$emit('saved', resp);
 				})
-				.catch(() => {
-					this.$emit('savedfailed');
+				.catch((err) => {
+					this.$emit('savedfailed', err);
 				});
 			this.dialog = false;
 		},
@@ -432,8 +439,12 @@ export default {
 			if(val === 6 || val === 7 || val === 8) {
 				this.eventDetector.duration = 1;
 			}
-			this.eventDetector.xid = `PED_${Math.round(Math.random() * 100000)}`;
+			this.eventDetector.xid = this.generateRandomXid();
 		},
+
+		generateRandomXid() {
+			return `PED_${Math.round(Math.random() * 100000)}`;
+		}
 	},
 };
 </script>
