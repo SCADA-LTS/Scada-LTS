@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 RUN apt-get -y update
-RUN apt-get install software-properties-common
+RUN apt-get -y install software-properties-common
 RUN apt-get -y update
 RUN add-apt-repository ppa:openjdk-r/ppa
 RUN apt-get -y update
