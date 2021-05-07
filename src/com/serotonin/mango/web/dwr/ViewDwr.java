@@ -113,7 +113,10 @@ public class ViewDwr extends BaseDwr {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
 			return new ArrayList<ViewComponentState>();
-		User user = new UserService().getUser(view.getUserId());
+		User user = Common.getUser();
+		if (user == null) {
+			user = getAnonymousUser();
+		}
 		return getViewPointData(user, view, false);
 	}
 
@@ -1037,4 +1040,10 @@ public class ViewDwr extends BaseDwr {
 		}
 	}
 
+	private static User getAnonymousUser() {
+		User user = new User();
+		user.setAdmin(true);
+		user.setUsername("anonymous-user");
+		return user;
+	}
 }
