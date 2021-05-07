@@ -52,7 +52,7 @@ public class EventDetectorAPI {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -67,7 +67,7 @@ public class EventDetectorAPI {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -109,7 +109,7 @@ public class EventDetectorAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -125,7 +125,7 @@ public class EventDetectorAPI {
                 return EventDetectorApiUtils.getDataPointById(datapointId, dataPointService).map(dataPoint -> {
                     boolean unique = dataPointService.isEventDetectorXidUnique(dataPoint.getId(), body.getXid(), Common.NEW_ID);
                     if (!unique) {
-                        return new ResponseEntity<JsonPointEventDetector>(HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<JsonPointEventDetector>(HttpStatus.CONFLICT);
                     }
                     PointEventDetectorVO pointEventDetectorVO = body.createPointEventDetectorVO(dataPoint);
                     JsonPointEventDetector jsonPointEventDetector = createEventDetector(dataPoint, pointEventDetectorVO);
@@ -136,7 +136,7 @@ public class EventDetectorAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -180,7 +180,7 @@ public class EventDetectorAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
