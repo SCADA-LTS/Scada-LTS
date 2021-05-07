@@ -139,7 +139,7 @@
 </head>
 
 <body>
-<table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
+<table cellspacing="0" cellpadding="0" id="mainHeader">
   <tr>
     <td><img id="logo" src="assets/logo.png" alt="Logo"/></td>
     <c:if test="${!simple}">
@@ -153,13 +153,13 @@
       </td>
     </c:if>
     <c:if test="${!empty instanceDescription}">
-      <td align="right" valign="bottom" class="projectTitle" style="padding:5px; white-space: nowrap;">${instanceDescription}</td>
+      <td id="instanceDescription" align="right" valign="bottom" class="projectTitle">${instanceDescription}</td>
     </c:if>
   </tr>
 </table>
 
 <c:if test="${!simple}">
-  <table class="navHeader" width="100%" id="subHeader">
+  <table class="navHeader" id="subHeader">
     <tr>
       <td style="cursor:default" >
         <c:if test="${!empty sessionUser}">
