@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get -y update
 RUN apt-get -y install aptitude
-RUN aptitude -y install openjdk-11-jdk=11.0.10
+RUN aptitude -y install openjdk-11-jdk=11.0.10+9
 RUN apt-get -y update
 RUN apt-get -y install apt-utils net-tools vim dos2unix
 ADD mysql /opt/installer
