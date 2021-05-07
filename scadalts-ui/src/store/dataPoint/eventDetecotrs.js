@@ -1,5 +1,5 @@
 import i18n from '@/i18n';
-import { eventDetectorTemplates } from './templates';
+import { eventDetectorTemplate } from './templates';
 
 const storeEventDetectors = {
 	state: {
@@ -17,7 +17,8 @@ const storeEventDetectors = {
 			{ id: 11, label: i18n.t('eventDetector.type.cusum.negative') },
 		],
 
-		eventDetectorTemplates: eventDetectorTemplates,
+		eventDetectorTemplate: eventDetectorTemplate,
+
 	},
 
 	mutations: {},
