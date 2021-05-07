@@ -38,6 +38,7 @@ const storeAlarmsNotifications = {
 			inactiveOverride: false,
 			inactiveRecipients: null,
 		},
+		lastPointEventDetector: new Map(),
 	},
 
 	mutations: {},
@@ -91,7 +92,18 @@ const storeAlarmsNotifications = {
 		},
 
 		async createEventHandler({ state, dispatch }, payload) {
-			let pedId = await dispatch('createPointEventDetector', payload.datapointId);
+			let pedId;
+			try {
+				pedId = await dispatch('createPointEventDetector', payload.datapointId);
+				state.lastPointEventDetector.set(payload.datapointId, pedId);
+			} catch (e) {
+				if(e.status === 409) {
+					pedId = state.lastPointEventDetector.get(payload.datapointId);
+					if(!pedId) {
+						throw 'Event Detector does not exist!';
+					}
+				}
+			}
 			let edId = pedId.id;
 			let dpId = payload.datapointId;
 			let mlId = payload.mailingListId[0];
