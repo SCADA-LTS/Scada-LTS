@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 RUN apt-get -y update
-RUN apt-get -y install apt-utils openjdk-8-jdk=jdk8u282-b08 net-tools vim dos2unix
+RUN apt-get -y install apt-utils openjdk-8-jdk=1.8.0_282-8u282-b08-0ubuntu1 net-tools vim dos2unix
 ADD mysql /opt/installer
 RUN chmod 777 /opt/installer/im.sh
 RUN dos2unix /opt/installer/im.sh
