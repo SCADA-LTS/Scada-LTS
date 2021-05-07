@@ -91,6 +91,14 @@ const storeAlarmsNotifications = {
 			});
 		},
 
+		async getPointEventDetector({ state, dispatch }, datapointId) {
+			let template = JSON.parse(JSON.stringify(state.pedTemplate));
+			template.xid = template.xid + `_${datapointId}`;
+
+			let pointData = await dispatch('getDataPointDetails', datapointId);
+			return pointData.eventDetectors.find(ed => ed.xid === template.xid);
+		},
+
 		async createEventHandler({ state, dispatch }, payload) {
 			let pedId;
 			try {
@@ -98,9 +106,14 @@ const storeAlarmsNotifications = {
 				state.lastPointEventDetector.set(payload.datapointId, pedId);
 			} catch (e) {
 				if(e.status === 409) {
+					// Load from cache
 					pedId = state.lastPointEventDetector.get(payload.datapointId);
 					if(!pedId) {
-						throw 'Event Detector does not exist!';
+						// Retrive data from server
+						pedId = await dispatch('getPointEventDetector', payload.datapointId);
+						if(!pedId) {
+							throw 'Event Detector does not exist!';
+						}
 					}
 				}
 			}
