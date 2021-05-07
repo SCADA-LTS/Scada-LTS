@@ -1,4 +1,6 @@
 FROM ubuntu:18.04
+RUN apt-get install software-properties-common
+RUN apt-get -y update
 RUN add-apt-repository ppa:openjdk-r/ppa
 RUN apt-get -y update
 RUN apt-get -y install apt-utils openjdk-11-jdk=11.0.10+9 net-tools vim dos2unix
