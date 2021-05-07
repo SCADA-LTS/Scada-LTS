@@ -367,7 +367,7 @@
 		</exec>
 	</target>
 
-	<target name="debug" description="Start the Scada-LTS application in debug mode">
+	<target name="run-debug" description="Start the Scada-LTS application in debug mode">
 		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
 			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
@@ -423,40 +423,40 @@
 		create-war,
 		deploy-tomcat"/>
 
-	<target name="run-build" description="Build and run application" depends="
+	<target name="build-run" description="Build and run application" depends="
 		build,
 		deploy,
 		run
 	"/>
 
-	<target name="run-build-skip-test" description="Build and run application and skip tests" depends="
+	<target name="build-skip-test-run" description="Build and run application and skip tests" depends="
 		build-skip-test,
 		deploy,
 		run
 	"/>
 
-	<target name="run-build-no-ui" description="Build and run application without building frontend application" depends="
+	<target name="build-no-ui-run" description="Build and run application without building frontend application" depends="
 		build-no-ui,
 		deploy,
 		run
 	"/>
 
-	<target name="run-build-no-ui-skip-test" description="Build and run application without building frontend application and skipping tests" depends="
+	<target name="build-no-ui-skip-test-run" description="Build and run application without building frontend application and skipping tests" depends="
 		build-no-ui-skip-test,
 		deploy,
 		run
 	"/>
 
-	<target name="debug-build" depends="
+	<target name="build-run-debug" depends="
 		build,
 		deploy,
-		debug
+		run-debug
 	"/>
 
-	<target name="debug-build-skip-test" depends="
+	<target name="build-skip-test-run-debug" depends="
 		build-skip-test,
 		deploy,
-		debug
+		run-debug
 	"/>
 
 	<target name="update-ui" depends="build-ui" description="Build and update User Interface with the latest changes inside Vue.js">

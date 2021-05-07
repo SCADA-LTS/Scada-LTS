@@ -48,13 +48,13 @@ Commands with their explanations are listed below:
 | Command | Explanation |
 | ---- | ---- |
 | ```ant run``` | Start Scada-LTS application using Tomcat server |
-| ```ant run-build``` | Build and start Scada-LTS application |
-| ```ant run-build-skip-test``` | Build and start Scada-LTS application without running Tests |
-| ```ant run-build-no-ui``` | Build and start Scada-LTS application without building user interface |
-| ```ant run-build-no-ui-skip-test``` | Build and start Scada-LTS application without building user interface but without Test task |
-| ```ant debug``` | Start Scada-LTS application in debug mode on Tomcat server |
-| ```ant debug-build``` | Build and start Scada-LTS application in debug mode |
-| ```ant debug-build-skip-test``` | Build and start Scada-LTS application in debug mode without tests |
+| ```ant build-run``` | Build and start Scada-LTS application |
+| ```ant build-skip-test-run``` | Build and start Scada-LTS application without running Tests |
+| ```ant build-no-ui-run``` | Build and start Scada-LTS application without building user interface |
+| ```ant build-no-ui-skip-test-run``` | Build and start Scada-LTS application without building user interface but without Test task |
+| ```ant run-debug``` | Start Scada-LTS application in debug mode on Tomcat server |
+| ```ant build-run-debug``` | Build and start Scada-LTS application in debug mode |
+| ```ant build-skip-test-run-debug``` | Build and start Scada-LTS application in debug mode without tests |
 
 ### Examples of build tasks
 | Command | Explanation |
