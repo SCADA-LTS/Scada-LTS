@@ -438,7 +438,7 @@ export default {
 		},
 		addEventDetectorFail(error) {
 			this.response.status = true;
-			if(error.status === 400) {
+			if(error.status === 409) {
 				this.response.message = this.$t('common.snackbar.xid.not.unique');
 			} else {
 				this.response.message = this.$t('common.snackbar.add.fail');
