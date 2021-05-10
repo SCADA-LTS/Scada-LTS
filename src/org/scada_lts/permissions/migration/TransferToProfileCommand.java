@@ -1,60 +1,64 @@
 package org.scada_lts.permissions.migration;
 
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.permissions.service.DataPointUserPermissionsService;
-import org.scada_lts.permissions.service.DataSourceUserPermissionsService;
-import org.scada_lts.permissions.service.WatchListUserPermissionsService;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.updatePermissions;
+import static org.scada_lts.permissions.migration.InfoUtils.iterationInfo;
+import static org.scada_lts.permissions.migration.InfoUtils.userInfo;
+import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.*;
 
-class TransferToProfileCommand implements MigrationPermissions {
+class TransferToProfileCommand extends AbstractMeasurmentCommand {
 
     private static final Log LOG = LogFactory.getLog(TransferToProfileCommand.class);
 
     private final Map<Accesses, UsersProfileVO> profiles;
-    private final UsersProfileService usersProfileService;
-    private final DataPointUserPermissionsService userPermissionsService;
-    private final DataSourceUserPermissionsService dataSourceUserPermissionsService;
-    private final WatchListUserPermissionsService watchListUserPermissionsService;
+    private final MigrationPermissionsService migrationPermissionsService;
+    private final MigrationDataService migrationDataService;
 
     TransferToProfileCommand(Map<Accesses, UsersProfileVO> profiles,
-                                    UsersProfileService usersProfileService,
-                                    DataPointUserPermissionsService userPermissionsService,
-                                    DataSourceUserPermissionsService dataSourceUserPermissionsService,
-                                    WatchListUserPermissionsService watchListUserPermissionsService) {
+                                 MigrationPermissionsService migrationPermissionsService,
+                                 MigrationDataService migrationDataService) {
         this.profiles = profiles;
-        this.usersProfileService = usersProfileService;
-        this.userPermissionsService = userPermissionsService;
-        this.dataSourceUserPermissionsService = dataSourceUserPermissionsService;
-        this.watchListUserPermissionsService = watchListUserPermissionsService;
+        this.migrationPermissionsService = migrationPermissionsService;
+        this.migrationDataService = migrationDataService;
     }
 
     @Override
-    public void execute(List<User> users, List<View> views) {
-
-        LOG.info(getName() + "...");
+    public void work(List<User> users) {
 
         AtomicInteger userIte = new AtomicInteger();
         users.forEach(user -> {
-            LOG.info(MessageFormat.format("user: {0} (id: {1}) - {2}/{3}", user.getUsername(), user.getId(), userIte.incrementAndGet(), users.size()));
-            Set<DataPointAccess> dataPointAccesses = MigrationPermissionsUtils.accessesBy(user, userPermissionsService);
-            updatePermissions(views, user, dataPointAccesses, dataSourceUserPermissionsService,
-                    watchListUserPermissionsService, usersProfileService, profiles);
-        });
+            long start = System.nanoTime();
+            String msg = iterationInfo(userInfo(user), userIte.incrementAndGet(), users.size());
+            LOG.info(msg);
 
-        LOG.info(getName() + "... end");
+            Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataPointUserPermissionsService()), migrationDataService.getDataPointService());
+            Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService.getDataSourceService());
+            Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService.getWatchListService()::getWatchList, "watchlist: ");
+            Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService.getViewService()::getView, "view: ");
+
+            Accesses fromUser = new Accesses(viewAccesses, watchListAccesses, dataPointAccesses, dataSourceAccesses);
+            Accesses fromProfile = fromProfile(user, profiles);
+
+            Accesses accesses = MigrationPermissionsUtils.merge(fromUser, fromProfile);
+
+            if(!accesses.isEmpty())
+                updatePermissions(user, accesses, migrationDataService.getUsersProfileService(), profiles);
+            else
+                LOG.info(userInfo(user) + " no permissions.");
+
+            printTime(start, msg + " - executed: ");
+        });
     }
 
     @Override

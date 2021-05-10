@@ -5,58 +5,56 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.permissions.service.DataPointUserPermissionsService;
-import org.scada_lts.permissions.service.DataSourceUserPermissionsService;
-import org.scada_lts.permissions.service.WatchListUserPermissionsService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class MigrationPermissionsCommand implements MigrationPermissions {
+import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.reduceToObjectExisting;
+
+
+class MigrationPermissionsCommand extends AbstractMeasurmentCommand {
 
     private static final Log LOG = LogFactory.getLog(MigrationPermissionsCommand.class);
 
-    private final UsersProfileService usersProfileService;
-    private final DataPointUserPermissionsService dataPointUserPermissionsService;
-    private final DataSourceUserPermissionsService dataSourceUserPermissionsService;
-    private final WatchListUserPermissionsService watchListUserPermissionsService;
+    private final MigrationPermissionsService migrationPermissionsService;
+    private final MigrationDataService migrationDataService;
+    private final List<View> views;
 
-    MigrationPermissionsCommand(UsersProfileService usersProfileService,
-                                        DataPointUserPermissionsService dataPointUserPermissionsService,
-                                        DataSourceUserPermissionsService dataSourceUserPermissionsService,
-                                        WatchListUserPermissionsService watchListUserPermissionsService) {
-        this.usersProfileService = usersProfileService;
-        this.dataPointUserPermissionsService = dataPointUserPermissionsService;
-        this.dataSourceUserPermissionsService = dataSourceUserPermissionsService;
-        this.watchListUserPermissionsService = watchListUserPermissionsService;
+    MigrationPermissionsCommand(MigrationPermissionsService migrationPermissionsService,
+                                MigrationDataService migrationDataService,
+                                List<View> views) {
+        this.migrationPermissionsService = migrationPermissionsService;
+        this.migrationDataService = migrationDataService;
+        this.views = views;
     }
 
     @Override
-    public void execute(List<User> users, List<View> views) {
-
-        LOG.info(getName() + " - users size: " + users.size() + " views size: " + views.size());
+    public void work(List<User> users) {
+        String msg = getName() + " - views size: " + views.size();
+        LOG.info(msg);
 
         Map<Accesses, UsersProfileVO> profiles = new HashMap<>();
-        usersProfileService.getUsersProfiles()
-                .forEach(profile -> profiles.put(new Accesses(profile), profile));
+        migrationDataService.getUsersProfileService().getUsersProfiles()
+                .forEach(profile -> {
+                    Accesses key = reduceToObjectExisting(new Accesses(profile), migrationDataService);
+                    UsersProfileVO reduceProfile = MigrationPermissionsUtils.newProfile(profile.getName(), key);
+                    reduceProfile.setId(profile.getId());
+                    reduceProfile.setXid(profile.getXid());
+                    profiles.put(key, reduceProfile);
+                });
 
-        MigrationPermissions verify = new VerifyPermissionsQuery(usersProfileService, dataPointUserPermissionsService,
-                dataSourceUserPermissionsService, watchListUserPermissionsService);
-        MigrationPermissions complementPermissions = new ComplementPermissionsCommand(profiles, usersProfileService, dataPointUserPermissionsService,
-                dataSourceUserPermissionsService, watchListUserPermissionsService);
-        MigrationPermissions transferToProfile = new TransferToProfileCommand(profiles, usersProfileService, dataPointUserPermissionsService,
-                dataSourceUserPermissionsService, watchListUserPermissionsService);
+        MigrationPermissions verify = new VerifyPermissionsQuery(migrationDataService, migrationPermissionsService);
+        MigrationPermissions complementPermissions = new ComplementPermissionsCommand(profiles, migrationPermissionsService,
+                migrationDataService, views);
+        MigrationPermissions transferToProfile = new TransferToProfileCommand(profiles, migrationPermissionsService, migrationDataService);
 
-        verify.execute(users, views);
-        complementPermissions.execute(users, views);
-        transferToProfile.execute(users, views);
-        verify.execute(users, views);
+        verify.execute(users);
+        complementPermissions.execute(users);
+        transferToProfile.execute(users);
+        verify.execute(users);
 
         profiles.clear();
-
-        LOG.info(getName() + "... end");
     }
 
     @Override

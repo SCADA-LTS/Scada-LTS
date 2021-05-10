@@ -124,7 +124,12 @@ public final class PermissionsUtils {
 
     private static <T> Set<T> merge(Set<T> accesses1, Set<T> accesses2,
                                     ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
-        return Stream.concat(accesses1.stream(), accesses2.stream())
+        return reduce(Stream.concat(accesses1.stream(), accesses2.stream())
+                .collect(Collectors.toSet()), getAccess, getId);
+    }
+
+    public static <T> Set<T> reduce(Set<T> accesses, ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
+        return accesses.stream()
                 .distinct()
                 .collect(Collectors
                         .toMap(getId::applyAsInt, a -> a,

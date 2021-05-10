@@ -1,57 +1,52 @@
 package org.scada_lts.permissions.migration;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.permissions.service.DataPointUserPermissionsService;
-import org.scada_lts.permissions.service.DataSourceUserPermissionsService;
-import org.scada_lts.permissions.service.WatchListUserPermissionsService;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 
 import java.util.List;
-import java.util.Optional;
 
-class VerifyPermissionsQuery implements MigrationPermissions {
+import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.containsPermission;
+import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.existsObject;
+import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.verifyUserPermissions;
 
-    private static final Log LOG = LogFactory.getLog(VerifyPermissionsQuery.class);
+class VerifyPermissionsQuery extends AbstractMeasurmentCommand {
 
-    private final UsersProfileService usersProfileService;
-    private final DataPointUserPermissionsService dataPointUserPermissionsService;
-    private final DataSourceUserPermissionsService dataSourceUserPermissionsService;
-    private final WatchListUserPermissionsService watchListUserPermissionsService;
+    private final MigrationDataService migrationDataService;
+    private final MigrationPermissionsService migrationPermissionsService;
 
-    VerifyPermissionsQuery(UsersProfileService usersProfileService,
-                                  DataPointUserPermissionsService dataPointUserPermissionsService,
-                                  DataSourceUserPermissionsService dataSourceUserPermissionsService,
-                                  WatchListUserPermissionsService watchListUserPermissionsService) {
-        this.usersProfileService = usersProfileService;
-        this.dataPointUserPermissionsService = dataPointUserPermissionsService;
-        this.dataSourceUserPermissionsService = dataSourceUserPermissionsService;
-        this.watchListUserPermissionsService = watchListUserPermissionsService;
+    VerifyPermissionsQuery(MigrationDataService migrationDataService, MigrationPermissionsService migrationPermissionsService) {
+        this.migrationDataService = migrationDataService;
+        this.migrationPermissionsService = migrationPermissionsService;
     }
 
     @Override
-    public void execute(List<User> users, List<View> views) {
-
-        LOG.info(getName() + "...");
+    public void work(List<User> users) {
 
         users.forEach(user -> {
-            UsersProfileVO usersProfile = Optional.ofNullable(usersProfileService.getUserProfileById(user.getUserProfile())).orElse(new UsersProfileVO());
-            MigrationPermissionsUtils.verifyUserPermissions(watchListUserPermissionsService, user, usersProfile,
-                    usersProfile::getWatchlistPermissions, MigrationPermissionsUtils::accessesBy,
-                    (access, accesses) -> accesses.stream().anyMatch(c -> c.getId() == access.getId() && c.getPermission() > access.getPermission()));
-            MigrationPermissionsUtils.verifyUserPermissions(dataSourceUserPermissionsService, user, usersProfile,
-                    usersProfile::getDataSourcePermissions, MigrationPermissionsUtils::accessesBy,
-                    (a, b) -> false);
-            MigrationPermissionsUtils.verifyUserPermissions(dataPointUserPermissionsService, user, usersProfile,
-                    usersProfile::getDataPointPermissions, MigrationPermissionsUtils::accessesBy,
-                    (access, accesses) -> accesses.stream().anyMatch(c -> c.getDataPointId() == access.getDataPointId() && c.getPermission() > access.getPermission()));
-            MigrationPermissionsUtils.verifyViewUserPermissions(views, user, usersProfile);
-        });
+            UsersProfileVO usersProfile = migrationDataService.getUsersProfileService().getUserProfileById(user.getUserProfile());
 
-        LOG.info(getName() + "... end");
+            if (usersProfile == null) {
+                usersProfile = new UsersProfileVO();
+            }
+
+            verifyUserPermissions(migrationPermissionsService.getWatchListUserPermissionsService(), user, usersProfile,
+                    usersProfile::getWatchlistPermissions, containsPermission(),
+                    existsObject(migrationDataService.getWatchListService()::getWatchList));
+
+            verifyUserPermissions(migrationPermissionsService.getDataSourceUserPermissionsService(), user, usersProfile,
+                    usersProfile::getDataSourcePermissions, containsPermission(1),
+                    existsObject(migrationDataService.getDataSourceService()));
+
+            verifyUserPermissions(migrationPermissionsService.getDataPointUserPermissionsService(), user, usersProfile,
+                    usersProfile::getDataPointPermissions, containsPermission(new DataPointAccess()),
+                    existsObject(migrationDataService.getDataPointService()));
+
+            verifyUserPermissions(migrationPermissionsService.getViewUserPermissionsService(), user, usersProfile,
+                    usersProfile::getViewPermissions, containsPermission(),
+                    existsObject(migrationDataService.getViewService()::getView));
+
+        });
     }
 
     @Override
