@@ -63,7 +63,7 @@ import com.serotonin.util.StringUtils;
 @Controller
 @RequestMapping("/data_point_edit.shtm") 
 public class DataPointEditController {
-	private static final Log LOG = LogFactory.getLog(LoginController.class);
+	private static final Log LOG = LogFactory.getLog(DataPointEditController.class);
 	
 	DataPointDao dataPointDao;
 	

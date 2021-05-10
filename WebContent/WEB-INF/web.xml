@@ -115,14 +115,14 @@
       <param-value>UTF-8</param-value>
     </init-param>
   </filter>
-  <filter>
-    <filter-name>IsLoggedIn</filter-name>
-    <filter-class>com.serotonin.mango.web.filter.NormalLoggedInFilter</filter-class>
-    <init-param>
-      <param-name>forwardUrl</param-name>
-      <param-value>/login.htm</param-value>
-    </init-param>
-  </filter>
+<!--  <filter>-->
+<!--    <filter-name>IsLoggedIn</filter-name>-->
+<!--    <filter-class>com.serotonin.mango.web.filter.NormalLoggedInFilter</filter-class>-->
+<!--    <init-param>-->
+<!--      <param-name>forwardUrl</param-name>-->
+<!--      <param-value>/login.htm</param-value>-->
+<!--    </init-param>-->
+<!--  </filter>-->
   
   <filter>
     <filter-name>WebContext</filter-name>
@@ -194,10 +194,10 @@
     <filter-name>CharacterSet</filter-name>
     <url-pattern>*.shtm</url-pattern>
   </filter-mapping>
-  <filter-mapping>
-    <filter-name>IsLoggedIn</filter-name>
-    <url-pattern>*.shtm</url-pattern>
-  </filter-mapping>
+<!--  <filter-mapping>-->
+<!--    <filter-name>IsLoggedIn</filter-name>-->
+<!--    <url-pattern>*.shtm</url-pattern>-->
+<!--  </filter-mapping>-->
   <filter-mapping>
     <filter-name>WebContext</filter-name>
     <url-pattern>*.shtm</url-pattern>

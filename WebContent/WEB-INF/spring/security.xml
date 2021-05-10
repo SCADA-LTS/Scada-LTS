@@ -6,29 +6,13 @@
 						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
 
 
-    <http use-expressions="true" auto-config="true">
-        <intercept-url pattern="/**" access="permitAll"/>
+    <http use-expressions="true">
         <intercept-url pattern="/api/datapoints" access="permitAll" />
         <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
-        <custom-filter ref="myCustomFilter" before="LAST" />
-<!--        <intercept-url pattern="/**" access="permitAll" requires-channel="https"/>-->
-<!--        <http-basic/>-->
-        <form-login login-page='/login.htm'
-                    authentication-success-handler-ref="myAuthenticationSuccessHandler" />
-        <csrf disabled="true"/>
+        <form-login authentication-success-handler-ref="myAuthenticationSuccessHandler" />
     </http>
 
-
-<!--    <http use-expressions="true">-->
-<!--        <intercept-url pattern="/login*" access="isAnonymous()" />-->
-<!--        <intercept-url pattern="/**" access="isAuthenticated()"/>-->
-
-<!--        <intercept-url pattern="/login.htm*" access="isAnonymous()"/>-->
-<!--        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />-->
-<!--        <form-login login-page='/login.htm' default-target-url='/watch_list.shtm'-->
-<!--                    always-use-default-target='true'/>-->
-<!--    </http>-->
 
     <authentication-manager id="authenticationManager">
         <authentication-provider>
@@ -38,23 +22,12 @@
                                        "select username, password, 'true' as enabled from users where username=?"
                                authorities-by-username-query=
                                        "select username, role from users where username =?  " />
-<!--            <user-service>-->
-<!--                <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_USER" />-->
-<!--                <user name="user1" password="1111" authorities="ROLE_USER" />-->
-<!--            </user-service>-->
         </authentication-provider>
     </authentication-manager>
 
-<!--    <b:bean id="myRestFilter" class="org.scada_lts.spring.RestFilter"/>-->
-
-    <b:bean id="myCustomFilter" class="org.scada_lts.spring.CustomFilter">
-        <b:constructor-arg index="0" value="/login*"/>
-        <b:constructor-arg index="1" value="POST"/>
-        <b:property name="authenticationManager" ref="authenticationManager"/>
-    </b:bean>
-
     <b:bean id="myAuthenticationSuccessHandler"
-                class="org.scada_lts.spring.MySimpleUrlAuthenticationSuccessHandler" />
+                class="org.scada_lts.spring.MySimpleUrlAuthenticationSuccessHandler" >
+    </b:bean>
 
 
     <b:bean id="dataSource"
@@ -64,7 +37,7 @@
         <b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts?useSSL=false" />
         <b:property name="username" value="root" />
-        <b:property name="password" value="rootroot" />
+        <b:property name="password" value="root" />
     </b:bean>
 
     <b:bean id="customPasswordEncoderncoder"

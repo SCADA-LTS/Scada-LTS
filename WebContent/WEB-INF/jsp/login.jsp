@@ -57,7 +57,7 @@
 
       <div class="login-box">
 
-        <form action="login.htm" method="post" onclick="nag()" style="margin: 0 auto; width:200px;">
+        <form action="login" method="post" onclick="nag()" style="margin: 0 auto; width:200px;">
 
 
               <div class="form-box">
@@ -85,6 +85,8 @@
                 <input type="submit" value="<fmt:message key="login.loginButton"/>"  style="padding: 5px 20px; margin-left:30%; margin-top:10px;"/>
                 <tag:help id="welcomeToMango"/>
               </div>
+
+            <input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
 
 
 
