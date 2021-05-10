@@ -86,7 +86,6 @@ new Vue({
 
 Vue.use(uiv);
 
-
 if (window.document.getElementById('app-test') != undefined) {
 	new Vue({
 		render: (h) =>
@@ -99,21 +98,17 @@ if (window.document.getElementById('app-test') != undefined) {
 }
 
 if (window.document.getElementById('app-isalive') != undefined) {
+	const isAliveDom = document.getElementById('app-isalive');
 	new Vue({
 		store,
 		render: (h) =>
 			h(IsAlive, {
 				props: {
-					plabel: window.document.getElementById('app-isalive').getAttribute('plabel'),
-					ptimeWarning: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-warning'),
-					ptimeError: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-error'),
-					ptimeRefresh: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-refresh'),
+					plabel: isAliveDom.getAttribute('plabel'),
+					ptimeWarning: isAliveDom.getAttribute('ptime-warning'),
+					ptimeError: isAliveDom.getAttribute('ptime-error'),
+					ptimeRefresh: isAliveDom.getAttribute('ptime-refresh'),
+					feedbackUrl: isAliveDom.getAttribute('feedback-url'),
 				},
 			}),
 	}).$mount('#app-isalive');
