@@ -18,7 +18,7 @@
         <intercept-url pattern="/api/datapoints" access="permitAll" />
         <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
-        <form-login authentication-success-handler-ref="myAuthenticationSuccessHandler" />
+        <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler" />
         <csrf disabled="true"/>
     </http>
 
@@ -33,8 +33,8 @@
         </authentication-provider>
     </authentication-manager>
 
-    <b:bean id="myAuthenticationSuccessHandler"
-                class="org.scada_lts.spring.MySimpleUrlAuthenticationSuccessHandler" >
+    <b:bean id="loginAuthenticationSuccessHandler"
+                class="org.scada_lts.spring.LoginAuthenticationSuccessHandler" >
     </b:bean>
 
     <b:bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
