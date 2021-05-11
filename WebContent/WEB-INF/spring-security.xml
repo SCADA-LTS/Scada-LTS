@@ -15,9 +15,6 @@
             <xss-protection />
         </headers>
 
-        <intercept-url pattern="/api/datapoints" access="permitAll" />
-        <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler" />
         <csrf disabled="true"/>
     </http>
