@@ -54,7 +54,7 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>
       /WEB-INF/applicationContext.xml
-      /WEB-INF/spring/security.xml
+      /WEB-INF/spring-security.xml
     </param-value>
   </context-param>
   <!-- Enabled html escape (for example: html that contains URL etc.), gb:2015/04/11

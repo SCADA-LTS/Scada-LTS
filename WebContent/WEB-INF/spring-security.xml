@@ -7,19 +7,27 @@
 
 
     <http use-expressions="true">
+        <headers>
+            <cache-control />
+            <content-type-options disabled="true"/>
+            <hsts />
+            <frame-options />
+            <xss-protection />
+        </headers>
+
         <intercept-url pattern="/api/datapoints" access="permitAll" />
         <intercept-url pattern="/api/datasource/getAll" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/api/mailingList/getAll" access="hasRole('ROLE_ADMIN')" />
         <form-login authentication-success-handler-ref="myAuthenticationSuccessHandler" />
+        <csrf disabled="true"/>
     </http>
-
 
     <authentication-manager id="authenticationManager">
         <authentication-provider>
-            <password-encoder ref="customPasswordEncoderncoder" />
+            <password-encoder ref="customPasswordEncoder" />
             <jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query=
-                                       "select username, password, 'true' as enabled from users where username=?"
+                                       "select username, password, disabled = 'N' as enabled from users where username=?"
                                authorities-by-username-query=
                                        "select username, role from users where username =?  " />
         </authentication-provider>
@@ -29,18 +37,12 @@
                 class="org.scada_lts.spring.MySimpleUrlAuthenticationSuccessHandler" >
     </b:bean>
 
-
-    <b:bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-    >
-
-        <b:property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <b:property name="url" value="jdbc:mysql://localhost:3306/scadalts?useSSL=false" />
-        <b:property name="username" value="root" />
-        <b:property name="password" value="root" />
+    <b:bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <b:property name="expectedType" value="javax.sql.DataSource"/>
+        <b:property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
     </b:bean>
 
-    <b:bean id="customPasswordEncoderncoder"
+    <b:bean id="customPasswordEncoder"
             class="org.scada_lts.spring.CustomPasswordEncoder">
     </b:bean>
 
