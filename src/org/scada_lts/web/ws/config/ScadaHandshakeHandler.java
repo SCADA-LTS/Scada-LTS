@@ -22,28 +22,28 @@ public class ScadaHandshakeHandler   extends DefaultHandshakeHandler {
     
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        Principal principal = request.getPrincipal();
+//        Principal principal = request.getPrincipal();
+//
+//        if (principal == null)
+//        {
+        ServletServerHttpRequest req = (ServletServerHttpRequest)request;
+        HttpSession session = req.getServletRequest().getSession();
+        final User user = (User) session.getAttribute("sessionUser");
+        //final User user = Common.getUser();
 
-        if(principal==null)
-        {
-            ServletServerHttpRequest req = (ServletServerHttpRequest)request;
-            HttpSession session = req.getServletRequest().getSession();
-            final User user = (User) session.getAttribute("sessionUser");
-            //final User user = Common.getUser();
-            
-            if( user != null ) {
-                LOG.debug("user.username: " + user.getUsername());
-                LOG.debug("user.id: " + user.getId());
-            }
-            
-//            principal=new Principal() {
-//                @Override
-//                public String getName() {
-//                    return user!=null?user.getUsername():"";
-//                }
-//            };
-            principal = new ScadaPrincipal(user); 
+        if( user != null ) {
+            LOG.debug("user.username: " + user.getUsername());
+            LOG.debug("user.id: " + user.getId());
         }
+
+////            principal=new Principal() {
+////                @Override
+////                public String getName() {
+////                    return user!=null?user.getUsername():"";
+////                }
+////            };
+        Principal principal = new ScadaPrincipal(user);
+//        }
         LOG.debug("principal: " +principal.getName());
         return principal;
     }
