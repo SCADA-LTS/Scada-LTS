@@ -101,7 +101,12 @@ public class UsersProfileService {
     }
 
     public UsersProfileVO getUserProfileByXid(String xid) {
-        return getUsersProfile(a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid()));
+        UsersProfileVO profile = getUsersProfile(profileByXidFilter(xid));
+        if(profile == null) {
+            usersProfileDAO.selectProfileByXid(xid).ifPresent(UsersProfileService::add);
+            return getUsersProfile(profileByXidFilter(xid));
+        }
+        return profile;
     }
 
     public void saveUsersProfile(UsersProfileVO profile) throws DAOException {
@@ -218,6 +223,10 @@ public class UsersProfileService {
                 .max(Comparator.comparingInt(UsersProfileVO::getId));
     }
 
+    private Predicate<UsersProfileVO> profileByXidFilter(String xid) {
+        return a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid());
+    }
+
     private static UsersProfileVO getUsersProfile(Predicate<UsersProfileVO> filter) {
         return stream()
                 .peek(a -> LOG.debug(a.getName() + ' ' + a.getXid() + ' ' + a.getId()))
@@ -230,6 +239,7 @@ public class UsersProfileService {
     }
 
     private static boolean add(UsersProfileVO profileVO) {
+        currentProfileList.remove(profileVO);
         return currentProfileList.add(profileVO);
     }
 

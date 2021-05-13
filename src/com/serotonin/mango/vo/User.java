@@ -56,6 +56,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UsersProfileService;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -512,9 +513,16 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
 			map.put("dataPointPermissions", dataPointPermissions);
+			UsersProfileService usersProfileService = new UsersProfileService();
+			UsersProfileVO profile = usersProfileService.getUserProfileById(userProfile);
+			if(profile != null)
+				map.put("userProfileXid", profile.getXid());
+			else
+				map.put("userProfileXid", "");
 		} else {
 			map.put("dataSourcePermissions", Collections.emptyList());
 			map.put("dataPointPermissions", Collections.emptyList());
+			map.put("userProfileXid", "");
 		}
 	}
 
