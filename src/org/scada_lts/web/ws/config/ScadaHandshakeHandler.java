@@ -23,19 +23,19 @@ public class ScadaHandshakeHandler extends DefaultHandshakeHandler {
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         Principal principal = request.getPrincipal();
 
-        if (principal == null || principal instanceof UsernamePasswordAuthenticationToken)
-        {
-            ServletServerHttpRequest req = (ServletServerHttpRequest)request;
+        if (principal == null || principal instanceof UsernamePasswordAuthenticationToken) {
+            ServletServerHttpRequest req = (ServletServerHttpRequest) request;
             HttpSession session = req.getServletRequest().getSession();
             final User user = (User) session.getAttribute("sessionUser");
 
-            if(user != null) {
+            if (user != null) {
                 LOG.debug("user.username: " + user.getUsername());
                 LOG.debug("user.id: " + user.getId());
             }
 
             principal = new ScadaPrincipal(user);
         }
+
         LOG.debug("principal: " + principal.getName());
         return principal;
     }

@@ -31,6 +31,7 @@ import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.*;
+import org.scada_lts.service.UserRoleService;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,7 @@ public class UserService implements MangoUser {
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
 	private UsersProfileService usersProfileService = new UsersProfileService();
+	private UserRoleService userRoleService = new UserRoleService();
 
 	private PermissionsService<DataPointAccess, User> dataPointPermissionsService = new DataPointUserPermissionsService();
 	private PermissionsService<Integer, User> dataSourcePermissionsService = new DataSourceUserPermissionsService();
@@ -152,6 +154,7 @@ public class UserService implements MangoUser {
 			int id = userDAO.insert(user);
 			user.setId(id);
 			updatePermissions(user);
+			userRoleService.insertUserRole(id, user.isAdmin());
 		} catch (Throwable t) {
 			LOG.error(t.getMessage(), t);
 		}
@@ -168,6 +171,7 @@ public class UserService implements MangoUser {
 
 		userDAO.update(user);
 		updatePermissions(user);
+		userRoleService.updateUserRole(user.getId(), user.isAdmin());
 	}
 
 	@Override
@@ -178,6 +182,7 @@ public class UserService implements MangoUser {
 		pointValueService.updatePointValueAnnotations(userId);
 		eventService.deleteUserEvent(userId);
 		eventService.updateEventAckUserId(userId);
+		userRoleService.deleteUserRoleUser(userId);
 		userDAO.delete(userId);
 	}
 

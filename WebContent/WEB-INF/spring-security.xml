@@ -15,7 +15,8 @@
             <xss-protection />
         </headers>
 
-        <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler" />
+        <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
+                    authentication-failure-url = "/login.htm?error=true"/>
         <csrf disabled="true"/>
     </http>
 
@@ -24,9 +25,11 @@
             <password-encoder ref="customPasswordEncoder" />
             <jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query=
-                                       "select username, password, disabled = 'N' as enabled from users where username=?"
+                                       "select username, password, enabled from springUser where username=?"
                                authorities-by-username-query=
-                                       "select username, role from users where username =?  " />
+                                       "select username, userRoles.role from users
+                                       inner join userRoles on users.id = userRoles.userId
+                                       where username =?  " />
         </authentication-provider>
     </authentication-manager>
 

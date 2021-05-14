@@ -16,6 +16,16 @@ public class V2_7__ extends BaseJavaMigration {
 
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
-        jdbcTmp.execute("ALTER TABLE users ADD role LONGTEXT;");
+        jdbcTmp.execute("CREATE VIEW springUser AS SELECT username, password, disabled = 'N' as enabled from users;");
+
+        jdbcTmp.execute("CREATE TABLE userRoles (userId int, role LONGTEXT, FOREIGN KEY (userId) REFERENCES users(id));");
+
+        jdbcTmp.execute("INSERT INTO userRoles (userId, role) SELECT id, " +
+                "CASE " +
+                "WHEN admin = 'Y' THEN 'ROLE_ADMIN' " +
+                "WHEN admin != 'Y' THEN 'ROLE_USER'" +
+                " END " +
+                "FROM users;");
+
     }
 }
