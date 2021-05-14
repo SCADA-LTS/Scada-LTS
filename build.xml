@@ -92,7 +92,7 @@
         <pathelement location="WebContent/WEB-INF/lib/bacnet4J.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/catalina-ant-6.0.29.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-beanutils-1.8.3.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>
+<!--        <pathelement location="WebContent/WEB-INF/lib/commons-codec-1.3.jar"/>-->
         <pathelement location="WebContent/WEB-INF/lib/commons-collections-3.2.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-dbcp-jdbc4.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/commons-discovery-0.2.jar"/>
@@ -174,10 +174,10 @@
         <pathelement location="WebContent/WEB-INF/lib/spring-context-support-4.3.16.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-core-4.3.16.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-expression-4.3.16.RELEASE.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-3.2.17.RELEASE.jar"/>
+<!--        <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-3.2.17.RELEASE.jar"/>-->
         <pathelement location="WebContent/WEB-INF/lib/spring-jdbc-4.3.16.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-tx-4.3.16.RELEASE.jar"/>
-    	<pathelement location="WebContent/WEB-INF/lib/spring-tx-3.2.17.RELEASE.jar"/>
+<!--    	<pathelement location="WebContent/WEB-INF/lib/spring-tx-3.2.17.RELEASE.jar"/>-->
         <pathelement location="WebContent/WEB-INF/lib/spring-web-4.3.16.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-webmvc-4.3.16.RELEASE.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/spring-websocket-4.3.16.RELEASE.jar"/>
@@ -411,6 +411,15 @@
             </fileset>
         </copy>
 
+		<copy todir="WebContent/img" taskname="Copy Vue.js image assets" includeemptydirs="false">
+			<fileset dir="${src-js-ui.dir}/img/">
+				<include name="**/*.png"/>
+				<include name="**/*.jpg"/>
+				<include name="**/*.jpeg"/>
+				<include name="**/*.svg"/>
+			</fileset>
+		</copy>
+
 		<!-- copy content for views -->
 		<copy includeemptydirs="false" todir="${js-ui.dir}/views/css" taskname="copy for views css">
 			<fileset dir="${src-js-ui.dir}/css/">
@@ -603,8 +612,16 @@
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
-
+      
 			<test name="org.scada_lts.utils.UpdateValuePointPropertiesTest"
+				  haltonfailure="yes">
+			</test>
+      
+		  	<test name="org.scada_lts.permissions.service.util.PermissionsTestsSuite"
+				haltonfailure="yes">
+		  	</test>
+
+			<test name="com.serotonin.mango.util.ViewControllerUtilsTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>

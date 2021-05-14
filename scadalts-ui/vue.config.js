@@ -1,3 +1,4 @@
+const { secureCookieProxy } = require('http-proxy-middleware-secure-cookies');
 var webpack = require('webpack');
 const fs = require('fs');
 const packageJson = JSON.parse(fs.readFileSync('./package.json'));
@@ -10,6 +11,7 @@ const commit = packageJson.commit || 'N/A';
 const pullRequestNumber = packageJson.pullRequestNumber || 'false';
 const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
+	publicPath: process.env.NODE_ENV === 'production' ? '/ScadaBR/' : '/',
 	filenameHashing: false,
 	configureWebpack: {
 		devtool: 'source-map',
@@ -39,10 +41,7 @@ module.exports = {
 	transpileDependencies: ['vuetify'],
 	devServer: {
 		proxy: {
-			'^/api': {
-				target: 'http://localhost:8080/ScadaBR',
-				changeOrigin: true,
-			},
+			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 		},
 	},
 };

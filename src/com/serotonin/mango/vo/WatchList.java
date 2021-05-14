@@ -54,7 +54,7 @@ public class WatchList implements JsonSerializable {
     @JsonRemoteProperty
     private String name;
     private final List<DataPointVO> pointList = new CopyOnWriteArrayList<DataPointVO>();
-    private List<ShareUser> watchListUsers = new ArrayList<ShareUser>();
+    private List<ShareUser> watchListUsers = new CopyOnWriteArrayList<ShareUser>();
 
     public int getUserAccess(User user) {
         if (user.getId() == userId)

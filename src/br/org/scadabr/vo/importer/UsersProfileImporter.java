@@ -68,7 +68,7 @@ public class UsersProfileImporter {
 			copyUsersOldAdditionalPermissions(user, savedProfile);
 			savedProfile.apply(user);
 			usersDao.saveUser(user);
-			usersProfileDao.updateUsersProfile(savedProfile);
+			usersProfileDao.updateUsersProfile(user, savedProfile);
 			restoreUsersOldAdditionalPermissions(user, savedProfile);
 		}
 

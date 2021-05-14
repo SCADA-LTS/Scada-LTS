@@ -36,7 +36,7 @@
 
 			<v-row v-if="selected === 1" dense id="renderer-binary">
 				<v-col cols="1">
-					<v-menu offset-y>
+					<v-menu offset-y :close-on-content-click="false">
 						<template v-slot:activator="{ on }">
 							<v-btn :color="data.textRenderer.zeroColour" v-on="on" block> </v-btn>
 						</template>
@@ -52,7 +52,7 @@
 					</v-text-field>
 				</v-col>
 				<v-col cols="1">
-					<v-menu offset-y>
+					<v-menu offset-y :close-on-content-click="false">
 						<template v-slot:activator="{ on }">
 							<v-btn :color="data.textRenderer.oneColour" v-on="on" block> </v-btn>
 						</template>
@@ -71,7 +71,7 @@
 
 			<v-row v-if="selected === 2" dense id="renderer-multistate">
 				<v-col cols="1">
-					<v-menu offset-y>
+					<v-menu offset-y :close-on-content-click="false">
 						<template v-slot:activator="{ on }">
 							<v-btn :color="multistateRenderer.colour" v-on="on" block> </v-btn>
 						</template>
@@ -146,7 +146,7 @@
 					</v-text-field>
 				</v-col>
 				<v-col cols="1">
-					<v-menu offset-y>
+					<v-menu offset-y :close-on-content-click="false">
 						<template v-slot:activator="{ on }">
 							<v-btn :color="rangeRenderer.colour" v-on="on" block> </v-btn>
 						</template>

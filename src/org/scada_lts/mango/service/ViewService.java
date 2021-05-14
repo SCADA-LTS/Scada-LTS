@@ -31,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.IdName;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.permissions.service.ViewGetShareUsers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,23 +50,25 @@ public class ViewService {
 	private Log LOG = LogFactory.getLog(ViewService.class);
 	private ViewDAO viewDAO;
 	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
+	private ViewGetShareUsers viewGetShareUsers;
 	
 	public ViewService() {
 		viewDAO = new ViewDAO();
+		viewGetShareUsers = new ViewGetShareUsers();
 	}
 	
 	public List<View> getViews() {
 		List<View> views = viewDAO.findAll();
 		for (View view: views) {
-			view.setViewUsers(viewDAO.getShareUsers(view.getId()));
+			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		}
 		return views;
 	}
-	
+
 	public List<View> getViews(int userId, int userProfileId) {
 		List<View> views = viewDAO.filtered(ViewDAO.VIEW_FILTERED_BASE_ON_ID, " order by name ", new Object[]{userId, userId, ShareUser.ACCESS_NONE, userProfileId}, ViewDAO.NO_LIMIT);
 		for (View view: views) {
-			view.setViewUsers(viewDAO.getShareUsers(view.getId()));
+			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		}
 		return views;
 	}
@@ -110,7 +114,7 @@ public class ViewService {
 	
 	public View getView(int id) {
 		View view = viewDAO.findById(new Object[] { id });
-		view.setViewUsers(viewDAO.getShareUsers(view.getId()));
+		view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		return view;
 	}
 	
@@ -124,12 +128,12 @@ public class ViewService {
 		if (view == null) {
 			return null;
 		}
-		view.setViewUsers(viewDAO.getShareUsers(view.getId()));
+		view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		return view;
 	}
 
 	public List<ShareUser> getShareUsers(View view) {
-		return viewDAO.getShareUsers(view.getId());
+		return viewGetShareUsers.getShareUsersWithProfile(view);
 	}
 
 	public String generateUniqueXid() {
@@ -147,9 +151,10 @@ public class ViewService {
 		} else {
 			viewDAO.update(view);
 		}
-						
-		saveViewUsers(view);
-		
+
+		//sharing an object doesn't work
+		//saveViewUsers(view);
+
 		//TODO why don't update
 		usersPermissions.clear();
 	}
@@ -182,4 +187,8 @@ public class ViewService {
 		viewDAO.deleteViewForUser(viewId, userId);
 	}
 
+
+	public List<ScadaObjectIdentifier> getSimpleViews() {
+		return viewDAO.selectViewIdentifiers();
+	}
 }
