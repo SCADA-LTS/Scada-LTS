@@ -1,16 +1,17 @@
 package org.scada_lts.dao;
 
-import com.serotonin.util.Tuple;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.scada_lts.service.model.UserRole;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
+import java.util.Collections;
 import java.util.List;
 
 public class UserRoleDAO {
@@ -48,65 +49,97 @@ public class UserRoleDAO {
             + "delete from userRoles where "
             + COLUMN_NAME_USER_ID + "=? ";
 
-    public List<Tuple<Integer, String>> getUserRoles(final int userId) {
+    private JdbcTemplate jdbcTemplate;
+
+    public UserRoleDAO() {
+        this.jdbcTemplate = DAO.getInstance().getJdbcTemp();
+    }
+
+    public UserRoleDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<UserRole> getUserRoles(final int userId) {
 
         if (LOG.isTraceEnabled()) {
             LOG.trace("getUserRoles(final int userId) userId:" + userId);
         }
-
-        return DAO.getInstance().getJdbcTemp().query(USER_ROLE_SELECT_WHERE_USERID, new Object[]{userId}, new RowMapper<Tuple<Integer, String>>() {
-            @Override
-            public Tuple<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Tuple<Integer, String>(rs.getInt(COLUMN_NAME_USER_ID), rs.getString(COLUMN_NAME_ROLE));
-            }
-        });
+        try {
+            return jdbcTemplate.query(USER_ROLE_SELECT_WHERE_USERID, new Object[]{userId}, new UserRoleDAO.UserRoleRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Collections.emptyList();
+        }
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-    public void insert(final int userId, final String role) {
+    public int insert(final int userId, final String role) {
 
         if (LOG.isTraceEnabled()) {
             LOG.trace("insert(final int userId, final String role) userId:" + userId + ", role:" + role);
         }
-
-        DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement preparedStatement = connection.prepareStatement(USER_ROLE_INSERT);
-                new ArgumentPreparedStatementSetter(new Object[]{
-                        userId,
-                        role
-                }).setValues(preparedStatement);
-                return preparedStatement;
-            }
-        });
+        try {
+            return jdbcTemplate.update(USER_ROLE_INSERT, userId, role);
+        } catch (EmptyResultDataAccessException ex) {
+            return 0;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return -1;
+        }
     }
 
-    @Transactional(readOnly = false, propagation= Propagation.REQUIRES_NEW, isolation= Isolation.READ_COMMITTED, rollbackFor=SQLException.class)
-    public void update(final String role, int userId) {
+    public int update(final String role, int userId) {
 
         if (LOG.isTraceEnabled()) {
             LOG.trace("update(final String role, int userId) role:" + role + ", userId:" + userId);
         }
-
-        DAO.getInstance().getJdbcTemp().update(USER_ROLE_UPDATE, new Object[] {role, userId});
+        try {
+            return jdbcTemplate.update(USER_ROLE_UPDATE, role, userId);
+        } catch (EmptyResultDataAccessException ex) {
+            return 0;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return -1;
+        }
     }
 
-    @Transactional(readOnly = false, propagation= Propagation.REQUIRES_NEW, isolation= Isolation.READ_COMMITTED, rollbackFor=SQLException.class)
     public int deleteUserRole(int userId, String role) {
         if(LOG.isTraceEnabled()) {
             LOG.trace("delete(int userId) userId:" + userId + ", role:" + role);
         }
-
-        return DAO.getInstance().getJdbcTemp().update(USER_ROLE_DELETE, new Object[] {userId, role});
+        try {
+            return jdbcTemplate.update(USER_ROLE_DELETE, userId, role);
+        } catch (EmptyResultDataAccessException ex) {
+            return 0;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return -1;
+        }
     }
 
-    @Transactional(readOnly = false, propagation= Propagation.REQUIRES_NEW, isolation= Isolation.READ_COMMITTED, rollbackFor=SQLException.class)
     public int deleteUserRoleUser(int userId) {
         if(LOG.isTraceEnabled()) {
             LOG.trace("delete(int userId) userId:" + userId);
         }
+        try {
+            return jdbcTemplate.update(USER_ROLE_USER_DELETE, userId);
+        } catch (EmptyResultDataAccessException ex) {
+            return 0;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return -1;
+        }
+    }
 
-        return DAO.getInstance().getJdbcTemp().update(USER_ROLE_USER_DELETE, new Object[] {userId});
+    private class UserRoleRowMapper implements RowMapper<UserRole> {
+
+        @Override
+        public UserRole mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserRole userRole = new UserRole();
+            userRole.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
+            userRole.setRole(rs.getString(COLUMN_NAME_ROLE));
+            return userRole;
+        }
     }
 }

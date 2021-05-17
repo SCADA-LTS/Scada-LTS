@@ -1,7 +1,7 @@
 package org.scada_lts.service;
 
-import com.serotonin.util.Tuple;
 import org.scada_lts.dao.UserRoleDAO;
+import org.scada_lts.service.model.UserRole;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class UserRoleService {
 
     private final UserRoleDAO userRoleDAO = new UserRoleDAO();
 
-    public List<Tuple<Integer, String>> getUserRoles(int userId){
+    public List<UserRole> getUserRoles(int userId){
         return userRoleDAO.getUserRoles(userId);
     }
 
