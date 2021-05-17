@@ -75,9 +75,11 @@
               </div>
 
                 <div class="formError">
-                  <c:forEach items="${errors}" var="error">
-                    <fmt:message key="${error}"/><br/>
-                  </c:forEach>
+                    <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
+                        <div class="error">
+                            <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}" />
+                        </div>
+                    </c:if>
                 </div>
 
 

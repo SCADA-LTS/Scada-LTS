@@ -16,7 +16,7 @@
         </headers>
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
-                    authentication-failure-url = "/login.htm?error=true"/>
+                    authentication-failure-url = "/login.htm?error"/>
         <csrf disabled="true"/>
     </http>
 
