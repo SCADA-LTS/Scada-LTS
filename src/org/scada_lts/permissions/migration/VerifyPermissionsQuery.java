@@ -6,9 +6,7 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 
 import java.util.List;
 
-import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.containsPermission;
-import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.existsObject;
-import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.verifyUserPermissions;
+import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.*;
 
 class VerifyPermissionsQuery extends AbstractMeasurmentCommand {
 
@@ -24,27 +22,22 @@ class VerifyPermissionsQuery extends AbstractMeasurmentCommand {
     public void work(List<User> users) {
 
         users.forEach(user -> {
-            UsersProfileVO usersProfile = migrationDataService.getUsersProfileService().getUserProfileById(user.getUserProfile());
 
-            if (usersProfile == null) {
-                usersProfile = new UsersProfileVO();
-            }
+            verifyUserDataSourcePermissions(user, migrationDataService.getUsersProfileService(),
+                    migrationDataService.getDataSourceService(),
+                    migrationPermissionsService.getDataSourceUserPermissionsService());
 
-            verifyUserPermissions(migrationPermissionsService.getWatchListUserPermissionsService(), user, usersProfile,
-                    usersProfile::getWatchlistPermissions, containsPermission(),
-                    existsObject(migrationDataService.getWatchListService()::getWatchList));
+            verifyUserDataPointPermissions(user, migrationDataService.getUsersProfileService(),
+                    migrationDataService.getDataPointService(),
+                    migrationPermissionsService.getDataPointUserPermissionsService());
 
-            verifyUserPermissions(migrationPermissionsService.getDataSourceUserPermissionsService(), user, usersProfile,
-                    usersProfile::getDataSourcePermissions, containsPermission(1),
-                    existsObject(migrationDataService.getDataSourceService()));
+            verifyUserWatchListPermissions(user, migrationDataService.getUsersProfileService(),
+                    migrationDataService.getWatchListService(),
+                    migrationPermissionsService.getWatchListUserPermissionsService());
 
-            verifyUserPermissions(migrationPermissionsService.getDataPointUserPermissionsService(), user, usersProfile,
-                    usersProfile::getDataPointPermissions, containsPermission(new DataPointAccess()),
-                    existsObject(migrationDataService.getDataPointService()));
-
-            verifyUserPermissions(migrationPermissionsService.getViewUserPermissionsService(), user, usersProfile,
-                    usersProfile::getViewPermissions, containsPermission(),
-                    existsObject(migrationDataService.getViewService()::getView));
+            verifyUserViewPermissions(user, migrationDataService.getUsersProfileService(),
+                    migrationDataService.getViewService(),
+                    migrationPermissionsService.getViewUserPermissionsService());
 
         });
     }

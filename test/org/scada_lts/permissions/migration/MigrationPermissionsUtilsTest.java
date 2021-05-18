@@ -1,12 +1,15 @@
 package org.scada_lts.permissions.migration;
 
 import br.org.scadabr.db.utils.TestUtils;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,35 +61,12 @@ public class MigrationPermissionsUtilsTest {
     }
 
     @Test
-    public void verifyViewUserPermissions() {
+    public void when_verifyUserPermissions() {
     }
 
-    @Test
-    public void toViewAccesses() {
-    }
 
     @Test
-    public void verifyUserPermissions() {
-    }
-
-    @Test
-    public void fromProfile() {
-    }
-
-    @Test
-    public void accessesBy() {
-    }
-
-    @Test
-    public void migratePermissions() {
-    }
-
-    @Test
-    public void getShareUser() {
-    }
-
-    @Test
-    public void findDataPointAccessesFromView() {
+    public void when_findDataPointAccessesFromView_then_expected_list_permissions() {
 
         //given:
         ShareUser shareUser = new ShareUser(user1.getId(), ShareUser.ACCESS_SET);
@@ -135,7 +115,4 @@ public class MigrationPermissionsUtilsTest {
         Assert.assertEquals(dataPointAccessesExpected, dataPointAccesses);
     }
 
-    @Test
-    public void merge() {
-    }
 }

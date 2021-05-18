@@ -36,19 +36,62 @@ final class MigrationPermissionsUtils {
 
     private MigrationPermissionsUtils() {}
 
-    static <T, S extends PermissionsService<T, User>> void verifyUserPermissions(S permissionsService, User user,
-                                                                                 UsersProfileVO usersProfile,
-                                                                                 Supplier<List<T>> fromProfile,
-                                                                                 BiPredicate<T, List<T>> containsPermission,
-                                                                                 Predicate<T> existsObject) {
-        Set<T> fromUserAccesses = new HashSet<>(permissionsService.getPermissions(user));
-        AtomicInteger i = new AtomicInteger();
-        fromUserAccesses.forEach(permission -> {
-            boolean transferred = containsPermission.test(permission, fromProfile.get());
-            boolean exists = existsObject.test(permission);
-            String msg = verifyInfo(permission, user, transferred, exists, usersProfile);
-            LOG.info(iterationInfo(msg, i.incrementAndGet(), fromUserAccesses.size()));
-        });
+
+    static void verifyUserWatchListPermissions(User user, UsersProfileService usersProfileService,
+                                               WatchListService watchListService,
+                                               WatchListUserPermissionsService watchListUserPermissionsService) {
+        UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
+
+        if (usersProfile == null) {
+            usersProfile = new UsersProfileVO();
+        }
+
+        verifyUserPermissions(watchListUserPermissionsService, user, usersProfile,
+                usersProfile::getWatchlistPermissions, containsPermission(),
+                existsObject(watchListService::getWatchList));
+    }
+
+
+    static void verifyUserViewPermissions(User user, UsersProfileService usersProfileService,
+                                               ViewService viewService,
+                                               ViewUserPermissionsService viewUserPermissionsService) {
+        UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
+
+        if (usersProfile == null) {
+            usersProfile = new UsersProfileVO();
+        }
+
+        verifyUserPermissions(viewUserPermissionsService, user, usersProfile,
+                usersProfile::getViewPermissions, containsPermission(),
+                existsObject(viewService::getView));
+    }
+
+    static void verifyUserDataSourcePermissions(User user, UsersProfileService usersProfileService,
+                                          DataSourceService dataSourceService,
+                                          DataSourceUserPermissionsService dataSourceUserPermissionsService) {
+        UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
+
+        if (usersProfile == null) {
+            usersProfile = new UsersProfileVO();
+        }
+
+        verifyUserPermissions(dataSourceUserPermissionsService, user, usersProfile,
+                usersProfile::getDataSourcePermissions, containsPermission(1),
+                existsObject(dataSourceService));
+    }
+
+    static void verifyUserDataPointPermissions(User user, UsersProfileService usersProfileService,
+                                                DataPointService dataPointService,
+                                                DataPointUserPermissionsService dataPointUserPermissionsService) {
+        UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
+
+        if (usersProfile == null) {
+            usersProfile = new UsersProfileVO();
+        }
+
+        verifyUserPermissions(dataPointUserPermissionsService, user, usersProfile,
+                usersProfile::getDataPointPermissions, containsPermission(new DataPointAccess()),
+                existsObject(dataPointService));
     }
 
     static Accesses fromProfile(User user, Map<Accesses, UsersProfileVO> profiles) {
@@ -158,30 +201,45 @@ final class MigrationPermissionsUtils {
         }
     }
 
-    static <T extends Permission> BiPredicate<T, List<T>> containsPermission() {
+    private static <T extends Permission> BiPredicate<T, List<T>> containsPermission() {
         return (access, accesses) -> accesses.contains(access)
                 || accesses.stream().anyMatch(c -> c.getId() == access.getId() && c.getPermission() > access.getPermission());
     }
 
-    static BiPredicate<DataPointAccess, List<DataPointAccess>> containsPermission(DataPointAccess dataPointAccess) {
+    private static BiPredicate<DataPointAccess, List<DataPointAccess>> containsPermission(DataPointAccess dataPointAccess) {
         return (access, accesses) -> accesses.contains(access)
                 || accesses.stream().anyMatch(c -> c.getDataPointId() == access.getDataPointId() && c.getPermission() > access.getPermission());
     }
 
-    static BiPredicate<Integer, List<Integer>> containsPermission(Integer dataSourceAccess) {
+    private static BiPredicate<Integer, List<Integer>> containsPermission(Integer dataSourceAccess) {
         return (access, accesses) -> accesses.contains(access);
     }
 
-    static <T extends Permission> Predicate<T> existsObject(IntFunction<?> verify) {
+    private static <T extends Permission> Predicate<T> existsObject(IntFunction<?> verify) {
         return (access) -> exists(verify, access, "object: ");
     }
 
-    static Predicate<Integer> existsObject(DataSourceService dataSourceService) {
+    private static Predicate<Integer> existsObject(DataSourceService dataSourceService) {
         return (access) ->  exists(dataSourceService, access);
     }
 
-    static Predicate<DataPointAccess> existsObject(DataPointService dataPointService) {
+    private static Predicate<DataPointAccess> existsObject(DataPointService dataPointService) {
         return (access) ->  exists(dataPointService, access);
+    }
+
+    private static <T, S extends PermissionsService<T, User>> void verifyUserPermissions(S permissionsService, User user,
+                                                                                         UsersProfileVO usersProfile,
+                                                                                         Supplier<List<T>> fromProfile,
+                                                                                         BiPredicate<T, List<T>> containsPermission,
+                                                                                         Predicate<T> existsObject) {
+        Set<T> fromUserAccesses = new HashSet<>(permissionsService.getPermissions(user));
+        AtomicInteger i = new AtomicInteger();
+        fromUserAccesses.forEach(permission -> {
+            boolean transferred = containsPermission.test(permission, fromProfile.get());
+            boolean exists = existsObject.test(permission);
+            String msg = verifyInfo(permission, user, transferred, exists, usersProfile);
+            LOG.info(iterationInfo(msg, i.incrementAndGet(), fromUserAccesses.size()));
+        });
     }
 
     private static UsersProfileVO createProfile(String prefix, UsersProfileService usersProfileService, Accesses key) {
