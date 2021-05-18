@@ -298,7 +298,7 @@ public class UserDAO {
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
 						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-						user.isMenuHidden(),
+						user.isHiddenMenu(),
 						user.getDefaultTheme().name()
 				}).setValues(preparedStatement);
 				return preparedStatement;
@@ -324,7 +324,7 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-				user.isMenuHidden(),
+				user.isHiddenMenu(),
 				user.getDefaultTheme().name(),
 				user.getId()
 		});

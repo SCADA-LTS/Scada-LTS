@@ -424,7 +424,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.defaultTheme = defaultTheme;
 	}
 
-	public boolean isMenuHidden() {
+	public boolean isHiddenMenu() {
 		return hiddenMenu;
 	}
 
