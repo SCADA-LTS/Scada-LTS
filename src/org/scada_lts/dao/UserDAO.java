@@ -39,6 +39,9 @@ public class UserDAO {
 	private final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
 	private final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
 	private final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
+	private final static String COLUMN_NAME_HIDDEN_MENU = "hiddenMenu";
+	private final static String COLUMN_NAME_DEFAULT_THEME = "defaultTheme";
+
 
 	// @formatter:off
 	private static final String USER_SELECT_ID = ""
@@ -59,7 +62,9 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_LAST_LOGIN + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + " "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_HIDDEN_MENU + ", "
+				+ COLUMN_NAME_DEFAULT_THEME + " "
 			+ "from users ";
 
 	private static final String USER_SELECT_ORDER = ""
@@ -91,7 +96,22 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + ", "
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_HIDDEN_MENU + ", "
+				+ COLUMN_NAME_DEFAULT_THEME + ") "
+			+ "values (?,?,?,?,?,?,?,?,?,?,?) ";
+
+	private static final String USER_INSERT_BASE_VERSION = ""
+			+ "insert into users ("
+			+ COLUMN_NAME_USERNAME + ", "
+			+ COLUMN_NAME_PASSWORD + ", "
+			+ COLUMN_NAME_EMAIL + ", "
+			+ COLUMN_NAME_PHONE + ", "
+			+ COLUMN_NAME_ADMIN + ", "
+			+ COLUMN_NAME_DISABLED + ", "
+			+ COLUMN_NAME_HOME_URL + ", "
+			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
+			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
 			+ "values (?,?,?,?,?,?,?,?,?) ";
 
 	private static final String USER_UPDATE = ""
@@ -104,7 +124,9 @@ public class UserDAO {
 				+ COLUMN_NAME_DISABLED + "=?, "
 				+ COLUMN_NAME_HOME_URL + "=?, "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=? "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
+				+ COLUMN_NAME_HIDDEN_MENU + "=?, "
+				+ COLUMN_NAME_DEFAULT_THEME + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
@@ -142,6 +164,8 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
+			user.setHiddenMenu(rs.getBoolean(COLUMN_NAME_HIDDEN_MENU));
+			user.setDefaultTheme(User.DefaultTheme.valueOf(rs.getString(COLUMN_NAME_DEFAULT_THEME)));
 			return user;
 		}
 	}
@@ -222,6 +246,36 @@ public class UserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public int insertBaseVersion(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertBaseVersion(User user) user:" + user.toString());
+		}
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement preparedStatement = connection.prepareStatement(USER_INSERT_BASE_VERSION, Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter(new Object[]{
+						user.getUsername(),
+						user.getPassword(),
+						user.getEmail(),
+						user.getPhone(),
+						DAO.boolToChar(user.isAdmin()),
+						DAO.boolToChar(user.isDisabled()),
+						user.getHomeUrl(),
+						user.getReceiveAlarmEmails(),
+						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+				}).setValues(preparedStatement);
+				return preparedStatement;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().intValue();
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int insert(final User user) {
 
 		if (LOG.isTraceEnabled()) {
@@ -243,7 +297,9 @@ public class UserDAO {
 						DAO.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+						user.isMenuHidden(),
+						user.getDefaultTheme().name()
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -268,6 +324,8 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.isMenuHidden(),
+				user.getDefaultTheme().name(),
 				user.getId()
 		});
 	}

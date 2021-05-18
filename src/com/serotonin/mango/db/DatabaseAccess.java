@@ -159,6 +159,8 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
+					user.setHiddenMenu(false);
+					user.setDefaultTheme(User.DefaultTheme.STANDARD);
 					new UserDao().saveUser(user);
 
 					// Record the current version.

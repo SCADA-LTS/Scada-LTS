@@ -38,6 +38,7 @@
                 show("usernameRow");
                 show("administrationRow");
                 show("disabledRow");
+                show("hiddenMenuRow");
                 show("deleteImg");
                 show("sendTestEmailImg");
                 
@@ -126,6 +127,8 @@
         $set("disabled", user.disabled);
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
+        $set("hiddenMenu", user.hiddenMenu);
+        $set("defaultTheme", user.defaultTheme);
 
     	
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
@@ -229,11 +232,12 @@
             
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, $get("usersProfilesList"), saveUserCB);
+                    dsPermis, dpPermis, $get("usersProfilesList"), $get("hiddenMenu"), $get("defaultTheme"), saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
-                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), saveUserCB);
+                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
+                    $get("defaultTheme"), saveUserCB);
      
     }
     
@@ -415,6 +419,14 @@
             <tr>
               <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
               <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
+            </tr>
+            <tr id="hiddenMenuRow" style="display:none;">
+              <td class="formLabelRequired"><fmt:message key="users.hiddenMenu"/></td>
+              <td class="formField"><input id="hiddenMenu" type="checkbox"/></td>
+            </tr>
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="users.defaultTheme"/></td>
+              <td class="formField"><select id="defaultTheme"><tag:defaultThemeOptions/></select></td>
             </tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>
