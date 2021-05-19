@@ -1,16 +1,18 @@
 package org.scada_lts.permissions.migration;
 
+import org.scada_lts.mango.adapter.MangoDataPoint;
+import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.*;
 
 public class MigrationDataService {
 
-    private final DataPointService dataPointService;
-    private final DataSourceService dataSourceService;
+    private final MangoDataPoint dataPointService;
+    private final MangoDataSource dataSourceService;
     private final ViewService viewService;
     private final WatchListService watchListService;
     private final UsersProfileService usersProfileService;
 
-    public MigrationDataService(DataPointService dataPointService, DataSourceService dataSourceService,
+    public MigrationDataService(MangoDataPoint dataPointService, MangoDataSource dataSourceService,
                                 ViewService viewService, WatchListService watchListService,
                                 UsersProfileService usersProfileService) {
         this.dataPointService = dataPointService;
@@ -20,11 +22,11 @@ public class MigrationDataService {
         this.usersProfileService = usersProfileService;
     }
 
-    public DataPointService getDataPointService() {
+    public MangoDataPoint getDataPointService() {
         return dataPointService;
     }
 
-    public DataSourceService getDataSourceService() {
+    public MangoDataSource getDataSourceService() {
         return dataSourceService;
     }
 

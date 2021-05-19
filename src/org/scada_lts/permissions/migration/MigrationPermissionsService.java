@@ -1,40 +1,41 @@
 package org.scada_lts.permissions.migration;
 
-import org.scada_lts.permissions.service.DataPointUserPermissionsService;
-import org.scada_lts.permissions.service.DataSourceUserPermissionsService;
-import org.scada_lts.permissions.service.ViewUserPermissionsService;
-import org.scada_lts.permissions.service.WatchListUserPermissionsService;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.permissions.service.*;
 
 public class MigrationPermissionsService {
 
-    private final DataPointUserPermissionsService dataPointUserPermissionsService;
-    private final DataSourceUserPermissionsService dataSourceUserPermissionsService;
-    private final WatchListUserPermissionsService watchListUserPermissionsService;
-    private final ViewUserPermissionsService viewUserPermissionsService;
+    private final PermissionsService<DataPointAccess, User> dataPointUserPermissionsService;
+    private final PermissionsService<Integer, User> dataSourceUserPermissionsService;
+    private final PermissionsService<WatchListAccess, User> watchListUserPermissionsService;
+    private final PermissionsService<ViewAccess, User> viewUserPermissionsService;
 
-    public MigrationPermissionsService(DataPointUserPermissionsService dataPointUserPermissionsService,
-                                       DataSourceUserPermissionsService dataSourceUserPermissionsService,
-                                       WatchListUserPermissionsService watchListUserPermissionsService,
-                                       ViewUserPermissionsService viewUserPermissionsService) {
+    public MigrationPermissionsService(PermissionsService<DataPointAccess, User> dataPointUserPermissionsService,
+                                       PermissionsService<Integer, User> dataSourceUserPermissionsService,
+                                       PermissionsService<WatchListAccess, User> watchListUserPermissionsService,
+                                       PermissionsService<ViewAccess, User> viewUserPermissionsService) {
         this.dataPointUserPermissionsService = dataPointUserPermissionsService;
         this.dataSourceUserPermissionsService = dataSourceUserPermissionsService;
         this.watchListUserPermissionsService = watchListUserPermissionsService;
         this.viewUserPermissionsService = viewUserPermissionsService;
     }
 
-    public DataPointUserPermissionsService getDataPointUserPermissionsService() {
+    public PermissionsService<DataPointAccess, User> getDataPointUserPermissionsService() {
         return dataPointUserPermissionsService;
     }
 
-    public DataSourceUserPermissionsService getDataSourceUserPermissionsService() {
+    public PermissionsService<Integer, User>  getDataSourceUserPermissionsService() {
         return dataSourceUserPermissionsService;
     }
 
-    public WatchListUserPermissionsService getWatchListUserPermissionsService() {
+    public PermissionsService<WatchListAccess, User> getWatchListUserPermissionsService() {
         return watchListUserPermissionsService;
     }
 
-    public ViewUserPermissionsService getViewUserPermissionsService() {
+    public PermissionsService<ViewAccess, User> getViewUserPermissionsService() {
         return viewUserPermissionsService;
     }
 }

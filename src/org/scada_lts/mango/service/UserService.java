@@ -65,6 +65,32 @@ public class UserService implements MangoUser {
 	private PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService = new ViewProfilePermissionsService();
 	private PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService = new WatchListProfilePermissionsService();
 
+	public UserService() {
+	}
+
+	public UserService(UserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
+					   EventService eventService, PointValueService pointValueService,
+					   UsersProfileService usersProfileService,
+					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,
+					   PermissionsService<Integer, User> dataSourcePermissionsService,
+					   PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService,
+					   PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService,
+					   PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService,
+					   PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService) {
+		this.userDAO = userDAO;
+		this.userCommentDAO = userCommentDAO;
+		this.mailingListService = mailingListService;
+		this.eventService = eventService;
+		this.pointValueService = pointValueService;
+		this.usersProfileService = usersProfileService;
+		this.dataPointPermissionsService = dataPointPermissionsService;
+		this.dataSourcePermissionsService = dataSourcePermissionsService;
+		this.dataPointProfilePermissionsService = dataPointProfilePermissionsService;
+		this.dataSourceProfilePermissionsService = dataSourceProfilePermissionsService;
+		this.viewProfilePermissionsService = viewProfilePermissionsService;
+		this.watchListProfilePermissionsService = watchListProfilePermissionsService;
+	}
+
 	@Override
 	public User getUser(int id) {
 		User user = userDAO.getUser(id);
