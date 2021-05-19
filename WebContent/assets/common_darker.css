@@ -203,7 +203,7 @@ input[type="checkbox"], input[type="radio"] {
 	padding: 0px;
 }
 .viewChangeBkgd {
-	background: var(--slts-color-secondary-lighter-alt);
+	background: #d1cccc26;
 }
 
 /* Documentation float pane style overrides. */
@@ -212,6 +212,7 @@ html > body .dojoFloatingPaneTitleBar {
 }
 html > body .dojoFloatingPaneClient {
 	font-size: var(--slts-font-size--small);
+	background: var(--slts-color-background);
 }
 #help h1 {
 	color: var(--slts-color-secondary-darker);
