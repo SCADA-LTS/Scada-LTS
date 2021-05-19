@@ -17,600 +17,226 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 :root {
-    --slts-primary: #39B54A;
+	--slts-color-primary: #39B54A;
+	--slts-color-primary-text: #000000;
+	--slts-color-secondary: #424041;
+	--slts-color-secondary-lighter: #F0F0F0;
+	--slts-color-secondary-lighter-alt: #d0d0d0;
+	--slts-color-secondary-darker: #333333;
+	--slts-color-secondary-text: #FFFFFF;
+	--slts-color-background: #FFFFFF;
+
+	--slts-font-size--small: 10px;
+	--slts-font-size--default: 11px;
+	--slts-font-size--section-title: 14px;
+	--slts-font-size--subtitle: 16px;
+	--slts-font-size--title: 18px;
+	--slts-font-family: Verdana, Arial, Helvetica, sans-serif;
+
+	--color-success: #39B54A;
+	--color-warning: #FF9D2E;
+	--color-error: #FF0000;
+
 	--navbar-spacer-width: 1px;
+	--padding-default: 3px;
+
 }
 html > body {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	color: #000000;
-	background-color: #FFFFFF;
-	margin: 0px;
-	padding: 0px;
+	font-family: var(--slts-font-family);
+	font-size: var(--slts-font-size--default);
+	color: var(--slts-color-primary-text);
+	background-color: var(--slts-color-background);
 }
 a, a:visited, a:link, .link {
-	/*color: #804000;*/
-	color: #414042;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	text-decoration: underline;
-	font-size: 11px;
+	color: var(--slts-color-secondary);
 }
 a:hover {
-	/*color: #F07800;*/
-	color: #39B54A;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	text-decoration: underline;
-	font-size: 11px;
+	color: var(--slts-color-primary);
 }
 a.titleLink, a.titleLink:visited, a.titleLink:link {
-	font-size: 11px;
+	font-weight: bold;
+}
 
-	font-weight: bold;
+/* --- Headers --- */
+#mainHeader {
+	padding-top: 5px;
+	background-color: #d6d5d5;
 }
-a.titleLink:hover {
-	font-size: 11px;
-	font-weight: bold;
+
+#subHeader {
+	background-color: var(--slts-color-secondary-lighter);
+	padding: var(--padding-default);
 }
+
 .bigTitle {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	color: #333333;
-	font-size: 16px;
+	color: var(--slts-color-secondary-darker);
+	font-size: var(--slts-font-size--title);
 	font-weight: bold;
 }
+/* Sub-header */
 .smallTitle {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	/*color: #804000;*/
-	color: #414042;
-	font-size: 16px;
+	color: var(--slts-color-secondary);
+	font-size: var(--slts-font-size--subtitle);
 	font-weight: bold;
 }
+/* Navbar instance header */
 .projectTitle {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	/*color: #804000;*/
-	color: #FFFFFF !important;
-	font-size: 14px;
+	color: var(--slts-color-secondary-text);
+	font-size: var(--slts-font-size--section-title);
 	font-weight: bold;
 }
-.titlePadding {
-	padding:1px 1px 0px 1px;
-}
-.copyTitle {
-	/*color: #804000;*/
-	color: #414042;
-	font-size: 10px;
-}
-.bodyCopy {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	color: #333333;
-	font-size: 11px;
+/* Navbar user header */
+.copyTitle, .bodyCopy, .footer {
+	color: var(--slts-color-secondary-darker);
 }
 .footer {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	color: #333333;
-	font-size: 9px;
+	font-size: var(--slts-font-size--small);
 }
-.ptr {
-	cursor: pointer;
-}
-
-
-/**
- * Header styles
- */
 #__header__alarmLevelText {
 	font-weight: bold;
 	font-size: 14px;
 	color: #25AB9B
 }
-#mainHeader {
-	padding-top: 5px;
-	background-color: #d6d5d5;
-}
-#subHeader {
-	background-color: #F0F0F0;
-	padding: 3px;
-}
 
-
-/**
- * List cell styles.
- */
-.rowHeader td, .smRowHeader td, .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
+/* --- Tables --- */
 .rowHeader td, .smRowHeader td {
 	font-weight: bold;
-	color: #FFFFFF;
-	/*background-color: #F07800;*/
-	background-color: #424041;
-	text-align: center;
-    white-space: nowrap;
+	color: var(--slts-color-secondary-text);
+	background-color: var(--slts-color-secondary-darker);
 }
-.rowHeader td {
-	padding: 3px 10px 3px 10px;
-}
-.smRowHeader td {
-	padding: 2px 3px 2px 3px;
-}
+
 a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:hover {
-	color: #FFFFFF;
-	text-decoration: underline;
+	color: var(--slts-color-secondary-text)
 }
+
 .row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
-	color: #000000;
+	color: var(--slts-color-primary-text);
 }
+
 .row td, .rowAlt td, .rowAlt2 td {
-	padding: 3px;
+	padding: var(--padding-default);
 }
 .smRow td, .smRowAlt td {
-	padding: 0px 3px 0px 3px;
+	padding: 0 var(--padding-default);
 }
-.row td, .smRow td {
-	background-color: #F0F0F0;
+.row td, .smRow td, .rowAlt2 td {
+	background-color: var(--slts-color-secondary-lighter);
 }
 .rowAlt td, .smRowAlt td {
-	background-color: #DCDCDC;
-}
-.rowAlt2 td {
-	background-color: #FFFFFF;
+	background-color: var(--slts-color-secondary-lighter-alt);
 }
 
 .borderDiv, .borderDivPadded {
-	/*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
+	border: 1px solid var(--slts-color-primary);
 }
 .borderDivPadded {
-	padding: 3px;
-}
-.marR {
-	margin-right: 5px;
-}
-.marB {
-	margin-bottom: 5px;
+	padding: var(--padding-default);
 }
 
-
-
-/**
- * Form styles
- */
-.formLabel, .formLabelRequired, .formField, .formError, select, input, textarea {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-}
+/* --- Form styles --- */
 .formLabel, .formLabelRequired {
-	color: #333333;
 	padding-right: 10px;
-	text-align: right;
-	white-space: nowrap;
 	padding-top: 5px;
-	vertical-align: top;
-}
-.formLabelRequired, .formError {
-	font-weight: bold;
+	text-align: right;
 }
 .formField {
 	padding: 2px;
-	color: #333333;
 }
 .formError {
-	color: #FF0000;
+	color: var(--color-error);
 	padding-left: 10px;
 }
 select, input, textarea {
-	color: #333333;
-	/*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-	padding: 2px;
+	border: 1px solid var(--slts-color-primary);
+	padding: var(--padding-default);
 }
 input[type="checkbox"], input[type="radio"] {
-	/*color: #F07800;*/
-	color: #39B54A;
+	color: var(--slts-color-primary);
 	border: 0;
 }
-.formVeryShort {
-	width: 30px;
-}
-.formShort {
-	width: 50px;
-}
-.formLong {
-	width: 250px;
-}
 .formDisabled {
-	border: 1px solid #D0D0D0;
-}
-input[type="submit"], input[type="button"] {
-	overflow: visible;
+	border: 1px solid var(--slts-color-secondary-lighter);
 }
 
-
-
-/**
- * View styles
- */
-.controlsDiv {
-    position: absolute;
-    visibility: hidden;
-    left: 0;
-    top: -1px;
-    z-index: 1;
-    margin: 1px 0px 1px 0px;
-    padding: 0;
-    background-color: #FFFFFF;
+/* --- View Styles --- */
+.controlsDiv, .controlsDiv table, .controlsDiv td, .controlsDiv td div, .controlContent, .labelDiv, .windowDiv, .imageDiv {
+    background-color: var(--slts-color-background);
 }
-.controlsDiv table {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    background-color: #FFFFFF;
-}
-.controlsDiv td {
-    list-style: none;
-    margin: 1px;
-    padding: 0;
-    /*background-color: #F8BB00;*/
-    background-color: #FFFFFF;
-    width: 16px;
-    height: 16px;
-}
-.controlsDiv td div, .controlContent {
-    padding: 1px 5px 1px 5px;
-    margin: 0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space: nowrap;
-    text-align: left;
-	font-size: 10px;
-	font-weight: normal;
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-    position: absolute;
-    visibility:hidden;
-    left: 15px;
-    top: 0px;
-}
-
-.labelDiv, .windowDiv {
-    position:absolute;
-    padding:1px 5px 1px 5px;
-    margin:0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space:nowrap;
-    text-align:left;
-	font-size: 10px;
-	font-weight: normal;
-	z-index: 20;
-}
-.labelDiv {
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-}
-.windowDiv {
-	/*border: 1px outset #F07800;*/
-	border: 1px outset #39B54A;
-}
-.labelDiv a, .windowDiv a {
-	font-size: 10px;
-}
-.imageDiv {
-    z-index:10;
-    left:18px;
-    position:absolute;
-    padding:0px;
-    margin:0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space:nowrap;
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-}
-.ovrflw {
-    background:inherit;
-    background:expression(this.parentNode.style.background);
-    color:inherit;
-    color:expression(this.parentNode.style.color);
-    font:inherit;
-    font:expression(this.parentNode.style.font);
-    width:300px;
-   	border-width:0 1px 0 1px;
-   	border-style:solid;
-   	/*border-color:#F07800;*/
-   	border-color:#39B54A;
-}
-#viewContent {
-	position:relative;
-	margin: 0px;
-	padding: 0px;
-}
-#viewContent img {
-	display: block;
-	margin: 0px;
-	padding: 0px;
-}
-.componentMin {
-	/*background-color: #F8BB00;*/
-    background-color: #FFFFFF;
-    top:0px;
-    left:0px;
-    margin:0px;
-    padding:0px;
-    width:16px;
-    height:16px;
+.controlsDiv td div, .controlContent, .imageDiv {
+	border: 1px solid var(--slts-color-primary);
+	font-size: var(--slts-font-size--small);
 }
 .componentInput {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	color: #333333;
-	/*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
+	border: 1px solid var(--slts-color-primary);
+	font-size: var(--slts-font-size--small);
 	padding: 1px;
 }
 .simpleRenderer, .simpleRenderer2 {
-    /*border: 1px solid #F07800;*/
-	border: 1px solid #39B54A;
-    padding:1px 5px 1px 5px;
+	border: 1px solid var(--slts-color-primary);
+	font-size: var(--slts-font-size--small);
+	padding:1px 5px;
     margin:0px;
-    /*background: #F8BB00;*/
-    background: #FFFFFF;
-    white-space:nowrap;
-    text-align:left;
-	font-size: 10px;
-	font-weight: normal;
 }
-.simpleRenderer {
-	line-height:16px;
+.labelDiv, .windowDiv, .labelDiv a, .windowDiv a {
+	font-size: var(--slts-font-size--small);
 }
+.labelDiv {
+	border: 1px solid var(--slts-color-primary);
+}
+.windowDiv {
+	border: 1px outset var(--slts-color-primary);
+}
+
+.componentMin {
+    background-color: var(--slts-color-background);
+}
+
 .infoData {
-	color: #FF0000;
+	color: var(--color-error);
 }
 .horzSeparator {
 	height: 1px;
-	background: #699D2E;
+	background: var(--slts-color-primary);
 	padding: 0px;
 }
 .viewChangeBkgd {
-	background: #D8E2CC;
+	background: var(--slts-color-secondary-lighter-alt);
 }
 
-
-/**
- * Absmiddle workaround
- */
-span.absmiddle img {
-	padding: 0;
-	margin: 0;
-	vertical-align: middle;
-/*	display: inline-block; */
-	display: inline;
-}
-
-
-/**
- * Documentation float pane style overrides.
- */
+/* Documentation float pane style overrides. */
 html > body .dojoFloatingPaneTitleBar {
-    background-color: #424041;
-}
-html > body .dojoFloatingPaneCloseIcon {
-    background-image: url(../images/cross_doc.png);
-    cursor: pointer;
+    background-color: var(--slts-color-secondary-darker);
 }
 html > body .dojoFloatingPaneClient {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10px;
-}
-html > body .dojoFloatingPaneClient p, #help p {
-	padding: 0px;
-	margin: 0px 0px 10px 0px;
+	font-size: var(--slts-font-size--small);
 }
 #help h1 {
-	/*color: #804000;*/
-	color: #414042;
-	font-size: 15px;
+	color: var(--slts-color-secondary-darker);
+	font-size: var(--slts-font-size--subtitle);
 	font-weight: bold;
-	padding: 0px;
-	margin: 20px 0px 10px 0px;
 }
 html > body .dojoFloatingPaneClient h1, #help h2 {
-	padding: 0px;
-	margin: 0px 0px 10px 0px;
-	font-size: 13px;
+	font-size: var(--slts-font-size--section-title);
 	font-weight: bold;
 }
-html > body .dojoFloatingPaneClient img, #help img {
-	vertical-align: bottom;
-}
 
-/**
- * Common tree styling
- */
+/* Common tree styling */
 html > body .dojoTreeNodeLabelSelected {
-	/*background-color: #F07800;*/
-    background-color: #39B54A;
-    color: #FFFFFF;
-    padding: 2px 3px 3px 2px;
+    background-color: var(--slts-color-primary);
+	color: var(--slts-color-secondary-text);
+    padding: 2px var(--padding-default);
 }
-
-
-/**
- * Styles for weekly 15 minute interval schedules.
- */
-.qoff {
-    /*background-color: #B4CE96;*/
-    background-color: #FF4000;
-}
-.qon {
-    /*background-color: #699D2E;*/
-    background-color: #B4CE96;
-}
-
-.qreg {
-    border: 1px solid #699D2E;
-}
-.qhlt {
-    border: 1px solid #FF9D2E;
-}
-
-.hreg {
-    border: 1px solid #FFFFFF;
-}
-.hhlt {
-    border: 1px solid #FF9D2E;
-}
-
-.selectItem {
-	width:100%;
+html > body .dojoTreeNodeLabelTitle {
+	color: var(--slts-color-primary-text)
 }
 
 .selectItem:hover {
-	background-color: rgb(96, 154, 68);
-}
-
-.windowDiv .selectDiv {
-	display:none;
-	max-height:100px;
-	overflow:auto;
-}
-
-/**
- * Enhanced image chart
- */
-.enhancedImageChart {
-	background-color: white;
-}
-.enhancedImageChartLegend {
-	position:static !important;
-	background-color: white;
-	padding: 5px;
-	display: inline-block;
-}
-.enhancedImageChartLegend > div {
-	margin-top: 2px;
-}
-.enhancedImageChartConfig {
-	position: absolute !important;
-	top: 0px !important;
-	left: 100% !important;
-	float: right;
-	padding-left: 5px;
-	display: block;
-	background-color: white;
-	width: 240px;
-	border: 1px outset #39B54A;
-	z-index: 1;
-}
-
-.enhancedImageChartConfig > div {
-	width: 100%;
-	display: inline-block;
-}
-.enhancedImageChartConfig div.margin1{
-	margin-top: 15px;
-}
-.enhancedImageChartConfig div.margin2{
-	margin: 5px 0px;
-}
-.enhancedImageChartConfig label.margin{
-	margin: 0px 5px;
-}
-.enhancedImageChartConfig span{
-	font-weight: bold;
-	margin: 5px 0;
-}
-
-/* To fix new css changees */
-.form-box {
-    width: 20px;
-}
-.login-button {
-    width: 165px;
-}
-
-img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"]:not(#viewBackground){
-	height: 16px;
-	width: 16px;
-}
-
-/* *** Main *** */
-#instanceDescription {
-	padding:5px;
-	white-space: nowrap;
-}
-
-/* Login form */
-.login-container {
-	margin: 100px auto 10px auto;
-	background-color: #77c055;
-	width: 290px;
-	border-radius: 10px;
-}
-.login-browser {
-	text-align: center;
-	padding-top: 10px;
-}
-.login-browser #browser {
-	font-weight: bold;
-}
-.login-browser #browserImg {
-	height: 10px;
-	width: auto;
-}
-
-.login-box > form {
-	margin: 0 auto;
-	width:200px;
+	background-color: var(--slts-color-primary);
 }
 
 .login-box .form-box > .formLabelRequired {
-	color: #000000;
-	font-size: 14px;
-}
-
-.login-box .form-box > .formField > input {
-	width: 200px;
-	height: 20px;
-}
-.login-box .login-button > input {
-	padding: 5px 20px;
-	margin-left:30%;
-	margin-top:10px;
-}
-
-/* Fixed styles */
-/* Main Header */
-#mainHeader {
-	display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-#eventsRow {
-	align-self: center;
-}
-#subHeader {
-	display: flex;
-    justify-content: space-between;
-	min-width: 500px;
-}
-#navbarUserInfo {
-	margin-right: 30px;
-}
-
-#navbarUserProperties .navbar-dropdown--hidden {
-	visibility:hidden;
-	left:0px;
-	top:15px;
-}
-
-.userName {
-	font-weight: bold;
-}
-
-.flex-default {
-	display: flex;
-	align-items: center;
+	color: var(--slts-color-primary-text);
+	font-size: var(--slts-font-size--subtitle);
 }
 
 .spacer > * {

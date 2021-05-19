@@ -43,6 +43,7 @@
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
+  <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
   <link id="pagestyle" href="assets/common_deprecated.css" type="text/css" rel="stylesheet"/>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
