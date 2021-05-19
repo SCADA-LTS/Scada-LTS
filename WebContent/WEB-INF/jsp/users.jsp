@@ -309,10 +309,12 @@
         if (adminUser) {
             if (admin) {
                 	$("usersProfilesList").disabled = true;
+                    $("hideMenu").disabled = true;
                 	
             }
             else {
 	                $("usersProfilesList").disabled = false;
+                    $("hideMenu").disabled = false;
 	            	
             }
             checkProfile();	

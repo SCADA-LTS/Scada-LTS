@@ -1,3 +1,4 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
@@ -163,12 +164,39 @@
     <tr>
       <td style="cursor:default" >
         <c:if test="${!empty sessionUser}">
-          <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
-          <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
-          <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
-          <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+          <c:choose>
+            <c:when test="${sessionUser.hideMenu}">
+              <c:if test="${!empty sessionUser.homeUrl}">
+                <c:set var="homeUrl" value="${fn:split(sessionUser.homeUrl, '?')}" />
+                <c:if test="${homeUrl[0] == 'watch_list.shtm'}">
+                  <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+                </c:if>
+                <c:if test="${homeUrl[0] == 'modern_watch_list.shtm'}">
+                  <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+                </c:if>
+                <c:if test="${homeUrl[0] == 'views.shtm'}">
+                  <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+                </c:if>
+                <c:if test="${homeUrl[0] == 'events.shtm'}">
+                  <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+                </c:if>
+                <c:if test="${homeUrl[0] == 'app.shtm'}">
+                  <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
+                </c:if>
+                <c:if test="${homeUrl[0] == 'reports.shtm'}">
+                  <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+                </c:if>
+              </c:if>
+            </c:when>
+            <c:otherwise>
+              <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+              <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+              <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+              <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+              <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
+              <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+            </c:otherwise>
+          </c:choose>
                 
           <c:if test="${sessionUser.admin}">
             <img src="./images/menu_separator.png" class="separator"/>
