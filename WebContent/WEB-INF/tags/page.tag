@@ -128,9 +128,11 @@
 
         var style1 = document.getElementById("stylesheet1");
         var style2 = document.getElementById("stylesheet2");
+        var style3 = document.getElementById("stylesheet3");
 
         style1.onclick = function () { swapStyleSheet("assets/common_deprecated.css") };
         style2.onclick = function () { swapStyleSheet("assets/common.css") };
+        style3.onclick = function () { swapStyleSheet("assets/common_darker.css") };
       }
 
       window.onload = initate;
@@ -241,6 +243,7 @@
         <tag:img png="theme" title="header.changeTheme"/>
         <div id="styleEdit" class="labelDiv navbar-dropdown--hidden" onmouseout="hideLayer(this)">
           <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
+          <a class="ptr" id="stylesheet3">Dark ScadaBR Theme</a><br/>
           <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
         </div>
       </div>
