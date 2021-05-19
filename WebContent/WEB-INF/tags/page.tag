@@ -139,38 +139,46 @@
 </head>
 
 <body>
-<table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
-  <tr>
-    <td><img id="logo" src="assets/logo.png" alt="Logo"/></td>
-    <c:if test="${!simple}">
-      <td align="center" width="99%" id="eventsRow">
-        <a href="events.shtm">
-          <span id="__header__alarmLevelDiv" style="display:none;">
-            <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
-            <span id="__header__alarmLevelText"></span>
-          </span>
-        </a>
-      </td>
-    </c:if>
-    <c:if test="${!empty instanceDescription}">
-      <td align="right" valign="bottom" class="projectTitle" style="padding:5px; white-space: nowrap;">${instanceDescription}</td>
-    </c:if>
-  </tr>
-</table>
 
+<!-- mainHeader -->
+<div id="mainHeader">
+  <div>
+    <img id="logo" src="assets/logo.png" alt="Logo">
+  </div>
+
+  <div id="eventsRow">
+    <a href="events.shtm">
+      <span id="__header__alarmLevelDiv" style="display:none;">
+        <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
+        <span id="__header__alarmLevelText"></span>
+      </span>
+    </a>
+  </div>
+
+  <div>
+    <c:if test="${!empty instanceDescription}">
+      <span id="instanceDescription" align="right" valign="bottom" class="projectTitle">${instanceDescription}</span>
+    </c:if>
+  </div>
+</div>
+
+<!-- subheader -->
 <c:if test="${!simple}">
-  <table class="navHeader" width="100%" id="subHeader">
-    <tr>
-      <td style="cursor:default" >
-        <c:if test="${!empty sessionUser}">
+<div class="navHeader" id="subHeader">
+  <div>
+    <nav class="flex-default">
+      <c:if test="${!empty sessionUser}">
+        <div class="spacer">
           <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
           <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
           <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
           <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
-                
-          <c:if test="${sessionUser.admin}">
+        </div>
+
+        <c:if test="${sessionUser.admin}">
+          <div class="spacer">
             <img src="./images/menu_separator.png" class="separator"/>
             <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
             <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
@@ -178,13 +186,17 @@
             <tag:menuItem href="compound_events.shtm" png="multi_bell" key="header.compoundEvents"/>
             <tag:menuItem href="point_links.shtm" png="link" key="header.pointLinks"/>
             <tag:menuItem href="scripting.shtm" png="script_gear" key="header.scripts"/>
-          </c:if>
-          
+          </div>
+        </c:if>
+
+        <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
           <tag:menuItem href="users.shtm" png="user" key="header.users"/>
-          
-          <c:if test="${sessionUser.admin}">
-	        <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
+        </div>
+
+        <c:if test="${sessionUser.admin}">
+          <div class="spacer">
+	          <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
             <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
             <tag:menuItem href="mailing_lists.shtm" png="book" key="header.mailingLists"/>
             <tag:menuItem href="publishers.shtm" png="transmit" key="header.publishers"/>
@@ -192,53 +204,64 @@
             <tag:menuItem href="system_settings.shtm" png="application_form" key="header.systemSettings"/>
             <tag:menuItem href="emport.shtm" png="script_code" key="header.emport"/>
             <tag:menuItem href="sql.shtm" png="script" key="header.sql"/>
-          </c:if>
-          
+          </div>
+        </c:if>
+
+        <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
-        </c:if>
-        <c:if test="${empty sessionUser}">
+        </div>
+      </c:if>
+
+      <c:if test="${empty sessionUser}">
           <tag:menuItem href="login.htm" png="control_play_blue" key="header.login"/>
-        </c:if>
-        <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
-      </td>
-      <td class="userDetails">
-        <c:if test="${!empty sessionUser}">
-            <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-            <span class="userName"><b>${sessionUser.username}</b></span>
-        </c:if>
-      </td>
-      <td align="right">
-        <c:if test="${!empty sessionUser}">
-          <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
-          <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-          <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-        </c:if>
-        <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
-          <tag:img png="theme" title="header.changeTheme"/>
-          <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
-            <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
+      </c:if>
+      <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
+    </nav>
+  </div>
+
+  <div class="flex-default">
+    <div id="navbarUserInfo">
+      <c:if test="${!empty sessionUser}">
+        <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+        <span class="userName">${sessionUser.username}</span>
+      </c:if>
+    </div>
+
+    <div id="navbarUserProperties" class="flex-default spacer">
+      <c:if test="${!empty sessionUser}">
+        <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
+        <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+        <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+      </c:if>
+
+      <div class="ptr" onmouseover="showMenu('styleEdit', -100, 10);">
+        <tag:img png="theme" title="header.changeTheme"/>
+        <div id="styleEdit" class="labelDiv navbar-dropdown--hidden" onmouseout="hideLayer(this)">
+          <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
+          <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
         </div>
+      </div>
+
+      <div class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
+        <tag:img png="world" title="header.changeLanguage"/>
+        <div id="localeEdit" class="labelDiv navbar-dropdown--hidden" onmouseout="hideLayer(this)">
+          <c:forEach items="${availableLanguages}" var="lang">
+            <a class="ptr" onclick="setLocale('${lang.key}')">${lang.value}</a><br/>
+          </c:forEach>
         </div>
-        <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
-          <tag:img png="world" title="header.changeLanguage"/>
-          <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <c:forEach items="${availableLanguages}" var="lang">
-              <a class="ptr" onclick="setLocale('${lang.key}')">${lang.value}</a><br/>
-            </c:forEach>
-          </div>
-        </div>
-      </td>
-    </tr>
-  </table>
+      </div>
+    </div>
+
+  </div>
+</div>
 </c:if>
 
-<div class="content" style="padding-top:10px;">
+<div id="sltsContent" class="content">
   <jsp:doBody/>
 </div>
-<div class="footer" style="text-align:center">
+<div id="sltsFooter" class="footer">
     <span>&copy;2012-2021 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
 <c:if test="${!empty onload}">
