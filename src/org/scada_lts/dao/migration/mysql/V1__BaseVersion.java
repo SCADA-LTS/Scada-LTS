@@ -740,7 +740,7 @@ public class V1__BaseVersion extends BaseJavaMigration {
 	   	   user.setDisabled(false);
 	   	   user.setDataSourcePermissions(new LinkedList<Integer>());
 	   	   user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-	   	   new UserDao().saveUserBaseVersion(user);
+	   	   new UserDao().saveUser(user);
 	             	   
 	   	   // Record the current version.
 	   	   new SystemSettingsDAO().setValue(

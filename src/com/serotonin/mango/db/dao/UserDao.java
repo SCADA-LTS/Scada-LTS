@@ -133,8 +133,9 @@ public class UserDao extends BaseDao {
 //				}));
 		userService.populateUserPermissions(user);
 	}
-	public void saveUserBaseVersion(final User user) {
-		userService.saveUserBaseVersion(user);
+
+	public void updateUserHideMenuAndDefaultTheme(final User user) {
+		userService.updateHiddenMenuAndDefaultTheme(user);
 	}
 
 

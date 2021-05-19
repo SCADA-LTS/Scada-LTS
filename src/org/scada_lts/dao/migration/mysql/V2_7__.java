@@ -11,9 +11,9 @@ public class V2_7__ extends BaseJavaMigration {
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
         jdbcTmp.execute("ALTER TABLE users " +
-                "ADD hiddenMenu BOOLEAN, " +
-                "ADD defaultTheme ENUM('MODERN', 'STANDARD');");
+                "ADD hideMenu BOOLEAN, " +
+                "ADD theme ENUM('MODERN', 'DEFAULT');");
 
-        jdbcTmp.update("UPDATE users SET hiddenMenu = false, defaultTheme = 'STANDARD';");
+        jdbcTmp.update("UPDATE users SET hideMenu = false, theme = 'DEFAULT';");
     }
 }

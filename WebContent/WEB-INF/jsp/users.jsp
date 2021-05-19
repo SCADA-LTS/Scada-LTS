@@ -38,7 +38,8 @@
                 show("usernameRow");
                 show("administrationRow");
                 show("disabledRow");
-                show("hiddenMenuRow");
+                show("hideMenuRow");
+                show("homeUrlRow");
                 show("deleteImg");
                 show("sendTestEmailImg");
                 
@@ -117,7 +118,8 @@
     }
     
     function showUserCB(user) {
-    	
+
+        console.log(user);
         show($("userDetails"));
         $set("username", user.username);
         $set("password", user.password);
@@ -127,8 +129,9 @@
         $set("disabled", user.disabled);
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
-        $set("hiddenMenu", user.hiddenMenu);
-        $set("defaultTheme", user.defaultTheme);
+        $set("hideMenu", user.hideMenu);
+        $set("homeUrl", user.homeUrl);
+        $set("theme", user.theme);
 
     	
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
@@ -232,12 +235,13 @@
             
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, $get("usersProfilesList"), $get("hiddenMenu"), $get("defaultTheme"), saveUserCB);
+                    dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), $get("homeUrl"),
+                    saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
                     $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
-                    $get("defaultTheme"), saveUserCB);
+                    $get("theme"), saveUserCB);
      
     }
     
@@ -420,13 +424,17 @@
               <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
               <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
             </tr>
-            <tr id="hiddenMenuRow" style="display:none;">
-              <td class="formLabelRequired"><fmt:message key="users.hiddenMenu"/></td>
-              <td class="formField"><input id="hiddenMenu" type="checkbox"/></td>
+            <tr id="hideMenuRow" style="display:none;">
+              <td class="formLabelRequired"><fmt:message key="users.hideMenu"/></td>
+              <td class="formField"><input id="hideMenu" type="checkbox"/></td>
+            </tr>
+            <tr id="homeUrlRow" style="display:none;">
+              <td class="formLabel"><fmt:message key="users.homeUrl"/></td>
+              <td class="formField"><input id="homeUrl" type="text"/></td>
             </tr>
             <tr>
-              <td class="formLabelRequired"><fmt:message key="users.defaultTheme"/></td>
-              <td class="formField"><select id="defaultTheme"><tag:defaultThemeOptions/></select></td>
+              <td class="formLabelRequired"><fmt:message key="users.theme"/></td>
+              <td class="formField"><select id="theme"><tag:UserThemeOptions/></select></td>
             </tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>

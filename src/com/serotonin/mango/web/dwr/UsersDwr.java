@@ -116,8 +116,8 @@ public class UsersDwr extends BaseDwr {
 			String password, String email, String phone, boolean admin,
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hiddenMenu,
-		    String defaultTheme) {
+			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hideMenu,
+		    String theme, String homeUrl) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -141,8 +141,9 @@ public class UsersDwr extends BaseDwr {
 		user.setDisabled(disabled);
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-		user.setHiddenMenu(hiddenMenu);
-		user.setDefaultTheme(User.DefaultTheme.valueOf(defaultTheme));
+		user.setHideMenu(hideMenu);
+		user.setTheme(User.UserTheme.valueOf(theme));
+		user.setHomeUrl(homeUrl);
         if(usersProfileId == Common.NEW_ID) {
             user.setDataSourcePermissions(dataSourcePermissions);
             user.setDataPointPermissions(dataPointPermissions);
@@ -176,6 +177,7 @@ public class UsersDwr extends BaseDwr {
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
+			userDao.updateUserHideMenuAndDefaultTheme(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
 			if (usersProfileId == Common.NEW_ID) {
@@ -223,12 +225,13 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
-		updateUser.setDefaultTheme(User.DefaultTheme.valueOf(defaultTheme));
+		updateUser.setTheme(User.UserTheme.valueOf(defaultTheme));
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
+			userDao.updateUserHideMenuAndDefaultTheme(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
