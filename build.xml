@@ -45,7 +45,7 @@
 		</copy>
 	</target>
 
-	<target name="build-core" description="Build Scada-LTS core application">
+	<target name="build-core" description="Build Scada-LTS core application" depends="init-core">
 		<record action="start" name="${build-project.log.src.name}"/>
 		<echo message="${ant.project.name}: ${ant.file}"/>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="${build-project.src.dir}" includeantruntime="false" source="${source}" target="${target}">
@@ -92,7 +92,7 @@
 		</exec>
 	</target>
 
-	<target name="test-junit" description="Test Scada-LTS core application">
+	<target name="test-junit" description="Test Scada-LTS core application" depends="build-core">
 		<record action="start" name="${junit.log.name}"/>
 		<junit printsummary="yes" haltonfailure="no">
 
