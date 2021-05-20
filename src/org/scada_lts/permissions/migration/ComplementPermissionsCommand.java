@@ -5,6 +5,7 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
@@ -43,6 +44,8 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
     @Override
     public void work(List<User> users) {
         AtomicInteger userIte = new AtomicInteger();
+
+        Map<Integer, List<DataPointVO>> dataPointsFromViews = findDataPointsFromViews(views);
         users.forEach(user -> {
             long start = System.nanoTime();
             String msg = iterationInfo(userInfo(user), userIte.incrementAndGet(), users.size());
@@ -54,7 +57,7 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
             if(!viewsWithAccess.isEmpty()) {
                 AtomicInteger viewIte = new AtomicInteger();
 
-                Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(fromView(user, viewsWithAccess, viewIte), migrationDataService.getDataPointService());
+                Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(fromView(user, viewsWithAccess, dataPointsFromViews, viewIte), migrationDataService.getDataPointService());
                 Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService.getDataSourceService());
                 Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService.getWatchListService()::getWatchList, "watchlist: ");
                 Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService.getViewService()::getView, "view: ");
@@ -72,7 +75,7 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
         });
     }
 
-    private Set<DataPointAccess> fromView(User user, List<View> viewsWithAccess, AtomicInteger viewIte) {
+    private Set<DataPointAccess> fromView(User user, List<View> viewsWithAccess, Map<Integer, List<DataPointVO>> dataPointsFromViews, AtomicInteger viewIte) {
         Set<DataPointAccess> dataPointAccesses = accessesBy(user, migrationPermissionsService.getDataPointUserPermissionsService());
 
         viewsWithAccess.forEach(view -> {
@@ -80,7 +83,9 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
 
             getShareUser(user, view).ifPresent(shareUser -> {
 
-                Set<DataPointAccess> dataPointAccessesFromView = findDataPointAccessesFromView(view, shareUser);
+                Set<DataPointAccess> dataPointAccessesFromView = dataPointsFromViews.get(view.getId()).stream()
+                        .map(dataPoint -> new DataPointAccess(dataPoint.getId(), shareUser.getAccessType()))
+                        .collect(Collectors.toSet());
                 dataPointAccesses.addAll(dataPointAccessesFromView);
 
             });

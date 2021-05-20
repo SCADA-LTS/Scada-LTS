@@ -133,6 +133,14 @@ final class MigrationPermissionsUtils {
         return dataPointAccessesFromView;
     }
 
+    static List<DataPointVO> findDataPointsFromView(View view) {
+        List<DataPointVO> dataPointAccessesFromView = new ArrayList<>();
+        view.getViewComponents()
+                .forEach(viewComponent ->
+                        findDataPoints(viewComponent, dataPointAccessesFromView));
+        return dataPointAccessesFromView;
+    }
+
     static void updatePermissions(User user, Accesses accesses, UsersProfileService usersProfileService,
                                   Map<Accesses, UsersProfileVO> profiles) {
         updatePermissions(user, "profile_", usersProfileService, accesses, profiles);
@@ -198,9 +206,39 @@ final class MigrationPermissionsUtils {
         }
         if(viewComponent instanceof PointComponent) {
             PointComponent pointComponent = (PointComponent) viewComponent;
-            if(pointComponent.tgetDataPoint() != null)
+            if(pointComponent.tgetDataPoint() != null) {
+                LOG.info(dataPointInfo("Found ", pointComponent.tgetDataPoint()));
                 dataPointAccesses.add(new DataPointAccess(pointComponent.tgetDataPoint().getId(), accessType));
+            }
         }
+    }
+
+    static void findDataPoints(ViewComponent viewComponent, List<DataPointVO> dataPoints) {
+        if(viewComponent instanceof CompoundComponent) {
+            CompoundComponent compoundComponent = (CompoundComponent) viewComponent;
+            compoundComponent.getChildComponents().stream()
+                    .filter(a -> a.getViewComponent() != null)
+                    .map(CompoundChild::getViewComponent)
+                    .forEach(a -> findDataPoints(a, dataPoints));
+        }
+        if(viewComponent instanceof PointComponent) {
+            PointComponent pointComponent = (PointComponent) viewComponent;
+            if(pointComponent.tgetDataPoint() != null) {
+                LOG.info(dataPointInfo("Found ", pointComponent.tgetDataPoint()));
+                dataPoints.add(pointComponent.tgetDataPoint());
+            }
+        }
+    }
+
+    public static Map<Integer, List<DataPointVO>> findDataPointsFromViews(List<View> views) {
+        Map<Integer, List<DataPointVO>> dataPoints = new HashMap<>();
+        LOG.info("search-datapoints");
+        views.forEach(a -> {
+            LOG.info(viewInfo(a));
+            dataPoints.put(a.getId(), findDataPointsFromView(a));
+        });
+        LOG.info("search-datapoints end");
+        return dataPoints;
     }
 
     private static <T extends Permission> BiPredicate<T, List<T>> containsPermission() {

@@ -53,6 +53,43 @@ public final class PermissionsUtils {
         update(user, permissionsFromUser, service, Integer::compareTo);
     }
 
+    public static <T extends Permission> Set<T> merge(Set<T> accesses1, Set<T> accesses2) {
+        return merge(accesses1, accesses2, Permission::getPermission, Permission::getId);
+    }
+
+    public static List<ShareUser> merge(List<ShareUser> accesses1, List<ShareUser> accesses2) {
+        return new ArrayList<>(merge(new HashSet<>(accesses1), new HashSet<>(accesses2),
+                ShareUser::getAccessType, ShareUser::getUserId));
+    }
+
+    public static Set<Integer> mergeInt(Set<Integer> accesses1, Set<Integer> accesses2) {
+        return Stream.concat(accesses1.stream(), accesses2.stream())
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<DataPointAccess> mergeDataPointAccesses(Set<DataPointAccess> accesses1,
+                                                              Set<DataPointAccess> accesses2) {
+        return merge(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId);
+    }
+
+
+    public static List<DataPointAccess> mergeDataPointAccessesList(List<DataPointAccess> accesses1,
+                                                                   List<DataPointAccess> accesses2) {
+        return new ArrayList<>(mergeDataPointAccesses(new HashSet<>(accesses1), new HashSet<>(accesses2)));
+    }
+
+    public static <T> Set<T> reduce(Set<T> accesses, ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
+        return accesses.stream()
+                .distinct()
+                .collect(Collectors
+                        .toMap(getId::applyAsInt, a -> a,
+                                (a, b) -> getAccess.applyAsInt(a) > getAccess.applyAsInt(b) ? a : b))
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toSet());
+    }
+
     private static <T, U> void updatePermissions(U user, List<T> accessesFromUser,
                                                     PermissionsService<T, U> service,
                                                  Comparator<T> comparator) {
@@ -97,46 +134,9 @@ public final class PermissionsUtils {
         return permissionsFromUser.stream().sorted(comparator).collect(Collectors.toList());
     }
 
-    public static <T extends Permission> Set<T> merge(Set<T> accesses1, Set<T> accesses2) {
-        return merge(accesses1, accesses2, Permission::getPermission, Permission::getId);
-    }
-
-    public static List<ShareUser> merge(List<ShareUser> accesses1, List<ShareUser> accesses2) {
-        return new ArrayList<>(merge(new HashSet<>(accesses1), new HashSet<>(accesses2),
-                ShareUser::getAccessType, ShareUser::getUserId));
-    }
-
-    public static Set<Integer> mergeInt(Set<Integer> accesses1, Set<Integer> accesses2) {
-        return Stream.concat(accesses1.stream(), accesses2.stream())
-                .collect(Collectors.toSet());
-    }
-
-    public static Set<DataPointAccess> mergeDataPointAccesses(Set<DataPointAccess> accesses1,
-                                                              Set<DataPointAccess> accesses2) {
-        return merge(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId);
-    }
-
-
-    public static List<DataPointAccess> mergeDataPointAccessesList(List<DataPointAccess> accesses1,
-                                                                   List<DataPointAccess> accesses2) {
-        return new ArrayList<>(mergeDataPointAccesses(new HashSet<>(accesses1), new HashSet<>(accesses2)));
-    }
-
     private static <T> Set<T> merge(Set<T> accesses1, Set<T> accesses2,
                                     ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
         return reduce(Stream.concat(accesses1.stream(), accesses2.stream())
                 .collect(Collectors.toSet()), getAccess, getId);
-    }
-
-    public static <T> Set<T> reduce(Set<T> accesses, ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
-        return accesses.stream()
-                .distinct()
-                .collect(Collectors
-                        .toMap(getId::applyAsInt, a -> a,
-                                (a, b) -> getAccess.applyAsInt(a) > getAccess.applyAsInt(b) ? a : b))
-                .entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toSet());
     }
 }
