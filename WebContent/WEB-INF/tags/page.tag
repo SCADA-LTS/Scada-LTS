@@ -100,6 +100,10 @@
       <c:if test="${!empty sessionUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
+        dojo.addOnLoad(function() { setUserTheme("${sessionUser.theme}"); });
+        <c:if test="${sessionUser.hideMenu}">
+          dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
+        </c:if>
       </c:if>
       
       function setLocale(locale) {
@@ -239,9 +243,11 @@
       </td>
       <td align="right">
         <c:if test="${!empty sessionUser}">
-          <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
-          <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-          <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+          <c:if test="${!sessionUser.hideMenu}">
+            <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
+            <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+            <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+          </c:if>
         </c:if>
         <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
           <tag:img png="theme" title="header.changeTheme"/>

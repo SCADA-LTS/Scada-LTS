@@ -119,7 +119,6 @@
     
     function showUserCB(user) {
 
-        console.log(user);
         show($("userDetails"));
         $set("username", user.username);
         $set("password", user.password);
