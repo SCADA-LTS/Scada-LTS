@@ -49,16 +49,7 @@
 	jQuery.noConflict();
 	
 	shortcut.add("Ctrl+Shift+F",function() {
-
-		setCookie("fullScreen","no");
-		
-		document.getElementById('mainHeader').style.display = "compact";
-  	  	document.getElementById('subHeader').style.display = "compact";
-  	  	document.getElementById('graphical').style.display = "compact";
-  	  	
-  		location.reload(true);
-
-		
+	    closeFullScreen();
 	});
 	
 	//check replace alert
@@ -211,9 +202,9 @@
 
 	function closeFullScreen() {
 		setCookie("fullScreen","no");
-		document.getElementById('mainHeader').style.display = "block";
-		document.getElementById('subHeader').style.display = "block";
-		document.getElementById('graphical').style.display = "block";
+		document.getElementById('mainHeader').style.display = "table";
+		document.getElementById('subHeader').style.display = "table";
+		document.getElementById('graphical').style.display = "table";
 	}
 		
 	function keyListen(e) {

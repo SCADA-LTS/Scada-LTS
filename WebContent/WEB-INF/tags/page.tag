@@ -125,7 +125,8 @@
 
       function setFullscreenIfGraphicView() {
         if(window.location.href.includes("views.shtm")) {
-          document.cookie = "fullScreen=yes"
+          document.cookie = "fullScreen=yes";
+          checkFullScreen();
         }
       }
 
