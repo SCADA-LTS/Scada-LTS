@@ -112,7 +112,7 @@
     }
     
     function configureComponentContent(content, viewComponent, parent, center) {
-        content.id = "c"+ viewComponent.id;
+        content.id = "c" + viewComponent.id;
         content.viewComponentId = viewComponent.id;
         content.style.zIndex = viewComponent.z;
         updateNodeIds(content, viewComponent.id);
@@ -187,14 +187,14 @@
 
     function moveUpComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
-        div.style.zIndex = Number(div.style.zIndex) + 1;
+        div.style.zIndex = Number(div.style.zIndex)++;
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
     }
 
     function moveDownComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
         if(div.style.zIndex > 0) {
-            div.style.zIndex = div.style.zIndex - 1;
+            div.style.zIndex = div.style.zIndex--;
         }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
     }
