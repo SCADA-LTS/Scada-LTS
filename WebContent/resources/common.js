@@ -1066,12 +1066,3 @@ function setUserTheme(userTheme) {
         swapStyleSheet("assets/common_deprecated.css");
 }
 
-function setFullscreenIfGraphicView(){
-    if (window.location.href.includes("views.shtm")) {
-        var check = getCookie("fullScreen");
-        if (check==null || check==""){
-            fullScreen();
-        }
-    }
-}
-

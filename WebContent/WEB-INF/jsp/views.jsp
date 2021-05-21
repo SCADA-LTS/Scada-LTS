@@ -183,35 +183,37 @@
   	  	jQuery('#fsOut').fadeOut(10000, function(){});
   	  	
 	}
-	
-	function fullScreen(){
-  	  	
-		document.getElementById('fsOut').style.display = "block";
-		document.getElementById('mainHeader').style.display = "none";
-  	  	document.getElementById('subHeader').style.display = "none";
-  	  	document.getElementById('graphical').style.display = "none";
-		jQuery('#fsOut').fadeOut(10000, function(){});
 
-  	  	setCookie("fullScreen","yes");
-  	  	
+	function fullScreen(){
+		openFullScreen();
 	}
-	
+
 	function checkFullScreen(){
-  	  	
 		var check = getCookie("fullScreen");
-		
 		if(check!=null && check!=""){
-			
 			if(check=="yes"){
-				toggleDisplay();
-// 				document.getElementById('fsOut').style.display = "block";
+				openFullScreen();
 			}
-			
 			if(check=="no"){
 				document.getElementById('fsOut').style.display = "none";
 			}
 		}
-  	  	
+	}
+
+	function openFullScreen() {
+		setCookie("fullScreen","yes");
+		document.getElementById('fsOut').style.display = "block";
+		document.getElementById('mainHeader').style.display = "none";
+		document.getElementById('subHeader').style.display = "none";
+		document.getElementById('graphical').style.display = "none";
+		jQuery('#fsOut').fadeOut(5000, function(){});
+	}
+
+	function closeFullScreen() {
+		setCookie("fullScreen","no");
+		document.getElementById('mainHeader').style.display = "block";
+		document.getElementById('subHeader').style.display = "block";
+		document.getElementById('graphical').style.display = "block";
 	}
 		
 	function keyListen(e) {
