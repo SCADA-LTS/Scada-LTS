@@ -140,17 +140,20 @@
             <v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 		</v-container>
 		<DataSourceCreator ref="creator"></DataSourceCreator>
+		<DataPointCreator ref="pointCreator"></DataPointCreator>
 	</div>
 </template>
 <script>
 import DataSourceDetails from './DataSourceDetails';
 import DataSourceCreator from './DataSourceCreator';
+import DataPointCreator from './DataPointCreator';
 
 export default {
 
 	components: {
 		DataSourceDetails,
-		DataSourceCreator
+		DataSourceCreator,
+		DataPointCreator,
 	},
 
 	data() {
@@ -218,7 +221,7 @@ export default {
 		},
 
 		createDataPoint(item) {
-			console.log(item);
+			this.$refs.pointCreator.showDialog(item);
 		},
 
 		createDataSource() {
