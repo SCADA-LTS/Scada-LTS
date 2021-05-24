@@ -38,6 +38,29 @@ final class MigrationPermissionsUtils {
 
     private MigrationPermissionsUtils() {}
 
+    public static void updatePermissions(User user, Set<DataPointAccess> dataPointAccessesFromView,
+                               Map<Accesses, UsersProfileVO> profiles,
+                               MigrationPermissionsService migrationPermissionsService,
+                               MigrationDataService migrationDataService) {
+        Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(dataPointAccessesFromView, migrationDataService.getDataPointService());
+        Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService.getDataSourceService());
+        Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService.getWatchListService()::getWatchList, "watchlist: ");
+        Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService.getViewService()::getView, "view: ");
+
+        Accesses fromUser = new Accesses(viewAccesses, watchListAccesses, dataPointAccesses, dataSourceAccesses);
+        Accesses fromProfile = fromProfile(user, profiles);
+
+        Accesses accesses = MigrationPermissionsUtils.merge(fromUser, fromProfile);
+
+        /*if(true) {
+            throw new IllegalStateException("accesses: " + accesses + ", fromUser: " + fromUser + ", fromProfile:" + fromProfile);
+        }*/
+
+        if(!accesses.isEmpty())
+            updatePermissions(user, accesses, migrationDataService.getUsersProfileService(), profiles);
+        else
+            LOG.info(userInfo(user) + " no permissions.");
+    }
 
     static void verifyUserWatchListPermissions(User user, UsersProfileService usersProfileService,
                                                WatchListService watchListService,
@@ -101,9 +124,8 @@ final class MigrationPermissionsUtils {
         if(user.getUserProfile() != Common.NEW_ID) {
             fromProfile = profiles.entrySet().stream()
                     .filter(a -> a.getValue().getId() == user.getUserProfile())
-                    .findFirst()
                     .map(Map.Entry::getKey)
-                    .orElse(Accesses.empty());
+                    .reduce(Accesses.empty(), MigrationPermissionsUtils::merge);
         }
         return fromProfile;
     }
@@ -313,6 +335,8 @@ final class MigrationPermissionsUtils {
 
     private static void updatePermissions(User user, String prefix, UsersProfileService usersProfileService,
                                           Accesses key, Map<Accesses, UsersProfileVO> profiles) {
+
+
         UsersProfileVO profile;
         if(!profiles.containsKey(key)) {
             profile = createProfile(prefix, usersProfileService, key);
@@ -322,9 +346,16 @@ final class MigrationPermissionsUtils {
             profile = profiles.get(key);
             LOG.info(MessageFormat.format("{0} exists", profileInfo(profile)));
         }
-        user.setUserProfile(profile);
-        usersProfileService.updateUsersProfile(user, profile);
-        LOG.info(MessageFormat.format("{0} update for {1}", profileInfo(profile), userInfo(user)));
+        if(user.getUserProfile() != profile.getId()) {
+            user.setUserProfile(profile);
+            usersProfileService.updateUsersProfile(user, profile);
+           /* if(true) {
+                throw new IllegalStateException("update user key: " + key + "\n profile: " + profile + "\n profiles:" + profiles + "\n user: " + user.getUserProfile());
+            }*/
+            LOG.info(MessageFormat.format("{0} has been assigned to user {1}", profileInfo(profile), userInfo(user)));
+        } else {
+            LOG.info(MessageFormat.format("{0} is already assigned to user {1}", profileInfo(profile), userInfo(user)));
+        }
     }
 
     private static <T extends Permission> boolean exists(IntFunction<?> verify, T a, String msg) {

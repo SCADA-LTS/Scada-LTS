@@ -41,22 +41,8 @@ class TransferToProfileCommand extends AbstractMeasurmentCommand {
             long start = System.nanoTime();
             String msg = iterationInfo(userInfo(user), userIte.incrementAndGet(), users.size());
             LOG.info(msg);
-
-            Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataPointUserPermissionsService()), migrationDataService.getDataPointService());
-            Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService.getDataSourceService());
-            Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService.getWatchListService()::getWatchList, "watchlist: ");
-            Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService.getViewService()::getView, "view: ");
-
-            Accesses fromUser = new Accesses(viewAccesses, watchListAccesses, dataPointAccesses, dataSourceAccesses);
-            Accesses fromProfile = fromProfile(user, profiles);
-
-            Accesses accesses = MigrationPermissionsUtils.merge(fromUser, fromProfile);
-
-            if(!accesses.isEmpty())
-                updatePermissions(user, accesses, migrationDataService.getUsersProfileService(), profiles);
-            else
-                LOG.info(userInfo(user) + " no permissions.");
-
+            Set<DataPointAccess> dataPointAccesses = accessesBy(user, migrationPermissionsService.getDataPointUserPermissionsService());
+            updatePermissions(user, dataPointAccesses, profiles, migrationPermissionsService, migrationDataService);
             printTime(start, msg + " - executed: ");
         });
     }

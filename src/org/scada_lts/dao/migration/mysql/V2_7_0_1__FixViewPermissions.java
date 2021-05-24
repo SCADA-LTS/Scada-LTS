@@ -23,7 +23,7 @@ import org.scada_lts.permissions.service.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class V2_7_1__FixViewPermissions extends BaseJavaMigration {
+public class V2_7_0_1__FixViewPermissions extends BaseJavaMigration {
 
     @Override
     public void migrate(Context context) throws Exception {

@@ -44,13 +44,15 @@ class MigrationPermissionsCommand extends AbstractMeasurmentCommand {
                     profiles.put(key, reduceProfile);
                 });
 
-        MigrationPermissions verify = new VerifyPermissionsQuery(migrationDataService, migrationPermissionsService);
-        MigrationPermissions complementPermissions = new ComplementPermissionsCommand(profiles, migrationPermissionsService,
-                migrationDataService, views);
-        MigrationPermissions transferToProfile = new TransferToProfileCommand(profiles, migrationPermissionsService, migrationDataService);
+        MigrationPermissions verify = new VerifyPermissionsQuery(migrationDataService,
+                migrationPermissionsService);
+        MigrationPermissions complementPermissions = new ComplementPermissionsCommand(profiles,
+                migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions transferToProfile = new TransferToProfileCommand(profiles,
+                migrationPermissionsService, migrationDataService);
 
         verify.execute(users);
-        complementPermissions.execute(users);
+        //complementPermissions.execute(users);
         transferToProfile.execute(users);
         verify.execute(users);
 

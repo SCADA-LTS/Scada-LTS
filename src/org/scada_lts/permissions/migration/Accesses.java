@@ -72,4 +72,14 @@ class Accesses {
         return getViewAccesses().isEmpty() && getDataPointAccesses().isEmpty() && getDataSourceAccesses().isEmpty()
                 && getWatchListAccesses().isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return "Accesses{" +
+                "viewAccesses=" + viewAccesses +
+                ", watchListAccesses=" + watchListAccesses +
+                ", dataPointAccesses=" + dataPointAccesses +
+                ", dataSourceAccesses=" + dataSourceAccesses +
+                '}';
+    }
 }

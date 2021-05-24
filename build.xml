@@ -625,9 +625,9 @@
 				  haltonfailure="yes">
 			</test>
 
-			<test name="org.scada_lts.permissions.migration.MigrationPermissionsUtilsTest"
+			<!--test name="org.scada_lts.permissions.migration.DataPointMigrationPermissionsCommandTest"
 				  haltonfailure="yes">
-			</test>
+			</test-->
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>

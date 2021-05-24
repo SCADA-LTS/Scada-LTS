@@ -1,7 +1,6 @@
 package org.scada_lts.permissions.migration;
 
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
@@ -57,19 +56,9 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
             if(!viewsWithAccess.isEmpty()) {
                 AtomicInteger viewIte = new AtomicInteger();
 
-                Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(fromView(user, viewsWithAccess, dataPointsFromViews, viewIte), migrationDataService.getDataPointService());
-                Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService.getDataSourceService());
-                Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService.getWatchListService()::getWatchList, "watchlist: ");
-                Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService.getViewService()::getView, "view: ");
+                Set<DataPointAccess> dataPointAccesses = fromView(user, viewsWithAccess, dataPointsFromViews, viewIte);
+                updatePermissions(user, dataPointAccesses, profiles, migrationPermissionsService, migrationDataService);
 
-                Accesses fromUser = new Accesses(viewAccesses, watchListAccesses, dataPointAccesses, dataSourceAccesses);
-                Accesses fromProfile = fromProfile(user, profiles);
-                Accesses accesses = MigrationPermissionsUtils.merge(fromUser, fromProfile);
-
-                if(!accesses.isEmpty())
-                    updatePermissions(user, accesses, migrationDataService.getUsersProfileService(), profiles);
-                else
-                    LOG.info(userInfo(user) + " no permissions.");
             }
             printTime(start, msg + " - executed: ");
         });
