@@ -41,7 +41,7 @@ import com.serotonin.util.StringUtils;
  * 
  * @author Matthew Lohbihler
  */
-abstract public class DBUpgrade extends BaseDao {
+abstract public class DBUpgrade {
 	private static final Log LOG = LogFactory.getLog(DBUpgrade.class);
 	protected static final String DEFAULT_DATABASE_TYPE = "*";
 
