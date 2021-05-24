@@ -28,7 +28,7 @@ import org.scada_lts.mango.service.UserService;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 
-public class UserDao extends BaseDao {
+public class UserDao {
 
 	private MangoUser userService = new UserService();
 
