@@ -187,14 +187,14 @@
 
     function moveUpComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
-        div.style.zIndex = Number(div.style.zIndex)++;
+        div.style.zIndex = Number(div.style.zIndex) + 1;
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
     }
 
     function moveDownComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
         if(div.style.zIndex > 0) {
-            div.style.zIndex = div.style.zIndex--;
+            div.style.zIndex = div.style.zIndex - 1;
         }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
     }
