@@ -1,6 +1,5 @@
 package org.scada_lts.permissions.migration;
 
-import br.org.scadabr.api.exception.DAOException;
 import br.org.scadabr.db.utils.TestUtils;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -10,6 +9,7 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +22,6 @@ import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.*;
-import org.scada_lts.permissions.service.util.PermissionsUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
 import utils.*;
 
 import java.util.*;
@@ -47,7 +45,7 @@ public class DataPointMigrationPermissionsCommandTest {
     private final static int dataPointId5 = 55;
 
 
-    @Parameterized.Parameters(name= "\n\n{index}: fromProfile: {0}, fromUser: {1}, \nfromView1: {2}, fromView2: {3}, permissionView1: {4}, permissionView2: {5}, \nexpected: {6}\n\n")
+    @Parameterized.Parameters(name= "{index}: \nfromProfile: {0}, fromUser: {1}, \nfromView1: {2}, fromView2: {3}, permissionView1: {4}, permissionView2: {5}, \nexpected: {6}\n\n")
     public static Object[][] primeNumbers() {
         return new Object[][] {
 
@@ -132,6 +130,24 @@ public class DataPointMigrationPermissionsCommandTest {
     }
 
     private List<DataPointAccess> expected;
+    private List<DataPointAccess> fromProfile;
+    private List<DataPointAccess> fromUser;
+    private List<Integer> fromView1;
+    private List<Integer> fromView2;
+    private int permissionView1;
+    private int permissionView2;
+
+    private PermissionsService<DataPointAccess, UsersProfileVO> profilePermissionsService;
+    private PermissionsService<DataPointAccess, User> userPermissionsService;
+
+    private User user;
+
+    private MigrationPermissionsService migrationPermissionsService;
+    private MigrationDataService migrationDataService;
+    private List<User> users;
+    private List<View> views;
+
+    private UsersProfileService usersProfileService;
 
     public DataPointMigrationPermissionsCommandTest(List<DataPointAccess> fromProfile,
                                                     List<DataPointAccess> fromUser,
@@ -139,8 +155,18 @@ public class DataPointMigrationPermissionsCommandTest {
                                                     List<Integer> fromView2,
                                                     int permissionView1,
                                                     int permissionView2,
-                                                    List<DataPointAccess> expected) throws DAOException {
-        this.expected = expected;
+                                                    List<DataPointAccess> expected) {
+        this.fromProfile = new ArrayList<>(fromProfile);
+        this.fromUser = new ArrayList<>(fromUser);
+        this.fromView1 = new ArrayList<>(fromView1);
+        this.fromView2 = new ArrayList<>(fromView2);
+        this.permissionView1 = permissionView1;
+        this.permissionView2 = permissionView2;
+        this.expected = new ArrayList<>(expected);
+    }
+
+    @Before
+    public void config() {
         this.expected.sort(Comparator.comparingInt(DataPointAccess::getDataPointId));
 
         UsersProfileVO profile = new UsersProfileVO();
@@ -202,8 +228,8 @@ public class DataPointMigrationPermissionsCommandTest {
 
         DAO dao = mock(DAO.class);
         when(dao.generateUniqueXid(UsersProfileVO.XID_PREFIX, "usersProfiles")).thenAnswer(a -> {
-                String pre = (String)a.getArguments()[0];
-                return pre + new Random().nextInt();
+            String pre = (String)a.getArguments()[0];
+            return pre + new Random().nextInt();
         });
 
         MangoDataPoint dataPointService = mock(DataPointService.class);
@@ -218,7 +244,10 @@ public class DataPointMigrationPermissionsCommandTest {
         MangoDataSource dataSourceService = mock(DataSourceService.class);
         WatchListService watchListService = mock(WatchListService.class);
 
-        UsersProfileService usersProfileService = new UsersProfileService(usersProfileDAO, dao, null,
+        UserDAO userDAO = mock(UserDAO.class);
+        when(userDAO.getUser(anyInt())).thenReturn(user);
+
+        usersProfileService = new UsersProfileService(usersProfileDAO, dao, userDAO,
                 watchListPermissionsService, profilePermissionsService,
                 dataSourcePermissionsService, viewPermissionsService);
 
@@ -227,19 +256,12 @@ public class DataPointMigrationPermissionsCommandTest {
 
         migrationDataService = new MigrationDataService(dataPointService,
                 dataSourceService, viewService, watchListService, usersProfileService);
-
     }
 
-
-    private PermissionsService<DataPointAccess, UsersProfileVO> profilePermissionsService;
-    private PermissionsService<DataPointAccess, User> userPermissionsService;
-
-    private User user;
-
-    private MigrationPermissionsService migrationPermissionsService;
-    private MigrationDataService migrationDataService;
-    private List<User> users;
-    private List<View> views;
+    @After
+    public void clean() {
+        usersProfileService.getUsersProfiles().forEach(a -> usersProfileService.deleteUserProfile(a.getId()));
+    }
 
     @Test
     public void when_execute_then_datapointaccesses() {

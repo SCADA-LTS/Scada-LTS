@@ -86,4 +86,10 @@ public class UsersProfileDAOMemory extends UsersProfileDAO {
         profiles.get(profileId).setDataPointPermissions(new ArrayList<>(dataPointAccesses));
         return new int[]{};
     }
+
+    @Override
+    public int deleteProfile(int profileId) {
+        profiles.entrySet().removeIf(a -> a.getValue().getId() == profileId);
+        return 0;
+    }
 }

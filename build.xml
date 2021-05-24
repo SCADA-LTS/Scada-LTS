@@ -612,7 +612,7 @@
 			<test name="org.scada_lts.service.InactiveEventsProviderTest"
 				  haltonfailure="yes">
 			</test>
-      
+
 			<test name="org.scada_lts.utils.UpdateValuePointPropertiesTest"
 				  haltonfailure="yes">
 			</test>
@@ -625,9 +625,9 @@
 				  haltonfailure="yes">
 			</test>
 
-			<!--test name="org.scada_lts.permissions.migration.DataPointMigrationPermissionsCommandTest"
+			<test name="org.scada_lts.permissions.migration.MigrationPermissionsTestsSuite"
 				  haltonfailure="yes">
-			</test-->
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 	</target>
