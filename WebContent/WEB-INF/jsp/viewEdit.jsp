@@ -112,8 +112,9 @@
     }
     
     function configureComponentContent(content, viewComponent, parent, center) {
-        content.id = "c"+ viewComponent.id;
+        content.id = "c" + viewComponent.id;
         content.viewComponentId = viewComponent.id;
+        content.style.zIndex = viewComponent.z;
         updateNodeIds(content, viewComponent.id);
         parent.appendChild(content);
         
@@ -182,6 +183,20 @@
     function openCustomEditor(cid) {
         closeEditors();
         customEditor.open(cid);
+    }
+
+    function moveUpComponent(viewComponentId) {
+        var div = $("c" + viewComponentId);
+        div.style.zIndex = Number(div.style.zIndex) + 1;
+        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+    }
+
+    function moveDownComponent(viewComponentId) {
+        var div = $("c" + viewComponentId);
+        if(div.style.zIndex > 0) {
+            div.style.zIndex = div.style.zIndex - 1;
+        }
+        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
     }
     
     function positionEditor(compId, editorId) {
@@ -570,6 +585,10 @@
                         title="viewEdit.editGraphicalRenderer"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
             <div style="position:absolute;left:-16px;top:0px;z-index:1;">
@@ -592,6 +611,10 @@
                         title="viewEdit.editStaticView"/></td></tr>
                 <tr><td><tag:img png="html_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deleteStaticView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
@@ -607,6 +630,10 @@
                         title="viewEdit.editPointView"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
@@ -626,6 +653,10 @@
                         title="viewEdit.editPointView"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
@@ -649,6 +680,10 @@
                         title="viewEdit.editPointView"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
             
@@ -669,6 +704,10 @@
                         title="viewEdit.editStaticView"/></td></tr>
                 <tr><td><tag:img png="html_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deleteStaticView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
