@@ -6,6 +6,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         DataPointMigrationPermissionsCommandTest.class,
+        DataSourceMigrationPermissionsCommandTest.class,
         MigrationPermissionsUtilsTest.class
 })
 public class MigrationPermissionsTestsSuite {
