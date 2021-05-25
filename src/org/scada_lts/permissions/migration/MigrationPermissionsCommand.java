@@ -52,7 +52,7 @@ class MigrationPermissionsCommand extends AbstractMeasurmentCommand {
                 migrationPermissionsService, migrationDataService);
 
         verify.execute(users);
-        //complementPermissions.execute(users);
+        complementPermissions.execute(users);
         transferToProfile.execute(users);
         verify.execute(users);
 

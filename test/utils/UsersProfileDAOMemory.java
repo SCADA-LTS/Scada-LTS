@@ -88,6 +88,15 @@ public class UsersProfileDAOMemory extends UsersProfileDAO {
     }
 
     @Override
+    public int[] insertDataSourceUsersProfile(int profileId, List<Integer> toInsert) {
+        Set<Integer> dataPointAccesses = new HashSet<>();
+        dataPointAccesses.addAll(toInsert);
+        dataPointAccesses.addAll(profiles.get(profileId).getDataSourcePermissions());
+        profiles.get(profileId).setDataSourcePermissions(new ArrayList<>(dataPointAccesses));
+        return new int[]{};
+    }
+
+    @Override
     public int deleteProfile(int profileId) {
         profiles.entrySet().removeIf(a -> a.getValue().getId() == profileId);
         return 0;

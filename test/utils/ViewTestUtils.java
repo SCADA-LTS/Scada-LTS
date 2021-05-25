@@ -30,17 +30,17 @@ public class ViewTestUtils {
 
     private static List<ViewComponent> collectViewComponents(DataPointVO... dataPoints) {
         return Stream.of(dataPoints)
-                    .limit(dataPoints.length/2)
                     .map(a -> {
                         SimplePointComponent pointComponent =
                                 (SimplePointComponent) ViewComponent
                                         .newInstance(SimplePointComponent.DEFINITION.getName());
                         pointComponent.tsetDataPoint(a);
-                        if(i.incrementAndGet() % 2 == 0) {
+                        int id = i.incrementAndGet();
+                        if(id % 2 == 0) {
                             return pointComponent;
                         } else {
                             SimpleCompoundComponent simpleCompoundComponent = (SimpleCompoundComponent) ViewComponent.newInstance(SimpleCompoundComponent.DEFINITION.getName());
-                            simpleCompoundComponent.getChildComponents().add(new CompoundChild(String.valueOf(i.incrementAndGet()),null, pointComponent, new int[]{}));
+                            simpleCompoundComponent.getChildComponents().add(new CompoundChild(String.valueOf(id),null, pointComponent, new int[]{}));
                             return simpleCompoundComponent;
                         }
                     })
