@@ -76,7 +76,7 @@
 			</v-col>
 
 			<v-col cols="12" xs="12" id="wl-chart-container">
-				<div class="hello" :style="{ height: 600 + 'px' }" ref="chartdiv"></div>
+				<div class="chartContainer" ref="chartdiv"></div>
 			</v-col>
 		</v-row>
 		<v-row v-else>
@@ -115,12 +115,12 @@ export default {
 	data() {
 		return {
 			chartType: 'live',
-			chartClass: undefined,
-			chartProperties: undefined,
-			chartConfiguration: undefined,
+			chartClass: null,
+			chartProperties: null,
+			chartConfiguration: null,
 			chartSeries: [],
 			activeColor: 0,
-			watchListData: undefined,
+			watchListData: null,
 			pointCompare: '',
 			chartLoaded: false,
 		};
@@ -396,9 +396,9 @@ export default {
 };
 </script>
 <style scoped>
-.hello {
+.chartContainer {
 	min-width: 650px;
-	height: 500px;
+	height: 600px;
 }
 p {
 	text-align: center;

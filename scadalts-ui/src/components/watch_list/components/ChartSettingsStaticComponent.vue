@@ -71,12 +71,12 @@ export default {
 					this.endTime = loadedData.endTime;
 				}
 			} else {
-				let today = new Date();
-				this.startDate = today.toISOString().slice(0, 10);
-				this.endDate = today.toISOString().slice(0, 10);
-				let tempTime = today.toLocaleTimeString().split(":")
-				this.startTime = `${Number(tempTime[0])-1}:${tempTime[1]}`;
-				this.endTime = `${Number(tempTime[0])}:${tempTime[1]}`;
+				let time = this.$date();
+				this.endDate = time.format('YYYY-MM-DD');
+				this.endTime = time.format('HH:mm');
+				time = time.subtract(1, 'hour');
+				this.startDate = time.format('YYYY-MM-DD');
+				this.startTime = time.format('HH:mm');
 			}
 		},
 

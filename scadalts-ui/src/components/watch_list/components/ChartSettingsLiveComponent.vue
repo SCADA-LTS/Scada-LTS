@@ -110,7 +110,6 @@ export default {
 				startDate: `${this.startTime}-${this.startTimeMultiplier}`,
 				endDate: null,
 			};
-			//TODO to może iść do Vuex
 			this.saveSettings();
 			return chartProperties;
 		},

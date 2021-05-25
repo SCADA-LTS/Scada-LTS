@@ -45,6 +45,7 @@
 		"vue": "2.6.10",
 		"vue-color-picker-wheel": "0.4.3",
 		"vue-cookie": "1.1.4",
+		"vue-dayjs-plugin": "^1.0.0",
 		"vue-i18n": "8.17.3",
 		"vue-jsoneditor": "1.0.13",
 		"vue-loader": "15.7.1",

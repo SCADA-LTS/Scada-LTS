@@ -7,6 +7,7 @@ import store from './store';
 
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
+import VueDayjs from 'vue-dayjs-plugin';
 
 import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
@@ -73,6 +74,7 @@ const optionsLodash = { name: 'lodash' };
 Vue.use(VueLodash, optionsLodash);
 
 Vue.use(VueCookie);
+Vue.use(VueDayjs);
 
 Vue.config.devtools = true;
 
