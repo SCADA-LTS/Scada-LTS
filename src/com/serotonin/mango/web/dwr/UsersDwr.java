@@ -143,7 +143,7 @@ public class UsersDwr extends BaseDwr {
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		user.setHideMenu(hideMenu);
-		user.setTheme(ScadaTheme.valueOf(theme));
+		user.setTheme(ScadaTheme.getType(theme));
 		user.setHomeUrl(homeUrl);
         if(usersProfileId == Common.NEW_ID) {
             user.setDataSourcePermissions(dataSourcePermissions);
@@ -227,7 +227,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
-		updateUser.setTheme(ScadaTheme.valueOf(defaultTheme));
+		updateUser.setTheme(ScadaTheme.getType(defaultTheme));
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 

@@ -161,7 +161,7 @@ public class UserDAO {
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
 			user.setHideMenu(rs.getBoolean(COLUMN_NAME_HIDE_MENU));
-			user.setTheme(ScadaTheme.valueOf(rs.getString(COLUMN_NAME_THEME)));
+			user.setTheme(ScadaTheme.getType(rs.getString(COLUMN_NAME_THEME)));
 			return user;
 		}
 	}
