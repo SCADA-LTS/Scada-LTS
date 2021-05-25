@@ -435,7 +435,7 @@
             </tr>
             <tr>
               <td class="formLabelRequired"><fmt:message key="users.theme"/></td>
-              <td class="formField"><select id="theme"><tag:UserThemeOptions/></select></td>
+              <td class="formField"><select id="theme"><tag:ScadaThemeOptions/></select></td>
             </tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>
