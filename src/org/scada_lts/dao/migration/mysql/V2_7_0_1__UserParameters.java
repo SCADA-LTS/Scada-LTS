@@ -5,7 +5,7 @@ import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V2_7__ extends BaseJavaMigration {
+public class V2_7_0_1__UserParameters extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
