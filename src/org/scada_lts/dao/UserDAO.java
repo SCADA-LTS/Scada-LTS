@@ -1,5 +1,6 @@
 package org.scada_lts.dao;
 
+import com.serotonin.mango.vo.ScadaTheme;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,12 +100,17 @@ public class UserDAO {
 				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
 			+ "values (?,?,?,?,?,?,?,?,?) ";
 
-	private static final String USER_UPDATE_HIDDEN_MENU_AND_DEFAULT_THEME = ""
+	private static final String USER_UPDATE_HIDE_MENU = ""
 			+ "update users set "
-				+ COLUMN_NAME_HIDE_MENU + "=?, "
-				+ COLUMN_NAME_THEME + "=? "
+				+ COLUMN_NAME_HIDE_MENU + "=? "
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String USER_UPDATE_SCADA_THEME = ""
+			+ "update users set "
+			+ COLUMN_NAME_THEME + "=? "
+			+ "where "
+			+ COLUMN_NAME_ID + "=? ";
 
 	private static final String USER_UPDATE = ""
 			+ "update users set "
@@ -155,7 +161,7 @@ public class UserDAO {
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
 			user.setHideMenu(rs.getBoolean(COLUMN_NAME_HIDE_MENU));
-			user.setTheme(User.UserTheme.valueOf(rs.getString(COLUMN_NAME_THEME)));
+			user.setTheme(ScadaTheme.valueOf(rs.getString(COLUMN_NAME_THEME)));
 			return user;
 		}
 	}
@@ -287,14 +293,26 @@ public class UserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void updateHiddenMenuAndDefaultTheme(final User user) {
+	public void updateHideMenu(final User user) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("updateHiddenMenuAndDefaultTheme(User user) user:" + user);
+			LOG.trace("updateHideMenu(User user) user:" + user);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HIDDEN_MENU_AND_DEFAULT_THEME, new Object[]{
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HIDE_MENU, new Object[]{
 				user.isHideMenu(),
+				user.getId()
+		});
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateScadaTheme(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateScadaTheme(User user) user:" + user);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_SCADA_THEME, new Object[]{
 				user.getTheme().name(),
 				user.getId()
 		});

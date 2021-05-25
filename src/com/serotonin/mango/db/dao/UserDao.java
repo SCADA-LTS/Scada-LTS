@@ -134,8 +134,12 @@ public class UserDao extends BaseDao {
 		userService.populateUserPermissions(user);
 	}
 
-	public void updateUserHideMenuAndDefaultTheme(final User user) {
-		userService.updateHiddenMenuAndDefaultTheme(user);
+	public void updateUserHideMenu(final User user) {
+		userService.updateHideMenu(user);
+	}
+
+	public void updateUserScadaTheme(final User user) {
+		userService.updateScadaTheme(user);
 	}
 
 

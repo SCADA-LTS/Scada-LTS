@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.ScadaTheme;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -142,7 +143,7 @@ public class UsersDwr extends BaseDwr {
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		user.setHideMenu(hideMenu);
-		user.setTheme(User.UserTheme.valueOf(theme));
+		user.setTheme(ScadaTheme.valueOf(theme));
 		user.setHomeUrl(homeUrl);
         if(usersProfileId == Common.NEW_ID) {
             user.setDataSourcePermissions(dataSourcePermissions);
@@ -177,7 +178,8 @@ public class UsersDwr extends BaseDwr {
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
-			userDao.updateUserHideMenuAndDefaultTheme(user);
+			userDao.updateUserHideMenu(user);
+			userDao.updateUserScadaTheme(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
 			if (usersProfileId == Common.NEW_ID) {
@@ -225,13 +227,13 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
-		updateUser.setTheme(User.UserTheme.valueOf(defaultTheme));
+		updateUser.setTheme(ScadaTheme.valueOf(defaultTheme));
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
-			userDao.updateUserHideMenuAndDefaultTheme(updateUser);
+			userDao.updateUserScadaTheme(updateUser);
 			Common.setUser(request, updateUser);
 		}
 

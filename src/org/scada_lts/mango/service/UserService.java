@@ -147,8 +147,13 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
-	public void updateHiddenMenuAndDefaultTheme(User user) {
-		userDAO.updateHiddenMenuAndDefaultTheme(user);
+	public void updateHideMenu(User user) {
+		userDAO.updateHideMenu(user);
+	}
+
+	@Override
+	public void updateScadaTheme(User user) {
+		userDAO.updateScadaTheme(user);
 	}
 
 	@Override
