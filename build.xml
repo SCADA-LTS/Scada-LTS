@@ -208,6 +208,14 @@
 			<test name="org.scada_lts.utils.UpdateValuePointPropertiesTest"
 				  haltonfailure="yes">
 			</test>
+      
+      <test name="org.scada_lts.permissions.service.util.PermissionsTestsSuite"
+				haltonfailure="yes">
+		  </test>
+
+			<test name="com.serotonin.mango.util.ViewControllerUtilsTest"
+				  haltonfailure="yes">
+      </test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 
@@ -564,9 +572,7 @@
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/modbus4j-3.0.2.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar"/>
-        <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-5.1.7-bin.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/mysql-connector-java-5.1.49.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/ojdbc6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/opc-driver.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/openscada-utils.jar"/>
@@ -669,5 +675,4 @@
 		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
-
 </project>

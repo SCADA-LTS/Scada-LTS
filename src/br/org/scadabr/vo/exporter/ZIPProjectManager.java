@@ -365,12 +365,12 @@ public class ZIPProjectManager {
 			throws Exception {
 		DataInputStream in = new DataInputStream(inputStream);
 		String strLine;
-		String file = "";
 
+		StringBuilder contentAsString = new StringBuilder();
 		while ((strLine = in.readLine()) != null) {
-			file += strLine + "\n";
+			contentAsString.append(strLine).append("\n");
 		}
 		in.close();
-		return file;
+		return contentAsString.toString();
 	}
 }
