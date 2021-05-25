@@ -176,7 +176,7 @@ public class DataSourceMigrationPermissionsCommandTest {
     }
 
     @Test
-    public void when_execute_then_datapointaccesses() {
+    public void when_execute_for_user_and_profile_accesses_then_same_accesses() {
         //given:
         MigrationPermissions migrationCommand = MigrationPermissions
                 .newMigration(migrationPermissionsService, migrationDataService, views);
@@ -193,6 +193,24 @@ public class DataSourceMigrationPermissionsCommandTest {
         List<Integer> dataPointAccessesFromProfile = profilePermissionsService.getPermissions(usersProfileVO);
 
         Set<Integer> result = mergeInt(new HashSet<>(dataPointAccesses), new HashSet<>(dataPointAccessesFromProfile));
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void when_execute_for_user_and_profile_accesses_then_same_profile_accesses() {
+        //given:
+        MigrationPermissions migrationCommand = MigrationPermissions
+                .newMigration(migrationPermissionsService, migrationDataService, views);
+
+        //when:
+        migrationCommand.execute(users);
+
+        //then:
+        UsersProfileVO usersProfileVO = new UsersProfileVO();
+        usersProfileVO.setId(user.getUserProfile());
+
+        Set<Integer> result = new HashSet<>(profilePermissionsService.getPermissions(usersProfileVO));
 
         assertEquals(expected, result);
     }
