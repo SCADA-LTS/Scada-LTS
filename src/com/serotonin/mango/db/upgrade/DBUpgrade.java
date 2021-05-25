@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
-import com.serotonin.mango.db.dao.BaseDao;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.util.StringUtils;
 
