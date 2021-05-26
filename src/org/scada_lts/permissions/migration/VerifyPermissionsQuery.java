@@ -1,9 +1,6 @@
 package org.scada_lts.permissions.migration;
 
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.DataPointAccess;
-
 import java.util.List;
 
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.*;

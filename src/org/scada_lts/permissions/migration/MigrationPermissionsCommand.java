@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.scada_lts.permissions.migration.InfoUtils.profileInfo;
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.reduceToObjectExisting;
 
 
@@ -42,7 +43,11 @@ class MigrationPermissionsCommand extends AbstractMeasurmentCommand {
                     reduceProfile.setId(profile.getId());
                     reduceProfile.setXid(profile.getXid());
                     profiles.put(key, reduceProfile);
+                    LOG.info(profileInfo(reduceProfile));
                 });
+
+        msg = getName() + " - profiles size: " + profiles.size();
+        LOG.info(msg);
 
         MigrationPermissions verify = new VerifyPermissionsQuery(migrationDataService,
                 migrationPermissionsService);
