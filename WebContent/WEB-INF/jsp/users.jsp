@@ -231,10 +231,9 @@
                 }
             }
             
-            
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), $get("homeUrl"),
+                    dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), parseHomeUrl($get("homeUrl")),
                     saveUserCB);
         }
         else
@@ -344,6 +343,13 @@
                 }
             });
         }
+    }
+
+    function parseHomeUrl(homeUrl) {
+      while(homeUrl.charAt(0) === '/') {
+        homeUrl = homeUrl.substring(1);
+      }
+      return homeUrl.endsWith('/') ? homeUrl.slice(0, -1) : homeUrl;
     }
   </script>
   
