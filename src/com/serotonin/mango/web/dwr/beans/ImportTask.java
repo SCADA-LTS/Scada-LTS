@@ -340,12 +340,6 @@ public class ImportTask extends ProgressiveTask {
 				return;
 			}
 
-			if (pointValuesIndex < pointValues.size()) {
-				importPointValues(pointValues.get(pointValuesIndex++)
-						.toJsonObject());
-				return;
-			}
-
 			if (systemSettingsIndex < systemSettings.size()) {
 				importSystemSettings(systemSettings.get(systemSettingsIndex++)
 						.toJsonObject());
@@ -354,6 +348,12 @@ public class ImportTask extends ProgressiveTask {
 
 			if (userProfilesIndex < usersProfiles.size()) {
 				importUsersProfile(usersProfiles.get(userProfilesIndex++)
+						.toJsonObject());
+				return;
+			}
+
+			if (pointValuesIndex < pointValues.size()) {
+				importPointValues(pointValues.get(pointValuesIndex++)
 						.toJsonObject());
 				return;
 			}
@@ -1090,7 +1090,7 @@ public class ImportTask extends ProgressiveTask {
 					I18NUtils.getMessage(bundle, "emport.saved"));
 	}
 
-	private String getJsonExceptionMessage(JsonException e) {
+	public String getJsonExceptionMessage(JsonException e) {
 		String msg = "'" + e.getMessage() + "'";
 		Throwable t = e;
 		while ((t = t.getCause()) != null) {

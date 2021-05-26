@@ -4,7 +4,7 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
@@ -37,35 +37,45 @@ public final class DeserializeUsersProfileUtils {
     public static List<DataPointAccess> getDataPointPermissions(
             JsonObject profileJson, JsonReader reader) throws JsonException {
         JsonArray jsonPoints = profileJson.getJsonArray("dataPointPermissions");
-        List<DataPointAccess> dataPointPermissions = new ArrayList<DataPointAccess>();
-        List<Integer> permittedPoints = new ArrayList<Integer>();
+        List<DataPointAccess> dataPointPermissions = new ArrayList<>();
+        List<Integer> permittedPoints = new ArrayList<>();
 
         for (JsonValue jv : jsonPoints.getElements()) {
-            DataPointAccess access = reader.readPropertyValue(jv,
-                    DataPointAccess.class, null);
-
-            if (!permittedPoints.contains(access.getDataPointId())) {
-                dataPointPermissions.add(access);
-                permittedPoints.add(access.getDataPointId());
+            try {
+                DataPointAccess access = reader.readPropertyValue(jv, DataPointAccess.class, null);
+                if (access.getDataPointId() == Common.NEW_ID) {
+                }
+                if (!permittedPoints.contains(access.getDataPointId()) && access.getDataPointId() != Common.NEW_ID) {
+                    dataPointPermissions.add(access);
+                    permittedPoints.add(access.getDataPointId());
+                }
+            } catch (LocalizableJsonException ex) {
+                LOG.warn(ex.getMsg().getLocalizedMessage(Common.getBundle()));
+            } catch (Exception ex) {
+                LOG.error(ex.getMessage(), ex);
             }
-
         }
         return dataPointPermissions;
     }
 
     public static List<ViewAccess> getViewPermissions(JsonObject profileJson,
-                                                JsonReader reader) throws JsonException {
+                                                      JsonReader reader) throws JsonException {
         List<ViewAccess> viewPermissions = new ArrayList<ViewAccess>();
         List<Integer> permittedViews = new ArrayList<Integer>();
 
         JsonArray viewsJson = profileJson.getJsonArray("viewPermissions");
 
         for (JsonValue jv : viewsJson.getElements()) {
-            ViewAccess access = reader.readPropertyValue(jv, ViewAccess.class,
-                    null);
-            if (!permittedViews.contains(access.getId())) {
-                viewPermissions.add(access);
-                permittedViews.add(access.getId());
+            try {
+                ViewAccess access = reader.readPropertyValue(jv, ViewAccess.class, null);
+                if (!permittedViews.contains(access.getId())) {
+                    viewPermissions.add(access);
+                    permittedViews.add(access.getId());
+                }
+            } catch (LocalizableJsonException ex) {
+                LOG.warn(ex.getMsg().getLocalizedMessage(Common.getBundle()));
+            } catch (Exception ex) {
+                LOG.error(ex.getMessage(), ex);
             }
         }
 
@@ -81,11 +91,17 @@ public final class DeserializeUsersProfileUtils {
         JsonArray viewsJson = profileJson.getJsonArray("watchlistPermissions");
 
         for (JsonValue jv : viewsJson.getElements()) {
-            WatchListAccess access = reader.readPropertyValue(jv,
-                    WatchListAccess.class, null);
-            if (!permittedWatchlist.contains(access.getId())) {
-                watchlistPermissions.add(access);
-                permittedWatchlist.add(access.getId());
+            try {
+                WatchListAccess access = reader.readPropertyValue(jv,
+                        WatchListAccess.class, null);
+                if (!permittedWatchlist.contains(access.getId())) {
+                    watchlistPermissions.add(access);
+                    permittedWatchlist.add(access.getId());
+                }
+            } catch (LocalizableJsonException ex) {
+                LOG.warn(ex.getMsg().getLocalizedMessage(Common.getBundle()));
+            } catch (Exception ex) {
+                LOG.error(ex.getMessage(), ex);
             }
         }
 
@@ -98,7 +114,7 @@ public final class DeserializeUsersProfileUtils {
 
         for (JsonValue jv : jsonUsersIds.getElements()) {
             int userid = jv.toJsonNumber().getIntValue();
-            User user = new UserDao().getUser(userid);
+            User user = new UserService().getUser(userid);
             users.add(user);
         }
 
@@ -199,7 +215,7 @@ public final class DeserializeUsersProfileUtils {
     }
 
     private static List<Integer> getDataSourcePermissionsById(JsonObject profileJson, DataSourceService dataSourceService) throws JsonException {
-        List<Integer> dataSourcePermissions = new ArrayList<Integer>();
+        List<Integer> dataSourcePermissions = new ArrayList<>();
 
         JsonArray jsonDataSources = profileJson
                 .getJsonArray("dataSourcePermissions");

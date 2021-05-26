@@ -29,14 +29,7 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.json.JsonSerializable;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
@@ -56,6 +49,7 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
 
 @JsonRemoteEntity
@@ -500,6 +494,23 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 						// The user doesn't already have access to the point.
 						dataPointPermissions.add(access);
 				}
+			}
+
+			UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
+			String userProfileXid = json.getString("userProfileXid");
+			Integer userProfileId = json.getInt("userProfile");
+			if (userProfileXid != null && !userProfileXid.isEmpty()) {
+				Optional<UsersProfileVO> usersProfileVO = usersProfileDAO.selectProfileByXid(userProfileXid);
+				if(!usersProfileVO.isPresent()) {
+					throw new LocalizableJsonException("emport.error.missingObject", "profile: " + userProfileXid);
+				}
+				userProfile = usersProfileVO.get().getId();
+			} else if(userProfileId != null && userProfileId != 0 && userProfileId != Common.NEW_ID) {
+				Optional<UsersProfileVO> usersProfileVO = usersProfileDAO.selectProfileById(userProfileId);
+				if(!usersProfileVO.isPresent()) {
+					throw new LocalizableJsonException("emport.error.missingObject", "profile: " + userProfileId);
+				}
+				userProfile = usersProfileVO.get().getId();
 			}
 		}
 	}
