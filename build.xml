@@ -841,6 +841,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/spring-security-messaging-4.2.5.RELEASE.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/spring-security-web-4.2.5.RELEASE.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/spring-session-1.3.5.RELEASE.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/amqp-client-5.12.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
