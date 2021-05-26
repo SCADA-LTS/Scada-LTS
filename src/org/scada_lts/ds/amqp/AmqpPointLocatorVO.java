@@ -1,12 +1,6 @@
 package org.scada_lts.ds.amqp;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
+import com.serotonin.json.*;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -19,45 +13,29 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.Map;
 
 public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
-    public interface ExchangeType {
-        String A_NONE   = "";
-        String A_DIRECT   = "direct";
-        String A_TOPIC    = "topic";
-        String A_FANOUT   = "fanout";
-    }
-
-    public interface DurabilityType {
-        String DURABLE    = "1";
-        String TRANSIENT   = "0";
-    }
-
-    public interface MessageAckType {
-        String ACK      = "0";
-        String NO_ACK   = "1";
-    }
-
-    private static String DEFAULT_NOT_SET = "";
-    private static boolean DEFAULT_WRITABLE = true;
+    private static final String DEFAULT_NOT_SET = "";
+    private static final boolean DEFAULT_WRITABLE = true;
 
     @JsonRemoteProperty
     private boolean settable;
     @JsonRemoteProperty
     private boolean writable = DEFAULT_WRITABLE;
     @JsonRemoteProperty
-    private String exchangeType;
+    private ExchangeType exchangeType = ExchangeType.NONE;
     @JsonRemoteProperty
-    private String exchangeName = ExchangeType.A_NONE;
+    private String exchangeName = "";
     @JsonRemoteProperty
     private String  queueName = DEFAULT_NOT_SET;
     @JsonRemoteProperty
     private String  routingKey = DEFAULT_NOT_SET;
     @JsonRemoteProperty
-    private String queueDurability = DurabilityType.DURABLE;
+    private DurabilityType queueDurability = DurabilityType.DURABLE;
     @JsonRemoteProperty
-    private String messageAck = MessageAckType.NO_ACK;
+    private MessageAckType messageAck = MessageAckType.NO_ACK;
 
     private int     dataTypeId;
 
@@ -73,14 +51,14 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
     @Override
     public void validate(DwrResponseI18n response) {
-        if (exchangeType.equalsIgnoreCase(ExchangeType.A_NONE)) {
+        if (exchangeType == ExchangeType.NONE) {
             routingKey = "";
             exchangeName = "";
             if (queueName.isBlank()) {
                 response.addContextualMessage("queueName", "validate.invalidValue");
             }
         }
-        if (exchangeType.equalsIgnoreCase(ExchangeType.A_DIRECT) || exchangeType.equalsIgnoreCase(ExchangeType.A_TOPIC)){
+        if (exchangeType == ExchangeType.DIRECT || exchangeType == ExchangeType.TOPIC){
             queueName = "";
             if (exchangeName.isBlank()) {
                 response.addContextualMessage("exchangeName", "validate.invalidValue");
@@ -90,7 +68,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             }
         }
 
-        if (exchangeType.equalsIgnoreCase(ExchangeType.A_FANOUT)) {
+        if (exchangeType == ExchangeType.FANOUT) {
             routingKey = "";
             if (exchangeName.isBlank()) {
                 response.addContextualMessage("exchangeName", "validate.invalidValue");
@@ -145,11 +123,11 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.writable = writable;
     }
 
-    public String getExchangeType() {
+    public ExchangeType getExchangeType() {
         return exchangeType;
     }
 
-    public void setExchangeType(String exchangeType) {
+    public void setExchangeType(ExchangeType exchangeType) {
         this.exchangeType = exchangeType;
     }
 
@@ -169,11 +147,11 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.queueName = queueName;
     }
 
-    public String getQueueDurability() {
+    public DurabilityType getQueueDurability() {
         return queueDurability;
     }
 
-    public void setQueueDurability(String queueDurability) {
+    public void setQueueDurability(DurabilityType queueDurability) {
         this.queueDurability = queueDurability;
     }
 
@@ -189,27 +167,27 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.dataTypeId = dataTypeId;
     }
 
-    public String getMessageAck() {
+    public MessageAckType getMessageAck() {
         return messageAck;
     }
 
-    public void setMessageAck(String messageAck) {
+    public void setMessageAck(MessageAckType messageAck) {
         this.messageAck = messageAck;
     }
 
-    private static final int version = 1;
+    private static final int VERSION = 1;
     // Serialization //
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(version);
+        out.writeInt(VERSION);
         out.writeBoolean(settable);
         out.writeBoolean(writable);
         out.writeInt(dataTypeId);
-        SerializationHelper.writeSafeUTF(out, exchangeType);
+        SerializationHelper.writeSafeUTF(out, exchangeType.name());
         SerializationHelper.writeSafeUTF(out, exchangeName);
         SerializationHelper.writeSafeUTF(out, queueName);
-        SerializationHelper.writeSafeUTF(out, queueDurability);
+        SerializationHelper.writeSafeUTF(out, queueDurability.name());
         SerializationHelper.writeSafeUTF(out, routingKey);
-        SerializationHelper.writeSafeUTF(out, messageAck);
+        SerializationHelper.writeSafeUTF(out, messageAck.name());
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -218,22 +196,23 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             settable        = in.readBoolean();
             writable        = in.readBoolean();
             dataTypeId      = in.readInt();
-            exchangeType    = SerializationHelper.readSafeUTF(in);
+            exchangeType    = ExchangeType.valueOf(SerializationHelper.readSafeUTF(in));
             exchangeName    = SerializationHelper.readSafeUTF(in);
             queueName       = SerializationHelper.readSafeUTF(in);
-            queueDurability = SerializationHelper.readSafeUTF(in);
+            queueDurability = DurabilityType.valueOf(SerializationHelper.readSafeUTF(in));
             routingKey      = SerializationHelper.readSafeUTF(in);
-            messageAck      = SerializationHelper.readSafeUTF(in);
+            messageAck      = MessageAckType.valueOf(SerializationHelper.readSafeUTF(in));
         }
     }
 
     @Override
-    public void serialize(JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-
+    public void jsonSerialize(Map<String, Object> map) {
+        serializeDataType(map);
     }
 
     @Override
-    public void serializeWithType(JsonGenerator jsonGenerator, SerializerProvider serializerProvider, TypeSerializer typeSerializer) throws IOException {
+    public void jsonDeserialize(JsonReader jsonReader, JsonObject jsonObject) throws JsonException {
+        deserializeDataType(jsonObject);
 
     }
 
