@@ -66,11 +66,11 @@ public class AmqpDataSourceRT extends PollingDataSource {
         }
         try {
             switch (locator.getVO().getExchangeType()) {
-                case AmqpPointLocatorVO.ExchangeType.A_DIRECT:
-                case AmqpPointLocatorVO.ExchangeType.A_TOPIC:
+                case DIRECT:
+                case TOPIC:
                     channel.basicPublish(locator.getExchangeName(), locator.getRoutingKey(), null, message.getBytes());
                     break;
-                case AmqpPointLocatorVO.ExchangeType.A_FANOUT:
+                case FANOUT:
                     channel.basicPublish(locator.getExchangeName(), "", null, message.getBytes());
                     break;
                 default:
@@ -80,8 +80,6 @@ public class AmqpDataSourceRT extends PollingDataSource {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     // Enable DataSource //
@@ -178,39 +176,38 @@ public class AmqpDataSourceRT extends PollingDataSource {
     private void initDataPoint(DataPointRT dp, Channel channel) throws IOException {
 
         AmqpPointLocatorRT locator = dp.getPointLocator();
-        String exchangeType = locator.getVO().getExchangeType();
+        ExchangeType exchangeType = locator.getVO().getExchangeType();
 
-        boolean durable = locator.getVO().getQueueDurability().equalsIgnoreCase("1");
-        boolean noAck = locator.getVO().getMessageAck().equalsIgnoreCase("1");
+        boolean durable = locator.getVO().getQueueDurability().ordinal() == 1;
+        boolean noAck = locator.getVO().getMessageAck().ordinal() == 1;
 
         if (channel != null) {
-            if (exchangeType.equalsIgnoreCase(AmqpPointLocatorVO.ExchangeType.A_FANOUT)) {
-                channel.exchangeDeclare(locator.getExchangeName(), AmqpPointLocatorVO.ExchangeType.A_FANOUT, durable);
+            if (exchangeType == ExchangeType.FANOUT) {
+                channel.exchangeDeclare(locator.getExchangeName(), ExchangeType.FANOUT.toString(), durable);
                 locator.setQueueName(channel.queueDeclare().getQueue());
                 channel.queueBind(locator.getQueueName(), locator.getExchangeName(), "");
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
                 channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
-            } else if (exchangeType.equalsIgnoreCase(AmqpPointLocatorVO.ExchangeType.A_DIRECT)) {
+            } else if (exchangeType == ExchangeType.DIRECT) {
 
-                channel.exchangeDeclare(locator.getExchangeName(), AmqpPointLocatorVO.ExchangeType.A_DIRECT, durable);
+                channel.exchangeDeclare(locator.getExchangeName(), ExchangeType.DIRECT.toString(), durable);
                 locator.setQueueName(channel.queueDeclare().getQueue());
                 channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
                 channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
-            } else if (exchangeType.equalsIgnoreCase(AmqpPointLocatorVO.ExchangeType.A_TOPIC)) {
-                channel.exchangeDeclare(locator.getExchangeName(), AmqpPointLocatorVO.ExchangeType.A_TOPIC, durable);
+            } else if (exchangeType == ExchangeType.TOPIC) {
+                channel.exchangeDeclare(locator.getExchangeName(), ExchangeType.TOPIC.toString(), durable);
                 locator.setQueueName(channel.queueDeclare().getQueue());
                 channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
 
                 Consumer consumer = new ScadaConsumer(channel, dp);
                 channel.basicConsume(locator.getQueueName(), noAck, consumer);
 
-
-            } else if (exchangeType.isEmpty()) {
+            } else if (exchangeType == ExchangeType.NONE) {
 
                 channel.queueDeclare(locator.getQueueName(), durable, false, false, null);
                 Consumer consumer = new ScadaConsumer(channel, dp);

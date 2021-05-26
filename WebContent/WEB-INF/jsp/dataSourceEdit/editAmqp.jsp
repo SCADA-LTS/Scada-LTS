@@ -6,22 +6,25 @@
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <%@page import="org.scada_lts.ds.amqp.AmqpPointLocatorVO"%>
+<%@page import="org.scada_lts.ds.amqp.ExchangeType"%>
+<%@page import="org.scada_lts.ds.amqp.MessageAckType"%>
+<%@page import="org.scada_lts.ds.amqp.DurabilityType"%>
 <script type="text/javascript">
     function exchangeTypeChange() {
         var exType = $get("exchangeType");
-        if (exType === "<%= AmqpPointLocatorVO.ExchangeType.A_NONE %>" ) {
+        if (exType === "<%= ExchangeType.NONE %>" ) {
             hide("exchangeFields");
             hide("routingFields");
             show("queueFields");
-        } else if ( exType === "<%= AmqpPointLocatorVO.ExchangeType.A_DIRECT %>" ) {
+        } else if ( exType === "<%= ExchangeType.DIRECT %>" ) {
             hide("queueFields");
             show("exchangeFields");
             show("routingFields");
-        } else if ( exType === "<%= AmqpPointLocatorVO.ExchangeType.A_TOPIC %>" ) {
+        } else if ( exType === "<%= ExchangeType.TOPIC %>" ) {
             hide("queueFields");
             show("exchangeFields");
             show("routingFields");
-        } else if ( exType === "<%= AmqpPointLocatorVO.ExchangeType.A_FANOUT %>" ) {
+        } else if ( exType === "<%= ExchangeType.FANOUT %>" ) {
             hide("queueFields");
             show("exchangeFields");
             hide("routingFields");
@@ -128,10 +131,10 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.exchangeType"/></td>
     <td class="formField">
         <select id="exchangeType" onchange="exchangeTypeChange()">
-            <option value="<c:out value="<%= AmqpPointLocatorVO.ExchangeType.A_NONE %>"/>">Empty</option>
-            <option value="<c:out value="<%= AmqpPointLocatorVO.ExchangeType.A_DIRECT %>"/>">Direct</option>
-            <option value="<c:out value="<%= AmqpPointLocatorVO.ExchangeType.A_TOPIC %>"/>">Topic</option>
-            <option value="<c:out value="<%= AmqpPointLocatorVO.ExchangeType.A_FANOUT %>"/>">Fanout</option>
+            <option value="<c:out value="<%= ExchangeType.NONE %>"/>">Empty</option>
+            <option value="<c:out value="<%= ExchangeType.DIRECT %>"/>">Direct</option>
+            <option value="<c:out value="<%= ExchangeType.TOPIC %>"/>">Topic</option>
+            <option value="<c:out value="<%= ExchangeType.FANOUT %>"/>">Fanout</option>
         </select>
     </td>
   </tr>
@@ -145,8 +148,8 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.queueDurability"/></td>
     <td class="formField">
         <select id="queueDurability">
-            <option value="<c:out value="<%= AmqpPointLocatorVO.DurabilityType.DURABLE %>"/>">Durable</option>
-            <option value="<c:out value="<%= AmqpPointLocatorVO.DurabilityType.TRANSIENT %>"/>">Transient</option>
+            <option value="<c:out value="<%= DurabilityType.DURABLE %>"/>">Durable</option>
+            <option value="<c:out value="<%= DurabilityType.TRANSIENT %>"/>">Transient</option>
         </select>
     </td>
   </tr>
@@ -166,8 +169,8 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.messageAck"/></td>
     <td class="formField">
         <select id="messageAck">
-            <option value="<c:out value="<%= AmqpPointLocatorVO.MessageAckType.NO_ACK %>"/>">No ACK</option>
-            <option value="<c:out value="<%= AmqpPointLocatorVO.MessageAckType.ACK %>"/>">ACK</option>
+            <option value="<c:out value="<%= MessageAckType.NO_ACK %>"/>">No ACK</option>
+            <option value="<c:out value="<%= MessageAckType.ACK %>"/>">ACK</option>
         </select>
     </td>
   </tr>
