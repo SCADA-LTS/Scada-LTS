@@ -46,7 +46,6 @@ public class AmqpDataSourceRT extends PollingDataSource {
         super(vo);
         this.vo = vo;
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
-        log.debug("DataSourceRT:AMQP - Created!");
     }
 
     @Override
@@ -86,7 +85,6 @@ public class AmqpDataSourceRT extends PollingDataSource {
     @Override
     public void initialize() {
 
-        log.debug("AMQP Datasource initializing started");
         ConnectionFactory rabbitFactory = new ConnectionFactory();
         rabbitFactory.setHost(vo.getServerIpAddress());
         rabbitFactory.setPort(Integer.parseInt(vo.getServerPortNumber()));
@@ -111,19 +109,19 @@ public class AmqpDataSourceRT extends PollingDataSource {
     // Disable DataSource //
     @Override
     public void terminate() {
-        try {
-            channel.close();
-            connection.close();
-            amqpBindEstablished = false;
-        } catch (IOException | TimeoutException | AlreadyClosedException e) {
-            this.vo.setEnabled(false);
-            amqpBindEstablished = false;
-            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
-
+        if(channel != null && connection != null) {
+            try {
+                channel.close();
+                connection.close();
+            } catch (IOException | TimeoutException | AlreadyClosedException e) {
+                raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                        new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
+            } finally {
+                amqpBindEstablished = false;
+            }
         }
+        this.vo.setEnabled(false);
         super.terminate();
-
     }
 
     @Override
