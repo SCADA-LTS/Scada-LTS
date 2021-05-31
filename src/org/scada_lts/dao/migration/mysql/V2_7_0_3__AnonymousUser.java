@@ -11,9 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.PreparedStatement;
 
-public class V2_7__AnonymousUser extends BaseJavaMigration {
+public class V2_7_0_3__AnonymousUser extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_7__AnonymousUser.class);
+    private static final Log LOG = LogFactory.getLog(V2_7_0_3__AnonymousUser.class);
 
     @Override
     public void migrate(Context context) throws Exception {
