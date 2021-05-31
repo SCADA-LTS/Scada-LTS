@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.vo.ScadaTheme;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -116,7 +117,8 @@ public class UsersDwr extends BaseDwr {
 			String password, String email, String phone, boolean admin,
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions, int usersProfileId) {
+			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hideMenu,
+		    String theme, String homeUrl) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -140,6 +142,9 @@ public class UsersDwr extends BaseDwr {
 		user.setDisabled(disabled);
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
+		user.setHideMenu(hideMenu);
+		user.setTheme(ScadaTheme.getType(theme));
+		user.setHomeUrl(homeUrl);
         if(usersProfileId == Common.NEW_ID) {
             user.setDataSourcePermissions(dataSourcePermissions);
             user.setDataPointPermissions(dataPointPermissions);
@@ -173,6 +178,8 @@ public class UsersDwr extends BaseDwr {
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
+			userDao.updateUserHideMenu(user);
+			userDao.updateUserScadaTheme(user);
 
 			UsersProfileDao profilesDao = new UsersProfileDao();
 			if (usersProfileId == Common.NEW_ID) {
@@ -202,7 +209,7 @@ public class UsersDwr extends BaseDwr {
 
 	public DwrResponseI18n saveUser(int id, String password, String email,
 			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId) {
+			boolean receiveOwnAuditEvents, int usersProfileId, String defaultTheme) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -220,11 +227,13 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
+		updateUser.setTheme(ScadaTheme.getType(defaultTheme));
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
+			userDao.updateUserScadaTheme(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
