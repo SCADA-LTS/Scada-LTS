@@ -173,6 +173,16 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
+	public void updateHideMenu(User user) {
+		userDAO.updateHideMenu(user);
+	}
+
+	@Override
+	public void updateScadaTheme(User user) {
+		userDAO.updateScadaTheme(user);
+	}
+
+	@Override
 	public void insertUser(User user) {
 		try {
 			int id = userDAO.insert(user);
