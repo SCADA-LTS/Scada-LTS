@@ -36,6 +36,8 @@ final class MigrationPermissionsUtils {
 
     private static final Log LOG = LogFactory.getLog(MigrationPermissionsUtils.class);
 
+    private static final AtomicInteger i = new AtomicInteger();
+
     private MigrationPermissionsUtils() {}
 
     public static void updatePermissions(User user, Set<DataPointAccess> dataPointAccessesFromView,
@@ -51,10 +53,6 @@ final class MigrationPermissionsUtils {
         Accesses fromProfile = fromProfile(user, profiles);
 
         Accesses accesses = MigrationPermissionsUtils.merge(fromUser, fromProfile);
-
-        /*if(true) {
-            throw new IllegalStateException("accesses: " + accesses + ", fromUser: " + fromUser + ", fromProfile:" + fromProfile);
-        }*/
 
         if(!accesses.isEmpty())
             updatePermissions(user, accesses, migrationDataService.getUsersProfileService(), profiles);
@@ -305,19 +303,23 @@ final class MigrationPermissionsUtils {
     }
 
     private static UsersProfileVO createProfile(String prefix, UsersProfileService usersProfileService, Accesses key) {
-        String profileName = prefix + System.nanoTime();
+        String profileName = newProfileName(prefix);
         UsersProfileVO usersProfile = newProfile(profileName, key);
 
         boolean saved = saveUsersProfile(usersProfileService, usersProfile);
         int limit = 100;
         while ((!saved || usersProfile.getId() == Common.NEW_ID) && limit > 0) {
-            String name = prefix + System.nanoTime();
+            String name = newProfileName(prefix);
             usersProfile.setName(name);
             saved = saveUsersProfile(usersProfileService, usersProfile);
             --limit;
         }
         LOG.info(MessageFormat.format("{0} created: {1}", profileInfo(usersProfile), saved));
         return usersProfile;
+    }
+
+    private static String newProfileName(String prefix) {
+        return prefix + i.incrementAndGet();
     }
 
     private static boolean saveUsersProfile(UsersProfileService usersProfileService, UsersProfileVO usersProfile) {
@@ -349,9 +351,6 @@ final class MigrationPermissionsUtils {
         if(user.getUserProfile() != profile.getId()) {
             user.setUserProfile(profile);
             usersProfileService.updateUsersProfile(user, profile);
-           /* if(true) {
-                throw new IllegalStateException("update user key: " + key + "\n profile: " + profile + "\n profiles:" + profiles + "\n user: " + user.getUserProfile());
-            }*/
             LOG.info(MessageFormat.format("{0} has been assigned to user {1}", profileInfo(profile), userInfo(user)));
         } else {
             LOG.info(MessageFormat.format("{0} is already assigned to user {1}", profileInfo(profile), userInfo(user)));
