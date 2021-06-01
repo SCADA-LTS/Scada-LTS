@@ -1,8 +1,10 @@
 import VirtualDataSource from './VirtualDataSource';
 import VirtualDataSourceEditor from './VirtualDataSource/config';
 import VirtualDataSourcePointEditor from './VirtualDataSource/point';
+
 import SnmpDataSource from './SnmpDataSource';
 import SnmpDataSourceEditor from './SnmpDataSource/config';
+import SnmpDataSroucePointEditor from './SnmpDataSource/point';
 
 export const dataSourcesMixin = {
     components: {
@@ -12,6 +14,7 @@ export const dataSourcesMixin = {
 
         'snmpdatasource': SnmpDataSource,
         'snmpdatasourceeditor': SnmpDataSourceEditor,
+        'snmpdatasourcepointeditor': SnmpDataSroucePointEditor,
     },
 
     data() {

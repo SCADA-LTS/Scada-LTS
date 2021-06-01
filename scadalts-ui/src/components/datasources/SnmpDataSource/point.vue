@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<DataPointCreation
-			title="Virtual Data Point"
+			title="SNPM Data Point"
 			:creator="createMode"
 			@cancel="cancel()"
 			@accept="save()"
@@ -25,14 +25,14 @@
             <!-- Binary -->
 			<v-row v-if="datapoint.type === 'Binary'">
 				<v-col>
-					<v-text-field label="Type"></v-text-field>
+					<v-text-field label="SNMP Bin"></v-text-field>
 				</v-col>
 			</v-row>
 
             <!-- Multistate -->
 			<v-row v-if="datapoint.type === 'Multistate'">
 				<v-col>
-					<v-text-field label="Type MS"></v-text-field>
+					<v-text-field label="Type MS SNMP"></v-text-field>
 				</v-col>
 			</v-row>
 		</DataPointCreation>

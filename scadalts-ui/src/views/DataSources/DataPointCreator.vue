@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dialogVisible">
 		
-        <component :is="`${datasourceType}`" @canceled="onCanceled()" @saved="onSaved($event)">
+        <component :is="`${datasourceType}`" :datapoint="datapoint" @canceled="onCanceled()" @saved="onSaved($event)">
 			<template v-slot:title> Create Data Log</template>
 			
 			<template v-slot:action> Create </template>
@@ -19,12 +19,24 @@ export default {
 		return {
             datasourceType: 'virtualdatasourcepointeditor', 
 			dialogVisible: false,
+			datapoint: null,
 		};
 	},
 
 	methods: {
-		showDialog(item) {
+		showDialog(item, datapoint) {
 			this.dialogVisible = true;
+			if(!!datapoint) {
+				this.datapoint = datapoint;
+			} else {
+				this.datapoint = {
+					name: '',
+					xid: 'DP_VDS_',
+					settable: false,
+					type: 'Binary',
+				}
+			}
+			console.log(this.datapoint)
             this.datasourceType = `${item.type}pointeditor`;
 		},
 
@@ -33,7 +45,8 @@ export default {
         },
 
         onSaved(event) {
-            console.log(event);
+			this.dialogVisible = false;
+			this.$emit('onSaved', event);
         }
 	},
     

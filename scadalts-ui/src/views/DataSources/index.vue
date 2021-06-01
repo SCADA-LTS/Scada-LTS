@@ -85,7 +85,7 @@
 												</v-btn>
 											</template>
 											<v-list>
-												<v-list-item>
+												<v-list-item @click="createDataPoint(item, dp)">
 													<v-list-item-icon>
 														<v-icon>mdi-pencil</v-icon>
 													</v-list-item-icon>
@@ -140,7 +140,7 @@
             <v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 		</v-container>
 		<DataSourceCreator ref="creator"></DataSourceCreator>
-		<DataPointCreator ref="pointCreator"></DataPointCreator>
+		<DataPointCreator ref="pointCreator" @onSaved="onDataPointSaved($event)"></DataPointCreator>
 	</div>
 </template>
 <script>
@@ -220,12 +220,16 @@ export default {
             }
 		},
 
-		createDataPoint(item) {
-			this.$refs.pointCreator.showDialog(item);
+		createDataPoint(item, datapoint = null) {
+			this.$refs.pointCreator.showDialog(item, datapoint);
 		},
 
 		createDataSource() {
 			this.$refs.creator.showDialog();
+		},
+
+		onDataPointSaved(event) {
+			console.log(event);
 		}
 
 	},
