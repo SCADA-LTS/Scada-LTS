@@ -55,8 +55,9 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
 
             if(!viewsWithAccess.isEmpty()) {
                 AtomicInteger viewIte = new AtomicInteger();
-
-                Set<DataPointAccess> dataPointAccesses = fromView(user, viewsWithAccess, dataPointsFromViews, viewIte);
+                Set<DataPointAccess> fromProfile = fromProfile(user, profiles).getDataPointAccesses();
+                Set<DataPointAccess> dataPointAccesses = fromView(user, viewsWithAccess, dataPointsFromViews,
+                        viewIte, fromProfile);
                 updatePermissions(user, dataPointAccesses, profiles, migrationPermissionsService, migrationDataService);
 
             }
@@ -64,8 +65,10 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
         });
     }
 
-    private Set<DataPointAccess> fromView(User user, List<View> viewsWithAccess, Map<Integer, List<DataPointVO>> dataPointsFromViews, AtomicInteger viewIte) {
+    private Set<DataPointAccess> fromView(User user, List<View> viewsWithAccess, Map<Integer,
+            List<DataPointVO>> dataPointsFromViews, AtomicInteger viewIte, Set<DataPointAccess> fromProfile) {
         Set<DataPointAccess> dataPointAccesses = accessesBy(user, migrationPermissionsService.getDataPointUserPermissionsService());
+        dataPointAccesses.addAll(fromProfile);
 
         viewsWithAccess.forEach(view -> {
             LOG.info(iterationInfo(viewInfo(view), viewIte.incrementAndGet(), viewsWithAccess.size()));
@@ -74,6 +77,7 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
 
                 Set<DataPointAccess> dataPointAccessesFromView = dataPointsFromViews.get(view.getId()).stream()
                         .map(dataPoint -> new DataPointAccess(dataPoint.getId(), shareUser.getAccessType()))
+                        .filter(access -> dataPointAccesses.isEmpty() || dataPointAccesses.stream().allMatch(a -> a.getDataPointId() != access.getDataPointId() || a.getPermission() < ShareUser.ACCESS_READ))
                         .collect(Collectors.toSet());
                 dataPointAccesses.addAll(dataPointAccessesFromView);
 

@@ -46,7 +46,7 @@ public class DataSourceMigrationPermissionsCommandTest {
     private final static int dataSourceId5 = 55;
 
 
-    @Parameterized.Parameters(name= "{index}: \nfromProfile: {0}, fromUser: {1}, \nfromView1: {2}, fromView2: {3}, permissionView1: {4}, permissionView2: {5}, \nexpected: {6}\n\n")
+    @Parameterized.Parameters(name= "{index}: \nfromProfile: {0}, fromUser: {1}, \nexpected: {2}\n\n")
     public static Object[][] primeNumbers() {
         return new Object[][] {
                 new Object[] {
