@@ -7,13 +7,18 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoDataSource;
-import org.scada_lts.mango.service.*;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.permissions.migration.MigrationDataService;
 import org.scada_lts.permissions.migration.MigrationPermissions;
 import org.scada_lts.permissions.migration.MigrationPermissionsService;
@@ -25,9 +30,19 @@ import java.util.stream.Collectors;
 
 public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
 
+    private static final Log LOG = LogFactory.getLog(V2_7_0_2__FixViewPermissions.class);
+
     @Override
     public void migrate(Context context) throws Exception {
+        try {
+            migratePermissions();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
 
+    private void migratePermissions() {
         UserDAO userDAO = new OnlyMigrationUserDAO();
         UsersProfileDAO usersProfileDAO = new OnlyMigrationUsersProfileDAO();
         WatchListDAO watchListDAO = new OnlyMigrationWatchListDAO();
@@ -87,6 +102,10 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
 
             MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService, views);
             migrationCommand.execute(users);
+
+            views.clear();
         }
+
+        users.clear();
     }
 }

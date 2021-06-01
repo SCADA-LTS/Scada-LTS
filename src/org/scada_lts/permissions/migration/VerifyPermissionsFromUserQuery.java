@@ -1,16 +1,17 @@
 package org.scada_lts.permissions.migration;
 
 import com.serotonin.mango.vo.User;
+
 import java.util.List;
 
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.*;
 
-class VerifyPermissionsQuery extends AbstractMeasurmentCommand {
+class VerifyPermissionsFromUserQuery extends AbstractMeasurmentCommand {
 
     private final MigrationDataService migrationDataService;
     private final MigrationPermissionsService migrationPermissionsService;
 
-    VerifyPermissionsQuery(MigrationDataService migrationDataService, MigrationPermissionsService migrationPermissionsService) {
+    VerifyPermissionsFromUserQuery(MigrationDataService migrationDataService, MigrationPermissionsService migrationPermissionsService) {
         this.migrationDataService = migrationDataService;
         this.migrationPermissionsService = migrationPermissionsService;
     }
@@ -41,6 +42,6 @@ class VerifyPermissionsQuery extends AbstractMeasurmentCommand {
 
     @Override
     public String getName() {
-        return "verify-permissions";
+        return "verify-permissions-from-user";
     }
 }

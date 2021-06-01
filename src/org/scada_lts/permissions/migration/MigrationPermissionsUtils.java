@@ -117,6 +117,41 @@ final class MigrationPermissionsUtils {
                 existsObject(dataPointService));
     }
 
+    static void verifyUserWatchListPermissions(User user, UsersProfileVO usersProfile,
+                                               WatchListService watchListService,
+                                               Set<WatchListAccess> oldAccesses) {
+
+        verifyUserPermissions(oldAccesses, user, usersProfile,
+                usersProfile::getWatchlistPermissions, containsPermission(),
+                existsObject(watchListService::getWatchList));
+    }
+
+
+    static void verifyUserViewPermissions(User user, UsersProfileVO usersProfile,
+                                          ViewService viewService,
+                                          Set<ViewAccess> oldAccesses) {
+        verifyUserPermissions(oldAccesses, user, usersProfile,
+                usersProfile::getViewPermissions, containsPermission(),
+                existsObject(viewService::getView));
+    }
+
+    static void verifyUserDataSourcePermissions(User user, UsersProfileVO usersProfile,
+                                                MangoDataSource dataSourceService,
+                                                Set<Integer> oldAccesses) {
+        verifyUserPermissions(oldAccesses, user, usersProfile,
+                usersProfile::getDataSourcePermissions, containsPermission(1),
+                existsObject(dataSourceService));
+    }
+
+    static void verifyUserDataPointPermissions(User user, UsersProfileVO usersProfile,
+                                               MangoDataPoint dataPointService,
+                                               Set<DataPointAccess> oldAccesses) {
+
+        verifyUserPermissions(oldAccesses, user, usersProfile,
+                usersProfile::getDataPointPermissions, containsPermission(new DataPointAccess()),
+                existsObject(dataPointService));
+    }
+
     static Accesses fromProfile(User user, Map<Accesses, UsersProfileVO> profiles) {
         Accesses fromProfile = Accesses.empty();
         if(user.getUserProfile() != Common.NEW_ID) {
@@ -302,6 +337,20 @@ final class MigrationPermissionsUtils {
         });
     }
 
+    private static <T> void verifyUserPermissions(Set<T> oldAccesses, User user,
+                                                  UsersProfileVO usersProfile,
+                                                  Supplier<List<T>> fromProfile,
+                                                  BiPredicate<T, List<T>> containsPermission,
+                                                  Predicate<T> existsObject) {
+        AtomicInteger i = new AtomicInteger();
+        oldAccesses.forEach(permission -> {
+            boolean transferred = containsPermission.test(permission, fromProfile.get());
+            boolean exists = existsObject.test(permission);
+            String msg = verifyInfo(permission, user, transferred, exists, usersProfile);
+            LOG.info(iterationInfo(msg, i.incrementAndGet(), oldAccesses.size()));
+        });
+    }
+
     private static UsersProfileVO createProfile(String prefix, UsersProfileService usersProfileService, Accesses key) {
         String profileName = newProfileName(prefix);
         UsersProfileVO usersProfile = newProfile(profileName, key);
@@ -351,9 +400,9 @@ final class MigrationPermissionsUtils {
         if(user.getUserProfile() != profile.getId()) {
             user.setUserProfile(profile);
             usersProfileService.updateUsersProfile(user, profile);
-            LOG.info(MessageFormat.format("{0} has been assigned to user {1}", profileInfo(profile), userInfo(user)));
+            LOG.info(MessageFormat.format("{0} has been assigned to {1}", profileInfo(profile), userInfo(user)));
         } else {
-            LOG.info(MessageFormat.format("{0} is already assigned to user {1}", profileInfo(profile), userInfo(user)));
+            LOG.info(MessageFormat.format("{0} is already assigned to {1}", profileInfo(profile), userInfo(user)));
         }
     }
 
