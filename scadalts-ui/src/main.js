@@ -7,6 +7,7 @@ import store from './store';
 
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
+import VueDayjs from 'vue-dayjs-plugin';
 
 import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
@@ -14,7 +15,7 @@ import CMP from './components/graphical_views/cmp/CMP';
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListChartWidget from './components/watch_list/WatchListChartWidget';
+import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent';
@@ -73,6 +74,7 @@ const optionsLodash = { name: 'lodash' };
 Vue.use(VueLodash, optionsLodash);
 
 Vue.use(VueCookie);
+Vue.use(VueDayjs);
 
 Vue.config.devtools = true;
 
@@ -188,7 +190,7 @@ if (window.document.getElementById('example-chart-cmp') != undefined) {
 		store,
 		vuetify,
 		i18n,
-		render: (h) => h(WatchListChartWidget),
+		render: (h) => h(WatchListJsonChart),
 	}).$mount('#example-chart-cmp');
 }
 
