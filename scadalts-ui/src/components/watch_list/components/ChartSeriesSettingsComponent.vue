@@ -1,14 +1,40 @@
 <template>
-	<v-app class="chartVuetify">
-		<btn @click.stop="openModal()">
-			<i class="glyphicon glyphicon-cog" />
-		</btn>
-		<v-dialog v-model="isModalVisible" width="1200">
+	<div class="chartVuetify">
+		<v-btn fab @click.stop="openModal()">
+			<v-icon>mdi-cog</v-icon>
+		</v-btn>
+		<v-dialog v-model="isModalVisible" width="800">
 			<v-card>
 				<v-card-title> {{ $t('modernwatchlist.chartseries.title') }} </v-card-title>
-				<v-card-text>
-					<v-row>
-						<v-col cols="8">
+				<v-card-text class="card-content">
+					<v-row id="general-settings">
+						<v-col cols="12">
+							<p>{{ $t('modernwatchlist.chartseries.aggregation.label') }}</p>
+						</v-col>
+
+						<v-col cols="12" class="button-space-double">
+							<v-btn-toggle v-model="aggregation.aggregate" dense mandatory>
+								<v-btn :value="false">{{
+									$t('modernwatchlist.chartseries.aggregation.all')
+								}}</v-btn>
+								<v-btn :value="true">{{
+									$t('modernwatchlist.chartseries.aggregation.aggregate')
+								}}</v-btn>
+							</v-btn-toggle>
+						</v-col>
+
+						<v-col cols="12">
+							<v-text-field
+								v-model="aggregation.count"
+								type="number"
+								:label="$t('modernwatchlist.chartseries.aggregation.count')"
+								:disabled="!aggregation.aggregate"
+								dense
+							></v-text-field>
+						</v-col>
+					</v-row>
+					<v-row id="chart-series-settings">
+						<v-col cols="12">
 							<v-tabs v-model="tab" background-color="primary" dark>
 								<v-tab v-for="s in tempSeries" :key="s">
 									{{ s.name }}
@@ -18,14 +44,14 @@
 								<v-tab-item v-for="s in tempSeries" :key="s">
 									<v-card class="paggin-top-small series-settings limit-height">
 										<v-row>
-											<v-col cols="6">
+											<v-col md="6" sm="12" xs="12">
 												<v-text-field
 													v-model="s.name"
 													:label="$t('modernwatchlist.chartseries.name')"
 													dense
 												></v-text-field>
 											</v-col>
-											<v-col cols="6">
+											<v-col md="6" sm="12" xs="12" class="button-space-double">
 												<v-btn-toggle v-model="s.type" dense mandatory>
 													<v-btn value="LineSeries">{{
 														$t('modernwatchlist.chartseries.series.line')
@@ -38,51 +64,63 @@
 										</v-row>
 
 										<v-row>
-											<v-col cols="2">
-												<p>{{ $t('modernwatchlist.chartseries.xaxis') }}</p>
+											<v-col md="2" sm="12" xs="12">
+												<v-row>
+													<v-col md="12" sm="6" xs="6">
+														<p>{{ $t('modernwatchlist.chartseries.xaxis') }}</p>
+													</v-col>
+													<v-col md="12" sm="6" xs="6" class="button-space-double">
+														<v-btn-toggle v-model="s.xAxis" dense mandatory>
+															<v-btn value="dateAxis1">1</v-btn>
+															<v-btn value="dateAxis2">2</v-btn>
+														</v-btn-toggle>
+													</v-col>
+												</v-row>
 											</v-col>
-											<v-col cols="6">
-												<p>{{ $t('modernwatchlist.chartseries.yaxis') }}</p>
+											<v-col md="4" sm="12" xs="12">
+												<v-row>
+													<v-col md="12" sm="6" xs="6">
+														<p>{{ $t('modernwatchlist.chartseries.yaxis') }}</p>
+													</v-col>
+													<v-col md="12" sm="6" xs="6">
+														<v-btn-toggle v-model="s.yAxis" dense mandatory>
+															<v-btn value="valueAxis1">1</v-btn>
+															<v-btn value="valueAxis2">2</v-btn>
+															<v-btn value="logAxis">{{
+																$t('modernwatchlist.chartseries.yaxis.logarithmic')
+															}}</v-btn>
+															<v-btn value="binAxis">{{
+																$t('modernwatchlist.chartseries.yaxis.binary')
+															}}</v-btn>
+														</v-btn-toggle>
+													</v-col>
+												</v-row>
 											</v-col>
-											<v-col cols="4">
-												<p>{{ $t('modernwatchlist.chartseries.bullets') }}</p>
-											</v-col>
-											<v-col cols="2">
-												<v-btn-toggle v-model="s.xAxis" dense mandatory>
-													<v-btn value="dateAxis1">1</v-btn>
-													<v-btn value="dateAxis2">2</v-btn>
-												</v-btn-toggle>
-											</v-col>
-											<v-col cols="6">
-												<v-btn-toggle v-model="s.yAxis" dense mandatory>
-													<v-btn value="valueAxis1">1</v-btn>
-													<v-btn value="valueAxis2">2</v-btn>
-													<v-btn value="logAxis">{{
-														$t('modernwatchlist.chartseries.yaxis.logarithmic')
-													}}</v-btn>
-													<v-btn value="binAxis">{{
-														$t('modernwatchlist.chartseries.yaxis.binary')
-													}}</v-btn>
-												</v-btn-toggle>
-											</v-col>
-											<v-col cols="4">
-												<v-btn-toggle
-													v-model="s.bullets[0].circle.radius"
-													dense
-													mandatory
-												>
-													<v-btn block :value="5">{{
-														$t('modernwatchlist.chartseries.show')
-													}}</v-btn>
-													<v-btn block :value="0">{{
-														$t('modernwatchlist.chartseries.hide')
-													}}</v-btn>
-												</v-btn-toggle>
+											<v-col md="4" sm="12" xs="12">
+												<v-row>
+													<v-col md="12" sm="6" xs="6">
+														<p>{{ $t('modernwatchlist.chartseries.bullets') }}</p>
+													</v-col>
+													<v-col md="12" sm="6" xs="6" class="button-space-double">
+														<v-btn-toggle
+															v-model="s.bullets[0].circle.radius"
+															dense
+															mandatory
+														>
+															<v-btn :value="5">{{
+																$t('modernwatchlist.chartseries.show')
+															}}</v-btn>
+															<v-btn :value="0">{{
+																$t('modernwatchlist.chartseries.hide')
+															}}</v-btn>
+														</v-btn-toggle>
+													</v-col>
+												</v-row>
 											</v-col>
 										</v-row>
 
 										<v-row>
-											<v-col cols="6">
+											<v-col md="6" sm="12" xs="12">
 												<v-row>
 													<v-col cols="12">
 														<p>{{ $t('modernwatchlist.chartseries.stroke.color') }}</p>
@@ -118,7 +156,7 @@
 												</v-row>
 											</v-col>
 
-											<v-col cols="6">
+											<v-col md="6" sm="12" xs="12">
 												<v-row>
 													<v-col cols="12">
 														<p>{{ $t('modernwatchlist.chartseries.fill.color') }}</p>
@@ -149,34 +187,6 @@
 								</v-tab-item>
 							</v-tabs-items>
 						</v-col>
-
-						<v-col cols="4">
-							<v-row>
-								<!-- Other settings -->
-								<v-col cols="12">
-									<p>{{ $t('modernwatchlist.chartseries.aggregation.label') }}</p>
-								</v-col>
-								<v-col cols="12">
-									<v-btn-toggle v-model="aggregation.aggregate" dense mandatory>
-										<v-btn :value="false">{{
-											$t('modernwatchlist.chartseries.aggregation.all')
-										}}</v-btn>
-										<v-btn :value="true">{{
-											$t('modernwatchlist.chartseries.aggregation.aggregate')
-										}}</v-btn>
-									</v-btn-toggle>
-								</v-col>
-								<v-col cols="12">
-									<v-text-field
-										v-model="aggregation.count"
-										type="number"
-										:label="$t('modernwatchlist.chartseries.aggregation.count')"
-										:disabled="!aggregation.aggregate"
-										dense
-									></v-text-field>
-								</v-col>
-							</v-row>
-						</v-col>
 					</v-row>
 				</v-card-text>
 				<v-card-actions>
@@ -193,7 +203,7 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
-	</v-app>
+	</div>
 </template>
 <script>
 export default {
@@ -256,7 +266,7 @@ export default {
 		saveAggregation() {
 			localStorage.setItem(
 				`MWL_${this.watchListName}_A`,
-				JSON.stringify(this.aggregation),
+				JSON.stringify(this.aggregation)
 			);
 		},
 
@@ -287,5 +297,17 @@ export default {
 <style>
 .chartVuetify .v-application--wrap {
 	min-height: 0;
+}
+
+.button-space-double > .v-item-group {
+	width: 100%;
+	display: flex;
+}
+.button-space-double > .v-item-group > button {
+	width: 50%;
+}
+.card-content {
+	max-height: 70vh;
+	overflow: auto;
 }
 </style>

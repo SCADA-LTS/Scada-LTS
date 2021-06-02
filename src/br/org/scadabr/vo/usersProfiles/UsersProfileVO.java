@@ -11,14 +11,19 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.mango.service.DataSourceService;
 
+@JsonRemoteEntity
 public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	public static final String XID_PREFIX = "UP_";
 
+	@JsonRemoteProperty
 	private String name;
 
+	@JsonRemoteProperty
 	private int id = Common.NEW_ID;
 
 	private List<Integer> dataSourcePermissions;
@@ -29,14 +34,18 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	private List<ViewAccess> viewPermissions;
 
+	@JsonRemoteProperty
 	private String xid;
 
 	private User lastAppliedUser = null;
 
+	@Deprecated
 	private List<WatchList> watchlists;
 
+	@Deprecated
 	private List<Integer> usersIds;
 
+	@Deprecated
 	private List<View> views;
 
 	public UsersProfileVO() {
@@ -114,22 +123,27 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		return lastAppliedUser;
 	}
 
+    @Deprecated
 	public void defineWatchlists(List<WatchList> watchlists) {
 		this.watchlists = watchlists;
 	}
 
+    @Deprecated
 	public List<WatchList> retrieveWatchlists() {
 		return this.watchlists;
 	}
 
+    @Deprecated
 	public void defineViews(List<View> views) {
 		this.views = views;
 	}
 
+    @Deprecated
 	public List<View> retrieveViews() {
 		return this.views;
 	}
 
+    @Deprecated
 	public void defineUsers(List<Integer> users) {
 		this.usersIds = users;
 	}
@@ -148,6 +162,16 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		// Note: data source permissions are explicitly deserialized by the
 		// import/export because the data sources and
 		// points need to be certain to exist before we can resolve the xids.
+		DataSourceService dataSourceService = new DataSourceService();
+		dataSourcePermissions.addAll(DeserializeUsersProfileUtils.getDataSourcePermissions(profileJson, dataSourceService));
+		dataPointPermissions.addAll(DeserializeUsersProfileUtils.getDataPointPermissions(profileJson, reader));
+		viewPermissions.addAll(DeserializeUsersProfileUtils.getViewPermissions(profileJson, reader));
+		watchlistPermissions.addAll(DeserializeUsersProfileUtils.getWatchlistPermissions(profileJson, reader));
+
+		usersIds.addAll(DeserializeUsersProfileUtils.getUsersOnProfile(profileJson).stream()
+				.filter(Objects::nonNull)
+				.map(User::getId)
+				.collect(Collectors.toList()));
 	}
 
 	public void jsonSerialize(Map<String, Object> map) {
@@ -156,6 +180,15 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		map.put("viewPermissions", viewPermissions);
 		map.put("watchlistPermissions", watchlistPermissions);
 		map.put("usersIds", usersIds);
+
+		DataSourceService dataSourceService = new DataSourceService();
+		Set<String> datasoureXids = dataSourcePermissions.stream()
+				.filter(Objects::nonNull)
+				.map(dataSourceService::getDataSource)
+				.filter(Objects::nonNull)
+				.map(DataSourceVO::getXid)
+				.collect(Collectors.toSet());
+		map.put("dataSourcePermissionsXid", datasoureXids);
 	}
 
 	@Override
@@ -193,6 +226,7 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
         return lastAppliedUser == null ?  "null" : lastAppliedUser.getId();
     }
 
+	@Deprecated
     private List<String> watchListsIds(List<WatchList> watchLists) {
 		if(watchLists != null && !watchLists.isEmpty()) {
 			return watchLists.stream().filter(Objects::nonNull)
@@ -203,6 +237,7 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		return Collections.emptyList();
 	}
 
+	@Deprecated
 	private List<String> viewsIds(List<View> views) {
 		if(views != null && !views.isEmpty()) {
 			return views.stream().filter(Objects::nonNull)

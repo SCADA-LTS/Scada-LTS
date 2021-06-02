@@ -1,215 +1,60 @@
 <template>
-	<div class="col-xs-12">
-		<div class="col-xs-12">
-			<div class="col-xs-3">
-				<select id="comp-el-1" v-model="pointSettings[0].dataPoint" class="form-control">
-					<option v-for="p in pointList" v-bind:value="p" v-bind:key="p.id">
-						{{ p.name }}: {{ p.xid }}
-					</option>
-				</select>
-				<tooltip
-					:text="$t('modernwatchlist.settings.compare.point1.tooltip')"
-					target="#comp-el-1"
-				/>
-			</div>
-			<div v-if="pointSettings[0].dataPoint" class="col-xs-9">
-				<div class="col-xs-6">
-					<dropdown class="form-group col-xs-11">
-						<div class="input-group">
-							<input
-								class="form-control"
-								type="text"
-								v-model="pointSettings[0].startDate"
-							/>
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-calendar"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li>
-								<datepicker
-									v-model="pointSettings[0].startDate"
-									:format="formatDate"
-									:inline="true"
-									:monday-first="true"
-								/>
-							</li>
-						</template>
-					</dropdown>
-					<dropdown class="form-group row">
-						<div class="input-group">
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-time"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li style="padding: 10px">
-								<time-picker
-									v-model="pointSettings[0].startTime"
-									:show-meridian="false"
-								/>
-							</li>
-						</template>
-					</dropdown>
-				</div>
-				<div class="col-xs-6">
-					<dropdown class="form-group col-xs-11">
-						<div class="input-group">
-							<input
-								class="form-control"
-								type="text"
-								v-model="pointSettings[0].endDate"
-							/>
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-calendar"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li>
-								<datepicker
-									v-model="pointSettings[0].endDate"
-									:format="formatDate"
-									:inline="true"
-									:monday-first="true"
-								/>
-							</li>
-						</template>
-					</dropdown>
-					<dropdown class="form-group row">
-						<div class="input-group">
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-time"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li style="padding: 10px">
-								<time-picker v-model="pointSettings[0].endTime" :show-meridian="false" />
-							</li>
-						</template>
-					</dropdown>
-				</div>
-			</div>
-		</div>
-		<div class="col-xs-12">
-			<div class="col-xs-3">
-				<select id="comp-el-2" v-model="pointSettings[1].dataPoint" class="form-control">
-					<option v-for="p in pointList" v-bind:value="p" v-bind:key="p.id">
-						{{ p.name }}: {{ p.xid }}
-					</option>
-				</select>
-				<tooltip
-					:text="$t('modernwatchlist.settings.compare.point2.tooltip')"
-					target="#comp-el-2"
-				/>
-			</div>
-			<div v-if="pointSettings[1].dataPoint" class="col-xs-9">
-				<div class="col-xs-6">
-					<dropdown class="form-group col-xs-11">
-						<div class="input-group">
-							<input
-								class="form-control"
-								type="text"
-								v-model="pointSettings[1].startDate"
-							/>
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-calendar"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li>
-								<datepicker
-									v-model="pointSettings[1].startDate"
-									@selected="formatDate"
-									:inline="true"
-									:monday-first="true"
-								/>
-							</li>
-						</template>
-					</dropdown>
-					<dropdown class="form-group row">
-						<div class="input-group">
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-time"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li style="padding: 10px">
-								<time-picker
-									v-model="pointSettings[1].startTime"
-									:show-meridian="false"
-								/>
-							</li>
-						</template>
-					</dropdown>
-				</div>
-				<div class="col-xs-6">
-					<dropdown class="form-group col-xs-11">
-						<div class="input-group">
-							<input
-								class="form-control"
-								type="text"
-								v-model="pointSettings[1].endDate"
-							/>
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-calendar"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li>
-								<datepicker
-									v-model="pointSettings[1].endDate"
-									@selected="formatDate"
-									:inline="true"
-									:monday-first="true"
-								/>
-							</li>
-						</template>
-					</dropdown>
-					<dropdown class="form-group row">
-						<div class="input-group">
-							<div class="input-group-btn">
-								<btn class="dropdown-toggle">
-									<i class="glyphicon glyphicon-time"></i>
-								</btn>
-							</div>
-						</div>
-						<template slot="dropdown">
-							<li style="padding: 10px">
-								<time-picker v-model="pointSettings[1].endTime" :show-meridian="false" />
-							</li>
-						</template>
-					</dropdown>
-				</div>
-			</div>
-		</div>
+	<div>
+		<v-row v-for="(point, index) in pointSettings" :key="index">
+			<v-col md="4" xs="4">
+				<v-select
+					v-model="point.dataPoint"
+					:items="pointList"
+					item-text="xid"
+					:return-object="true"
+					dense
+				>
+					<template slot="selection" slot-scope="data">
+						{{ data.item.xid }} - {{ data.item.name }}
+					</template>
+					<template slot="item" slot-scope="data">
+						{{ data.item.xid }} - {{ data.item.name }}
+					</template>
+				</v-select>
+			</v-col>
+
+			<v-col md="4" xs="4">
+				<v-menu offset-y :close-on-content-click="false" class="wl-menu-time-picker">
+					<template v-slot:activator="{ on }">
+						<v-text-field
+							v-on="on"
+							:label="$t('modernwatchlist.settings.date.start')"
+							:value="concatenateDateTime(point.startDate, point.startTime)"
+							dense
+						></v-text-field>
+					</template>
+					<v-date-picker first-day-of-week="1" v-model="point.startDate"></v-date-picker>
+					<v-time-picker format="24hr" v-model="point.startTime"></v-time-picker>
+				</v-menu>
+			</v-col>
+
+			<v-col md="4" xs="4">
+				<v-menu offset-y :close-on-content-click="false" class="wl-menu-time-picker">
+					<template v-slot:activator="{ on }">
+						<v-text-field
+							v-on="on"
+							:label="$t('modernwatchlist.settings.date.end')"
+							:value="concatenateDateTime(point.endDate, point.endTime)"
+							dense
+						></v-text-field>
+					</template>
+					<v-date-picker first-day-of-week="1" v-model="point.endDate"></v-date-picker>
+					<v-time-picker format="24hr" v-model="point.endTime"></v-time-picker>
+				</v-menu>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 <script>
-import Axios from 'axios';
-import Datepicker from 'vuejs-datepicker';
-
 export default {
 	name: 'ChartSettingsCompareComonent',
 
-	components: {
-		Datepicker,
-	},
-
-	props: ['watchListName', 'pointId'],
+	props: ['watchListName', 'pointArray'],
 
 	data() {
 		return {
@@ -218,17 +63,17 @@ export default {
 			pointSettings: [
 				{
 					dataPoint: undefined,
-					startDate: new Date(),
-					startTime: new Date(),
-					endDate: new Date(),
-					endTime: new Date(),
+					startDate: '',
+					startTime: '',
+					endDate: '',
+					endTime: '',
 				},
 				{
 					dataPoint: undefined,
-					startDate: new Date(),
-					startTime: new Date(),
-					endDate: new Date(),
-					endTime: new Date(),
+					startDate: '',
+					startTime: '',
+					endDate: '',
+					endTime: '',
 				},
 			],
 		};
@@ -238,8 +83,6 @@ export default {
 		this.loadSettings();
 		this.init();
 	},
-
-	computed: {},
 
 	methods: {
 		applySettings() {
@@ -251,24 +94,24 @@ export default {
 				comparePoints: [
 					{
 						pointId: this.pointSettings[0].dataPoint.id,
-						startDate: this.convertDate(
+						startDate: this.concatenateDateTime(
 							this.pointSettings[0].startDate,
-							this.pointSettings[0].startTime,
+							this.pointSettings[0].startTime
 						),
-						endDate: this.convertDate(
+						endDate: this.concatenateDateTime(
 							this.pointSettings[0].endDate,
-							this.pointSettings[0].endTime,
+							this.pointSettings[0].endTime
 						),
 					},
 					{
 						pointId: this.pointSettings[1].dataPoint.id,
-						startDate: this.convertDate(
+						startDate: this.concatenateDateTime(
 							this.pointSettings[1].startDate,
-							this.pointSettings[1].startTime,
+							this.pointSettings[1].startTime
 						),
-						endDate: this.convertDate(
+						endDate: this.concatenateDateTime(
 							this.pointSettings[1].endDate,
-							this.pointSettings[1].endTime,
+							this.pointSettings[1].endTime
 						),
 					},
 				],
@@ -283,14 +126,10 @@ export default {
 				if (loadedData.type === this.CHART_TYPE) {
 					for (let i = 0; i < loadedData.pointSettings.length; i++) {
 						this.pointSettings[i].dataPoint = loadedData.pointSettings[i].dataPoint;
-						this.pointSettings[i].startDate = new Date(
-							loadedData.pointSettings[i].startDate,
-						);
-						this.pointSettings[i].startTime = new Date(
-							loadedData.pointSettings[i].startTime,
-						);
-						this.pointSettings[i].endDate = new Date(loadedData.pointSettings[i].endDate);
-						this.pointSettings[i].endTime = new Date(loadedData.pointSettings[i].endTime);
+						this.pointSettings[i].startDate = loadedData.pointSettings[i].startDate
+						this.pointSettings[i].startTime = loadedData.pointSettings[i].startTime
+						this.pointSettings[i].endDate = loadedData.pointSettings[i].endDate;
+						this.pointSettings[i].endTime = loadedData.pointSettings[i].endTime;
 					}
 				}
 			}
@@ -322,9 +161,8 @@ export default {
 		initDataPointsDetails() {
 			return new Promise((resolve) => {
 				let pointPromises = [];
-				let pointArray = this.pointId.split(',');
-				pointArray.forEach((id) => {
-					pointPromises.push(this.getDataPointDetails(id));
+				this.pointArray.forEach((id) => {
+					pointPromises.push(this.getDataPointDetails(id.id));
 				});
 
 				Promise.all(pointPromises).then(() => {
@@ -335,12 +173,12 @@ export default {
 
 		getDataPointDetails(pointId) {
 			return new Promise((resolve) => {
-				Axios.get(`./api/point_value/getValue/id/${pointId}`).then((r) => {
+				this.$store.dispatch('getDataPointValue', pointId).then((r) => {
 					let pointDetails = {
 						id: pointId,
-						xid: r.data.xid,
-						name: r.data.name,
-						type: r.data.type,
+						xid: r.xid,
+						name: r.name,
+						type: r.type,
 					};
 					this.pointList.push(pointDetails);
 					resolve(true);
@@ -348,27 +186,8 @@ export default {
 			});
 		},
 
-		convertDate(date, time) {
-			if (!(time instanceof Date)) {
-				if (time === undefined || time === null) {
-					time = new Date();
-				} else {
-					time = new Date(time);
-				}
-			}
-			let dateString = this.formatDate(new Date(date));
-			let timeString = `${time.getHours()}:${time.getMinutes()}`;
-			return `${dateString} ${timeString}`;
-		},
-
-		formatDate(date) {
-			return (
-				date.getUTCFullYear() +
-				'/' +
-				('0' + (date.getUTCMonth() + 1)).slice(-2) +
-				'/' +
-				('0' + date.getUTCDate()).slice(-2)
-			);
+		concatenateDateTime(date, time) {
+			return `${date} ${time}`;
 		},
 	},
 };
