@@ -28,7 +28,7 @@ public class V2_7_0_3__AnonymousUser extends BaseJavaMigration {
             new ArgumentPreparedStatementSetter(new Object[]{
                     "anonymous-user",
                     Common.encrypt("anonymous"),
-                    "null@sivec.lu",
+                    "anonymous@mail.com",
                     "",
                     "N",
                     "Y",
