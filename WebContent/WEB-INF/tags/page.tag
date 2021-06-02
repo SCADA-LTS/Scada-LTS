@@ -45,7 +45,14 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
-  <link id="pagestyle" href="assets/common_deprecated.css" type="text/css" rel="stylesheet"/>
+  <c:choose>
+    <c:when test="${!empty sessionUser}">
+      <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
+    </c:when>
+    <c:otherwise>
+      <link href="assets/common_DEFAULT.css" type="text/css" rel="stylesheet"/>
+    </c:otherwise>
+  </c:choose>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
@@ -101,7 +108,6 @@
       <c:if test="${!empty sessionUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
-        dojo.addOnLoad(function() { setUserTheme("${sessionUser.theme}"); });
         <c:if test="${sessionUser.hideMenu}">
           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
         </c:if>
@@ -119,29 +125,12 @@
           MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
       }
 
-      function swapStyleSheet(sheet) {
-        document.getElementById("pagestyle").setAttribute("href", sheet);
-        localStorage.setItem('theme', sheet);
-      }
-
       function setFullscreenIfGraphicView() {
         if(window.location.href.includes("views.shtm")) {
           document.cookie = "fullScreen=yes";
           checkFullScreen();
         }
       }
-
-      function initate() {
-
-        var theme = localStorage.getItem('theme');
-        if (theme) {
-            document.getElementById("pagestyle").setAttribute("href", theme);
-        }
-
-      }
-
-      window.onload = initate;
-
     </script>
   </c:if>
 </head>

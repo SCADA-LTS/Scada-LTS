@@ -1059,13 +1059,4 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
-function setUserTheme(userTheme) {
-    if (userTheme == 'MODERN') {
-        swapStyleSheet("assets/common.css");
-    } else if (userTheme == 'DARK') {
-        swapStyleSheet("assets/common_darker.css")
-    } else if (userTheme == 'DEFAULT') {
-        swapStyleSheet("assets/common_deprecated.css");
-    }
-}
 
