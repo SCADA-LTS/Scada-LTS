@@ -230,6 +230,7 @@ public class UsersProfileService {
     }
 
     private static boolean add(UsersProfileVO profileVO) {
+        currentProfileList.remove(profileVO);
         return currentProfileList.add(profileVO);
     }
 

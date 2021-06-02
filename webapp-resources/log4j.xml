@@ -246,6 +246,12 @@
     <appender-ref ref="stdout"/>
   </category>
 
+  <category name="org.scada_lts.permissions.migration" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="scadadaoasync"/>
+    <appender-ref ref="stdout"/>
+  </category>
+
 <!-- Root Log -->
   <root>
     <level value="info"/>

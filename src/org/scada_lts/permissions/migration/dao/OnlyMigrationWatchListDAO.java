@@ -15,19 +15,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao.watchlist;
-
-import java.sql.*;
-import java.util.List;
-import java.util.stream.Collectors;
+package org.scada_lts.permissions.migration.dao;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
+import com.serotonin.mango.view.ShareUser;
+import com.serotonin.mango.vo.WatchList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
-import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
+import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -35,23 +34,17 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.mango.view.ShareUser;
-import com.serotonin.mango.vo.WatchList;
+import java.sql.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * WatchList DAO
- *
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
- */
-@Repository
-public class WatchListDAO implements GenericDaoCR<WatchList> {
+public class OnlyMigrationWatchListDAO extends WatchListDAO implements GenericDaoCR<WatchList> {
 	
-	private static final Log LOG = LogFactory.getLog(WatchListDAO.class);
+	private static final Log LOG = LogFactory.getLog(OnlyMigrationWatchListDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
