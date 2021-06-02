@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 public enum ScadaTheme {
     MODERN,
+    DARK,
     DEFAULT;
 
     public static ScadaTheme getType(String name) {
