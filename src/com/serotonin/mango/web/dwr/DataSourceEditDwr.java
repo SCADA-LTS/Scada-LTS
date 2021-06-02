@@ -43,6 +43,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import br.org.scadabr.db.dao.UsersProfileDao;
+import com.serotonin.db.KeyValuePair;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -1292,7 +1293,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
                                                        int updatePeriods, int updatePeriodType, String url,
-                                                       int timeoutSeconds, int retries, boolean stop) {
+                                                       int timeoutSeconds, int retries, boolean stop,
+                                                       List<KeyValuePair> staticHeaders) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1304,6 +1306,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
+        ds.setStaticHeaders(staticHeaders);
 
         return tryDataSourceSave(ds);
     }
@@ -1311,7 +1314,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
                                                                               int updatePeriods, int updatePeriodType, String url,
-                                                                              int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation) {
+                                                                              int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation,
+                                                                              List<KeyValuePair> staticHeaders) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1325,6 +1329,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setStop(stop);
         ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
         ds.setReactivation(rDs);
+        ds.setStaticHeaders(staticHeaders);
 
         DwrResponseI18n result;
 
