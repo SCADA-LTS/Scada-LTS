@@ -1,6 +1,5 @@
 package org.scada_lts.dao;
 
-import com.serotonin.mango.vo.ScadaTheme;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -161,7 +160,7 @@ public class UserDAO {
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
 			user.setHideMenu(rs.getBoolean(COLUMN_NAME_HIDE_MENU));
-			user.setTheme(ScadaTheme.getType(rs.getString(COLUMN_NAME_THEME)));
+			user.setTheme(rs.getString(COLUMN_NAME_THEME));
 			return user;
 		}
 	}
@@ -313,7 +312,7 @@ public class UserDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_SCADA_THEME, new Object[]{
-				user.getTheme().name(),
+				user.getTheme(),
 				user.getId()
 		});
 	}
