@@ -7,6 +7,8 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 
 import java.util.List;
 
+import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
+
 public class WatchListGetShareUsers implements GetShareUsers<WatchList> {
 
     private final WatchListDAO watchListDAO;
@@ -35,7 +37,7 @@ public class WatchListGetShareUsers implements GetShareUsers<WatchList> {
     @Override
     public List<ShareUser> getShareUsersWithProfile(WatchList object) {
         List<ShareUser> shareUsers = watchListDAO.getWatchListUsers(object.getId());
-        shareUsers.addAll(usersProfileDAO.selectWatchListShareUsers(object.getId()));
-        return shareUsers;
+        List<ShareUser> fromProfile = usersProfileDAO.selectWatchListShareUsers(object.getId());
+        return merge(shareUsers, fromProfile);
     }
 }

@@ -55,6 +55,7 @@ import org.scada_lts.mango.service.UsersProfileService;
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
 		JsonSerializable {
+
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String username;
@@ -84,6 +85,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private int receiveAlarmEmails;
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
+
+	@JsonRemoteProperty
+	private String theme;
+	@JsonRemoteProperty
+	private boolean hideMenu;
 
 	//
 	// Session data. The user object is stored in session, and some other
@@ -401,6 +407,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void setEventExportDefinition(
 			EventExportDefinition eventExportDefinition) {
 		this.eventExportDefinition = eventExportDefinition;
+	}
+
+	public String getTheme() {
+		return theme;
+	}
+
+	public void setTheme(String theme) {
+		this.theme = theme;
+	}
+
+	public boolean isHideMenu() {
+		return hideMenu;
+	}
+
+	public void setHideMenu(boolean hideMenu) {
+		this.hideMenu = hideMenu;
 	}
 
 	public void setAttribute(String key, Object value) {

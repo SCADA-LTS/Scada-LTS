@@ -39,6 +39,9 @@ public class UserDAO {
 	private final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
 	private final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
 	private final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
+	private final static String COLUMN_NAME_HIDE_MENU = "hideMenu";
+	private final static String COLUMN_NAME_THEME = "theme";
+
 
 	// @formatter:off
 	private static final String USER_SELECT_ID = ""
@@ -59,7 +62,9 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_LAST_LOGIN + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + " "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_HIDE_MENU + ", "
+				+ COLUMN_NAME_THEME + " "
 			+ "from users ";
 
 	private static final String USER_SELECT_ORDER = ""
@@ -93,6 +98,18 @@ public class UserDAO {
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
 				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
 			+ "values (?,?,?,?,?,?,?,?,?) ";
+
+	private static final String USER_UPDATE_HIDE_MENU = ""
+			+ "update users set "
+				+ COLUMN_NAME_HIDE_MENU + "=? "
+			+ "where "
+				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String USER_UPDATE_SCADA_THEME = ""
+			+ "update users set "
+			+ COLUMN_NAME_THEME + "=? "
+			+ "where "
+			+ COLUMN_NAME_ID + "=? ";
 
 	private static final String USER_UPDATE = ""
 			+ "update users set "
@@ -142,6 +159,8 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
+			user.setHideMenu(rs.getBoolean(COLUMN_NAME_HIDE_MENU));
+			user.setTheme(rs.getString(COLUMN_NAME_THEME));
 			return user;
 		}
 	}
@@ -268,6 +287,32 @@ public class UserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.getId()
+		});
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateHideMenu(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateHideMenu(User user) user:" + user);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HIDE_MENU, new Object[]{
+				user.isHideMenu(),
+				user.getId()
+		});
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateScadaTheme(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateScadaTheme(User user) user:" + user);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_SCADA_THEME, new Object[]{
+				user.getTheme(),
 				user.getId()
 		});
 	}

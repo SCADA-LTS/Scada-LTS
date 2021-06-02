@@ -52,8 +52,8 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 	@Override
 	public String toString() {
 		return "WatchListAccess{" +
-				"permission=" + permission +
-				", id=" + id +
+				"id=" + id +
+				", permission=" + permission +
 				'}';
 	}
 }

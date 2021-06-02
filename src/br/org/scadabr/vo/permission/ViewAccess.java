@@ -52,8 +52,8 @@ public class ViewAccess extends Permission implements JsonSerializable {
 	@Override
 	public String toString() {
 		return "ViewAccess{" +
-				"permission=" + permission +
-				", id=" + id +
+				"id=" + id +
+				", permission=" + permission +
 				'}';
 	}
 }

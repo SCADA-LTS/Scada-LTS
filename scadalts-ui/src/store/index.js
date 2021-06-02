@@ -12,10 +12,10 @@ import storeUsers from './users';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
+import watchListModule from './modernWatchList';
 import axios from 'axios';
 
 import i18n from '@/i18n';
-import { doc } from 'prettier';
 
 Vue.use(Vuex);
 
@@ -37,6 +37,7 @@ export default new Vuex.Store({
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,
+		watchListModule,
 	},
 	state: {
 		loggedUser: null,
