@@ -61,8 +61,6 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class User implements SetPointSource, HttpSessionBindingListener,
 		JsonSerializable {
 
-	public enum DefaultTheme {MODERN, STANDARD}
-
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String username;
@@ -94,9 +92,9 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean receiveOwnAuditEvents;
 
 	@JsonRemoteProperty
-	private DefaultTheme defaultTheme;
+	private ScadaTheme theme;
 	@JsonRemoteProperty
-	private boolean hiddenMenu;
+	private boolean hideMenu;
 
 	//
 	// Session data. The user object is stored in session, and some other
@@ -416,20 +414,20 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = eventExportDefinition;
 	}
 
-	public DefaultTheme getDefaultTheme() {
-		return defaultTheme;
+	public ScadaTheme getTheme() {
+		return theme;
 	}
 
-	public void setDefaultTheme(DefaultTheme defaultTheme) {
-		this.defaultTheme = defaultTheme;
+	public void setTheme(ScadaTheme theme) {
+		this.theme = theme;
 	}
 
-	public boolean isHiddenMenu() {
-		return hiddenMenu;
+	public boolean isHideMenu() {
+		return hideMenu;
 	}
 
-	public void setHiddenMenu(boolean hiddenMenu) {
-		this.hiddenMenu = hiddenMenu;
+	public void setHideMenu(boolean hideMenu) {
+		this.hideMenu = hideMenu;
 	}
 
 	public void setAttribute(String key, Object value) {

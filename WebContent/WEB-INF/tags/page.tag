@@ -1,8 +1,9 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -32,14 +33,14 @@
     <c:when test="${!empty instanceDescription}">${instanceDescription}</c:when>
     <c:otherwise><fmt:message key="header.title"/></c:otherwise>
   </c:choose></title>
-  
+
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
-  <meta http-equiv="Content-Style-Type" content="text/css" />  
+  <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="Copyright" content="ScadaLTS &copy;2020"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
-  
+
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
@@ -49,7 +50,7 @@
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
   <jsp:invoke fragment="styles"/>
-  
+
   <!-- Scripts -->
   <script type="text/javascript">
   	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
@@ -62,9 +63,9 @@
     <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
   </c:forTokens>
   <script type="text/javascript">
-	var jQuery = $; 
+	var jQuery = $;
 	$ = null;
-  </script> 
+  </script>
   <script type="text/javascript" src="dwr/engine.js"></script>
   <script type="text/javascript" src="dwr/util.js"></script>
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
@@ -80,7 +81,7 @@
   <c:if test="${!simple}">
     <script type="text/javascript" src="resources/header.js"></script>
     <script type="text/javascript">
-    
+
 	    function loadjscssfile(filename, filetype){
 			if (filetype=="js"){ //if filename is a external JavaScript file
 	    		var fileref=document.createElement('script')
@@ -95,28 +96,39 @@
 			if (typeof fileref!="undefined")
 	    		document.getElementsByTagName("head")[0].appendChild(fileref)
 		};
-    
+
       dwr.util.setEscapeHtml(false);
       <c:if test="${!empty sessionUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
+        dojo.addOnLoad(function() { setUserTheme("${sessionUser.theme}"); });
+        <c:if test="${sessionUser.hideMenu}">
+          dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
+        </c:if>
       </c:if>
-      
+
       function setLocale(locale) {
           MiscDwr.setLocale(locale, function() { window.location = window.location });
       }
-      
+
       function setHomeUrl() {
           MiscDwr.setHomeUrl(window.location.href, function() { alert("Home URL saved"); });
       }
-      
+
       function goHomeUrl() {
           MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
       }
 
       function swapStyleSheet(sheet) {
-        document.getElementById("pagestyle").setAttribute("href", sheet); 
+        document.getElementById("pagestyle").setAttribute("href", sheet);
         localStorage.setItem('theme', sheet);
+      }
+
+      function setFullscreenIfGraphicView() {
+        if(window.location.href.includes("views.shtm")) {
+          document.cookie = "fullScreen=yes";
+          checkFullScreen();
+        }
       }
 
       function initate() {
@@ -172,13 +184,41 @@
     <nav class="flex-default">
       <c:if test="${!empty sessionUser}">
         <div class="spacer">
-          <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
-          <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
-          <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
-          <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+            <c:choose>
+                <c:when test="${sessionUser.hideMenu}">
+                    <c:if test="${!empty sessionUser.homeUrl}">
+                        <c:set var="homeUrl" value="${fn:split(sessionUser.homeUrl, '?')}" />
+                        <c:if test="${homeUrl[0] == 'watch_list.shtm'}">
+                            <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'modern_watch_list.shtm'}">
+                          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'views.shtm'}">
+                          <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'events.shtm'}">
+                          <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'app.shtm'}">
+                          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'reports.shtm'}">
+                          <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+                        </c:if>
+                    </c:if>
+                </c:when>
+             <c:otherwise>
+                <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+                <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+                <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+                <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+                <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
+                <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+             </c:otherwise>
+           </c:choose>
         </div>
+
 
         <c:if test="${sessionUser.admin}">
           <div class="spacer">
@@ -234,9 +274,11 @@
 
     <div id="navbarUserProperties" class="flex-default spacer">
       <c:if test="${!empty sessionUser}">
-        <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
-        <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-        <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+        <c:if test="${!sessionUser.hideMenu}">
+            <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
+            <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+            <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+        </c:if>
       </c:if>
 
       <div class="ptr" onmouseover="showMenu('styleEdit', -100, 10);">

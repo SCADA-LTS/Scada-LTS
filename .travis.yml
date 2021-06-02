@@ -32,7 +32,7 @@ branches:
   - "/^develop.*$/"
   - "/^master.*$/"
   - "/^release.*$/"
-  - "/^feature/#1687.*$/"
+  - "/^feature/#1702.*$/"
 notifications:
   email: false
 env:
@@ -55,10 +55,8 @@ after_script:
 - rm -rf ./apache-tomcat-7.0.85
 - cp ../../ScadaBR.war ./webapps
 - ls -l ./webapps/ScadaBR.war
-- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
-- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
-- ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
-- ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
+- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.49.jar ./lib/
+- ls -l ./lib/mysql-connector-java-5.1.49.jar
 - cp -f ../config/context.xml ./conf/
 - cat ./conf/context.xml
 - cd ../

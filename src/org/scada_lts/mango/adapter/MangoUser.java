@@ -43,11 +43,11 @@ public interface MangoUser {
 
 	void saveUser(final User user);
 
-	void saveUserBaseVersion(final User user);
-
 	void insertUser(User user);
 
-	void insertUserBaseVersion(User user);
+	void updateHideMenu(User user);
+
+	void updateScadaTheme(User user);
 
 	void updateUser(User user);
 

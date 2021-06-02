@@ -138,15 +138,6 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
-	public void saveUserBaseVersion(User user) {
-		if (user.getId() == Common.NEW_ID) {
-			insertUserBaseVersion(user);
-		} else {
-			updateUser(user);
-		}
-	}
-
-	@Override
 	public void saveUser(User user) {
 		if (user.getId() == Common.NEW_ID) {
 			insertUser(user);
@@ -156,14 +147,13 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
-	public void insertUserBaseVersion(User user) {
-		try {
-			int id = userDAO.insertBaseVersion(user);
-			user.setId(id);
-			updatePermissions(user);
-		} catch (Throwable t) {
-			LOG.error(t.getMessage(), t);
-		}
+	public void updateHideMenu(User user) {
+		userDAO.updateHideMenu(user);
+	}
+
+	@Override
+	public void updateScadaTheme(User user) {
+		userDAO.updateScadaTheme(user);
 	}
 
 	@Override
