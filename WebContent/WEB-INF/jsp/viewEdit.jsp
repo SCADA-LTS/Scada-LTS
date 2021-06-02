@@ -417,6 +417,7 @@
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.anonymous"/></td>
                   <td class="formField" width="250">
+                  <tag:help id="anonymousView"/>
                     <sst:select name="view.anonymousAccess" value="${status.value}">
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
