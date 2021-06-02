@@ -92,7 +92,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean receiveOwnAuditEvents;
 
 	@JsonRemoteProperty
-	private ScadaTheme theme;
+	private String theme;
 	@JsonRemoteProperty
 	private boolean hideMenu;
 
@@ -414,11 +414,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = eventExportDefinition;
 	}
 
-	public ScadaTheme getTheme() {
+	public String getTheme() {
 		return theme;
 	}
 
-	public void setTheme(ScadaTheme theme) {
+	public void setTheme(String theme) {
 		this.theme = theme;
 	}
 

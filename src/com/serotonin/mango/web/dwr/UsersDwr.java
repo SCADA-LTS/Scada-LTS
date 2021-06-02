@@ -27,7 +27,6 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.vo.ScadaTheme;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
@@ -143,7 +142,7 @@ public class UsersDwr extends BaseDwr {
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		user.setHideMenu(hideMenu);
-		user.setTheme(ScadaTheme.getType(theme));
+		user.setTheme(theme);
 		user.setHomeUrl(homeUrl);
         if(usersProfileId == Common.NEW_ID) {
             user.setDataSourcePermissions(dataSourcePermissions);
@@ -209,7 +208,7 @@ public class UsersDwr extends BaseDwr {
 
 	public DwrResponseI18n saveUser(int id, String password, String email,
 			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId, String defaultTheme) {
+			boolean receiveOwnAuditEvents, int usersProfileId, String theme) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -227,7 +226,7 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
 		updateUser.setUserProfileId(usersProfileId);
-		updateUser.setTheme(ScadaTheme.getType(defaultTheme));
+		updateUser.setTheme(theme);
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
