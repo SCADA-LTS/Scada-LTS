@@ -226,7 +226,7 @@
               icons[i].src = iconSrc;
 
           window.dispatchEvent(new CustomEvent("watchListChanged", {
-            detail: { wlName: select.options[select.selectedIndex].text }
+            detail: { wlId: select.options[select.selectedIndex].value }
           }));
       }
 
