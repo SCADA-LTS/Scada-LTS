@@ -18,6 +18,33 @@
 		</v-card-title>
 
 		<v-card-text>
+			<v-row>
+				<v-col cols="12" :md="8" :sm="12">
+					<v-text-field v-model="datasource.name" label="DataSource Name" ref="dsName"></v-text-field>
+				</v-col>
+				<v-col cols="12" :md="4" :sm="12">
+					<v-text-field
+						v-model="datasource.xid"
+						label="DataSource Export Id"
+					></v-text-field>
+				</v-col>
+			</v-row>
+			<v-row v-if="polling">
+				<v-col cols="6">
+					<v-text-field
+						v-model="datasource.updatePeriod"
+						label="Update Period"
+					></v-text-field>
+				</v-col>
+				<v-col cols="6">
+					<UpdatePeriodType
+						:value="datasource.updatePeriodType"
+						@update="onUpdatePeriodTypeUpdate"
+						types="1,2,3,4,5"
+					>
+					</UpdatePeriodType>
+				</v-col>
+			</v-row>
 			<slot></slot>
 		</v-card-text>
 
@@ -36,7 +63,13 @@
 	</v-card>
 </template>
 <script>
+import UpdatePeriodType from '@/layout/forms/UpdatePeriodType';
+
 export default {
+	components: {
+		UpdatePeriodType,
+	},
+
 	props: {
 		title: {
 			type: String,
@@ -46,6 +79,23 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		polling: {
+			type: Boolean,
+			default: true,
+		},
+		datasource: {
+			type: Object,
+			default: () => {
+				return {
+					name: '',
+					xid: '',
+				};
+			},
+		},
+	},
+
+	mounted() {
+		this.setInitialFocus();
 	},
 
 	methods: {
@@ -56,6 +106,14 @@ export default {
 		accept() {
 			this.$emit('accept');
 		},
+
+		onUpdatePeriodTypeUpdate(value) {
+			this.datasource.updatePeriodType = value;
+		},
+
+		setInitialFocus() {
+			this.$refs.dsName.focus();
+		}
 	},
 };
 </script>

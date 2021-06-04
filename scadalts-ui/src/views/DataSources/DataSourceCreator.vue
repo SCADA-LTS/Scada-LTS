@@ -1,5 +1,5 @@
 <template>
-	<v-dialog v-model="dialogVisible">
+	<v-dialog v-model="dialogVisible" max-width="800">
 		<component :is="`${selectedType}`" @canceled="onCanceled()" @saved="onSaved($event)">
 			<template v-slot:title> Create Data Log</template>
 			<template v-slot:selector>
@@ -35,7 +35,9 @@ export default {
         },
 
         onSaved(event) {
-            console.log(event);
+			event.type = this.selectedType;
+			console.log("DSC::SAVE")
+			this.$emit('saved', event);
         }
 
 

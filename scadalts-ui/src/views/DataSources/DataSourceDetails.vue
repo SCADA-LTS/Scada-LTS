@@ -5,6 +5,7 @@
 			:is="`${datasource.type}`"
 			:id="datasource.id"
             ref="component"
+			@saved="onSaved"
 		/>
 
 		<v-spacer> </v-spacer>
@@ -14,7 +15,7 @@
 		<v-btn icon elevation="0" @click="openEditor()">
 			<v-icon> mdi-pencil </v-icon>
 		</v-btn>
-		<v-btn icon elevation="0">
+		<v-btn icon elevation="0" @click="deleteDataSource()">
 			<v-icon> mdi-delete </v-icon>
 		</v-btn>
 	</div>
@@ -30,7 +31,15 @@ export default {
     methods: {
         openEditor() {
             this.$refs.component.openEditor()
-        }
+        },
+
+		onSaved(event) {
+			this.$emit('saved', event);
+		},
+
+		deleteDataSource() {
+			this.$emit('deleted', this.datasource.id);
+		}
     }
 };
 </script>

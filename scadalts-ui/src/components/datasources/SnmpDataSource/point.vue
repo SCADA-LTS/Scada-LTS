@@ -3,24 +3,13 @@
 		<DataPointCreation
 			title="SNPM Data Point"
 			:creator="createMode"
+			:datapoint="datapoint"
 			@cancel="cancel()"
 			@accept="save()"
 		>
 			<template v-slot:selector>
 				<v-select v-model="datapoint.type" :items="datapointTypes"></v-select>
 			</template>
-
-			<v-row>
-				<v-col>
-					<v-text-field v-model="datapoint.name" label="Data Point Name"></v-text-field>
-				</v-col>
-				<v-col>
-					<v-text-field v-model="datapoint.xid" label="Data Point Export ID"></v-text-field>
-				</v-col>
-                <v-col>
-                    <v-checkbox v-model="datapoint.settable" label="Settable"></v-checkbox>
-                </v-col>
-			</v-row>
 
             <!-- Binary -->
 			<v-row v-if="datapoint.type === 'Binary'">

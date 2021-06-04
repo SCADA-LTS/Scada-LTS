@@ -45,7 +45,8 @@ export default {
 		},
 
 		onSaved(event) {
-			console.log(event);
+			this.$emit('saved', event);
+			// console.log(event);
 		},
 	},
 };

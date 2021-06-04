@@ -14,12 +14,25 @@
 				<v-col cols="4">
                     <slot name="selector">
                     </slot>
-                    
 				</v-col>
 			</v-row>
 		</v-card-title>
 
 		<v-card-text>
+			<v-row>
+				<v-col cols="12" :sm="6">
+					<v-text-field v-model="datapoint.name" label="Data Point Name"></v-text-field>
+				</v-col>
+				<v-col cols="6" :sm="4">
+					<v-text-field v-model="datapoint.xid" label="Data Point Export ID"></v-text-field>
+				</v-col>
+                <v-col cols="6" :sm="2">
+                    <v-checkbox v-model="datapoint.settable" label="Settable"></v-checkbox>
+                </v-col>
+				<v-col cols="12">
+					<v-text-field v-model="datapoint.desc" label="Description"></v-text-field>
+				</v-col>
+			</v-row>
             <slot></slot>
 		</v-card-text>
 
@@ -47,6 +60,14 @@ export default {
 		creator: {
 			type: Boolean,
 			default: true,
+		},
+		datapoint: {
+			type: Object,
+			default: () => {
+				return {
+					desc: '',
+				}
+			}
 		},
 	},
 

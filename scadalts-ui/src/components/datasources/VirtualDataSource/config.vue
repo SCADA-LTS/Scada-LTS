@@ -1,37 +1,16 @@
 <template>
 	<DataSourceConfig
 		title="Virtual Data Source"
+		:datasource="datasource"
 		:creator="createMode"
 		@cancel="cancel()"
 		@accept="save()"
 	>
+
 		<template v-slot:selector>
 			<slot name="selector"></slot>
 		</template>
-
-		<v-row>
-			<v-col>
-				<v-text-field v-model="datasource.name" label="DataSource Name"></v-text-field>
-			</v-col>
-			<v-col>
-				<v-text-field
-					v-model="datasource.xid"
-					label="DataSource Export Id"
-				></v-text-field>
-			</v-col>
-			<v-col>
-				<v-text-field
-					v-model="datasource.updatePeriod"
-					label="Update Period"
-				></v-text-field>
-			</v-col>
-			<v-col>
-				<v-text-field
-					v-model="datasource.updatePeriodType"
-					label="Update Period Type"
-				></v-text-field>
-			</v-col>
-		</v-row>
+		
 	</DataSourceConfig>
 </template>
 <script>
@@ -55,7 +34,7 @@ export default {
 					name: '',
 					xid: 'DS_VDS_',
 					updatePeriod: 5,
-					updatePeriodType: 1,
+					updatePeriodType: 2,
 				};
 			},
 		},
@@ -67,8 +46,13 @@ export default {
 		},
 
 		save() {
+			console.log("VDS::SAVE")
 			this.$emit('saved', this.datasource);
 		},
+
+		onUpdatePeriodTypeUpdate(value) {
+			this.datasource.updatePeriodType = value;
+		}
 	},
 };
 </script>

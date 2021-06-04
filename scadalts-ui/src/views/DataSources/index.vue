@@ -40,6 +40,8 @@
 							<v-col cols="12" class="flex">
 								<DataSourceDetails
 									:datasource="item"
+									@saved="onDataSourceUpdate"
+									@deleted="onDataSourceDelete"
 								></DataSourceDetails>
 							</v-col>
 						</v-row>
@@ -91,7 +93,7 @@
 													</v-list-item-icon>
 													<v-list-item-title> Edit </v-list-item-title>
 												</v-list-item>
-												<v-list-item>
+												<v-list-item  @click="deleteDataPoint(item, dp)">
 													<v-list-item-icon>
 														<v-icon>mdi-delete</v-icon>
 													</v-list-item-icon>
@@ -139,8 +141,8 @@
 			</v-data-table>
             <v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 		</v-container>
-		<DataSourceCreator ref="creator"></DataSourceCreator>
-		<DataPointCreator ref="pointCreator" @onSaved="onDataPointSaved($event)"></DataPointCreator>
+		<DataSourceCreator ref="creator" @saved="onDataSourceSaved($event)"></DataSourceCreator>
+		<DataPointCreator ref="pointCreator" @saved="onDataPointSaved($event)" @updated="onDataPointUpdate($event)"></DataPointCreator>
 	</div>
 </template>
 <script>
@@ -224,12 +226,72 @@ export default {
 			this.$refs.pointCreator.showDialog(item, datapoint);
 		},
 
+		deleteDataPoint(item, datapoint) {
+			//TODO: MAKE CONFIRMATION DIALOG
+			console.log(item, datapoint)
+			item.datapoints = item.datapoints.filter(e => {
+				return e.xid !== datapoint.xid;
+			});
+		},
+
 		createDataSource() {
 			this.$refs.creator.showDialog();
 		},
 
+		
+
+		onDataPointUpdate(event) {
+			console.log(this.dataSourceList)
+			console.log(event)
+			let x = this.dataSourceList.find(e => {
+				return e.id === event.dp.id
+			});
+			let z = x.datapoints.find(e => {
+				return e.xid === event.e.xid
+			});
+			z = event.e;
+			console.log(z);
+		},
+
 		onDataPointSaved(event) {
+			console.log(this.dataSourceList)
+			console.log(event)
+			let x = this.dataSourceList.find(e => {
+				return e.id === event.dp.id
+			});
+			x.datapoints.push(event.e);
+		},
+
+		onDataSourceUpdate(event) {
 			console.log(event);
+		},
+
+		onDataSourceDelete(event) {
+			//TODO: MAKE CONFIRMATION DIALOG
+			this.dataSourceList = this.dataSourceList.filter(e => {
+				return e.id !== event;
+			});
+		},
+		
+		onDataSourceSaved(event) {
+			console.log(event);
+			//name: ""
+			// updatePeriod: 5
+			// updatePeriodType: 2
+			// xid: "DS_VDS_"
+
+
+			// this.dataSourceList.push(event);
+			//conn: "5 minutes"
+			// datapoints: Array(3)
+			// descr: "Nothing important"
+			// enabled: true
+			// id: 0
+			// loaded: true
+			// name: "Test"
+			// type: "virtualdatasource"
+			// xid: "DS_012311"
+
 		}
 
 	},

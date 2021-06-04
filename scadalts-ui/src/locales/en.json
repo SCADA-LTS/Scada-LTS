@@ -29,6 +29,8 @@
 	"common.alarmlevels.title": "Alarm Level",
 	"common.alarmlevels.urgent": "Urgent",
 	"common.cancel": "Cancel",
+	"common.create": "Create",
+	"common.update": "Update",
 	"common.ok": "Ok",
 	"common.save": "Save",
 	"common.search": "Serach",
