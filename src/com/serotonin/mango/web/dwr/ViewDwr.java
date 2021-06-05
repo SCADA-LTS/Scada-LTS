@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -94,6 +96,8 @@ import com.serotonin.web.dwr.MethodFilter;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 
+import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+
 /**
  * This class is so not threadsafe. Do not use class fields except for the
  * resource bundle stuff.
@@ -108,6 +112,8 @@ public class ViewDwr extends BaseDwr {
 	// /
 	//
 	//
+	private static final Log LOG = LogFactory.getLog(ViewDwr.class);
+
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -936,7 +942,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			loggingErrorExecutionScript(e, LOG, script);
 		}
 
 		return false;
