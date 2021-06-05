@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -91,6 +93,8 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 
+import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+
 /**
  * This class is so not threadsafe. Do not use class fields except for the
  * resource bundle stuff.
@@ -105,6 +109,8 @@ public class ViewDwr extends BaseDwr {
 	// /
 	//
 	//
+	private static final Log LOG = LogFactory.getLog(ViewDwr.class);
+
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
@@ -933,7 +939,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			loggingErrorExecutionScript(e, LOG, script);
 		}
 
 		return false;

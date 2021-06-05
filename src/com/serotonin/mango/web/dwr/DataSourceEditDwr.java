@@ -42,7 +42,8 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import com.serotonin.mango.web.dwr.beans.*;
+import br.org.scadabr.db.dao.UsersProfileDao;
+import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
