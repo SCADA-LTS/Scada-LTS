@@ -93,7 +93,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -939,7 +939,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-			loggingErrorExecutionScript(e, LOG, script);
+		    LOG.error(infoErrorExecutionScript(e, script), e);
 		}
 
 		return false;

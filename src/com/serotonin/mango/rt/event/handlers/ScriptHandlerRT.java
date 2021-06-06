@@ -10,7 +10,7 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 public class ScriptHandlerRT extends EventHandlerRT {
 
@@ -28,9 +28,9 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			try {
 				script.createScriptRT().execute();
 			} catch (ScriptException e) {
-				loggingErrorExecutionScript(e, LOG, script);
+				LOG.error(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
-				loggingErrorExecutionScript(e, LOG, script);
+				LOG.error(infoErrorExecutionScript(e, script));
 				throw e;
 			}
 		}
@@ -44,9 +44,9 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			try {
 				script.createScriptRT().execute();
 			} catch (ScriptException e) {
-				loggingErrorExecutionScript(e, LOG, script);
+				LOG.error(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
-				loggingErrorExecutionScript(e, LOG, script);
+				LOG.error(infoErrorExecutionScript(e, script));
 				throw e;
 			}
 		}

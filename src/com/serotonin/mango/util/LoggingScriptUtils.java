@@ -5,7 +5,6 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
-import org.apache.commons.logging.Log;
 
 import java.text.MessageFormat;
 
@@ -13,9 +12,38 @@ public final class LoggingScriptUtils {
 
     private LoggingScriptUtils() {}
 
-    public static void loggingErrorExecutionScript(Exception e, Log log,
-                                                   DataPointRT dataPoint,
-                                                   DataSourceRT dataSource) {
+    public static String infoErrorExecutionScript(Exception e,
+                                                  DataPointRT dataPoint,
+                                                  DataSourceRT dataSource) {
+        String context = generateContext(dataPoint, dataSource);
+        return infoErrorExecutionScript(e, context);
+    }
+
+    public static String infoErrorExecutionScript(Exception e,
+                                                  PointLinkVO vo,
+                                                  DataPointRT target,
+                                                  DataPointRT source) {
+        String context = generateContext(vo, target, source);
+
+        return infoErrorExecutionScript(e, context);
+    }
+
+    public static String infoErrorExecutionScript(Exception e, ScriptVO<?> vo) {
+        String context = generateContext(vo);
+        return infoErrorExecutionScript(e, context);
+    }
+
+    public static String infoErrorExecutionScript(Exception e, String context) {
+        if(e != null) {
+            String info = "Problem with execute script: context: {0}, {1}";
+            return MessageFormat.format(info, context, exceptionInfo(e));
+        } else {
+            String info = "Problem with execute script: context: {0}";
+            return MessageFormat.format(info, context);
+        }
+    }
+
+    private static String generateContext(DataPointRT dataPoint, DataSourceRT dataSource) {
         String context = "";
 
         if(dataSource != null) {
@@ -26,14 +54,10 @@ public final class LoggingScriptUtils {
             DataPointVO dataPointVO = dataPoint.getVO();
             context += ", " + dataPointInfo(dataPointVO);
         }
-
-        loggingErrorExecutionScript(e, log, context);
+        return context;
     }
 
-    public static void loggingErrorExecutionScript(Exception e, Log log,
-                                                   PointLinkVO vo,
-                                                   DataPointRT target,
-                                                   DataPointRT source) {
+    private static String generateContext(PointLinkVO vo, DataPointRT target, DataPointRT source) {
         String context = "";
         if(vo != null) {
             context = pointLinkInfo(vo);
@@ -46,28 +70,16 @@ public final class LoggingScriptUtils {
         if(source != null && source.getVO() != null) {
             context += ", source: " + dataPointInfo(source.getVO());
         }
-
-        loggingErrorExecutionScript(e, log, context);
+        return context;
     }
 
-    public static void loggingErrorExecutionScript(Exception e, Log log, ScriptVO<?> vo) {
+    private static String generateContext(ScriptVO<?> vo) {
         String context = "";
 
         if(vo != null) {
             context = scriptInfo(vo);
         }
-
-        loggingErrorExecutionScript(e, log, context);
-    }
-
-    public static void loggingErrorExecutionScript(Exception e, Log log, String context) {
-        if(e != null) {
-            String info = "Problem with execute script: context: {0}, {1}";
-            log.error(MessageFormat.format(info, context, exceptionInfo(e)));
-        } else {
-            String info = "Problem with execute script: context: {0}";
-            log.error(MessageFormat.format(info, context));
-        }
+        return context;
     }
 
     private static String dataPointInfo(DataPointVO dataPointVO) {
