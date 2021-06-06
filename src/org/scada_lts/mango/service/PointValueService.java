@@ -66,7 +66,7 @@ import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * Base on the PointValueDao
@@ -639,40 +639,46 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
             metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
 
-            ScriptExecutor scriptExecutor = new ScriptExecutor();
-
-            Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
-
-            PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
-
             String value = "";
 
-            switch (metaPointLocatorVO.getDataTypeId()) {
-                case DataTypes.BINARY:
-                    BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
-                    if (binaryValue.getBooleanValue()) {
-                        value = "" + 1;
-                    } else {
-                        value = "" + 0;
-                    }
-                    break;
-                case DataTypes.MULTISTATE:
-                    MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
-                    value = "" + multistateValue.getIntegerValue();
-                    break;
-                case DataTypes.NUMERIC:
-                    NumericValue numericValue = (NumericValue) pointValueTime.getValue();
-                    value = "" + numericValue.getDoubleValue();
-                    break;
-                case DataTypes.ALPHANUMERIC:
-                    AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
-                    value = alphanumericValue.getStringValue();
-                    break;
+            try {
+
+                ScriptExecutor scriptExecutor = new ScriptExecutor();
+
+                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+
+                PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+
+                switch (metaPointLocatorVO.getDataTypeId()) {
+                    case DataTypes.BINARY:
+                        BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
+                        if (binaryValue.getBooleanValue()) {
+                            value = "" + 1;
+                        } else {
+                            value = "" + 0;
+                        }
+                        break;
+                    case DataTypes.MULTISTATE:
+                        MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
+                        value = "" + multistateValue.getIntegerValue();
+                        break;
+                    case DataTypes.NUMERIC:
+                        NumericValue numericValue = (NumericValue) pointValueTime.getValue();
+                        value = "" + numericValue.getDoubleValue();
+                        break;
+                    case DataTypes.ALPHANUMERIC:
+                        AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
+                        value = alphanumericValue.getStringValue();
+                        break;
+                }
+            } catch (Exception ex) {
+                LOG.error(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
+                throw ex;
             }
 
             dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
         } catch (Exception e) {
-            LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, "dataPointXid: " + xid);
+            //
         }
     }
 

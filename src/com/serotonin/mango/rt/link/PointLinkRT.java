@@ -29,7 +29,6 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.PointLinkSetPointSource;
 import com.serotonin.mango.rt.maint.work.PointLinkSetPointWorkItem;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,7 +42,7 @@ import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * @author Matthew Lohbihler
@@ -161,14 +160,14 @@ public class PointLinkRT implements DataPointListener, PointLinkSetPointSource {
 			} catch (ScriptException e) {
 				raiseFailureEvent(newValue.getTime(), new LocalizableMessage(
 						"common.default", e.getMessage()));
-				LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, vo, targetPoint, source);
+				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
 				return;
 			} catch (ResultTypeException e) {
 				raiseFailureEvent(newValue.getTime(), e.getLocalizableMessage());
-				LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, vo, targetPoint, source);
+				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
 				return;
 			} catch (Exception e) {
-				LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, vo, targetPoint, source);
+				LOG.error(infoErrorExecutionScript(e, vo, targetPoint, source));
 				throw e;
 			}
 		}
