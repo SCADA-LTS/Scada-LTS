@@ -96,7 +96,7 @@ import com.serotonin.web.dwr.MethodFilter;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -942,7 +942,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-			loggingErrorExecutionScript(e, LOG, script);
+		    LOG.error(infoErrorExecutionScript(e, script), e);
 		}
 
 		return false;

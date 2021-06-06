@@ -48,7 +48,7 @@ import com.serotonin.web.taglib.DateFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * @author Matthew Lohbihler
@@ -172,7 +172,7 @@ public class PointLinksDwr extends BaseDwr {
                 message = e.getLocalizableMessage();
             }
             catch (Exception e) {
-                LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, "validateScript");
+                LOG.error(infoErrorExecutionScript(e, "validateScript"));
                 throw e;
             }
         }

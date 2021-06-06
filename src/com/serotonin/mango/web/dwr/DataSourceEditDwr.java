@@ -217,7 +217,7 @@ import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * @author Matthew Lohbihler
@@ -1120,7 +1120,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
         } catch (Exception e) {
-            LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, "validateScript");
+            LOG.error(infoErrorExecutionScript(e,"validateScript"));
             throw e;
         }
 
