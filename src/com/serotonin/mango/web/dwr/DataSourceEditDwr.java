@@ -1294,7 +1294,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
                                                        int updatePeriods, int updatePeriodType, String url,
                                                        int timeoutSeconds, int retries, boolean stop,
-                                                       List<KeyValuePair> staticHeaders) {
+                                                       String username, String password) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1306,16 +1306,39 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
-        ds.setStaticHeaders(staticHeaders);
+        setAuthorizationStaticHeader(ds, username, password);
 
         return tryDataSourceSave(ds);
+    }
+
+    private void setAuthorizationStaticHeader(HttpRetrieverDataSourceVO ds, String username, String password) {
+        String headerValue = getCredentials(username, password);
+        if (headerValue != null) {
+            if (ds.getStaticHeaders().isEmpty()) {
+                ds.getStaticHeaders().add(new KeyValuePair("Authorization", headerValue));
+            } else {
+                for (KeyValuePair kvp : ds.getStaticHeaders()) {
+                    if (kvp.getKey().equals("Authorization")) {
+                        kvp.setValue(headerValue);
+                    }
+                }
+            }
+        }
+    }
+
+    private String getCredentials(String username, String password) {
+        if (!(StringUtils.isEmpty(username) || StringUtils.isEmpty(password))) {
+            byte[] credentials = (username + ':' + password).getBytes();
+            return "Basic " + Base64.getEncoder().encodeToString(credentials);
+        } else
+            return null;
     }
 
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
                                                                               int updatePeriods, int updatePeriodType, String url,
                                                                               int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation,
-                                                                              List<KeyValuePair> staticHeaders) {
+                                                                              String username, String password) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1329,7 +1352,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setStop(stop);
         ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
         ds.setReactivation(rDs);
-        ds.setStaticHeaders(staticHeaders);
+        setAuthorizationStaticHeader(ds, username, password);
 
         DwrResponseI18n result;
 

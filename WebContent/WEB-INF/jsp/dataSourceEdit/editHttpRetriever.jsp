@@ -74,7 +74,7 @@
   function saveDataSourceImplOld(){
   DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
                 $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
-                $get("stop"),
+                $get("stop"), $get("username"), $get("password"),
                 saveDataSourceCB);
   }
 
@@ -91,6 +91,8 @@
                   editDSNewUI.reactivation.sleep,
                   editDSNewUI.reactivation.type,
                   editDSNewUI.reactivation.value,
+                  $get("username"),
+                  $get("password"),
                   saveDataSourceCB
       );
   }
@@ -168,6 +170,14 @@
           <td class="formField">
             <input id="url" type="text" value="${dataSource.url}" class="formLong"/>
             <tag:img png="bullet_go" onclick="window.open($get('url'), 'httpRetrieverTarget')" title="dsEdit.httpRetriever.openUrl"/>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.credentials"/></td>
+          <td class="formField">
+            <fmt:message key="dsEdit.httpRetriever.username"/> <input type="text" id="username" class="formShort"/>
+            <fmt:message key="dsEdit.httpRetriever.password"/> <input type="password" id="password" class="formShort"/>
           </td>
         </tr>
         
