@@ -12,34 +12,46 @@
 					</h1>
 				</v-col>
 				<v-col cols="4">
-                    <slot name="selector">
-                    </slot>
+					<slot name="selector"> </slot>
 				</v-col>
 			</v-row>
 		</v-card-title>
 
 		<v-card-text>
-			<v-row>
-				<v-col cols="12" :sm="6">
-					<v-text-field v-model="datapoint.name" label="Data Point Name"></v-text-field>
-				</v-col>
-				<v-col cols="6" :sm="4">
-					<v-text-field v-model="datapoint.xid" label="Data Point Export ID"></v-text-field>
-				</v-col>
-                <v-col cols="6" :sm="2">
-                    <v-checkbox v-model="datapoint.settable" label="Settable"></v-checkbox>
-                </v-col>
-				<v-col cols="12">
-					<v-text-field v-model="datapoint.desc" label="Description"></v-text-field>
-				</v-col>
-			</v-row>
-            <slot></slot>
+			<v-form ref="datapointForm" v-model="formValid">
+				<v-row>
+					<v-col cols="12" :sm="6">
+						<v-text-field
+							autofocus
+							v-model="datapoint.name"
+							label="Data Point Name"
+							:rules="[ruleNotNull]"
+							required
+						></v-text-field>
+					</v-col>
+					<v-col cols="6" :sm="4">
+						<v-text-field
+							v-model="datapoint.xid"
+							label="Data Point Export ID"
+							:rules="[ruleNotNull]"
+							requred
+						></v-text-field>
+					</v-col>
+					<v-col cols="6" :sm="2">
+						<v-checkbox v-model="datapoint.settable" label="Settable"></v-checkbox>
+					</v-col>
+					<v-col cols="12">
+						<v-text-field v-model="datapoint.desc" label="Description"></v-text-field>
+					</v-col>
+				</v-row>
+				<slot></slot>
+			</v-form>
 		</v-card-text>
 
 		<v-card-actions>
 			<v-spacer></v-spacer>
 			<v-btn text @click="cancel()">{{ $t('common.cancel') }}</v-btn>
-			<v-btn color="primary" text @click="accept()">
+			<v-btn color="primary" text @click="accept()" :disabled="!formValid">
 				<span v-if="creator">
 					{{ $t('common.create') }}
 				</span>
@@ -66,9 +78,17 @@ export default {
 			default: () => {
 				return {
 					desc: '',
-				}
-			}
+				};
+			},
 		},
+	},
+
+	data() {
+		return {
+			formValid: false,
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull')
+
+		}
 	},
 
 	methods: {

@@ -357,5 +357,6 @@
 	"uiv.disable": "Behindert",
 	"uiv.enable": "Aktiviert",
 	"uiv.modal.cancel": "Stornieren",
-	"uiv.modal.ok": "Ok"
+	"uiv.modal.ok": "Ok",
+	"validation.rule.notNull": "Feld darf nicht leer sein!"
 }

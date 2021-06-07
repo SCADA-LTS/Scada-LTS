@@ -417,5 +417,6 @@
 	"uiv.disable": "Disable",
 	"uiv.enable": "Enable",
 	"uiv.modal.cancel": "Cancel",
-	"uiv.modal.ok": "OK"
+	"uiv.modal.ok": "OK",
+	"validation.rule.notNull": "Field must not be empty!"
 }
