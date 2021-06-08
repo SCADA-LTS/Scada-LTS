@@ -223,7 +223,6 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch" javascript="SecondaryAddressingSearch"/>
     <convert converter="enum" match="com.serotonin.dataframes.MBusMedium" />
     <convert converter="enum" match="com.serotonin.MBusAddressing" />
-    <convert converter="enum" match="com.serotonin.mango.vo.ScadaTheme" />
     
     <!-- End MBus4J stuff-->
     
