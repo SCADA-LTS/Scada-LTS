@@ -678,7 +678,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
             dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
         } catch (Exception e) {
-            //
+            LOG.error(e.getMessage());
         }
     }
 
