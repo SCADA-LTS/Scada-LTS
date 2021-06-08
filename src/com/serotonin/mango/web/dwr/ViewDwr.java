@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.util.LoggingScriptUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
@@ -93,6 +94,7 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 
@@ -242,7 +244,7 @@ public class ViewDwr extends BaseDwr {
 			DataPointRT dataPointRT = null;
 			if (pointComponent.tgetDataPoint() != null)
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
-
+			model.put(LoggingScriptUtils.VIEW_IDENTIFIER, new ScadaObjectIdentifier(view.getId(), view.getXid(), view.getName()));
 			ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 			if (!edit) {
@@ -271,8 +273,9 @@ public class ViewDwr extends BaseDwr {
 		ViewComponentState state = new ViewComponentState();
 		state.setId(pointComponent.getId());
 
+		Object identifier = model.get(LoggingScriptUtils.VIEW_IDENTIFIER);
 		PointValueTime pointValue = prepareBasePointState(pointComponent.getId(), state, pointComponent.tgetDataPoint(), point, model);
-
+		model.put(LoggingScriptUtils.VIEW_IDENTIFIER, identifier);
 		model.put("pointComponent", pointComponent);
 		if (pointComponent.isValid())
 			setEvents(pointComponent.tgetDataPoint(), user, model);
