@@ -100,7 +100,7 @@ public class ViewsController extends ParameterizableViewController {
 			// Make sure the owner still has permission to all of the points in
 			// the view, and that components are
 			// otherwise valid.
-			currentView.validateViewComponents(user, currentView);
+			currentView.validateViewComponents(user);
 
 			// Add the view to the session for the dwr access stuff.
 			model.put("currentView", currentView);

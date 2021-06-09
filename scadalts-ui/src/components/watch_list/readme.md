@@ -23,7 +23,7 @@ Display data from specific WatchList time range.
 
 Usefull function when user define mulitpe watch lists with monthly summarization. User easly select specific range using intuitive datepicker component.
 
-### Compare chart **_(NEW!)_**
+### Compare chart
 
 Compare two specific datapoints on one chart.
 
@@ -53,6 +53,12 @@ Since Scada-LTS version 2.4.0 ModernWatchList Chart has seperate configuration f
 - **Bullets** - Display or Hide
 
 ## Version change
+
+### v2.1.0
+- Vuetifization of the interface
+- Using Day.js library to manage the time operations
+- More responsibe Chart Settings
+- Chart is loaded using WatchList ID instead of WatchList name
 
 ### v2.0.0
 
