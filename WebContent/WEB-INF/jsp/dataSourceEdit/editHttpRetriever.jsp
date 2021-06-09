@@ -33,6 +33,7 @@
   // when end of load get data from model and set in editHttpRetriver
 
   // share data old ui and new ui in vuejs
+  var staticHeaders;
 
       var editDSNewUI = {
         id: ${dataSource.id},
@@ -44,6 +45,19 @@
         }
       }
 
+  function init() {
+    DataSourceEditDwr.initHttpRetriever(initCB);
+  }
+  dojo.addOnLoad(init);
+
+  function initCB(response) {
+    staticHeaders = response.data.httpRetriever.staticHeaders;
+    DataSourceEditDwr.getUsername(staticHeaders, setUsername);
+  }
+
+  function setUsername(username) {
+    $set("username", username);
+  }
 
   function testValueParams() {
       startImageFader("valueTestImg", true);

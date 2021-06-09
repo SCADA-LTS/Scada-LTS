@@ -24,6 +24,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +45,7 @@ import javax.script.ScriptException;
 
 import br.org.scadabr.db.dao.UsersProfileDao;
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -1332,6 +1334,33 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             return "Basic " + Base64.getEncoder().encodeToString(credentials);
         } else
             return null;
+    }
+
+    public String getUsername(List<KeyValuePair> staticHeaders) {
+	    String authorization = null;
+        for (KeyValuePair kvp : staticHeaders) {
+            if (kvp.getKey().equals("Authorization")) {
+                authorization = kvp.getValue();
+            }
+        }
+        if (authorization != null && authorization.startsWith("Basic")){
+            String base64Credentials = authorization.substring("Basic".length()).trim();
+            byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+            String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+            // credentials = username:password
+            final String[] values = credentials.split(":", 2);
+            return values[0];
+        }
+        return null;
+    }
+
+    public DwrResponseI18n initHttpRetriever() {
+        HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
+                .getUser().getEditDataSource();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("httpRetriever", ds);
+        return response;
     }
 
     @MethodFilter
