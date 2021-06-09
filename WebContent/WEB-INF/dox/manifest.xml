@@ -398,4 +398,7 @@
 
   <item id="eventTextRenderers">
   </item>
+
+  <item id="anonymousView">
+  </item>
 </doxManifest>

@@ -119,7 +119,8 @@ public class ViewService {
 	
 	public View getView(int id) {
 		View view = viewDAO.findById(new Object[] { id });
-		view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
+		if(view != null)
+			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		return view;
 	}
 	

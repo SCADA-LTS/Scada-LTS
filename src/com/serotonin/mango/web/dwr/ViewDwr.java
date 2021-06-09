@@ -21,11 +21,7 @@ package com.serotonin.mango.web.dwr;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -91,8 +87,11 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -111,8 +110,10 @@ public class ViewDwr extends BaseDwr {
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
-			return new ArrayList<ViewComponentState>();
-		return getViewPointData(null, view, false);
+			return new ArrayList<>();
+		return getUser(new UserService())
+				.map(user -> getViewPointData(user, view, false))
+				.orElse(new ArrayList<>());
 	}
 
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
@@ -1034,5 +1035,4 @@ public class ViewDwr extends BaseDwr {
 			}
 		}
 	}
-
 }
