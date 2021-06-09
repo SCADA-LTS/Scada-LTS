@@ -47,92 +47,11 @@
 						</v-row>
 						<v-divider></v-divider>
 						<v-row class="datapoint-list" v-if="item.loaded">
-							<v-col cols="12">
-								<v-list-item v-for="dp in item.datapoints" :key="dp.xid">
-									<v-list-item-content>
-										<v-list-item-title>
-											<v-row>
-												<v-col cols="1">
-													<v-icon
-														:color="dp.enabled ? 'primary' : 'error'"
-														v-show="dp.enabled"
-														>mdi-decagram</v-icon
-													>
-													<v-icon
-														:color="dp.enabled ? 'primary' : 'error'"
-														v-show="!dp.enabled"
-														>mdi-decagram-outline</v-icon
-													>
-												</v-col>
-												<v-col cols="3">
-													{{ dp.name }}
-												</v-col>
-												<v-col cols="3">
-													{{ dp.type }}
-												</v-col>
-												<v-col cols="2">
-													{{ dp.xid }}
-												</v-col>
-												<v-col cols="3">
-													{{ dp.desc }}
-												</v-col>
-											</v-row>
-										</v-list-item-title>
-									</v-list-item-content>
-									<v-list-item-action>
-										<v-menu top :offset-y="true">
-											<template v-slot:activator="{ on, attrs }">
-												<v-btn icon v-bind="attrs" v-on="on">
-													<v-icon> mdi-dots-vertical </v-icon>
-												</v-btn>
-											</template>
-											<v-list>
-												<v-list-item @click="createDataPoint(item, dp)">
-													<v-list-item-icon>
-														<v-icon>mdi-pencil</v-icon>
-													</v-list-item-icon>
-													<v-list-item-title> Edit </v-list-item-title>
-												</v-list-item>
-												<v-list-item  @click="deleteDataPoint(item, dp)">
-													<v-list-item-icon>
-														<v-icon>mdi-delete</v-icon>
-													</v-list-item-icon>
-													<v-list-item-title> Delete </v-list-item-title>
-												</v-list-item>
-											</v-list>
-										</v-menu>
-									</v-list-item-action>
-								</v-list-item>
-								<v-list-item v-if="!item.datapoints">
-									<v-list-item-content>
-										<v-list-item-title>
-											This Data Source does not contain any DataPoints. Create the first
-											one!
-										</v-list-item-title>
-									</v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>
-										<v-list-item-title>
-											<v-row align="center" justify="center">
-												<v-col cols="1">
-													<v-btn
-														color="primary"
-														dark
-														fab
-														x-small
-														elevation="0"
-														@click="createDataPoint(item)"
-													>
-														<v-icon> mdi-plus</v-icon>
-													</v-btn>
-												</v-col>
-											</v-row>
-										</v-list-item-title>
-									</v-list-item-content>
-								</v-list-item>
-								<v-list-item> </v-list-item>
-							</v-col>
+							<DataSourcePointList
+								:datasource="item"
+								@create="onDataPointCreation"
+								@delete="onDataPointDeletion"
+							></DataSourcePointList>
 						</v-row>
                         <v-skeleton-loader v-else type="article">
                         </v-skeleton-loader>
@@ -149,6 +68,7 @@
 import DataSourceDetails from './DataSourceDetails';
 import DataSourceCreator from './DataSourceCreator';
 import DataPointCreator from './DataPointCreator';
+import DataSourcePointList from './DataSourcePointList';
 
 export default {
 
@@ -156,6 +76,7 @@ export default {
 		DataSourceDetails,
 		DataSourceCreator,
 		DataPointCreator,
+		DataSourcePointList
 	},
 
 	data() {
@@ -222,11 +143,11 @@ export default {
             }
 		},
 
-		createDataPoint(item, datapoint = null) {
+		onDataPointCreation({item, datapoint}) {
 			this.$refs.pointCreator.showDialog(item, datapoint);
 		},
 
-		deleteDataPoint(item, datapoint) {
+		onDataPointDeletion({item, datapoint}) {
 			//TODO: MAKE CONFIRMATION DIALOG
 			console.log(item, datapoint)
 			item.datapoints = item.datapoints.filter(e => {
@@ -302,9 +223,16 @@ export default {
 	display: flex;
 }
 .datapoint-list {
-	padding: 0 5%;
+	padding: 0 2%;
 }
+
 .small-margin-top > .row {
 	margin-top: 8px;
+}
+
+@media (min-width: 1264px){
+	.datapoint-list {
+		padding: 0 3%;
+	}
 }
 </style>

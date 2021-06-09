@@ -1,5 +1,5 @@
 <template>
-	<v-dialog v-model="dialogVisible">
+	<v-dialog v-model="dialogVisible" max-width="800">
 		<component
 			:is="`${datasourceType}`"
 			:datapoint="datapoint"

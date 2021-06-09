@@ -18,40 +18,52 @@
 		</v-card-title>
 
 		<v-card-text>
-			<v-row>
-				<v-col cols="12" :md="8" :sm="12">
-					<v-text-field v-model="datasource.name" label="DataSource Name" ref="dsName"></v-text-field>
-				</v-col>
-				<v-col cols="12" :md="4" :sm="12">
-					<v-text-field
-						v-model="datasource.xid"
-						label="DataSource Export Id"
-					></v-text-field>
-				</v-col>
-			</v-row>
-			<v-row v-if="polling">
-				<v-col cols="6">
-					<v-text-field
-						v-model="datasource.updatePeriod"
-						label="Update Period"
-					></v-text-field>
-				</v-col>
-				<v-col cols="6">
-					<UpdatePeriodType
-						:value="datasource.updatePeriodType"
-						@update="onUpdatePeriodTypeUpdate"
-						types="1,2,3,4,5"
-					>
-					</UpdatePeriodType>
-				</v-col>
-			</v-row>
-			<slot></slot>
+			<v-form ref="datasourceForm" v-model="formValid">
+				<v-row>
+					<v-col cols="12" :md="8" :sm="12">
+						<v-text-field
+							autofocus
+							v-model="datasource.name"
+							label="DataSource Name"
+							:rules="[ruleNotNull]"
+							required
+						></v-text-field>
+					</v-col>
+					<v-col cols="12" :md="4" :sm="12">
+						<v-text-field
+							v-model="datasource.xid"
+							label="DataSource Export Id"
+							:rules="[ruleNotNull]"
+							required
+						></v-text-field>
+					</v-col>
+				</v-row>
+				<v-row v-if="polling">
+					<v-col cols="6">
+						<v-text-field
+							v-model="datasource.updatePeriod"
+							label="Update Period"
+							:rules="[ruleNotNull, ruleOnlyNumber]"
+							required
+						></v-text-field>
+					</v-col>
+					<v-col cols="6">
+						<UpdatePeriodType
+							:value="datasource.updatePeriodType"
+							@update="onUpdatePeriodTypeUpdate"
+							types="1,2,3,4,5"
+						>
+						</UpdatePeriodType>
+					</v-col>
+				</v-row>
+				<slot></slot>
+			</v-form>
 		</v-card-text>
 
 		<v-card-actions>
 			<v-spacer></v-spacer>
 			<v-btn text @click="cancel()">{{ $t('common.cancel') }}</v-btn>
-			<v-btn color="primary" text @click="accept()">
+			<v-btn color="primary" text @click="accept()" :disabled="!formValid">
 				<span v-if="creator">
 					{{ $t('common.create') }}
 				</span>
@@ -94,8 +106,12 @@ export default {
 		},
 	},
 
-	mounted() {
-		this.setInitialFocus();
+	data() {
+		return {
+			formValid: false,
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleOnlyNumber: (v) => !isNaN(v) || this.$t('validation.rule.onlyNumber'),
+		}
 	},
 
 	methods: {
@@ -111,9 +127,6 @@ export default {
 			this.datasource.updatePeriodType = value;
 		},
 
-		setInitialFocus() {
-			this.$refs.dsName.focus();
-		}
 	},
 };
 </script>
