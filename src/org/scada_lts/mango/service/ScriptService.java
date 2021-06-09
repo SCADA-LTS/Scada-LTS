@@ -2,7 +2,6 @@ package org.scada_lts.mango.service;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.ScriptDAO;
 import org.scada_lts.mango.adapter.MangoScript;
 
@@ -43,11 +42,11 @@ public class ScriptService implements MangoScript {
 
     @Override
     public String generateUniqueXid() {
-        return DAO.getInstance().generateUniqueXid(ScriptVO.XID_PREFIX, "scripts");
+        return scriptDAO.generateUniqueXid();
     }
 
     @Override
     public boolean isXidUnique(String xid, int excludeId) {
-        return DAO.getInstance().isXidUnique(xid, excludeId, "scripts");
+        return scriptDAO.isXidUnique(xid, excludeId);
     }
 }
