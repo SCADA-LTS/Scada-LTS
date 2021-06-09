@@ -1336,7 +1336,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             return null;
     }
 
-    public String getUsername(List<KeyValuePair> staticHeaders) {
+    public String[] getCredentials(List<KeyValuePair> staticHeaders) {
 	    String authorization = null;
         for (KeyValuePair kvp : staticHeaders) {
             if (kvp.getKey().equals("Authorization")) {
@@ -1349,7 +1349,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             String credentials = new String(credDecoded, StandardCharsets.UTF_8);
             // credentials = username:password
             final String[] values = credentials.split(":", 2);
-            return values[0];
+            return values;
         }
         return null;
     }
@@ -1358,8 +1358,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
+        List<KeyValuePair> staticHeaders = ds.getStaticHeaders();
+
         DwrResponseI18n response = new DwrResponseI18n();
-        response.addData("httpRetriever", ds);
+        response.addData("staticHeaders", staticHeaders);
         return response;
     }
 
@@ -1406,10 +1408,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     @MethodFilter
     public String testHttpRetrieverValueParams(String url, int timeoutSeconds,
-                                               int retries, String valueRegex, int dataTypeId, String valueFormat) {
+                                               int retries, String valueRegex, int dataTypeId, String valueFormat,
+                                               List<KeyValuePair> staticHeaders) {
         try {
             String data = HttpRetrieverDataSourceRT.getData(url,
-                    timeoutSeconds, retries);
+                    timeoutSeconds, retries, staticHeaders);
 
             Pattern valuePattern = Pattern.compile(valueRegex);
             DecimalFormat decimalFormat = null;
@@ -1428,10 +1431,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     @MethodFilter
     public String testHttpRetrieverTimeParams(String url, int timeoutSeconds,
-                                              int retries, String timeRegex, String timeFormat) {
+                                              int retries, String timeRegex, String timeFormat,
+                                              List<KeyValuePair> staticHeaders) {
         try {
             String data = HttpRetrieverDataSourceRT.getData(url,
-                    timeoutSeconds, retries);
+                    timeoutSeconds, retries, staticHeaders);
 
             Pattern timePattern = Pattern.compile(timeRegex);
             DateFormat dateFormat = new SimpleDateFormat(timeFormat);

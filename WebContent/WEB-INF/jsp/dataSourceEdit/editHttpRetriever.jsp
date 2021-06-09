@@ -51,19 +51,20 @@
   dojo.addOnLoad(init);
 
   function initCB(response) {
-    staticHeaders = response.data.httpRetriever.staticHeaders;
-    DataSourceEditDwr.getUsername(staticHeaders, setUsername);
+    staticHeaders = response.data.staticHeaders;
+    DataSourceEditDwr.getCredentials(staticHeaders, setCredentials);
   }
 
-  function setUsername(username) {
-    $set("username", username);
+  function setCredentials(credentials) {
+    $set("username", credentials[0]);
+    $set("password", credentials[1]);
   }
 
   function testValueParams() {
       startImageFader("valueTestImg", true);
       hide("valueTestRow");
       DataSourceEditDwr.testHttpRetrieverValueParams($get("url"), $get("timeoutSeconds"), $get("retries"),
-              $get("valueRegex"), $get("dataTypeId"), $get("valueFormat"), testValueParamsCB);
+              $get("valueRegex"), $get("dataTypeId"), $get("valueFormat"), staticHeaders, testValueParamsCB);
   }
   
   function testValueParamsCB(result) {
@@ -76,7 +77,7 @@
       startImageFader("timeTestImg", true);
       hide("timeTestRow");
       DataSourceEditDwr.testHttpRetrieverTimeParams($get("url"), $get("timeoutSeconds"), $get("retries"),
-              $get("timeRegex"), $get("timeFormat"), testTimeParamsCB);
+              $get("timeRegex"), $get("timeFormat"), staticHeaders, testTimeParamsCB);
   }
   
   function testTimeParamsCB(result) {
@@ -109,6 +110,17 @@
                   $get("password"),
                   saveDataSourceCB
       );
+  }
+
+  function openURL() {
+    var url = $get('url');
+    if ($get("username") && $get("password")) {
+      var urlParts = url.split("://", 2);
+      if (urlParts.length === 2) {
+        url = urlParts[0] + "://" + $get("username") + ":" + $get("password") + "@" + urlParts[1];
+      }
+    }
+    window.open(url, 'httpRetrieverTarget');
   }
 
   function appendPointListColumnFunctions(pointListColumnHeaders, pointListColumnFunctions) {
@@ -183,7 +195,7 @@
           <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.url"/></td>
           <td class="formField">
             <input id="url" type="text" value="${dataSource.url}" class="formLong"/>
-            <tag:img png="bullet_go" onclick="window.open($get('url'), 'httpRetrieverTarget')" title="dsEdit.httpRetriever.openUrl"/>
+            <tag:img png="bullet_go" onclick="openURL()" title="dsEdit.httpRetriever.openUrl"/>
           </td>
         </tr>
 
