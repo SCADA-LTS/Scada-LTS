@@ -50,6 +50,14 @@
       for (i=0; i<list.length; i++)
           addToSelectedArray(list[i].dataPointId, list[i].parameterName, list[i].includeTimestamp);
       refreshSelectedPoints();
+      PublisherEditDwr.getCredentials(staticHeaderList, setCredentials);
+  }
+
+  function setCredentials(credentials) {
+    if (credentials != null) {
+      $set("username", credentials[0]);
+      $set("password", credentials[1]);
+    }
   }
   
   function addStaticHeader() {
