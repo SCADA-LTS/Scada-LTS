@@ -13,6 +13,16 @@
 	</div>
 </template>
 <script>
+
+/**
+ * Data Source Loader Component
+ * 
+ * This component is responsible for providing a skeleton loaders
+ * for DataSources. They are displayed until "loaded" property is false.
+ * When data from API has been downloaded the Deticated Point "Index" page and
+ * "config" component is ready to be rendered.
+ * 
+ */
 export default {
     props: {
         loaded: {

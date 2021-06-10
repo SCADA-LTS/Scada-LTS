@@ -1,14 +1,16 @@
 <template>
 	<div class="flex">
-        
 		<component
 			:is="`${datasource.type}`"
 			:id="datasource.id"
-            ref="component"
+			ref="component"
 			@saved="onSaved"
 		/>
 
-		<v-spacer> </v-spacer>
+		<v-spacer>			
+		</v-spacer>
+		<DataSourceEvents>
+		</DataSourceEvents>
 		<v-btn icon elevation="0">
 			<v-icon> mdi-alert-decagram </v-icon>
 		</v-btn>
@@ -22,16 +24,21 @@
 </template>
 <script>
 import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
+import DataSourceEvents from './DataSourceEvents'
 
 export default {
-    props: ['datasource'],
+	props: ['datasource'],
 
-    mixins: [dataSourceMixin],
+	components: {
+		DataSourceEvents
+	},
 
-    methods: {
-        openEditor() {
-            this.$refs.component.openEditor()
-        },
+	mixins: [dataSourceMixin],
+
+	methods: {
+		openEditor() {
+			this.$refs.component.openEditor();
+		},
 
 		onSaved(event) {
 			this.$emit('saved', event);
@@ -39,8 +46,8 @@ export default {
 
 		deleteDataSource() {
 			this.$emit('deleted', this.datasource.id);
-		}
-    }
+		},
+	},
 };
 </script>
 <style></style>

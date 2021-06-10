@@ -1,6 +1,6 @@
 <template>
 	<v-dialog v-model="dialogVisible" max-width="800">
-		<component :is="`${selectedType}`" @canceled="onCanceled()" @saved="onSaved($event)">
+		<component :is="`${selectedType}editor`" @canceled="onCanceled()" @saved="onSaved($event)">
 			<template v-slot:title> Create Data Log</template>
 			<template v-slot:selector>
                 <v-select
@@ -21,7 +21,7 @@ export default {
 	data() {
 		return {
 			dialogVisible: false,
-			selectedType: 'virtualdatasourceeditor',
+			selectedType: 'virtualdatasource',
 		};
 	},
 

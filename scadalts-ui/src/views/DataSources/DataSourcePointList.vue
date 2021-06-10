@@ -5,10 +5,16 @@
 				<v-list-item-title>
 					<v-row>
 						<v-col cols="1" class="datapoint-status">
-							<v-icon :color="dp.enabled ? 'primary' : 'error'" v-show="dp.enabled"
+							<v-icon
+								:color="dp.enabled ? 'primary' : 'error'"
+								v-show="dp.enabled"
+								@click="toggleDataPoint(dp)"
 								>mdi-decagram</v-icon
 							>
-							<v-icon :color="dp.enabled ? 'primary' : 'error'" v-show="!dp.enabled"
+							<v-icon
+								:color="dp.enabled ? 'primary' : 'error'"
+								v-show="!dp.enabled"
+								@click="toggleDataPoint(dp)"
 								>mdi-decagram-outline</v-icon
 							>
 						</v-col>
@@ -30,30 +36,25 @@
 							{{ dp.type }}
 						</v-col>
 
-                        <v-col v-show="!$vuetify.breakpoint.lg && !$vuetify.breakpoint.xl" cols="1">
-
-                        </v-col>
+						<v-col v-show="!$vuetify.breakpoint.lg && !$vuetify.breakpoint.xl" cols="1">
+						</v-col>
 
 						<v-col cols="11" lg="4" xl="7">
-							<component :is="`${datasource.type}pointlist`"
-                                :datapoint="dp"
-                            ></component>
+							<component :is="`${datasource.type}pointlist`" :datapoint="dp"></component>
 						</v-col>
 					</v-row>
 				</v-list-item-title>
-                <v-list-item-subtitle v-show="$vuetify.breakpoint.lg || $vuetify.breakpoint.xl">
-                    <v-row>
-                        <v-col cols="1">
-                        </v-col>
-                        <v-col cols="1">
-                            {{ dp.xid }}
-                        </v-col>
-                        <v-col>
-                            {{ dp.desc }}
-                        </v-col>
-                    </v-row>
-                    
-                </v-list-item-subtitle>
+				<v-list-item-subtitle v-show="$vuetify.breakpoint.lg || $vuetify.breakpoint.xl">
+					<v-row>
+						<v-col cols="1"> </v-col>
+						<v-col cols="1">
+							{{ dp.xid }}
+						</v-col>
+						<v-col>
+							{{ dp.desc }}
+						</v-col>
+					</v-row>
+				</v-list-item-subtitle>
 			</v-list-item-content>
 			<v-list-item-action>
 				<v-menu top :offset-y="true">
@@ -63,11 +64,23 @@
 						</v-btn>
 					</template>
 					<v-list>
+						<v-list-item @click="showDataPoint(datasource, dp)">
+							<v-list-item-icon>
+								<v-icon>mdi-information</v-icon>
+							</v-list-item-icon>
+							<v-list-item-title> Details </v-list-item-title>
+						</v-list-item>
 						<v-list-item @click="createDataPoint(datasource, dp)">
 							<v-list-item-icon>
 								<v-icon>mdi-pencil</v-icon>
 							</v-list-item-icon>
 							<v-list-item-title> Edit </v-list-item-title>
+						</v-list-item>
+						<v-list-item @click="copyDataPoint(datasource, dp)" disabled>
+							<v-list-item-icon>
+								<v-icon>mdi-content-copy</v-icon>
+							</v-list-item-icon>
+							<v-list-item-title> Copy </v-list-item-title>
 						</v-list-item>
 						<v-list-item @click="deleteDataPoint(datasource, dp)">
 							<v-list-item-icon>
@@ -104,9 +117,9 @@
 						</v-col>
 					</v-row>
 				</v-list-item-title>
+				<v-list-item-subtitle> </v-list-item-subtitle>
 			</v-list-item-content>
 		</v-list-item>
-		<v-list-item> </v-list-item>
 	</v-col>
 </template>
 <script>
@@ -119,20 +132,24 @@ export default {
 
 	methods: {
 		createDataPoint(item, datapoint = null) {
-            this.$emit('create', {item, datapoint});
-        },
+			this.$emit('create', { item, datapoint });
+		},
 		deleteDataPoint(item, datapoint) {
-            this.$emit('delete', {item, datapoint});
-        },
+			this.$emit('delete', { item, datapoint });
+		},
+		toggleDataPoint(dp) {
+			dp.enabled = !dp.enabled;
+			console.log(dp);
+		},
 	},
 };
 </script>
 <style>
 .datapoint-status {
-    justify-content: flex-start;
-    display: flex;
+	justify-content: flex-start;
+	display: flex;
 }
-@media (min-width: 1264px){
+@media (min-width: 1264px) {
 	.datapoint-status {
 		justify-content: flex-end;
 	}

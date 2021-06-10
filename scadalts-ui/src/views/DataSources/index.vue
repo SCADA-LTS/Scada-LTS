@@ -13,8 +13,9 @@
 					</v-col>
 				</v-row>
 			</header>
+
 			<v-data-table
-                v-if="tableLoaded"
+				v-if="tableLoaded"
 				:headers="headers"
 				:items="dataSourceList"
 				:single-expand="false"
@@ -27,12 +28,16 @@
 				@item-expanded="fetchDataPointList"
 			>
 				<template v-slot:item.enabled="{ item }">
-					<v-icon :color="item.enabled ? 'primary' : 'error'" v-show="item.enabled"
-						>mdi-decagram</v-icon
-					>
-					<v-icon :color="item.enabled ? 'primary' : 'error'" v-show="!item.enabled"
-						>mdi-decagram-outline</v-icon
-					>
+					<!-- TODO: Make badge button color match the highest alarm level -->
+					<v-badge overlap color="blue" dot>
+						<v-btn x-small icon fab elevation="0" @click="toggleDataSource(item)" :color="item.enabled ? 'primary' : 'error'">
+							<v-icon v-show="item.enabled">mdi-decagram</v-icon>
+							<v-icon v-show="!item.enabled">mdi-decagram-outline</v-icon>
+						</v-btn>
+					</v-badge>
+				</template>
+				<template v-slot:item.type="{ item }">
+					{{$t(`datasource.type.${item.type}`)}}
 				</template>
 				<template v-slot:expanded-item="{ headers, item }">
 					<td :colspan="headers.length" class="small-margin-top">
@@ -53,15 +58,23 @@
 								@delete="onDataPointDeletion"
 							></DataSourcePointList>
 						</v-row>
-                        <v-skeleton-loader v-else type="article">
-                        </v-skeleton-loader>
+						<v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 					</td>
 				</template>
 			</v-data-table>
-            <v-skeleton-loader v-else type="article"> </v-skeleton-loader>
+			<v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 		</v-container>
-		<DataSourceCreator ref="creator" @saved="onDataSourceSaved($event)"></DataSourceCreator>
-		<DataPointCreator ref="pointCreator" @saved="onDataPointSaved($event)" @updated="onDataPointUpdate($event)"></DataPointCreator>
+
+		<!-- Related dialog components -->
+		<DataSourceCreator
+			ref="creator"
+			@saved="onDataSourceSaved($event)"
+		></DataSourceCreator>
+		<DataPointCreator
+			ref="pointCreator"
+			@saved="onDataPointSaved($event)"
+			@updated="onDataPointUpdate($event)"
+		></DataPointCreator>
 	</div>
 </template>
 <script>
@@ -71,12 +84,11 @@ import DataPointCreator from './DataPointCreator';
 import DataSourcePointList from './DataSourcePointList';
 
 export default {
-
 	components: {
 		DataSourceDetails,
 		DataSourceCreator,
 		DataPointCreator,
-		DataSourcePointList
+		DataSourcePointList,
 	},
 
 	data() {
@@ -115,42 +127,42 @@ export default {
 		};
 	},
 
-    mounted() {
-        this.fetchDataSources();
-    },
+	mounted() {
+		this.fetchDataSources();
+	},
 
 	methods: {
-        async fetchDataSources() {
-            try {
-                this.tableLoaded = false;
-                this.dataSourceList = await this.$store.dispatch('getDataSources');
-                this.tableLoaded = true;
-            } catch (e) {
-                console.error(e);
-                this.tableLoaded = true;
-                this.dataSourceList = [];
-            }
-        },
-
-		async fetchDataPointList({item, value}) {
-            if(value) {
-                // Load data from REST API if threre is no datapoints.
-                if(!!item.datapoints && item.datapoints.length === 0) {
-                    item.loaded = false;
-                    item.datapoints = await this.$store.dispatch('fetchDataPointsForDS', item.name);
-                    item.loaded = true;
-                }
-            }
+		async fetchDataSources() {
+			try {
+				this.tableLoaded = false;
+				this.dataSourceList = await this.$store.dispatch('getDataSources');
+				this.tableLoaded = true;
+			} catch (e) {
+				console.error(e);
+				this.tableLoaded = true;
+				this.dataSourceList = [];
+			}
 		},
 
-		onDataPointCreation({item, datapoint}) {
+		async fetchDataPointList({ item, value }) {
+			if (value) {
+				// Load data from REST API if threre is no datapoints.
+				if (!!item.datapoints && item.datapoints.length === 0) {
+					item.loaded = false;
+					item.datapoints = await this.$store.dispatch('fetchDataPointsForDS', item.name);
+					item.loaded = true;
+				}
+			}
+		},
+
+		onDataPointCreation({ item, datapoint }) {
 			this.$refs.pointCreator.showDialog(item, datapoint);
 		},
 
-		onDataPointDeletion({item, datapoint}) {
+		onDataPointDeletion({ item, datapoint }) {
 			//TODO: MAKE CONFIRMATION DIALOG
-			console.log(item, datapoint)
-			item.datapoints = item.datapoints.filter(e => {
+			console.log(item, datapoint);
+			item.datapoints = item.datapoints.filter((e) => {
 				return e.xid !== datapoint.xid;
 			});
 		},
@@ -159,26 +171,24 @@ export default {
 			this.$refs.creator.showDialog();
 		},
 
-		
-
 		onDataPointUpdate(event) {
-			console.log(this.dataSourceList)
-			console.log(event)
-			let x = this.dataSourceList.find(e => {
-				return e.id === event.dp.id
+			console.log(this.dataSourceList);
+			console.log(event);
+			let x = this.dataSourceList.find((e) => {
+				return e.id === event.dp.id;
 			});
-			let z = x.datapoints.find(e => {
-				return e.xid === event.e.xid
+			let z = x.datapoints.find((e) => {
+				return e.xid === event.e.xid;
 			});
 			z = event.e;
 			console.log(z);
 		},
 
 		onDataPointSaved(event) {
-			console.log(this.dataSourceList)
-			console.log(event)
-			let x = this.dataSourceList.find(e => {
-				return e.id === event.dp.id
+			console.log(this.dataSourceList);
+			console.log(event);
+			let x = this.dataSourceList.find((e) => {
+				return e.id === event.dp.id;
 			});
 			x.datapoints.push(event.e);
 		},
@@ -189,18 +199,21 @@ export default {
 
 		onDataSourceDelete(event) {
 			//TODO: MAKE CONFIRMATION DIALOG
-			this.dataSourceList = this.dataSourceList.filter(e => {
+			this.dataSourceList = this.dataSourceList.filter((e) => {
 				return e.id !== event;
 			});
 		},
-		
+
+		toggleDataSource(ds){
+			ds.enabled = !ds.enabled;
+		},
+
 		onDataSourceSaved(event) {
 			console.log(event);
 			//name: ""
 			// updatePeriod: 5
 			// updatePeriodType: 2
 			// xid: "DS_VDS_"
-
 
 			// this.dataSourceList.push(event);
 			//conn: "5 minutes"
@@ -212,9 +225,7 @@ export default {
 			// name: "Test"
 			// type: "virtualdatasource"
 			// xid: "DS_012311"
-
-		}
-
+		},
 	},
 };
 </script>
@@ -230,7 +241,7 @@ export default {
 	margin-top: 8px;
 }
 
-@media (min-width: 1264px){
+@media (min-width: 1264px) {
 	.datapoint-list {
 		padding: 0 3%;
 	}

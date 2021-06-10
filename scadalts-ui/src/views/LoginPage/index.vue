@@ -12,6 +12,7 @@
 					<v-row>
 						<v-col cols="12">
 							<v-text-field
+								autofocus
 								v-model="user.username"
 								:label="$t('loginPage.username')"
 								:rules="[(v) => !!v || $t('loginPage.validation.username')]"

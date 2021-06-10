@@ -137,6 +137,8 @@
 	"datapointDetails.valueHistory.table.value": "Value",
 	"datapointDetails.valueHistory.title": "Data Point Values",
 	"event.audit.compoundEventDetector": "Compound event detector",
+	"datasource.type.virtualdatasource": "Virtual Data Source",
+	"datasource.type.snmpdatasource": "SNMP Data Source",
 	"event.audit.dataPoint": "Data point",
 	"event.audit.dataSource": "Data source",
 	"event.audit.eventHandler": "Event handler",

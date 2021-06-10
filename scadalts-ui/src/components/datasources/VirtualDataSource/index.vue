@@ -1,5 +1,5 @@
 <template>
-	<DataSourceInfo :loaded="detailsLoaded" ref="dialog">
+	<DataSourceLoader :loaded="detailsLoaded" ref="dialog">
 		<template v-slot:config>
 			<config
 				v-if="detailsLoaded"
@@ -14,14 +14,14 @@
 			<v-col> Radek </v-col>
 		</v-row>
 
-	</DataSourceInfo>
+	</DataSourceLoader>
 </template>
 <script>
-import BaseDataSourceVue from '../BaseDataSource.vue';
+import DataSourceBase from '../DataSourceBase.vue';
 import config from './config.vue';
 
 export default {
-    extends: BaseDataSourceVue,
+    extends: DataSourceBase,
 	
     components: {
 		config,
@@ -42,11 +42,6 @@ export default {
 			let res = await this.fetchDataSourceDetails();
 			console.log(res);
 			this.ds = res;
-		},
-
-		onSaved(event) {
-			this.$emit('saved', event);
-			// console.log(event);
 		},
 	},
 };

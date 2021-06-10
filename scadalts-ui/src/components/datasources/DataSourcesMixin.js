@@ -21,21 +21,24 @@ export const dataSourcesMixin = {
 
     data() {
         return {
-            dataSourceList: [
-                {
-                    value: 'virtualdatasourceeditor',
-                    text: "Virtual Data Source"
-                },
-                {
-                    value: 'snmpdatasourceeditor',
-                    text: "SNMP Data Source"
-                },
-            ],
+            /* DEFINE A NEW DATASOURCE HERE */
+            dataSources: [
+                'virtualdatasource',
+                'snmpdatasource',
+            ]
+        }
+    },
+
+    computed: {
+        dataSourceList() {
+            return this.dataSources.map(dsType => {
+                return {
+                    value: `${dsType}`,
+                    text: this.$t(`datasource.type.${dsType}`)
+                };
+            });
         }
     }
-
-    //TODO: array with ENUMS of DataSources.
-
 }
 
 export default dataSourcesMixin;
