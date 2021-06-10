@@ -246,7 +246,8 @@
       
       PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true", 
     		  staticHeaderList, staticParameterList, cacheWarningSize, changesOnly, $get("raiseResultWarning"),
-    		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
+    		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType,
+              $get("username"), $get("password"), savePublisherCB);
   }
   
   function httpSendTest() {
@@ -317,6 +318,14 @@
             <td class="formField">
               <input type="text" id="url" value="${publisher.url}" class="formLong"/>
               <div id="urlMsg" class="formError" style="display:none;"></div>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.credentials"/></td>
+            <td class="formField">
+              <fmt:message key="publisherEdit.httpSender.username"/> <input type="text" id="username" class="formShort"/>
+              <fmt:message key="publisherEdit.httpSender.password"/> <input type="password" id="password" class="formShort"/>
             </td>
           </tr>
           

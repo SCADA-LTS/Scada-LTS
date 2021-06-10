@@ -18,6 +18,8 @@
  */
 package com.serotonin.mango.web.dwr;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,6 +39,7 @@ import com.serotonin.mango.vo.publish.pachube.PachubeSenderVO;
 import com.serotonin.mango.vo.publish.persistent.PersistentPointVO;
 import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.mango.web.dwr.beans.HttpSenderTester;
+import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -84,7 +87,7 @@ public class PublisherEditDwr extends BaseDwr {
     public DwrResponseI18n saveHttpSender(String name, String xid, boolean enabled, List<HttpPointVO> points,
             String url, boolean usePost, List<KeyValuePair> staticHeaders, List<KeyValuePair> staticParameters,
             int cacheWarningSize, boolean changesOnly, boolean raiseResultWarning, int dateFormat,
-            boolean sendSnapshot, int snapshotSendPeriods, int snapshotSendPeriodType) {
+            boolean sendSnapshot, int snapshotSendPeriods, int snapshotSendPeriodType, String username, String password) {
         HttpSenderVO p = (HttpSenderVO) Common.getUser().getEditPublisher();
 
         p.setName(name);
@@ -102,8 +105,48 @@ public class PublisherEditDwr extends BaseDwr {
         p.setSendSnapshot(sendSnapshot);
         p.setSnapshotSendPeriods(snapshotSendPeriods);
         p.setSnapshotSendPeriodType(snapshotSendPeriodType);
+        setAuthorizationStaticHeader(p, username, password);
 
         return trySave(p);
+    }
+
+    private void setAuthorizationStaticHeader(HttpSenderVO httpSenderVO, String username, String password) {
+        String headerValue = getCredentials(username, password);
+        if (headerValue != null) {
+            if (httpSenderVO.getStaticHeaders().stream().noneMatch(o -> o.getKey().equals("Authorization"))) {
+                httpSenderVO.getStaticHeaders().add(new KeyValuePair("Authorization", headerValue));
+            } else {
+                for (KeyValuePair kvp : httpSenderVO.getStaticHeaders()) {
+                    if (kvp.getKey().equals("Authorization")) {
+                        kvp.setValue(headerValue);
+                    }
+                }
+            }
+        }
+    }
+
+    private String getCredentials(String username, String password) {
+        if (!(StringUtils.isEmpty(username) || StringUtils.isEmpty(password))) {
+            byte[] credentials = (username + ':' + password).getBytes();
+            return "Basic " + Base64.getEncoder().encodeToString(credentials);
+        } else
+            return null;
+    }
+
+    public String[] getCredentials(List<KeyValuePair> staticHeaders) {
+        String authorization = null;
+        KeyValuePair auth = staticHeaders.stream().filter(o -> o.getKey().equals("Authorization")).findFirst().orElse(null);
+        if (auth != null)
+            authorization = auth.getValue();
+        if (authorization != null && authorization.startsWith("Basic")){
+            String base64Credentials = authorization.substring("Basic".length()).trim();
+            byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+            String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+            // credentials = username:password
+            final String[] values = credentials.split(":", 2);
+            return values;
+        }
+        return null;
     }
 
     public void httpSenderTest(String url, boolean usePost, List<KeyValuePair> staticHeaders,
