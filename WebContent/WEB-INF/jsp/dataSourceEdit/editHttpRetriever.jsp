@@ -56,8 +56,10 @@
   }
 
   function setCredentials(credentials) {
-    $set("username", credentials[0]);
-    $set("password", credentials[1]);
+    if (credentials != null) {
+      $set("username", credentials[0]);
+      $set("password", credentials[1]);
+    }
   }
 
   function testValueParams() {
