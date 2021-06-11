@@ -1313,45 +1313,58 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return tryDataSourceSave(ds);
     }
 
-    private void setAuthorizationStaticHeader(HttpRetrieverDataSourceVO ds, String username, String password) {
-        String headerValue = getCredentials(username, password);
-        if (headerValue != null) {
-            if (ds.getStaticHeaders().isEmpty()) {
+    private static void setAuthorizationStaticHeader(HttpRetrieverDataSourceVO ds, String username, String password) {
+        toBasicCredentials(username, password).ifPresent(headerValue -> {
+            if (ds.getStaticHeaders().isEmpty() || !containsKey(ds.getStaticHeaders(), "Authorization")) {
                 ds.getStaticHeaders().add(new KeyValuePair("Authorization", headerValue));
             } else {
                 for (KeyValuePair kvp : ds.getStaticHeaders()) {
-                    if (kvp.getKey().equals("Authorization")) {
+                    if (kvp.getKey().equalsIgnoreCase("Authorization")) {
                         kvp.setValue(headerValue);
                     }
                 }
             }
-        }
+        });
     }
 
-    private String getCredentials(String username, String password) {
-        if (!(StringUtils.isEmpty(username) || StringUtils.isEmpty(password))) {
-            byte[] credentials = (username + ':' + password).getBytes();
-            return "Basic " + Base64.getEncoder().encodeToString(credentials);
-        } else
-            return null;
-    }
-
-    public String[] getCredentials(List<KeyValuePair> staticHeaders) {
-	    String authorization = null;
+    private static boolean containsKey(List<KeyValuePair> staticHeaders, String key) {
         for (KeyValuePair kvp : staticHeaders) {
-            if (kvp.getKey().equals("Authorization")) {
-                authorization = kvp.getValue();
+            if (kvp.getKey().equalsIgnoreCase(key)) {
+                return true;
             }
         }
-        if (authorization != null && authorization.startsWith("Basic")){
-            String base64Credentials = authorization.substring("Basic".length()).trim();
-            byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
-            String credentials = new String(credDecoded, StandardCharsets.UTF_8);
-            // credentials = username:password
-            final String[] values = credentials.split(":", 2);
-            return values;
+        return false;
+    }
+
+    private static Optional<String> toBasicCredentials(String username, String password) {
+        if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
+            byte[] credentials = (username + ':' + password).getBytes();
+            return Optional.of("Basic " + Base64.getEncoder().encodeToString(credentials));
         }
-        return null;
+        return Optional.empty();
+    }
+
+    public static String[] getBasicCredentials(List<KeyValuePair> staticHeaders) {
+        return getAuthorization(staticHeaders)
+                .filter(authorization -> authorization.startsWith("Basic")
+                        || authorization.startsWith("basic"))
+                .map(authorization -> {
+                    String base64Credentials = authorization.substring("Basic".length()).trim();
+                    byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+                    String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+                    // credentials = username:password
+                    return credentials.split(":", 2);
+                })
+                .orElseGet(() -> new String[]{});
+    }
+
+    private static Optional<String> getAuthorization(List<KeyValuePair> staticHeaders) {
+        for (KeyValuePair kvp : staticHeaders) {
+            if (kvp.getKey().equalsIgnoreCase("Authorization")) {
+                return Optional.ofNullable(kvp.getValue());
+            }
+        }
+        return Optional.empty();
     }
 
     public DwrResponseI18n initHttpRetriever() {

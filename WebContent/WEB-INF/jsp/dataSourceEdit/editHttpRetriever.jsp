@@ -52,14 +52,12 @@
 
   function initCB(response) {
     staticHeaders = response.data.staticHeaders;
-    DataSourceEditDwr.getCredentials(staticHeaders, setCredentials);
+    DataSourceEditDwr.getBasicCredentials(staticHeaders, setCredentials);
   }
 
   function setCredentials(credentials) {
-    if (credentials != null) {
-      $set("username", credentials[0]);
-      $set("password", credentials[1]);
-    }
+    $set("username", credentials[0]);
+    $set("password", credentials[1]);
   }
 
   function testValueParams() {
