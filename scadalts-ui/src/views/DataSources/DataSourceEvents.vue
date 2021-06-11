@@ -130,7 +130,6 @@
 										<v-list-item-content>
 											<v-list-item-title>
 												<v-text-field
-													v-model="newComment"
 													:label="$t('comment.add')"
 													append-icon="mdi-check"
 													@click:append="addComment(e)"
@@ -159,6 +158,7 @@ export default {
 
     data() {
         return {
+			dialogVisible: false,
             events: [
                 {
                     id: 1,

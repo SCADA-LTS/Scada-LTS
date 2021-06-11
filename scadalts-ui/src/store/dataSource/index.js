@@ -1,4 +1,21 @@
+import i18n from '@/i18n';
 import Axios from 'axios';
+import { datasourceApiMocks, datasourceDetailsMocks } from './mocks/datasourceapi';
+
+/**
+ * Data Source received form REST API
+ * @typedef {Object} DataSourceAPI
+ * @property {Number} 	id
+ * @property {String} 	xid
+ * @property {Boolean} 	enabled
+ * @property {String} 	name
+ * @property {Number} 	type
+ * @property {String} 	connection
+ * @property {String} 	description
+ * @property {Number} 	activeEvents
+ * @property {Boolean}	loaded
+ * @property {Object}	datapoints
+ */
 
 const ds = {
 	state: {
@@ -8,69 +25,45 @@ const ds = {
 			useCredentials: true,
 			credentials: 'same-origin',
 		},
+
+		dataSources: new Map()
+			.set(1,"virtualdatasource")
+			.set(5, "snmpdatasource"),
+
 	},
 	mutations: {},
 	actions: {
+
+		/**
+		 * Get All DataSources
+		 * 
+		 * @param {*} param0 
+		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
+		 */
 		getDataSources({ dispatch }) {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					const data = [
-						{
-							id: 0,
-							enabled: true,
-							name: 'Test',
-							type: 'virtualdatasource',
-							xid: 'DS_012311',
-							conn: '5 minutes',
-							descr: 'Nothing important',
-							loaded: false,
-							datapoints: []
-						},
-						{
-							id: 1,
-							enabled: true,
-							name: 'Tes2',
-							type: 'snmpdatasource',
-							xid: 'DS_01232131',
-							conn: '30 seconds',
-							descr: 'User has changed on/off status',
-							loaded: false,
-							datapoints: [],
-						},
-					];
-					resolve(data);
+					resolve(datasourceApiMocks)
 				}, 2000);
 				
 			});
 		},
 
+		/**
+		 * Get DataSource Details
+		 * 
+		 * Details are dependend on the DataSource Type. 
+		 * The logic to parse that data should be written 
+		 * in speficic datasource component.
+		 * 
+		 * @param {*} param0 
+		 * @param {Number} dataSourceId - ID number of DataSource
+		 * @returns 
+		 */
 		fetchDataSourceDetails({dispatch}, dataSourceId) {
 			return new Promise((resolve) => {
 				setTimeout(() => {
-					let data;
-					if(dataSourceId === 0) {
-						data = {
-							id: 1,
-							enabled: true,
-							name: 'Tes2',
-							xid: 'DS_01232131',
-							updatePeriod: 5,
-							updatePeriodType: 1,
-						}
-					} else if(dataSourceId === 1) {
-						data = {
-							id: 2,
-							enabled: true,
-							name: 'Tes2ErSNMP',
-							xid: 'DS_01214',
-							updatePeriod: 5,
-							updatePeriodType: 1,
-							host: 'localhost',
-							port:'161',
-						}
-					}
-					
-					resolve(data)
+					resolve(datasourceDetailsMocks[dataSourceId]);
 				}, 1000);
 			})
 		},
@@ -139,6 +132,18 @@ const ds = {
 			});
 		},
 	},
-	getters: {},
+
+	getters: {
+		dataSourceList(state) {
+			let datasources = [];
+			state.dataSources.forEach(dsType => {
+                datasources.push({
+                    value: `${dsType}`,
+                    text: i18n.t(`datasource.type.${dsType}`)
+                });
+            });
+            return datasources;
+		}
+	},
 };
 export default ds;

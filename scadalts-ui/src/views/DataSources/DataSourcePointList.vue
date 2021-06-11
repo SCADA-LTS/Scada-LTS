@@ -40,7 +40,7 @@
 						</v-col>
 
 						<v-col cols="11" lg="4" xl="7">
-							<component :is="`${datasource.type}pointlist`" :datapoint="dp"></component>
+							<component :is="`${datasourceType}pointlist`" :datapoint="dp"></component>
 						</v-col>
 					</v-row>
 				</v-list-item-title>
@@ -126,7 +126,7 @@
 import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
 
 export default {
-	props: ['datasource'],
+	props: ['datasource', 'datasourceType'],
 
 	mixins: [dataSourceMixin],
 

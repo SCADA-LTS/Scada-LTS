@@ -7,6 +7,17 @@ import SnmpDataSource from './SnmpDataSource';
 import SnmpDataSourceEditor from './SnmpDataSource/config';
 import SnmpDataSroucePointEditor from './SnmpDataSource/point';
 
+/**
+ * Data Sources Mixin
+ * 
+ * That mixin should be placed in every place where custom
+ * DataSource components should be rendered. It contains definitions
+ * for all available DataSources and their child components.
+ * 
+ * Remember to define the DataSource Variables in Vuex.
+ * [Data Source Vuex]{@link ../../store/dataSource/index.js}
+ * 
+ */
 export const dataSourcesMixin = {
     components: {
         'virtualdatasource': VirtualDataSource,
@@ -19,24 +30,9 @@ export const dataSourcesMixin = {
         'snmpdatasourcepointeditor': SnmpDataSroucePointEditor,
     },
 
-    data() {
-        return {
-            /* DEFINE A NEW DATASOURCE HERE */
-            dataSources: [
-                'virtualdatasource',
-                'snmpdatasource',
-            ]
-        }
-    },
-
     computed: {
         dataSourceList() {
-            return this.dataSources.map(dsType => {
-                return {
-                    value: `${dsType}`,
-                    text: this.$t(`datasource.type.${dsType}`)
-                };
-            });
+            return this.$store.getters.dataSourceList;
         }
     }
 }

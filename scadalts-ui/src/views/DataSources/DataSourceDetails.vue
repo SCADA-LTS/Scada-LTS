@@ -1,7 +1,7 @@
 <template>
 	<div class="flex">
 		<component
-			:is="`${datasource.type}`"
+			:is="`${datasourceType}`"
 			:id="datasource.id"
 			ref="component"
 			@saved="onSaved"
@@ -27,7 +27,7 @@ import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
 import DataSourceEvents from './DataSourceEvents'
 
 export default {
-	props: ['datasource'],
+	props: ['datasource', 'datasourceType'],
 
 	components: {
 		DataSourceEvents

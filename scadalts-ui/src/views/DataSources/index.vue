@@ -29,7 +29,7 @@
 			>
 				<template v-slot:item.enabled="{ item }">
 					<!-- TODO: Make badge button color match the highest alarm level -->
-					<v-badge overlap color="blue" dot>
+					<v-badge overlap :color="setAlarmColor(item.activeEvents)" dot :value="item.activeEvents > 0">
 						<v-btn x-small icon fab elevation="0" @click="toggleDataSource(item)" :color="item.enabled ? 'primary' : 'error'">
 							<v-icon v-show="item.enabled">mdi-decagram</v-icon>
 							<v-icon v-show="!item.enabled">mdi-decagram-outline</v-icon>
@@ -37,7 +37,7 @@
 					</v-badge>
 				</template>
 				<template v-slot:item.type="{ item }">
-					{{$t(`datasource.type.${item.type}`)}}
+					{{$t(`datasource.type.${dataSources.get(item.type)}`)}}
 				</template>
 				<template v-slot:expanded-item="{ headers, item }">
 					<td :colspan="headers.length" class="small-margin-top">
@@ -45,15 +45,18 @@
 							<v-col cols="12" class="flex">
 								<DataSourceDetails
 									:datasource="item"
+									:datasourceType="dataSources.get(item.type)"
 									@saved="onDataSourceUpdate"
 									@deleted="onDataSourceDelete"
 								></DataSourceDetails>
 							</v-col>
 						</v-row>
 						<v-divider></v-divider>
+						{{item.loaded}}
 						<v-row class="datapoint-list" v-if="item.loaded">
 							<DataSourcePointList
 								:datasource="item"
+								:datasourceType="dataSources.get(item.type)"
 								@create="onDataPointCreation"
 								@delete="onDataPointDeletion"
 							></DataSourcePointList>
@@ -114,12 +117,12 @@ export default {
 				{
 					text: 'Connection',
 					align: 'center',
-					value: 'conn',
+					value: 'connection',
 				},
 				{
 					text: 'Status Description',
 					align: 'center',
-					value: 'descr',
+					value: 'description',
 				},
 				{ text: '', value: 'data-table-expand' },
 			],
@@ -127,11 +130,38 @@ export default {
 		};
 	},
 
+	computed: {
+		dataSources() {
+			return this.$store.state.dataSource.dataSources;
+		}
+	},
+
 	mounted() {
 		this.fetchDataSources();
 	},
 
 	methods: {
+
+		setAlarmColor(alarmLevel) {
+			let color;
+			switch(alarmLevel) {
+				case 1:
+					color = "blue"; break;
+				case 2:
+					color = "yellow"; break;
+				case 3:
+					color = "orange"; break;
+				case 4:
+					color = "red"; break;
+				default:
+					color = "green";
+			}
+			return color;
+		},
+
+		/**
+		 * Load basic and generic DataSource list without details.
+		 */
 		async fetchDataSources() {
 			try {
 				this.tableLoaded = false;
@@ -143,6 +173,7 @@ export default {
 				this.dataSourceList = [];
 			}
 		},
+
 
 		async fetchDataPointList({ item, value }) {
 			if (value) {

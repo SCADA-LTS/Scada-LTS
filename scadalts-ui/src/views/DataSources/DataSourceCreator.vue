@@ -39,8 +39,6 @@ export default {
 			console.log("DSC::SAVE")
 			this.$emit('saved', event);
         }
-
-
 	},
 };
 </script>
