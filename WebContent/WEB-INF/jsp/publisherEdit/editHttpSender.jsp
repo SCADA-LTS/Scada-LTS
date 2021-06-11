@@ -50,14 +50,17 @@
       for (i=0; i<list.length; i++)
           addToSelectedArray(list[i].dataPointId, list[i].parameterName, list[i].includeTimestamp);
       refreshSelectedPoints();
-      PublisherEditDwr.getCredentials(staticHeaderList, setCredentials);
+      PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
+      PublisherEditDwr.getIsUseJSON(setUseJSON);
   }
 
   function setCredentials(credentials) {
-    if (credentials != null) {
       $set("username", credentials[0]);
       $set("password", credentials[1]);
-    }
+  }
+
+  function setUseJSON(useJSON) {
+      $set("useJSON", useJSON);
   }
   
   function addStaticHeader() {
@@ -255,7 +258,7 @@
       PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true", 
     		  staticHeaderList, staticParameterList, cacheWarningSize, changesOnly, $get("raiseResultWarning"),
     		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType,
-              $get("username"), $get("password"), savePublisherCB);
+              $get("username"), $get("password"), $get("useJSON"), savePublisherCB);
   }
   
   function httpSendTest() {
@@ -319,6 +322,11 @@
                 <sst:option value="true">POST</sst:option>
               </sst:select>
             </td>
+          </tr>
+
+          <tr>
+            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.useJSON"/></td>
+            <td class="formField"><sst:checkbox id="useJSON" /></td>
           </tr>
           
           <tr>

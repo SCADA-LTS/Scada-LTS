@@ -248,6 +248,6 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
     }
 
     public boolean isUseJSON() {
-        return staticHeaders.stream().filter(o -> o.getKey().equals("Content-Type")).findAny().filter(o -> o.getValue().equals("application/json")).isPresent();
+        return staticHeaders.stream().anyMatch(o -> (o.getKey().equals("Content-Type") && o.getValue().equals("application/json")));
     }
 }
