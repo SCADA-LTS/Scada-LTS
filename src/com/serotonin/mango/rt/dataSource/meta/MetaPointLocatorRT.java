@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource.meta;
 
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +46,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static com.serotonin.mango.util.LoggingScriptUtils.generateContext;
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorInitializationScript;
 
 /**
  * @author Matthew Lohbihler
@@ -240,8 +243,10 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     }
 
     void execute(long runtime, List<Integer> sourceIds) {
-        if (context == null)
+        if (context == null) {
+            LOG.warn("MetaPointLocatorRT.context is null, Context: " + generateContext(dataPoint, dataSource));
             return;
+        }
 
         // Check if we've reached the maximum number of recursions for this point
         int count = 0;
@@ -252,6 +257,9 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
         if (count > MAX_RECURSION) {
             handleError(runtime, new LocalizableMessage("event.meta.recursionFailure"));
+            String msg = MessageFormat.format("Recursion failure: exceeded MAX_RECURSION: expected <= {0} but was {1}, Context: {2}",
+                    String.valueOf(MAX_RECURSION), count, generateContext(dataPoint, dataSource));
+            LOG.error(msg);
             return;
         }
 
@@ -292,7 +300,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             context = scriptExecutor.convertContext(vo.getContext());
         }
         catch (DataPointStateException e) {
-            // no op
+            LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
         }
     }
 

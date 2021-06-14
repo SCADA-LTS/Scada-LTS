@@ -42,6 +42,12 @@ public final class LoggingScriptUtils {
         return infoErrorExecutionScript(e, context);
     }
 
+    public static String infoErrorInitializationScript(Exception e,
+                                                  DataPointRT dataPoint,
+                                                  DataSourceRT dataSource) {
+        return infoErrorExecutionScript(e, dataPoint, dataSource);
+    }
+
     public static String infoErrorExecutionScript(Exception e,
                                                   ScadaObjectIdentifier viewIdentifier,
                                                   ScriptComponent scriptComponent) {
@@ -77,7 +83,7 @@ public final class LoggingScriptUtils {
         return MessageFormat.format(info, context, "");
     }
 
-    private static String generateContext(DataPointRT dataPoint, DataSourceRT dataSource) {
+    public static String generateContext(DataPointRT dataPoint, DataSourceRT dataSource) {
         String context;
         if(dataSource != null) {
             context = dataSourceInfo(dataSource);
