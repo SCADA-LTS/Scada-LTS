@@ -298,8 +298,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         try {
             ScriptExecutor scriptExecutor = new ScriptExecutor();
             context = scriptExecutor.convertContext(vo.getContext());
-        }
-        catch (DataPointStateException e) {
+        } catch (Exception e) {
             LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
         }
     }
