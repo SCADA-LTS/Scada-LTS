@@ -7,7 +7,7 @@
 						Event Detectors
 						<ConfirmationDialog
 							:btnvisible="false"
-							:dialog="confirmDeleteDialog"
+							ref="confirmDeleteDialog"
 							@result="deleteEventDetector"
 							:title="
 								$t('datapointDetails.pointProperties.eventDetectors.delete.dialog.title')
@@ -399,7 +399,6 @@ export default {
 
 	data() {
 		return {
-			confirmDeleteDialog: false,
 			confirmDeleteDetector: null,
 			binaryState: [
 				{
@@ -442,7 +441,7 @@ export default {
 		},
 
 		openConfirmDialog(e) {
-			this.confirmDeleteDialog = true;
+			this.$refs.confirmDeleteDialog.showDialog();
 			this.confirmDeleteDetector = e;
 		},
 
@@ -464,7 +463,6 @@ export default {
 		},
 
 		deleteEventDetector(e) {
-			this.confirmDeleteDialog = false;
 			if (e) {
 				this.$store
 					.dispatch('deleteEventDetector', {

@@ -7,7 +7,13 @@
 						<h1>Data Sources</h1>
 					</v-col>
 					<v-col cols="6" class="row justify-end" v-if="tableLoaded">
-						<v-btn color="primary" dark fab small @click="createDataSource()">
+						<v-progress-circular
+							v-show="savingData"
+      						:size="50"
+      						color="primary"
+      						indeterminate
+    					></v-progress-circular>
+						<v-btn color="primary" v-show="!savingData" dark fab small @click="createDataSource()">
 							<v-icon> mdi-plus </v-icon>
 						</v-btn>
 					</v-col>
@@ -52,7 +58,6 @@
 							</v-col>
 						</v-row>
 						<v-divider></v-divider>
-						{{item.loaded}}
 						<v-row class="datapoint-list" v-if="item.loaded">
 							<DataSourcePointList
 								:datasource="item"
@@ -71,13 +76,20 @@
 		<!-- Related dialog components -->
 		<DataSourceCreator
 			ref="creator"
-			@saved="onDataSourceSaved($event)"
+			@savedDS="onDataSourceSaved($event)"
 		></DataSourceCreator>
 		<DataPointCreator
 			ref="pointCreator"
 			@saved="onDataPointSaved($event)"
 			@updated="onDataPointUpdate($event)"
 		></DataPointCreator>
+		<ConfirmationDialog
+			:btnvisible="false"
+			ref="deleteDataSource"
+			@result="onDataSourceDeleteConfirm"
+			title="Do you want to delete this data source?"
+			message="This operation connot be undone?"
+		></ConfirmationDialog>
 	</div>
 </template>
 <script>
@@ -86,12 +98,15 @@ import DataSourceCreator from './DataSourceCreator';
 import DataPointCreator from './DataPointCreator';
 import DataSourcePointList from './DataSourcePointList';
 
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+
 export default {
 	components: {
 		DataSourceDetails,
 		DataSourceCreator,
 		DataPointCreator,
 		DataSourcePointList,
+		ConfirmationDialog,
 	},
 
 	data() {
@@ -127,6 +142,8 @@ export default {
 				{ text: '', value: 'data-table-expand' },
 			],
 			dataSourceList: [],
+			savingData: false,
+			operationQueue: null,
 		};
 	},
 
@@ -187,7 +204,7 @@ export default {
 		},
 
 		onDataPointCreation({ item, datapoint }) {
-			this.$refs.pointCreator.showDialog(item, datapoint);
+			this.$refs.pointCreator.showDialog(item, datapoint, this.dataSources.get(item.type));
 		},
 
 		onDataPointDeletion({ item, datapoint }) {
@@ -224,38 +241,48 @@ export default {
 			x.datapoints.push(event.e);
 		},
 
-		onDataSourceUpdate(event) {
-			console.log(event);
+		async onDataSourceUpdate(event) {
+			this.savingData = true;
+			event.type = this.$store.getters.dataSourceTypeId(event.type)
+			try {
+				let resp = await this.$store.dispatch("updateDataSource", event)
+				console.log(resp);
+			} catch (error) {
+				console.error(error);
+			} finally {
+				this.savingData = false;
+			}
 		},
 
 		onDataSourceDelete(event) {
-			//TODO: MAKE CONFIRMATION DIALOG
-			this.dataSourceList = this.dataSourceList.filter((e) => {
-				return e.id !== event;
-			});
+			this.$refs.deleteDataSource.showDialog();
+			this.operationQueue = event;
+		},
+
+		onDataSourceDeleteConfirm(evnet) {
+			if(evnet) {
+				this.dataSourceList = this.dataSourceList.filter((e) => {
+					return e.id !== this.operationQueue;
+				});
+			}
 		},
 
 		toggleDataSource(ds){
 			ds.enabled = !ds.enabled;
 		},
 
-		onDataSourceSaved(event) {
-			console.log(event);
-			//name: ""
-			// updatePeriod: 5
-			// updatePeriodType: 2
-			// xid: "DS_VDS_"
-
-			// this.dataSourceList.push(event);
-			//conn: "5 minutes"
-			// datapoints: Array(3)
-			// descr: "Nothing important"
-			// enabled: true
-			// id: 0
-			// loaded: true
-			// name: "Test"
-			// type: "virtualdatasource"
-			// xid: "DS_012311"
+		async onDataSourceSaved(event) {
+			event.type = this.$store.getters.dataSourceTypeId(event.type)
+			this.savingData = true;
+			try {
+				let resp = await this.$store.dispatch("createDataSource", event)
+				this.dataSourceList.push(resp);
+				console.log(resp);
+			} catch (error) {
+				console.error(error);
+			} finally {
+				this.savingData = false;
+			}
 		},
 	},
 };

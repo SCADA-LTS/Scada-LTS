@@ -1,5 +1,6 @@
 import i18n from '@/i18n';
 import Axios from 'axios';
+import { reject } from 'core-js/fn/promise';
 import { datasourceApiMocks, datasourceDetailsMocks } from './mocks/datasourceapi';
 
 /**
@@ -92,6 +93,67 @@ const ds = {
 			});
 		},
 
+		/**
+		 * Create Data Source
+		 * 
+		 * Send a POST request to the Core aplication REST API to create a new
+		 * DataSource. Based on the typeID of datasource it should create a 
+		 * valid DS Type and as a response sould be received DataSourceAPI object.
+		 * It sould contain a new generated ID.
+		 * 
+		 * --- MOCKED ---
+		 * 
+		 * @param {*} param0 
+		 * @param {Object} datasource - DataSource object from Creator component.
+		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
+		 */
+		createDataSource({dispatch}, datasource) {
+			/* Mocking TODO: real method*/
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					const response = {
+						id: 10,
+						xid: datasource.xid,
+						enabled: false,
+						name: datasource.name,
+						type: datasource.type,
+						connection: `${datasource.updatePeriod} ${datasource.updatePeriodType}`,
+						description: '',
+						activeEvents: null,
+						loaded: false,
+						datapoints: [],
+					}
+					resolve(response);
+				}, 3000);
+			})
+		},
+
+
+		/**
+		 * Update Data Source
+		 * 
+		 * Send a PUT request to the Core aplication REST API to update existing
+		 * DataSource. 
+		 * 
+		 * --- MOCKED ---
+		 * 
+		 * @param {*} param0 
+		 * @param {Object} datasource - DataSource object from Creator component.
+		 * @returns 
+		 */
+		 updateDataSource({dispatch}, datasource) {
+			/* Mocking TODO: real method*/
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					console.log(datasource);
+					const response = {
+						status: "OK",
+					}
+					resolve(response);
+				}, 1000);
+			})
+		},
+
 		getAllDataSources(context) {
 			return new Promise((resolve, reject) => {
 				Axios.get(
@@ -143,6 +205,15 @@ const ds = {
                 });
             });
             return datasources;
+		},
+
+		dataSourceTypeId:(state) => (datasourceType) => {
+			for (let [key, value] of state.dataSources.entries()) {
+				if(value === datasourceType) {
+					return key;
+				}
+			}
+			return -1;
 		}
 	},
 };

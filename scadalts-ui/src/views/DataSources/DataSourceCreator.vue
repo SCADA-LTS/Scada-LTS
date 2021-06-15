@@ -35,9 +35,9 @@ export default {
         },
 
         onSaved(event) {
+			this.dialogVisible = false;
 			event.type = this.selectedType;
-			console.log("DSC::SAVE")
-			this.$emit('saved', event);
+			this.$emit('savedDS', event);
         }
 	},
 };

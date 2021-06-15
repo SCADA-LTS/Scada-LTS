@@ -3,7 +3,7 @@
 		<v-container fluid>
 			<ConfirmationDialog
 				:btnvisible="false"
-				:dialog="confirmToggleDialog"
+				ref="toggleDialogConfirm"
 				@result="toggleDataPointDialog"
 				:title="$t('datapointDetails.pointProperties.toggle.dialog.title')"
 				:message="$t('datapointDetails.pointProperties.toggle.dialog.text')"
@@ -117,7 +117,6 @@ export default {
 		return {
 			newComment: '',
 			dataPointDetails: undefined,
-			confirmToggleDialog: false,
 			chartRefreshRate: 10000,
 			response: {
 				status: false,
@@ -144,11 +143,10 @@ export default {
 		},
 
 		toggleDataPoint() {
-			this.confirmToggleDialog = true;
+			this.$refs.toggleDialogConfirm.showDialog();
 		},
 
 		async toggleDataPointDialog(e) {
-			this.confirmToggleDialog = false;
 			if (e) {
 				let resp = await this.$store.dispatch(
 					'toggleDataPoint',

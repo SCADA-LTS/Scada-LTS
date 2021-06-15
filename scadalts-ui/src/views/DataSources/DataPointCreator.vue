@@ -30,7 +30,7 @@ export default {
 	},
 
 	methods: {
-		showDialog(item, datapoint) {
+		showDialog(item, datapoint, datasourceType) {
 			this.dialogVisible = true;
 			if (!!datapoint) {
 				this.datapoint = datapoint;
@@ -45,8 +45,7 @@ export default {
 				};
 			}
 			this.datasource = item;
-			console.log(this.datapoint);
-			this.datasourceType = `${item.type}pointeditor`;
+			this.datasourceType = `${datasourceType}pointeditor`;
 		},
 
 		onCanceled() {

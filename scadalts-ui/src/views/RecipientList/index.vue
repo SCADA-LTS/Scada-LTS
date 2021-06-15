@@ -89,7 +89,7 @@
 		</v-dialog>
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="deleteRecipientDialog"
+			ref="deleteRecipientDialog"
 			@result="deleteRecipientDialogResult"
 			:title="$t('recipientlist.dialog.delete.title')"
 			:message="$t('recipientlist.dialog.delete.text')"
@@ -133,7 +133,6 @@ export default {
 			recipeintLists: undefined,
 			activeRecipientList: undefined,
 			blankRecipientList: undefined,
-			deleteRecipientDialog: false,
 			response: {
 				status: false,
 				message: '',
@@ -159,11 +158,10 @@ export default {
 		},
 
 		deleteRecipientList() {
-			this.deleteRecipientDialog = true;
+			this.$refs.deleteRecipientDialog.showDialog();
 		},
 
 		async deleteRecipientDialogResult(e) {
-			this.deleteRecipientDialog = false;
 			if (e) {
 				let resp = await this.$store.dispatch(
 					'deleteMailingList',

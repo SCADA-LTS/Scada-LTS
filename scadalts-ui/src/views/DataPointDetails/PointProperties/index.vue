@@ -2,7 +2,7 @@
 	<v-dialog v-model="dialog" width="1200">
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmToggleDialog"
+			ref="toggleDialogConfirm"
 			@result="toggleDataPointDialog"
 			:title="$t('datapointDetails.pointProperties.toggle.dialog.title')"
 			:message="$t('datapointDetails.pointProperties.toggle.dialog.text')"
@@ -154,7 +154,6 @@ export default {
 		return {
 			dialog: false,
 			purgeDialog: false,
-			confirmToggleDialog: false,
 			response: {
 				status: false,
 				message: '',
@@ -169,11 +168,10 @@ export default {
 		},
 
 		toggleDataPoint() {
-			this.confirmToggleDialog = true;
+			this.$refs.toggleDialogConfirm.showDialog();
 		},
 
 		async toggleDataPointDialog(e) {
-			this.confirmToggleDialog = false;
 			if (e) {
 				let resp = await this.$store.dispatch('toggleDataPoint', this.data.id);
 				if (!!resp) {

@@ -4,20 +4,14 @@
 			<v-list-item-content>
 				<v-list-item-title>
 					<v-row>
+						
 						<v-col cols="1" class="datapoint-status">
-							<v-icon
-								:color="dp.enabled ? 'primary' : 'error'"
-								v-show="dp.enabled"
-								@click="toggleDataPoint(dp)"
-								>mdi-decagram</v-icon
-							>
-							<v-icon
-								:color="dp.enabled ? 'primary' : 'error'"
-								v-show="!dp.enabled"
-								@click="toggleDataPoint(dp)"
-								>mdi-decagram-outline</v-icon
-							>
+							<v-btn x-small icon fab elevation="0" :color="dp.enabled ? 'primary' : 'error'" @click="toggleDataPoint(dp)">
+								<v-icon v-show="dp.enabled">mdi-decagram</v-icon>
+								<v-icon v-show="!dp.enabled">mdi-decagram-outline</v-icon>
+							</v-btn>
 						</v-col>
+
 						<v-col cols="11" :sm="9" :md="7" :lg="5" xl="3">
 							<v-tooltip bottom>
 								<template v-slot:activator="{ on, attrs }">
@@ -32,6 +26,7 @@
 								</span>
 							</v-tooltip>
 						</v-col>
+
 						<v-col cols="12" :sm="2" :md="4" lg="1" xl="1">
 							{{ dp.type }}
 						</v-col>
