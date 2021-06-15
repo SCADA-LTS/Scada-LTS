@@ -167,7 +167,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	@JsonRemoteProperty
 	private int y;
 	@JsonRemoteProperty
-	private int z = 1;
+	private int z = 2;
 
 	public void setLocation(int x, int y) {
 		this.x = x;
