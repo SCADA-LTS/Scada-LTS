@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class V2_7_0_4__HttpRetriever extends BaseJavaMigration {
+public class V2_7_1_0__HttpRetriever extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_7_0_4__HttpRetriever.class);
+    private static final Log LOG = LogFactory.getLog(V2_7_1_0__HttpRetriever.class);
 
     @Override
     public void migrate(Context context) throws Exception {
