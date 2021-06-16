@@ -27,38 +27,37 @@ public class V2_7_1_0__HttpRetriever extends BaseJavaMigration {
 
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
-        updateDataSourcesTable(jdbcTmp);
+        try {
+            migrate(jdbcTmp);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
-    private void updateDataSourcesTable(JdbcTemplate jdbcTmp) throws Exception {
-
-        try {
-            List<HttpRetrieverDataSourceVO> dataSources = jdbcTmp.query("SELECT id, data FROM dataSources where dataSourceType = 11", (resultSet, i) -> {
-                try (InputStream inputStream = resultSet.getBinaryStream("data");
-                     ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
-                    HttpRetrieverDataSourceVO dataSourceVO = (HttpRetrieverDataSourceVO) objectInputStream.readObject();
-                    dataSourceVO.setId(resultSet.getInt("id"));
-                    if (dataSourceVO.getStaticHeaders() == null)
-                        dataSourceVO.setStaticHeaders(new ArrayList<KeyValuePair>());
-                    return dataSourceVO;
-                } catch (IOException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            });
-
-            boolean isNull = dataSources.stream().anyMatch(Objects::isNull);
-            if (isNull) {
-                throw new IllegalStateException("HttpRetrieverDataSourceVO is null!");
+    private void migrate(JdbcTemplate jdbcTmp) {
+        List<HttpRetrieverDataSourceVO> dataSources = jdbcTmp.query("SELECT id, data FROM dataSources where dataSourceType = 11", (resultSet, i) -> {
+            try (InputStream inputStream = resultSet.getBinaryStream("data");
+                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
+                HttpRetrieverDataSourceVO dataSourceVO = (HttpRetrieverDataSourceVO) objectInputStream.readObject();
+                dataSourceVO.setId(resultSet.getInt("id"));
+                if (dataSourceVO.getStaticHeaders() == null)
+                    dataSourceVO.setStaticHeaders(new ArrayList<KeyValuePair>());
+                return dataSourceVO;
+            } catch (IOException | ClassNotFoundException ex) {
+                LOG.error(ex.getMessage(), ex);
+                return null;
             }
+        });
 
-            for (HttpRetrieverDataSourceVO dataSource : dataSources) {
-                jdbcTmp.update("UPDATE dataSources set data = ? WHERE id = ?",
-                        new SerializationData().writeObject(dataSource), dataSource.getId());
-            }
+        boolean isNull = dataSources.stream().anyMatch(Objects::isNull);
+        if (isNull) {
+            throw new IllegalStateException("HttpRetrieverDataSourceVO is null!");
+        }
 
-        } catch (EmptyResultDataAccessException empty) {
-            LOG.warn(empty);
+        for (HttpRetrieverDataSourceVO dataSource : dataSources) {
+            jdbcTmp.update("UPDATE dataSources set data = ? WHERE id = ?",
+                    new SerializationData().writeObject(dataSource), dataSource.getId());
         }
     }
 }
