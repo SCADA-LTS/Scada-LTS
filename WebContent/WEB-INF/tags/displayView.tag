@@ -38,7 +38,7 @@
       
       <c:when test="${vc.defName == 'simpleCompound'}">
         <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;z-index:${vc.z}"
-                  onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}', ${vc.z});">
+                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}', ${vc.z});">
           <tag:pointComponent vc="${vc.leadComponent}"/>
           <c:choose>
             <c:when test="${empty vc.backgroundColour}"><c:set var="bkgd"></c:set></c:when>
@@ -57,7 +57,7 @@
       
       <c:when test="${vc.defName == 'imageChart'}">
         <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;z-index:${vc.z};"
-                  onmouseover="vcOver('c${vc.id}', 10);" onmouseout="vcOut('c${vc.id}, ${vc.z}');">
+                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}, ${vc.z}');">
           <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
           <div id="c${vc.id}Controls" class="controlContent">
             <div id="c${vc.id}Info">
@@ -108,7 +108,7 @@
       
       <c:when test="${vc.compoundComponent}">
         <div id="c${vc.id}" class="viewComponent" style="position:absolute;left:${vc.x}px;top:${vc.y}px;z-index:${vc.z}"
-                  onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}', ${vc.z});">
+                  onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}', ${vc.z});">
           ${vc.staticContent}
           <div id="c${vc.id}Controls" class="controlsDiv">
             <table cellpadding="0" cellspacing="1">

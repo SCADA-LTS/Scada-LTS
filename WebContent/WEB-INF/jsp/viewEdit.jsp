@@ -187,8 +187,11 @@
 
     function moveUpComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
-        div.style.zIndex = Number(div.style.zIndex) + 1;
+        if(div.style.zIndex < 99) {
+           div.style.zIndex = Number(div.style.zIndex) + 1;
+        }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
     }
 
     function moveDownComponent(viewComponentId) {
@@ -197,6 +200,13 @@
             div.style.zIndex = div.style.zIndex - 1;
         }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
+    }
+
+    function updateZIndexLabel(viewComponentId, value) {
+        var spanIndex = document.getElementById("c" + viewComponentId + "zindex");
+        spanIndex.parentNode.parentNode.style.display = "initial";
+        spanIndex.innerText = Number(value);
     }
     
     function positionEditor(compId, editorId) {
@@ -587,6 +597,7 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -613,6 +624,7 @@
                         title="viewEdit.deleteStaticView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -632,6 +644,7 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -655,6 +668,7 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -682,6 +696,7 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -706,6 +721,7 @@
                         title="viewEdit.deleteStaticView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
