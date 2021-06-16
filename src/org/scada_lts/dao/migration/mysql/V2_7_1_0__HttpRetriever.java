@@ -8,7 +8,6 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
