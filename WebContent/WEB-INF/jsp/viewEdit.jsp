@@ -196,7 +196,7 @@
 
     function moveDownComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
-        if(div.style.zIndex > 0) {
+        if(div.style.zIndex > 1) {
             div.style.zIndex = div.style.zIndex - 1;
         }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
