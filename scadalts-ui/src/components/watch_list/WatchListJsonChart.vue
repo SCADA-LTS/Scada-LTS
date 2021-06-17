@@ -1,84 +1,88 @@
 <template>
-	<div>
-		<div class="container-fluid">
-			<div class="col-xs-12">
-				<btn-group class="col-xs-3">
-					<btn
-						class="col-xs-4"
-						input-type="radio"
-						input-value="live"
-						v-model="chartType"
-						id="live-btn-1"
-						>{{ $t('modernwatchlist.chart.panel.live') }}</btn
-					>
-					<tooltip
-						:text="$t('modernwatchlist.chart.panel.live.tooltip')"
-						target="#live-btn-1"
-					/>
-					<btn
-						class="col-xs-4"
-						input-type="radio"
-						input-value="static"
-						v-model="chartType"
-						id="static-btn-1"
-						>{{ $t('modernwatchlist.chart.panel.static') }}</btn
-					>
-					<tooltip
-						:text="$t('modernwatchlist.chart.panel.static.tooltip')"
-						target="#static-btn-1"
-					/>
-					<btn
-						class="col-xs-4"
-						input-type="radio"
-						input-value="compare"
-						v-model="chartType"
-						id="compare-btn-1"
-						>{{ $t('modernwatchlist.chart.panel.compare') }}</btn
-					>
-					<tooltip
-						:text="$t('modernwatchlist.chart.panel.compare.tooltip')"
-						target="#compare-btn-1"
-					/>
-				</btn-group>
-				<div v-show="chartType === 'live'" class="col-xs-8">
-					<ChartSettingsLiveComponent
-						ref="csLiveComponent"
-						:watchListName="watchlistName"
-					></ChartSettingsLiveComponent>
+	<v-app>
+		<v-row v-if="chartLoaded">
+			<v-col xs="12" cols="12">
+				<p>Modern Chart</p>
+			</v-col>
+			<v-col id="wl-chart-type-select" md="3" xs="3" class="button-space-start">
+				<v-btn-toggle v-model="chartType">
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn value="live" v-bind="attrs" v-on="on">
+								{{ $t('modernwatchlist.chart.panel.live') }}
+							</v-btn>
+						</template>
+						<span>{{ $t('modernwatchlist.chart.panel.live.tooltip') }}</span>
+					</v-tooltip>
+
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn value="static" v-bind="attrs" v-on="on">
+								{{ $t('modernwatchlist.chart.panel.static') }}
+							</v-btn>
+						</template>
+						<span>{{ $t('modernwatchlist.chart.panel.static.tooltip') }}</span>
+					</v-tooltip>
+
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn value="compare" v-bind="attrs" v-on="on">
+								{{ $t('modernwatchlist.chart.panel.compare') }}
+							</v-btn>
+						</template>
+						<span>{{ $t('modernwatchlist.chart.panel.compare.tooltip') }}</span>
+					</v-tooltip>
+				</v-btn-toggle>
+			</v-col>
+
+			<v-col id="wl-chart-type-settings" md="7" xs="7">
+				<ChartSettingsLiveComponent
+					ref="csLiveComponent"
+					:watchListName="watchListData.id"
+					v-show="chartType === 'live'"
+				></ChartSettingsLiveComponent>
+
+				<ChartSettingsStaticComponent
+					ref="csStaticComponent"
+					:watchListName="watchListData.id"
+					v-show="chartType === 'static'"
+				></ChartSettingsStaticComponent>
+
+				<ChartSettingsCompareComponent
+					ref="csCompareComponent"
+					:watchListName="watchListData.id"
+					:pointArray="watchListData.pointList"
+					v-show="chartType === 'compare'"
+				></ChartSettingsCompareComponent>
+			</v-col>
+
+			<v-col id="wl-chart-settings" md="2" xs="2" class="button-space">
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn fab @click="updateSettings()" v-bind="attrs" v-on="on">
+							<v-icon>mdi-refresh</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ $t('modernwatchlist.chart.panel.apply.tooltip') }}</span>
+				</v-tooltip>
+
+				<div v-if="chartSeries">
+					<ChartSeriesSettingsComponent
+						:series="chartSeries"
+						:watchListName="watchListData.id"
+						@saved="seriesDetailsSaved"
+					></ChartSeriesSettingsComponent>
 				</div>
-				<div v-show="chartType === 'static'" class="col-xs-8">
-					<ChartSettingsStaticComponent
-						ref="csStaticComponent"
-						:watchListName="watchlistName"
-					></ChartSettingsStaticComponent>
-				</div>
-				<div v-show="chartType === 'compare'" class="col-xs-8">
-					<ChartSettingsCompareComponent
-						ref="csCompareComponent"
-						:watchListName="watchlistName"
-						:pointId="pointId"
-					></ChartSettingsCompareComponent>
-				</div>
-				<div class="col-xs-1">
-					<btn class="dropdown-toggle" @click="updateSettings()" id="updateSettingsBtn">
-						<i class="glyphicon glyphicon-refresh"></i>
-					</btn>
-					<tooltip
-						:text="$t('modernwatchlist.chart.panel.apply.tooltip')"
-						target="#updateSettingsBtn"
-					/>
-					<div v-if="chartSeries">
-						<ChartSeriesSettingsComponent
-							:series="chartSeries"
-							:watchListName="watchlistName"
-							@saved="seriesDetailsSaved"
-						></ChartSeriesSettingsComponent>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="hello" v-bind:style="{ height: 600 + 'px' }" ref="chartdiv"></div>
-	</div>
+			</v-col>
+
+			<v-col cols="12" xs="12" id="wl-chart-container">
+				<div class="chartContainer" ref="chartdiv"></div>
+			</v-col>
+		</v-row>
+		<v-row v-else>
+			<v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
+		</v-row>
+	</v-app>
 </template>
 <script>
 import Axios from 'axios';
@@ -106,36 +110,50 @@ export default {
 		ChartSettingsCompareComponent,
 	},
 
-	props: [
-		'pointId',
-		'watchlistName',
-		'rangeValue',
-		'rangeColor',
-		'rangeLabel',
-		'showReload',
-		'jsonConfig',
-	],
+	props: [],
 
 	data() {
 		return {
 			chartType: 'live',
-			chartClass: undefined,
-			chartProperties: undefined,
-			chartConfiguration: undefined,
+			chartClass: null,
+			chartProperties: null,
+			chartConfiguration: null,
 			chartSeries: [],
 			activeColor: 0,
+			watchListData: null,
+			pointCompare: '',
+			chartLoaded: false,
 		};
 	},
 
 	mounted() {
-		this.init();
+		this.$nextTick(() => {
+			window.addEventListener('watchListChanged', this.onWatchListChanged);
+		});
 	},
 
 	methods: {
+		onWatchListChanged(event) {
+			this.chartLoaded = false;
+			this.reset().then(() => {
+				this.loadWatchList(Number(event.detail.wlId));
+			});
+		},
+
+		loadWatchList(watchListId) {
+			this.$store.dispatch('getWatchListDetails', watchListId).then((r) => {
+				this.watchListData = r;
+				this.pointCompare = r.pointList.join(',');
+				this.chartLoaded = true;
+				this.$nextTick(() => {
+					this.init();
+				});
+			});
+		},
+
 		async initChart() {
 			this.chartConfiguration = this.copyObject(CHART_CONFIGURATION_TEMPLATE);
 			let chartSeriesData = this.loadChart();
-			console.log(chartSeriesData);
 
 			this.loadAggregation();
 
@@ -151,7 +169,7 @@ export default {
 				this.$refs.chartdiv,
 				null,
 				'.',
-				this.chartConfiguration,
+				this.chartConfiguration
 			);
 
 			await this.initChartData();
@@ -173,9 +191,9 @@ export default {
 						pointPromises.push(this.initChartSeriesPoint(p.pointId));
 					});
 				} else {
-					let pointArray = this.pointId.split(',');
+					let pointArray = this.watchListData.pointList;
 					pointArray.forEach((id) => {
-						pointPromises.push(this.initChartSeriesPoint(id));
+						pointPromises.push(this.initChartSeriesPoint(id.id));
 					});
 				}
 
@@ -234,19 +252,19 @@ export default {
 				if (this.chartProperties.type == 'compare') {
 					this.chartProperties.comparePoints.forEach((p) => {
 						pointPromises.push(
-							this.chartClass.loadData(p.pointId, p.startDate, p.endDate, false),
+							this.chartClass.loadData(p.pointId, p.startDate, p.endDate, false)
 						);
 					});
 				} else {
-					let pointArray = this.pointId.split(',');
+					let pointArray = this.watchListData.pointList;
 					pointArray.forEach((id) => {
 						pointPromises.push(
 							this.chartClass.loadData(
-								id,
+								id.id,
 								this.chartProperties.startDate,
 								this.chartProperties.endDate,
-								false,
-							),
+								false
+							)
 						);
 					});
 				}
@@ -264,9 +282,9 @@ export default {
 
 		loadChart() {
 			console.debug('WLJCH::loadChart::Loading chart from memory...');
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchlistName}`));
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListData.id}`));
 			if (!!loadedData) {
-				let chartType = JSON.parse(localStorage.getItem(`MWL_${this.watchlistName}_P`))
+				let chartType = JSON.parse(localStorage.getItem(`MWL_${this.watchListData.id}_P`))
 					.type;
 				if (!!chartType) {
 					this.chartType = chartType;
@@ -291,8 +309,8 @@ export default {
 			if (!!this.chartSeries) {
 				if (this.chartSeries.length != 0) {
 					localStorage.setItem(
-						`MWL_${this.watchlistName}`,
-						JSON.stringify(this.chartSeries),
+						`MWL_${this.watchListData.id}`,
+						JSON.stringify(this.chartSeries)
 					);
 				}
 			}
@@ -300,14 +318,14 @@ export default {
 		},
 
 		loadAggregation() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchlistName}_A`));
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListData.id}_A`));
 			if (!!loadedData) {
 				this.chartConfiguration.xAxes[0].groupData = loadedData.aggregate;
 				this.chartConfiguration.xAxes[0].groupCount = loadedData.count;
 				console.debug('WLJCH::loadAggregation::Aggregation detected!', loadedData);
 			} else {
 				console.debug(
-					'WLJCH::loadAggregation::Aggregation not detected - using default settings.',
+					'WLJCH::loadAggregation::Aggregation not detected - using default settings.'
 				);
 			}
 		},
@@ -315,15 +333,15 @@ export default {
 		applySettings() {
 			if (this.chartType === 'live') {
 				this.chartProperties = this.copyObject(
-					this.$refs.csLiveComponent.applySettings(),
+					this.$refs.csLiveComponent.applySettings()
 				);
 			} else if (this.chartType === 'static') {
 				this.chartProperties = this.copyObject(
-					this.$refs.csStaticComponent.applySettings(),
+					this.$refs.csStaticComponent.applySettings()
 				);
 			} else if (this.chartType === 'compare') {
 				this.chartProperties = this.copyObject(
-					this.$refs.csCompareComponent.applySettings(),
+					this.$refs.csCompareComponent.applySettings()
 				);
 			}
 		},
@@ -363,7 +381,7 @@ export default {
 						this.chartClass.chart.dispose();
 					}
 					this.chartClass = null;
-					this.pointId = null;
+					this.watchListData = null;
 					this.chartSeries = [];
 					resolve(true);
 				} catch (error) {
@@ -378,9 +396,9 @@ export default {
 };
 </script>
 <style scoped>
-.hello {
+.chartContainer {
 	min-width: 650px;
-	height: 500px;
+	height: 600px;
 }
 p {
 	text-align: center;
@@ -388,5 +406,21 @@ p {
 }
 .error {
 	color: red;
+}
+.button-space {
+	display: flex;
+	justify-content: space-evenly;
+}
+.button-space-start {
+	display: flex;
+	justify-content: flex-start;
+	padding-left: 30px;
+}
+.button-space-start > .v-item-group {
+	width: 100%;
+	display: flex;
+}
+.button-space-start > .v-item-group > button {
+	width: 33%;
 }
 </style>
