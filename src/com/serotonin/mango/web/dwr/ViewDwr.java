@@ -21,11 +21,7 @@ package com.serotonin.mango.web.dwr;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -91,8 +87,11 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -111,8 +110,10 @@ public class ViewDwr extends BaseDwr {
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
-			return new ArrayList<ViewComponentState>();
-		return getViewPointData(null, view, false);
+			return new ArrayList<>();
+		return getUser(new UserService())
+				.map(user -> getViewPointData(user, view, false))
+				.orElse(new ArrayList<>());
 	}
 
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
@@ -242,7 +243,8 @@ public class ViewDwr extends BaseDwr {
 			if (!edit) {
 				if (pointComponent.isSettable()) {
 					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+					if ((access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+							&& Permissions.hasDataPointSetPermission(user, pointComponent.tgetDataPoint()))
 						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
 				}
 
@@ -396,13 +398,23 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
-		viewComponent.validateDataPoint(user, false);
+		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
 	}
 
 	@MethodFilter
 	public void setViewComponentLocation(String viewComponentId, int x, int y) {
 		getViewComponent(viewComponentId).setLocation(x, y);
+	}
+
+	@MethodFilter
+	public void setViewComponentZIndex(String viewComponentId, int zIndex) {
+		getViewComponent(viewComponentId).setZ(zIndex);
+	}
+
+	@MethodFilter
+	public int getViewComponentZIndex(String viewComponentId) {
+		return getViewComponent(viewComponentId).getZ();
 	}
 
 	@MethodFilter
@@ -1033,5 +1045,4 @@ public class ViewDwr extends BaseDwr {
 			}
 		}
 	}
-
 }

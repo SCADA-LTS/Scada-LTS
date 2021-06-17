@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataPoint from './dataPoint';
 import storeEvents from './events';
-import storeEventDetectors from './dataPoint/eventDetecotrs';
+import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
 import amcharts from './amcharts';
@@ -13,10 +13,11 @@ import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
+import watchListModule from './modernWatchList';
+
 import axios from 'axios';
 
 import i18n from '@/i18n';
-import { doc } from 'prettier';
 
 Vue.use(Vuex);
 
@@ -28,7 +29,7 @@ export default new Vuex.Store({
 	modules: {
 		dataSource,
 		dataPoint,
-		storeEventDetectors,
+		eventDetectorModule,
 		storeEvents,
 		graphicView,
 		pointHierarchy,
@@ -39,6 +40,7 @@ export default new Vuex.Store({
 		storeMailingList,
 		storeAlarmsNotifications,
 		SynopticPanelModule,
+		watchListModule,
 	},
 	state: {
 		loggedUser: null,

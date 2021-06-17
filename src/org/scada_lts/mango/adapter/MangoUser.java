@@ -45,6 +45,10 @@ public interface MangoUser {
 
 	void insertUser(User user);
 
+	void updateHideMenu(User user);
+
+	void updateScadaTheme(User user);
+
 	void updateUser(User user);
 
 	void deleteUser(final int userId);

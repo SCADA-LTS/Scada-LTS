@@ -322,7 +322,7 @@ export default {
 					new ApiCMP()
 						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
-							refreshHistory()
+							//refreshHistory()
 							// rxjs
 							let found = _.findWhere(this.controlsLevel0, { name: action });
 							if (found.toChange != undefined) {
@@ -336,7 +336,7 @@ export default {
 						})
 						.catch((er) => {
 							this.setErrorAndNotification(er.message);
-							refreshHistory()
+							//refreshHistory()
 						});
 				}
 			} else {
@@ -355,7 +355,7 @@ export default {
 			}
 		},
 		setActionLevel1(action) {
-			refreshHistory()
+			//refreshHistory()
 			if (this.selectActionLevel1 == action) {
 				this.selectActionLevel1 = '';
 			} else {

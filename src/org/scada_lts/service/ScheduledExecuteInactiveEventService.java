@@ -7,8 +7,9 @@ import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.MailingListService;
 
 public interface ScheduledExecuteInactiveEventService {
-    void scheduleEvent(EventHandlerVO eventHandler, EventInstance event);
-    void unscheduleEvent(ScheduledEvent event, CommunicationChannel channel);
+    boolean scheduleEvent(EventHandlerVO eventHandler, EventInstance event);
+    boolean scheduleEventFail(EventHandlerVO eventHandler, EventInstance event);
+    boolean unscheduleEvent(ScheduledEvent event, CommunicationChannel channel);
 
     static ScheduledExecuteInactiveEventService getInstance() {
         return ScheduledExecuteInactiveEventServiceImpl.getInstance();

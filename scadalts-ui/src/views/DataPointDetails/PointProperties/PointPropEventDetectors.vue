@@ -236,7 +236,7 @@
 						<v-col cols="1"></v-col>
 						<v-col cols="5">
 							<v-text-field
-								:label="$t('datapointDetails.pointProperties.eventDetectors.duartion')"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 								v-model="e.duration"
 								dense
 							></v-text-field>
@@ -440,9 +440,14 @@ export default {
 			this.response.status = true;
 			this.response.message = this.$t('common.snackbar.add.success');
 		},
-		addEventDetectorFail() {
+		addEventDetectorFail(error) {
 			this.response.status = true;
-			this.response.message = this.$t('common.snackbar.add.fail');
+			if(error.status === 409) {
+				this.response.message = this.$t('common.snackbar.xid.not.unique');
+			} else {
+				this.response.message = this.$t('common.snackbar.add.fail');
+			}
+			
 		},
 
 		openConfirmDialog(e) {

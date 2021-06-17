@@ -29,14 +29,7 @@ import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.json.JsonSerializable;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
@@ -56,10 +49,13 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.mango.service.UsersProfileService;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
 		JsonSerializable {
+
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String username;
@@ -89,6 +85,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private int receiveAlarmEmails;
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
+
+	@JsonRemoteProperty
+	private String theme;
+	@JsonRemoteProperty
+	private boolean hideMenu;
 
 	//
 	// Session data. The user object is stored in session, and some other
@@ -408,6 +409,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = eventExportDefinition;
 	}
 
+	public String getTheme() {
+		return theme;
+	}
+
+	public void setTheme(String theme) {
+		this.theme = theme;
+	}
+
+	public boolean isHideMenu() {
+		return hideMenu;
+	}
+
+	public void setHideMenu(boolean hideMenu) {
+		this.hideMenu = hideMenu;
+	}
+
 	public void setAttribute(String key, Object value) {
 		attributes.put(key, value);
 	}
@@ -500,6 +517,23 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 						dataPointPermissions.add(access);
 				}
 			}
+
+			UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
+			String userProfileXid = json.getString("userProfileXid");
+			Integer userProfileId = json.getInt("userProfile");
+			if (userProfileXid != null && !userProfileXid.isEmpty()) {
+				Optional<UsersProfileVO> usersProfileVO = usersProfileDAO.selectProfileByXid(userProfileXid);
+				if(!usersProfileVO.isPresent()) {
+					throw new LocalizableJsonException("emport.error.missingObject", "profile: " + userProfileXid);
+				}
+				userProfile = usersProfileVO.get().getId();
+			} else if(userProfileId != null && userProfileId != 0 && userProfileId != Common.NEW_ID) {
+				Optional<UsersProfileVO> usersProfileVO = usersProfileDAO.selectProfileById(userProfileId);
+				if(!usersProfileVO.isPresent()) {
+					throw new LocalizableJsonException("emport.error.missingObject", "profile: " + userProfileId);
+				}
+				userProfile = usersProfileVO.get().getId();
+			}
 		}
 	}
 
@@ -512,9 +546,16 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
 			map.put("dataPointPermissions", dataPointPermissions);
+			UsersProfileService usersProfileService = new UsersProfileService();
+			UsersProfileVO profile = usersProfileService.getUserProfileById(userProfile);
+			if(profile != null)
+				map.put("userProfileXid", profile.getXid());
+			else
+				map.put("userProfileXid", "");
 		} else {
 			map.put("dataSourcePermissions", Collections.emptyList());
 			map.put("dataPointPermissions", Collections.emptyList());
+			map.put("userProfileXid", "");
 		}
 	}
 
