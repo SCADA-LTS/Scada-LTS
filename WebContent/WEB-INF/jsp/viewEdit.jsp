@@ -187,16 +187,26 @@
 
     function moveUpComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
-        div.style.zIndex = Number(div.style.zIndex) + 1;
+        if(div.style.zIndex < 99) {
+           div.style.zIndex = Number(div.style.zIndex) + 1;
+        }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
     }
 
     function moveDownComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
-        if(div.style.zIndex > 0) {
+        if(div.style.zIndex > 1) {
             div.style.zIndex = div.style.zIndex - 1;
         }
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
+    }
+
+    function updateZIndexLabel(viewComponentId, value) {
+        var spanIndex = document.getElementById("c" + viewComponentId + "zindex");
+        spanIndex.parentNode.parentNode.style.display = "initial";
+        spanIndex.innerText = Number(value);
     }
     
     function positionEditor(compId, editorId) {
@@ -384,6 +394,12 @@
 
 	}
 
+    function revealPointControls(viewComponentId) {
+        showLayer("c" + viewComponentId + "Controls");
+        var div = $("c" + viewComponentId);
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
+	}
+
 	function deleteConfirm(){
 		if(document.getElementById("deleteCheckbox").checked) {
 			document.getElementById("deleteButton").style.visibility = 'visible';
@@ -564,7 +580,7 @@
             </tr>
           </table>
         
-          <div id="pointTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="pointTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
@@ -587,6 +603,7 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -601,7 +618,7 @@
             </div>
           </div>
           
-          <div id="htmlTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="htmlTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"></div>
@@ -613,6 +630,7 @@
                         title="viewEdit.deleteStaticView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -620,7 +638,7 @@
           </div>
           
           
-          <div id="imageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="imageChartTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <span id="c_TEMPLATE_Content"></span>
@@ -632,13 +650,14 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
             
-          <div id="enhancedImageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="enhancedImageChartTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content" style="display: none;"></div>
@@ -655,13 +674,14 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
           
-          <div id="compoundTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="compoundTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <span id="c_TEMPLATE_Content"></span>
@@ -682,6 +702,7 @@
                         title="viewEdit.deletePointView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
@@ -694,7 +715,7 @@
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
           </div>
           
-          <div id="customTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="customTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"></div>
@@ -706,6 +727,7 @@
                         title="viewEdit.deleteStaticView"/></td></tr>
                 <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
                         title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
                 <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
                         title="viewEdit.moveDownComponent"/></td></tr>
               </table>
