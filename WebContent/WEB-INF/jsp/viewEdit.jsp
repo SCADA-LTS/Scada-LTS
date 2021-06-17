@@ -394,6 +394,12 @@
 
 	}
 
+    function revealPointControls(viewComponentId) {
+        showLayer("c" + viewComponentId + "Controls");
+        var div = $("c" + viewComponentId);
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
+	}
+
 	function deleteConfirm(){
 		if(document.getElementById("deleteCheckbox").checked) {
 			document.getElementById("deleteButton").style.visibility = 'visible';
@@ -574,7 +580,7 @@
             </tr>
           </table>
         
-          <div id="pointTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="pointTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
@@ -612,7 +618,7 @@
             </div>
           </div>
           
-          <div id="htmlTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="htmlTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"></div>
@@ -632,7 +638,7 @@
           </div>
           
           
-          <div id="imageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="imageChartTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <span id="c_TEMPLATE_Content"></span>
@@ -651,7 +657,7 @@
             </div>
           </div>
             
-          <div id="enhancedImageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="enhancedImageChartTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content" style="display: none;"></div>
@@ -675,7 +681,7 @@
             </div>
           </div>
           
-          <div id="compoundTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="compoundTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <span id="c_TEMPLATE_Content"></span>
@@ -709,7 +715,7 @@
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
           </div>
           
-          <div id="customTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="customTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"></div>
