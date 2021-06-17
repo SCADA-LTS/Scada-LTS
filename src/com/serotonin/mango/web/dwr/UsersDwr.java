@@ -144,10 +144,10 @@ public class UsersDwr extends BaseDwr {
 		user.setHideMenu(hideMenu);
 		user.setTheme(theme);
 		user.setHomeUrl(homeUrl);
-        if(usersProfileId == Common.NEW_ID) {
-            user.setDataSourcePermissions(dataSourcePermissions);
-            user.setDataPointPermissions(dataPointPermissions);
-        } else {
+    if(usersProfileId == Common.NEW_ID) {
+        user.setDataSourcePermissions(dataSourcePermissions);
+        user.setDataPointPermissions(dataPointPermissions);
+    } else {
 			user.setDataSourcePermissions(new ArrayList<>());
 			user.setDataPointPermissions(new ArrayList<>());
 		}

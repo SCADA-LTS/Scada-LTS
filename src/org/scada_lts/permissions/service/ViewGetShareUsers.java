@@ -7,6 +7,8 @@ import org.scada_lts.dao.ViewDAO;
 
 import java.util.List;
 
+import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
+
 public class ViewGetShareUsers implements GetShareUsers<View> {
 
     private final ViewDAO viewDAO;
@@ -35,7 +37,7 @@ public class ViewGetShareUsers implements GetShareUsers<View> {
     @Override
     public List<ShareUser> getShareUsersWithProfile(View object) {
         List<ShareUser> shareUsers = viewDAO.getShareUsers(object.getId());
-        shareUsers.addAll(usersProfileDAO.selectViewShareUsers(object.getId()));
-        return shareUsers;
+        List<ShareUser> fromProfile = usersProfileDAO.selectViewShareUsers(object.getId());
+        return merge(shareUsers, fromProfile);
     }
 }
