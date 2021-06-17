@@ -52,9 +52,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./scadalts-ui
         run: npm install
-      - name: Run Frontend UnitTests
-        working-directory: ./scadalts-ui
-        run: npm run-script test:unit
+#      - name: Run Frontend UnitTests
+#        working-directory: ./scadalts-ui
+#        run: npm run-script test:unit
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
         run: npm run-script build-config -- 2.6.0 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
