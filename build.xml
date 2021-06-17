@@ -236,7 +236,7 @@
 		</exec>
 	</target>
 
-	<target name="create-war" description="Build and deploy WAR archive." depends="build-skip-test">
+	<target name="create-war" description="Build and deploy WAR archive.">
 		<record action="start" name="${war.log.name}"/>
 		<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>
 		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
