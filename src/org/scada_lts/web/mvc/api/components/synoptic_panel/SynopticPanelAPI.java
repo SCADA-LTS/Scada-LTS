@@ -42,7 +42,7 @@ public class SynopticPanelAPI {
      * @param request HTTP request with user data.
      * @return SynopticPanelList
      */
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public ResponseEntity<List<ScadaObjectIdentifier>> getSynopticPanels(HttpServletRequest request) {
         LOG.info("GET:" + request.getRequestURI());
         try {
@@ -74,7 +74,7 @@ public class SynopticPanelAPI {
         }
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public ResponseEntity<SynopticPanel> createSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanel requestBody) {
         LOG.info("POST:" + request.getRequestURI());
         try {
@@ -89,7 +89,7 @@ public class SynopticPanelAPI {
         }
     }
 
-    @PutMapping(value = "")
+    @PutMapping(value = "/")
     public ResponseEntity<SynopticPanel> updateSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanel requestBody) {
         LOG.info("PUT:" + request.getRequestURI());
         try {

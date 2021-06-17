@@ -137,6 +137,8 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
             DAO.getInstance().getJdbcTemp().update(SP_DELETE, id);
             return 0;
         } catch (Exception e) {
+            String message = "FAILED ON DELETING Synoptic Panel with ID: ";
+            LOG.error(message + id);
             LOG.error(e);
             return -1;
         }
