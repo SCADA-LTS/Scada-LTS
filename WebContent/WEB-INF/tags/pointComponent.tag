@@ -23,8 +23,8 @@
 <c:choose>
   <c:when test="${vc.pointComponent && !vc.visible}"><!-- vc ${vc.id} not a point component or not visible --></c:when>
   <c:when test="${vc.pointComponent}">
-    <div id="c${vc.id}" style="${vc.style}"
-            <c:if test="${vc.displayControls}">onmouseover="vcOver('c${vc.id}');" onmouseout="vcOut('c${vc.id}');"</c:if>>
+    <div id="c${vc.id}" class="viewComponent" style="${vc.style}"
+            <c:if test="${vc.displayControls}">onmouseover="vcOver('c${vc.id}', ${vc.z+1});" onmouseout="vcOut('c${vc.id}', ${vc.z});"</c:if>>
       <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
       <c:if test="${vc.displayControls}">
         <div id="c${vc.id}Controls" class="controlsDiv">
@@ -55,7 +55,7 @@
           </table>
         </div>
       </c:if>
-      <div style="position:absolute;left:-16px;top:0px;z-index:1;">
+      <div style="position:absolute;left:-16px;top:0px;z-index:${vc.z+1};">
         <div id="c${vc.id}Warning" style="display:none;" onmouseover="showMenu('c${vc.id}Messages', 16, 0);"
                 onmouseout="hideLayer('c${vc.id}Messages');">
           	  <tag:img png="warn" title="common.warning"/>
@@ -69,9 +69,9 @@
     <div style="${vc.style}">${vc.staticContent}</div>
   </c:when>
   <c:when test="${vc.customComponent}">
-    <div id="c${vc.id}" style="${vc.style}">
+    <div id="c${vc.id}" class="viewComponent" style="${vc.style}">
       <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
-      <div style="position:absolute;left:-16px;top:0px;z-index:1;">
+      <div style="position:absolute;left:-16px;top:0px;z-index:${vc.z+1};">
         <div id="c${vc.id}Warning" style="display:none;" onmouseover="showMenu('c${vc.id}Messages', 16, 0);"
                 onmouseout="hideLayer('c${vc.id}Messages');">
           	  <tag:img png="warn" title="common.warning"/>

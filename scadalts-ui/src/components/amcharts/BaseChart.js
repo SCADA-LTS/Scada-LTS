@@ -1,7 +1,7 @@
 /**
  * @fileoverview BaseChart Class Definition.
  * @author <a href="mailto:rjajko@softq.pl">Radoslaw Jajko</a>
- * @version 1.0.0
+ * @version 1.0.1
  *
  * @requires am4core
  * @requires am4charts
@@ -17,7 +17,7 @@ import Axios from 'axios';
  * @class
  */
 export default class BaseChart {
-	//xcopy .\dist\static C:\services\tomcat7.0\webapps\ScadaLTS\resources\new-ui\ /E /K /Y
+
 	/**
 	 *
 	 * @param {any} chartReference Id of DOM element where this char will be initialized
@@ -440,7 +440,7 @@ export default class BaseChart {
 	 * @param {String} axisType [ValueAxis | DateAxis | CategoryAxis] Specified types for different chart axes
 	 * @param {String} category When Category Axis has been chosen set the name of category to display.
 	 */
-	createAxisX(axisType, category) {
+	createAxisX(axisType, category, aggregation = 0) {
 		let axis;
 		if (axisType === 'ValueAxis') {
 			axis = this.chart.xAxes.push(new am4charts.ValueAxis());
@@ -466,6 +466,10 @@ export default class BaseChart {
 			axis.renderer.labels.template.rotation = 315;
 			axis.tooltip.disabled = true;
 			axis.renderer.minHeight = 110;
+		}
+		if(aggregation > 0) {
+			axis.groupData = true;
+			axis.groupCount = aggregation;
 		}
 	}
 
