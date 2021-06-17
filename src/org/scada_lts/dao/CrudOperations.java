@@ -44,7 +44,7 @@ public interface CrudOperations<T> {
      * identify that within application.
      * @return List of ScadaObjectIdentifiers
      */
-    public List<ScadaObjectIdentifier> getBriefList();
+    public List<ScadaObjectIdentifier> getSimpleList();
 
     /**
      * Get List of Objects

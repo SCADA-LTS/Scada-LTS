@@ -94,7 +94,7 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public List<ScadaObjectIdentifier> getBriefList() {
+    public List<ScadaObjectIdentifier> getSimpleList() {
         return DAO.getInstance().getJdbcTemp()
                 .query(
                         ScadaObjectIdRowMapper.selectScadaObjectIdFrom(TABLE_NAME),

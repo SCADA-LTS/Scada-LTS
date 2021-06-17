@@ -130,17 +130,6 @@ public class MailingListDAO {
 			return mailingList;
 		}
 	}
-//
-//	private class SimpleMailingListRowMapper implements RowMapper<ScadaObjectIdentifier> {
-//		@Override
-//		public ScadaObjectIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
-//			return new ScadaObjectIdentifier(
-//					rs.getInt(COLUMN_NAME_ID),
-//					rs.getString(COLUMN_NAME_XID),
-//					rs.getString(COLUMN_NAME_NAME)
-//			);
-//		}
-//	}
 
 	public MailingList getMailingList(int id) {
 

@@ -31,7 +31,6 @@ import java.util.List;
 public class SynopticPanelAPI {
 
     private static final Log LOG = LogFactory.getLog(SynopticPanelAPI.class);
-    private static final String LOG_PREFIX = "/api/synoptic-panels";
 
     @Resource
     private SynopticPanelService synopticPanelService;
@@ -45,7 +44,7 @@ public class SynopticPanelAPI {
      */
     @GetMapping(value = "")
     public ResponseEntity<List<ScadaObjectIdentifier>> getSynopticPanels(HttpServletRequest request) {
-        LOG.info("GET:" + LOG_PREFIX);
+        LOG.info("GET:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
             if (user != null) {
@@ -60,7 +59,7 @@ public class SynopticPanelAPI {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<SynopticPanel> getSynopticPanel(@PathVariable("id") int id, HttpServletRequest request) {
-        LOG.info("GET:" + LOG_PREFIX + "/" + id);
+        LOG.info("GET:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
             if (user != null) {
@@ -77,7 +76,7 @@ public class SynopticPanelAPI {
 
     @PostMapping(value = "")
     public ResponseEntity<SynopticPanel> createSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanel requestBody) {
-        LOG.info("POST:" + LOG_PREFIX + "/" + requestBody.getName());
+        LOG.info("POST:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
             if(user != null) {
@@ -92,7 +91,7 @@ public class SynopticPanelAPI {
 
     @PutMapping(value = "")
     public ResponseEntity<SynopticPanel> updateSynopticPanel(HttpServletRequest request, @RequestBody SynopticPanel requestBody) {
-        LOG.info("PUT:" + LOG_PREFIX + "/" + requestBody.getName());
+        LOG.info("PUT:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
             if(user != null) {
@@ -107,7 +106,7 @@ public class SynopticPanelAPI {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteSynopticPanel(@PathVariable("id") int id, HttpServletRequest request) {
-        LOG.info("DELETE:" + LOG_PREFIX + "/" + id);
+        LOG.info("DELETE:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
             if(user != null) {

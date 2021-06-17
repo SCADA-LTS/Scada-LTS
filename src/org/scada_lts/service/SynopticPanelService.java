@@ -20,7 +20,7 @@ public class SynopticPanelService {
     private final SynopticPanelDAO synopticPanelDAO = new SynopticPanelDAO();
 
     public List<ScadaObjectIdentifier> getSimpleSynopticPanelsList() {
-        return synopticPanelDAO.getBriefList();
+        return synopticPanelDAO.getSimpleList();
     }
 
     public SynopticPanel getSynopticPanel(int id) {
