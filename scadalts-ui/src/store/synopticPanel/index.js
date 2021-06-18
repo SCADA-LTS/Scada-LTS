@@ -7,7 +7,7 @@ const storeSynopticPanel = {
 
 	actions: {
 		fetchSynopticPanelList({ dispatch }) {
-			return dispatch('requestGet', `/synoptic-panels`);
+			return dispatch('requestGet', `/synoptic-panels/`);
 		},
 
 		fetchSynopticPanel({ dispatch }, id) {
@@ -16,7 +16,7 @@ const storeSynopticPanel = {
 
 		createSynopticPanel({ dispatch }, synopticPanel) {
 			return dispatch('requestPost', {
-				url: `/synoptic-panels`,
+				url: `/synoptic-panels/`,
 				data: synopticPanel,
 			});
 		},
@@ -27,7 +27,7 @@ const storeSynopticPanel = {
 
 		updateSynopticPanel({ dispatch }, synopticPanel) {
 			return dispatch('requestPut', {
-				url: `/synoptic-panels`,
+				url: `/synoptic-panels/`,
 				data: synopticPanel,
 			});
 		},
