@@ -94,11 +94,13 @@ public class SynopticPanelAPI {
         LOG.info("PUT:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if (user != null) {
                 return new ResponseEntity<>(synopticPanelService.updateSynopticPanel(requestBody), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
