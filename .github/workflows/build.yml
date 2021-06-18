@@ -57,14 +57,14 @@ jobs:
       - name: Install dependencies
         working-directory: ./scadalts-ui
         run: npm install
-#      - name: Run Frontend UnitTests
-#        working-directory: ./scadalts-ui
-#        run: npm run-script test:unit
-#      - name: Publish Mocha Test Results
-#        uses: EnricoMi/publish-unit-test-result-action@v1
-#        if: always()
-#        with:
-#          files: ./scadalts-ui/test-results.xml
+      - name: Run Frontend UnitTests
+        working-directory: ./scadalts-ui
+        run: npm run-script test:unit
+      - name: Publish Mocha Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: ./scadalts-ui/test-results.xml
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
         run: npm run-script build-config -- 2.7.0 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
