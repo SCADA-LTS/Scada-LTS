@@ -29,6 +29,11 @@ jobs:
         run: ant -noinput -buildfile build.xml build-no-ui-skip-test
       - name: JUnit Scada Application with Ant
         run: ant -noinput -buildfile build.xml test-junit
+      - name: Publish Junit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: ./build/test-reports/**/*.xml
       - name: Cache Scada-LTS application
         uses: actions/cache@v2
         with:
@@ -55,9 +60,14 @@ jobs:
 #      - name: Run Frontend UnitTests
 #        working-directory: ./scadalts-ui
 #        run: npm run-script test:unit
+#      - name: Publish Mocha Test Results
+#        uses: EnricoMi/publish-unit-test-result-action@v1
+#        if: always()
+#        with:
+#          files: ./scadalts-ui/test-results.xml
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
-        run: npm run-script build-config -- 2.6.0 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
+        run: npm run-script build-config -- 2.7.0 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
       - name: Build User Interface
         working-directory: ./scadalts-ui
         run: npm run-script build
