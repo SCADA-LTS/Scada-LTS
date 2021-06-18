@@ -3,6 +3,7 @@ package org.scada_lts.service;
 import org.scada_lts.dao.SynopticPanelDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.model.SynopticPanel;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +32,8 @@ public class SynopticPanelService {
         return (SynopticPanel) synopticPanelDAO.create(synopticPanel);
     }
 
-    public SynopticPanel updateSynopticPanel(SynopticPanel synopticPanel) {
-        return (SynopticPanel) synopticPanelDAO.update(synopticPanel);
+    public SynopticPanel updateSynopticPanel(SynopticPanel synopticPanel) throws EmptyResultDataAccessException {
+        return (synopticPanelDAO.update(synopticPanel));
     }
 
     public int deleteSynopticPanel(int id) {

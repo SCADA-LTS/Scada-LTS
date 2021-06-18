@@ -3,7 +3,7 @@ package org.scada_lts.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.dao.rowmappers.ScadaObjectIdRowMapper;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.service.model.SynopticPanel;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -95,11 +95,10 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
 
     @Override
     public List<ScadaObjectIdentifier> getSimpleList() {
+        ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+
         return DAO.getInstance().getJdbcTemp()
-                .query(
-                        ScadaObjectIdRowMapper.selectScadaObjectIdFrom(TABLE_NAME),
-                        new ScadaObjectIdRowMapper()
-                );
+                .query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
     }
 
     @Override
@@ -119,16 +118,19 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public SynopticPanel update(SynopticPanel entity) {
-        DAO.getInstance().getJdbcTemp()
-                .update(
-                        SP_UPDATE,
-                        entity.getXid(),
-                        entity.getName(),
-                        entity.getVectorImage(),
-                        entity.getComponentData(),
-                        entity.getId());
-        return getById(entity.getId());
+    public SynopticPanel update(SynopticPanel entity) throws EmptyResultDataAccessException {
+        int result = DAO.getInstance().getJdbcTemp().update(
+                SP_UPDATE,
+                entity.getXid(),
+                entity.getName(),
+                entity.getVectorImage(),
+                entity.getComponentData(),
+                entity.getId());
+        if (result == 0) {
+            LOG.error("Synoptic Panel entity with id= " + entity.getId() + " has been not updated!");
+            throw new EmptyResultDataAccessException(0);
+        }
+        return entity;
     }
 
     @Override
