@@ -46,17 +46,16 @@
   }
 
   function initImpl() {
-    DataSourceEditDwr.initHttpRetriever(initCB);
+    DataSourceEditDwr.initHttpRetriever(initRetriever);
   }
 
-  function initCB(response) {
+  function initRetriever(response) {
     var i;
-
-    list = response.data.staticHeaders;
-    DataSourceEditDwr.getBasicCredentials(list, setCredentials);
+    var list = response.data.staticHeaders;
     for (i=0; i<list.length; i++)
       staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
     refreshStaticHeaderList();
+    DataSourceEditDwr.getBasicCredentials(list, setCredentials);
   }
 
   function addStaticHeader() {
@@ -110,7 +109,7 @@
       startImageFader("valueTestImg", true);
       hide("valueTestRow");
       DataSourceEditDwr.testHttpRetrieverValueParams($get("url"), $get("timeoutSeconds"), $get("retries"),
-              $get("valueRegex"), $get("dataTypeId"), $get("valueFormat"), staticHeaders, testValueParamsCB);
+              $get("valueRegex"), $get("dataTypeId"), $get("valueFormat"), staticHeaderList, testValueParamsCB);
   }
   
   function testValueParamsCB(result) {
@@ -123,7 +122,7 @@
       startImageFader("timeTestImg", true);
       hide("timeTestRow");
       DataSourceEditDwr.testHttpRetrieverTimeParams($get("url"), $get("timeoutSeconds"), $get("retries"),
-              $get("timeRegex"), $get("timeFormat"), staticHeaders, testTimeParamsCB);
+              $get("timeRegex"), $get("timeFormat"), staticHeaderList, testTimeParamsCB);
   }
   
   function testTimeParamsCB(result) {
