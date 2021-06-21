@@ -14,6 +14,7 @@
 		"build": "vue-cli-service build",
 		"prettier": "npx prettier --write .",
 		"test:unit": "vue-cli-service test:unit --reporter mocha-junit-reporter",
+		"test:mocha": "vue-cli-service test:unit",
 		"test:e2e": "vue-cli-service test:e2e",
 		"test:cypress": "./node_modules/.bin/cypress run",
 		"cypress": "./node_modules/.bin/cypress open",
