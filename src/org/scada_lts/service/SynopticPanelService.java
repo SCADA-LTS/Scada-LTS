@@ -1,13 +1,14 @@
 package org.scada_lts.service;
 
 import org.scada_lts.dao.SynopticPanelDAO;
+import org.scada_lts.dao.exceptions.EntityNotExistsException;
+import org.scada_lts.dao.exceptions.XidNotUniqueException;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.model.SynopticPanel;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for Synoptic Panels
@@ -25,16 +26,16 @@ public class SynopticPanelService {
         return synopticPanelDAO.getSimpleList();
     }
 
-    public Optional<SynopticPanel> getSynopticPanel(int id) {
-        return Optional.ofNullable(synopticPanelDAO.getById(id));
+    public SynopticPanel getSynopticPanel(int id) throws EntityNotExistsException {
+        return (SynopticPanel) synopticPanelDAO.getById(id);
     }
 
-    public SynopticPanel createSynopticPanel(SynopticPanel synopticPanel) {
+    public SynopticPanel createSynopticPanel(SynopticPanel synopticPanel) throws XidNotUniqueException {
         return (SynopticPanel) synopticPanelDAO.create(synopticPanel);
     }
 
-    public int updateSynopticPanel(SynopticPanel synopticPanel) throws EmptyResultDataAccessException {
-        return (synopticPanelDAO.update(synopticPanel));
+    public SynopticPanel updateSynopticPanel(SynopticPanel synopticPanel) throws EntityNotExistsException {
+        return (SynopticPanel) synopticPanelDAO.update(synopticPanel);
     }
 
     public int deleteSynopticPanel(int id) {

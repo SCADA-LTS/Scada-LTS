@@ -1,7 +1,8 @@
 package org.scada_lts.dao;
 
+import org.scada_lts.dao.exceptions.EntityNotExistsException;
+import org.scada_lts.dao.exceptions.XidNotUniqueException;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface CrudOperations<T> {
      * @param entity Object to create
      * @return Operation result
      */
-    public T create(T entity);
+    public T create(T entity) throws XidNotUniqueException;
 
     /**
      * Get List of ScadaObjects
@@ -59,7 +60,7 @@ public interface CrudOperations<T> {
      * @param id - object identifier
      * @return Object
      */
-    public T getById(int id) throws EmptyResultDataAccessException;
+    public T getById(int id) throws EntityNotExistsException;
 
     /**
      * Update object
@@ -69,7 +70,7 @@ public interface CrudOperations<T> {
      * @param entity Object to create
      * @return Operation result
      */
-    public int update(T entity);
+    public T update(T entity) throws EntityNotExistsException, XidNotUniqueException;
 
     /**
      * Delete object

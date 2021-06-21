@@ -2,6 +2,8 @@ package org.scada_lts.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.exceptions.EntityNotExistsException;
+import org.scada_lts.dao.exceptions.XidNotUniqueException;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.service.model.SynopticPanel;
@@ -76,24 +78,28 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
             + "delete from synopticPanels where "
             + COLUMN_NAME_SP_ID + "=?";
 
-    private static final int DAO_EMPTY_RESULT = 0;
-    private static final int DAO_EXCEPTION = -1;
+    private static final String ENTITY_NOT_EXIST = "Synoptic Panel entity does not exists! - ID:";
 
     @Override
-    public SynopticPanel create(SynopticPanel entity) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        DAO.getInstance().getJdbcTemp().update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SP_INSERT, Statement.RETURN_GENERATED_KEYS);
-            new ArgumentPreparedStatementSetter(new Object[]{
-                    entity.getXid(),
-                    entity.getName(),
-                    entity.getVectorImage(),
-                    entity.getComponentData()
-            }).setValues(ps);
-            return ps;
-        }, keyHolder);
-        entity.setId(keyHolder.getKey().intValue());
-        return entity;
+    public SynopticPanel create(SynopticPanel entity) throws XidNotUniqueException {
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            DAO.getInstance().getJdbcTemp().update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(SP_INSERT, Statement.RETURN_GENERATED_KEYS);
+                new ArgumentPreparedStatementSetter(new Object[]{
+                        entity.getXid(),
+                        entity.getName(),
+                        entity.getVectorImage(),
+                        entity.getComponentData()
+                }).setValues(ps);
+                return ps;
+            }, keyHolder);
+            entity.setId(keyHolder.getKey().intValue());
+            return entity;
+        } catch (Exception e) { //TODO: Make sure that the correct exception is handled.
+            throw new XidNotUniqueException("XID is not Unique!", e);
+        }
+
     }
 
     @Override
@@ -111,7 +117,7 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public SynopticPanel getById(int id) throws EmptyResultDataAccessException {
+    public SynopticPanel getById(int id) throws EntityNotExistsException {
         try {
             return DAO.getInstance().getJdbcTemp()
                     .queryForObject(
@@ -120,27 +126,26 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
                             new SynopticPanelRowMapper()
                     );
         } catch (EmptyResultDataAccessException e) {
-            LOG.error("Synoptic Panel entity with id= " + id + " does not exists!");
-            return null;
+            throw new EntityNotExistsException(ENTITY_NOT_EXIST + id, e);
         }
     }
 
     @Override
-    public int update(SynopticPanel entity) throws EmptyResultDataAccessException {
+    public SynopticPanel update(SynopticPanel entity) throws EntityNotExistsException {
         try {
-            return DAO.getInstance().getJdbcTemp().update(
+            int result = DAO.getInstance().getJdbcTemp().update(
                     SP_UPDATE,
                     entity.getXid(),
                     entity.getName(),
                     entity.getVectorImage(),
                     entity.getComponentData(),
                     entity.getId());
+            if (result == 0) {
+                throw new EntityNotExistsException(ENTITY_NOT_EXIST + entity.getId());
+            }
+            return entity;
         } catch (EmptyResultDataAccessException e) {
-            LOG.error("Synoptic Panel entity with id= " + entity.getId() + " does not exists!");
-            return DAO_EMPTY_RESULT;
-        } catch (Exception e) {
-            LOG.error(e);
-            return DAO_EXCEPTION;
+            throw new EntityNotExistsException(ENTITY_NOT_EXIST + entity.getId(), e);
         }
     }
 

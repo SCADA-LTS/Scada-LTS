@@ -4,10 +4,11 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.exceptions.EntityNotExistsException;
+import org.scada_lts.dao.exceptions.XidNotUniqueException;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.SynopticPanelService;
 import org.scada_lts.service.model.SynopticPanel;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for Synoptic Panels
@@ -64,13 +64,13 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return synopticPanelService.getSynopticPanel(id)
-                        .map(panel -> new ResponseEntity<>(panel, HttpStatus.OK))
-                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                return new ResponseEntity<>(synopticPanelService.getSynopticPanel(id), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (Exception e) {
+        } catch (EntityNotExistsException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e1) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -80,11 +80,13 @@ public class SynopticPanelAPI {
         LOG.info("POST:" + request.getRequestURI());
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if (user != null) {
                 return new ResponseEntity<>(synopticPanelService.createSynopticPanel(requestBody), HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+        } catch (XidNotUniqueException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -96,17 +98,12 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                switch (synopticPanelService.updateSynopticPanel(requestBody)) {
-                    case 1:
-                        return new ResponseEntity<>(requestBody, HttpStatus.OK);
-                    case 0:
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                    default:
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                    return new ResponseEntity<>(synopticPanelService.updateSynopticPanel(requestBody), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+        } catch (EntityNotExistsException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
