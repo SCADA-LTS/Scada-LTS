@@ -158,6 +158,7 @@
         dataPointsCheckboxChanged();
         $set("pointValues", checked);
         $set("systemSettings", checked);
+        $set("usersProfiles", checked);
     }
 
     function dataPointsCheckboxChanged() {

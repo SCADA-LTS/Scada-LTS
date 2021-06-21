@@ -155,9 +155,14 @@ public class View implements Serializable, JsonSerializable {
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
 
-	public void validateViewComponents(User user, View view) {
+	public void validateViewComponents(User user) {
 		for (ViewComponent viewComponent : viewComponents)
-			viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
+			viewComponent.validateDataPoint(user, getUserAccess(user) == ShareUser.ACCESS_READ);
+	}
+
+	public void validateViewComponentsAnon(User user) {
+		for (ViewComponent viewComponent : viewComponents)
+			viewComponent.validateDataPoint(user, getAnonymousAccess() == ShareUser.ACCESS_READ);
 	}
 
 	public String getBackgroundFilename() {

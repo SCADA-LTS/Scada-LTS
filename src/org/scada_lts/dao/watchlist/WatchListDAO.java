@@ -237,6 +237,32 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "where "
 			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
 
+	private static final String WATCHLIST_USER_BASE_ON_USER_ID = ""
+			+"select "
+			+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
+			+ COLUMN_NAME_USER_ACCESS_TYPE+" "
+			+ "from "
+			+ "watchListUsers "
+			+ "where "
+			+ COLUMN_NAME_WLU_USER_ID+"=?";
+
+	private static final String WATCHLIST_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE = ""
+			+"insert "
+			+ "watchListUsers ("
+			+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
+			+ COLUMN_NAME_WLU_USER_ID+", "
+			+ COLUMN_NAME_USER_ACCESS_TYPE+") "
+			+ "values (?,?,?) ON DUPLICATE KEY UPDATE " +
+			COLUMN_NAME_USER_ACCESS_TYPE + "=?";
+
+	private static final String WATCHLIST_USER_DELETE_BASE_ON_WATCHLIST_ID_USER_ID =""
+			+"delete "
+			+ "from "
+			+ "watchListUsers "
+			+ "where "
+			+ COLUMN_NAME_WLU_WATCHLIST_ID+"=? and "
+			+ COLUMN_NAME_WLU_USER_ID+"=?";
+
 	// @formatter:on
 	
 	//RowMapper
@@ -439,4 +465,49 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 						.nameColumnName(COLUMN_NAME_NAME)
 						.build());
     }
+
+	public List<WatchListAccess> selectWatchListPermissions(final int userId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("selectViewPermissions(final int userId) userId:" + userId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USER_BASE_ON_USER_ID, new Object[]{userId}, (rs, rowNum) -> {
+			WatchListAccess viewAccess = new WatchListAccess();
+			viewAccess.setId(rs.getInt(COLUMN_NAME_WLU_WATCHLIST_ID));
+			viewAccess.setPermission(rs.getInt(COLUMN_NAME_WLU_ACCESS_TYPE));
+			return viewAccess;
+		});
+
+	}
+
+	public int[] insertPermissions(final int userId, final List<WatchListAccess> toInsert) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertPermissions(final User user, final List<WatchListAccess> toInsert) user:" + userId + "");
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER };
+
+		List<Object[]> batchArgs = toInsert.stream()
+				.map(a -> new Object[] {a.getId(), userId, a.getPermission(), a.getPermission()})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCHLIST_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+	}
+
+	public int[] deletePermissions(final int userId, final List<WatchListAccess> toDelete) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deletePermissions(final int userId, final List<WatchListAccess> toDelete) user:" + userId);
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+		List<Object[]> batchArgs = toDelete.stream()
+				.map(a -> new Object[] {a.getId(), userId})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCHLIST_USER_DELETE_BASE_ON_WATCHLIST_ID_USER_ID, batchArgs, argTypes);
+	}
 }
