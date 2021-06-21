@@ -76,6 +76,9 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
             + "delete from synopticPanels where "
             + COLUMN_NAME_SP_ID + "=?";
 
+    private static final int DAO_EMPTY_RESULT = 0;
+    private static final int DAO_EXCEPTION = -1;
+
     @Override
     public SynopticPanel create(SynopticPanel entity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -118,19 +121,22 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public SynopticPanel update(SynopticPanel entity) throws EmptyResultDataAccessException {
-        int result = DAO.getInstance().getJdbcTemp().update(
-                SP_UPDATE,
-                entity.getXid(),
-                entity.getName(),
-                entity.getVectorImage(),
-                entity.getComponentData(),
-                entity.getId());
-        if (result == 0) {
-            LOG.error("Synoptic Panel entity with id= " + entity.getId() + " has been not updated!");
-            throw new EmptyResultDataAccessException(0);
+    public int update(SynopticPanel entity) throws EmptyResultDataAccessException {
+        try {
+            return DAO.getInstance().getJdbcTemp().update(
+                    SP_UPDATE,
+                    entity.getXid(),
+                    entity.getName(),
+                    entity.getVectorImage(),
+                    entity.getComponentData(),
+                    entity.getId());
+        } catch (EmptyResultDataAccessException e) {
+            LOG.error("Synoptic Panel entity with id= " + entity.getId() + " does not exists!");
+            return DAO_EMPTY_RESULT;
+        } catch (Exception e) {
+            LOG.error(e);
+            return DAO_EXCEPTION;
         }
-        return entity;
     }
 
     @Override

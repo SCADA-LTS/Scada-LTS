@@ -95,7 +95,14 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return new ResponseEntity<>(synopticPanelService.updateSynopticPanel(requestBody), HttpStatus.OK);
+                switch (synopticPanelService.updateSynopticPanel(requestBody)) {
+                    case 1:
+                        return new ResponseEntity<>(requestBody, HttpStatus.OK);
+                    case 0:
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    default:
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

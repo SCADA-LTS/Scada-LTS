@@ -69,7 +69,7 @@ public interface CrudOperations<T> {
      * @param entity Object to create
      * @return Operation result
      */
-    public T update(T entity) throws EmptyResultDataAccessException;
+    public int update(T entity);
 
     /**
      * Delete object
