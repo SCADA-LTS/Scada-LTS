@@ -93,7 +93,7 @@
       dwr.util.addRows("staticHeaderList", staticHeaderList, [
         function(data) { return data.key +"="+ data.value; },
         function(data, options) {
-          return "<img src='images/bullet_delete.png' class='ptr' title='<fmt:message key="publisherEdit.httpSender.removeHeader"/>' "+
+          return "<img src='images/bullet_delete.png' class='ptr' title='<fmt:message key="dsEdit.httpRetriever.removeHeader"/>' "+
                   "onclick='removeStaticHeader("+ options.rowIndex + ");'/>";
         }
       ], null);
