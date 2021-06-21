@@ -29,7 +29,8 @@
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
             name : '${sst:quotEncode(dp.extendedName)}',
-            type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
+            type : '<sst:i18n message="${dp.dataTypeMessage}"/>',
+            xid : '${dp.xid}'
         };
       </c:forEach>
       
@@ -69,7 +70,7 @@
   function editPointCBImpl(locator) {
       contextArray.length = 0;
       for (var i=0; i<locator.context.length; i++)
-          addToContextArray(locator.context[i].key, locator.context[i].value);
+          addToContextArray(locator.context[i].key);
       writeContextArray();
       
       $set("script", locator.script);
@@ -97,11 +98,11 @@
   
   function addPointToContext() {
       var pointId = $get("allPointsList");
-      addToContextArray(pointId, "p"+ pointId);
+      addToContextArray(pointId);
       writeContextArray();
   }
   
-  function addToContextArray(pointId, scriptVarName) {
+  function addToContextArray(pointId) {
       var data = getElement(pointsArray, pointId);
       if (data) {
           // Missing names imply that the point was deleted, so ignore.
@@ -109,7 +110,7 @@
               pointId : pointId,
               pointName : data.name,
               pointType : data.type,
-              scriptVarName : scriptVarName
+              scriptVarName : data.xid.toLowerCase().trim()
           };
       }
   }
@@ -136,7 +137,7 @@
                   function(data) { return data.pointName; },
                   function(data) { return data.pointType; },
                   function(data) {
-                          return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
+                          return "<input type='text' value='"+ data.scriptVarName +"' class='form' "+
                                   "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                   },
                   function(data) { 

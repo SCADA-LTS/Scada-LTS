@@ -85,7 +85,8 @@
                 pointsArray[i] = {
                         "id":point.id,
                         "name":point.name,
-                        "type":1
+                        "type":1,
+                        "xid": point.xid
                         };
             }
             document.getElementById("loader").style.display = "none";
@@ -130,7 +131,7 @@
 
             contextArray.length = 0;
             for (var i=0; i<s.pointsOnContext.length; i++)
-                addToContextArray(s.pointsOnContext[i].key, s.pointsOnContext[i].value);
+                addToContextArray(s.pointsOnContext[i].key);
             writeContextArray();
 
             clearObjectsTable();
@@ -193,11 +194,11 @@
 
     function addPointToContext() {
         var pointId = $get("allPointsList");
-        addToContextArray(pointId, "p"+ pointId);
+        addToContextArray(pointId);
         writeContextArray();
     }
 
-    function addToContextArray(pointId, scriptVarName) {
+    function addToContextArray(pointId) {
         var data = getElement(pointsArray, pointId);
         if (data) {
             // Missing names imply that the point was deleted, so ignore.
@@ -205,7 +206,7 @@
                 pointId : pointId,
                 pointName : data.name,
                 pointType : data.type,
-                scriptVarName : scriptVarName
+                scriptVarName : data.xid.toLowerCase().trim()
             };
         }
     }
@@ -232,7 +233,7 @@
                     function(data) { return data.pointName; },
                     function(data) { return data.pointType; },
                     function(data) {
-                            return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
+                            return "<input type='text' value='"+ data.scriptVarName +"' class='form' "+
                                     "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                     },
                     function(data) {
