@@ -8,6 +8,7 @@ ScadaLTS modern charts components it is a set of new VueJS v2.0 components desig
 
 - **\<line-chart>** Line Series Chart
 - **\<step-line-chart>** Step Line Series Chart
+- **\<range-chart>** Line Series Chart with Time-Range Selection
 
 ## Usage:
 
@@ -82,6 +83,9 @@ To display values from specified period just add **'end-date'** parameter.
 
 And it still works with multiple data points. It's great! Isn't it? \
 But what if I want to add a horizontal line to chart to create for example warning level, which of it is exceeded it could be dangerous?
+
+#### **Notice!**
+Using `<range-chart>` there is no option to set up `start-date` and `end-date` parameter!
 
 ---
 
