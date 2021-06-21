@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for Synoptic Panels
@@ -63,7 +64,10 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return new ResponseEntity<>(synopticPanelService.getSynopticPanel(id), HttpStatus.OK);
+                SynopticPanel sp = synopticPanelService.getSynopticPanel(id);
+                return Optional.ofNullable(sp)
+                        .map(toGet -> new ResponseEntity<>(sp, HttpStatus.OK))
+                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -106,8 +110,6 @@ public class SynopticPanelAPI {
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
