@@ -42,7 +42,7 @@
 		"sockjs-client": "1.5.0",
 		"uiv": "^0.27.0",
 		"util": "0.12.3",
-		"vue": "2.6.10",
+		"vue": "2.6.14",
 		"vue-color-picker-wheel": "0.4.3",
 		"vue-cookie": "1.1.4",
 		"vue-dayjs-plugin": "^1.0.0",
@@ -79,7 +79,7 @@
 		"sass-loader": "8.0.0",
 		"vue-cli-plugin-i18n": "1.0.1",
 		"vue-cli-plugin-vuetify": "2.0.8",
-		"vue-template-compiler": "2.6.10",
+		"vue-template-compiler": "2.6.14",
 		"vuetify-loader": "1.7.2"
 	}
 }
