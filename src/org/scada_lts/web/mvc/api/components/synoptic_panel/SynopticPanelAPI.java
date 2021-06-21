@@ -64,16 +64,13 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                SynopticPanel sp = synopticPanelService.getSynopticPanel(id);
-                return Optional.ofNullable(sp)
-                        .map(toGet -> new ResponseEntity<>(sp, HttpStatus.OK))
+                return synopticPanelService.getSynopticPanel(id)
+                        .map(panel -> new ResponseEntity<>(panel, HttpStatus.OK))
                         .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-        } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e1) {
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

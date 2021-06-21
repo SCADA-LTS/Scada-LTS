@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service for Synoptic Panels
@@ -24,8 +25,8 @@ public class SynopticPanelService {
         return synopticPanelDAO.getSimpleList();
     }
 
-    public SynopticPanel getSynopticPanel(int id) {
-        return synopticPanelDAO.getById(id);
+    public Optional<SynopticPanel> getSynopticPanel(int id) {
+        return Optional.ofNullable(synopticPanelDAO.getById(id));
     }
 
     public SynopticPanel createSynopticPanel(SynopticPanel synopticPanel) {

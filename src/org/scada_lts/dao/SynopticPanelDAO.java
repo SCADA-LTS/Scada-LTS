@@ -112,12 +112,17 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
 
     @Override
     public SynopticPanel getById(int id) throws EmptyResultDataAccessException {
-        return DAO.getInstance().getJdbcTemp()
-                .queryForObject(
-                        SP_SELECT + " where " + COLUMN_NAME_SP_ID + "=?",
-                        new Object[]{id},
-                        new SynopticPanelRowMapper()
-                );
+        try {
+            return DAO.getInstance().getJdbcTemp()
+                    .queryForObject(
+                            SP_SELECT + " where " + COLUMN_NAME_SP_ID + "=?",
+                            new Object[]{id},
+                            new SynopticPanelRowMapper()
+                    );
+        } catch (EmptyResultDataAccessException e) {
+            LOG.error("Synoptic Panel entity with id= " + id + " does not exists!");
+            return null;
+        }
     }
 
     @Override
