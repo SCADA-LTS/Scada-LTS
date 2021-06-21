@@ -16,6 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+:root {
+    --slts-primary: #39B54A;
+}
 html > body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 11px;
@@ -219,9 +222,18 @@ input[type="checkbox"], input[type="radio"] {
 }
 input[type="submit"], input[type="button"] {
 	overflow: visible;
+	background-color: rgb(239, 239, 239);
+	border: 1px solid var(--slts-primary);
 }
 
-
+#viewContent button.viewComponent {
+	overflow: visible;
+	background: silver;
+    border-width: 3px;
+    border-color: gainsboro gray gray gainsboro;
+    border-style: solid;
+    padding: 1px 5px;
+}
 
 /**
  * View styles
@@ -528,4 +540,56 @@ html > body .dojoTreeNodeLabelSelected {
 img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"]:not(#viewBackground){
 	height: 16px;
 	width: 16px;
+}
+
+/* *** Main *** */
+#mainHeader {
+	width: 100%;
+	border: 0;
+}
+#subHeader {
+	width: 100%;
+}
+#instanceDescription {
+	padding:5px; 
+	white-space: nowrap;
+}
+
+/* Login form */
+.login-container {
+	margin: 100px auto 10px auto;
+	background-color: #77c055; 
+	width: 290px; 
+	border-radius: 10px;
+}
+.login-browser {
+	text-align: center; 
+	padding-top: 10px;
+}
+.login-browser #browser {
+	font-weight: bold;
+}
+.login-browser #browserImg {
+	height: 10px;
+	width: auto;
+}
+
+.login-box > form {
+	margin: 0 auto; 
+	width:200px;
+}
+
+.login-box .form-box > .formLabelRequired {
+	color: #000000; 
+	font-size: 14px;
+}
+
+.login-box .form-box > .formField > input {
+	width: 200px; 
+	height: 20px;
+}
+.login-box .login-button > input {
+	padding: 5px 20px; 
+	margin-left:30%; 
+	margin-top:10px;
 }

@@ -408,6 +408,16 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
+	public void setViewComponentZIndex(String viewComponentId, int zIndex) {
+		getViewComponent(viewComponentId).setZ(zIndex);
+	}
+
+	@MethodFilter
+	public int getViewComponentZIndex(String viewComponentId) {
+		return getViewComponent(viewComponentId).getZ();
+	}
+
+	@MethodFilter
 	public void deleteViewComponent(String viewComponentId) {
 		View view = Common.getUser().getView();
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
