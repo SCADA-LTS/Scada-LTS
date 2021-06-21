@@ -365,3 +365,8 @@ img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="i
 	bottom:0;
 	width:38%;
 }
+
+form.view-edit-form {
+    max-width: 100vw;
+    overflow-x: auto;
+}
