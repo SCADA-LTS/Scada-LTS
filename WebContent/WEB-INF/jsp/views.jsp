@@ -202,8 +202,8 @@
 
 	function closeFullScreen() {
 		setCookie("fullScreen","no");
-		document.getElementById('mainHeader').style.display = "table";
-		document.getElementById('subHeader').style.display = "table";
+		document.getElementById('mainHeader').style.display = "flex";
+		document.getElementById('subHeader').style.display = "flex";
 		document.getElementById('graphical').style.display = "table";
 	}
 		
