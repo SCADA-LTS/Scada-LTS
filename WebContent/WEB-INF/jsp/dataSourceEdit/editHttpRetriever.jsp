@@ -134,7 +134,7 @@
   function saveDataSourceImplOld(){
   DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
                 $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
-                $get("stop"), $get("username"), $get("password"),
+                $get("stop"), $get("username"), $get("password"), staticHeaderList,
                 saveDataSourceCB);
   }
 
@@ -153,6 +153,7 @@
                   editDSNewUI.reactivation.value,
                   $get("username"),
                   $get("password"),
+                  staticHeaderList,
                   saveDataSourceCB
       );
   }

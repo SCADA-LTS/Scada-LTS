@@ -1296,7 +1296,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
                                                        int updatePeriods, int updatePeriodType, String url,
                                                        int timeoutSeconds, int retries, boolean stop,
-                                                       String username, String password) {
+                                                       String username, String password, List<KeyValuePair> staticHeaders) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1308,6 +1308,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
+        ds.setStaticHeaders(staticHeaders);
         setAuthorizationStaticHeader(ds, username, password);
 
         return tryDataSourceSave(ds);
@@ -1382,7 +1383,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
                                                                               int updatePeriods, int updatePeriodType, String url,
                                                                               int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation,
-                                                                              String username, String password) {
+                                                                              String username, String password, List<KeyValuePair> staticHeaders) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1396,6 +1397,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setStop(stop);
         ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
         ds.setReactivation(rDs);
+        ds.setStaticHeaders(staticHeaders);
         setAuthorizationStaticHeader(ds, username, password);
 
         DwrResponseI18n result;
