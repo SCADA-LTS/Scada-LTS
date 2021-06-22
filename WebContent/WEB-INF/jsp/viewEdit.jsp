@@ -510,6 +510,15 @@
                 </tr>
               </spring:bind>
 
+              <tr><td colspan="2"><hr style="margin: 5px 0;"></td></tr>
+
+              <tr>
+                <td colspan="2" align="center">
+                  <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
+                </td>
+              </tr>
+
             </table>
           </div>
         </td>
@@ -534,6 +543,12 @@
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
           <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
+        </td>
+
+        <td class="formLabelRequired" width="350"><fmt:message key="viewEdit.viewDelete"/></td>
+        <td class="formField" width="250">
+          <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
+          <input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
         </td>
 
       </tr>
@@ -568,17 +583,6 @@
             </tr>
 
             <tr><td colspan="3">&nbsp;</td></tr>
-
-            <tr>
-              <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
-                <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
-                <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
-                <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
-              </td>
-              <td></td>
-            </tr>
           </table>
         
           <div id="pointTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
