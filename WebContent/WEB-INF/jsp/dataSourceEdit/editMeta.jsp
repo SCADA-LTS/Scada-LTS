@@ -70,7 +70,7 @@
   function editPointCBImpl(locator) {
       contextArray.length = 0;
       for (var i=0; i<locator.context.length; i++)
-          addToContextArray(locator.context[i].key);
+          initContextArray(locator.context[i].key, locator.context[i].value);
       writeContextArray();
       
       $set("script", locator.script);
@@ -101,18 +101,30 @@
       addToContextArray(pointId);
       writeContextArray();
   }
-  
+
   function addToContextArray(pointId) {
-      var data = getElement(pointsArray, pointId);
-      if (data) {
-          // Missing names imply that the point was deleted, so ignore.
-          contextArray[contextArray.length] = {
-              pointId : pointId,
-              pointName : data.name,
-              pointType : data.type,
-              scriptVarName : data.xid.toLowerCase().trim()
-          };
-      }
+    var data = getElement(pointsArray, pointId);
+    if (data) {
+      var scriptVarName = data.xid.toLowerCase().trim();
+      // Missing names imply that the point was deleted, so ignore.
+      addElementToContextArray(data, pointId, scriptVarName);
+    }
+  }
+
+  function initContextArray(pointId, scriptVarName) {
+    var data = getElement(pointsArray, pointId);
+    if (data) {
+      addElementToContextArray(data, pointId, scriptVarName);
+    }
+  }
+
+  function addElementToContextArray(data, pointId, scriptVarName) {
+    contextArray[contextArray.length] = {
+      pointId : pointId,
+      pointName : data.name,
+      pointType : data.type,
+      scriptVarName : scriptVarName
+    };
   }
   
   function removeFromContextArray(pointId) {
