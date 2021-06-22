@@ -33,7 +33,7 @@
   // when end of load get data from model and set in editHttpRetriver
 
   // share data old ui and new ui in vuejs
-  var staticHeaderList = new Array();
+  var staticHeaderList;
 
   var editDSNewUI = {
     id: ${dataSource.id},
@@ -50,6 +50,7 @@
   }
 
   function initRetriever(response) {
+    staticHeaderList = new Array();
     var i;
     var list = response.data.staticHeaders;
     for (i=0; i<list.length; i++)
@@ -80,6 +81,10 @@
   }
 
   function removeStaticHeader(index) {
+    if (staticHeaderList[index].key == "Authorization") {
+      $set("username", "");
+      $set("password", "");
+    }
     staticHeaderList.splice(index, 1);
     refreshStaticHeaderList();
   }
@@ -137,6 +142,7 @@
                 $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
                 $get("stop"), $get("username"), $get("password"), staticHeaderList,
                 saveDataSourceCB);
+    DataSourceEditDwr.initHttpRetriever(initRetriever);
   }
 
   function saveDataSourceImpl() {
@@ -158,6 +164,7 @@
                   staticHeaderList,
                   saveDataSourceCB
       );
+    DataSourceEditDwr.initHttpRetriever(initRetriever);
   }
 
   function openURL() {
@@ -230,7 +237,7 @@
   }
 
   function updateStaticHeadersList() {
-    if (!$get("username") && !$get("password")) {
+    if (!$get("username") || !$get("password")) {
       removeAuthFromStaticHeaders();
       refreshStaticHeaderList();
     }
