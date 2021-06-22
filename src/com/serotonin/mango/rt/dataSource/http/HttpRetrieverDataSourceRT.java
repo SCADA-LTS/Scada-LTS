@@ -131,8 +131,8 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
             for (KeyValuePair kvp : staticHeaders) {
                 if (kvp.getKey().equals("Authorization")) {
                     method.setDoAuthentication(true);
-                    method.addRequestHeader(kvp.getKey(), kvp.getValue());
                 }
+                method.addRequestHeader(kvp.getKey(), kvp.getValue());
             }
         }
         return method;

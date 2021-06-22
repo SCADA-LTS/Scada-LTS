@@ -132,13 +132,15 @@
   }
 
   function saveDataSourceImplOld(){
-  DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
+    updateStaticHeadersList();
+    DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
                 $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
                 $get("stop"), $get("username"), $get("password"), staticHeaderList,
                 saveDataSourceCB);
   }
 
   function saveDataSourceImpl() {
+      updateStaticHeadersList();
       DataSourceEditDwr.saveHttpRetrieverDataSourceWithReactivationOptions(
                   $get("dataSourceName"),
                   $get("dataSourceXid"),
@@ -222,6 +224,17 @@
       var timeRegexLen = $get("timeRegex").trim().length;
       display("timeFormatRow", timeRegexLen > 0);
   }
+
+  function removeAuthFromStaticHeaders() {
+    staticHeaderList = staticHeaderList.filter(header => header.key != 'Authorization');
+  }
+
+  function updateStaticHeadersList() {
+    if (!$get("username") && !$get("password")) {
+      removeAuthFromStaticHeaders();
+      refreshStaticHeaderList();
+    }
+  }
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.httpRetriever.desc"/></c:set>
@@ -246,6 +259,14 @@
         </tr>
 
         <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.credentials"/></td>
+          <td class="formField">
+            <fmt:message key="dsEdit.httpRetriever.username"/> <input type="text" id="username" class="formShort"/>
+            <fmt:message key="dsEdit.httpRetriever.password"/> <input type="password" id="password" class="formShort"/>
+          </td>
+        </tr>
+
+        <tr>
           <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticHeaders"/></td>
           <td class="formField">
             <fmt:message key="publisherEdit.httpSender.headerKey"/> <input type="text" id="sheaderKey" class="formShort"/>
@@ -258,14 +279,6 @@
           </td>
         </tr>
 
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.credentials"/></td>
-          <td class="formField">
-            <fmt:message key="dsEdit.httpRetriever.username"/> <input type="text" id="username" class="formShort"/>
-            <fmt:message key="dsEdit.httpRetriever.password"/> <input type="password" id="password" class="formShort"/>
-          </td>
-        </tr>
-        
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.httpRetriever.timeout"/></td>
           <td class="formField"><input id="timeoutSeconds" type="text" value="${dataSource.timeoutSeconds}"/></td>
