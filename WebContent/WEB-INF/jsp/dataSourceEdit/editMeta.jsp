@@ -106,6 +106,9 @@
     var data = getElement(pointsArray, pointId);
     if (data) {
       var scriptVarName = data.xid.toLowerCase().trim();
+      if (!isVarName(scriptVarName)) {
+        alert("Invalid var name: " + data.xid + ". Change to valid, before saving!");
+      }
       // Missing names imply that the point was deleted, so ignore.
       addElementToContextArray(data, pointId, scriptVarName);
     }
