@@ -123,7 +123,7 @@ public class UsersProfilesDwr {
 			userDao.saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
-					"usersProfiles.validate.nameUnique"));
+					"userProfiles.validate.nameUnique"));
 		}
 
 		if (!response.getHasMessages()) {

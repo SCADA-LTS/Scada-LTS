@@ -17,15 +17,10 @@ const modules = {
  * Prepare wrapper wiht all required stubs and props.
  */
 function initWrapper(props = dataPointMock) {
-	return prepareMountWrapper(
-		PointPropChartRenderer, 
-		modules,
-		{data: props}
-	);
+	return prepareMountWrapper(PointPropChartRenderer, modules, { data: props });
 }
 
 describe('Point Properties Tests --- Chart Renderer', () => {
-
 	it('Initialize Component', () => {
 		const wrapper = initWrapper();
 		expect(wrapper.name()).to.equal('PointPropChartRenderer');

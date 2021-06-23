@@ -15,7 +15,7 @@ public final class ValidationUtils {
     }
 
     public static String validXid(String xidExpected, String xid) {
-        return msgIfNonNullAndInvalid("Correct xid", xid, a -> !StringUtils.isEmpty(a) && !a.equals(xidExpected));
+        return msgIfNonNullAndInvalid("Correct xid;", xid, a -> !StringUtils.isEmpty(a) && !a.equals(xidExpected));
     }
 
     public static String validId(Integer id, String xid) {

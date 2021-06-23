@@ -7,6 +7,7 @@ import store from './store';
 
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
+import VueDayjs from 'vue-dayjs-plugin';
 
 import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
@@ -14,11 +15,12 @@ import CMP from './components/graphical_views/cmp/CMP';
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListChartWidget from './components/watch_list/WatchListChartWidget';
+import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
 import StepLineChartComponent from './components/amcharts/StepLineChartComponent';
 import LineChartComponent from './components/amcharts/LineChartComponent';
+import RangeChartComponent from './components/amcharts/RangeChartComponent';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -40,6 +42,7 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
 import * as uiv from 'uiv';
+import svgJS from './plugins/svg';
 
 library.add(
 	faCoffee,
@@ -73,6 +76,9 @@ const optionsLodash = { name: 'lodash' };
 Vue.use(VueLodash, optionsLodash);
 
 Vue.use(VueCookie);
+Vue.use(VueDayjs);
+
+Vue.use(svgJS);
 
 Vue.config.devtools = true;
 
@@ -183,7 +189,7 @@ if (window.document.getElementById('example-chart-cmp') != undefined) {
 		store,
 		vuetify,
 		i18n,
-		render: (h) => h(WatchListChartWidget),
+		render: (h) => h(WatchListJsonChart),
 	}).$mount('#example-chart-cmp');
 }
 
@@ -271,6 +277,50 @@ for (let x = 0; x < 10; x++) {
 						showLegend: window.document
 							.getElementById(chartId)
 							.getAttribute('show-legned'),
+					},
+				}),
+		}).$mount(`#${chartId}`);
+	}
+}
+
+for (let x = 0; x < 10; x++) {
+	const chartId = `chart-range-${x}`;
+	if (window.document.getElementById(chartId) != undefined) {
+		new Vue({
+			store,
+			vuetify,
+			render: (h) =>
+				h(RangeChartComponent, {
+					props: {
+						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
+						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
+						color: window.document.getElementById(chartId).getAttribute('color'),
+						width: window.document.getElementById(chartId).getAttribute('width'),
+						height: window.document.getElementById(chartId).getAttribute('height'),
+						polylineStep: window.document
+							.getElementById(chartId)
+							.getAttribute('polyline-step'),
+						rangeValue: window.document
+							.getElementById(chartId)
+							.getAttribute('range-value'),
+						rangeColor: window.document
+							.getElementById(chartId)
+							.getAttribute('range-color'),
+						rangeLabel: window.document
+							.getElementById(chartId)
+							.getAttribute('range-label'),
+						showScrollbarX: window.document
+							.getElementById(chartId)
+							.getAttribute('show-scrollbar-x'),
+						showScrollbarY: window.document
+							.getElementById(chartId)
+							.getAttribute('show-scrollbar-y'),
+						showLegend: window.document
+							.getElementById(chartId)
+							.getAttribute('show-legned'),
+						aggregation: window.document
+							.getElementById(chartId)
+							.getAttribute('aggregation'),
 					},
 				}),
 		}).$mount(`#${chartId}`);

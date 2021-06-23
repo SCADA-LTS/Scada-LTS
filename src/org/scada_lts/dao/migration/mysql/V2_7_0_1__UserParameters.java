@@ -12,7 +12,7 @@ public class V2_7_0_1__UserParameters extends BaseJavaMigration {
 
         jdbcTmp.execute("ALTER TABLE users " +
                 "ADD hideMenu BOOLEAN, " +
-                "ADD theme ENUM('MODERN', 'DEFAULT');");
+                "ADD theme VARCHAR(10);");
 
         jdbcTmp.update("UPDATE users SET hideMenu = false, theme = 'DEFAULT';");
     }

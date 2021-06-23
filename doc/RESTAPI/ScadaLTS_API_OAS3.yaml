@@ -807,7 +807,7 @@ paths:
                       type: string
                     admin:
                       type: boolean
-  /watchlist/getAll:
+  /watch-lists:
     get:
       tags:
         - WatchListAPI
@@ -827,7 +827,85 @@ paths:
                       type: string
                     name:
                       type: string
-  /watchlist/getNames:
+  /watch-lists/{id}:
+    get:
+      tags:
+        - WatchListAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  xid:
+                    type: string
+                  name:
+                    type: string
+                  userId:
+                    type: number
+                  pointList:
+                    type: array
+                    items:
+                      type: object
+                  watchListUsers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: number
+                        accessType:
+                          type: number
+/watch-lists/xid/{xid}:
+  get:
+    tags:
+      - WatchListAPI
+    parameters:
+      - name: 'xid'
+        in: 'path'
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                xid:
+                  type: string
+                name:
+                  type: string
+                userId:
+                  type: number
+                pointList:
+                  type: array
+                  items:
+                    type: object
+                watchListUsers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      userId:
+                        type: number
+                      accessType:
+                        type: number
+  /watch-lists/getNames:
     get:
       tags:
         - WatchListAPI
@@ -845,7 +923,7 @@ paths:
                       type: number
                     name:
                       type: string
-  /watchlist/getPoints/{xid}:
+  /watch-lists/getPoints/{xid}:
     get:
       tags:
         - WatchListAPI
@@ -869,7 +947,7 @@ paths:
                       type: number
                     name:
                       type: string
-  /watchlist/getChartData/{xid}/{fromData}/{toData}:
+  /watch-lists/getChartData/{xid}/{fromData}/{toData}:
     get:
       tags:
         - WatchListAPI
@@ -1843,9 +1921,9 @@ paths:
                       properties:
                         pointId:
                           type: number
-                        pointName: 
+                        pointName:
                           type: string
-                        count: 
+                        count:
                           type: number
   /systemSettings/purgeData:
     get:
@@ -1900,7 +1978,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SystemScadaConfigJSON'
-
+  /synoptic-panels:
+    get:
+      tags:
+        - SynopticPanelAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
+    post:
+      tags:
+        - SynopticPanelAPI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SynopticPanelJSON'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynopticPanelJSON'
+    put:
+      tags:
+        - SynopticPanelAPI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SynopticPanelJSON'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynopticPanelJSON'
+  /synoptic-panels/{id}:
+    get:
+      tags:
+        - SynopticPanelAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'Synoptic Panel Item'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynopticPanelJSON'
+        '204':
+          description: 'No content'
+    delete:
+      tags:
+        - SynopticPanelAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
   /userComment/{typeId}/{refId}:
     post:
       tags:
@@ -2170,7 +2327,7 @@ components:
     SettingsMiscJSON:
       type: object
       properties:
-        groveLogging: 
+        groveLogging:
           type: boolean
         eventPurgePeriodType:
           type: number
@@ -2198,7 +2355,7 @@ components:
     SettingsSystemInfoJSON:
       type: object
       properties:
-        newVersionNotficationLevel: 
+        newVersionNotficationLevel:
           type: string
         instanceDescription:
           type: string
@@ -2493,6 +2650,28 @@ components:
         comment:
           type: string
         username:
+          type: string
+    ScadaObjectIdentifier:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        name:
+          type: string
+    SynopticPanelJSON:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        name:
+          type: string
+        componentData:
+          type: string
+        vectorImage:
           type: string
   parameters:
     Authorization:

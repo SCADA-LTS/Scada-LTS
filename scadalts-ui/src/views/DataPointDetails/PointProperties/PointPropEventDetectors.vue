@@ -19,7 +19,11 @@
 					</h3>
 				</v-col>
 				<v-col class="row justify-end">
-					<CreateEventDetectorDialog :data="data" @saved="addEventDetector" @savedfailed="addEventDetectorFail">
+					<CreateEventDetectorDialog
+						:data="data"
+						@saved="addEventDetector"
+						@savedfailed="addEventDetectorFail"
+					>
 					</CreateEventDetectorDialog>
 				</v-col>
 			</v-row>
@@ -232,7 +236,7 @@
 						<v-col cols="1"></v-col>
 						<v-col cols="5">
 							<v-text-field
-								:label="$t('datapointDetails.pointProperties.eventDetectors.duartion')"
+								:label="$t('datapointDetails.pointProperties.eventDetectors.duration')"
 								v-model="e.duration"
 								dense
 							></v-text-field>
@@ -389,7 +393,7 @@ export default {
 				'No Update Detector',
 				'Alphanumeric State Detector',
 				'Positive CUSUM',
-				'Negative CUSUM'
+				'Negative CUSUM',
 			];
 			return detectorsList[value - 1];
 		},
@@ -436,9 +440,14 @@ export default {
 			this.response.status = true;
 			this.response.message = this.$t('common.snackbar.add.success');
 		},
-		addEventDetectorFail() {
+		addEventDetectorFail(error) {
 			this.response.status = true;
-			this.response.message = this.$t('common.snackbar.add.fail');
+			if(error.status === 409) {
+				this.response.message = this.$t('common.snackbar.xid.not.unique');
+			} else {
+				this.response.message = this.$t('common.snackbar.add.fail');
+			}
+			
 		},
 
 		openConfirmDialog(e) {
@@ -482,10 +491,11 @@ export default {
 							this.response.status = true;
 							this.response.message = this.$t('common.snackbar.delete.fail');
 						}
-					}).catch(() => {
+					})
+					.catch(() => {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.delete.fail');
-					})
+					});
 			}
 		},
 	},

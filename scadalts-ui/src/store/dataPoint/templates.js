@@ -136,7 +136,7 @@ export const eventRenderersTemplates = [
 			name: 'eventTextRendererNone',
 			exportName: 'EVENT_NONE',
 			nameKey: 'textRenderer.none',
-			supportedDataTypes: [1,2,3,4,5],
+			supportedDataTypes: [1, 2, 3, 4, 5],
 		},
 		text: null,
 	},
@@ -180,122 +180,18 @@ export const eventRenderersTemplates = [
 	},
 ];
 
-export const eventDetectorTemplates = [
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 1,
-
-		duration: 0,
-		durationType: 1,
-		limit: 0.0,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 2,
-
-		duration: 0,
-		durationType: 1,
-		limit: 0.0,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 3,
-
-		duration: 0,
-		durationType: 1,
-		binaryState: false,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 4,
-
-		duration: 0,
-		durationType: 1,
-		multistateState: 0,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 5,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 6,
-
-		duration: 0,
-		durationType: 1,
-		changeCount: 2,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 7,
-
-		duration: 0,
-		durationType: 1,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 8,
-
-		duration: 0,
-		durationType: 1,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 9,
-
-		duration: 0,
-		durationType: 1,
-		alphanumericState: null,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 10,
-
-		duration: 0,
-		durationType: 1,
-		weight: 0,
-		limit: 1,
-	},
-	{
-		id: -1,
-		xid: '',
-		alias: '',
-		alarmLevel: 0,
-		detectorType: 11,
-
-		duration: 0,
-		durationType: 1,
-		weight: 0,
-		limit: 1,
-	},
-];
+export const eventDetectorTemplate = {
+	id: -1,
+	xid: '',
+	alias: '',
+	detectorType: 1,
+	alarmLevel: 0,
+	limit: 0.0,
+	duration: 0,
+	durationType: 1,
+	binaryState: false,
+	multistateState: 0,
+	changeCount: 2,
+	alphanumericState: null,
+	weight: 0.0
+};

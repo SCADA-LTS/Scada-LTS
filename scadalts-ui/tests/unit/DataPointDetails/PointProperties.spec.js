@@ -20,22 +20,23 @@ global.requestAnimationFrame = (cb) => cb();
  */
 function initWrapper() {
 	return prepareMountWrapper(
-		PointProperties, 
+		PointProperties,
 		modules,
-		{data: dataPointMock },
-		{stubs: [
-			'PointPropChartRenderer',
-			'PointPropEventDetectors',
-			'PointPropEventRenderer',
-			'PointPropTextRenderer',
-			'PointPropLogging',
-			'PurgeDataDialog',
-		]}
+		{ data: dataPointMock },
+		{
+			stubs: [
+				'PointPropChartRenderer',
+				'PointPropEventDetectors',
+				'PointPropEventRenderer',
+				'PointPropTextRenderer',
+				'PointPropLogging',
+				'PurgeDataDialog',
+			],
+		},
 	);
 }
 
 describe('Point Properties Tests', () => {
-
 	it('Initialize Component', () => {
 		const wrapper = initWrapper();
 		expect(wrapper.name()).to.equal('PointProperties');

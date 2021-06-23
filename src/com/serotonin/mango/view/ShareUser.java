@@ -122,4 +122,12 @@ public class ShareUser implements JsonSerializable {
 
         return Objects.hash(getUserId(), getAccessType());
     }
+
+    @Override
+    public String toString() {
+        return "ShareUser{" +
+                "userId=" + userId +
+                ", accessType=" + accessType +
+                '}';
+    }
 }

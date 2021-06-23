@@ -51,10 +51,15 @@ public class ViewService {
 	private ViewDAO viewDAO;
 	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
 	private ViewGetShareUsers viewGetShareUsers;
-	
+
 	public ViewService() {
 		viewDAO = new ViewDAO();
 		viewGetShareUsers = new ViewGetShareUsers();
+	}
+
+	public ViewService(ViewDAO viewDAO, ViewGetShareUsers viewGetShareUsers) {
+		this.viewDAO = viewDAO;
+		this.viewGetShareUsers = viewGetShareUsers;
 	}
 	
 	public List<View> getViews() {
@@ -114,7 +119,8 @@ public class ViewService {
 	
 	public View getView(int id) {
 		View view = viewDAO.findById(new Object[] { id });
-		view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
+		if(view != null)
+			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		return view;
 	}
 	

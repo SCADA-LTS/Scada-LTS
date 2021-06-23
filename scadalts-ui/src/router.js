@@ -9,6 +9,8 @@ import AlarmNotifications from './views/AlarmNotifications';
 import RecipientList from './views/RecipientList';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
+import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
+import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
 
 import store from './store/index';
 
@@ -94,6 +96,17 @@ const routing = new Router({
 			meta: {
 				requiresAuth: true
 			},
+		},
+		{
+			path: '/synoptic-panel',
+			name: 'synoptic-panel',
+			component: SynopticPanelMenu,
+			children: [
+				{
+					path: ':id',
+					component: SynopticPanelItem,
+				},
+			],
 		},
 		{
 			path: '/example-ph',
