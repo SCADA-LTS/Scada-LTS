@@ -31,10 +31,10 @@ script:
   - ant create-war
 branches:
   only:
-  - "/^develop.*$/"
-  - "/^master.*$/"
-  - "/^release.*$/"
-  - "/^feature/#1703.*$/"
+    - "/^develop.*$/"
+    - "/^master.*$/"
+    - "/^release.*$/"
+    - "/^feature/#1607.*$/"
 notifications:
   email: false
 env:

@@ -187,21 +187,21 @@ export default {
 					renderers.push(
 						this.$store.state.dataPoint.textRenderesList.filter((e) => {
 							return e.id === 1;
-						})[0]
+						})[0],
 					);
 				} else if (this.data.pointLocator.dataTypeId === 2) {
 					// Multistate datapoint
 					renderers.push(
 						this.$store.state.dataPoint.textRenderesList.filter((e) => {
 							return e.id === 2;
-						})[0]
+						})[0],
 					);
 				} else if (this.data.pointLocator.dataTypeId === 3) {
 					// Numeric datapoint
 					renderers.push(
 						this.$store.state.dataPoint.textRenderesList.filter((e) => {
 							return e.id === 4;
-						})[0]
+						})[0],
 					);
 				}
 			}
@@ -238,7 +238,7 @@ export default {
 				val = 0;
 			}
 			let template = JSON.parse(
-				JSON.stringify(this.$store.state.dataPoint.eventRenderersTemplates[val])
+				JSON.stringify(this.$store.state.dataPoint.eventRenderersTemplates[val]),
 			);
 			if (!!this.data.eventTextRenderer) {
 				if (this.data.eventTextRenderer.def.exportName === template.def.exportName) {
@@ -250,7 +250,7 @@ export default {
 
 		addRangeValue() {
 			this.data.eventTextRenderer.rangeEventValues.push(
-				Object.assign({}, this.rangeRenderer)
+				Object.assign({}, this.rangeRenderer),
 			);
 			this.rangeRenderer = {
 				from: 0,
@@ -262,13 +262,13 @@ export default {
 			this.data.eventTextRenderer.rangeEventValues = this.data.eventTextRenderer.rangeEventValues.filter(
 				(e) => {
 					return e.text !== val.text;
-				}
+				},
 			);
 		},
 
 		addMultistateValue() {
 			this.data.eventTextRenderer.multistateEventValues.push(
-				Object.assign({}, this.multistateRenderer)
+				Object.assign({}, this.multistateRenderer),
 			);
 			this.rangeRenderer = { key: 0, text: '' };
 		},
@@ -276,7 +276,7 @@ export default {
 			this.data.eventTextRenderer.multistateEventValues = this.data.eventTextRenderer.multistateEventValues.filter(
 				(e) => {
 					return e.key !== val.key;
-				}
+				},
 			);
 		},
 	},
