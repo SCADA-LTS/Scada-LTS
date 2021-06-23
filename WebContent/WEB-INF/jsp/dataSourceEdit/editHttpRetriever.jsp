@@ -141,8 +141,7 @@
     DataSourceEditDwr.saveHttpRetrieverDataSource($get("dataSourceName"), $get("dataSourceXid"),
                 $get("updatePeriods"), $get("updatePeriodType"), $get("url"), $get("timeoutSeconds"), $get("retries"),
                 $get("stop"), $get("username"), $get("password"), staticHeaderList,
-                saveDataSourceCB);
-    DataSourceEditDwr.initHttpRetriever(initRetriever);
+                saveHttpRetrieverDataSourceCB);
   }
 
   function saveDataSourceImpl() {
@@ -162,8 +161,12 @@
                   $get("username"),
                   $get("password"),
                   staticHeaderList,
-                  saveDataSourceCB
+                  saveHttpRetrieverDataSourceCB
       );
+  }
+
+  function saveHttpRetrieverDataSourceCB(response) {
+    saveDataSourceCB(response);
     DataSourceEditDwr.initHttpRetriever(initRetriever);
   }
 
