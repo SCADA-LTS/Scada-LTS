@@ -81,6 +81,13 @@ public class PublisherEditDwr extends BaseDwr {
         return response;
     }
 
+    public DwrResponseI18n updateHttpSenderStaticHeaders() {
+        DwrResponseI18n response = new DwrResponseI18n();
+        HttpSenderVO p = (HttpSenderVO) Common.getUser().getEditPublisher();
+        response.addData("staticHeaders", p.getStaticHeaders());
+        return response;
+    }
+
     //
     //
     // HTTP sender stuff

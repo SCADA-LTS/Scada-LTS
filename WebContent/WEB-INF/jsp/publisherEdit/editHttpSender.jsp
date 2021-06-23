@@ -19,7 +19,7 @@
 <%@page import="com.serotonin.mango.vo.publish.httpSender.HttpSenderVO"%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <script type="text/javascript">
-  var staticHeaderList = new Array();
+  var staticHeaderList;
   var staticParameterList = new Array();
   var allPoints = new Array();  
   var selectedPoints = new Array();  
@@ -35,7 +35,8 @@
       for (var i=0; i<list.length; i++)
           allPoints[allPoints.length] = {
                   id: list[i].id, name: list[i].extendedName, enabled: list[i].enabled, type: list[i].dataTypeMessage};
-          
+
+      staticHeaderList = new Array();
       list = response.data.publisher.staticHeaders;
       for (i=0; i<list.length; i++)
           staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
@@ -52,6 +53,16 @@
       refreshSelectedPoints();
       PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
       PublisherEditDwr.getIsUseJSON(setUseJSON);
+  }
+
+  function initStaticHeaders(response) {
+    staticHeaderList = new Array();
+    var i;
+    var list = response.data.staticHeaders;
+    for (i=0; i<list.length; i++)
+      staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
+    refreshStaticHeaderList();
+    PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
   }
 
   function setCredentials(credentials) {
@@ -85,6 +96,10 @@
   }
   
   function removeStaticHeader(index) {
+      if (staticHeaderList[index].key == "Authorization") {
+        $set("username", "");
+        $set("password", "");
+      }
       staticHeaderList.splice(index, 1);
       refreshStaticHeaderList();
   }
@@ -254,11 +269,18 @@
       for (var i=0; i<selectedPoints.length; i++)
           points[points.length] = {dataPointId: selectedPoints[i].id, parameterName: selectedPoints[i].parameterName,
                   includeTimestamp: selectedPoints[i].includeTimestamp};
+
+      updateStaticHeadersList();
       
       PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true", 
     		  staticHeaderList, staticParameterList, cacheWarningSize, changesOnly, $get("raiseResultWarning"),
     		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType,
-              $get("username"), $get("password"), $get("useJSON"), savePublisherCB);
+              $get("username"), $get("password"), $get("useJSON"), saveHttpSenderCB);
+  }
+
+  function saveHttpSenderCB(response) {
+    savePublisherCB(response);
+    PublisherEditDwr.updateHttpSenderStaticHeaders(initStaticHeaders);
   }
   
   function httpSendTest() {
@@ -302,6 +324,17 @@
   function httpSendTestCancelCB() {
       httpSendTestButtons(false);
       showMessage("httpSendTestMessage", "<fmt:message key="common.cancelled"/>");
+  }
+
+  function removeAuthFromStaticHeaders() {
+    staticHeaderList = staticHeaderList.filter(header => header.key != 'Authorization');
+  }
+
+  function updateStaticHeadersList() {
+    if (!$get("username") || !$get("password")) {
+      removeAuthFromStaticHeaders();
+      refreshStaticHeaderList();
+    }
   }
 </script>
 
