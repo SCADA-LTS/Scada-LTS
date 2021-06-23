@@ -44,7 +44,15 @@
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link id="pagestyle" href="assets/common_deprecated.css" type="text/css" rel="stylesheet"/>
+  <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
+  <c:choose>
+    <c:when test="${!empty sessionUser}">
+      <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
+    </c:when>
+    <c:otherwise>
+      <link href="assets/common_DEFAULT.css" type="text/css" rel="stylesheet"/>
+    </c:otherwise>
+  </c:choose>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
@@ -100,7 +108,6 @@
       <c:if test="${!empty sessionUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
-        dojo.addOnLoad(function() { setUserTheme("${sessionUser.theme}"); });
         <c:if test="${sessionUser.hideMenu}">
           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
         </c:if>
@@ -118,93 +125,85 @@
           MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
       }
 
-      function swapStyleSheet(sheet) {
-        document.getElementById("pagestyle").setAttribute("href", sheet);
-        localStorage.setItem('theme', sheet);
-      }
-
       function setFullscreenIfGraphicView() {
         if(window.location.href.includes("views.shtm")) {
           document.cookie = "fullScreen=yes";
           checkFullScreen();
         }
       }
-
-      function initate() {
-
-        var theme = localStorage.getItem('theme');
-        if (theme) {
-            document.getElementById("pagestyle").setAttribute("href", theme);
-        }
-
-      }
-
-      window.onload = initate;
-
     </script>
   </c:if>
 </head>
 
 <body>
-<table cellspacing="0" cellpadding="0" id="mainHeader">
-  <tr>
-    <td><img id="logo" src="assets/logo.png" alt="Logo"/></td>
-    <c:if test="${!simple}">
-      <td align="center" width="99%" id="eventsRow">
-        <a href="events.shtm">
-          <span id="__header__alarmLevelDiv" style="display:none;">
-            <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
-            <span id="__header__alarmLevelText"></span>
-          </span>
-        </a>
-      </td>
-    </c:if>
+
+<!-- mainHeader -->
+<div id="mainHeader">
+  <div>
+    <img id="logo" src="assets/logo.png" alt="Logo">
+  </div>
+
+  <div id="eventsRow">
+    <a href="events.shtm">
+      <span id="__header__alarmLevelDiv" style="display:none;">
+        <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
+        <span id="__header__alarmLevelText"></span>
+      </span>
+    </a>
+  </div>
+
+  <div>
     <c:if test="${!empty instanceDescription}">
-      <td id="instanceDescription" align="right" valign="bottom" class="projectTitle">${instanceDescription}</td>
+      <span id="instanceDescription" align="right" valign="bottom" class="projectTitle">${instanceDescription}</span>
     </c:if>
-  </tr>
-</table>
+  </div>
+</div>
 
+<!-- subheader -->
 <c:if test="${!simple}">
-  <table class="navHeader" id="subHeader">
-    <tr>
-      <td style="cursor:default" >
-        <c:if test="${!empty sessionUser}">
-          <c:choose>
-            <c:when test="${sessionUser.hideMenu}">
-              <c:if test="${!empty sessionUser.homeUrl}">
-                <c:set var="homeUrl" value="${fn:split(sessionUser.homeUrl, '?')}" />
-                <c:if test="${homeUrl[0] == 'watch_list.shtm'}">
-                  <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-                </c:if>
-                <c:if test="${homeUrl[0] == 'modern_watch_list.shtm'}">
-                  <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
-                </c:if>
-                <c:if test="${homeUrl[0] == 'views.shtm'}">
-                  <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
-                </c:if>
-                <c:if test="${homeUrl[0] == 'events.shtm'}">
-                  <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-                </c:if>
-                <c:if test="${homeUrl[0] == 'app.shtm'}">
-                  <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
-                </c:if>
-                <c:if test="${homeUrl[0] == 'reports.shtm'}">
-                  <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
-                </c:if>
-              </c:if>
-            </c:when>
-            <c:otherwise>
-              <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-              <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
-              <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
-              <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-              <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
-              <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
-            </c:otherwise>
-          </c:choose>
+<div class="navHeader" id="subHeader">
+  <div>
+    <nav class="flex-default">
+      <c:if test="${!empty sessionUser}">
+        <div class="spacer">
+            <c:choose>
+                <c:when test="${sessionUser.hideMenu}">
+                    <c:if test="${!empty sessionUser.homeUrl}">
+                        <c:set var="homeUrl" value="${fn:split(sessionUser.homeUrl, '?')}" />
+                        <c:if test="${homeUrl[0] == 'watch_list.shtm'}">
+                            <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'modern_watch_list.shtm'}">
+                          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'views.shtm'}">
+                          <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'events.shtm'}">
+                          <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'app.shtm'}">
+                          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
+                        </c:if>
+                        <c:if test="${homeUrl[0] == 'reports.shtm'}">
+                          <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+                        </c:if>
+                    </c:if>
+                </c:when>
+             <c:otherwise>
+                <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+                <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+                <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+                <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+                <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
+                <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+             </c:otherwise>
+           </c:choose>
+        </div>
 
-          <c:if test="${sessionUser.admin}">
+
+        <c:if test="${sessionUser.admin}">
+          <div class="spacer">
             <img src="./images/menu_separator.png" class="separator"/>
             <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
             <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
@@ -212,13 +211,17 @@
             <tag:menuItem href="compound_events.shtm" png="multi_bell" key="header.compoundEvents"/>
             <tag:menuItem href="point_links.shtm" png="link" key="header.pointLinks"/>
             <tag:menuItem href="scripting.shtm" png="script_gear" key="header.scripts"/>
-          </c:if>
+          </div>
+        </c:if>
 
+        <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
           <tag:menuItem href="users.shtm" png="user" key="header.users"/>
+        </div>
 
-          <c:if test="${sessionUser.admin}">
-	        <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
+        <c:if test="${sessionUser.admin}">
+          <div class="spacer">
+	          <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
             <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
             <tag:menuItem href="mailing_lists.shtm" png="book" key="header.mailingLists"/>
             <tag:menuItem href="publishers.shtm" png="transmit" key="header.publishers"/>
@@ -226,48 +229,57 @@
             <tag:menuItem href="system_settings.shtm" png="application_form" key="header.systemSettings"/>
             <tag:menuItem href="emport.shtm" png="script_code" key="header.emport"/>
             <tag:menuItem href="sql.shtm" png="script" key="header.sql"/>
-          </c:if>
+          </div>
+        </c:if>
 
+        <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
-        </c:if>
-        <c:if test="${empty sessionUser}">
+        </div>
+      </c:if>
+
+      <c:if test="${empty sessionUser}">
           <tag:menuItem href="login.htm" png="control_play_blue" key="header.login"/>
-        </c:if>
-        <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
-      </td>
-      <td class="userDetails">
-        <c:if test="${!empty sessionUser}">
-            <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-            <span class="userName"><b>${sessionUser.username}</b></span>
-        </c:if>
-      </td>
-      <td align="right">
-        <c:if test="${!empty sessionUser}">
-          <c:if test="${!sessionUser.hideMenu}">
+      </c:if>
+      <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
+    </nav>
+  </div>
+
+  <div class="flex-default">
+    <div id="navbarUserInfo">
+      <c:if test="${!empty sessionUser}">
+        <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+        <span class="userName">${sessionUser.username}</span>
+      </c:if>
+    </div>
+
+    <div id="navbarUserProperties" class="flex-default spacer">
+      <c:if test="${!empty sessionUser}">
+        <c:if test="${!sessionUser.hideMenu}">
             <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
             <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
             <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-          </c:if>
         </c:if>
-        <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
-          <tag:img png="world" title="header.changeLanguage"/>
-          <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <c:forEach items="${availableLanguages}" var="lang">
-              <a class="ptr" onclick="setLocale('${lang.key}')">${lang.value}</a><br/>
-            </c:forEach>
-          </div>
+      </c:if>
+
+      <div class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
+        <tag:img png="world" title="header.changeLanguage"/>
+        <div id="localeEdit" class="labelDiv navbar-dropdown--hidden" onmouseout="hideLayer(this)">
+          <c:forEach items="${availableLanguages}" var="lang">
+            <a class="ptr" onclick="setLocale('${lang.key}')">${lang.value}</a><br/>
+          </c:forEach>
         </div>
-      </td>
-    </tr>
-  </table>
+      </div>
+    </div>
+  </div>
+</div>
 </c:if>
 
-<div class="content" style="padding-top:10px;">
+<div id="sltsContent" class="content">
   <jsp:doBody/>
 </div>
-<div class="footer" style="text-align:center">
+<div id="sltsFooter" class="footer">
     <span>&copy;2012-2021 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
 <c:if test="${!empty onload}">

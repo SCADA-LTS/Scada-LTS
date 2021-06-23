@@ -42,6 +42,7 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
 import * as uiv from 'uiv';
+import svgJS from './plugins/svg';
 
 library.add(
 	faCoffee,
@@ -77,6 +78,8 @@ Vue.use(VueLodash, optionsLodash);
 Vue.use(VueCookie);
 Vue.use(VueDayjs);
 
+Vue.use(svgJS);
+
 Vue.config.devtools = true;
 
 new Vue({
@@ -88,7 +91,6 @@ new Vue({
 }).$mount('#app');
 
 Vue.use(uiv);
-
 
 if (window.document.getElementById('app-test') != undefined) {
 	new Vue({
@@ -102,21 +104,17 @@ if (window.document.getElementById('app-test') != undefined) {
 }
 
 if (window.document.getElementById('app-isalive') != undefined) {
+	const isAliveDom = document.getElementById('app-isalive');
 	new Vue({
 		store,
 		render: (h) =>
 			h(IsAlive, {
 				props: {
-					plabel: window.document.getElementById('app-isalive').getAttribute('plabel'),
-					ptimeWarning: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-warning'),
-					ptimeError: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-error'),
-					ptimeRefresh: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-refresh'),
+					plabel: isAliveDom.getAttribute('plabel'),
+					ptimeWarning: isAliveDom.getAttribute('ptime-warning'),
+					ptimeError: isAliveDom.getAttribute('ptime-error'),
+					ptimeRefresh: isAliveDom.getAttribute('ptime-refresh'),
+					feedbackUrl: isAliveDom.getAttribute('feedback-url'),
 				},
 			}),
 	}).$mount('#app-isalive');
