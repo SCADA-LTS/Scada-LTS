@@ -18,14 +18,7 @@
 package org.scada_lts.mango.service;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -44,6 +37,7 @@ import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
@@ -99,6 +93,8 @@ public class DataPointService implements MangoDataPoint {
 	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
+
+	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
 	@Override
 	public String generateUniqueXid() {
@@ -580,5 +576,21 @@ public class DataPointService implements MangoDataPoint {
 			json.setEventText(dataPointVO.getEventTextRenderer().getText(true));
 		}
 		return json;
+	}
+
+	public List<Map<String, Double>> getPointValuesFromRangeXid(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = new ArrayList<>();
+		for(String xid: pointString.split(",")) {
+			pointIds.add(getDataPoint(xid).getId());
+		}
+		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
+	}
+
+	public List<Map<String, Double>> getPointValuesFromRangeId(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = new ArrayList<>();
+		for(String id: pointString.split(",")) {
+			pointIds.add(Integer.parseInt(id));
+		}
+		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 }

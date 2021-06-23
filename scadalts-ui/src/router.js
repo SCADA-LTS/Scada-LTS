@@ -146,6 +146,7 @@ const routing = new Router({
 		{
 			path: '/example-chart-cmp',
 			name: 'example-chart-cmp',
+			// component: ExampleChartCmp,
 			component: () =>
 				import(
 					/* webpackChunkName: "example-chart-cmp" */ './views/components/ExampleChartCmp.vue'

@@ -1,110 +1,118 @@
 <template>
 	<div>
-		<p>{{ label }}</p>
+		<v-alert
+			:type="errorMessage.type"
+			dismissible
+			v-if="!!errorMessage"
+			transition="scale-transition"
+			dense
+		>
+			{{ errorMessage.message }}
+		</v-alert>
 		<div
-			class="hello"
 			v-bind:style="{ height: this.height + 'px', width: this.width + 'px' }"
 			ref="chartdiv"
 		></div>
-		<div v-if="errorMessage">
-			<p class="error">{{ errorMessage }}</p>
-		</div>
-		<div v-if="showReload">
-			<button v-on:click="reload()">Reload</button>
-		</div>
 	</div>
 </template>
 <script>
-import LineChart from './LineChart';
+import AmCharts from './AmChart';
 
 export default {
 	name: 'LineChartComponent',
-	props: [
-		'pointId',
-		'pointXid',
-		'color',
-		'label',
-		'startDate',
-		'endDate',
-		'refreshRate',
-		'width',
-		'height',
-		'polylineStep',
-		'rangeValue',
-		'rangeColor',
-		'rangeLabel',
-		'showScrollbarX',
-		'showScrollbarY',
-		'showLegend',
-		'showReload',
-	],
+
+	props: {
+		pointIds: { type: String, required: true },
+		useXid: { type: Boolean },
+		startDate: { type: String },
+		endDate: { type: String },
+		refreshRate: { type: Number },
+		width: { type: String, default: "500" },
+		height: { type: String, default: "400" },
+		aggregation: { type: Number },
+		showScrollbar: { type: Boolean },
+		showLegend: { type: Boolean },
+		showBullets: { type: Boolean },
+		showExportMenu: { type: String },
+		smoothLine: { type: Number },
+	},
+
 	data() {
 		return {
-			errorMessage: undefined,
 			chartClass: undefined,
-			isExportId: false,
+			errorMessage: undefined,
 		};
 	},
-	mounted() {
-		this.generateChart();
-	},
-	methods: {
-		generateChart() {
-			if (Number(this.polylineStep) > 1) {
-				LineChart.setPolylineStep(Number(this.polylineStep));
-			}
-			this.chartClass = new LineChart(this.$refs.chartdiv, this.color);
-			this.chartClass.displayControls(
-				this.showScrollbarX,
-				this.showScrollbarY,
-				this.showLegend,
-			);
-			if (
-				this.pointXid !== undefined &&
-				this.pointXid !== null &&
-				(this.pointId === null || this.pointId === undefined)
-			) {
-				this.isExportId = true;
-			}
-			let promises = [];
-			let points;
-			if (this.isExportId) {
-				points = this.pointXid.split(',');
-			} else {
-				points = this.pointId.split(',');
-			}
-			for (let i = 0; i < points.length; i++) {
-				promises.push(
-					this.chartClass.loadData(
-						points[i],
-						this.startDate,
-						this.endDate,
-						this.isExportId,
-					),
-				);
-			}
 
-			Promise.all(promises).then((response) => {
-				for (let i = 0; i < response.length; i++) {
-					if (response[i] !== 'done') {
-						this.errorMessage = 'Point given with index [' + i + '] has not been loaded!';
+	mounted() {
+		this.initChart();
+	},
+
+	beforeDestroy() {
+		this.close()
+	},
+
+	methods: {
+		initChart() {
+			this.chartClass = new AmCharts(
+				this.$refs.chartdiv,
+				'xychart',
+				this.pointIds
+			).showCursor();
+
+			if (!!this.useXid) {
+				this.chartClass.xid();
+			}
+			if (!!this.startDate) {
+				this.chartClass.startTime(this.startDate);
+			}
+			if (!!this.endDate) {
+				this.chartClass.endTime(this.endDate);
+			}
+			if (!!this.refreshRate) {
+				this.chartClass.withLiveUpdate(this.refreshRate);
+			}
+			if (!!this.aggregation) {
+				if (this.aggregation === 0) {
+					this.chartClass.useAggregation();
+				} else {
+					this.chartClass.useAggregation(this.aggregation);
+				}
+			}
+			if (!!this.showScrollbar) {
+				this.chartClass.showScrollbar();
+			}
+			if (!!this.showLegend) {
+				this.chartClass.showLegend();
+			}
+			if (!!this.showBullets) {
+				this.chartClass.showBullets();
+			}
+			if (!!this.showExportMenu) {
+				this.chartClass.showExportMenu(this.showExportMenu);
+			}
+			if (!!this.smoothLine) {
+				this.chartClass.smoothLine(this.smoothLine);
+			}
+			this.chartClass = this.chartClass.build();
+
+			this.chartClass.createChart().catch((e) => {
+				if(e.message === 'No data from that range!') {
+					this.errorMessage = {
+						type: 'warning',
+						message: e.message
 					}
-				}
-				this.chartClass.showChart(); // Display Chart
-				if (this.rangeValue !== undefined) {
-					this.chartClass.addRangeValue(
-						Number(this.rangeValue),
-						this.rangeColor,
-						this.rangeLabel,
-					);
-				}
-				if (this.refreshRate != undefined) {
-					this.chartClass.startLiveUpdate(Number(this.refreshRate), this.isExportId);
+				} else {
+					this.errorMessage = {
+						type: 'error',
+						message: `Failed to load chart!: ${e.message}`
+					}
 				}
 			});
 		},
-		reload() {
-			this.generateChart();
+
+		close() {
+			this.chartClass.disposeChart();
 		},
 	},
 };
@@ -118,7 +126,7 @@ p {
 	text-align: center;
 	padding-top: 10px;
 }
-.error {
+/* .error {
 	color: red;
-}
+} */
 </style>
