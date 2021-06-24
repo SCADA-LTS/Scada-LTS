@@ -348,18 +348,23 @@ public class DataPointMigrationPermissionsCommandTest {
 
         DataPointVO dataPoint1 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         dataPoint1.setId(dataPointId1);
+        dataPoint1.setSettable(true);
 
         DataPointVO dataPoint2 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         dataPoint2.setId(dataPointId2);
+        dataPoint2.setSettable(true);
 
         DataPointVO dataPoint3 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         dataPoint3.setId(dataPointId3);
+        dataPoint3.setSettable(true);
 
         DataPointVO dataPoint4 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         dataPoint4.setId(dataPointId4);
+        dataPoint4.setSettable(true);
 
         DataPointVO dataPoint5 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         dataPoint5.setId(dataPointId5);
+        dataPoint5.setSettable(true);
 
         List<DataPointVO> dataPoints = Arrays.asList(dataPoint1, dataPoint2, dataPoint3, dataPoint4, dataPoint5);
 
