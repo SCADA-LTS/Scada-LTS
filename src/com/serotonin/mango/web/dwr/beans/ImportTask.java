@@ -76,6 +76,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
 
 /**
@@ -601,6 +602,13 @@ public class ImportTask extends ProgressiveTask {
 			} catch (JsonException e) {
 				response.addGenericMessage("emport.view.prefix", xid,
 						getJsonExceptionMessage(e));
+			}
+
+			if(!view.getDeserializeErrors().isEmpty()) {
+				for(LocalizableMessage msg: view.getDeserializeErrors()) {
+					response.addGenericMessage("emport.view.prefix", xid, msg);
+				}
+				view.resetDeserializeErrors();
 			}
 		}
 	}

@@ -22,18 +22,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.json.JsonSerializable;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.ViewDao;
@@ -46,6 +39,9 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 
 @JsonRemoteEntity
@@ -72,6 +68,10 @@ public class View implements Serializable, JsonSerializable {
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
+
+	transient private List<LocalizableMessage> deserializeErrors = new ArrayList<>();
+
+	private static final Log LOG = LogFactory.getLog(View.class);
 	
 	public void addViewComponent(ViewComponent viewComponent) {
 		// Determine an index for the component.
@@ -398,6 +398,8 @@ public class View implements Serializable, JsonSerializable {
 	@Override
 	public void jsonDeserialize(JsonReader reader, JsonObject json)
 			throws JsonException {
+
+		deserializeErrors = new ArrayList<>();
 		
 		resolution = ResolutionView.R1600x1200;
 		this.height = 1200;
@@ -405,31 +407,36 @@ public class View implements Serializable, JsonSerializable {
 		
 		if (isNew()) {
 			String username = json.getString("user");
-			if (StringUtils.isEmpty(username))
-				throw new LocalizableJsonException("emport.error.missingValue",
-						"user");
-			User user = new UserDao().getUser(username);
-			if (user == null)
-				throw new LocalizableJsonException("emport.error.missingUser",
-						username);
-			userId = user.getId();
+			try {
+				setOwner(username);
+			} catch (LocalizableJsonException ex) {
+				LOG.error(toLocalizedMessage(ex.getMsg()), ex);
+				deserializeErrors.add(ex.getMsg());
+			}
 		}
 
 		JsonArray components = json.getJsonArray("viewComponents");
 		if (components != null) {
 			viewComponents.clear();
-			for (JsonValue jv : components.getElements())
-				addViewComponent(reader.readPropertyValue(jv,
-						ViewComponent.class, null));
+			for (JsonValue jv : components.getElements()) {
+				try {
+					addViewComponent(reader, jv);
+				} catch (LocalizableJsonException ex) {
+					LocalizableMessage msg = new LocalizableMessage("emport.error.viewComponent", toString(jv.toJsonObject()), ex.getMsg());
+					LOG.error(toLocalizedMessage(msg), ex);
+					deserializeErrors.add(msg);
+				}
+			}
 		}
 
 		String text = json.getString("anonymousAccess");
 		if (text != null) {
-			anonymousAccess = ShareUser.ACCESS_CODES.getId(text);
-			if (anonymousAccess == -1)
-				throw new LocalizableJsonException("emport.error.invalid",
-						"anonymousAccess", text,
-						ShareUser.ACCESS_CODES.getCodeList());
+			try {
+				setAnonymousAccess(text);
+			} catch (LocalizableJsonException ex) {
+				LOG.error(toLocalizedMessage(ex.getMsg()), ex);
+				deserializeErrors.add(ex.getMsg());
+			}
 		}
 		
 		String resolution = json.getString("resolution");
@@ -441,16 +448,28 @@ public class View implements Serializable, JsonSerializable {
 
 		JsonArray jsonSharers = json.getJsonArray("sharingUsers");
 		if (jsonSharers != null) {
-			viewUsers = new CopyOnWriteArrayList<ShareUser>();
+
+			viewUsers = new CopyOnWriteArrayList<>();
 
 			for (JsonValue jv : jsonSharers.getElements()) {
-				ShareUser shareUser = reader.readPropertyValue(jv,
-						ShareUser.class, null);
-				if (shareUser.getUserId() != userId)
-					// No need for the owning user to be in this list.
-					viewUsers.add(shareUser);
+				try {
+					addShareUser(reader, jv);
+				} catch (LocalizableJsonException ex) {
+					LocalizableMessage msg = new LocalizableMessage("emport.error.sharingUser", toString(jv.toJsonObject()), ex.getMsg());
+					LOG.error(toLocalizedMessage(msg), ex);
+					deserializeErrors.add(msg);
+				}
 			}
+
 		}
+	}
+
+	public List<LocalizableMessage> getDeserializeErrors() {
+		return deserializeErrors;
+	}
+
+	public void resetDeserializeErrors() {
+		deserializeErrors = new ArrayList<>();
 	}
 
 	@Override
@@ -460,5 +479,80 @@ public class View implements Serializable, JsonSerializable {
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
+	}
+
+
+	private void setAnonymousAccess(String text) throws LocalizableJsonException {
+		anonymousAccess = ShareUser.ACCESS_CODES.getId(text);
+		if (anonymousAccess == -1)
+			throw new LocalizableJsonException("emport.error.invalid",
+					"anonymousAccess", text,
+					ShareUser.ACCESS_CODES.getCodeList());
+	}
+
+	private void addViewComponent(JsonReader reader, JsonValue jv) throws JsonException {
+		ViewComponent component = reader.readPropertyValue(jv, ViewComponent.class, null);
+		addViewComponent(component);
+	}
+
+	private static String toLocalizedMessage(LocalizableMessage msg) {
+		ResourceBundle bundle = Common.getBundle();
+		return msg.getLocalizedMessage(bundle);
+	}
+
+	private void addShareUser(JsonReader reader, JsonValue jv) throws JsonException {
+		ShareUser shareUser = reader.readPropertyValue(jv,
+				ShareUser.class, null);
+		if (shareUser.getUserId() != userId)
+			// No need for the owning user to be in this list.
+			viewUsers.add(shareUser);
+	}
+
+	private static Map<String, String> toString(JsonObject json) {
+		return json.getProperties().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, a -> {
+			List<String> values = new ArrayList<>();
+			addValue(a.getValue(), values);
+			return values.toString();
+		}));
+	}
+
+	private static void addValue(JsonValue jsonValue, List<String> values) {
+		if(jsonValue instanceof JsonBoolean) {
+			values.add(String.valueOf(((JsonBoolean) jsonValue).getValue()));
+		} else if(jsonValue instanceof JsonString) {
+			values.add(((JsonString) jsonValue).getValue());
+		} else if(jsonValue instanceof JsonNumber) {
+			values.add(String.valueOf(((JsonNumber) jsonValue).getValue()));
+		} else if(jsonValue instanceof JsonArray) {
+			for(JsonValue jsonObject: ((JsonArray) jsonValue).getElements()) {
+				addValue(jsonObject, values);
+			}
+		}
+	}
+
+	private void setOwner(String username) throws LocalizableJsonException {
+		UserService userService = new UserService();
+		try {
+			User user = getUser(username, userService);
+			userId = user.getId();
+		} catch (LocalizableJsonException ex) {
+			User admin = userService.getUser("admin");
+			if(admin != null)
+				userId = admin.getId();
+			throw ex;
+		}
+	}
+
+	private User getUser(String username, UserService userService) throws LocalizableJsonException {
+
+		if (StringUtils.isEmpty(username))
+			throw new LocalizableJsonException("emport.error.missingValue",
+					"user");
+		User user = userService.getUser(username);
+		if (user == null) {
+			throw new LocalizableJsonException("emport.error.missingUser",
+					username);
+		}
+		return user;
 	}
 }
