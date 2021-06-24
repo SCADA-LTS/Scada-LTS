@@ -35,12 +35,14 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
     }
 
     private void migrateScripts(JdbcTemplate jdbcTmp) {
-        List<ContextualizedScriptVO> scripts = jdbcTmp.query("SELECT id, data FROM scripts", (resultSet, i) -> {
+        List<ContextualizedScriptVO> scripts = jdbcTmp.query("SELECT id, script, data FROM scripts", (resultSet, i) -> {
             try (InputStream inputStream = resultSet.getBinaryStream("data");
                  ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                 ContextualizedScriptVO scriptVO = (ContextualizedScriptVO) objectInputStream.readObject();
                 scriptVO.setId(resultSet.getInt("id"));
-                updateScript(scriptVO.getScript(), scriptVO.getPointsOnContext());
+                String updatedScript = updateScript(resultSet.getString("script"), scriptVO.getPointsOnContext());
+                jdbcTmp.update("UPDATE scripts set script = ? WHERE id = ?",
+                        updatedScript, resultSet.getInt("id"));
                 updatePointsOnContext(scriptVO.getPointsOnContext());
 
                 return scriptVO;
@@ -61,15 +63,17 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
         }
     }
 
-    private void updateScript(String script, List<IntValuePair> pointsOnContext) {
+    private String updateScript(String script, List<IntValuePair> pointsOnContext) {
         List<IntValuePair> sorted = new ArrayList<>(pointsOnContext);
         sorted.sort(Comparator.comparing(IntValuePair::getKey));
         Collections.reverse(sorted);
         for (IntValuePair point : sorted) {
             if (point.getValue().matches("^p[0-9]+$")) {
-                script.replaceAll(point.getValue(), new DataPointDAO().getDataPoint(point.getKey()).getXid().toLowerCase().trim());
+                String xid = new DataPointDAO().getDataPoint(point.getKey()).getXid();
+                script = script.replaceAll(point.getValue(), xid.toLowerCase().trim());
             }
         }
+        return script;
     }
 
     private void updatePointsOnContext(List<IntValuePair> pointsOnContext) {
