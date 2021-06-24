@@ -18,17 +18,31 @@
 <script>
 import AmCharts from './AmChart';
 
+/**
+ * Line AmChart Component
+ * @version 2.0.0
+ * 
+ * Display complex AmChart instance
+ * that can handle the errors and 
+ * also can be configured in varoius ways.
+ * That chart can display classic line series
+ * but it also replace old "StepLineChartComponent"
+ * becouse now it is just one property to be set 
+ * to change the mode of that chart.
+ */
 export default {
 	name: 'LineChartComponent',
 
 	props: {
 		pointIds: { type: String, required: true },
 		useXid: { type: Boolean },
+		stepLine: { type: Boolean },
 		startDate: { type: String },
 		endDate: { type: String },
 		refreshRate: { type: Number },
 		width: { type: String, default: "500" },
 		height: { type: String, default: "400" },
+		color: { type: String },
 		aggregation: { type: Number },
 		showScrollbar: { type: Boolean },
 		showLegend: { type: Boolean },
@@ -63,6 +77,9 @@ export default {
 			if (!!this.useXid) {
 				this.chartClass.xid();
 			}
+			if (!!this.stepLine) {
+				this.chartClass.stepLine();
+			}
 			if (!!this.startDate) {
 				this.chartClass.startTime(this.startDate);
 			}
@@ -78,6 +95,9 @@ export default {
 				} else {
 					this.chartClass.useAggregation(this.aggregation);
 				}
+			}
+			if (!!this.color) {
+				this.chartClass.useColors(this.color)
 			}
 			if (!!this.showScrollbar) {
 				this.chartClass.showScrollbar();
@@ -118,15 +138,4 @@ export default {
 };
 </script>
 <style scoped>
-.hello {
-	min-width: 650px;
-	height: 500px;
-}
-p {
-	text-align: center;
-	padding-top: 10px;
-}
-/* .error {
-	color: red;
-} */
 </style>

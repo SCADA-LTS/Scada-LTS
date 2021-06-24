@@ -3,8 +3,6 @@ import * as am4charts from '@amcharts/amcharts4/charts';
 
 import axios from 'axios';
 
-//TODO: Make a README.md file update with latest changes.
-
 export class AmChart {
 	constructor(build) {
 		this.chart = null;
@@ -12,6 +10,7 @@ export class AmChart {
 		this.chartType = build.chartType;
 		this.pointIds = build.pointIds;
 		this.isExportId = build.isExportId || false;
+		this.isStepLineChart = build.isStepLineChart;
 
 		this.colorPallete = build.colorPallete;
 		this.legend = build.legend;
@@ -265,7 +264,10 @@ export class AmChart {
 				series.startLocation = 0.5;
 				break;
 			default:
-				series = this.chart.series.push(new am4charts.LineSeries());
+				let type = !!this.isStepLineChart 
+					? new am4charts.StepLineSeries()
+					: new am4charts.LineSeries();
+				series = this.chart.series.push(type);
 		}
 		if (!!this.isExportId) {
             console.log(pointDetails.id)
@@ -362,8 +364,16 @@ export class AmChart {
 }
 
 export class AmChartBuilder {
+
+	/**
+	 * Define AmChart instance object
+	 * using prepared Builder class.
+	 * 
+	 * @param {string | HTMLElement} reference - HTML reference where to render
+	 * @param {string} type - Type of am4chart class
+	 * @param {string} pointIds - String Data Points separeted with comma char to be displayed.
+	 */
 	constructor(reference, type, pointIds) {
-		console.log('Buildiong');
 		this.chartReference = reference;
 		this.chartType = type;
 		this.pointIds = pointIds;
@@ -397,6 +407,18 @@ export class AmChartBuilder {
 	 */
 	xid() {
 		this.isExportId = true;
+		return this;
+	}
+
+	/**
+	 * Enable Step Line mode
+	 * 
+	 * Render all series as Step line type
+	 * instead of classic line series.
+	 */
+	stepLine() {
+		this.isStepLineChart = true;
+		return this;
 	}
 
 	/**

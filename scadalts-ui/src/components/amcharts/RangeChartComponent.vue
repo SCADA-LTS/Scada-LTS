@@ -46,14 +46,23 @@
 <script>
 import AmCharts from './AmChart.js';
 
+/**
+ * Range Chart Component
+ * @version 2.0.0
+ * 
+ * Display AmChart with Datepicker
+ * 
+ */
 export default {
 	name: 'RangeChartComponent',
 
 	props: {
 		pointIds: { type: String, required: true },
 		useXid: { type: Boolean },
+		stepLine: { type: Boolean },
 		width: { type: String, default: '500' },
 		height: { type: String, default: '400' },
+		color: { type: String },
 		aggregation: { type: Number },
 		showBullets: { type: Boolean },
 		showExportMenu: { type: String },
@@ -86,12 +95,18 @@ export default {
 			if (!!this.useXid) {
 				this.chartClass.xid();
 			}
+			if (!!this.stepLine) {
+				this.chartClass.stepLine();
+			}
 			if (!!this.aggregation) {
 				if (this.aggregation === 0) {
 					this.chartClass.useAggregation();
 				} else {
 					this.chartClass.useAggregation(this.aggregation);
 				}
+			}
+			if (!!this.color) {
+				this.chartClass.useColors(this.color)
 			}
 			if (!!this.showBullets) {
 				this.chartClass.showBullets();
