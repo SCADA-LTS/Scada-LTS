@@ -43,6 +43,7 @@ public class DataPointMigrationPermissionsCommandTest {
     private final static int dataPointId3 = 33;
     private final static int dataPointId4 = 44;
     private final static int dataPointId5 = 55;
+    private final static int dataPointId6 = 66;
 
 
     @Parameterized.Parameters(name= "{index}: \nfromProfile: {0}, fromUser: {1}, \nfromView1: {2}, fromView2: {3}, permissionView1: {4}, permissionView2: {5}, \nexpected: {6}\n\n")
@@ -267,6 +268,50 @@ public class DataPointMigrationPermissionsCommandTest {
                     Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1),
                             new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId5, 1),
                             new DataPointAccess(dataPointId4, 1)).collect(Collectors.toList()),
+            }, new Object[] {
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
+                    Stream.of(new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId4, 1),
+                            new DataPointAccess(dataPointId5, 1)).collect(Collectors.toList()),
+                    Stream.of(dataPointId2).collect(Collectors.toList()),
+                    Stream.of(dataPointId3).collect(Collectors.toList()),
+                    2,
+                    2,
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1),
+                            new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId5, 1),
+                            new DataPointAccess(dataPointId4, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
+            }, new Object[] {
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1)).collect(Collectors.toList()),
+                    Stream.of(new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId4, 1), new DataPointAccess(dataPointId6, 1),
+                            new DataPointAccess(dataPointId5, 1)).collect(Collectors.toList()),
+                    Stream.of(dataPointId2).collect(Collectors.toList()),
+                    Stream.of(dataPointId3).collect(Collectors.toList()),
+                    2,
+                    2,
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1),
+                            new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId5, 1),
+                            new DataPointAccess(dataPointId4, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
+            }, new Object[] {
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
+                    Stream.of(new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId4, 1),
+                            new DataPointAccess(dataPointId5, 1)).collect(Collectors.toList()),
+                    Stream.of(dataPointId2, dataPointId6).collect(Collectors.toList()),
+                    Stream.of(dataPointId3).collect(Collectors.toList()),
+                    2,
+                    2,
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1),
+                            new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId5, 1),
+                            new DataPointAccess(dataPointId4, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
+            }, new Object[] {
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1)).collect(Collectors.toList()),
+                    Stream.of(new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId4, 1),
+                            new DataPointAccess(dataPointId5, 1)).collect(Collectors.toList()),
+                    Stream.of(dataPointId2).collect(Collectors.toList()),
+                    Stream.of(dataPointId3, dataPointId6).collect(Collectors.toList()),
+                    2,
+                    2,
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1),
+                            new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId5, 1),
+                            new DataPointAccess(dataPointId4, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
             }
         };
     }
@@ -366,7 +411,11 @@ public class DataPointMigrationPermissionsCommandTest {
         dataPoint5.setId(dataPointId5);
         dataPoint5.setSettable(true);
 
-        List<DataPointVO> dataPoints = Arrays.asList(dataPoint1, dataPoint2, dataPoint3, dataPoint4, dataPoint5);
+        DataPointVO dataPoint6 = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
+        dataPoint6.setId(dataPointId6);
+        dataPoint6.setSettable(false);
+
+        List<DataPointVO> dataPoints = Arrays.asList(dataPoint1, dataPoint2, dataPoint3, dataPoint4, dataPoint5, dataPoint6);
 
         views = new ArrayList<>();
         views.add(ViewTestUtils.newView(dataPoints, fromView1, new ShareUser(user.getId(), permissionView1)));
