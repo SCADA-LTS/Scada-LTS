@@ -291,7 +291,7 @@ public class DataPointMigrationPermissionsCommandTest {
                             new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId5, 1),
                             new DataPointAccess(dataPointId4, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
             }, new Object[] {
-                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1), new DataPointAccess(dataPointId6, 1)).collect(Collectors.toList()),
+                    Stream.of(new DataPointAccess(dataPointId1, 1), new DataPointAccess(dataPointId2, 1)).collect(Collectors.toList()),
                     Stream.of(new DataPointAccess(dataPointId3, 1), new DataPointAccess(dataPointId4, 1),
                             new DataPointAccess(dataPointId5, 1)).collect(Collectors.toList()),
                     Stream.of(dataPointId2, dataPointId6).collect(Collectors.toList()),
