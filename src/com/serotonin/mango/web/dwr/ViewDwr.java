@@ -424,7 +424,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name, boolean settable, String bkgdColorOverride, boolean displayControls) {
+	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name, boolean settable, String bkgdColorOverride, boolean displayControls, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
@@ -438,6 +438,7 @@ public class ViewDwr extends BaseDwr {
 			pc.setSettableOverride(settable && Permissions.hasDataPointSetPermission(user, dp));
 			pc.setBkgdColorOverride(bkgdColorOverride);
 			pc.setDisplayControls(displayControls);
+			pc.setLocation(positionX, positionY);
 
 			pc.validateDataPoint(user, false);
 		}
@@ -485,13 +486,14 @@ public class ViewDwr extends BaseDwr {
 	// Save view component
 	//
 	@MethodFilter
-	public void saveHtmlComponent(String viewComponentId, String content) {
+	public void saveHtmlComponent(String viewComponentId, String content, int positionX, int positionY) {
 		HtmlComponent c = (HtmlComponent) getViewComponent(viewComponentId);
 		c.setContent(content);
+		c.setLocation(positionX, positionY);
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link) {
+	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
 			response.addContextualMessage("linkText", "validate.required");
@@ -502,13 +504,14 @@ public class ViewDwr extends BaseDwr {
 			LinkComponent c = (LinkComponent) getViewComponent(viewComponentId);
 			c.setText(text);
 			c.setLink(link);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid) {
+	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
 			response.addContextualMessage("scriptButtonText", "validate.required");
@@ -519,6 +522,7 @@ public class ViewDwr extends BaseDwr {
 			ScriptButtonComponent c = (ScriptButtonComponent) getViewComponent(viewComponentId);
 			c.setText(text);
 			c.setScriptXid(scriptXid);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
@@ -808,7 +812,7 @@ public class ViewDwr extends BaseDwr {
 	// }
 
 	@MethodFilter
-	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height) {
+	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -822,13 +826,14 @@ public class ViewDwr extends BaseDwr {
 			ChartComparatorComponent c = (ChartComparatorComponent) getViewComponent(viewComponentId);
 			c.setWidth(width);
 			c.setHeight(height);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined, String projectsSource, int projectId, boolean runtimeMode) {
+	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined, String projectsSource, int projectId, boolean runtimeMode, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -853,6 +858,7 @@ public class ViewDwr extends BaseDwr {
 			c.setProjectSource(projectsSource);
 			c.setProjectId(projectId);
 			c.setRuntimeMode(runtimeMode);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;

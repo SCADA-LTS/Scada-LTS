@@ -54,6 +54,14 @@
         <td class="formLabel"><fmt:message key="viewEdit.settings.displayControls"/></td>
         <td class="formField"><input id="settingsControls" type="checkbox"/></td>
       </tr>
+      <tr>
+        <td class="formLabel">Position X</td>
+        <td class="formField"><input id="settingsPositionX" type="number"/></td></td>
+      </tr>
+      <tr>
+        <td class="formLabel">Position Y</td>
+        <td class="formField"><input id="settingsPositionY" type="number"/></td></td>
+      </tr>
     </table>
   </td></tr></table>
   
@@ -82,6 +90,8 @@
                 $set("settingsSettable", comp.settableOverride);
                 $set("settingsBkgdColor", comp.bkgdColorOverride);
                 $set("settingsControls", comp.displayControls);                
+                $set("settingsPositionX", comp.x);
+                $set("settingsPositionY", comp.y);
                 
                 settingsEditor.pointSelectChanged();
                 
@@ -105,9 +115,10 @@
         
         this.save = function() {
             hideContextualMessages("settingsEditorPopup");
+            settingsEditor.updatePointPosition();
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
-                    $get("settingsControls"), function(response) {
+                    $get("settingsControls"), $get("settingsPositionX"), $get("settingsPositionY"), function(response) {
                 if (response.hasMessages) {
                     showDwrMessages(response.messages);
                 }
@@ -116,6 +127,12 @@
                     MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
                 }
             });
+        };
+
+        this.updatePointPosition = function() {
+          var div = document.getElementById("c"+settingsEditor.componentId);
+          div.style.left = $get("settingsPositionX") + "px";
+          div.style.top = $get("settingsPositionY") + "px";
         };
         
         this.setPointList = function(pointList) {

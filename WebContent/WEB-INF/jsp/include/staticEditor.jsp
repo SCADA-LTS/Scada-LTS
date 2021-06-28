@@ -30,6 +30,16 @@
         </td>
       </tr>
     </table>
+    <table>
+      <tr>
+        <td class="formLabel">Position X</td>
+        <td class="formField"><input id="staticPositionX" type="number"/></td></td>
+      </tr>
+      <tr>
+        <td class="formLabel">Position Y</td>
+        <td class="formField"><input id="staticPositionY" type="number"/></td></td>
+      </tr>
+    </table>
     <table id="htmlEditor">
       <tr>
         <td class="formField"><textarea id="staticPointContent" rows="10" cols="50"></textarea></td>
@@ -115,6 +125,9 @@
             ViewDwr.getViewComponent(compId, function(comp) {
                 // Update the data in the form.
                 staticEditor.component = comp;
+
+            $set("staticPositionX", comp.x);
+            $set("staticPositionY", comp.y);
                 
 				if(comp.defName == 'html') {
 					$set("staticPointContent", comp.content);
@@ -193,74 +206,100 @@
         };
         
         this.save = function() {
-			if(staticEditor.component.defName == 'html') {
-				ViewDwr.saveHtmlComponent(staticEditor.componentId, $get("staticPointContent"), function() {
+          staticEditor.updatePointPosition();
+          switch(staticEditor.component.defName) {
+            case 'html':
+              ViewDwr.saveHtmlComponent(staticEditor.componentId, 
+                $get("staticPointContent"), 
+                $get("staticPositionX"), $get("staticPositionY"), 
+                function() {
 	                staticEditor.close();
 	                updateHtmlComponentContent("c"+ staticEditor.componentId, $get("staticPointContent"));
-	            });
-			} else if(staticEditor.component.defName == 'link') {
-				ViewDwr.saveLinkComponent(staticEditor.componentId, $get("linkText"), $get("linkLink"), function(response) {
-					if (response.hasMessages)
-			        	showDwrMessages(response.messages);
-					else {
-						staticEditor.close();
+	              }
+              );
+              break;
+            case 'link':
+              ViewDwr.saveLinkComponent(staticEditor.componentId, 
+                $get("linkText"), $get("linkLink"),
+                $get("staticPositionX"), $get("staticPositionY"), 
+                function(response) {
+	                if (response.hasMessages)
+			        	    showDwrMessages(response.messages);
+					        else {
+						        staticEditor.close();
 		                tempContent = "<a> " +$get("linkText") +"</a>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
-					}
-	                
-	            });
-			} else if(staticEditor.component.defName == 'scriptButton') {
-				ViewDwr.saveScriptButtonComponent(staticEditor.componentId, $get("scriptButtonText"), $get("scriptsList"), function(response) {
-					if (response.hasMessages)
-			        	showDwrMessages(response.messages);
-					else {
-						staticEditor.close();
+					        }
+	              }
+              );
+              break;
+            case 'scriptButton':
+              ViewDwr.saveScriptButtonComponent(staticEditor.componentId, 
+                $get("scriptButtonText"), $get("scriptsList"), 
+                $get("staticPositionX"), $get("staticPositionY"), 
+                function(response) {
+					        if (response.hasMessages)
+			        	    showDwrMessages(response.messages);
+					        else {
+						        staticEditor.close();
 		                tempContent = "<button> " +$get("scriptButtonText") +"</button>";
 		                updateHtmlComponentContent("c"+ staticEditor.componentId, tempContent);
-					}
-	                
+					        }	                
 	            });
-			} else if(staticEditor.component.defName == 'chartComparator') {
-				ViewDwr.saveChartComparatorComponent(staticEditor.componentId, $get("chartComparatorWidth"), $get("chartComparatorHeight"),
-					function(response) {
-						if (response.hasMessages)
-				        	showDwrMessages(response.messages);
-						else {
-							staticEditor.close();
-			                tempContent = 
-				                "<div style='background-color: silver; border: 1px solid red; width: "+ ($get("chartComparatorWidth")*2) +"px; height: "+$get("chartComparatorHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
-			                componentId = "c"+ staticEditor.componentId;
-			                updateHtmlComponentContent(componentId, tempContent);
+              break;
+            case 'chartComparator':
+              ViewDwr.saveChartComparatorComponent(staticEditor.componentId, 
+                $get("chartComparatorWidth"), $get("chartComparatorHeight"),
+                $get("staticPositionX"), $get("staticPositionY"), 
+                function(response) {
+						      if (response.hasMessages)
+				        	  showDwrMessages(response.messages);
+						      else {
+							      staticEditor.close();
+			              tempContent = 
+				              "<div style='background-color: silver; border: 1px solid red; width: "+ ($get("chartComparatorWidth")*2) +"px; height: "+$get("chartComparatorHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
+			              componentId = "c"+ staticEditor.componentId;
+			              updateHtmlComponentContent(componentId, tempContent);
 			                //$(componentId).style.top=  "0px";
 			                //$(componentId).style.left=  "0px";
 			                //updateViewComponentLocation(componentId);
 
 			                //resizeViewBackground($get("flexWidth"), $get("flexHeight"));
-						}
+						      }
 	            });
-			}
-			else if(staticEditor.component.defName == 'flex') {
-				ViewDwr.saveFlexComponent(staticEditor.componentId, $get("flexWidth"), $get("flexHeight"),
-						$get("flexProjectDefined"),$get("flexProjectsSource"),$get("flexProjectsList"),$get("flexRuntimeMode"),
-					function(response) {
-						if (response.hasMessages)
-				        	showDwrMessages(response.messages);
-						else {
-							staticEditor.close();
-			                tempContent = 
-				                "<div style='background-color: silver; border: 1px solid red; width: "+ $get("flexWidth") +"px; height: "+$get("flexHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
-			                componentId = "c"+ staticEditor.componentId;
-			                updateHtmlComponentContent(componentId, tempContent);
+              break;
+            case 'flex':
+              ViewDwr.saveFlexComponent(staticEditor.componentId, 
+                $get("flexWidth"), $get("flexHeight"),
+						    $get("flexProjectDefined"),$get("flexProjectsSource"),
+                $get("flexProjectsList"),$get("flexRuntimeMode"),
+                $get("staticPositionX"), $get("staticPositionY"), 
+					      function(response) {
+						      if (response.hasMessages)
+				        	  showDwrMessages(response.messages);
+						      else {
+							      staticEditor.close();
+			              tempContent = 
+				              "<div style='background-color: silver; border: 1px solid red; width: "+ $get("flexWidth") +"px; height: "+$get("flexHeight") +"px;'> <b> <fmt:message key='viewEdit.graphic.saveToLoad'/> </b> </div>";
+			              componentId = "c"+ staticEditor.componentId;
+			              updateHtmlComponentContent(componentId, tempContent);
 			                //$(componentId).style.top=  "0px";
 			                //$(componentId).style.left=  "0px";
 			                //updateViewComponentLocation(componentId);
 
 			                //resizeViewBackground($get("flexWidth"), $get("flexHeight"));
-						}
+						      }
 	            });
-			}
-			
-            
+              break;
+            default:
+              console.error("Not found component!")
+          }
+        };
+
+        this.updatePointPosition = function() {
+          var div = document.getElementById("c"+staticEditor.componentId);
+          div.style.left = $get("staticPositionX") + "px";
+          div.style.top = $get("staticPositionY") + "px";
         };
 
         this.updateViewsList = function(views) {
