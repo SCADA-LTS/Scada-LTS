@@ -593,4 +593,22 @@ public class DataPointService implements MangoDataPoint {
 		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
+
+	public List<Map<String, Double>> getPointValuesToCompareFromRangeXid(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = new ArrayList<>();
+		for(String xid: pointString.split(",")) {
+			pointIds.add(getDataPoint(xid).getId());
+		}
+		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
+	}
+
+	public List<Map<String, Double>> getPointValuesToCompareFromRangeId(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = new ArrayList<>();
+		for(String id: pointString.split(",")) {
+			pointIds.add(Integer.parseInt(id));
+		}
+		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
+	}
+
+
 }

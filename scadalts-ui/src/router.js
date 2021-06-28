@@ -153,14 +153,6 @@ const routing = new Router({
 				),
 		},
 		{
-			path: '/example-step-line-chart-cmp',
-			name: 'example-step-line-chart-cmp',
-			component: () =>
-				import(
-					/* webpackChunkName: "step-line-chart-component" */ './views/components/ExampleStepLineChartCmp.vue'
-				),
-		},
-		{
 			path: '/example-live-alarms',
 			name: 'example-live-alarms',
 			component: () =>
@@ -168,6 +160,7 @@ const routing = new Router({
 					/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue'
 				),
 		},
+		
 	],
 });
 

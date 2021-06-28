@@ -13,7 +13,7 @@
 						</v-col>
 
 						<v-col cols="12" class="button-space-double">
-							<v-btn-toggle v-model="aggregation.aggregate" dense mandatory>
+							<v-btn-toggle v-model="chartConfig.xAxes[0].groupData" dense mandatory>
 								<v-btn :value="false">{{
 									$t('modernwatchlist.chartseries.aggregation.all')
 								}}</v-btn>
@@ -25,10 +25,10 @@
 
 						<v-col cols="12">
 							<v-text-field
-								v-model="aggregation.count"
+								v-model="chartConfig.xAxes[0].groupCount"
 								type="number"
 								:label="$t('modernwatchlist.chartseries.aggregation.count')"
-								:disabled="!aggregation.aggregate"
+								:disabled="!chartConfig.xAxes[0].groupData"
 								dense
 							></v-text-field>
 						</v-col>
@@ -36,12 +36,12 @@
 					<v-row id="chart-series-settings">
 						<v-col cols="12">
 							<v-tabs v-model="tab" background-color="primary" dark>
-								<v-tab v-for="s in tempSeries" :key="s">
+								<v-tab v-for="s in series" :key="s">
 									{{ s.name }}
 								</v-tab>
 							</v-tabs>
 							<v-tabs-items v-model="tab">
-								<v-tab-item v-for="s in tempSeries" :key="s">
+								<v-tab-item v-for="s in series" :key="s">
 									<v-card class="paggin-top-small series-settings limit-height">
 										<v-row>
 											<v-col md="6" sm="12" xs="12">
@@ -64,7 +64,7 @@
 										</v-row>
 
 										<v-row>
-											<v-col md="2" sm="12" xs="12">
+											<v-col md="6" sm="12" xs="12">
 												<v-row>
 													<v-col md="12" sm="6" xs="6">
 														<p>{{ $t('modernwatchlist.chartseries.xaxis') }}</p>
@@ -77,7 +77,7 @@
 													</v-col>
 												</v-row>
 											</v-col>
-											<v-col md="4" sm="12" xs="12">
+											<v-col md="6" sm="12" xs="12">
 												<v-row>
 													<v-col md="12" sm="6" xs="6">
 														<p>{{ $t('modernwatchlist.chartseries.yaxis') }}</p>
@@ -96,27 +96,6 @@
 													</v-col>
 												</v-row>
 											</v-col>
-											<v-col md="4" sm="12" xs="12">
-												<v-row>
-													<v-col md="12" sm="6" xs="6">
-														<p>{{ $t('modernwatchlist.chartseries.bullets') }}</p>
-													</v-col>
-													<v-col md="12" sm="6" xs="6" class="button-space-double">
-														<v-btn-toggle
-															v-model="s.bullets[0].circle.radius"
-															dense
-															mandatory
-														>
-															<v-btn :value="5">{{
-																$t('modernwatchlist.chartseries.show')
-															}}</v-btn>
-															<v-btn :value="0">{{
-																$t('modernwatchlist.chartseries.hide')
-															}}</v-btn>
-														</v-btn-toggle>
-													</v-col>
-												</v-row>
-											</v-col>
 										</v-row>
 
 										<v-row>
@@ -130,7 +109,7 @@
 															<template v-slot:activator="{ on }">
 																<v-btn :color="s.stroke" v-on="on" block> </v-btn>
 															</template>
-															<v-color-picker v-model="s.stroke"> </v-color-picker>
+															<v-color-picker v-model="s.stroke" :close-on-content-click="false"> </v-color-picker>
 														</v-menu>
 													</v-col>
 													<v-col cols="4">
@@ -166,7 +145,7 @@
 															<template v-slot:activator="{ on }">
 																<v-btn :color="s.fill" v-on="on" block> </v-btn>
 															</template>
-															<v-color-picker v-model="s.fill"> </v-color-picker>
+															<v-color-picker v-model="s.fill" :close-on-content-click="false"> </v-color-picker>
 														</v-menu>
 													</v-col>
 													<v-col cols="10">
@@ -194,6 +173,9 @@
 					<v-btn text @click="close()">{{
 						$t('modernwatchlist.chartseries.close')
 					}}</v-btn>
+					<v-btn text @click="deleteFromStorage()">{{
+						$t('modernwatchlist.chartseries.delete')
+					}}</v-btn>
 					<v-btn text @click="restore()">{{
 						$t('modernwatchlist.chartseries.restore')
 					}}</v-btn>
@@ -209,45 +191,38 @@
 export default {
 	name: 'ChartSeriesSettingsComponent',
 
-	props: ['watchListName', 'series'],
+	props: ['watchListName', 'series', 'chartConfig'],
 
 	data() {
 		return {
 			tempSeries: undefined,
 			tab: null,
-			canvansVisible: false,
 			isModalVisible: false,
-			aggregation: {
-				aggregate: true,
-				count: 500,
-			},
 		};
 	},
 
-	mounted() {
-		this.loadAggregation();
-	},
-
-	computed: {},
-
 	methods: {
 		openModal() {
-			this.restore();
+			this.tempSeries = this.copyObject(this.series);
 			this.isModalVisible = true;
 		},
 
 		restore() {
-			this.tempSeries = this.copyObject(this.series);
+			this.series = this.tempSeries;
 		},
 
 		close() {
 			this.isModalVisible = false;
-			this.saveAggregation();
 		},
 
 		save() {
 			this.close();
-			this.$emit('saved', this.tempSeries);
+			this.$emit('saved');
+		},
+
+		deleteFromStorage() {
+			this.close();
+			this.$emit('deleted');
 		},
 
 		copyObject(object) {
@@ -260,20 +235,6 @@ export default {
 				series.dataFields.dateX = 'date';
 			} else if (series.xAxis == 'dateAxis1') {
 				series.dataFields.dateX = 'date2';
-			}
-		},
-
-		saveAggregation() {
-			localStorage.setItem(
-				`MWL_${this.watchListName}_A`,
-				JSON.stringify(this.aggregation)
-			);
-		},
-
-		loadAggregation() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListName}_A`));
-			if (!!loadedData) {
-				this.aggregation = loadedData;
 			}
 		},
 	},

@@ -26,6 +26,7 @@ export class AmChart {
 		this.groupCount = build.groupCount;
 
 		this.refreshRate = build.refreshRate;
+		this.isCompareMode = build.isCompareMode;
 		this.lastUpdate = 0;
 		this.liveUpdateInterval = null;
 		this.liveUpdateIntervalRetries = 0;
@@ -47,28 +48,29 @@ export class AmChart {
 			);
 		} else {
 			this.chart = am4core.create(this.chartReference, this.useChartType(this.chartType));
+			this.prepareColors();
+			this.prepareAxisX();
+			this.prepareAxisY();
+			if (!!this.scrollbarX) {
+				this.prepareScrollbar();
+			}
+			if (!!this.legend) {
+				this.prepareLegend();
+			}
+			if (!!this.cursor) {
+				this.prepareCursor();
+			}
+			if (!!this.exportMenu) {
+				this.prepareExportMenu();
+			}
+			let requests = [];
+			for (let i of this.pointIds.split(',')) {
+				requests.push(this.addSeries(i));
+			}
+			await Promise.all(requests);
 		}
-		this.prepareColors();
 		await this.getData();
-		this.prepareAxisX();
-		this.prepareAxisY();
-		if (!!this.scrollbarX) {
-			this.prepareScrollbar();
-		}
-		if (!!this.legend) {
-			this.prepareLegend();
-		}
-		if (!!this.cursor) {
-			this.prepareCursor();
-		}
-		if (!!this.exportMenu) {
-			this.prepareExportMenu();
-		}
-		let requests = [];
-		for (let i of this.pointIds.split(',')) {
-			requests.push(this.addSeries(i));
-		}
-		await Promise.all(requests);
+
 		if (!!this.refreshRate && this.refreshRate > 1000) {
 			this.startLiveUpdate();
 		}
@@ -81,9 +83,11 @@ export class AmChart {
 	 * interval period defined during the chart creation.
 	 */
 	startLiveUpdate() {
+		
 		this.liveUpdateInterval = setInterval(async () => {
 			let newTimestamp = new Date().getTime();
 			try {
+				console.log(this.lastUpdate, newTimestamp);
 				this.chart.addData(await this.fetchPointValues(this.lastUpdate, newTimestamp));
 				this.lastUpdate = newTimestamp;
 			} catch (error) {
@@ -117,6 +121,7 @@ export class AmChart {
 	 */
 	disposeChart() {
 		if (!!this.chart) {
+			this.stopLiveUpdate();
 			this.chart.dispose();
 		}
 	}
@@ -127,7 +132,6 @@ export class AmChart {
 	async getData() {
 		try {
 			this.chart.data = await this.fetchPointValues(this.startTime, this.endTime);
-			console.log(!this.chart.data[0].date);
 			if (!this.chart.data[0].date) {
 				throw new Error('No data from that range!');
 			}
@@ -242,16 +246,16 @@ export class AmChart {
 		});
 	}
 
-    /**
-     * Prepare chart series
-     * @private
-     * 
-     * Fetch DataPoint details to prepare chart series to
-     * render data properly.
-     * 
-     * @param {string} seriesId - Series ID - it could be an XID or ID number.
-     * @returns am4charts Series object
-     */
+	/**
+	 * Prepare chart series
+	 * @private
+	 *
+	 * Fetch DataPoint details to prepare chart series to
+	 * render data properly.
+	 *
+	 * @param {string} seriesId - Series ID - it could be an XID or ID number.
+	 * @returns am4charts Series object
+	 */
 	async prepareSeries(seriesId) {
 		let series;
 
@@ -264,13 +268,12 @@ export class AmChart {
 				series.startLocation = 0.5;
 				break;
 			default:
-				let type = !!this.isStepLineChart 
+				let type = !!this.isStepLineChart
 					? new am4charts.StepLineSeries()
 					: new am4charts.LineSeries();
 				series = this.chart.series.push(type);
 		}
 		if (!!this.isExportId) {
-            console.log(pointDetails.id)
 			series.dataFields.valueY = `${pointDetails.id}`;
 		} else {
 			series.dataFields.valueY = seriesId;
@@ -286,9 +289,11 @@ export class AmChart {
 	 * @returns
 	 */
 	fetchPointValues(startTs, endTs) {
+		console.log(startTs, endTs);
 		if (typeof startTs === 'string' || typeof endTs === 'string') {
 			throw new Error('Start and End date must be a number!');
 		}
+		console.log(startTs>endTs);
 		if (startTs > endTs) {
 			throw new Error('Start date is greater than End date!');
 		}
@@ -303,6 +308,10 @@ export class AmChart {
 		if (!!this.isExportId) {
 			requestUrl += '&xid=1';
 		}
+		if (!!this.isCompareMode) {
+			requestUrl += '&cmp=1';
+		}
+		console.log(requestUrl)
 		return new Promise((resolve, reject) => {
 			axios
 				.get(requestUrl)
@@ -334,7 +343,7 @@ export class AmChart {
 				})
 				.catch((error) => {
 					console.error(error);
-					reject(new Error("Failed to load Data Point details"));
+					reject(new Error('Failed to load Data Point details'));
 				});
 		});
 	}
@@ -364,11 +373,10 @@ export class AmChart {
 }
 
 export class AmChartBuilder {
-
 	/**
 	 * Define AmChart instance object
 	 * using prepared Builder class.
-	 * 
+	 *
 	 * @param {string | HTMLElement} reference - HTML reference where to render
 	 * @param {string} type - Type of am4chart class
 	 * @param {string} pointIds - String Data Points separeted with comma char to be displayed.
@@ -409,10 +417,26 @@ export class AmChartBuilder {
 		this.isExportId = true;
 		return this;
 	}
+	
+	/**
+	 * Enable compare Mode
+	 * 
+	 * Get two data series from API
+	 * to render them in a seperate
+	 * date and value axes that can
+	 * present data from different
+	 * time ranges. Usefull to provide
+	 * a series comparison.
+	 * @returns 
+	 */
+	compare() {
+		this.isCompareMode = true;
+		return this;
+	}
 
 	/**
 	 * Enable Step Line mode
-	 * 
+	 *
 	 * Render all series as Step line type
 	 * instead of classic line series.
 	 */

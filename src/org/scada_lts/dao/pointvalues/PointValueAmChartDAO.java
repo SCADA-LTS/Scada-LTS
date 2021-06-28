@@ -61,6 +61,38 @@ public class PointValueAmChartDAO {
 
     }
 
+    public List<Map<String, Double>> getPointValuesToCompareFromRange(int[] pointIds, long startTs, long endTs) {
+
+        String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
+        String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
+
+        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER;
+
+        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
+
+        return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
+
+    }
+
+    private List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
+        List<Map<String, Double>> chartData = new ArrayList<>();
+        Map<String, Double> entry = new HashMap<>();
+
+        for (DataPointSimpleValue pvc: result) {
+            if(pvc.pointId == basePointId) {
+                entry.put("date", (double) pvc.timestamp);
+            } else {
+                entry.put("date2", (double) pvc.timestamp);
+            }
+            entry.put(String.valueOf(pvc.pointId), pvc.value);
+            chartData.add(entry);
+            entry = new HashMap<>();
+        }
+        return chartData;
+    }
+
+
+
     /**
      * Convert from SQL objects to AmChart Data interface
      *

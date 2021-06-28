@@ -33,15 +33,25 @@ public class AmChartValuesAPI {
             @RequestParam long startTs,
             @RequestParam long endTs,
             @RequestParam Optional<Integer> xid,
+            @RequestParam Optional<Integer> cmp,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
                 if(xid.isPresent() && xid.get() == 1) {
-                    return new ResponseEntity<>(dpService.getPointValuesFromRangeXid(ids, startTs, endTs), HttpStatus.OK);
+                    if(cmp.isPresent() && cmp.get() == 1) {
+                        return new ResponseEntity<>(dpService.getPointValuesToCompareFromRangeXid(ids, startTs, endTs), HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(dpService.getPointValuesFromRangeXid(ids, startTs, endTs), HttpStatus.OK);
+                    }
                 } else {
-                    return new ResponseEntity<>(dpService.getPointValuesFromRangeId(ids, startTs, endTs), HttpStatus.OK);
+                    if(cmp.isPresent() && cmp.get() == 1) {
+                        return new ResponseEntity<>(dpService.getPointValuesToCompareFromRangeId(ids, startTs, endTs), HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(dpService.getPointValuesFromRangeId(ids, startTs, endTs), HttpStatus.OK);
+                    }
+
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

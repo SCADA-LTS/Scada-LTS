@@ -108,7 +108,7 @@ export default {
 				type: this.CHART_TYPE,
 				refreshRate: this.refreshRate,
 				startDate: `${this.startTime}-${this.startTimeMultiplier}`,
-				endDate: null,
+				endDate: undefined,
 			};
 			this.saveSettings();
 			return chartProperties;
