@@ -393,8 +393,28 @@
         }
 
 	}
+  
+  function validateComponentPosition(positionX, positionY) {
+    canvasWidth = document.getElementById("viewBackground").width;
+    canvasHeight = document.getElementById("viewBackground").height;
+    positionX = !!positionX ? positionX : 0;
+    positionX = positionX < 0 ? 0 : positionX;
+    positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
+    positionY = !!positionY ? positionY : 0;
+    positionY = positionY < 0 ? 0 : positionY;
+    positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
+    return [positionX, positionY];
+  }
 
-    function revealPointControls(viewComponentId) {
+  function updatePointPosition(compId, posX, posY, referenceX, referenceY) {
+    var div = document.getElementById("c" + compId);
+    div.style.left = posX + "px";
+    div.style.top = posY + "px";
+    $set(referenceX, posX);
+    $set(referenceY, posY);
+  }
+  
+  function revealPointControls(viewComponentId) {
         showLayer("c" + viewComponentId + "Controls");
         var div = $("c" + viewComponentId);
         updateZIndexLabel(viewComponentId, div.style.zIndex);

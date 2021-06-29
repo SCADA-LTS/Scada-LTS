@@ -55,11 +55,11 @@
         <td class="formField"><input id="settingsControls" type="checkbox"/></td>
       </tr>
       <tr>
-        <td class="formLabel">Position X</td>
+        <td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
         <td class="formField"><input id="settingsPositionX" type="number"/></td></td>
       </tr>
       <tr>
-        <td class="formLabel">Position Y</td>
+        <td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
         <td class="formField"><input id="settingsPositionY" type="number"/></td></td>
       </tr>
     </table>
@@ -117,8 +117,10 @@
             hideContextualMessages("settingsEditorPopup");
             let posX = $get("settingsPositionX");
             let posY = $get("settingsPositionY");
-            [posX, posY] = settingsEditor.validateComponentPosition(posX, posY);
-            settingsEditor.updatePointPosition(posX, posY);
+            [posX, posY] = validateComponentPosition(posX, posY);
+            updatePointPosition(settingsEditor.componentId,
+              posX, posY, "settingsPositionX", "settingsPositionY"
+            );
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
                     $get("settingsControls"), posX, posY, function(response) {
@@ -130,26 +132,6 @@
                     MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
                 }
             });
-        };
-
-        this.validateComponentPosition = function(positionX, positionY) {
-            canvasWidth = document.getElementById("viewBackground").width;
-            canvasHeight = document.getElementById("viewBackground").height;
-            positionX = !!positionX ? positionX : 0;
-            positionX = positionX < 0 ? 0 : positionX;
-            positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
-            positionY = !!positionY ? positionY : 0;
-            positionY = positionY < 0 ? 0 : positionY;
-            positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
-            return [positionX, positionY];
-        }
-
-        this.updatePointPosition = function(posX, posY) {
-          var div = document.getElementById("c"+settingsEditor.componentId);
-          div.style.left = posX + "px";
-          div.style.top = posY + "px";
-          $set("settingsPositionX", posX);
-          $set("settingsPositionY", posY);
         };
         
         this.setPointList = function(pointList) {

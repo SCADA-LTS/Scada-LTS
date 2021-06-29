@@ -668,7 +668,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -688,6 +688,7 @@ public class ViewDwr extends BaseDwr {
 			SimpleCompoundComponent c = (SimpleCompoundComponent) getViewComponent(viewComponentId);
 			c.setName(name);
 			c.setBackgroundColour(backgroundColour);
+			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
 		}
 
@@ -695,7 +696,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		commonImageChartComponentValidation(name, width, height, durationType, durationPeriods, response);
@@ -707,6 +708,7 @@ public class ViewDwr extends BaseDwr {
 			c.setHeight(height);
 			c.setDurationType(durationType);
 			c.setDurationPeriods(durationPeriods);
+			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
 		}
 
@@ -714,7 +716,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList) {
+	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList, int positionX, int positionY) {
 
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -731,13 +733,14 @@ public class ViewDwr extends BaseDwr {
 			c.setEnhancedImageChartType(chartType);
 			saveCompoundPoints(c, childPointIds);
 			saveEnhancedPoints(c, pointsPropsList);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -745,6 +748,7 @@ public class ViewDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			CompoundComponent c = (CompoundComponent) getViewComponent(viewComponentId);
 			c.setName(name);
+			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
 		}
 

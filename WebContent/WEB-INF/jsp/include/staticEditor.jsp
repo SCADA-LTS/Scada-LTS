@@ -32,11 +32,11 @@
     </table>
     <table>
       <tr>
-        <td class="formLabel">Position X</td>
+        <td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
         <td class="formField"><input id="staticPositionX" type="number" default="0" min="0"/></td></td>
       </tr>
       <tr>
-        <td class="formLabel">Position Y</td>
+        <td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
         <td class="formField"><input id="staticPositionY" type="number" default="0" min="0"/></td></td>
       </tr>
     </table>
@@ -208,7 +208,7 @@
         this.save = function() {
           let posX = Number($get("staticPositionX").trim());
           let posY = Number($get("staticPositionY").trim());
-          [posX, posY] = staticEditor.validateComponentPosition(posX,posY);
+          [posX, posY] = validateComponentPosition(posX,posY);
 
           switch(staticEditor.component.defName) {
             case 'html':
@@ -297,27 +297,9 @@
             default:
               console.error("Not found component!")
           }
-          staticEditor.updatePointPosition(posX, posY);
-        };
-
-        this.validateComponentPosition = function(positionX, positionY) {
-            canvasWidth = document.getElementById("viewBackground").width;
-            canvasHeight = document.getElementById("viewBackground").height;
-            positionX = !!positionX ? positionX : 0;
-            positionX = positionX < 0 ? 0 : positionX;
-            positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
-            positionY = !!positionY ? positionY : 0;
-            positionY = positionY < 0 ? 0 : positionY;
-            positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
-            return [positionX, positionY];
-        }
-
-        this.updatePointPosition = function(posX, posY) {
-          var div = document.getElementById("c"+staticEditor.componentId);
-          div.style.left = posX + "px";
-          div.style.top = posY + "px";
-          $set("staticPositionX", posX);
-          $set("staticPositionY", posY);
+          updatePointPosition(staticEditor.componentId,
+            posX, posY, "staticPositionX", "staticPositionY"
+          );
         };
 
         this.updateViewsList = function(views) {
