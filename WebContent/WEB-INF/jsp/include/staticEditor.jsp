@@ -33,11 +33,11 @@
     <table>
       <tr>
         <td class="formLabel">Position X</td>
-        <td class="formField"><input id="staticPositionX" type="number"/></td></td>
+        <td class="formField"><input id="staticPositionX" type="number" default="0" min="0"/></td></td>
       </tr>
       <tr>
         <td class="formLabel">Position Y</td>
-        <td class="formField"><input id="staticPositionY" type="number"/></td></td>
+        <td class="formField"><input id="staticPositionY" type="number" default="0" min="0"/></td></td>
       </tr>
     </table>
     <table id="htmlEditor">
@@ -206,12 +206,15 @@
         };
         
         this.save = function() {
-          staticEditor.updatePointPosition();
+          let posX = Number($get("staticPositionX").trim());
+          let posY = Number($get("staticPositionY").trim());
+          [posX, posY] = staticEditor.validateComponentPosition(posX,posY);
+
           switch(staticEditor.component.defName) {
             case 'html':
               ViewDwr.saveHtmlComponent(staticEditor.componentId, 
                 $get("staticPointContent"), 
-                $get("staticPositionX"), $get("staticPositionY"), 
+                posX, posY,
                 function() {
 	                staticEditor.close();
 	                updateHtmlComponentContent("c"+ staticEditor.componentId, $get("staticPointContent"));
@@ -221,7 +224,7 @@
             case 'link':
               ViewDwr.saveLinkComponent(staticEditor.componentId, 
                 $get("linkText"), $get("linkLink"),
-                $get("staticPositionX"), $get("staticPositionY"), 
+                posX, posY,
                 function(response) {
 	                if (response.hasMessages)
 			        	    showDwrMessages(response.messages);
@@ -236,7 +239,7 @@
             case 'scriptButton':
               ViewDwr.saveScriptButtonComponent(staticEditor.componentId, 
                 $get("scriptButtonText"), $get("scriptsList"), 
-                $get("staticPositionX"), $get("staticPositionY"), 
+                posX, posY,
                 function(response) {
 					        if (response.hasMessages)
 			        	    showDwrMessages(response.messages);
@@ -250,7 +253,7 @@
             case 'chartComparator':
               ViewDwr.saveChartComparatorComponent(staticEditor.componentId, 
                 $get("chartComparatorWidth"), $get("chartComparatorHeight"),
-                $get("staticPositionX"), $get("staticPositionY"), 
+                posX, posY,
                 function(response) {
 						      if (response.hasMessages)
 				        	  showDwrMessages(response.messages);
@@ -273,7 +276,7 @@
                 $get("flexWidth"), $get("flexHeight"),
 						    $get("flexProjectDefined"),$get("flexProjectsSource"),
                 $get("flexProjectsList"),$get("flexRuntimeMode"),
-                $get("staticPositionX"), $get("staticPositionY"), 
+                posX, posY,
 					      function(response) {
 						      if (response.hasMessages)
 				        	  showDwrMessages(response.messages);
@@ -294,12 +297,27 @@
             default:
               console.error("Not found component!")
           }
+          staticEditor.updatePointPosition(posX, posY);
         };
 
-        this.updatePointPosition = function() {
+        this.validateComponentPosition = function(positionX, positionY) {
+            canvasWidth = document.getElementById("viewBackground").width;
+            canvasHeight = document.getElementById("viewBackground").height;
+            positionX = !!positionX ? positionX : 0;
+            positionX = positionX < 0 ? 0 : positionX;
+            positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
+            positionY = !!positionY ? positionY : 0;
+            positionY = positionY < 0 ? 0 : positionY;
+            positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
+            return [positionX, positionY];
+        }
+
+        this.updatePointPosition = function(posX, posY) {
           var div = document.getElementById("c"+staticEditor.componentId);
-          div.style.left = $get("staticPositionX") + "px";
-          div.style.top = $get("staticPositionY") + "px";
+          div.style.left = posX + "px";
+          div.style.top = posY + "px";
+          $set("staticPositionX", posX);
+          $set("staticPositionY", posY);
         };
 
         this.updateViewsList = function(views) {

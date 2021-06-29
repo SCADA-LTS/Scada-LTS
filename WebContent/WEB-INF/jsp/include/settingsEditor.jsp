@@ -115,10 +115,13 @@
         
         this.save = function() {
             hideContextualMessages("settingsEditorPopup");
-            settingsEditor.updatePointPosition();
+            let posX = $get("settingsPositionX");
+            let posY = $get("settingsPositionY");
+            [posX, posY] = settingsEditor.validateComponentPosition(posX, posY);
+            settingsEditor.updatePointPosition(posX, posY);
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
-                    $get("settingsControls"), $get("settingsPositionX"), $get("settingsPositionY"), function(response) {
+                    $get("settingsControls"), posX, posY, function(response) {
                 if (response.hasMessages) {
                     showDwrMessages(response.messages);
                 }
@@ -129,10 +132,24 @@
             });
         };
 
-        this.updatePointPosition = function() {
+        this.validateComponentPosition = function(positionX, positionY) {
+            canvasWidth = document.getElementById("viewBackground").width;
+            canvasHeight = document.getElementById("viewBackground").height;
+            positionX = !!positionX ? positionX : 0;
+            positionX = positionX < 0 ? 0 : positionX;
+            positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
+            positionY = !!positionY ? positionY : 0;
+            positionY = positionY < 0 ? 0 : positionY;
+            positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
+            return [positionX, positionY];
+        }
+
+        this.updatePointPosition = function(posX, posY) {
           var div = document.getElementById("c"+settingsEditor.componentId);
-          div.style.left = $get("settingsPositionX") + "px";
-          div.style.top = $get("settingsPositionY") + "px";
+          div.style.left = posX + "px";
+          div.style.top = posY + "px";
+          $set("settingsPositionX", posX);
+          $set("settingsPositionY", posY);
         };
         
         this.setPointList = function(pointList) {
