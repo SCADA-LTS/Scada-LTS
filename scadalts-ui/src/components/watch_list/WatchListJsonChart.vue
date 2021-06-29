@@ -1,7 +1,7 @@
 <template>
 	<v-app>
-		<v-row>
-			<v-col id="wl-chart-type-select" md="3" xs="3" class="button-space-start">
+		<v-row class="wl-chart-settings">
+			<v-col id="wl-chart-type-select" cols="8" md="3" order="1" order-md="0" class="button-space-start">
 				<v-btn-toggle v-model="chartType">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
@@ -32,28 +32,25 @@
 				</v-btn-toggle>
 			</v-col>
 
-			<v-col id="wl-chart-type-settings" md="7" xs="7" v-if="!!watchListData">
+			<v-col id="wl-chart-type-settings" cols="12" md="7" order="2" order-md="0" v-if="!!watchListData">
 				<ChartSettingsLiveComponent
 					ref="csLiveComponent"
-					:watchListName="watchListData.id"
 					v-show="chartType === 'live'"
 				></ChartSettingsLiveComponent>
 
 				<ChartSettingsStaticComponent
 					ref="csStaticComponent"
-					:watchListName="watchListData.id"
 					v-show="chartType === 'static'"
 				></ChartSettingsStaticComponent>
 
 				<ChartSettingsCompareComponent
 					ref="csCompareComponent"
-					:watchListName="watchListData.id"
 					:pointArray="watchListData.pointList"
 					v-show="chartType === 'compare'"
 				></ChartSettingsCompareComponent>
 			</v-col>
 
-			<v-col id="wl-chart-settings" md="2" xs="2" class="button-space">
+			<v-col id="wl-chart-settings" cols="4" md="2" order="1" order-md="0" class="button-space">
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on, attrs }">
 						<v-btn fab @click="updateSettings()" v-bind="attrs" v-on="on">
@@ -73,12 +70,15 @@
 					></ChartSeriesSettingsComponent>
 				</div>	
 			</v-col>
-
+		</v-row>
+		<v-row no-gutters>
 			<v-col cols="12"  id="wl-chart-container">
 				<div class="chartContainer" ref="chartdiv"></div>
 			</v-col>
 		</v-row>
-		
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</v-app>
 </template>
 <script>
@@ -118,6 +118,11 @@ export default {
 			config: null,
 			watchListData: {id: 1, pointList: [{id:1},{id:2}]},
 			pointCompare: '',
+			response: {
+				status: false,
+				color: '',
+				message: '',
+			},
 		};
 	},
 
@@ -169,7 +174,22 @@ export default {
 		},
 
 		renderChart() {
-			this.chartClass.createChart();
+			this.chartClass.createChart().catch((e) => {
+				console.log(e);
+				if(e.message === 'No data from that range!') {
+					this.response = {
+						status: true,
+						color: 'warning',
+						message: e.message
+					}
+				} else {
+					this.response = {
+						status: true,
+						color: 'error',
+						message: `Failed to load chart!: ${e.message}`
+					}
+				}
+			});
 		},
 
 		disposeChart() {
@@ -186,6 +206,8 @@ export default {
 
 		async loadWatchList(watchListId) {
 			this.watchListData = await this.$store.dispatch('getWatchListDetails', watchListId);
+			this.initSettings();
+			this.loadSettings();
 			let points = [];
 			this.watchListData.pointList.forEach(point => {
 				points.push(point.id);
@@ -206,26 +228,25 @@ export default {
 			this.config.deleteChartConfiguration();
 		},
 
-		applySettings() {
-			if (this.chartType === 'live') {
-				this.chartProperties = this.copyObject(
-					this.$refs.csLiveComponent.applySettings()
-				);
-			} else if (this.chartType === 'static') {
-				this.chartProperties = this.copyObject(
-					this.$refs.csStaticComponent.applySettings()
-				);
-			} else if (this.chartType === 'compare') {
-				this.deleteConfiguration();
-				this.chartProperties = this.copyObject(
-					this.$refs.csCompareComponent.applySettings()
-				);
-			}
+		initSettings() {
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListData.id}_P`));
+			this.chartType = !!loadedData ? loadedData.type : 'live';
+		},
+
+		loadSettings() {
+			let component = this.getComponentType(this.chartType);
+			this.chartProperties = component.loadSettings(this.watchListData.id);
+		},
+
+		saveSettings() {
+			let component = this.getComponentType(this.chartType);
+			component.saveSettings(this.watchListData.id);
 		},
 
 		async updateSettings() {
-			this.applySettings();
+			this.saveSettings();
 			this.disposeChart();
+			this.loadSettings();
 			await this.initDefaultConfiguration();
 			this.initChart();
 			this.renderChart();
@@ -242,9 +263,18 @@ export default {
 			this.updateSettings();
 		},
 
-		copyObject(object) {
-			return JSON.parse(JSON.stringify(object));
-		},
+		getComponentType(type) {
+			switch(type) {
+				case 'live':
+					return this.$refs.csLiveComponent;
+				case 'static':
+					return this.$refs.csStaticComponent;
+				case 'compare':
+					return this.$refs.csCompareComponent;
+				default:
+					throw new Error("Chart type not recognized!");
+			}
+		}
 
 		
 	},
@@ -257,10 +287,6 @@ export default {
 .chartContainer {
 	min-width: 650px;
 	height: 600px;
-}
-p {
-	text-align: center;
-	padding-top: 10px;
 }
 .error {
 	color: red;
@@ -280,5 +306,14 @@ p {
 }
 .button-space-start > .v-item-group > button {
 	width: 33%;
+}
+.wl-chart-settings {
+	max-height: 90px;
+}
+@media (max-width: 960px) {
+	.wl-chart-settings {
+		max-height: 190px;
+	}
+
 }
 </style>

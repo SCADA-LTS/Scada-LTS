@@ -105,7 +105,7 @@
 														<p>{{ $t('modernwatchlist.chartseries.stroke.color') }}</p>
 													</v-col>
 													<v-col cols="2">
-														<v-menu offset-y>
+														<v-menu offset-y :close-on-content-click="false">
 															<template v-slot:activator="{ on }">
 																<v-btn :color="s.stroke" v-on="on" block> </v-btn>
 															</template>
@@ -141,7 +141,7 @@
 														<p>{{ $t('modernwatchlist.chartseries.fill.color') }}</p>
 													</v-col>
 													<v-col cols="2">
-														<v-menu offset-y>
+														<v-menu offset-y :close-on-content-click="false">
 															<template v-slot:activator="{ on }">
 																<v-btn :color="s.fill" v-on="on" block> </v-btn>
 															</template>
@@ -221,8 +221,8 @@ export default {
 		},
 
 		deleteFromStorage() {
-			this.close();
 			this.$emit('deleted');
+			this.close();
 		},
 
 		copyObject(object) {

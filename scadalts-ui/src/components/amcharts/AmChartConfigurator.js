@@ -53,7 +53,7 @@ export class AmChartConfigurator {
         );
     }
 
-    deleteChartConfiguartion() {
+    deleteChartConfiguration() {
         localStorage.removeItem(`AmChartConfig_${this.configId}`);
     }
 

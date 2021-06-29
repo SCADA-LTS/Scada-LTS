@@ -289,12 +289,10 @@ export class AmChart {
 	 * @returns
 	 */
 	fetchPointValues(startTs, endTs) {
-		console.log(startTs, endTs);
 		if (typeof startTs === 'string' || typeof endTs === 'string') {
 			throw new Error('Start and End date must be a number!');
 		}
-		console.log(startTs>endTs);
-		if (startTs > endTs) {
+		if (!!startTs && !!endTs && startTs > endTs) {
 			throw new Error('Start date is greater than End date!');
 		}
 		if (!endTs) {
@@ -311,7 +309,6 @@ export class AmChart {
 		if (!!this.isCompareMode) {
 			requestUrl += '&cmp=1';
 		}
-		console.log(requestUrl)
 		return new Promise((resolve, reject) => {
 			axios
 				.get(requestUrl)
