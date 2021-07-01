@@ -33,8 +33,6 @@
 export default {
 	name: 'ChartSettingsStaticComponent',
 
-	props: ['watchListName'],
-
 	data() {
 		return {
 			CHART_TYPE: 'static',
@@ -45,24 +43,9 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.loadSettings();
-	},
-
 	methods: {
-		applySettings() {
-			let chartProperties = {
-				type: this.CHART_TYPE,
-				refreshRate: null,
-				startDate: this.concatenateDateTime(this.startDate, this.startTime),
-				endDate: this.concatenateDateTime(this.endDate, this.endTime),
-			};
-			this.saveSettings();
-			return chartProperties;
-		},
-
-		loadSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListName}_P`));
+		loadSettings(watchListId) {
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${watchListId}_P`));
 			if (!!loadedData) {
 				if (loadedData.type === this.CHART_TYPE) {
 					this.startDate = loadedData.startDate;
@@ -78,9 +61,15 @@ export default {
 				this.startDate = time.format('YYYY-MM-DD');
 				this.startTime = time.format('HH:mm');
 			}
+			return {
+				type: this.CHART_TYPE,
+				refreshRate: null,
+				startDate: this.concatenateDateTime(this.startDate, this.startTime),
+				endDate: this.concatenateDateTime(this.endDate, this.endTime),
+			}
 		},
 
-		saveSettings() {
+		saveSettings(watchListId) {
 			let saveData = {
 				type: this.CHART_TYPE,
 				startDate: this.startDate,
@@ -88,7 +77,7 @@ export default {
 				endDate: this.endDate,
 				endTime: this.endTime,
 			};
-			localStorage.setItem(`MWL_${this.watchListName}_P`, JSON.stringify(saveData));
+			localStorage.setItem(`MWL_${watchListId}_P`, JSON.stringify(saveData));
 		},
 
 		concatenateDateTime(date, time) {

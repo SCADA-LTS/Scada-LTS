@@ -54,7 +54,7 @@
 export default {
 	name: 'ChartSettingsCompareComonent',
 
-	props: ['watchListName', 'pointArray'],
+	props: ['pointArray'],
 
 	data() {
 		return {
@@ -62,14 +62,14 @@ export default {
 			pointList: [],
 			pointSettings: [
 				{
-					dataPoint: undefined,
+					dataPoint: null,
 					startDate: '',
 					startTime: '',
 					endDate: '',
 					endTime: '',
 				},
 				{
-					dataPoint: undefined,
+					dataPoint: null,
 					startDate: '',
 					startTime: '',
 					endDate: '',
@@ -80,13 +80,25 @@ export default {
 	},
 
 	mounted() {
-		this.loadSettings();
 		this.init();
 	},
 
 	methods: {
-		applySettings() {
-			let chartProperties = {
+		
+		loadSettings(watchListId) {
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${watchListId}_P`));
+			if (!!loadedData) {
+				if (loadedData.type === this.CHART_TYPE) {
+					for (let i = 0; i < loadedData.pointSettings.length; i++) {
+						this.pointSettings[i].dataPoint = loadedData.pointSettings[i].dataPoint;
+						this.pointSettings[i].startDate = loadedData.pointSettings[i].startDate
+						this.pointSettings[i].startTime = loadedData.pointSettings[i].startTime
+						this.pointSettings[i].endDate = loadedData.pointSettings[i].endDate;
+						this.pointSettings[i].endTime = loadedData.pointSettings[i].endTime;
+					}
+				}
+			}
+			return {
 				type: this.CHART_TYPE,
 				refreshRate: null,
 				startDate: null,
@@ -115,27 +127,10 @@ export default {
 						),
 					},
 				],
-			};
-			this.saveSettings();
-			return chartProperties;
-		},
-
-		loadSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListName}_P`));
-			if (!!loadedData) {
-				if (loadedData.type === this.CHART_TYPE) {
-					for (let i = 0; i < loadedData.pointSettings.length; i++) {
-						this.pointSettings[i].dataPoint = loadedData.pointSettings[i].dataPoint;
-						this.pointSettings[i].startDate = loadedData.pointSettings[i].startDate
-						this.pointSettings[i].startTime = loadedData.pointSettings[i].startTime
-						this.pointSettings[i].endDate = loadedData.pointSettings[i].endDate;
-						this.pointSettings[i].endTime = loadedData.pointSettings[i].endTime;
-					}
-				}
 			}
 		},
 
-		saveSettings() {
+		saveSettings(watchListId) {
 			let saveData = {
 				type: this.CHART_TYPE,
 				pointSettings: [],
@@ -150,8 +145,7 @@ export default {
 				};
 				saveData.pointSettings.push(point);
 			});
-			console.debug('TRYING TO SAVE', saveData);
-			localStorage.setItem(`MWL_${this.watchListName}_P`, JSON.stringify(saveData));
+			localStorage.setItem(`MWL_${watchListId}_P`, JSON.stringify(saveData));
 		},
 
 		async init() {
