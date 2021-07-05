@@ -43,6 +43,7 @@ export default {
 		width: { type: String, default: "500" },
 		height: { type: String, default: "400" },
 		color: { type: String },
+		strokeWidth: {type: Number},
 		aggregation: { type: Number },
 		showScrollbar: { type: Boolean },
 		showLegend: { type: Boolean },
@@ -72,7 +73,7 @@ export default {
 				this.$refs.chartdiv,
 				'xychart',
 				this.pointIds
-			).showCursor();
+			).showCursor().setStrokeWidth(this.strokeWidth);
 
 			if (!!this.useXid) {
 				this.chartClass.xid();
