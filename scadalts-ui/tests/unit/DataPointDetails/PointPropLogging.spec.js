@@ -17,17 +17,12 @@ const modules = {
  * Prepare wrapper wiht all required stubs and props.
  */
 function initWrapper() {
-	return prepareMountWrapper(
-		PointPropLogging, 
-		modules,
-		{data: dataPointMock}
-	);
+	return prepareMountWrapper(PointPropLogging, modules, { data: dataPointMock });
 }
 
 global.requestAnimationFrame = (cb) => cb();
 
 describe('Point Properties Tests - Logging properties', () => {
-	
 	it('Initialize Component', () => {
 		const wrapper = initWrapper();
 		const items = wrapper.find('.v-select:first-of-type').props('items');

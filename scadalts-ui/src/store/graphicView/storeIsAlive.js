@@ -14,6 +14,7 @@ const storeIsAlive = {
 		timeRefreshEpoch: 2000, // default  2000 [ms]
 		timeServerEpoch: -1, // -1 not initiate
 		timeInWebEpoch: -1, // -1 not initiate
+		webhookUrl: '', // url to send positive feedback about connection with scada is alive
 		msgErr: '',
 		lastTimeCheck: -1,
 	},
@@ -25,6 +26,7 @@ const storeIsAlive = {
 			state.timeWarningEpoch = t.tw;
 			state.timeErrorEpoch = t.te;
 			state.timeRefreshEpoch = t.tr;
+			state.webhookUrl = t.wh;
 		},
 		CHECK_IS_ALIVE(state, timeFromServer) {
 			state.lastTimeCheck = timeFromServer;
@@ -74,6 +76,7 @@ const storeIsAlive = {
 					.then((res) => {
 						dispatch('calculateStateIsAlive', res.data).then(() => {
 							resolve(res);
+							axios.get(state.webhookUrl);
 						});
 					})
 					.catch((err) => {

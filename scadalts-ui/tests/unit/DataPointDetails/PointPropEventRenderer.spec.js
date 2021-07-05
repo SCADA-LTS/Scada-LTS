@@ -17,11 +17,7 @@ const modules = {
  * Prepare wrapper wiht all required stubs and props.
  */
 function initWrapper(props = dataPointMock) {
-	return prepareMountWrapper(
-		PointPropEventRenderer, 
-		modules,
-		{data: props}
-	);
+	return prepareMountWrapper(PointPropEventRenderer, modules, { data: props });
 }
 
 global.requestAnimationFrame = (cb) => cb();

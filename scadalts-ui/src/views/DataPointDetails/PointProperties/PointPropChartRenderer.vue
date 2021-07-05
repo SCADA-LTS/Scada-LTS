@@ -85,8 +85,8 @@ export default {
 		},
 
 		chartRenderersList() {
-			if(!!this.data) {
-				if(this.data.pointLocator.dataTypeId === 4) {
+			if (!!this.data) {
+				if (this.data.pointLocator.dataTypeId === 4) {
 					return this.$store.state.dataPoint.chartRenderersList.filter((e) => {
 						return e.id !== 1;
 					});
@@ -95,8 +95,7 @@ export default {
 				}
 			}
 			return null;
-		}
-
+		},
 	},
 
 	mounted() {

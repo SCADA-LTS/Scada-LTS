@@ -76,7 +76,7 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
             getShareUser(user, view).ifPresent(shareUser -> {
 
                 Set<DataPointAccess> dataPointAccessesFromView = dataPointsFromViews.get(view.getId()).stream()
-                        .map(dataPoint -> new DataPointAccess(dataPoint.getId(), shareUser.getAccessType()))
+                        .map(dataPoint -> generateDataPointAccess(shareUser, dataPoint))
                         .filter(access -> dataPointAccesses.isEmpty() || dataPointAccesses.stream().allMatch(a -> a.getDataPointId() != access.getDataPointId() || a.getPermission() < ShareUser.ACCESS_READ))
                         .collect(Collectors.toSet());
                 dataPointAccesses.addAll(dataPointAccessesFromView);
