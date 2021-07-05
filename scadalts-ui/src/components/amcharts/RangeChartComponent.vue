@@ -1,7 +1,7 @@
 <template>
-	<v-app>
+	<v-app relative id="chart-component" :style="{ 'width': `${width}px`, 'height': `${height}px` }">
 		<v-row id="chart-settings">
-			<v-col cols="12" v-if="!!errorMessage">
+			<v-col cols="12" v-if="!!errorMessage" class="error-message-bar">
 				<v-alert
 					:type="errorMessage.type"
 					dismissible
@@ -15,19 +15,21 @@
 			</v-col>
 
 			<v-col cols="5">
-				<v-menu offset-y :close-on-content-click="false">
+				<v-menu offset-y :close-on-content-click="false" attach>
 					<template v-slot:activator="{ on }">
-						<v-text-field v-on="on" label="Start Date" :value="startDate"></v-text-field>
+						<v-text-field v-on="on" label="Start Date" :value="concatenateDateTime(startDate, startTime)"></v-text-field>
 					</template>
 					<v-date-picker first-day-of-week="1" v-model="startDate"> </v-date-picker>
+					<v-time-picker format="24hr" v-model="startTime"></v-time-picker>
 				</v-menu>
 			</v-col>
 			<v-col cols="5">
-				<v-menu offset-y :close-on-content-click="false">
+				<v-menu offset-y :close-on-content-click="false" attach>
 					<template v-slot:activator="{ on }">
-						<v-text-field v-on="on" label="End Date" :value="endDate"></v-text-field>
+						<v-text-field v-on="on" label="End Date" :value="concatenateDateTime(endDate, endTime)"></v-text-field>
 					</template>
 					<v-date-picker first-day-of-week="1" v-model="endDate"> </v-date-picker>
+					<v-time-picker format="24hr" v-model="endTime"></v-time-picker>
 				</v-menu>
 			</v-col>
 			<v-col cols="2">
@@ -63,6 +65,7 @@ export default {
 		width: { type: String, default: '500' },
 		height: { type: String, default: '400' },
 		color: { type: String },
+		strokeWidth: {type: Number},
 		aggregation: { type: Number },
 		showBullets: { type: Boolean },
 		showExportMenu: { type: String },
@@ -76,6 +79,8 @@ export default {
 			viewId: 0,
 			startDate: '',
 			endDate: '',
+			startTime: '',
+			endTime: '',
 		};
 	},
 
@@ -87,8 +92,9 @@ export default {
 		initChart() {
 			this.chartClass = new AmCharts(this.$refs.chartReference, 'xychart', this.pointIds)
 				.showCursor()
-				.startTime(this.startDate)
-				.endTime(this.endDate)
+				.startTime(`${this.startDate} ${this.startTime}`)
+				.endTime(`${this.endDate} ${this.endTime}`)
+				.setStrokeWidth(this.strokeWidth)
 				.showScrollbar()
 				.showLegend();
 
@@ -137,6 +143,7 @@ export default {
 		reload() {
 			this.chartClass.disposeChart();
 			this.saveToLocalStorage();
+			this.errorMessage = null;
 			this.initChart();
 		},
 
@@ -157,6 +164,8 @@ export default {
 			if (!!data[0] && !!data[1]) {
 				this.startDate = data[0];
 				this.endDate = data[1];
+				this.startTime = data[2] || '';
+				this.endTime = data[3] || '';
 			} else {
 				this.initialTime();
 			}
@@ -166,13 +175,17 @@ export default {
 			let baseKey = `GVRC_${this.viewId}`;
 			localStorage.setItem(`${baseKey}-start-date`, this.startDate);
 			localStorage.setItem(`${baseKey}-end-date`, this.endDate);
+			localStorage.setItem(`${baseKey}-start-time`, this.startTime);
+			localStorage.setItem(`${baseKey}-end-time`, this.endTime);
 		},
 
 		loadFromLocalStorage() {
 			let baseKey = `GVRC_${this.viewId}`;
 			let startDate = localStorage.getItem(`${baseKey}-start-date`);
 			let endDate = localStorage.getItem(`${baseKey}-end-date`);
-			return [startDate, endDate];
+			let startTime = localStorage.getItem(`${baseKey}-start-time`);
+			let endTime = localStorage.getItem(`${baseKey}-end-time`);
+			return [startDate, endDate, startTime, endTime];
 		},
 
 		initialTime() {
@@ -187,6 +200,10 @@ export default {
 				this.errorMessage = null;
 			}
 		},
+
+		concatenateDateTime(date, time) {
+			return `${date} ${time}`;
+		}
 	},
 };
 </script>
@@ -197,5 +214,12 @@ export default {
 #chart-container > * > div {
 	min-width: 650px;
 	height: 500px;
+}
+#chart-component {
+	position: relative;
+}
+.error-message-bar {
+	position: absolute;
+    top: 50px;
 }
 </style>

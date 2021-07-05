@@ -13,6 +13,7 @@ export class AmChart {
 		this.isStepLineChart = build.isStepLineChart;
 
 		this.colorPallete = build.colorPallete;
+		this.strokeWidth = build.strokeWidth || 1;
 		this.legend = build.legend;
 		this.cursor = build.cursor;
 		this.bullets = build.bullets;
@@ -229,6 +230,7 @@ export class AmChart {
 			series.tooltip.label.minHeight = 40;
 			series.tooltip.label.textAlign = 'middle';
 			series.tooltip.label.textValign = 'middle';
+			series.strokeWidth = this.strokeWidth;
 			if (!!this.tension) {
 				series.tensionX = this.tension;
 			}
@@ -509,6 +511,18 @@ export class AmChartBuilder {
 			for (let i = colorsArray.length - 1; i >= 0; i--) {
 				this.colorPallete.unshift(am4core.color(colorsArray[i].trim()));
 			}
+		}
+		return this;
+	}
+
+	/**
+	 * Set Stroke Width for Series Lines
+	 * 
+	 * @param {Number} width - [1,10] Width of the series line
+	 */
+	setStrokeWidth(width) {
+		if(!!width && width > 0 && width <= 10) {
+			this.strokeWidth = width;
 		}
 		return this;
 	}

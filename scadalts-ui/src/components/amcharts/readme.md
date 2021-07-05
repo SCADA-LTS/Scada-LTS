@@ -148,6 +148,7 @@ Properties properties for Line charts
 | width | Number | width="1920" |
 | height | Number | height="1080" |
 | color | String | color="#FFFC19" |
+| stroke-width | Number | stroke-width="3" |
 | aggregation | Number (default=0) | aggregation="100" |
 | show-scrollbar | Boolean | show-scrollbar |
 | show-legned | Boolean | show-legned |
