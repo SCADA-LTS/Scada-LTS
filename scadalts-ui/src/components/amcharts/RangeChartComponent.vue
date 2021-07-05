@@ -141,7 +141,9 @@ export default {
 		},
 
 		reload() {
-			this.chartClass.disposeChart();
+			if(!!this.chartClass) {
+				this.chartClass.disposeChart();
+			}
 			this.saveToLocalStorage();
 			this.errorMessage = null;
 			this.initChart();
@@ -191,8 +193,10 @@ export default {
 		initialTime() {
 			let today = new Date();
 			this.endDate = today.toISOString().slice(0, 10);
+			this.endTime = "12:00";
 			today.setDate(today.getDate() - 1);
 			this.startDate = today.toISOString().slice(0, 10);
+			this.startTime = "12:00";
 		},
 
 		updatedAlert(event) {
