@@ -31,8 +31,6 @@
 export default {
 	name: 'ChartSettingsLiveComponent',
 
-	props: ['watchListName'],
-
 	data() {
 		return {
 			CHART_TYPE: 'live',
@@ -96,26 +94,9 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.loadSettings();
-	},
-
-	computed: {},
-
 	methods: {
-		applySettings() {
-			let chartProperties = {
-				type: this.CHART_TYPE,
-				refreshRate: this.refreshRate,
-				startDate: `${this.startTime}-${this.startTimeMultiplier}`,
-				endDate: null,
-			};
-			this.saveSettings();
-			return chartProperties;
-		},
-
-		loadSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListName}_P`));
+		loadSettings(watchListId) {
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${watchListId}_P`));
 			if (!!loadedData) {
 				if (loadedData.type === this.CHART_TYPE) {
 					this.startTime = loadedData.startTime;
@@ -123,16 +104,22 @@ export default {
 					this.refreshRate = loadedData.refreshRate;
 				}
 			}
+			return {
+				type: this.CHART_TYPE,
+				refreshRate: this.refreshRate,
+				startDate: `${this.startTime}-${this.startTimeMultiplier}`,
+				endDate: null,
+			}
 		},
 
-		saveSettings() {
+		saveSettings(watchListId) {
 			let saveData = {
 				type: this.CHART_TYPE,
 				startTime: this.startTime,
 				startTimeMultiplier: this.startTimeMultiplier,
 				refreshRate: this.refreshRate,
 			};
-			localStorage.setItem(`MWL_${this.watchListName}_P`, JSON.stringify(saveData));
+			localStorage.setItem(`MWL_${watchListId}_P`, JSON.stringify(saveData));
 		},
 	},
 };

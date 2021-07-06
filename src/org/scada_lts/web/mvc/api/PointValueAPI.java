@@ -161,6 +161,7 @@ class ValueToJSON implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private int id;
     private String value;
     private String formattedValue;
     private Long ts;
@@ -172,6 +173,7 @@ class ValueToJSON implements Serializable {
     private boolean enabled;
 
     void set(PointValueTime pvt, DataPointVO dpvo) {
+        setId(dpvo.getId());
         setValue(pvt.getValue());
         setTs(pvt.getTime());
         setName(dpvo.getName());
@@ -181,6 +183,10 @@ class ValueToJSON implements Serializable {
         setFormattedValue(textRenderer.getText(pvt, 1) + textRenderer.getMetaText());
         setEnabled(dpvo.isEnabled());
     }
+
+    public void setId(int id) { this.id = id; }
+
+    public int getId() { return this.id; }
 
     public String getValue() {
         return value;

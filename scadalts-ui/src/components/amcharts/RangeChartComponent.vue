@@ -1,24 +1,39 @@
 <template>
-	<v-app>
+	<v-app relative id="chart-component" :style="{ 'width': `${width}px`, 'height': `${height}px` }">
 		<v-row id="chart-settings">
+			<v-col cols="12" v-if="!!errorMessage" class="error-message-bar">
+				<v-alert
+					:type="errorMessage.type"
+					dismissible
+					v-if="!!errorMessage"
+					transition="scale-transition"
+					dense
+					@input="updatedAlert"
+				>
+					{{ errorMessage.message }}
+				</v-alert>
+			</v-col>
+
 			<v-col cols="5">
-				<v-menu offset-y :close-on-content-click="false">
+				<v-menu offset-y :close-on-content-click="false" attach>
 					<template v-slot:activator="{ on }">
-						<v-text-field v-on="on" label="Start Date" :value="startDate"></v-text-field>
+						<v-text-field v-on="on" label="Start Date" :value="concatenateDateTime(startDate, startTime)"></v-text-field>
 					</template>
 					<v-date-picker first-day-of-week="1" v-model="startDate"> </v-date-picker>
+					<v-time-picker format="24hr" v-model="startTime"></v-time-picker>
 				</v-menu>
 			</v-col>
 			<v-col cols="5">
-				<v-menu offset-y :close-on-content-click="false">
+				<v-menu offset-y :close-on-content-click="false" attach>
 					<template v-slot:activator="{ on }">
-						<v-text-field v-on="on" label="End Date" :value="endDate"></v-text-field>
+						<v-text-field v-on="on" label="End Date" :value="concatenateDateTime(endDate, endTime)"></v-text-field>
 					</template>
 					<v-date-picker first-day-of-week="1" v-model="endDate"> </v-date-picker>
+					<v-time-picker format="24hr" v-model="endTime"></v-time-picker>
 				</v-menu>
 			</v-col>
 			<v-col cols="2">
-				<v-btn icon @click="reload()"> 
+				<v-btn icon @click="reload()">
 					<v-icon>mdi-refresh</v-icon>
 				</v-btn>
 			</v-col>
@@ -31,87 +46,107 @@
 	</v-app>
 </template>
 <script>
-import LineChart from './LineChart';
+import AmCharts from './AmChart.js';
 
+/**
+ * Range Chart Component
+ * @version 2.0.0
+ * 
+ * Display AmChart with Datepicker
+ * 
+ */
 export default {
 	name: 'RangeChartComponent',
-	props: [
-		'pointId',
-		'pointXid',
-		'color',
-		'width',
-		'height',
-		'polylineStep',
-		'rangeValue',
-		'rangeColor',
-		'rangeLabel',
-		'showScrollbarX',
-		'showScrollbarY',
-		'showLegend',
-		'aggregation',
-	],
+
+	props: {
+		pointIds: { type: String, required: true },
+		useXid: { type: Boolean },
+		stepLine: { type: Boolean },
+		width: { type: String, default: '500' },
+		height: { type: String, default: '400' },
+		color: { type: String },
+		strokeWidth: {type: Number},
+		aggregation: { type: Number },
+		showBullets: { type: Boolean },
+		showExportMenu: { type: String },
+		smoothLine: { type: Number },
+	},
+
 	data() {
 		return {
-			errorMessage: undefined,
 			chartClass: undefined,
-			isExportId: false,
+			errorMessage: undefined,
 			viewId: 0,
 			startDate: '',
 			endDate: '',
+			startTime: '',
+			endTime: '',
 		};
 	},
+
 	mounted() {
 		this.initConfiguration();
-		this.generateChart();
+		this.initChart();
 	},
 	methods: {
-		async generateChart() {
-			if (Number(this.polylineStep) > 1) {
-				LineChart.setPolylineStep(Number(this.polylineStep));
+		initChart() {
+			this.chartClass = new AmCharts(this.$refs.chartReference, 'xychart', this.pointIds)
+				.showCursor()
+				.startTime(`${this.startDate} ${this.startTime}`)
+				.endTime(`${this.endDate} ${this.endTime}`)
+				.setStrokeWidth(this.strokeWidth)
+				.showScrollbar()
+				.showLegend();
+
+			if (!!this.useXid) {
+				this.chartClass.xid();
 			}
-			this.chartClass = new LineChart(this.$refs.chartReference, this.color);
-			this.chartClass.displayControls(
-				this.showScrollbarX,
-				this.showScrollbarY,
-				this.showLegend
-			);
-			// Provide value aggregation mechanism to 
-			// improve the performance for huge amount of data
-			this.chartClass.aggregation = this.aggregation;
-
-			const pointPromises = await Promise.all(this.loadPoints());
-			const notLoadedPointIds = pointPromises.filter((res) =>  res !== 'done');
-			this.errorMessage = `Points with index [${notLoadedPointIds.join(", ")}] has not been loaded!`;
-
-			this.chartClass.showChart();
-
-			if (!!this.rangeValue) {
-				this.chartClass.addRangeValue(
-					Number(this.rangeValue),
-					this.rangeColor,
-					this.rangeLabel
-				);
+			if (!!this.stepLine) {
+				this.chartClass.stepLine();
 			}
+			if (!!this.aggregation) {
+				if (this.aggregation === 0) {
+					this.chartClass.useAggregation();
+				} else {
+					this.chartClass.useAggregation(this.aggregation);
+				}
+			}
+			if (!!this.color) {
+				this.chartClass.useColors(this.color)
+			}
+			if (!!this.showBullets) {
+				this.chartClass.showBullets();
+			}
+			if (!!this.showExportMenu) {
+				this.chartClass.showExportMenu(this.showExportMenu);
+			}
+			if (!!this.smoothLine) {
+				this.chartClass.smoothLine(this.smoothLine);
+			}
+			this.chartClass = this.chartClass.build();
+
+			this.chartClass.createChart().catch((e) => {
+				if (e.message === 'No data from that range!') {
+					this.errorMessage = {
+						type: 'warning',
+						message: e.message,
+					};
+				} else {
+					this.errorMessage = {
+						type: 'error',
+						message: `Failed to load chart!: ${e.message}`,
+					};
+				}
+			});
 		},
 
 		reload() {
+			if(!!this.chartClass) {
+				this.chartClass.disposeChart();
+			}
 			this.saveToLocalStorage();
-			this.generateChart();
-		},
-
-		/**
-		 * Load Points using ID or XID
-		 *
-		 * Load Points data based on them ID or Export ID if present.
-		 * @returns pointPromises - response from API
-		 */
-		loadPoints() {
-			this.isExportId = !!this.pointXid && !this.pointId;
-			let points = this.isExportId ? this.pointXid.split(',') : this.pointId.split(',');
-			let pointPromises = points.map((point) => {
-				return this.chartClass.loadData(point, this.startDate, this.endDate, this.isExportId);
-			});
-			return pointPromises;
+			this.errorMessage = null;
+			this.initChart();
 		},
 
 		/**
@@ -127,10 +162,12 @@ export default {
 
 		initConfiguration() {
 			this.getViewId();
-			let data = this.loadFromLocalStorage()
-			if(!!data[0] && !!data[1]) {
+			let data = this.loadFromLocalStorage();
+			if (!!data[0] && !!data[1]) {
 				this.startDate = data[0];
 				this.endDate = data[1];
+				this.startTime = data[2] || '';
+				this.endTime = data[3] || '';
 			} else {
 				this.initialTime();
 			}
@@ -139,22 +176,38 @@ export default {
 		saveToLocalStorage() {
 			let baseKey = `GVRC_${this.viewId}`;
 			localStorage.setItem(`${baseKey}-start-date`, this.startDate);
-			localStorage.setItem(`${baseKey}-end-date`,  this.endDate);
+			localStorage.setItem(`${baseKey}-end-date`, this.endDate);
+			localStorage.setItem(`${baseKey}-start-time`, this.startTime);
+			localStorage.setItem(`${baseKey}-end-time`, this.endTime);
 		},
 
 		loadFromLocalStorage() {
 			let baseKey = `GVRC_${this.viewId}`;
 			let startDate = localStorage.getItem(`${baseKey}-start-date`);
 			let endDate = localStorage.getItem(`${baseKey}-end-date`);
-			return [startDate, endDate];
+			let startTime = localStorage.getItem(`${baseKey}-start-time`);
+			let endTime = localStorage.getItem(`${baseKey}-end-time`);
+			return [startDate, endDate, startTime, endTime];
 		},
 
 		initialTime() {
 			let today = new Date();
 			this.endDate = today.toISOString().slice(0, 10);
+			this.endTime = "12:00";
 			today.setDate(today.getDate() - 1);
 			this.startDate = today.toISOString().slice(0, 10);
+			this.startTime = "12:00";
 		},
+
+		updatedAlert(event) {
+			if (!event) {
+				this.errorMessage = null;
+			}
+		},
+
+		concatenateDateTime(date, time) {
+			return `${date} ${time}`;
+		}
 	},
 };
 </script>
@@ -165,5 +218,12 @@ export default {
 #chart-container > * > div {
 	min-width: 650px;
 	height: 500px;
+}
+#chart-component {
+	position: relative;
+}
+.error-message-bar {
+	position: absolute;
+    top: 50px;
 }
 </style>

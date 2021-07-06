@@ -6,7 +6,6 @@ import storeEvents from './events';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
-import amcharts from './amcharts';
 import alarms from './alarms';
 import storeUsers from './users';
 import storeMailingList from './mailingList';
@@ -33,7 +32,6 @@ export default new Vuex.Store({
 		storeEvents,
 		graphicView,
 		pointHierarchy,
-		amcharts,
 		alarms,
 		storeUsers,
 		systemSettings,
