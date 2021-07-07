@@ -12,6 +12,7 @@ export class AmChart {
 		this.isExportId = build.isExportId || false;
 		this.isStepLineChart = build.isStepLineChart;
 
+		this.isSeparateAxis = build.isSeparateAxis;
 		this.colorPallete = build.colorPallete;
 		this.strokeWidth = build.strokeWidth || 1;
 		this.legend = build.legend;
@@ -269,7 +270,9 @@ export class AmChart {
 			case 'BinaryValue':
 			case 'MultistateValue':
 				series = this.chart.series.push(new am4charts.StepLineSeries());
-				series.yAxis = this.prepareAxisY(true, "BinaryAxis");
+				if(!this.isSeparateAxis) {
+					series.yAxis = this.prepareAxisY(true, "BinaryAxis");
+				}
 				series.startLocation = 0.5;
 				break;
 			default:
@@ -282,6 +285,9 @@ export class AmChart {
 			series.dataFields.valueY = `${pointDetails.id}`;
 		} else {
 			series.dataFields.valueY = seriesId;
+		}
+		if(!!this.isSeparateAxis) {
+			series.yAxis = this.prepareAxisY(false, `Axis${seriesId}`);
 		}
 		series.name = pointDetails.name;
 		return series;
@@ -417,6 +423,19 @@ export class AmChartBuilder {
 	 */
 	xid() {
 		this.isExportId = true;
+		return this;
+	}
+
+	/**
+	 * Separate Y Axes
+	 * 
+	 * Generate sepearate Y-axes for all
+	 * datapoint series that will be rendered
+	 * on a chart.
+	 * @returns 
+	 */
+	separateAxis() {
+		this.isSeparateAxis = true;
 		return this;
 	}
 	

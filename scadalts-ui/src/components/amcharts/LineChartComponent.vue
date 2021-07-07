@@ -36,6 +36,7 @@ export default {
 	props: {
 		pointIds: { type: String, required: true },
 		useXid: { type: Boolean },
+		separateAxis: {type: Boolean},
 		stepLine: { type: Boolean },
 		startDate: { type: String },
 		endDate: { type: String },
@@ -77,6 +78,9 @@ export default {
 
 			if (!!this.useXid) {
 				this.chartClass.xid();
+			}
+			if(!!this.separateAxis) {
+				this.chartClass.separateAxis();
 			}
 			if (!!this.stepLine) {
 				this.chartClass.stepLine();
