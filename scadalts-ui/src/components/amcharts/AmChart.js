@@ -88,7 +88,6 @@ export class AmChart {
 		this.liveUpdateInterval = setInterval(async () => {
 			let newTimestamp = new Date().getTime();
 			try {
-				console.log(this.lastUpdate, newTimestamp);
 				this.chart.addData(await this.fetchPointValues(this.lastUpdate, newTimestamp));
 				this.lastUpdate = newTimestamp;
 			} catch (error) {
@@ -166,13 +165,17 @@ export class AmChart {
 	/**
 	 * @private
 	 */
-	prepareAxisY(opposite = false) {
-		let axis = this.chart.yAxes.push(new am4charts.ValueAxis());
-		axis.tooltip.disabled = false;
-		if (opposite) {
-			axis.renderer.opposite = opposite;
+	prepareAxisY(opposite = false, axisId = "NumericAxis") {
+		let axis = this.chart.yAxes.values.find(a => a.id === axisId);
+		if(!axis) {
+			axis = this.chart.yAxes.push(new am4charts.ValueAxis());
+			axis.id = axisId
+			axis.tooltip.disabled = false;
+			if (opposite) {
+				axis.renderer.opposite = opposite;
+			}
 		}
-		return axis;
+		return axis;		
 	}
 
 	/**
@@ -266,7 +269,7 @@ export class AmChart {
 			case 'BinaryValue':
 			case 'MultistateValue':
 				series = this.chart.series.push(new am4charts.StepLineSeries());
-				series.yAxis = this.prepareAxisY(true);
+				series.yAxis = this.prepareAxisY(true, "BinaryAxis");
 				series.startLocation = 0.5;
 				break;
 			default:
