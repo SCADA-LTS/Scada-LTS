@@ -36,6 +36,16 @@ public class PointValueAmChartDAO {
             COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
     private static final String SELECT_ORDER = " ORDER BY " + COLUMN_TIMESTAMP + " ASC";
 
+    private static final String SELECT_VALUES_FOR_AGGREGATION = "SELECT " + COLUMN_DATAPOINT_ID + ", " +
+            "avg(" + COLUMN_VALUE + ") AS " + COLUMN_VALUE + ", " +
+            "max(" + COLUMN_TIMESTAMP + ") AS " + COLUMN_TIMESTAMP + ", " +
+            "substring(from_unixtime(max(" + COLUMN_TIMESTAMP + ")/1000),1,19) AS time " +
+            "FROM " + TABLE_NAME + " ";
+
+    private static final String CONDITION_TIMESTAMP =" AND " + COLUMN_TIMESTAMP + " >=? AND " + COLUMN_TIMESTAMP + " <=?";
+    private static final String GROUPBY_DATAPOINT_ID_TIMESTAMP = " GROUP BY " + COLUMN_DATAPOINT_ID + ", floor(" + COLUMN_TIMESTAMP + "/?)";
+
+
     /**
      * Get Point Values from Time Range
      *
@@ -71,6 +81,42 @@ public class PointValueAmChartDAO {
         List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
 
         return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
+
+    }
+
+    public List<Map<String, Double>> getPointValuesToCompareFromRange(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
+
+        String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
+
+        String sqlQuery = SELECT_VALUES_FOR_AGGREGATION +
+                selectDataPoints +
+                CONDITION_TIMESTAMP +
+                GROUPBY_DATAPOINT_ID_TIMESTAMP +
+                SELECT_ORDER;
+
+        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery,
+                new Object[]{startTs, endTs, aggregateMinDiffMs},
+                new PointValueChartRowMapper());
+
+        return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
+
+    }
+
+    public List<Map<String, Double>> getPointValuesFromRange(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
+
+        String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
+
+        String sqlQuery = SELECT_VALUES_FOR_AGGREGATION +
+                selectDataPoints +
+                CONDITION_TIMESTAMP +
+                GROUPBY_DATAPOINT_ID_TIMESTAMP +
+                SELECT_ORDER;
+
+        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery,
+                new Object[]{startTs, endTs, aggregateMinDiffMs},
+                new PointValueChartRowMapper());
+
+        return convertToAmChartDataObject(pvcList);
 
     }
 
