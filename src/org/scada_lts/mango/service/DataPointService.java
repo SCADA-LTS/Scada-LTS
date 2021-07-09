@@ -215,11 +215,16 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
 		
 		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
-		
-		DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
-				dpvo.getId());
-		
-		dpRT.updatePointValue(pvt);
+
+		if(dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
+            Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
+        } else {
+
+			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
+					dpvo.getId());
+
+			dpRT.updatePointValue(pvt);
+		}
 		
 	}
 
@@ -609,6 +614,4 @@ public class DataPointService implements MangoDataPoint {
 		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
-
-
 }
