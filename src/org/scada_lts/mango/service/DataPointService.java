@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -65,6 +66,9 @@ import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
+
+import static org.scada_lts.utils.AggregateUtils.calculateMinDiffMs;
+import static org.scada_lts.utils.AggregateUtils.withAggregation;
 
 /**
  * Service for DataPointDAO
@@ -584,34 +588,87 @@ public class DataPointService implements MangoDataPoint {
 	}
 
 	public List<Map<String, Double>> getPointValuesFromRangeXid(String pointString, long startTs, long endTs) {
-		List<Integer> pointIds = new ArrayList<>();
-		for(String xid: pointString.split(",")) {
-			pointIds.add(getDataPoint(xid).getId());
-		}
+		List<Integer> pointIds = getDataPointIdsByXid(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		if (withAggregation())
+			return aggregatePointValuesFromRangeXid(pointString, startTs, endTs);
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
 	public List<Map<String, Double>> getPointValuesFromRangeId(String pointString, long startTs, long endTs) {
-		List<Integer> pointIds = new ArrayList<>();
-		for(String id: pointString.split(",")) {
-			pointIds.add(Integer.parseInt(id));
-		}
+		List<Integer> pointIds = getDataPointIds(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		if (withAggregation())
+			return aggregatePointValuesFromRangeId(pointString, startTs, endTs);
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
 	public List<Map<String, Double>> getPointValuesToCompareFromRangeXid(String pointString, long startTs, long endTs) {
-		List<Integer> pointIds = new ArrayList<>();
-		for(String xid: pointString.split(",")) {
-			pointIds.add(getDataPoint(xid).getId());
-		}
+		List<Integer> pointIds = getDataPointIdsByXid(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		if (withAggregation())
+			return aggregatePointValuesToCompareFromRangeXid(pointString, startTs, endTs);
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
 	public List<Map<String, Double>> getPointValuesToCompareFromRangeId(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = getDataPointIds(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		if (withAggregation())
+			return agreggatePointValuesToCompareFromRangeId(pointString, startTs, endTs);
+		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
+	}
+
+	private List<Map<String, Double>> aggregatePointValuesFromRangeXid(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = getDataPointIdsByXid(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs,
+				calculateMinDiffMs(startTs, endTs, pointIds.size()));
+	}
+
+	private List<Map<String, Double>> aggregatePointValuesFromRangeId(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = getDataPointIds(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(),
+				startTs, endTs, calculateMinDiffMs(startTs, endTs, pointIds.size()));
+	}
+
+	private List<Map<String, Double>> aggregatePointValuesToCompareFromRangeXid(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = getDataPointIdsByXid(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(),
+				startTs, endTs, calculateMinDiffMs(startTs, endTs, pointIds.size()));
+	}
+
+	private List<Map<String, Double>> agreggatePointValuesToCompareFromRangeId(String pointString, long startTs, long endTs) {
+		List<Integer> pointIds = getDataPointIds(pointString);
+		if(pointIds.isEmpty())
+			return Collections.emptyList();
+		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(),
+				startTs, endTs, calculateMinDiffMs(startTs, endTs, pointIds.size()));
+	}
+
+	private List<Integer> getDataPointIds(String pointString) {
 		List<Integer> pointIds = new ArrayList<>();
 		for(String id: pointString.split(",")) {
 			pointIds.add(Integer.parseInt(id));
 		}
-		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
+		return pointIds;
 	}
+
+	private List<Integer> getDataPointIdsByXid(String pointString) {
+		List<Integer> pointIds = new ArrayList<>();
+		for(String xid: pointString.split(",")) {
+			pointIds.add(getDataPoint(xid).getId());
+		}
+		return pointIds;
+	}
+
 }
