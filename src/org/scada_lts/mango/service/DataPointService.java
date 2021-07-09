@@ -592,7 +592,8 @@ public class DataPointService implements MangoDataPoint {
 					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
 			if (pvcList.size() >= limit) {
 				return aggregatePointValuesFromRangeXid(pointString, startTs, endTs);
-			}
+			} else
+				return pointValueAmChartDao.convertToAmChartDataObject(pvcList);
 		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
@@ -607,7 +608,8 @@ public class DataPointService implements MangoDataPoint {
 					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
 			if (pvcList.size() >= limit) {
 				return aggregatePointValuesFromRangeId(pointString, startTs, endTs);
-			}
+			} else
+				return pointValueAmChartDao.convertToAmChartDataObject(pvcList);
 		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
@@ -622,6 +624,8 @@ public class DataPointService implements MangoDataPoint {
 					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
 			if (pvcList.size() >= limit) {
 				return aggregatePointValuesToCompareFromRangeXid(pointString, startTs, endTs);
+			} else {
+				pointValueAmChartDao.convertToAmChartCompareDataObject(pvcList, pointIds.get(0));
 			}
 		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
@@ -637,6 +641,8 @@ public class DataPointService implements MangoDataPoint {
 					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
 			if (pvcList.size() >= limit) {
 				return agreggatePointValuesToCompareFromRangeId(pointString, startTs, endTs);
+			} else {
+				pointValueAmChartDao.convertToAmChartCompareDataObject(pvcList, pointIds.get(0));
 			}
 		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);

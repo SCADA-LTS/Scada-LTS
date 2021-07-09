@@ -118,7 +118,7 @@ public class PointValueAmChartDAO {
         return pvcList;
     }
 
-    private List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
+    public List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
         List<Map<String, Double>> chartData = new ArrayList<>();
         Map<String, Double> entry = new HashMap<>();
 
@@ -199,7 +199,7 @@ public class PointValueAmChartDAO {
      * @param result    SQL result of Statement
      * @return          List of Java Maps containing values for data points in specific timestamp
      */
-    private List<Map<String, Double>> convertToAmChartDataObject(List<DataPointSimpleValue> result) {
+    public List<Map<String, Double>> convertToAmChartDataObject(List<DataPointSimpleValue> result) {
         List<Map<String, Double>> chartData = new ArrayList<>();
         Map<String, Double> entry = new HashMap<>();
         AtomicLong lastTimestamp = new AtomicLong();
