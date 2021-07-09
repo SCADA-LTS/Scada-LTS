@@ -67,8 +67,8 @@ import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
 
-import static org.scada_lts.utils.AggregateUtils.calculateMinDiffMs;
-import static org.scada_lts.utils.AggregateUtils.withAggregation;
+import static org.scada_lts.utils.AggregateUtils.*;
+import static org.scada_lts.utils.AggregateUtils.getApiAmchartsAggregationLimitMultiplierKey;
 
 /**
  * Service for DataPointDAO
@@ -586,8 +586,14 @@ public class DataPointService implements MangoDataPoint {
 		List<Integer> pointIds = getDataPointIdsByXid(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation())
-			return aggregatePointValuesFromRangeXid(pointString, startTs, endTs);
+		if (withAggregation()) {
+			int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
+			List<PointValueAmChartDAO.DataPointSimpleValue> pvcList =
+					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
+			if (pvcList.size() >= limit) {
+				return aggregatePointValuesFromRangeXid(pointString, startTs, endTs);
+			}
+		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
@@ -595,8 +601,14 @@ public class DataPointService implements MangoDataPoint {
 		List<Integer> pointIds = getDataPointIds(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation())
-			return aggregatePointValuesFromRangeId(pointString, startTs, endTs);
+		if (withAggregation()) {
+			int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
+			List<PointValueAmChartDAO.DataPointSimpleValue> pvcList =
+					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
+			if (pvcList.size() >= limit) {
+				return aggregatePointValuesFromRangeId(pointString, startTs, endTs);
+			}
+		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
@@ -604,8 +616,14 @@ public class DataPointService implements MangoDataPoint {
 		List<Integer> pointIds = getDataPointIdsByXid(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation())
-			return aggregatePointValuesToCompareFromRangeXid(pointString, startTs, endTs);
+		if (withAggregation()) {
+			int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
+			List<PointValueAmChartDAO.DataPointSimpleValue> pvcList =
+					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
+			if (pvcList.size() >= limit) {
+				return aggregatePointValuesToCompareFromRangeXid(pointString, startTs, endTs);
+			}
+		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
@@ -613,8 +631,14 @@ public class DataPointService implements MangoDataPoint {
 		List<Integer> pointIds = getDataPointIds(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation())
-			return agreggatePointValuesToCompareFromRangeId(pointString, startTs, endTs);
+		if (withAggregation()) {
+			int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
+			List<PointValueAmChartDAO.DataPointSimpleValue> pvcList =
+					pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit);
+			if (pvcList.size() >= limit) {
+				return agreggatePointValuesToCompareFromRangeId(pointString, startTs, endTs);
+			}
+		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 

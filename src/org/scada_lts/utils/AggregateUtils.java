@@ -39,7 +39,7 @@ public final class AggregateUtils {
     public static int getNumberOfValuesLimit() {
         try {
             return ScadaConfig.getInstance().getInt(API_AMCHARTS_AGGREGATION_VALUES_LIMIT_KEY, NUMBER_OF_VALUES_LIMIT_DEFAULT);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error(e.getMessage());
             return 10000;
         }
@@ -48,7 +48,7 @@ public final class AggregateUtils {
     public static double getApiAmchartsAggregationLimitMultiplierKey() {
         try {
             return Double.parseDouble(ScadaConfig.getInstance().getProperty(API_AMCHARTS_AGGREGATION_LIMIT_MULTIPLIER_KEY));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error(e.getMessage());
             return 1;
         }
