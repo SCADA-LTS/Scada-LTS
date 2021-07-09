@@ -1,14 +1,20 @@
 package org.scada_lts.dao.pointvalues;
 
+import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.scada_lts.utils.AggregateUtils.getApiAmchartsAggregationLimitMultiplierKey;
+import static org.scada_lts.utils.AggregateUtils.getNumberOfValuesLimit;
 
 /**
  * Point Value DAO for AmChart Interface
@@ -25,6 +31,8 @@ public class PointValueAmChartDAO {
 
     private static final Log LOG = LogFactory.getLog(PointValueAmChartDAO.class);
 
+    private static final DataPointDAO dataPointDAO = new DataPointDAO();
+
     private static final String TABLE_NAME = "pointValues";
     private static final String COLUMN_DATAPOINT_ID = "dataPointId";
     private static final String COLUMN_TIMESTAMP = "ts";
@@ -35,6 +43,7 @@ public class PointValueAmChartDAO {
             COLUMN_VALUE + ", " +
             COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
     private static final String SELECT_ORDER = " ORDER BY " + COLUMN_TIMESTAMP + " ASC";
+    private static final String SELECT_LIMIT = " LIMIT ";
 
     private static final String SELECT_VALUES_FOR_AGGREGATION = "SELECT " + COLUMN_DATAPOINT_ID + ", " +
             "avg(" + COLUMN_VALUE + ") AS " + COLUMN_VALUE + ", " +
@@ -87,37 +96,38 @@ public class PointValueAmChartDAO {
     public List<Map<String, Double>> getPointValuesToCompareFromRange(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
 
         String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
+        String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
 
-        String sqlQuery = SELECT_VALUES_FOR_AGGREGATION +
-                selectDataPoints +
-                CONDITION_TIMESTAMP +
-                GROUPBY_DATAPOINT_ID_TIMESTAMP +
-                SELECT_ORDER;
+        int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
 
-        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery,
-                new Object[]{startTs, endTs, aggregateMinDiffMs},
-                new PointValueChartRowMapper());
+        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + SELECT_LIMIT + limit;
 
-        return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
+        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
+
+        if (pvcList.size() == limit) {
+            return convertToAmChartCompareDataObject(getGroupedPvcList(pointIds, startTs, endTs, aggregateMinDiffMs), pointIds[0]);
+        } else {
+            return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
+        }
 
     }
 
     public List<Map<String, Double>> getPointValuesFromRange(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
 
         String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
+        String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
 
-        String sqlQuery = SELECT_VALUES_FOR_AGGREGATION +
-                selectDataPoints +
-                CONDITION_TIMESTAMP +
-                GROUPBY_DATAPOINT_ID_TIMESTAMP +
-                SELECT_ORDER;
+        int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
 
-        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery,
-                new Object[]{startTs, endTs, aggregateMinDiffMs},
-                new PointValueChartRowMapper());
+        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + SELECT_LIMIT + limit;
 
-        return convertToAmChartDataObject(pvcList);
+        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
 
+        if (pvcList.size() == limit) {
+            return convertToAmChartDataObject(getGroupedPvcList(pointIds, startTs, endTs, aggregateMinDiffMs));
+        } else {
+            return convertToAmChartDataObject(pvcList);
+        }
     }
 
     private List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
@@ -135,6 +145,50 @@ public class PointValueAmChartDAO {
             entry = new HashMap<>();
         }
         return chartData;
+    }
+
+    private Map<Integer, List<Integer>> groupByDataType(int[] pointIds) {
+        Map<Integer, List<Integer>> datapoints = new HashMap<>();
+        for (int id : pointIds) {
+            DataPointVO dp = dataPointDAO.getDataPoint(id);
+            int dataPointType = dp.getPointLocator().getDataTypeId();
+            if (!datapoints.containsKey(dataPointType))
+                datapoints.put(dataPointType, new ArrayList<Integer>());
+            datapoints.get(dataPointType).add(id);
+        }
+        return datapoints;
+    }
+
+    private List<DataPointSimpleValue> getGroupedPvcList(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
+        Map<Integer, List<Integer>> groupedByDataType = groupByDataType(pointIds);
+
+        List<DataPointSimpleValue> pvcListAll = new ArrayList<DataPointSimpleValue>();
+
+        for (Map.Entry<Integer, List<Integer>> entry : groupedByDataType.entrySet()) {
+            String selectDataPointsGrouped = prepareWhereDataPointIdsStatement(entry.getValue().stream().mapToInt(i->i).toArray());
+
+            String sqlQueryGrouped = SELECT_VALUES_FOR_AGGREGATION +
+                    selectDataPointsGrouped +
+                    CONDITION_TIMESTAMP +
+                    GROUPBY_DATAPOINT_ID_TIMESTAMP +
+                    SELECT_ORDER;
+
+            if (entry.getKey() == DataTypes.BINARY) {
+                sqlQueryGrouped = sqlQueryGrouped.replaceFirst("avg", "max");
+            } else if (entry.getKey() == DataTypes.MULTISTATE){
+                sqlQueryGrouped = sqlQueryGrouped + SELECT_LIMIT + getNumberOfValuesLimit();
+            }
+
+            List<DataPointSimpleValue> pvcListGrouped = DAO.getInstance().getJdbcTemp().query(sqlQueryGrouped,
+                    new Object[]{startTs, endTs, aggregateMinDiffMs},
+                    new PointValueChartRowMapper());
+
+            pvcListAll.addAll(pvcListGrouped);
+        }
+
+        pvcListAll.sort(Comparator.comparing(DataPointSimpleValue::getTimestamp));
+
+        return pvcListAll;
     }
 
 
@@ -211,6 +265,10 @@ public class PointValueAmChartDAO {
             this.pointId = pointId;
             this.value = value;
             this.timestamp = timestamp;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
         }
     }
 
