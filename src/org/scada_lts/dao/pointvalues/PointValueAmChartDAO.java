@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.scada_lts.utils.AggregateUtils.getApiAmchartsAggregationLimitMultiplierKey;
 import static org.scada_lts.utils.AggregateUtils.getNumberOfValuesLimit;
 
 /**
@@ -95,39 +94,28 @@ public class PointValueAmChartDAO {
 
     public List<Map<String, Double>> getPointValuesToCompareFromRange(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
 
-        String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
-        String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
+        List<DataPointSimpleValue> pvcList = getGroupedPvcList(pointIds, startTs, endTs, aggregateMinDiffMs);
 
-        int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
-
-        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + SELECT_LIMIT + limit;
-
-        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
-
-        if (pvcList.size() == limit) {
-            return convertToAmChartCompareDataObject(getGroupedPvcList(pointIds, startTs, endTs, aggregateMinDiffMs), pointIds[0]);
-        } else {
-            return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
-        }
-
+        return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
     }
 
     public List<Map<String, Double>> getPointValuesFromRange(int[] pointIds, long startTs, long endTs, long aggregateMinDiffMs) {
 
+        List<DataPointSimpleValue> pvcList = getGroupedPvcList(pointIds, startTs, endTs, aggregateMinDiffMs);
+
+        return convertToAmChartDataObject(pvcList);
+    }
+
+    public List<DataPointSimpleValue> getPointValuesFromRangeWithLimit(int[] pointIds, long startTs, long endTs, int limit) {
+
         String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
         String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
-
-        int limit = (int) (getNumberOfValuesLimit() * getApiAmchartsAggregationLimitMultiplierKey());
 
         String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + SELECT_LIMIT + limit;
 
         List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
 
-        if (pvcList.size() == limit) {
-            return convertToAmChartDataObject(getGroupedPvcList(pointIds, startTs, endTs, aggregateMinDiffMs));
-        } else {
-            return convertToAmChartDataObject(pvcList);
-        }
+        return pvcList;
     }
 
     private List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
@@ -256,7 +244,7 @@ public class PointValueAmChartDAO {
         return statement.toString();
     }
 
-    private static class DataPointSimpleValue {
+    public static class DataPointSimpleValue {
         int pointId;
         double value;
         long timestamp;
