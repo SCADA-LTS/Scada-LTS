@@ -28,8 +28,6 @@ public class PointValueAmChartDAO {
 
     private static final Log LOG = LogFactory.getLog(PointValueAmChartDAO.class);
 
-    private static final DataPointDAO dataPointDAO = new DataPointDAO();
-
     private static final String TABLE_NAME = "pointValues";
     private static final String COLUMN_DATAPOINT_ID = "dataPointId";
     private static final String COLUMN_TIMESTAMP = "ts";
