@@ -26,7 +26,7 @@
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field 
 							v-model="startDate"
-							:label="$t('modernwatchlist.settings.date.start')"
+							label="Start Date"
 							prepend-icon="mdi-calendar"
 							v-bind="attrs"
 							v-on="on"
@@ -53,7 +53,7 @@
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field 
 							v-model="startTime"
-							:label="$t('modernwatchlist.settings.time.start')"
+							label="Start Time"
 							prepend-icon="mdi-clock-time-four-outline"
 							v-bind="attrs"
 							v-on="on"
@@ -79,7 +79,7 @@
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field 
 							v-model="endDate"
-							:label="$t('modernwatchlist.settings.date.end')"
+							label="End Date"
 							prepend-icon="mdi-calendar"
 							v-bind="attrs"
 							v-on="on"
@@ -106,7 +106,7 @@
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field 
 							v-model="endTime"
-							:label="$t('modernwatchlist.settings.time.end')"
+							label="End Time"
 							prepend-icon="mdi-clock-time-four-outline"
 							v-bind="attrs"
 							v-on="on"
