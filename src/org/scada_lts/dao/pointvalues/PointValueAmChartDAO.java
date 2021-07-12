@@ -1,8 +1,11 @@
 package org.scada_lts.dao.pointvalues;
 
+import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -29,12 +32,31 @@ public class PointValueAmChartDAO {
     private static final String COLUMN_DATAPOINT_ID = "dataPointId";
     private static final String COLUMN_TIMESTAMP = "ts";
     private static final String COLUMN_VALUE = "pointValue";
+    private static final String COLUMN_DATA_TYPE = "dataType";
+
 
     private static final String SELECT_VALUES = "SELECT " +
             COLUMN_DATAPOINT_ID + ", " +
             COLUMN_VALUE + ", " +
             COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
     private static final String SELECT_ORDER = " ORDER BY " + COLUMN_TIMESTAMP + " ASC";
+    private static final String SELECT_LIMIT = " LIMIT ?";
+
+    private static final String SELECT_AVG_VALUES_FOR_AGGREGATION = "SELECT " + COLUMN_DATAPOINT_ID + ", " +
+            "avg(" + COLUMN_VALUE + ") AS " + COLUMN_VALUE + ", " +
+            "max(" + COLUMN_TIMESTAMP + ") AS " + COLUMN_TIMESTAMP + " " +
+            "FROM " + TABLE_NAME;
+
+    private static final String SELECT_MAX_VALUES_FOR_AGGREGATION = "SELECT " + COLUMN_DATAPOINT_ID + ", " +
+            "max(" + COLUMN_VALUE + ") AS " + COLUMN_VALUE + ", " +
+            "max(" + COLUMN_TIMESTAMP + ") AS " + COLUMN_TIMESTAMP + " " +
+            "FROM " + TABLE_NAME;
+
+    private static final String CONDITION_TIMESTAMP =" AND " + COLUMN_TIMESTAMP + " >=? AND " + COLUMN_TIMESTAMP + " <=?";
+    private static final String GROUPBY_DATAPOINT_ID_TIMESTAMP = " GROUP BY " + COLUMN_DATAPOINT_ID + ", floor(" + COLUMN_TIMESTAMP + "/?)";
+
+    private static final String CONDITION_DATA_TYPE = " AND " + COLUMN_DATA_TYPE + "=?";
+    private static final String WHERE_DATA_POINT = " WHERE " + COLUMN_DATAPOINT_ID + "=?";
 
     /**
      * Get Point Values from Time Range
@@ -74,7 +96,28 @@ public class PointValueAmChartDAO {
 
     }
 
-    private List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
+    public List<DataPointSimpleValue> aggregatePointValues(DataPointVO dataPoint, long startTs, long endTs,
+                                                           long intervalMs, int limit) {
+
+        if(dataPoint == null || dataPoint.getPointLocator() == null) {
+            return Collections.emptyList();
+        }
+        QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(), startTs, endTs, intervalMs, limit);
+        return DAO.getInstance().getJdbcTemp().query(aggregationQuery.getQuery(),
+                aggregationQuery.getArgs(), new PointValueChartRowMapper());
+    }
+
+    public List<DataPointSimpleValue> getPointValuesFromRangeWithLimit(int[] pointIds, long startTs, long endTs, int limit) {
+
+        String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
+        String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
+
+        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + " LIMIT " + limit;
+
+        return DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
+    }
+
+    public List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {
         List<Map<String, Double>> chartData = new ArrayList<>();
         Map<String, Double> entry = new HashMap<>();
 
@@ -90,8 +133,6 @@ public class PointValueAmChartDAO {
         }
         return chartData;
     }
-
-
 
     /**
      * Convert from SQL objects to AmChart Data interface
@@ -111,7 +152,7 @@ public class PointValueAmChartDAO {
      * @param result    SQL result of Statement
      * @return          List of Java Maps containing values for data points in specific timestamp
      */
-    private List<Map<String, Double>> convertToAmChartDataObject(List<DataPointSimpleValue> result) {
+    public List<Map<String, Double>> convertToAmChartDataObject(List<DataPointSimpleValue> result) {
         List<Map<String, Double>> chartData = new ArrayList<>();
         Map<String, Double> entry = new HashMap<>();
         AtomicLong lastTimestamp = new AtomicLong();
@@ -156,7 +197,7 @@ public class PointValueAmChartDAO {
         return statement.toString();
     }
 
-    private static class DataPointSimpleValue {
+    public static class DataPointSimpleValue {
         int pointId;
         double value;
         long timestamp;
@@ -165,6 +206,10 @@ public class PointValueAmChartDAO {
             this.pointId = pointId;
             this.value = value;
             this.timestamp = timestamp;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
         }
     }
 
@@ -179,4 +224,75 @@ public class PointValueAmChartDAO {
         }
     }
 
+
+    public static QueryArgs toAggregationQuery(int pointId, int dataType, long startTs, long endTs,
+                                         long intervalMs, int limit) {
+
+        String sqlQuery;
+
+        List<Object> args = new ArrayList<>();
+
+        args.add(pointId);
+        args.add(startTs);
+        args.add(endTs);
+        args.add(dataType);
+
+        switch (dataType) {
+            case DataTypes.BINARY:
+                sqlQuery = SELECT_MAX_VALUES_FOR_AGGREGATION +
+                        WHERE_DATA_POINT +
+                        CONDITION_TIMESTAMP +
+                        CONDITION_DATA_TYPE +
+                        GROUPBY_DATAPOINT_ID_TIMESTAMP +
+                        SELECT_ORDER;
+                args.add(intervalMs);
+                break;
+            case DataTypes.MULTISTATE:
+                sqlQuery = SELECT_VALUES +
+                        WHERE_DATA_POINT +
+                        CONDITION_TIMESTAMP +
+                        CONDITION_DATA_TYPE +
+                        SELECT_ORDER;
+                break;
+            case DataTypes.NUMERIC:
+                sqlQuery = SELECT_AVG_VALUES_FOR_AGGREGATION +
+                        WHERE_DATA_POINT +
+                        CONDITION_TIMESTAMP +
+                        CONDITION_DATA_TYPE +
+                        GROUPBY_DATAPOINT_ID_TIMESTAMP +
+                        SELECT_ORDER;
+                args.add(intervalMs);
+                break;
+            default:
+                sqlQuery = SELECT_VALUES +
+                        WHERE_DATA_POINT +
+                        CONDITION_TIMESTAMP +
+                        CONDITION_DATA_TYPE +
+                        SELECT_ORDER;
+        }
+
+        if(limit > 0) {
+            sqlQuery += SELECT_LIMIT;
+            args.add(limit);
+        }
+        return new QueryArgs(sqlQuery, args.toArray());
+    }
+
+    public static class QueryArgs {
+        private String query;
+        private Object[] args;
+
+        QueryArgs(String query, Object[] args) {
+            this.query = query;
+            this.args = args;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+
+        public Object[] getArgs() {
+            return args;
+        }
+    }
 }

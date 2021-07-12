@@ -220,6 +220,10 @@
 			<test name="org.scada_lts.permissions.migration.MigrationPermissionsTestsSuite"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.dao.pointvalues.PointValueAmChartDAOTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 

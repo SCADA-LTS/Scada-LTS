@@ -150,6 +150,7 @@ Properties properties for Line charts
 | color | String | color="#FFFC19" |
 | stroke-width | Number | stroke-width="3" |
 | aggregation | Number (default=0) | aggregation="100" |
+| separate-axes | Boolean | separate-axes |
 | show-scrollbar | Boolean | show-scrollbar |
 | show-legned | Boolean | show-legned |
 | show-bullets | Boolean | show-bullets |
