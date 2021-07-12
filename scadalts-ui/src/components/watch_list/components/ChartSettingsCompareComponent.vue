@@ -18,33 +18,113 @@
 				</v-select>
 			</v-col>
 
-			<v-col md="4" xs="4">
-				<v-menu offset-y :close-on-content-click="false" class="wl-menu-time-picker">
-					<template v-slot:activator="{ on }">
+			<v-col cols="2">
+				<v-menu
+					ref="start-date-menu"
+					:close-on-content-click="false"
+					:nudge-right="40"
+					transition="scale-transition"
+					offset-y
+					min-width="auto"
+					attach
+				>
+					<template v-slot:activator="{ on, attrs }">
 						<v-text-field
-							v-on="on"
+							v-model="point.startDate"
 							:label="$t('modernwatchlist.settings.date.start')"
-							:value="concatenateDateTime(point.startDate, point.startTime)"
+							prepend-icon="mdi-calendar"
+							v-bind="attrs"
+							v-on="on"
 							dense
 						></v-text-field>
 					</template>
-					<v-date-picker first-day-of-week="1" v-model="point.startDate"></v-date-picker>
-					<v-time-picker format="24hr" v-model="point.startTime"></v-time-picker>
+					<v-date-picker
+						v-model="point.startDate"
+						first-day-of-week="1"
+						no-title
+						scrollable
+					></v-date-picker>
+				</v-menu>
+			</v-col>
+			<v-col cols="2">
+				<v-menu
+					ref="start-time-menu"
+					:close-on-content-click="false"
+					:nudge-right="40"
+					transition="scale-transition"
+					offset-y
+					max-width="290px"
+					min-width="290px"
+					attach
+				>
+					<template v-slot:activator="{ on, attrs }">
+						<v-text-field
+							v-model="point.startTime"
+							:label="$t('modernwatchlist.settings.time.start')"
+							prepend-icon="mdi-clock-time-four-outline"
+							v-bind="attrs"
+							v-on="on"
+							dense
+						></v-text-field>
+					</template>
+					<v-time-picker
+						v-model="point.startTime"
+						format="24hr"
+						scrollable
+					></v-time-picker>
 				</v-menu>
 			</v-col>
 
-			<v-col md="4" xs="4">
-				<v-menu offset-y :close-on-content-click="false" class="wl-menu-time-picker">
-					<template v-slot:activator="{ on }">
+			<v-col cols="2">
+				<v-menu
+					ref="end-date-menu"
+					:close-on-content-click="false"
+					:nudge-right="40"
+					transition="scale-transition"
+					offset-y
+					min-width="auto"
+					attach
+				>
+					<template v-slot:activator="{ on, attrs }">
 						<v-text-field
-							v-on="on"
+							v-model="point.endDate"
 							:label="$t('modernwatchlist.settings.date.end')"
-							:value="concatenateDateTime(point.endDate, point.endTime)"
+							prepend-icon="mdi-calendar"
+							v-bind="attrs"
+							v-on="on"
 							dense
 						></v-text-field>
 					</template>
-					<v-date-picker first-day-of-week="1" v-model="point.endDate"></v-date-picker>
-					<v-time-picker format="24hr" v-model="point.endTime"></v-time-picker>
+					<v-date-picker
+						v-model="point.endDate"
+						first-day-of-week="1"
+						no-title
+						scrollable
+					></v-date-picker>
+				</v-menu>
+			</v-col>
+			<v-col cols="2">
+				<v-menu
+					ref="end-time-menu"
+					:close-on-content-click="false"
+					:nudge-right="40"
+					transition="scale-transition"
+					offset-y
+					max-width="290px"
+					min-width="290px"
+					attach
+				>
+					<template v-slot:activator="{ on, attrs }">
+						<v-text-field
+							v-model="point.endTime"
+							:label="$t('modernwatchlist.settings.time.end')"
+							prepend-icon="mdi-clock-time-four-outline"
+							v-bind="attrs"
+							v-on="on"
+							dense
+						></v-text-field>
+					</template>
+					<v-time-picker v-model="point.endTime" format="24hr" scrollable></v-time-picker>
 				</v-menu>
 			</v-col>
 		</v-row>
@@ -84,15 +164,14 @@ export default {
 	},
 
 	methods: {
-		
 		loadSettings(watchListId) {
 			let loadedData = JSON.parse(localStorage.getItem(`MWL_${watchListId}_P`));
 			if (!!loadedData) {
 				if (loadedData.type === this.CHART_TYPE) {
 					for (let i = 0; i < loadedData.pointSettings.length; i++) {
 						this.pointSettings[i].dataPoint = loadedData.pointSettings[i].dataPoint;
-						this.pointSettings[i].startDate = loadedData.pointSettings[i].startDate
-						this.pointSettings[i].startTime = loadedData.pointSettings[i].startTime
+						this.pointSettings[i].startDate = loadedData.pointSettings[i].startDate;
+						this.pointSettings[i].startTime = loadedData.pointSettings[i].startTime;
 						this.pointSettings[i].endDate = loadedData.pointSettings[i].endDate;
 						this.pointSettings[i].endTime = loadedData.pointSettings[i].endTime;
 					}
@@ -127,7 +206,7 @@ export default {
 						),
 					},
 				],
-			}
+			};
 		},
 
 		saveSettings(watchListId) {
