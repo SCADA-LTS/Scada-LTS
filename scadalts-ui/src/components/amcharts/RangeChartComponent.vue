@@ -61,6 +61,7 @@ export default {
 	props: {
 		pointIds: { type: String, required: true },
 		useXid: { type: Boolean },
+		separateAxis: {type: Boolean},
 		stepLine: { type: Boolean },
 		width: { type: String, default: '500' },
 		height: { type: String, default: '400' },
@@ -102,6 +103,9 @@ export default {
 
 			if (!!this.useXid) {
 				this.chartClass.xid();
+			}
+			if (!!this.separateAxis) {
+				this.chartClass.separateAxis();
 			}
 			if (!!this.stepLine) {
 				this.chartClass.stepLine();

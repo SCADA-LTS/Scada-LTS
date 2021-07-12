@@ -203,6 +203,7 @@ for (let x = 0; x < 10; x++) {
 					props: {
 						pointIds: el.getAttribute('point-ids'),
 						useXid: el.getAttribute('use-xid') !== null,
+						separateAxis: el.getAttribute('separate-axes') !== null,
 						stepLine: el.getAttribute('step-line') !== null,
 						startDate: el.getAttribute('start-date'),
 						endDate: el.getAttribute('end-date'),
@@ -235,6 +236,7 @@ for (let x = 0; x < 10; x++) {
 					props: {
 						pointIds: el.getAttribute('point-ids'),
 						useXid: el.getAttribute('use-xid') !== null,
+						separateAxis: el.getAttribute('separate-axes') !== null,
 						stepLine: el.getAttribute('step-line') !== null,
 						aggregation: Number(el.getAttribute('aggregation')),
 						strokeWidth: Number(el.getAttribute('stroke-width')),
