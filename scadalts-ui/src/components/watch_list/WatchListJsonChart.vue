@@ -308,7 +308,8 @@ export default {
 	width: 33%;
 }
 .wl-chart-settings {
-	max-height: 90px;
+	max-height: 140px;
+	margin-top: 10px;
 }
 @media (max-width: 960px) {
 	.wl-chart-settings {

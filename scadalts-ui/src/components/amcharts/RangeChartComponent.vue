@@ -17,19 +17,19 @@
 			<v-col cols="5">
 				<v-menu offset-y :close-on-content-click="false" attach>
 					<template v-slot:activator="{ on }">
-						<v-text-field v-on="on" label="Start Date" :value="concatenateDateTime(startDate, startTime)"></v-text-field>
+						<v-text-field v-on="on" label="Start Date" v-model="chartStartTime"></v-text-field>
 					</template>
-					<v-date-picker first-day-of-week="1" v-model="startDate"> </v-date-picker>
-					<v-time-picker format="24hr" v-model="startTime"></v-time-picker>
+					<v-date-picker @change="fromatChartTime()" first-day-of-week="1" v-model="startDate"> </v-date-picker>
+					<v-time-picker @change="fromatChartTime()" format="24hr" v-model="startTime"></v-time-picker>
 				</v-menu>
 			</v-col>
 			<v-col cols="5">
 				<v-menu offset-y :close-on-content-click="false" attach>
 					<template v-slot:activator="{ on }">
-						<v-text-field v-on="on" label="End Date" :value="concatenateDateTime(endDate, endTime)"></v-text-field>
+						<v-text-field v-on="on" label="End Date" v-model="chartEndTime"></v-text-field>
 					</template>
-					<v-date-picker first-day-of-week="1" v-model="endDate"> </v-date-picker>
-					<v-time-picker format="24hr" v-model="endTime"></v-time-picker>
+					<v-date-picker @change="fromatChartTime()" first-day-of-week="1" v-model="endDate"> </v-date-picker>
+					<v-time-picker @change="fromatChartTime()" format="24hr" v-model="endTime"></v-time-picker>
 				</v-menu>
 			</v-col>
 			<v-col cols="2">
@@ -81,6 +81,8 @@ export default {
 			endDate: '',
 			startTime: '',
 			endTime: '',
+			chartStartTime: '',
+			chartEndTime: '',
 		};
 	},
 
@@ -92,8 +94,8 @@ export default {
 		initChart() {
 			this.chartClass = new AmCharts(this.$refs.chartReference, 'xychart', this.pointIds)
 				.showCursor()
-				.startTime(`${this.startDate} ${this.startTime}`)
-				.endTime(`${this.endDate} ${this.endTime}`)
+				.startTime(this.chartStartTime)
+				.endTime(this.chartEndTime)
 				.setStrokeWidth(this.strokeWidth)
 				.showScrollbar()
 				.showLegend();
@@ -171,6 +173,7 @@ export default {
 			} else {
 				this.initialTime();
 			}
+			this.fromatChartTime();
 		},
 
 		saveToLocalStorage() {
@@ -205,9 +208,10 @@ export default {
 			}
 		},
 
-		concatenateDateTime(date, time) {
-			return `${date} ${time}`;
-		}
+		fromatChartTime() {
+			this.chartStartTime = `${this.startDate} ${this.startTime}`;
+			this.chartEndTime = `${this.endDate} ${this.endTime}`
+		},
 	},
 };
 </script>
