@@ -184,6 +184,8 @@
 	"modernwatchlist.settings.compare.point2.tooltip": "Denken Sie daran, diesen Datenpunkt der 2. X-Achse im Menü 'Weitere Einstellungen' zuzuweisen!",
 	"modernwatchlist.settings.date.end": "Endtermin",
 	"modernwatchlist.settings.date.start": "Anfangsdatum",
+	"modernwatchlist.settings.time.end": "Endzeit",
+	"modernwatchlist.settings.time.start": "Startzeit",
 	"modernwatchlist.settings.live.performance.1": "Aktualisieren Sie alle 1 Sekunde",
 	"modernwatchlist.settings.live.performance.10": "Aktualisieren Sie alle 10 Sekunden",
 	"modernwatchlist.settings.live.performance.2": "Aktualisieren Sie alle 2 Sekunden",
