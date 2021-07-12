@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import dataSource from './dataSource';
+import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
 import storeEvents from './events';
 import storeEventDetectors from './dataPoint/eventDetecotrs';
@@ -26,6 +27,7 @@ const myLoggerForVuexMutation = (store) => {
 export default new Vuex.Store({
 	modules: {
 		dataSource,
+		dataSourceState,
 		dataPoint,
 		storeEventDetectors,
 		storeEvents,

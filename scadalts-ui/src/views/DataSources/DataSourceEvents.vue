@@ -2,9 +2,14 @@
 <v-dialog v-model="dialogVisible" max-width="800">
     <template v-slot:activator="{on, attrs}">
         <v-badge overlap color="blue" content="23">
-            <v-btn icon elevation="0" v-bind="attrs" v-on="on">
-			    <v-icon>mdi-bell-circle</v-icon>
-		    </v-btn>
+			<v-tooltip bottom v-bind="attrs" v-on="on">
+				<template v-slot:activator="{ on, attrs }">
+					<v-btn icon elevation="0" v-bind="attrs" v-on="on" @click="dialogVisible = true">
+						<v-icon>mdi-bell-circle</v-icon>
+					</v-btn>
+				</template>
+				<span>Events</span>
+			</v-tooltip>
         </v-badge>
     </template>
 

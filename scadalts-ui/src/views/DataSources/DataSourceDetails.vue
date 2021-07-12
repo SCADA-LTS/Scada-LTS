@@ -11,15 +11,32 @@
 		</v-spacer>
 		<DataSourceEvents>
 		</DataSourceEvents>
-		<v-btn icon elevation="0">
-			<v-icon> mdi-alert-decagram </v-icon>
-		</v-btn>
-		<v-btn icon elevation="0" @click="openEditor()">
-			<v-icon> mdi-pencil </v-icon>
-		</v-btn>
-		<v-btn icon elevation="0" @click="deleteDataSource()">
-			<v-icon> mdi-delete </v-icon>
-		</v-btn>
+		<v-tooltip bottom>
+			<template v-slot:activator="{ on, attrs }">
+				<v-btn icon elevation="0" v-bind="attrs" v-on="on">
+					<v-icon> mdi-alert-decagram </v-icon>
+				</v-btn>
+			</template>
+			<span>Enable all points</span>
+		</v-tooltip>
+
+		<v-tooltip bottom>
+			<template v-slot:activator="{ on, attrs }">
+				<v-btn icon @click="openEditor()" elevation="0" v-bind="attrs" v-on="on">
+					<v-icon> mdi-pencil </v-icon>
+				</v-btn>
+			</template>
+			<span>Edit</span>
+		</v-tooltip>
+
+		<v-tooltip bottom>
+			<template v-slot:activator="{ on, attrs }">
+				<v-btn icon @click="deleteDataSource()" elevation="0" v-bind="attrs" v-on="on">
+					<v-icon> mdi-delete </v-icon>
+				</v-btn>
+			</template>
+			<span>Delete</span>
+		</v-tooltip>
 	</div>
 </template>
 <script>

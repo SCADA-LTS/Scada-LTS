@@ -99,16 +99,22 @@
 				<v-list-item-title>
 					<v-row align="center" justify="center">
 						<v-col cols="1">
-							<v-btn
-								color="primary"
-								dark
-								fab
-								x-small
-								elevation="0"
-								@click="createDataPoint(datasource)"
-							>
-								<v-icon> mdi-plus</v-icon>
-							</v-btn>
+							<v-tooltip bottom>
+								<template v-slot:activator="{ on, attrs }">
+									<v-btn v-bind="attrs" v-on="on"
+										color="primary"
+										dark
+										fab
+										x-small
+										elevation="0"
+										@click="createDataPoint(datasource)"
+									>
+										<v-icon> mdi-plus</v-icon>
+									</v-btn>
+								</template>
+								<span>Create new data point</span>
+							</v-tooltip>
+							
 						</v-col>
 					</v-row>
 				</v-list-item-title>

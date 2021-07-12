@@ -76,14 +76,14 @@ const ds = {
 						{
 							enabled: false,
 							name: 'DP-01',
-							type: 'Binary',
+							type: 0,
 							desc: 'Additional Descr',
 							xid: 'DP_0121323',
 						},
 						{
 							enabled: true,
 							name: 'DP-02',
-							type: 'Numeric',
+							type: 2,
 							desc: 'Descr',
 							xid: 'DP_0121314',
 						},
