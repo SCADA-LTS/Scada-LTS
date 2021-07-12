@@ -224,7 +224,10 @@ public class SystemSettingsDAO {
 	}
 
 	public static boolean getBooleanValueOrDefault(String key) {
-		return getBooleanValue(key, Boolean.parseBoolean(String.valueOf(DEFAULT_VALUES.get(key))));
+		String value = getValue(key, null);
+		if (value == null)
+			return Boolean.parseBoolean(String.valueOf(DEFAULT_VALUES.get(key)));
+		return Boolean.parseBoolean(value);
 	}
 
 	public void setValue(final String key, final String value) {
