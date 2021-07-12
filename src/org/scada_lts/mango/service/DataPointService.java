@@ -46,6 +46,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -589,42 +590,42 @@ public class DataPointService implements MangoDataPoint {
 		return json;
 	}
 
-	public List<Map<String, Double>> getPointValuesFromRangeXid(String pointString, long startTs, long endTs) {
+	public List<Map<String, Double>> getPointValuesFromRangeXid(String pointString, long startTs, long endTs, AggregateSettings aggregateSettings) {
 		List<Integer> pointIds = getDataPointIdsByXid(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation()) {
-			return pointValueAmChartDao.convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds));
+		if (aggregateSettings.isEnabled()) {
+			return pointValueAmChartDao.convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings));
 		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
-	public List<Map<String, Double>> getPointValuesFromRangeId(String pointString, long startTs, long endTs) {
+	public List<Map<String, Double>> getPointValuesFromRangeId(String pointString, long startTs, long endTs, AggregateSettings aggregateSettings) {
 		List<Integer> pointIds = getDataPointIds(pointString);
 		if (pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation()) {
-			return pointValueAmChartDao.convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds));
+		if (aggregateSettings.isEnabled()) {
+			return pointValueAmChartDao.convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings));
 		}
 		return pointValueAmChartDao.getPointValuesFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
-	public List<Map<String, Double>> getPointValuesToCompareFromRangeXid(String pointString, long startTs, long endTs) {
+	public List<Map<String, Double>> getPointValuesToCompareFromRangeXid(String pointString, long startTs, long endTs, AggregateSettings aggregateSettings) {
 		List<Integer> pointIds = getDataPointIdsByXid(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation()) {
-			return pointValueAmChartDao.convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, pointIds), pointIds.get(0));
+		if (aggregateSettings.isEnabled()) {
+			return pointValueAmChartDao.convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings), pointIds.get(0));
 		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
 
-	public List<Map<String, Double>> getPointValuesToCompareFromRangeId(String pointString, long startTs, long endTs) {
+	public List<Map<String, Double>> getPointValuesToCompareFromRangeId(String pointString, long startTs, long endTs, AggregateSettings aggregateSettings) {
 		List<Integer> pointIds = getDataPointIds(pointString);
 		if(pointIds.isEmpty())
 			return Collections.emptyList();
-		if (withAggregation()) {
-			return pointValueAmChartDao.convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, pointIds), pointIds.get(0));
+		if (aggregateSettings.isEnabled()) {
+			return pointValueAmChartDao.convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings), pointIds.get(0));
 		}
 		return pointValueAmChartDao.getPointValuesToCompareFromRange(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs);
 	}
@@ -634,6 +635,12 @@ public class DataPointService implements MangoDataPoint {
                 .map(a -> getDataPointOpt(a))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
+				.peek(a -> {
+					if(a.getPointLocator() == null) {
+						LOG.warn(PointValueAmChartDAO.dataPointInfo(a));
+					}
+				})
+				.filter(a -> a.getPointLocator() != null)
                 .collect(Collectors.toList());
     }
 
@@ -653,18 +660,18 @@ public class DataPointService implements MangoDataPoint {
 		return pointIds;
 	}
 
-	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs, List<Integer> pointIds) {
-		int limit = getNumberOfValuesLimit();
+	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs, List<Integer> pointIds, AggregateSettings aggregateSettings) {
+		int limit = aggregateSettings.getValuesLimit();
 		List<PointValueAmChartDAO.DataPointSimpleValue> pvcList = pointValueAmChartDao.getPointValuesFromRangeWithLimit(pointIds.stream().mapToInt(i -> i).toArray(), startTs, endTs, limit + 1);
 		if (pvcList.size() > limit) {
 			pvcList.clear();
-			return aggregateSortValues(startTs, endTs, pointIds, limit);
+			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
+			return aggregateSortValues(startTs, endTs, pointIds, limit, intervalMs);
 		}
 		return pvcList;
 	}
 
-	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateSortValues(long startTs, long endTs, List<Integer> pointIds, int limit) {
-		long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size());
+	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateSortValues(long startTs, long endTs, List<Integer> pointIds, int limit, long intervalMs) {
 		return getDataPoints(pointIds).stream()
 				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs, limit).stream())
 				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
