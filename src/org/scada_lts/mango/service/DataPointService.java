@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
