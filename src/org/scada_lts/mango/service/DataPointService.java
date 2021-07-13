@@ -26,7 +26,6 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.web.dwr.MethodFilter;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
