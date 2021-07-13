@@ -74,7 +74,7 @@ public class AmChartValuesAPI {
 
     @GetMapping("/by-xid")
     public ResponseEntity<List<Map<String, Double>>> getValuesFromTimeRangeByXid(
-            @RequestParam Set<String> xids,
+            @RequestParam Set<String> ids,
             @RequestParam long startTs,
             @RequestParam long endTs,
             @RequestParam(required = false, defaultValue = "false")  boolean cmp,
@@ -85,7 +85,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(xids.isEmpty()) {
+                if(ids.isEmpty()) {
                     return ResponseEntity.badRequest().build();
                 }
                 if(configFromSystem) {
@@ -95,7 +95,7 @@ public class AmChartValuesAPI {
                     if(!errors.isEmpty())
                         return ResponseEntity.badRequest().build();
                 }
-                return getPointValuesFromRangeByXid(xids, startTs, endTs, cmp, aggregateSettings);
+                return getPointValuesFromRangeByXid(ids, startTs, endTs, cmp, aggregateSettings);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
