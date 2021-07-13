@@ -26,6 +26,7 @@ export class AmChart {
 		this.startTime = build.startTimestamp;
 		this.endTime = build.endTimestamp;
 		this.groupCount = build.groupCount;
+		this.aggregateApiSettings = build.aggregateApiSettings;
 
 		this.refreshRate = build.refreshRate;
 		this.isCompareMode = build.isCompareMode;
@@ -315,11 +316,18 @@ export class AmChart {
 		this.lastUpdate = endTs;
 		let requestUrl = `./api/amcharts/?startTs=${startTs}&endTs=${endTs}&ids=${this.pointIds}`;
 		if (!!this.isExportId) {
-			requestUrl += '&xid=1';
+			requestUrl += '&xid=true';
 		}
 		if (!!this.isCompareMode) {
-			requestUrl += '&cmp=1';
+			requestUrl += '&cmp=true';
 		}
+		if (!!this.aggregateApiSettings) {
+			requestUrl += '&configFromSystem=false';
+			requestUrl += '&enabled=true';
+			requestUrl += `&valuesLimit=${this.aggregateApiSettings.valuesLimit}`;
+			requestUrl += `&limitFactor=${this.aggregateApiSettings.limitFactor}`;
+		}
+
 		return new Promise((resolve, reject) => {
 			axios
 				.get(requestUrl)
@@ -645,6 +653,25 @@ export class AmChartBuilder {
 	 */
 	withLiveUpdate(refreshRate) {
 		this.refreshRate = refreshRate;
+		return this;
+	}
+
+	/**
+	 * Set Point Values Agregation on Backend
+	 * 
+	 * Set dedicated agregation for specific chart.
+	 * Override the SystemSettings settings.
+	 * 
+	 *@param {Number} valuesLimit - Limit the number of values that will be displayed on the chart
+	 *@param {Number} limitFactor - Factor that will detect when the aggegation should be activated.
+	 *@returns
+	 */
+	setApiAggregation(valuesLimit, limitFactor = 1) {
+		this.aggregateApiSettings = {
+			enabled: true,
+			valuesLimit: valuesLimit,
+			limitFactor: limitFactor
+		}
 		return this;
 	}
 

@@ -131,6 +131,20 @@ To generate multiple charts on View page just use unique identifiers.
 
 ![Multiple Charts](../../assets/doc/watch_list/MWL_CompareCharts.gif)
 
+### Aggregation
+To increase the performance of the AmCharts there are two different approches. The first one is the build-in basic chart point aggregation. 
+It limit the data displayed on the AmChart based on the **"aggregation"**
+parameter provided with chart. This settings reduce the rendered data on
+a user browser.
+
+Second approach is related with Server-side aggregation. This mechanizm 
+reduce the amount of data send to the Chart Component. It contains the 
+aggregates calculated by Scada-LTS server. To configure that aggregation
+use parameter **"server-values-limit"**. Using that it you do not have to
+worry how much data is in specific range because the API will send values
+that match that limitation. You can modify that factor by using **"server-limit-factor"** argument. It is the factor when the server-side
+aggregation is going to be enabled. So when it is equal to "1.5" that means from specific range where are 30 000 of points and "server-values-limit" is set to 20 000 the server side aggregation is enabled. Because `1.5 * 20000 = 30000`. So it is enable when there are more than 30000 point values.  
+
 ## Modern Chart documentation:
 
 Available properties in one place for all chart types. Charts could be exported to external file in graphical or text way. You can export to _.png, _.jpg, _.csv, _.json files.
@@ -156,7 +170,8 @@ Properties properties for Line charts
 | show-bullets | Boolean | show-bullets |
 | show-export-menu | Boolean | show-export-menu |
 | smooth-line | Number [0-1] | smooth-line="0.75" |
-
+| server-values-limit | Number | server-values-limit="10000" |
+| server-limit-factor | Number | server-limit-factor="1.5" |
 
 # Author
 
