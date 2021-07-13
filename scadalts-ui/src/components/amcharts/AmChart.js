@@ -175,6 +175,10 @@ export class AmChart {
 			if (opposite) {
 				axis.renderer.opposite = opposite;
 			}
+			if(axisId === 'BinaryAxis') {
+				axis.max = 1.4;
+				axis.min = -0.2;
+			}
 		}
 		return axis;		
 	}
@@ -271,7 +275,11 @@ export class AmChart {
 			case 'MultistateValue':
 				series = this.chart.series.push(new am4charts.StepLineSeries());
 				if(!this.isSeparateAxis) {
-					series.yAxis = this.prepareAxisY(true, "BinaryAxis");
+					if(pointDetails.type === 'BinaryValue') {
+						series.yAxis = this.prepareAxisY(true, "BinaryAxis");
+					} else {
+						series.yAxis = this.prepareAxisY(true, "MultistateAxis");
+					}
 				}
 				series.startLocation = 0.5;
 				break;

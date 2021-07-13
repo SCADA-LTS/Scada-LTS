@@ -71,7 +71,9 @@
 			</v-row>
 		</v-container>
 		<v-container fluid>
-			<LineChartComponent :pointId="this.$route.params.id" :refreshRate="chartRefreshRate"> </LineChartComponent>
+			<LineChartComponent :pointIds="this.$route.params.id" :refreshRate="chartRefreshRate"
+				:showLegend="true" :showScrollbar="true" :width="chartWidth"
+			></LineChartComponent>
 		</v-container>
 		<v-snackbar v-model="response.status">
 			{{ response.message }}
@@ -119,11 +121,21 @@ export default {
 			dataPointDetails: undefined,
 			confirmToggleDialog: false,
 			chartRefreshRate: 10000,
+			chartWidth: 500,
 			response: {
 				status: false,
 				message: '',
 			},
 		};
+	},
+
+	created() {
+		window.addEventListener('resize', this.handleChartResize);
+		this.handleChartResize();
+	},
+
+	destroyed() {
+		window.removeEventListener('resize', this.handleChartResize);
 	},
 
 	mounted() {
@@ -179,6 +191,10 @@ export default {
 					this.response.message = this.$t('common.snackbar.update.fail');
 				});
 		},
+
+		handleChartResize() {
+			this.chartWidth = window.innerWidth - 200;
+		}
 	},
 };
 </script>
