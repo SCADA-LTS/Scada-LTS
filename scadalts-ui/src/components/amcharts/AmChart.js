@@ -178,6 +178,14 @@ export class AmChart {
 			if(axisId === 'BinaryAxis') {
 				axis.max = 1.4;
 				axis.min = -0.2;
+				axis.renderer.labels.template.disabled = true;
+				axis.renderer.grid.template.disabled = true;
+				let zeroRange = axis.axisRanges.create();
+				zeroRange.value = 0;
+				zeroRange.label.text = '0';
+				let oneRange = axis.axisRanges.create();
+				oneRange.value = 1;
+				oneRange.label.text = '1';
 			}
 		}
 		return axis;		
