@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.web.dwr.MethodFilter;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
@@ -101,6 +103,8 @@ public class DataPointService implements MangoDataPoint {
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
+
+	private static final PointValueDAO4REST pointValueDao4Rest = new PointValueDAO4REST();
 
 	@Override
 	public String generateUniqueXid() {
@@ -215,23 +219,15 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-
-
-	public void save(String value, String xid, int typePointValueOfREST ) {
+	public void save(User user, String value, String xid, int typePointValueOfREST) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		
-		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
+		pointValueDao4Rest.save(value, typePointValueOfREST, dpvo.getId());
+		setPoint(user, dpvo, value);
+	}
 
-		if(dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
-            Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
-        } else {
-
-			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
-					dpvo.getId());
-
-			dpRT.updatePointValue(pvt);
-		}
-		
+	private void setPoint(User user, DataPointVO point, String valueStr) {
+		Permissions.ensureDataPointSetPermission(user, point);
+		setPointImpl(point, valueStr, user);
 	}
 
 	public void saveAPI(User user, String value, String xid) {
