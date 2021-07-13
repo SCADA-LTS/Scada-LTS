@@ -330,10 +330,13 @@ export class AmChart {
 			startTs = endTs - 3600000;
 		}
 		this.lastUpdate = endTs;
-		let requestUrl = `./api/amcharts/?startTs=${startTs}&endTs=${endTs}&ids=${this.pointIds}`;
+		let requestUrl = `./api/amcharts`;
 		if (!!this.isExportId) {
-			requestUrl += '&xid=true';
+			requestUrl += `/by-xid`;
+		} else {
+			requestUrl += `/by-id`;
 		}
+		requestUrl += `?startTs=${startTs}&endTs=${endTs}&ids=${this.pointIds}`;
 		if (!!this.isCompareMode) {
 			requestUrl += '&cmp=true';
 		}
