@@ -1,20 +1,4 @@
-const DataTypes = {
-    UNKNOWN: 0,
-    BINARY: 1,
-    MULTISTATE: 2,
-    NUMERIC: 3,
-    APLHANUMERIC: 4
-}
-
-const ALTERNATE_BOOLEAN = 1;
-const BROWNIAN = 2;
-const INCREMENT_ANALOG = 3;
-const INCREMENT_MULTISTATE = 4;
-const NO_CHANGE = 5;
-const RANDOM_ANALOG = 6;
-const RANDOM_BOOLEAN = 7;
-const RANDOM_MULTISTATE = 8;
-const ANALOG_ATTRACTOR = 9;
+import { DataTypes, DataChangeTypes } from "./constants";
 
 const dsDataPointEditor = {
     state: {
@@ -39,39 +23,39 @@ const dsDataPointEditor = {
         //ChangeTypeVO
         datapointChangeTypes: [
             {
-                value: ALTERNATE_BOOLEAN,
+                value: DataChangeTypes.ALTERNATE_BOOLEAN,
                 text: 'Alternate'
             },
             {
-                value: BROWNIAN,
+                value: DataChangeTypes.BROWNIAN,
                 text: 'Brownian'
             },
             {
-                value: INCREMENT_ANALOG,
+                value: DataChangeTypes.INCREMENT_ANALOG,
                 text: 'Increment'
             },
             {
-                value: INCREMENT_MULTISTATE,
+                value: DataChangeTypes.INCREMENT_MULTISTATE,
                 text: 'Increment'
             },
             {
-                value: NO_CHANGE,
+                value: DataChangeTypes.NO_CHANGE,
                 text: 'No Change'
             },
             {
-                value: RANDOM_ANALOG,
+                value: DataChangeTypes.RANDOM_ANALOG,
                 text: 'Random'
             },
             {
-                value: RANDOM_BOOLEAN,
+                value: DataChangeTypes.RANDOM_BOOLEAN,
                 text: 'Random'
             },
             {
-                value: RANDOM_MULTISTATE,
+                value: DataChangeTypes.RANDOM_MULTISTATE,
                 text: 'Random'
             },
             {
-                value: ANALOG_ATTRACTOR,
+                value: DataChangeTypes.ANALOG_ATTRACTOR,
                 text: 'Attractor'
             },
         ]
@@ -85,27 +69,27 @@ const dsDataPointEditor = {
             switch(datapointType) {
                 case DataTypes.BINARY:
                     return state.datapointChangeTypes.filter(t => (
-                        t.value === ALTERNATE_BOOLEAN || 
-                        t.value === NO_CHANGE || 
-                        t.value === RANDOM_BOOLEAN
+                        t.value === DataChangeTypes.ALTERNATE_BOOLEAN || 
+                        t.value === DataChangeTypes.NO_CHANGE || 
+                        t.value === DataChangeTypes.RANDOM_BOOLEAN
                     ));
                 case DataTypes.MULTISTATE:
                     return state.datapointChangeTypes.filter(t => (
-                        t.value === INCREMENT_MULTISTATE ||
-                        t.value === NO_CHANGE ||
-                        t.value === RANDOM_MULTISTATE
+                        t.value === DataChangeTypes.INCREMENT_MULTISTATE ||
+                        t.value === DataChangeTypes.NO_CHANGE ||
+                        t.value === DataChangeTypes.RANDOM_MULTISTATE
                     ));
                 case DataTypes.NUMERIC:
                     return state.datapointChangeTypes.filter(t => (
-                        t.value === BROWNIAN ||
-                        t.value === INCREMENT_ANALOG ||
-                        t.value === NO_CHANGE ||
-                        t.value === RANDOM_ANALOG ||
-                        t.value === ANALOG_ATTRACTOR
+                        t.value === DataChangeTypes.BROWNIAN ||
+                        t.value === DataChangeTypes.INCREMENT_ANALOG ||
+                        t.value === DataChangeTypes.NO_CHANGE ||
+                        t.value === DataChangeTypes.RANDOM_ANALOG ||
+                        t.value === DataChangeTypes.ANALOG_ATTRACTOR
                     ));
                 case DataTypes.APLHANUMERIC:
                     return state.datapointChangeTypes.filter(t => (
-                        t.value === NO_CHANGE
+                        t.value === DataChangeTypes.NO_CHANGE
                     ));
                 default:
                     console.error("Data Point Type not recognized!");
