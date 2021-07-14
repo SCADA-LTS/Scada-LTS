@@ -137,13 +137,10 @@ It limit the data displayed on the AmChart based on the **"aggregation"**
 parameter provided with chart. This settings reduce the rendered data on
 a user browser.
 
-Second approach is related with Server-side aggregation. This mechanizm 
-reduce the amount of data send to the Chart Component. It contains the 
-aggregates calculated by Scada-LTS server. To configure that aggregation
-use parameter **"server-values-limit"**. Using that it you do not have to
-worry how much data is in specific range because the API will send values
-that match that limitation. You can modify that factor by using **"server-limit-factor"** argument. It is the factor when the server-side
-aggregation is going to be enabled. So when it is equal to "1.5" that means from specific range where are 30 000 of points and "server-values-limit" is set to 20 000 the server side aggregation is enabled. Because `1.5 * 20000 = 30000`. So it is enable when there are more than 30000 point values.  
+Second approach is related with Server-side aggregation. User can define the
+data count limit using **"server-values-limit"** parameter. This settings
+in ideal situation describe the amount of values that are distributed evenly on a timeline. But in real life some values are genereated at the same time or the gap between them can vary so the "ideal" situation with evenly distributed vales is almost imposible. So to fix that there is an **"server-limit-factor"** parameter that helps to achive the more reliable chart. Increasing that factor, we divide the interval into smaller blocks, so the data presenation is more accurate. There are more of this aggregated groups, but in each there are fewer values and averages to calculate.
+If from specific range there are less values than **"server-values-limit"** define that mechanism will be disabled. It tries to get the most accurate graph. AmChart works well with less than 30 000 of data point values on a single chart, so try to set up your graph to not exceed that constraint. 
 
 ## Modern Chart documentation:
 
