@@ -4,6 +4,8 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.PurgeType;
 import org.mozilla.javascript.NativeObject;
 
+import java.util.Objects;
+
 public class DataPointPurgeTypeProperties implements DataPointUpdate {
 
     private final PurgeType purgeType;
@@ -33,8 +35,8 @@ public class DataPointPurgeTypeProperties implements DataPointUpdate {
     }
 
     @Override
-    public void update(DataPointVO dataPoint) {
-        dataPoint.setPurgeType(purgeType.getId());
+    public void updateDataPoint(DataPointVO dataPoint) {
+        dataPoint.setPurgeType(purgeType.getCode());
         dataPoint.setPurgePeriod(purgePeriod);
     }
 
@@ -46,4 +48,24 @@ public class DataPointPurgeTypeProperties implements DataPointUpdate {
         return purgePeriod;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataPointPurgeTypeProperties)) return false;
+        DataPointPurgeTypeProperties that = (DataPointPurgeTypeProperties) o;
+        return getPurgePeriod() == that.getPurgePeriod() && getPurgeType() == that.getPurgeType();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPurgeType(), getPurgePeriod());
+    }
+
+    @Override
+    public String toString() {
+        return "DataPointPurgeTypeProperties{" +
+                "purgeType=" + purgeType +
+                ", purgePeriod=" + purgePeriod +
+                '}';
+    }
 }

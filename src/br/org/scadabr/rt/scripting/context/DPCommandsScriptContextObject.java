@@ -70,8 +70,8 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 
 	public void setLoggingTypeInterval(String xid, String intervalLoggingPeriodType, int intervalLoggingPeriod,
 									   String intervalLoggingType) {
-		if(intervalLoggingPeriod < 0) {
-			throw new IllegalArgumentException("intervalLoggingPeriod must be >= 0");
+		if(intervalLoggingPeriod <= 0) {
+			throw new IllegalArgumentException("intervalLoggingPeriod must be > 0");
 		}
 		DataPointUpdate dataPointUpdate;
 		try {
@@ -141,7 +141,7 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 		if (dataPoint != null) {
 			Permissions.ensureDataPointSetPermission(user, dataPoint);
 			RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
-			dataPointUpdate.update(dataPoint);
+			dataPointUpdate.updateDataPoint(dataPoint);
 			runtimeManager.saveDataPoint(dataPoint);
 		}
 	}

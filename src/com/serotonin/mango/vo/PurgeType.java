@@ -1,5 +1,7 @@
 package com.serotonin.mango.vo;
 
+import java.util.stream.Stream;
+
 public enum PurgeType {
 
     DAYS(DataPointVO.PurgeTypes.DAYS),
@@ -7,13 +9,20 @@ public enum PurgeType {
     MONTHS(DataPointVO.PurgeTypes.MONTHS),
     YEARS(DataPointVO.PurgeTypes.YEARS);
 
-    private final int id;
+    private final int code;
 
-    PurgeType(int id) {
-        this.id = id;
+    PurgeType(int code) {
+        this.code = code;
     }
 
-    public int getId() {
-        return id;
+    public int getCode() {
+        return code;
+    }
+
+    public static PurgeType getType(int code) {
+        return Stream.of(PurgeType.values())
+                .filter(a -> a.getCode() == code)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(PurgeType.class.getSimpleName() + " for code " + code + " does not exist"));
     }
 }

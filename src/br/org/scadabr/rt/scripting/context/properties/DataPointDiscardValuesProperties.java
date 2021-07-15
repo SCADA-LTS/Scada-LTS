@@ -3,6 +3,8 @@ package br.org.scadabr.rt.scripting.context.properties;
 import com.serotonin.mango.vo.DataPointVO;
 import org.mozilla.javascript.NativeObject;
 
+import java.util.Objects;
+
 public class DataPointDiscardValuesProperties implements DataPointUpdate {
 
     private final boolean discardExtremeValues;
@@ -33,7 +35,7 @@ public class DataPointDiscardValuesProperties implements DataPointUpdate {
     }
 
     @Override
-    public void update(DataPointVO dataPoint) {
+    public void updateDataPoint(DataPointVO dataPoint) {
         dataPoint.setDiscardExtremeValues(discardExtremeValues);
         dataPoint.setDiscardHighLimit(discardHighLimit);
         dataPoint.setDiscardLowLimit(discardLowLimit);
@@ -49,5 +51,27 @@ public class DataPointDiscardValuesProperties implements DataPointUpdate {
 
     public double getDiscardLowLimit() {
         return discardLowLimit;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataPointDiscardValuesProperties)) return false;
+        DataPointDiscardValuesProperties that = (DataPointDiscardValuesProperties) o;
+        return isDiscardExtremeValues() == that.isDiscardExtremeValues() && Double.compare(that.getDiscardHighLimit(), getDiscardHighLimit()) == 0 && Double.compare(that.getDiscardLowLimit(), getDiscardLowLimit()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isDiscardExtremeValues(), getDiscardHighLimit(), getDiscardLowLimit());
+    }
+
+    @Override
+    public String toString() {
+        return "DataPointDiscardValuesProperties{" +
+                "discardExtremeValues=" + discardExtremeValues +
+                ", discardHighLimit=" + discardHighLimit +
+                ", discardLowLimit=" + discardLowLimit +
+                '}';
     }
 }

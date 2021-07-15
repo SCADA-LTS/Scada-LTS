@@ -6,6 +6,8 @@ import com.serotonin.mango.vo.IntervalLoggingType;
 import com.serotonin.mango.vo.LoggingType;
 import org.mozilla.javascript.NativeObject;
 
+import java.util.Objects;
+
 public class DataPointLoggingTypeProperties implements DataPointUpdate {
 
     private final LoggingType loggingType;
@@ -24,7 +26,7 @@ public class DataPointLoggingTypeProperties implements DataPointUpdate {
     }
 
     public static DataPointLoggingTypeProperties defaultProperties() {
-        return new DataPointLoggingTypeProperties(LoggingType.NONE, IntervalLoggingPeriodType.MINUTES,
+        return new DataPointLoggingTypeProperties(LoggingType.ON_CHANGE, IntervalLoggingPeriodType.MINUTES,
                 IntervalLoggingType.INSTANT, 15, 0.0);
     }
 
@@ -41,7 +43,7 @@ public class DataPointLoggingTypeProperties implements DataPointUpdate {
             throw new IllegalArgumentException("tolerance must be >= 0");
         }
 
-        if(intervalLoggingPeriod != null && intervalLoggingPeriod < 0) {
+        if(intervalLoggingPeriod != null && intervalLoggingPeriod <= 0) {
             throw new IllegalArgumentException("intervalLoggingPeriod must be > 0");
         }
 
@@ -135,11 +137,11 @@ public class DataPointLoggingTypeProperties implements DataPointUpdate {
     }
 
     @Override
-    public void update(DataPointVO dataPoint) {
-        dataPoint.setLoggingType(loggingType.getId());
+    public void updateDataPoint(DataPointVO dataPoint) {
+        dataPoint.setLoggingType(loggingType.getCode());
         dataPoint.setIntervalLoggingPeriod(intervalPeriod);
-        dataPoint.setIntervalLoggingPeriodType(intervalPeriodType.getId());
-        dataPoint.setIntervalLoggingType(intervalLoggingType.getId());
+        dataPoint.setIntervalLoggingPeriodType(intervalPeriodType.getCode());
+        dataPoint.setIntervalLoggingType(intervalLoggingType.getCode());
         dataPoint.setTolerance(tolerance);
     }
 
@@ -161,5 +163,29 @@ public class DataPointLoggingTypeProperties implements DataPointUpdate {
 
     public IntervalLoggingType getIntervalLoggingType() {
         return intervalLoggingType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataPointLoggingTypeProperties)) return false;
+        DataPointLoggingTypeProperties that = (DataPointLoggingTypeProperties) o;
+        return getIntervalPeriod() == that.getIntervalPeriod() && Double.compare(that.getTolerance(), getTolerance()) == 0 && getLoggingType() == that.getLoggingType() && getIntervalLoggingType() == that.getIntervalLoggingType() && getIntervalPeriodType() == that.getIntervalPeriodType();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLoggingType(), getIntervalLoggingType(), getIntervalPeriodType(), getIntervalPeriod(), getTolerance());
+    }
+
+    @Override
+    public String toString() {
+        return "DataPointLoggingTypeProperties{" +
+                "loggingType=" + loggingType +
+                ", intervalLoggingType=" + intervalLoggingType +
+                ", intervalPeriodType=" + intervalPeriodType +
+                ", intervalPeriod=" + intervalPeriod +
+                ", tolerance=" + tolerance +
+                '}';
     }
 }

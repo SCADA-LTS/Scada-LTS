@@ -2,6 +2,8 @@ package com.serotonin.mango.vo;
 
 import com.serotonin.mango.Common;
 
+import java.util.stream.Stream;
+
 public enum IntervalLoggingPeriodType {
 
     SECONDS(Common.TimePeriods.SECONDS),
@@ -12,13 +14,20 @@ public enum IntervalLoggingPeriodType {
     MONTHS(Common.TimePeriods.MONTHS),
     YEARS(Common.TimePeriods.YEARS);
 
-    private final int id;
+    private final int code;
 
-    IntervalLoggingPeriodType(int id) {
-        this.id = id;
+    IntervalLoggingPeriodType(int code) {
+        this.code = code;
     }
 
-    public int getId() {
-        return id;
+    public int getCode() {
+        return code;
+    }
+
+    public static IntervalLoggingPeriodType getType(int code) {
+        return Stream.of(IntervalLoggingPeriodType.values())
+                .filter(a -> a.getCode() == code)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(IntervalLoggingPeriodType.class.getSimpleName() + "for code " + code + " does not exist"));
     }
 }

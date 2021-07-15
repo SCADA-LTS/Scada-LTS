@@ -1,5 +1,7 @@
 package com.serotonin.mango.vo;
 
+import java.util.stream.Stream;
+
 public enum IntervalLoggingType {
 
     INSTANT(DataPointVO.IntervalLoggingTypes.INSTANT),
@@ -7,13 +9,20 @@ public enum IntervalLoggingType {
     MINIMUM(DataPointVO.IntervalLoggingTypes.MINIMUM),
     AVERAGE(DataPointVO.IntervalLoggingTypes.AVERAGE);
 
-    private final int id;
+    private final int code;
 
-    IntervalLoggingType(int id) {
-        this.id = id;
+    IntervalLoggingType(int code) {
+        this.code = code;
     }
 
-    public int getId() {
-        return id;
+    public int getCode() {
+        return code;
+    }
+
+    public static IntervalLoggingType getType(int code) {
+        return Stream.of(IntervalLoggingType.values())
+                .filter(a -> a.getCode() == code)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(IntervalLoggingType.class.getSimpleName() + " for code " + code + " does not exist"));
     }
 }

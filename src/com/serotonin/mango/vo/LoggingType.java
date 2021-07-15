@@ -1,5 +1,7 @@
 package com.serotonin.mango.vo;
 
+import java.util.stream.Stream;
+
 public enum LoggingType {
 
     ON_CHANGE(DataPointVO.LoggingTypes.ON_CHANGE),
@@ -8,13 +10,20 @@ public enum LoggingType {
     INTERVAL(DataPointVO.LoggingTypes.INTERVAL),
     ON_TS_CHANGE(DataPointVO.LoggingTypes.ON_TS_CHANGE);
 
-    private final int id;
+    private final int code;
 
-    LoggingType(int id) {
-        this.id = id;
+    LoggingType(int code) {
+        this.code = code;
     }
 
-    public int getId() {
-        return id;
+    public int getCode() {
+        return code;
+    }
+
+    public static LoggingType getType(int code) {
+        return Stream.of(LoggingType.values())
+                .filter(a -> a.getCode() == code)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(LoggingType.class.getSimpleName() + " for code " + code + " does not exist"));
     }
 }
