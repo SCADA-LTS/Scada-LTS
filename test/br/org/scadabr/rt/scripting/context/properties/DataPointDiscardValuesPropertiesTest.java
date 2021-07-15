@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.mozilla.javascript.NativeObject;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,9 +43,9 @@ public class DataPointDiscardValuesPropertiesTest {
         DataPointDiscardValuesProperties expected = new DataPointDiscardValuesProperties(true, 33.33, -22.22);
 
         NativeObject nativeObject = mock(NativeObject.class);
-        when(nativeObject.get(eq("discardLowLimit"))).thenReturn(-22.22);
-        when(nativeObject.get(eq("discardHighLimit"))).thenReturn(33.33);
-        when(nativeObject.get(eq("discardExtremeValues"))).thenReturn(true);
+        when(nativeObject.get("discardLowLimit")).thenReturn(-22.22);
+        when(nativeObject.get("discardHighLimit")).thenReturn(33.33);
+        when(nativeObject.get("discardExtremeValues")).thenReturn(true);
 
         //when:
         DataPointDiscardValuesProperties result = DataPointDiscardValuesProperties.byNativeObject(nativeObject);
@@ -61,14 +60,38 @@ public class DataPointDiscardValuesPropertiesTest {
         DataPointDiscardValuesProperties expected = new DataPointDiscardValuesProperties(false, 33.33, -22.22);
 
         NativeObject nativeObject = mock(NativeObject.class);
-        when(nativeObject.get(eq("discardLowLimit"))).thenReturn(-22.22);
-        when(nativeObject.get(eq("discardHighLimit"))).thenReturn(33.33);
-        when(nativeObject.get(eq("discardExtremeValues"))).thenReturn(false);
+        when(nativeObject.get("discardLowLimit")).thenReturn(-22.22);
+        when(nativeObject.get("discardHighLimit")).thenReturn(33.33);
+        when(nativeObject.get("discardExtremeValues")).thenReturn(false);
 
         //when:
         DataPointDiscardValuesProperties result = DataPointDiscardValuesProperties.byNativeObject(nativeObject);
 
         //then:
         assertEquals(expected, result);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void when_byNativeObject_with_discardLowLimit_greater_than_discardHighLimit_then_exception() {
+        //given:
+        NativeObject nativeObject = mock(NativeObject.class);
+        when(nativeObject.get("discardLowLimit")).thenReturn(-22.22);
+        when(nativeObject.get("discardHighLimit")).thenReturn(-33.33);
+        when(nativeObject.get("discardExtremeValues")).thenReturn(false);
+
+        //when:
+        DataPointDiscardValuesProperties.byNativeObject(nativeObject);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void when_byNativeObject_with_discardLowLimit_equals_discardHighLimit_then_exception() {
+        //given:
+        NativeObject nativeObject = mock(NativeObject.class);
+        when(nativeObject.get("discardLowLimit")).thenReturn(-22.22);
+        when(nativeObject.get("discardHighLimit")).thenReturn(-22.22);
+        when(nativeObject.get("discardExtremeValues")).thenReturn(false);
+
+        //when:
+        DataPointDiscardValuesProperties.byNativeObject(nativeObject);
     }
 }

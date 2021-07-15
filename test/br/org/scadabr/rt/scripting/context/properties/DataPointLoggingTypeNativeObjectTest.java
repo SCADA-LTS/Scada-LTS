@@ -17,7 +17,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(Parameterized.class)
 public class DataPointLoggingTypeNativeObjectTest {
 
-    @Parameterized.Parameters(name= "{index}: purgeType: {0}, period: {1}")
+    @Parameterized.Parameters(name= "{index}: properties: {0}")
     public static Object[] data() {
         return new Object[][] {
                 {DataPointLoggingTypeProperties.onChange(0.555)},

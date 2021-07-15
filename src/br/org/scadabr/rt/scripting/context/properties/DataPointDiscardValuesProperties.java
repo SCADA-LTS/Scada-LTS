@@ -28,10 +28,14 @@ public class DataPointDiscardValuesProperties implements DataPointUpdate {
         Double discardHighLimit = (Double)nativeObject.get("discardHighLimit");
         Double discardLowLimit = (Double)nativeObject.get("discardLowLimit");
 
+        if(discardLowLimit != null && discardHighLimit != null
+                && (discardLowLimit > discardHighLimit || Objects.equals(discardLowLimit, discardHighLimit)))
+            throw new IllegalArgumentException("must be discardHighLimit > discardLowLimit");
+
         return new DataPointDiscardValuesProperties(
                 discardExtremeValues == null ? defaultProperties.isDiscardExtremeValues() : discardExtremeValues,
-                discardHighLimit == null ? defaultProperties.getDiscardHighLimit(): discardHighLimit,
-                discardLowLimit == null ? defaultProperties.getDiscardLowLimit() : discardLowLimit);
+                discardHighLimit == null || discardLowLimit == null ? defaultProperties.getDiscardHighLimit(): discardHighLimit,
+                discardHighLimit == null || discardLowLimit == null ? defaultProperties.getDiscardLowLimit() : discardLowLimit);
     }
 
     @Override

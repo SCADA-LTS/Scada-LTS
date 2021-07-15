@@ -16,7 +16,7 @@ import static utils.DataPointLoggingTestUtils.*;
 @RunWith(Parameterized.class)
 public class DataPointDiscardValuesUpdateDataPointTest {
 
-    @Parameterized.Parameters(name= "{index}: purgeType: {0}, purgePeriod: {1}")
+    @Parameterized.Parameters(name= "{index}: discardExtremeValues: {0}, discardHighLimit: {1}, discardLowLimit: {2}")
     public static Object[] data() {
         return new Object[][] {
                 {true, 12, -12},
@@ -46,7 +46,7 @@ public class DataPointDiscardValuesUpdateDataPointTest {
     }
 
     @Test
-    public void when_updateDataPoint_for_LoggingType_Interval() {
+    public void when_updateDataPoint_for_DiscardValues() {
         //given:
         DataPointDiscardValuesProperties dataPointUpdate = new DataPointDiscardValuesProperties(discardExtremeValues, discardHighLimit, discardLowLimit);
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
