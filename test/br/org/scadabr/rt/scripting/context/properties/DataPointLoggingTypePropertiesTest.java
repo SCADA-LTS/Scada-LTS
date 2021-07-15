@@ -181,7 +181,7 @@ public class DataPointLoggingTypePropertiesTest {
         when(nativeObject.get(eq("intervalPeriodType"))).thenReturn("weeks");
         when(nativeObject.get(eq("intervalPeriod"))).thenReturn(-1.0);
         when(nativeObject.get(eq("intervalLoggingType"))).thenReturn("minimum");
-        when(nativeObject.get(eq("loggingType"))).thenReturn("interval");.
+        when(nativeObject.get(eq("loggingType"))).thenReturn("interval");
 
         //when:
         DataPointLoggingTypeProperties.byNativeObject(nativeObject);
