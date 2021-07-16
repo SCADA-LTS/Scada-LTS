@@ -162,6 +162,11 @@ public class Permissions {
             throw new PermissionException("User does not have set permission to point", user);
     }
 
+    public static void ensureDataPointUpdatePermission(User user, DataPointVO point) throws PermissionException {
+        if(!hasDataPointSetPermission(user, point))
+            throw new PermissionException("User does not have set permission to point", user);
+    }
+
     public static boolean hasDataPointSetPermission(User user, DataPointVO point) throws PermissionException {
         if(user.isAdmin())
             return true;
