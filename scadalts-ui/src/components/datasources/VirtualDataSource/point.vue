@@ -94,6 +94,8 @@
 					</v-row>
 				</v-col>
 
+				<!-- TODO: Add Atttractor Point Logic -->
+
 				<v-col>
 					<v-text-field label="Initial Value" v-model="pointLocator.startValue"></v-text-field>
 				</v-col>
@@ -130,6 +132,11 @@ export default {
 			required: true,
 			type: Object,
 		},
+		visible: {
+			default: false,
+			type: Boolean,
+		}
+		// Invent the PointLocator for every kind of data point.
 	},
 
     data() {
@@ -138,7 +145,7 @@ export default {
 			msValues: ['1', '2'],
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
-			pointLocator: {
+			virtualPointLocator: {
 				startValue: '',
         		min: 0,
         		max: 100,
@@ -170,11 +177,16 @@ export default {
 	},
 
 	methods: {
+		onDialogOpen() {
+			console.log("On Opened")
+		},
+
 		cancel() {
 			this.$emit('canceled');
 		},
 
 		save() {
+			console.log(this.pointLocator);
 			this.$emit('saved', this.datapoint);
 		},
 

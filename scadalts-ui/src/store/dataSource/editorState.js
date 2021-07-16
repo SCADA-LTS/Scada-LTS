@@ -93,7 +93,7 @@ const dsDataPointEditor = {
                     ));
                 default:
                     console.error("Data Point Type not recognized!");
-                    return -1;
+                    return [];
             }
         }
     },

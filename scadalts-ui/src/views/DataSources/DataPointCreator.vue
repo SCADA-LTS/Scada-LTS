@@ -4,6 +4,7 @@
 			:is="`${datasourceType}`"
 			:datapoint="datapoint"
 			:createMode="!editMode"
+			:visible="dialogVisible"
 			@canceled="onCanceled()"
 			@saved="onSaved($event)"
 		>
