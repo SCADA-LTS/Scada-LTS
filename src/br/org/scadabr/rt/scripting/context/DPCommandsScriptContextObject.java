@@ -139,7 +139,7 @@ public class DPCommandsScriptContextObject extends ScriptContextObject {
 	private void updateDataPoint(String xid, DataPointUpdate dataPointUpdate) {
 		DataPointVO dataPoint = new DataPointDao().getDataPoint(xid);
 		if (dataPoint != null) {
-			Permissions.ensureDataPointSetPermission(user, dataPoint);
+			Permissions.ensureDataPointUpdatePermission(user, dataPoint);
 			RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
 			dataPointUpdate.updateDataPoint(dataPoint);
 			runtimeManager.saveDataPoint(dataPoint);
