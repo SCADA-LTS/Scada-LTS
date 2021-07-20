@@ -663,18 +663,14 @@ public class DataPointService implements MangoDataPoint {
 				.collect(Collectors.toList());
 	}
 
-    private Optional<DataPointVO> getDataPointOpt(Integer a) {
-        if(a == null)
-            return Optional.empty();
-        DataPointRT dataPointRT = Common.ctx.getRuntimeManager().getDataPoint(a);
-        if(dataPointRT == null) {
-            try {
-                return Optional.ofNullable(getDataPoint(a));
-            } catch (Exception ex) {
-                LOG.error(ex.getMessage());
-                return Optional.empty();
-            }
-        }
-        return Optional.ofNullable(dataPointRT.getVO());
-    }
+	private Optional<DataPointVO> getDataPointOpt(Integer a) {
+		if(a == null)
+			return Optional.empty();
+		try {
+			return Optional.ofNullable(getDataPoint(a));
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage());
+			return Optional.empty();
+		}
+	}
 }
