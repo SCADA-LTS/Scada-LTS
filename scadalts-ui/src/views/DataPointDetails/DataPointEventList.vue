@@ -80,7 +80,10 @@
 					<v-list-item-content>
 						<v-list-item-title>
 							<span>
-								{{ e.message.split('|')[1] }}
+								{{ $t(getEventMessageType(e.message), prepareEventMessage(e.message)) }}
+							</span>
+							<span v-if="getEventMessageTimePeriod(e.message)">
+								{{ $t(getEventMessageTimePeriod(e.message)) }}
 							</span>
 						</v-list-item-title>
 						<v-list-item-subtitle>
@@ -171,16 +174,18 @@
 	</v-card>
 </template>
 <script>
+import { initWebSocket } from '@/web-socket.js'
 /**
  * Event List for Data Point
- *
+ * 
  * Display events that are related to specific data point.
  * Allow user to acknowlede them and to browse the historical events.
+ * Using Web-Sockets user is informed about all changes without polling.
  *
  * @param {number} datapointId - Point Detail Id
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0
+ * @version 1.1
  */
 export default {
 	name: 'DataPointEventList',
@@ -196,6 +201,8 @@ export default {
 			activeUserId: -1,
 			newComment: '',
 			hideSkeleton: false,
+			stompClient: undefined,
+			socket: undefined,
 		};
 	},
 
@@ -203,9 +210,35 @@ export default {
 		this.refresh();
 		this.fetchDataPointEvents();
 		this.hideSkeleton = true;
+		this.connect();
+	},
+
+	beforeDestroy() {
+		this.disconnect();
 	},
 
 	methods: {
+		connect() {
+			let callback = () => {
+				this.stompClient.subscribe("/topic/alarm", tick => {
+					if(tick.body === "Event Raised") {
+						this.fetchDataPointEvents();
+					}
+				});
+			}
+
+			this.stompClient = initWebSocket(
+				this.$store.state.webSocketUrl,
+				callback,
+			);
+		},
+
+		disconnect() {
+			if(!!this.stompClient) {
+				this.stompClient.disconnect();
+			}
+		},
+
 		refresh() {
 			if (!!this.$store.state.loggedUser) {
 				this.activeUserId = this.$store.state.loggedUser.id;
@@ -263,6 +296,27 @@ export default {
 					console.error('Not Acknowledged!');
 				});
 		},
+
+		getEventMessageType(message) {
+			return message.split('|')[0]
+		},
+
+		prepareEventMessage(message) {
+			let response = message.replace(/[\[\]]/g,"");
+			response = response.split('|');
+			return response.slice(1);
+		},
+
+		getEventMessageTimePeriod(message) {
+			const regex = /(?!common.tp.description)common.tp.\w+/g;
+			const found = message.match(regex);
+			if(!!found) {
+				return found[0];
+			}
+			return false
+		},
+
+		
 	},
 };
 </script>

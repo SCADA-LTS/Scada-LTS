@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.scada_lts.dao.ViewDAO;
-
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -48,6 +46,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.permissions.service.ViewGetShareUsers;
 
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
@@ -134,7 +133,7 @@ public class View implements Serializable, JsonSerializable {
 			return ShareUser.ACCESS_OWNER;
 
 		if (viewUsers == null) {
-			viewUsers = new ViewDAO().getShareUsers(getId());
+			viewUsers = new ViewGetShareUsers().getShareUsersWithProfile(this);
 		}
 		
 		for (ShareUser vu : viewUsers) {
@@ -154,6 +153,11 @@ public class View implements Serializable, JsonSerializable {
 		User owner = new UserDao().getUser(userId);
 		for (ViewComponent viewComponent : viewComponents)
 			viewComponent.validateDataPoint(owner, makeReadOnly);
+	}
+
+	public void validateViewComponents(User user, View view) {
+		for (ViewComponent viewComponent : viewComponents)
+			viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 	}
 
 	public String getBackgroundFilename() {
@@ -221,23 +225,7 @@ public class View implements Serializable, JsonSerializable {
 	}
 
 	public void setWidth(Integer width) {
-
-		if (width == 640) {
-			this.resolution = ResolutionView.R640x480;
-		} else if (width == 800) {
-			this.resolution = ResolutionView.R800x600;
-		} else if (width == 1024) {
-			this.resolution = ResolutionView.R1024x768;
-		} else if (width == 1600) {
-			this.resolution = ResolutionView.R1600x1200;
-		} else if (width == 1920) {
-			this.resolution = ResolutionView.R1920x1080;
-		} else {
-			new RuntimeException("Don't support width view:"+width);
-		}
-		
 		this.width = width;
-
 	}
 
 	public Integer getHeight() {
@@ -250,12 +238,33 @@ public class View implements Serializable, JsonSerializable {
 			this.resolution = ResolutionView.R640x480;
 		} else if (height == 600) {
 			this.resolution = ResolutionView.R800x600;
+		} else if (height == 700) {
+			this.resolution = ResolutionView.R1300x700;
+		} else if (height == 720) {
+			this.resolution = ResolutionView.R1280x720;
 		} else if (height == 768) {
-			this.resolution = ResolutionView.R1024x768;
-		} else if (height == 1200) {
-			this.resolution = ResolutionView.R1600x1200;
+			try {
+				if(this.width == 1024) {
+					this.resolution = ResolutionView.R1024x768;
+				} else {
+					this.resolution = ResolutionView.R1366x768;
+				}
+			} catch (NullPointerException e) {
+				this.width = 1024; // Default width
+				this.resolution = ResolutionView.R1024x768;
+			}
+		} else if (height == 800) {
+			this.resolution = ResolutionView.R1280x800;
+		} else if (height == 900) {
+			this.resolution = ResolutionView.R1440x900;
+		} else if (height == 1050) {
+			this.resolution = ResolutionView.R1680x1050;
 		} else if (height == 1080) {
 			this.resolution = ResolutionView.R1920x1080;
+		} else if (height == 1200) {
+			this.resolution = ResolutionView.R1600x1200;
+		} else if (height == 1440) {
+			this.resolution = ResolutionView.R2560x1440;
 		} else {
 			new RuntimeException("Don't support width height:"+height);
 		}
@@ -275,26 +284,53 @@ public class View implements Serializable, JsonSerializable {
 	public void setResolution(int aresolution) {
 		if (aresolution == ResolutionView.R640x480) {
 			this.resolution = ResolutionView.R640x480;
-			this.height = 480;
 			this.width = 640;
+			this.height = 480;
 		} else if (aresolution == ResolutionView.R800x600) {
 			this.resolution = ResolutionView.R800x600;
-			this.height = 600;
 			this.width = 800;
+			this.height = 600;
 		} else if (aresolution == ResolutionView.R1024x768) {
 			this.resolution = ResolutionView.R1024x768;
-			this.height = 768;
 			this.width = 1024;
+			this.height = 768;
 		} else if (aresolution == ResolutionView.R1600x1200) {
 			this.resolution = ResolutionView.R1600x1200;
-			this.height = 1200;
 			this.width = 1600;
-		} else if (aresolution == 4) {
+			this.height = 1200;
+		} else if (aresolution == ResolutionView.R1920x1080) {
 			this.resolution = ResolutionView.R1920x1080;
-			this.height = 1080;
 			this.width = 1920;
+			this.height = 1080;
+		} else if (aresolution == ResolutionView.R1280x720) {
+			this.resolution = ResolutionView.R1280x720;
+			this.width = 1280;
+			this.height = 720;
+		} else if (aresolution == ResolutionView.R1280x800) {
+			this.resolution = ResolutionView.R1280x800;
+			this.width = 1280;
+			this.height = 800;
+		} else if (aresolution == ResolutionView.R1300x700) {
+			this.resolution = ResolutionView.R1300x700;
+			this.width = 1300;
+			this.height = 700;
+		} else if (aresolution == ResolutionView.R1366x768) {
+			this.resolution = ResolutionView.R1366x768;
+			this.width = 1366;
+			this.height = 768;
+		} else if (aresolution == ResolutionView.R1440x900) {
+			this.resolution = ResolutionView.R1440x900;
+			this.width = 1440;
+			this.height = 900;
+		} else if (aresolution == ResolutionView.R1680x1050) {
+			this.resolution = ResolutionView.R1680x1050;
+			this.width = 1680;
+			this.height = 1050;
+		} else if (aresolution == ResolutionView.R2560x1440) {
+			this.resolution = ResolutionView.R2560x1440;
+			this.width = 2560;
+			this.height = 1440;
 		}
-		
 	}
 
 	public long getModificationTime() {

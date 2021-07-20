@@ -6,6 +6,7 @@ import com.serotonin.mango.rt.event.ScheduledEvent;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.DataPointVO;
@@ -35,11 +36,11 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiPredicate;
+import java.util.function.BiConsumer;
 
 public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boolean> {
 
-    private static final Log log = LogFactory.getLog(ScheduledExecuteInactiveEventRT.class);
+    private static final Log LOG = LogFactory.getLog(ScheduledExecuteInactiveEventRT.class);
 
     private TimerTask task;
     private final CommunicationChannel communicationChannel;
@@ -84,7 +85,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
             CronTimerTrigger activeTrigger = new CronTimerTrigger(communicationChannel.getSendingActivationCron());
             task = new ModelTimeoutTask<>(activeTrigger, this, true);
         } catch (ParseException e) {
-            log.error(e);
+            LOG.error(e);
         }
     }
 
@@ -92,6 +93,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         if (task != null)
             task.cancel();
         toExecute.clear();
+        inactiveEventsProvider.clear();
     }
 
     @Override
@@ -152,22 +154,35 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
         }
     }
 
-    private static boolean communicateLimit(Set<String> addresses, long fireTime, CommunicationChannel communicationChannel) {
+    private static void communicateLimit(Set<String> addresses, long fireTime, CommunicationChannel channel,
+                                         AtomicInteger communicateLimitLock) {
         LocalizableMessage dailyLimitExceededMsg = new LocalizableMessage("mailingLists.dailyLimitExceeded");
         EventType eventType = new DataPointEventType();
         EventInstance event = new EventInstance(eventType, fireTime,false,
                 AlarmLevels.INFORMATION, dailyLimitExceededMsg, Collections.emptyMap());
-        CommunicationChannelTypable type = communicationChannel.getType();
+        CommunicationChannelTypable type = channel.getType();
 
-        boolean sent = type.sendLimit(event, addresses,"Limit");
-        if(sent) {
-            log.info("Last message sent today for a list of addresses id: " + communicationChannel.getChannelId() + ", type: " + communicationChannel.getType());
-            return true;
+        boolean sent = type.sendLimit(event, addresses,"Limit", new AfterWork() {
+
+            @Override
+            public void workSuccess() {
+                LOG.info("Last message sent today for a list of addresses id: " + channel.getChannelId() + ", type: "
+                        + channel.getType());
+            }
+
+            @Override
+            public void workFail(Exception exception) {
+                LOG.error(exception.getMessage());
+                communicateLimitLock.set(0);
+            }
+        });
+
+        if(!sent) {
+            communicateLimitLock.set(0);
         }
-        return false;
     }
 
-    private boolean send(ScheduledEvent scheduledEvent, Set<String> addresses) {
+    private void send(ScheduledEvent scheduledEvent, Set<String> addresses) {
         EventInstance event = scheduledEvent.getEvent();
         EventType eventType = event.getEventType();
         EventHandlerVO eventHandler = scheduledEvent.getEventHandler();
@@ -180,18 +195,30 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
             String eventHandlerAlias = eventHandler.getAlias();
             String alias = eventHandlerAlias == null || eventHandlerAlias.isEmpty() ? "Delay msg" : eventHandlerAlias;
-            boolean sent = type.sendMsg(toSend, addresses, alias);
-            if(sent) {
-                service.unscheduleEvent(scheduledEvent, communicationChannel);
-                inactiveEventsProvider.confirm(scheduledEvent);
-                return true;
+            boolean sent = type.sendMsg(toSend, addresses, alias, new AfterWork() {
+
+                @Override
+                public void workSuccess() {
+                    service.unscheduleEvent(scheduledEvent, communicationChannel);
+                    inactiveEventsProvider.confirm(scheduledEvent);
+                }
+
+                @Override
+                public void workFail(Exception exception) {
+                    LOG.error(exception.getMessage());
+                    inactiveEventsProvider.repeat(scheduledEvent);
+                    failsCounter.incrementAndGet();
+                }
+            });
+
+            if(!sent) {
+                inactiveEventsProvider.repeat(scheduledEvent);
+                failsCounter.incrementAndGet();
             }
-            inactiveEventsProvider.repeat(scheduledEvent);
-            return false;
+        } else {
+            service.unscheduleEvent(scheduledEvent, communicationChannel);
+            inactiveEventsProvider.confirm(scheduledEvent);
         }
-        service.unscheduleEvent(scheduledEvent, communicationChannel);
-        inactiveEventsProvider.confirm(scheduledEvent);
-        return false;
     }
 
     private Map<String, Object> createContext(DataPointVO dataPoint) {
@@ -224,37 +251,30 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
     }
 
     private static class Execute<N> {
-        BiPredicate<N, Set<String>> predicate;
+        BiConsumer<N, Set<String>> consumer;
         ExecuteData executeData;
         N arg1;
 
-        public Execute(BiPredicate<N, Set<String>> predicate, N arg1, ExecuteData executeData) {
-            this.predicate = predicate;
+        public Execute(BiConsumer<N, Set<String>> consumer, N arg1, ExecuteData executeData) {
+            this.consumer = consumer;
             this.executeData = executeData;
             this.arg1 = arg1;
         }
 
         void execute() {
             Set<String> addresses = executeData.getAddresses();
-            boolean executed = predicate.test(arg1, addresses);
+            consumer.accept(arg1, addresses);
 
-            long fireTime = executeData.getFireTime();
             CommunicationChannel channel = executeData.getCommunicationChannel();
 
             if(channel.isDailyLimitSent()) {
                 AtomicInteger limit = executeData.getLimit();
                 AtomicInteger fails = executeData.getFails();
                 AtomicInteger lock = executeData.getLock();
-                if (!executed)
-                    fails.incrementAndGet();
-                else if (limit.get() == 0 && fails.get() == 0 && lock.getAndDecrement() == 0) {
-                    boolean communicated = false;
-                    try {
-                        communicated = ScheduledExecuteInactiveEventRT.communicateLimit(addresses, fireTime, channel);
-                    } finally {
-                        if(!communicated)
-                            lock.set(0);
-                    }
+                long fireTime = executeData.getFireTime();
+
+                if (limit.get() == 0 && fails.get() == 0 && lock.getAndDecrement() == 0) {
+                    communicateLimit(addresses, fireTime, channel, lock);
                 }
             }
         }

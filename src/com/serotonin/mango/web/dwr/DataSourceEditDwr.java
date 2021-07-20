@@ -44,6 +44,7 @@ import javax.script.ScriptException;
 
 import br.org.scadabr.db.dao.UsersProfileDao;
 import com.serotonin.mango.util.LoggingScriptUtils;
+
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -359,7 +360,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-
+        UsersProfileDao usersProfileDao = new UsersProfileDao();
+        usersProfileDao.updateDataPointPermissions();
         return getPoints();
     }
 

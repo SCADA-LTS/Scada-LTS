@@ -28,7 +28,7 @@ public class ScriptButtonComponent extends HtmlComponent {
 
 	private void createScriptButton() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<button onclick='mango.view.executeScript(\"" + scriptXid
+		sb.append("<button class='viewComponent' onclick='mango.view.executeScript(\"" + scriptXid
 				+ "\");'>");
 		sb.append(text);
 		sb.append("</button>");

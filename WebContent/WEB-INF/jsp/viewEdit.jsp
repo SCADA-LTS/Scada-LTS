@@ -330,6 +330,34 @@
 			   	$("viewBackground").width = 1920;
 			   	$("viewBackground").height = 1080;
 			       break;
+			   case "5":
+                $("viewBackground").width = 1280;
+                $("viewBackground").height = 720;
+                break;
+               case "6":
+                $("viewBackground").width = 1280;
+                $("viewBackground").height = 800;
+                break;
+               case "7":
+                $("viewBackground").width = 1300;
+                $("viewBackground").height = 700;
+                break;
+               case "8":
+                $("viewBackground").width = 1366;
+                $("viewBackground").height = 768;
+                break;
+               case "9":
+                $("viewBackground").width = 1440;
+                $("viewBackground").height = 900;
+                break;
+               case "10":
+                $("viewBackground").width = 1680;
+                $("viewBackground").height = 1050;
+                break;
+               case "11":
+                $("viewBackground").width = 2560;
+                $("viewBackground").height = 1440;
+                break;
 			   default:
 			   	$("viewBackground").width = 1600;
 			   	$("viewBackground").height = 1200;
@@ -435,8 +463,15 @@
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
                       <sst:option value="<%= Integer.toString(1) %>"> 800x600</sst:option>
                       <sst:option value="<%= Integer.toString(2) %>"> 1024x768</sst:option>
+                      <sst:option value="<%= Integer.toString(5) %>"> 1280x720</sst:option>
+                      <sst:option value="<%= Integer.toString(6) %>"> 1280x800</sst:option>
+                      <sst:option value="<%= Integer.toString(7) %>"> 1300x700</sst:option>
+                      <sst:option value="<%= Integer.toString(8) %>"> 1366x768</sst:option>
+                      <sst:option value="<%= Integer.toString(9) %>"> 1440x900</sst:option>
                       <sst:option value="<%= Integer.toString(3) %>"> 1600x1200</sst:option>
-                      <sst:option value="<%= Integer.toString(4) %>"> 1920x1024</sst:option>
+                      <sst:option value="<%= Integer.toString(10) %>"> 1680x1050</sst:option>
+                      <sst:option value="<%= Integer.toString(4) %>"> 1920x1080</sst:option>
+                      <sst:option value="<%= Integer.toString(11) %>"> 2560x1440</sst:option>
                     </sst:select>
                   </td>
                   <td class="formError">${status.errorMessage}</td>

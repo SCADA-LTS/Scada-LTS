@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -93,6 +94,8 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -136,12 +139,11 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		ViewDao viewDao = new ViewDao();
+		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess();
 		User user = Common.getUser();
-
-		List<IntValuePair> views = viewDao.getViewNames(user.getId(), user.getUserProfile());
-
-		return views;
+		return viewPermissionsService.getObjectIdentifiersWithAccess(user).stream()
+				.map(a -> new IntValuePair(a.getId(), a.getName()))
+				.collect(Collectors.toList());
 	}
 
 	@MethodFilter
@@ -248,7 +250,8 @@ public class ViewDwr extends BaseDwr {
 			if (!edit) {
 				if (pointComponent.isSettable()) {
 					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+					if ((access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+							&& Permissions.hasDataPointSetPermission(user, pointComponent.tgetDataPoint()))
 						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
 				}
 
@@ -402,7 +405,7 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
-		viewComponent.validateDataPoint(user, false);
+		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
 	}
 
