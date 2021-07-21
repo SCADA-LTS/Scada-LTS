@@ -19,6 +19,7 @@
 package com.serotonin.mango.vo.permission;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -48,6 +49,14 @@ public class DataPointAccess implements JsonSerializable {
 
 	private int dataPointId;
 	private int permission;
+
+	public DataPointAccess() {
+	}
+
+	public DataPointAccess(int dataPointId, int permission) {
+		this.dataPointId = dataPointId;
+		this.permission = permission;
+	}
 
 	public int getDataPointId() {
 		return dataPointId;
@@ -94,5 +103,28 @@ public class DataPointAccess implements JsonSerializable {
 		map.put("dataPointXid", new DataPointDao().getDataPoint(dataPointId)
 				.getXid());
 		map.put("permission", ACCESS_CODES.getCode(permission));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof DataPointAccess)) return false;
+		DataPointAccess that = (DataPointAccess) o;
+		return getDataPointId() == that.getDataPointId() &&
+				getPermission() == that.getPermission();
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(getDataPointId(), getPermission());
+	}
+
+	@Override
+	public String toString() {
+		return "DataPointAccess{" +
+				"dataPointId=" + dataPointId +
+				", permission=" + permission +
+				'}';
 	}
 }

@@ -130,6 +130,7 @@
 				</div>
 			</collapse>
 		</div>
+	</div>
 	<!--</v-app> -->
 </template>
 

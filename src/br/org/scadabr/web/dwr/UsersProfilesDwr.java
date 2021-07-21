@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +32,7 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 public class UsersProfilesDwr {
 
@@ -74,7 +77,9 @@ public class UsersProfilesDwr {
 		initData.put("watchlists", watchlists);
 
 		ViewDao viewDao = new ViewDao();
-		List<View> views = viewDao.getViews();
+		List<View> views = viewDao.getSimpleViews().stream()
+				.map(toView())
+				.collect(Collectors.toList());
 		initData.put("views", views);
 
 		return initData;
@@ -118,7 +123,7 @@ public class UsersProfilesDwr {
 			userDao.saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
-					"usersProfiles.validate.nameUnique"));
+					"userProfiles.validate.nameUnique"));
 		}
 
 		if (!response.getHasMessages()) {
@@ -146,4 +151,13 @@ public class UsersProfilesDwr {
 		return response;
 	}
 
+	private Function<ScadaObjectIdentifier, View> toView() {
+		return a -> {
+			View view = new View();
+			view.setId(a.getId());
+			view.setXid(a.getXid());
+			view.setName(a.getName());
+			return view;
+		};
+	}
 }

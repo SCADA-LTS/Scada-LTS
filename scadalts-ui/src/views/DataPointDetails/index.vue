@@ -54,18 +54,26 @@
 			</v-row>
 		</v-container>
 		<v-container fluid>
-			<DataPointValueHistory
-				:data="dataPointDetails"
-				class="pointDetailsCards"
-			></DataPointValueHistory>
-
-			<DataPointEventList
-				:datapointId="dataPointDetails.id"
-				class="pointDetailsCards"
-			></DataPointEventList>
+			<v-row align-content="stretch">
+				<v-col md="6" sm="12" xs="12">
+					<DataPointValueHistory
+						:data="dataPointDetails"
+						class="pointDetailsCards"
+						ref="valueHistory"
+					></DataPointValueHistory>
+				</v-col>
+				<v-col md="6" sm="12" xs="12">
+					<DataPointEventList
+						:datapointId="dataPointDetails.id"
+						class="pointDetailsCards"
+					></DataPointEventList>
+				</v-col>
+			</v-row>
 		</v-container>
 		<v-container fluid>
-			<LineChartComponent :pointId="this.$route.params.id"> </LineChartComponent>
+			<LineChartComponent :pointIds="this.$route.params.id" :refreshRate="chartRefreshRate"
+				:showLegend="true" :showScrollbar="true" :width="chartWidth"
+			></LineChartComponent>
 		</v-container>
 		<v-snackbar v-model="response.status">
 			{{ response.message }}
@@ -112,11 +120,22 @@ export default {
 			newComment: '',
 			dataPointDetails: undefined,
 			confirmToggleDialog: false,
+			chartRefreshRate: 10000,
+			chartWidth: 500,
 			response: {
 				status: false,
 				message: '',
 			},
 		};
+	},
+
+	created() {
+		window.addEventListener('resize', this.handleChartResize);
+		this.handleChartResize();
+	},
+
+	destroyed() {
+		window.removeEventListener('resize', this.handleChartResize);
 	},
 
 	mounted() {
@@ -160,6 +179,8 @@ export default {
 					if (resp === 'saved') {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.success');
+						this.$refs.valueHistory.reconnect();
+
 					} else {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.fail');
@@ -170,14 +191,17 @@ export default {
 					this.response.message = this.$t('common.snackbar.update.fail');
 				});
 		},
+
+		handleChartResize() {
+			this.chartWidth = window.innerWidth - 200;
+		}
 	},
 };
 </script>
 <style scoped>
 .pointDetailsCards {
-	width: 49%;
-	float: left;
-	max-height: 40vh;
+	height: 100%;
+	max-height: 52vh;
 	overflow-y: auto;
 }
 .thin-top-margin {

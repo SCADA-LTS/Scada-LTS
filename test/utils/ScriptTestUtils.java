@@ -21,12 +21,9 @@ import com.serotonin.util.PropertiesUtils;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.servlet.ServletContext;
-import java.util.Collections;
-import java.util.List;
+import javax.servlet.*;
+import java.util.*;
 
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -66,12 +63,12 @@ public class ScriptTestUtils {
 
     public static void configMock(RuntimeManager runtimeManager, ScriptContextObject scriptContextObject) throws Exception {
         ContextWrapper contextWrapper = mock(ContextWrapper.class);
-        ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = new ServletContextMock(a ->
+                a.contains("scriptFunctions") ? "test/scriptFunctions.js" : "".equals(a) ? "test/" : "");
+
         Common.ctx = contextWrapper;
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManager);
         when(contextWrapper.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getRealPath(contains("scriptFunctions"))).thenReturn("test/scriptFunctions.js");
-        when(servletContext.getRealPath(eq(""))).thenReturn("test/");
 
         PointValueDao pointValueDao = mock(PointValueDao.class);
         whenNew(PointValueDao.class)

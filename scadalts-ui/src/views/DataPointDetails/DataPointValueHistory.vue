@@ -59,7 +59,15 @@
 
 		<v-card-text v-if="hideSkeleton">
 			<v-row align="center">
-				<v-col cols="4">
+				<v-col cols="4" v-if="data.pointLocator.dataTypeId === 1">
+					<v-btn 
+						block
+						@click="toggleValue()"
+						:color="getBinaryRendererLabel(pointValue, 'color')">
+						{{getBinaryRendererLabel(pointValue, 'label')}}
+					</v-btn>
+				</v-col>
+				<v-col cols="4" v-else>
 					<v-text-field
 						v-model="pointValue"
 						:label="$t('datapointDetails.valueHistory.stats.add')"
@@ -177,17 +185,20 @@
 	</v-card>
 </template>
 <script>
+import { initWebSocket } from '@/web-socket.js'
+
 /**
  * Value History List for Data Point
- *
+ * 
  * Display history values from specific data point.
- * Present the statiscics from given time period and allow user
+ * Present the statiscics from given time period and allow user 
  * to set a new value for that Data Point.
+ * Using Web-Sockets user is informed about all changes without polling.
  *
  * @param {number} data - Point Details object with data.
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0
+ * @version 1.1
  */
 export default {
 	name: 'DataPointValueHistory',
@@ -212,6 +223,8 @@ export default {
 				ts: null,
 				value: null,
 			},
+			stompClient: undefined,
+			socket: undefined,
 		};
 	},
 
@@ -226,9 +239,42 @@ export default {
 	mounted() {
 		this.fetchData();
 		this.hideSkeleton = true;
+		this.connect();
+	},
+
+	beforeDestroy() {
+		this.disconnect();
 	},
 
 	methods: {
+
+		connect() {
+			let callback = () => {
+				this.stompClient.subscribe(`/ws/datapoint/${this.data.id}/value`, () => {});
+				this.stompClient.subscribe(`/topic/datapoint/${this.data.id}/value`, tick => {
+					this.pointValue = tick.body;
+					this.fetchData();
+				});
+			}
+
+			this.stompClient = initWebSocket(
+				this.$store.state.webSocketUrl,
+				callback,
+			);
+		},
+
+		disconnect() {
+			if(!!this.stompClient) {
+				this.stompClient.send(`/ws/datapoint/${this.data.id}/value/unsub`)
+				this.stompClient.disconnect();
+			}
+		},
+
+		reconnect() {
+			this.disconnect();
+			this.connect();
+		},
+
 		async fetchData() {
 			this.fetchingData = true;
 			let from = await this.$store.dispatch('convertSinceTimePeriodToTimestamp', {
@@ -267,6 +313,12 @@ export default {
 			this.$store.dispatch('setDataPointValue', request).then((resp) => {
 				this.fetchData();
 			});
+		},
+
+		toggleValue() {
+			this.pointValue = this.pointValue === 'true' ? true : (this.pointValue === 'false' ? false : this.pointValue);
+			this.pointValue = !this.pointValue;
+			this.sendValue();
 		},
 
 		calculateStatistics(precision = 1000) {
@@ -337,6 +389,29 @@ export default {
 			});
 			return -1;
 		},
+
+		getBinaryRendererLabel(value, type) {
+			if(!!this.data.textRenderer && this.data.textRenderer.typeName === "textRendererBinary") {
+				if(value === "false") {
+					if(type === "label") {
+						return this.data.textRenderer.zeroLabel;
+					} else {
+						return this.data.textRenderer.zeroColour;
+					}
+				} else {
+					if(type === "label") {
+						return this.data.textRenderer.oneLabel;
+					} else {
+						return this.data.textRenderer.oneColour;
+					}
+				}
+			}
+			if(type === "color") {
+				return '#f5f5f5';
+			}
+			return value;
+			
+		}
 	},
 };
 </script>

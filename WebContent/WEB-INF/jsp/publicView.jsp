@@ -28,6 +28,7 @@
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link id="pagestyle" href="resources/common_deprecated.css" type="text/css" rel="stylesheet"/>
   <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
+  <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
 
   <!-- Script -->
   <script type="text/javascript">var djConfig = { isDebug: true };</script>

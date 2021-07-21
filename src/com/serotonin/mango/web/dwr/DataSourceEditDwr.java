@@ -359,7 +359,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-
+        UsersProfileDao usersProfileDao = new UsersProfileDao();
+        usersProfileDao.updateDataPointPermissions();
         return getPoints();
     }
 

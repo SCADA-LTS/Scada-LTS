@@ -173,14 +173,17 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceCopy.getId();
 	}
 
+	@Deprecated
 	public List<Integer> getDataSourceId(int userId) {
 		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
 	}
 
+	@Deprecated
 	public void deleteDataSourceUser(int userId) {
 		dataSourceDAO.deleteDataSourceUser(userId);
 	}
 
+	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
 	}
