@@ -94,9 +94,13 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+
+
+
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
