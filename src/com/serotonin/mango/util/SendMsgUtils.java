@@ -9,6 +9,8 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.rt.maint.work.EmailNotificationWorkItem;
+import com.serotonin.mango.view.event.NoneEventRenderer;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -231,5 +233,12 @@ public final class SendMsgUtils {
             }
         }
         return addresses.toArray(new InternetAddress[]{});
+    }
+
+    public static String getDataPointMessage(DataPointVO dataPoint) {
+        if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
+            return " " + dataPoint.getDescription();
+        else
+            return " " + dataPoint.getName();
     }
 }
