@@ -1,6 +1,7 @@
 package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
@@ -236,7 +237,14 @@ public final class SendMsgUtils {
     }
 
     public static String getDataPointMessage(DataPointVO dataPoint) {
-        if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
+        DataPointRT point = Common.ctx.getRuntimeManager().getDataPoint(dataPoint.getId());
+        if (dataPoint.getEventTextRenderer() != null &&
+                !dataPoint.getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                dataPoint.getEventTextRenderer().getText(point.getPointValue().getValue()) != null &&
+                (!dataPoint.getEventTextRenderer().getText(point.getPointValue().getValue()).equals(""))) {
+            return " " + dataPoint.getEventTextRenderer().getText(point.getPointValue().getValue());
+        }
+        else if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
             return " " + dataPoint.getDescription();
         else
             return " " + dataPoint.getName();

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.serotonin.mango.rt.event.AlarmLevels.getAlarmLevelMessage;
 import static com.serotonin.mango.util.SendMsgUtils.getDataPointMessage;
 
 public final class EmailContentUtils {
@@ -90,7 +89,7 @@ public final class EmailContentUtils {
                     LocalizableMessage subjectMsg;
                     LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
                     subjectMsg = new LocalizableMessage("ftl.subject.default", evt.getPrettyActiveTimestamp(),
-                            getAlarmLevelMessage(evt.getAlarmLevel()), getDataPointMessage(dataPoint), notifTypeMsg);
+                            AlarmLevels.CODES.getCode(evt.getAlarmLevel()).toUpperCase(), getDataPointMessage(dataPoint), notifTypeMsg);
                     return subjectMsg.getLocalizedMessage(bundle);
                 }
             }
@@ -101,7 +100,7 @@ public final class EmailContentUtils {
         LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
         if (StringUtils.isEmpty(alias)) {
             subjectMsg = new LocalizableMessage("ftl.subject.default", evt.getPrettyActiveTimestamp(),
-                    getAlarmLevelMessage(evt.getAlarmLevel()), "", notifTypeMsg);
+                    AlarmLevels.CODES.getCode(evt.getAlarmLevel()).toUpperCase(), "", notifTypeMsg);
         } else {
             subjectMsg = new LocalizableMessage("ftl.subject.alias", alias, notifTypeMsg);
         }
