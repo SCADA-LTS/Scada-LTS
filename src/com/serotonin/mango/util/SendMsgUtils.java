@@ -36,34 +36,34 @@ public final class SendMsgUtils {
                                      Set<String> addresses, String alias, AfterWork afterWork) {
         try {
 
-            SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
-            validateEmail(evt, notificationType, addresses, alias);
+            if(evt.getAlarmLevel() > 0) {
+                SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
+                validateEmail(evt, notificationType, addresses, alias);
 
-            if (evt.getEventType().isSystemMessage()) {
-                if (((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
-                    // Don't send email notifications about email send failures.
-                    LOG.info("Not sending email for event raised due to email failure");
-                    return false;
+                if (evt.getEventType().isSystemMessage()
+                        && ((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
+                        // Don't send email notifications about email send failures.
+                        LOG.info("Not sending email for event raised due to email failure");
+                        return false;
                 }
+
+                MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
+                String[] toAddrs = addresses.toArray(new String[0]);
+
+                InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+                validateAddresses(evt, notificationType, internetAddresses, alias);
+
+                // Send the email.
+                EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
+                emailNotificationWorkItem.execute();
+                return true;
             }
-
-            MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
-            String[] toAddrs = addresses.toArray(new String[0]);
-
-            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
-            validateAddresses(evt, notificationType, internetAddresses, alias);
-
-            // Send the email.
-            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
-            emailNotificationWorkItem.execute();
-            return true;
-
         } catch (Exception e) {
             LOG.error(MessageFormat.format("Info about email: {0}, StackTrace: {1}",
                     getInfoEmail(evt,notificationType,alias),
                     ExceptionUtils.getStackTrace(e)));
-            return false;
         }
+        return false;
     }
 
     public static boolean sendSms(EventInstance evt, EmailToSmsHandlerRT.SmsNotificationType notificationType,
