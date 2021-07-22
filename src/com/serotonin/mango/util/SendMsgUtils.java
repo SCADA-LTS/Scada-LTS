@@ -159,7 +159,7 @@ public final class SendMsgUtils {
 
         String messageInfoAlias = MessageFormat.format("Alias: {0} \n", alias);
         String messageInfoEmail = MessageFormat.format("Event: {0} \n", evt.getId());
-        String messageInfoNotyfication = MessageFormat.format("Notyfication: {0} \n", notificationType.getKey());
+        String messageInfoNotification = MessageFormat.format("Notification: {0} \n", notificationType.getKey());
         String subject = "";
         String messageExceptionWhenGetSubjectEmail = "";
         try {
@@ -167,7 +167,7 @@ public final class SendMsgUtils {
             LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
             if (StringUtils.isEmpty(alias)) {
                 if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
+                    subjectMsg = new LocalizableMessage("ftl.subject.default.log", notifTypeMsg);
                 else
                     subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
             } else {
@@ -185,7 +185,7 @@ public final class SendMsgUtils {
 
         String messages = new StringBuilder()
                 .append(messageInfoEmail)
-                .append(messageInfoNotyfication)
+                .append(messageInfoNotification)
                 .append(messageInfoAlias)
                 .append(subject)
                 .append(messageExceptionWhenGetSubjectEmail).toString();
