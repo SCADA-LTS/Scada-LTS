@@ -12,21 +12,20 @@ const WATCHLIST_NAME = 'UnitTestWL';
  */
 function initWrapper() {
 	return prepareMountWrapper(
-		WatchListJsonChart, 
+		WatchListJsonChart,
 		{},
 		{
 			pointId: '1',
 			watchlistName: WATCHLIST_NAME,
 			width: 600,
 		},
-		{stubs: ['VApp']}
+		{ stubs: ['VApp'] },
 	);
 }
 
 global.localStorage = new LocalStorageMock();
 
 describe('WatchListJsonChart.vue Test', () => {
-
 	const wrapper = initWrapper();
 
 	it('Initialize blank JsonChart', () => {

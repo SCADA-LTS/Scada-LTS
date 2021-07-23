@@ -1,14 +1,12 @@
 const storeUsers = {
-	state: {
-		
-	},
+	state: {},
 
 	mutations: {},
 
 	actions: {
-        getAllUsers({dispatch}) {
-            return dispatch('requestGet', `/user/getAll`);
-        },    
+		getAllUsers({ dispatch }) {
+			return dispatch('requestGet', `/user/getAll`);
+		},
 	},
 
 	getters: {},

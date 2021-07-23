@@ -1059,12 +1059,6 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
-function setUserTheme(userTheme) {
-    if (userTheme == 'MODERN')
-        swapStyleSheet("assets/common.css");
-    else if (userTheme == 'DEFAULT')
-        swapStyleSheet("assets/common_deprecated.css");
-}
 
 function isVarName(str) {
     if (typeof str !== 'string') {
