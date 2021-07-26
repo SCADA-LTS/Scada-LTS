@@ -1,7 +1,7 @@
 # [Scada-LTS](http://scada-lts.org)
 
 Open Source, web-based, multi-platform solution for building your own SCADA   
-(Supervisory Control and Data Acquisition) system.
+(Supervisory Control and Data Acquisition) system. 
 Code released under [the GPL license](https://github.com/SCADA-LTS/Scada-LTS/blob/develop/LICENSE).
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/SCADA-LTS/Scada-LTS)
