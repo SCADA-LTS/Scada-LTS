@@ -14,7 +14,7 @@
 				</v-alert>
 			</v-col>
 
-			<v-col cols="3">
+			<v-col cols="12" class="flex">
 				<v-menu ref="start-date-menu"
 					:close-on-content-click="false"
 					:nudge-right="40"
@@ -39,8 +39,7 @@
           				scrollable
         			></v-date-picker>
 				</v-menu>
-			</v-col>
-			<v-col cols="2">
+
 				<v-menu ref="start-time-menu"
 					:close-on-content-click="false"
 					:nudge-right="40"
@@ -65,9 +64,7 @@
 						scrollable
 					></v-time-picker>
 				</v-menu>
-			</v-col>
 
-			<v-col cols="3">
 				<v-menu ref="end-date-menu"
 					:close-on-content-click="false"
 					:nudge-right="40"
@@ -92,8 +89,7 @@
           				scrollable
         			></v-date-picker>
 				</v-menu>
-			</v-col>
-			<v-col cols="2">
+
 				<v-menu ref="end-time-menu"
 					:close-on-content-click="false"
 					:nudge-right="40"
@@ -118,8 +114,7 @@
 						scrollable
 					></v-time-picker>
 				</v-menu>
-			</v-col>
-			<v-col cols="2">
+
 				<v-btn icon @click="reload()">
 					<v-icon>mdi-refresh</v-icon>
 				</v-btn>
@@ -305,6 +300,9 @@ export default {
 };
 </script>
 <style scoped>
+.flex {
+	display: flex;
+}
 #chart-settings {
 	flex: none;
 }
