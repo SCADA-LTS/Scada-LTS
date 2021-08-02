@@ -17,6 +17,7 @@
 			<v-col cols="12" class="flex">
 				<v-menu ref="start-date-menu"
 					:close-on-content-click="false"
+					:close-on-click="true"
 					:nudge-right="40"
 					transition="scale-transition"
 					offset-y
@@ -42,6 +43,7 @@
 
 				<v-menu ref="start-time-menu"
 					:close-on-content-click="false"
+					:close-on-click="true"
 					:nudge-right="40"
 					transition="scale-transition"
 					offset-y
@@ -67,6 +69,7 @@
 
 				<v-menu ref="end-date-menu"
 					:close-on-content-click="false"
+					:close-on-click="true"
 					:nudge-right="40"
 					transition="scale-transition"
 					offset-y
@@ -92,6 +95,7 @@
 
 				<v-menu ref="end-time-menu"
 					:close-on-content-click="false"
+					:close-on-click="true"
 					:nudge-right="40"
 					transition="scale-transition"
 					offset-y
@@ -116,13 +120,16 @@
 				</v-menu>
 
 				<v-btn icon @click="reload()">
-					<v-icon>mdi-refresh</v-icon>
+					<v-icon :class="{ 'chart-loading--animation': chartLoading }">mdi-refresh</v-icon>
 				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row id="chart-container">
 			<v-col cols="12">
-				<div ref="chartReference"></div>
+				<v-skeleton-loader v-if="chartLoading" type="article">
+				</v-skeleton-loader>
+				<div ref="chartReference" v-show="!chartLoading"></div>
+				
 			</v-col>
 		</v-row>
 	</v-app>
@@ -141,6 +148,7 @@ export default {
 	name: 'RangeChartComponent',
 
 	props: {
+		chartId: { type: Number, required: true },
 		pointIds: { type: String, required: true },
 		useXid: { type: Boolean },
 		separateAxis: {type: Boolean},
@@ -160,6 +168,7 @@ export default {
 	data() {
 		return {
 			chartClass: undefined,
+			chartLoading: false,
 			errorMessage: undefined,
 			viewId: 0,
 			startDate: '',
@@ -217,6 +226,7 @@ export default {
 			}
 			this.chartClass = this.chartClass.build();
 
+			this.chartLoading = true;
 			this.chartClass.createChart().catch((e) => {
 				if (e.message === 'No data from that range!') {
 					this.errorMessage = {
@@ -229,6 +239,8 @@ export default {
 						message: `Failed to load chart!: ${e.message}`,
 					};
 				}
+			}).finally(() => {
+				this.chartLoading = false;
 			});
 		},
 
@@ -266,7 +278,7 @@ export default {
 		},
 
 		saveToLocalStorage() {
-			let baseKey = `GVRC_${this.viewId}`;
+			let baseKey = `GVRC_${this.viewId}_${this.chartId}`;
 			localStorage.setItem(`${baseKey}-start-date`, this.startDate);
 			localStorage.setItem(`${baseKey}-end-date`, this.endDate);
 			localStorage.setItem(`${baseKey}-start-time`, this.startTime);
@@ -274,7 +286,7 @@ export default {
 		},
 
 		loadFromLocalStorage() {
-			let baseKey = `GVRC_${this.viewId}`;
+			let baseKey = `GVRC_${this.viewId}_${this.chartId}`;
 			let startDate = localStorage.getItem(`${baseKey}-start-date`);
 			let endDate = localStorage.getItem(`${baseKey}-end-date`);
 			let startTime = localStorage.getItem(`${baseKey}-start-time`);
@@ -299,6 +311,12 @@ export default {
 	},
 };
 </script>
+<style>
+@keyframes loading-rotation {
+	from { transform: rotate(0);}
+	to {transform: rotate(360deg);}
+}
+</style>
 <style scoped>
 .flex {
 	display: flex;
@@ -312,6 +330,9 @@ export default {
 }
 #chart-component {
 	position: relative;
+}
+.chart-loading--animation {
+	animation: loading-rotation 1s linear infinite;
 }
 .error-message-bar {
 	position: absolute;
