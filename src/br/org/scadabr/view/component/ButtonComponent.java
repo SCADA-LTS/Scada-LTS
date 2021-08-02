@@ -67,32 +67,26 @@ public class ButtonComponent extends ScriptComponent {
 
 	private void createButtonScript() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("var s = '';");
-		sb.append("if (value) ");
+		sb.append("var s = '';").append("if (value) ");
+		sb.append(" s += \"<input type='button' class='simpleRenderer' value='").append(whenOnLabel).append("' ");
+		sb.append("onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", false);return false;' style='");
 		if (width > 0 && height > 0) {
-			sb
-					.append(" s += \"<input type='button' value='"
-							+ whenOnLabel
-							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", false);return false;' style='width:"
-							+ width + "px; height:" + height + "px; background-color:"+ getBkgdColorOverride() + ";'/>\";");
-			sb.append(" else");
-			sb
-					.append(" s += \"<input type='button' value='"
-							+ whenOffLabel
-							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", true);return true;' style='width:"
-							+ width + "px; height:" + height + "px; background-color:"+ getBkgdColorOverride() + ";'/>\";");
-		} else {
-			sb
-					.append(" s += \"<input type='button' value='"
-							+ whenOnLabel
-							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", false);return false;' style='background-color:"+ getBkgdColorOverride() +";'/>\";");
-			sb.append(" else");
-			sb
-					.append(" s += \"<input type='button' value='"
-							+ whenOffLabel
-							+ "' onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", true);return true;' style='background-color:"+ getBkgdColorOverride() +";'/>\";");
+			sb.append("width:").append(width).append("px; ");
+			sb.append("height:").append(height).append("px; ");
 		}
+		sb.append("background-color:").append(getBkgdColorOverride()).append(";");
+		sb.append("'/>").append("\"; ");
 
+		sb.append("else");
+
+		sb.append(" s += \"<input type='button' class='simpleRenderer' value='").append(whenOffLabel).append("' ");
+		sb.append("onclick='mango.view.setPoint(\"+ point.id +\",\"+ pointComponent.id +\", true);return true;' style='");
+		if (width > 0 && height > 0) {
+			sb.append("width:").append(width).append("px; ");
+			sb.append("height:").append(height).append("px; ");
+		}
+		sb.append("background-color:").append(getBkgdColorOverride()).append(";");
+		sb.append("'/>").append("\"; ");
 		sb.append(" return s;");
 		setScript(sb.toString());
 	}

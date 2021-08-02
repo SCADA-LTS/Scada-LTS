@@ -4,19 +4,18 @@ import dataSource from './dataSource';
 import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
 import storeEvents from './events';
-import storeEventDetectors from './dataPoint/eventDetecotrs';
+import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
-import amcharts from './amcharts';
 import alarms from './alarms';
 import storeUsers from './users';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
+import watchListModule from './modernWatchList';
 import axios from 'axios';
 
 import i18n from '@/i18n';
-import { doc } from 'prettier';
 
 Vue.use(Vuex);
 
@@ -29,16 +28,16 @@ export default new Vuex.Store({
 		dataSource,
 		dataSourceState,
 		dataPoint,
-		storeEventDetectors,
+		eventDetectorModule,
 		storeEvents,
 		graphicView,
 		pointHierarchy,
-		amcharts,
 		alarms,
 		storeUsers,
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,
+		watchListModule,
 	},
 	state: {
 		loggedUser: null,

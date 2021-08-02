@@ -54,6 +54,14 @@
         <td class="formLabel"><fmt:message key="viewEdit.settings.displayControls"/></td>
         <td class="formField"><input id="settingsControls" type="checkbox"/></td>
       </tr>
+      <tr>
+        <td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
+        <td class="formField"><input id="settingsPositionX" type="number"/></td></td>
+      </tr>
+      <tr>
+        <td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
+        <td class="formField"><input id="settingsPositionY" type="number"/></td></td>
+      </tr>
     </table>
   </td></tr></table>
   
@@ -82,6 +90,8 @@
                 $set("settingsSettable", comp.settableOverride);
                 $set("settingsBkgdColor", comp.bkgdColorOverride);
                 $set("settingsControls", comp.displayControls);                
+                $set("settingsPositionX", comp.x);
+                $set("settingsPositionY", comp.y);
                 
                 settingsEditor.pointSelectChanged();
                 
@@ -105,9 +115,15 @@
         
         this.save = function() {
             hideContextualMessages("settingsEditorPopup");
+            let posX = $get("settingsPositionX");
+            let posY = $get("settingsPositionY");
+            [posX, posY] = validateComponentPosition(posX, posY);
+            updatePointPosition(settingsEditor.componentId,
+              posX, posY, "settingsPositionX", "settingsPositionY"
+            );
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
-                    $get("settingsControls"), function(response) {
+                    $get("settingsControls"), posX, posY, function(response) {
                 if (response.hasMessages) {
                     showDwrMessages(response.messages);
                 }

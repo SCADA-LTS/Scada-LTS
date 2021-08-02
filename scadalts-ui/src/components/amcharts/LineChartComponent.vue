@@ -1,222 +1,151 @@
 <template>
 	<div>
-		<p>{{ label }}</p>
+		<v-alert
+			:type="errorMessage.type"
+			dismissible
+			v-if="!!errorMessage"
+			transition="scale-transition"
+			dense
+		>
+			{{ errorMessage.message }}
+		</v-alert>
 		<div
-			class="hello"
 			v-bind:style="{ height: this.height + 'px', width: this.width + 'px' }"
 			ref="chartdiv"
 		></div>
-		<div v-if="errorMessage">
-			<p class="error">{{ errorMessage }}</p>
-		</div>
-		<div v-if="showReload">
-			<button v-on:click="reload()">Reload</button>
-		</div>
 	</div>
 </template>
 <script>
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4charts from '@amcharts/amcharts4/charts';
-import am4themes_animated from '@amcharts/amcharts4/themes/animated';
-import httpClient from 'axios';
-import BaseChart from './BaseChart';
-am4core.useTheme(am4themes_animated);
-class LineChart extends BaseChart {
-	constructor(chartReference, color, domain = '.') {
-		super(chartReference, 'XYChart', color, domain);
-	}
-	displayControls(scrollbarX, scrollbarY, legend) {
-		if (scrollbarX !== undefined && scrollbarX == 'true') {
-			this.showScrollbarX = true;
-		} else if (scrollbarX !== undefined && scrollbarX == 'false') {
-			this.showScrollbarX = false;
-		}
-		if (scrollbarY !== undefined && scrollbarY == 'true') {
-			this.showScrollbarY = true;
-		} else if (scrollbarY !== undefined && scrollbarY == 'false') {
-			this.showScrollbarY = false;
-		}
-		if (legend !== undefined && legend == 'true') {
-			this.showLegend = true;
-		} else if (legend !== undefined && legend == 'false') {
-			this.showLegend = false;
-		}
-	}
-	loadData(pointId, startTimestamp, endTimestamp, exportId) {
-		return new Promise((resolve, reject) => {
-			super.loadData(pointId, startTimestamp, endTimestamp, exportId).then((data) => {
-				if (this.pointCurrentValue.get(pointId) == undefined) {
-					this.pointCurrentValue.set(pointId, {
-						name: data.name,
-						suffix: data.textRenderer.suffix,
-						type: data.type,
-						labels: new Map(),
-					});
-				}
-				if (data.type === 'Multistate') {
-					let customLabels = data.textRenderer.multistateValues;
-					if (
-						data.textRenderer.typeName === 'textRendererMultistate' &&
-						customLabels !== undefined
-					) {
-						let labelsMap = new Map();
-						for (let i = 0; i < customLabels.length; i++) {
-							labelsMap.set(String(customLabels[i].key), customLabels[i].text);
-						}
-						this.pointCurrentValue.get(pointId).labels = labelsMap;
-					}
-				}
-				if (data.type === 'Binary') {
-					if (data.textRenderer.typeName === 'textRendererBinary') {
-						let labelsMap = new Map();
-						labelsMap.set('0', data.textRenderer.zeroLabel);
-						labelsMap.set('1', data.textRenderer.oneLabel);
-						this.pointCurrentValue.get(pointId).labels = labelsMap;
-					}
-				}
-				data.values.forEach((e) => {
-					this.addValue(e, data.name, this.pointPastValues);
-				});
-				resolve('done');
-			});
-		});
-	}
-	setupChart() {
-		this.chart.data = BaseChart.prepareChartData(
-			BaseChart.sortMapKeys(this.pointPastValues),
-		);
-		this.createAxisX('DateAxis', null);
-		this.createAxisY();
-		this.createScrollBarsAndLegend(
-			this.showScrollbarX,
-			this.showScrollbarY,
-			this.showLegend,
-		);
-		this.createExportMenu(true, 'Scada_LineChart');
-		for (let [k, v] of this.pointCurrentValue) {
-			let s = this.createSeries(v.name, v.name, v.suffix);
-			if (v.type === 'Multistate') {
-				let mAxis = this.createAxisY(v.labels);
-				s.yAxis = mAxis;
-				mAxis.renderer.line.stroke = s.stroke;
-				mAxis.title.text = v.name;
-			}
-			if (v.type === 'Binary') {
-				if (v.labels.size > 0) {
-					let bAxis = this.createAxisY(v.labels);
-					s.yAxis = bAxis;
-					bAxis.renderer.line.stroke = s.stroke;
-					bAxis.title.text = v.name;
-				}
-			}
-		}
-	}
-	createSeries(seriesValueY, seriesName, suffix) {
-		return super.createSeries('Line', 'date', seriesValueY, seriesName, suffix);
-	}
-}
+import AmCharts from './AmChart';
+
+/**
+ * Line AmChart Component
+ * @version 2.0.0
+ * 
+ * Display complex AmChart instance
+ * that can handle the errors and 
+ * also can be configured in varoius ways.
+ * That chart can display classic line series
+ * but it also replace old "StepLineChartComponent"
+ * becouse now it is just one property to be set 
+ * to change the mode of that chart.
+ */
 export default {
 	name: 'LineChartComponent',
-	props: [
-		'pointId',
-		'pointXid',
-		'color',
-		'label',
-		'startDate',
-		'endDate',
-		'refreshRate',
-		'width',
-		'height',
-		'polylineStep',
-		'rangeValue',
-		'rangeColor',
-		'rangeLabel',
-		'showScrollbarX',
-		'showScrollbarY',
-		'showLegend',
-		'showReload',
-	],
+
+	props: {
+		pointIds: { type: String, required: true },
+		useXid: { type: Boolean },
+		separateAxis: {type: Boolean},
+		stepLine: { type: Boolean },
+		startDate: { type: String },
+		endDate: { type: String },
+		refreshRate: { type: Number },
+		width: { type: String, default: "500" },
+		height: { type: String, default: "400" },
+		color: { type: String },
+		strokeWidth: {type: Number},
+		aggregation: { type: Number },
+		showScrollbar: { type: Boolean },
+		showLegend: { type: Boolean },
+		showBullets: { type: Boolean },
+		showExportMenu: { type: String },
+		smoothLine: { type: Number },
+		serverValuesLimit: { type: Number },
+		serverLimitFactor: { type: Number }
+	},
+
 	data() {
 		return {
-			errorMessage: undefined,
 			chartClass: undefined,
-			isExportId: false,
+			errorMessage: undefined,
 		};
 	},
-	mounted() {
-		this.generateChart();
-	},
-	methods: {
-		generateChart() {
-			if (Number(this.polylineStep) > 1) {
-				LineChart.setPolylineStep(Number(this.polylineStep));
-			}
-			this.chartClass = new LineChart(this.$refs.chartdiv, this.color);
-			this.chartClass.displayControls(
-				this.showScrollbarX,
-				this.showScrollbarY,
-				this.showLegend,
-			);
-			if (
-				this.pointXid !== undefined &&
-				this.pointXid !== null &&
-				(this.pointId === null || this.pointId === undefined)
-			) {
-				this.isExportId = true;
-			}
-			let promises = [];
-			let points;
-			if (this.isExportId) {
-				points = this.pointXid.split(',');
-			} else {
-				points = this.pointId.split(',');
-			}
-			for (let i = 0; i < points.length; i++) {
-				promises.push(
-					this.chartClass.loadData(
-						points[i],
-						this.startDate,
-						this.endDate,
-						this.isExportId,
-					),
-				);
-			}
 
-			Promise.all(promises).then((response) => {
-				for (let i = 0; i < response.length; i++) {
-					if (response[i] !== 'done') {
-						this.errorMessage = 'Point given with index [' + i + '] has not been loaded!';
+	mounted() {
+		this.initChart();
+	},
+
+	beforeDestroy() {
+		this.close()
+	},
+
+	methods: {
+		initChart() {
+			this.chartClass = new AmCharts(
+				this.$refs.chartdiv,
+				'xychart',
+				this.pointIds
+			).showCursor().setStrokeWidth(this.strokeWidth);
+
+			if (!!this.useXid) {
+				this.chartClass.xid();
+			}
+			if(!!this.serverValuesLimit) {
+				this.chartClass.setApiAggregation(this.serverValuesLimit, this.serverLimitFactor);
+			}
+			if(!!this.separateAxis) {
+				this.chartClass.separateAxis();
+			}
+			if (!!this.stepLine) {
+				this.chartClass.stepLine();
+			}
+			if (!!this.startDate) {
+				this.chartClass.startTime(this.startDate);
+			}
+			if (!!this.endDate) {
+				this.chartClass.endTime(this.endDate);
+			}
+			if (!!this.refreshRate) {
+				this.chartClass.withLiveUpdate(this.refreshRate);
+			}
+			if (!!this.aggregation) {
+				if (this.aggregation === 0) {
+					this.chartClass.useAggregation();
+				} else {
+					this.chartClass.useAggregation(this.aggregation);
+				}
+			}
+			if (!!this.color) {
+				this.chartClass.useColors(this.color)
+			}
+			if (!!this.showScrollbar) {
+				this.chartClass.showScrollbar();
+			}
+			if (!!this.showLegend) {
+				this.chartClass.showLegend();
+			}
+			if (!!this.showBullets) {
+				this.chartClass.showBullets();
+			}
+			if (!!this.showExportMenu) {
+				this.chartClass.showExportMenu(this.showExportMenu);
+			}
+			if (!!this.smoothLine) {
+				this.chartClass.smoothLine(this.smoothLine);
+			}
+			this.chartClass = this.chartClass.build();
+
+			this.chartClass.createChart().catch((e) => {
+				if(e.message === 'No data from that range!') {
+					this.errorMessage = {
+						type: 'warning',
+						message: e.message
 					}
-				}
-				this.chartClass.showChart(); // Display Chart
-				if (this.rangeValue !== undefined) {
-					this.chartClass.addRangeValue(
-						Number(this.rangeValue),
-						this.rangeColor,
-						this.rangeLabel,
-					);
-				}
-				if (this.refreshRate != undefined) {
-					this.chartClass.startLiveUpdate(Number(this.refreshRate), this.isExportId);
+				} else {
+					this.errorMessage = {
+						type: 'error',
+						message: `Failed to load chart!: ${e.message}`
+					}
 				}
 			});
 		},
-		reload() {
-			this.generateChart();
+
+		close() {
+			this.chartClass.disposeChart();
 		},
 	},
 };
 </script>
 <style scoped>
-.hello {
-	min-width: 650px;
-	height: 500px;
-}
-p {
-	text-align: center;
-	padding-top: 10px;
-}
-.error {
-	color: red;
-}
 </style>

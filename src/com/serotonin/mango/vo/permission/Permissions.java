@@ -31,9 +31,12 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionViewACL;
-import org.scada_lts.permissions.PermissionWatchlistACL;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
+
+import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccessesList;
 
 /**
  * @author Matthew Lohbihler
@@ -159,6 +162,11 @@ public class Permissions {
             throw new PermissionException("User does not have set permission to point", user);
     }
 
+    public static void ensureDataPointUpdatePermission(User user, DataPointVO point) throws PermissionException {
+        if(!hasDataPointSetPermission(user, point))
+            throw new PermissionException("User does not have set permission to point", user);
+    }
+
     public static boolean hasDataPointSetPermission(User user, DataPointVO point) throws PermissionException {
         if(user.isAdmin())
             return true;
@@ -171,11 +179,8 @@ public class Permissions {
     }
 
     private static DataPointAccess getDataPointAccess(User user, int dataPointId) {
-        for (DataPointAccess a : user.getDataPointPermissions()) {
-            if (a.getDataPointId() == dataPointId)
-                return a;
-        }
-        for (DataPointAccess a : user.getDataPointProfilePermissions()) {
+        List<DataPointAccess> merged = mergeDataPointAccessesList(user.getDataPointPermissions(), user.getDataPointProfilePermissions());
+        for (DataPointAccess a : merged) {
             if (a.getDataPointId() == dataPointId)
                 return a;
         }

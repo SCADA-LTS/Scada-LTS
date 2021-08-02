@@ -183,7 +183,8 @@ function isMouseLeaveOrEnter(e, handler) {
 function show(node, styleType) {
     if (!styleType)
         styleType = '';
-    getNodeIfString(node).style.display = styleType;
+    if (node != null)
+        getNodeIfString(node).style.display = styleType;
 }
 
 function hide(node) {
@@ -563,13 +564,15 @@ function setPointLinkImg(disabled, imgNode) {
 
 function updateImg(imgNode, src, text, visible, styleType) {
     if (visible) {
-        imgNode = getNodeIfString(imgNode);
-        show(imgNode, styleType);
-        if (src)
-            imgNode.src = src;
-        if (text) {
-            imgNode.title = text;
-            imgNode.alt = text;
+        if (imgNode != null) {
+            imgNode = getNodeIfString(imgNode);
+            show(imgNode, styleType);
+            if (src)
+                imgNode.src = src;
+            if (text) {
+                imgNode.title = text;
+                imgNode.alt = text;
+            }
         }
     }
     else
@@ -899,10 +902,12 @@ function setSilenced(eventId, silenced) {
 function setUserMuted(muted) {
     mango.soundPlayer.setMute(muted);
     var imgNode = $("userMutedImg");
-    if (muted)
-        updateImg(imgNode, "images/sound_mute.png", mango.i18n["header.unmute"], true, "inline");
-    else
-        updateImg(imgNode, "images/sound_none.png", mango.i18n["header.mute"], true, "inline");
+    if (imgNode != null) {
+        if (muted)
+            updateImg(imgNode, "images/sound_mute.png", mango.i18n["header.unmute"], true, "inline");
+        else
+            updateImg(imgNode, "images/sound_none.png", mango.i18n["header.mute"], true, "inline");
+    }
 }
 
 function ackEvent(eventId) {
@@ -1053,4 +1058,5 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	//alert(dps.length);
 	
 }
+
 

@@ -31,7 +31,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.vo.AnonymousUser;
 import com.serotonin.mango.vo.bean.LongPair;
 
-public class PointValueDao extends BaseDao {
+public class PointValueDao {
 	
 	private MangoPointValues pointValueService;
 
