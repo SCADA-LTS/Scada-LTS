@@ -117,6 +117,7 @@
 
         this.open = function(compId) {
             document.getElementById("staticEditorPopup").firstElementChild.setAttribute("id", "static" + compId);
+
             hide('htmlEditor');
             hide('linkEditor');
             hide('scriptButtonEditor');
