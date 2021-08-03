@@ -8,110 +8,318 @@
 			@accept="save()"
 		>
 			<template v-slot:selector>
-				<v-select v-model="datapoint.type" :items="datapointTypes"></v-select>
+				<v-select
+					v-model="datapoint.pointLocator.dataTypeId"
+					:items="datapointTypes"
+				></v-select>
 			</template>
 
 			<v-row>
 				<v-col>
-					<v-select 
+					<v-select
 						label="Change Type"
-						v-model="datapoint.changeTypeId"
+						v-model="datapoint.pointLocator.changeTypeId"
 						:items="changeTypes"
 					></v-select>
 				</v-col>
-				
 			</v-row>
 
-            <!-- Binary -->
-			<v-row v-if="datapoint.type === DataTypes.BINARY">
-				<v-col v-if="datapoint.changeTypeId === DataChangeTypes.ALTERNATE_BOOLEAN 
-					|| datapoint.changeTypeId === DataChangeTypes.RANDOM_BOOLEAN">
-					<v-select label="Start Value" v-model="pointLocator.startValue">
-						<v-option value="0">False</v-option>
-						<v-option value="1">True</v-option>
-					</v-select>
-				</v-col>
-
-				<v-col v-else>
-					<v-text-field label="Start Value" v-model="pointLocator.startValue"></v-text-field>
-				</v-col>
-
-				
-			</v-row>
-
-            <!-- Multistate -->
-			<v-row v-if="datapoint.type === DataTypes.MULTISTATE">
-				<v-col v-if="datapoint.changeTypeId === DataChangeTypes.INCREMENT_MULTISTATE 
-					|| datapoint.changeTypeId === DataChangeTypes.RANDOM_MULTISTATE">
-					<v-row>
+			<!-- Binary -->
+			<v-row v-if="datapoint.pointLocator.dataTypeId === DataTypes.BINARY">
+				<v-col>
+					<v-row
+						v-if="
+							datapoint.pointLocator.changeTypeId === DataChangeTypes.ALTERNATE_BOOLEAN
+						"
+					>
 						<v-col>
+							<v-select
+								label="Start Value"
+								v-model="datapoint.pointLocator.alternateBooleanChange.startValue"
+								:items="booleanSelectBox"
+							></v-select>
+						</v-col>
+					</v-row>
+					<v-row
+						v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.RANDOM_BOOLEAN"
+					>
+						<v-col>
+							<v-select
+								label="Start Value"
+								v-model="datapoint.pointLocator.randomBooleanChange.startValue"
+								:items="booleanSelectBox"
+							></v-select>
+						</v-col>
+					</v-row>
+					<v-row v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.NO_CHANGE">
+						<v-col>
+							<v-select
+								label="Start Value"
+								v-model="datapoint.pointLocator.noChange.startValue"
+								:items="booleanSelectBox"
+							></v-select>
+						</v-col>
+					</v-row>
+				</v-col>
+			</v-row>
+
+			<!-- Multistate -->
+			<v-row v-if="datapoint.pointLocator.dataTypeId === DataTypes.MULTISTATE">
+				<v-col>
+					<v-row
+						v-if="
+							datapoint.pointLocator.changeTypeId === DataChangeTypes.INCREMENT_MULTISTATE
+						"
+					>
+						<v-col cols="5">
 							<v-text-field type="Number" label="Values" v-model="multistateValue">
-								<v-icon slot="append" @click="addMsValue">mdi-plus</v-icon>
+								<v-icon
+									slot="append"
+									@click="
+										addMsValue(datapoint.pointLocator.incrementMultistateChange.values)
+									"
+									>mdi-plus</v-icon
+								>
 							</v-text-field>
 						</v-col>
-					</v-row>
-					<v-row>
-						<v-col v-for="(v, index) in pointLocator.values"  :key="index">
-							<span @click="removeMsValue(v)">{{v}}</span>
+						
+						<v-col cols="2">
+							<v-checkbox
+								label="Roll"
+								v-model="datapoint.pointLocator.incrementMultistateChange.roll"
+							></v-checkbox>
+						</v-col>
+						<v-col cols="5">
+							<v-select
+								label="Initail Value"
+								v-model="datapoint.pointLocator.incrementMultistateChange.startValue"
+								:items="datapoint.pointLocator.incrementMultistateChange.values"
+							></v-select>
+						</v-col>
+						<v-col cols="2"
+							v-for="(v, index) in datapoint.pointLocator.incrementMultistateChange
+								.values"
+							:key="index"
+						>
+							<v-chip close close-icon="mdi-delete" color="primary" label class="multistate-value--label"
+								@click:close="removeMsValue(DataChangeTypes.INCREMENT_MULTISTATE, v)">
+								{{v}}
+							</v-chip>
 						</v-col>
 					</v-row>
-					<v-row>
-						<v-checkbox label="Roll" v-model="pointLocator.roll"></v-checkbox>
+					<v-row
+						v-if="
+							datapoint.pointLocator.changeTypeId === DataChangeTypes.RANDOM_MULTISTATE
+						"
+					>
+						<v-col cols="5">
+							<v-text-field type="Number" label="Values" v-model="multistateValue">
+								<v-icon
+									slot="append"
+									@click="
+										addMsValue(datapoint.pointLocator.randomMultistateChange.values)
+									"
+									>mdi-plus</v-icon
+								>
+							</v-text-field>
+						</v-col>
+						<v-col cols="2">
+							<v-checkbox
+								label="Roll"
+								v-model="datapoint.pointLocator.randomMultistateChange.roll"
+							></v-checkbox>
+						</v-col>
+						<v-col cols="5">
+							<v-select
+								label="Initail Value"
+								v-model="datapoint.pointLocator.randomMultistateChange.startValue"
+								:items="datapoint.pointLocator.randomMultistateChange.values"
+							></v-select>
+						</v-col>
+						<v-col cols="2"
+							v-for="(v, index) in datapoint.pointLocator.randomMultistateChange
+								.values"
+							:key="index"
+						>
+							<v-chip close close-icon="mdi-delete" color="primary" label class="multistate-value--label"
+								@click:close="removeMsValue(DataChangeTypes.RANDOM_MULTISTATE, v)">
+								{{v}}
+							</v-chip>
+						</v-col>
 					</v-row>
-					<v-row>
-						<v-select label="Initail Value" v-model="pointLocator.startValue"></v-select>
+					<v-row v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.NO_CHANGE">
+						<v-col>
+							<v-text-field
+								label="Start Value"
+								type="number"
+								v-model="datapoint.pointLocator.noChange.startValue"
+							></v-text-field>
+						</v-col>
 					</v-row>
-				</v-col>
-
-				<v-col v-else>
-					<v-text-field label="Initial Value" v-model="pointLocator.startValue"></v-text-field>
+					
 				</v-col>
 			</v-row>
 
 			<!-- Numeric -->
-			<v-row v-if="datapoint.type === DataTypes.NUMERIC">
-				<v-col v-if="datapoint.changeTypeId !== DataChangeTypes.NO_CHANGE">
-					<v-row>
-						<v-col>
-							<v-text-field label="Minimum" v-model="pointLocator.min"></v-text-field>
-						</v-col>
-						<v-col>
-							<v-text-field label="Maximum" v-model="pointLocator.max"></v-text-field>
-						</v-col>
-					</v-row>
-					<v-row v-if="datapoint.changeTypeId === DataChangeTypes.BROWNIAN">
-						<v-col>
-							<v-text-field label="Maximum Change" v-model="pointLocator.maxChange"></v-text-field>
-						</v-col>
-					</v-row>
-
-					<v-row v-if="datapoint.changeTypeId === DataChangeTypes.INCREMENT_ANALOG">
-						<v-col>
-							<v-text-field label="Change Change" v-model="pointLocator.change"></v-text-field>
-							<v-checkbox label="Roll" v-model="pointLocator.roll"></v-checkbox>
-							<!--  roll -->
-						</v-col>
-					</v-row>
-				</v-col>
-
-				<!-- TODO: Add Atttractor Point Logic -->
-
+			<v-row v-if="datapoint.pointLocator.dataTypeId === DataTypes.NUMERIC">
 				<v-col>
-					<v-text-field label="Initial Value" v-model="pointLocator.startValue"></v-text-field>
-				</v-col>
+					<v-row v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.BROWNIAN">
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Minimum"
+								v-model="datapoint.pointLocator.brownianChange.min"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Maximum"
+								v-model="datapoint.pointLocator.brownianChange.max"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Maximum Change"
+								v-model="datapoint.pointLocator.brownianChange.maxChange"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Start value"
+								v-model="datapoint.pointLocator.brownianChange.startValue"
+							></v-text-field>
+						</v-col>
+					</v-row>
 
+					<v-row
+						v-if="
+							datapoint.pointLocator.changeTypeId === DataChangeTypes.INCREMENT_ANALOG
+						"
+					>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Minimum"
+								v-model="datapoint.pointLocator.incrementAnalogChange.min"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Maximum"
+								v-model="datapoint.pointLocator.incrementAnalogChange.max"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Maximum Change"
+								v-model="datapoint.pointLocator.incrementAnalogChange.change"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-checkbox
+								label="Roll"
+								v-model="datapoint.pointLocator.incrementAnalogChange.roll"
+							></v-checkbox>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Start value"
+								v-model="datapoint.pointLocator.incrementAnalogChange.startValue"
+							></v-text-field>
+						</v-col>
+					</v-row>
+
+					<v-row v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.NO_CHANGE">
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Start value"
+								v-model="datapoint.pointLocator.noChange.startValue"
+							></v-text-field>
+						</v-col>
+					</v-row>
+
+					<v-row
+						v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.RANDOM_ANALOG"
+					>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Minimum"
+								v-model="datapoint.pointLocator.randomAnalogChange.min"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Maximum"
+								v-model="datapoint.pointLocator.randomAnalogChange.max"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Start value"
+								v-model="datapoint.pointLocator.randomAnalogChange.startValue"
+								:rules="[ruleNotNull]"
+							></v-text-field>
+							<!-- TODO: Add rule for not null -->
+						</v-col>
+					</v-row>
+
+					<v-row
+						v-if="
+							datapoint.pointLocator.changeTypeId === DataChangeTypes.ANALOG_ATTRACTOR
+						"
+					>
+						<!-- TODO: Add Atttractor Point Logic -->
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="attractionPointId"
+								v-model="datapoint.pointLocator.analogAttractorChange.attractionPointId"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="volatility"
+								v-model="datapoint.pointLocator.analogAttractorChange.volatility"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="maxChange"
+								v-model="datapoint.pointLocator.analogAttractorChange.maxChange"
+							></v-text-field>
+						</v-col>
+						<v-col>
+							<v-text-field
+								type="Number"
+								label="Start value"
+								v-model="datapoint.pointLocator.analogAttractorChange.startValue"
+							></v-text-field>
+						</v-col>
+					</v-row>
+				</v-col>
 			</v-row>
 
 			<!-- Alphanumeric -->
-			<v-row v-if="datapoint.type === DataTypes.APLHANUMERIC">
+			<v-row v-if="datapoint.pointLocator.dataTypeId === DataTypes.APLHANUMERIC">
 				<v-col>
-					<v-text-field label="Initial Value" v-model="pointLocator.startValue"></v-text-field>
+					<v-text-field
+						label="Initial Value"
+						v-model="datapoint.pointLocator.noChange.startValue"
+					></v-text-field>
 				</v-col>
 			</v-row>
-
-			
-
-
 		</DataPointCreation>
 	</div>
 </template>
@@ -135,70 +343,87 @@ export default {
 		visible: {
 			default: false,
 			type: Boolean,
-		}
-		// Invent the PointLocator for every kind of data point.
+		},
 	},
 
-    data() {
-        return {
-			selectedChangeType:'',
-			msValues: ['1', '2'],
+	data() {
+		return {
+			msValues: ['1', '2'],			
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
-			virtualPointLocator: {
-				startValue: '',
-        		min: 0,
-        		max: 100,
-        		maxChange: 10,
-        		change: '',
-        		roll: false,
-        		values: [],
-        		volatility: 0,
-        		attractionPointId: 0
-			},
 			multistateValue: 0,
-        }
-    },
+			booleanSelectBox: [{
+				text: 'False',
+				value: false
+			},{
+				text: 'True',
+				value: true
+			}],
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+		};
+	},
 
 	computed: {
 		changeTypes() {
-			console.log(this.datapoint)
-			if(!!this.datapoint) {
-				return this.$store.getters.getVirtualDatapointChangeType(this.datapoint.type);
+			if (!!this.datapoint) {
+				return this.$store.getters.getVirtualDatapointChangeType(
+					this.datapoint.pointLocator.dataTypeId
+				);
 			} else {
-				return 1;
+				return [
+					{
+						value: DataChangeTypes.NO_CHANGE,
+						text: 'No Change',
+					},
+				];
 			}
-			
 		},
 
 		datapointTypes() {
-			return this.$store.state.dataSourceState.datapointTypes;	
-		}
+			return this.$store.state.dataSourceState.datapointTypes;
+		},
 	},
 
 	methods: {
-		onDialogOpen() {
-			console.log("On Opened")
-		},
-
 		cancel() {
+			console.debug("VirtualDataSource.point.vue::cancel()")
 			this.$emit('canceled');
 		},
 
 		save() {
-			console.log(this.pointLocator);
+			console.debug("VirtualDataSource.point.vue::save()")
 			this.$emit('saved', this.datapoint);
 		},
 
-		addMsValue() {
-			this.pointLocator.values.push(this.multistateValue);
+		addMsValue(array) {
+			array.push(this.multistateValue);
 			this.multistateValue = Number(this.multistateValue) + 1;
 		},
 
-		removeMsValue(index) {
-			this.pointLocator.values = this.pointLocator.values.filter(t => t !== index);
-		}
+		removeMsValue(type, index) {
+			if (type === DataChangeTypes.RANDOM_MULTISTATE) {
+				this.datapoint.pointLocator.randomMultistateChange.values = this.datapoint.pointLocator.randomMultistateChange.values.filter(
+					(t) => t !== index
+				);
+			} else if (type === DataChangeTypes.INCREMENT_MULTISTATE) {
+				this.datapoint.pointLocator.incrementMultistateChange.values = this.datapoint.pointLocator.incrementMultistateChange.values.filter(
+					(t) => t !== index
+				);
+			} else {
+				console.log('Remove Multistate Value Failed!');
+				return;
+			}
+		},
 	},
 };
 </script>
-<style></style>
+<style>
+.multistate-value--label {
+	width: 100%;
+}
+.multistate-value--label .v-chip__content {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+</style>

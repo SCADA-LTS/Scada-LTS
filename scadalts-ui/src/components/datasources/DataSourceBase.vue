@@ -39,10 +39,13 @@ export default {
         },
 
         closeEditor() {
+            console.debug("datasources.DataSourceBase.vue::closeEditor()")
             this.$refs.dialog.editorVisible = false;
 		},
 
         onSaved(event) {
+            console.debug("datasources.DataSourceBase.vue::onSaved()")
+            this.$refs.dialog.editorVisible = false;
             this.$emit('saved', event)
         },
 

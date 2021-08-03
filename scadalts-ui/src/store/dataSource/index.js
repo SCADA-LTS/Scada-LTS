@@ -74,18 +74,132 @@ const ds = {
 				setTimeout(() => {
 					const data = [
 						{
-							enabled: false,
-							name: 'DP-01',
-							type: 0,
-							desc: 'Additional Descr',
-							xid: 'DP_0121323',
+							id:3,
+							xid:"AG_T_Numeric_01",
+							name:"AG Test - Numeric",
+							description:null,
+							dataSourceId:2,
+							deviceName:"AggregationTests",
+							enabled:true,
+							pointFolderId:0,
+							loggingType:1,
+							intervalLoggingPeriodType:2,
+							intervalLoggingPeriod:15,
+							intervalLoggingType:1,
+							tolerance:0.0,
+							purgeType:7,
+							purgePeriod:1,
+							pointLocator:{
+								dataTypeId:3,
+								changeTypeId:6,
+								settable:true,
+								alternateBooleanChange:{
+									startValue:true,
+								},
+								brownianChange:{
+									startValue:"",
+									min:0.0,
+									max:0.0,
+									maxChange:0.0
+								},
+								incrementAnalogChange:{
+									startValue:"",
+									min:0.0,
+									max:0.0,
+									change:0.0,
+									roll:false
+								},
+								incrementMultistateChange:{
+									startValue:"",
+									values:[],
+									roll:false
+								},
+								noChange:{
+									startValue:""
+								},
+								randomAnalogChange:{
+									startValue:12,
+									min:10.0,
+									max:100.0
+								},
+								randomBooleanChange:{
+									startValue:true
+								},
+								randomMultistateChange:{
+									startValue:"",
+									values:[]
+								},
+								analogAttractorChange:{
+									startValue:"",
+									maxChange:0.0,
+									volatility:0.0,
+									attractionPointId:0
+								}
+							}
 						},
 						{
-							enabled: true,
-							name: 'DP-02',
-							type: 2,
-							desc: 'Descr',
-							xid: 'DP_0121314',
+							id:2,
+							xid:"AG_T_Binary_01",
+							name:"AG Test - Binary",
+							description:null,
+							dataSourceId:2,
+							deviceName:"AggregationTests",
+							enabled:true,
+							pointFolderId:0,
+							loggingType:1,
+							intervalLoggingPeriodType:2,
+							intervalLoggingPeriod:15,
+							intervalLoggingType:1,
+							tolerance:0.0,
+							purgeType:7,
+							purgePeriod:1,
+							pointLocator:{
+								dataTypeId:1,
+								changeTypeId:7,
+								settable:true,
+								alternateBooleanChange:{
+									startValue:true,
+								},
+								brownianChange:{
+									startValue:"",
+									min:0.0,
+									max:0.0,
+									maxChange:0.0
+								},
+								incrementAnalogChange:{
+									startValue:"",
+									min:0.0,
+									max:0.0,
+									change:0.0,
+									roll:false
+								},
+								incrementMultistateChange:{
+									startValue:"",
+									values:[],
+									roll:false
+								},
+								noChange:{
+									startValue:""
+								},
+								randomAnalogChange:{
+									startValue:"0",
+									min:0.0,
+									max:100.0
+								},
+								randomBooleanChange:{
+									startValue:true
+								},
+								randomMultistateChange:{
+									startValue:"",
+									values:[]
+								},
+								analogAttractorChange:{
+									startValue:"",
+									maxChange:0.0,
+									volatility:0.0,
+									attractionPointId:0
+								}
+							}
 						},
 					];
 					resolve(data);

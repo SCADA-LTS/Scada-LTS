@@ -35,6 +35,7 @@ export default {
         },
 
         onSaved(event) {
+			console.debug("DataSourceCreator.vue::onSaved()")
 			this.dialogVisible = false;
 			event.type = this.selectedType;
 			this.$emit('savedDS', event);

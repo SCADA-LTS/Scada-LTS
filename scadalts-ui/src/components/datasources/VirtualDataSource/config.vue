@@ -46,7 +46,7 @@ export default {
 		},
 
 		save() {
-			console.log("VDS::SAVE")
+			console.debug("VirtualDataSource.config.vue::save()")
 			this.$emit('saved', this.datasource);
 		},
 

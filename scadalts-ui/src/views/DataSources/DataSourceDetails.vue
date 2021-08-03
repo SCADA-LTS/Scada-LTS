@@ -58,10 +58,12 @@ export default {
 		},
 
 		onSaved(event) {
+			console.debug("DataSourceDetails.vue::onSaved()")
 			this.$emit('saved', event);
 		},
 
 		deleteDataSource() {
+			console.debug("DataSourceDetails.vue::deleteDataSource()")
 			this.$emit('deleted', this.datasource.id);
 		},
 	},

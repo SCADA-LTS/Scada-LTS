@@ -93,10 +93,12 @@ export default {
 
 	methods: {
 		cancel() {
+			console.debug("datasources.DataPointCreation.vue::cancel()")
 			this.$emit('cancel');
 		},
 
 		accept() {
+			console.debug("datasources.DataPointCreation.vue::accept()")
 			this.$emit('accept');
 		},
 	},

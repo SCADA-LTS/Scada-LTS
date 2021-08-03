@@ -204,10 +204,12 @@ export default {
 		},
 
 		onDataPointCreation({ item, datapoint }) {
+			console.debug("DataSources.index.vue::onDataPointCreation()")
 			this.$refs.pointCreator.showDialog(item, datapoint, this.dataSources.get(item.type));
 		},
 
 		onDataPointDeletion({ item, datapoint }) {
+			console.debug("DataSources.index.vue::onDataPointDeletion()")
 			//TODO: MAKE CONFIRMATION DIALOG
 			console.log(item, datapoint);
 			item.datapoints = item.datapoints.filter((e) => {
@@ -220,6 +222,7 @@ export default {
 		},
 
 		onDataPointUpdate(event) {
+			console.debug("DataSources.index.vue::onDataPointUpdate()")
 			console.log(this.dataSourceList);
 			console.log(event);
 			let x = this.dataSourceList.find((e) => {
@@ -233,6 +236,7 @@ export default {
 		},
 
 		onDataPointSaved(event) {
+			console.debug("DataSources.index.vue::onDataPointSaved()")
 			console.log(this.dataSourceList);
 			console.log(event);
 			let x = this.dataSourceList.find((e) => {
@@ -242,6 +246,7 @@ export default {
 		},
 
 		async onDataSourceUpdate(event) {
+			console.debug("DataSources.index.vue::onDataSourceUpdate()")
 			this.savingData = true;
 			event.type = this.$store.getters.dataSourceTypeId(event.type)
 			try {
@@ -255,6 +260,7 @@ export default {
 		},
 
 		onDataSourceDelete(event) {
+			console.debug("DataSources.index.vue::onDataSourceDelete()")
 			this.$refs.deleteDataSource.showDialog();
 			this.operationQueue = event;
 		},
@@ -272,6 +278,7 @@ export default {
 		},
 
 		async onDataSourceSaved(event) {
+			console.debug("DataSources.index.vue::onDataSourceSaved()")
 			event.type = this.$store.getters.dataSourceTypeId(event.type)
 			this.savingData = true;
 			try {

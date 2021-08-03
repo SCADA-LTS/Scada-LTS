@@ -42,7 +42,7 @@
 				<v-list-item-subtitle v-show="$vuetify.breakpoint.lg || $vuetify.breakpoint.xl">
 					<v-row>
 						<v-col cols="1"> </v-col>
-						<v-col cols="1">
+						<v-col cols="2">
 							{{ dp.xid }}
 						</v-col>
 						<v-col>

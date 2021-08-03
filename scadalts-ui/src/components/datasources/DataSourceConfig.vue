@@ -116,10 +116,12 @@ export default {
 
 	methods: {
 		cancel() {
+			console.debug("datasources.DataSourceConfig.vue::cancel()")
 			this.$emit('cancel');
 		},
 
 		accept() {
+			console.debug("datasources.DataSourceConfig.vue::accept()")
 			this.$emit('accept');
 		},
 
