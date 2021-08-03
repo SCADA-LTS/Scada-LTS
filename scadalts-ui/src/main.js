@@ -232,6 +232,7 @@ for (let x = 0; x < 10; x++) {
 			render: (h) =>
 				h(RangeChartComponent, {
 					props: {
+						chartId: x,
 						pointIds: el.getAttribute('point-ids'),
 						useXid: el.getAttribute('use-xid') !== null,
 						separateAxis: el.getAttribute('separate-axes') !== null,

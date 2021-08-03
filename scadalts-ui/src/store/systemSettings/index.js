@@ -100,6 +100,7 @@ const storeSystemSettings = {
 
 		getDatabaseSize({ commit, dispatch }) {
 			return dispatch('requestGet', `/systemSettings/getDatabaseSize`).then((r) => {
+				r.topPoints = r.topPoints.slice(0, 10);
 				commit('setDatabaseInfo', r);
 				return r;
 			});
