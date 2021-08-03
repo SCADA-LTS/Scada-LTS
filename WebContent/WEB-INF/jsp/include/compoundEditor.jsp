@@ -24,6 +24,7 @@
 <%@page	import="com.serotonin.mango.view.component.SimpleCompoundComponent"%>
 
 <div id="compoundEditorPopup" style="display: none; left: 0px; top: 0px;" class="windowDiv">
+	<div>
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td>
@@ -136,6 +137,7 @@
 		}
 
 		open(compId) {
+			document.getElementById("compoundEditorPopup").firstElementChild.setAttribute("id", "compound" + compId);
 			ViewDwr.getViewComponent(compId, (comp) => {
                 this.component = comp;
                 $set("compoundComponentName", comp.displayName);
@@ -399,4 +401,5 @@
 	
 	var compoundEditor = new CompoundEditor();
 	</script>
+	</div>
 </div>
