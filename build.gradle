@@ -19,7 +19,7 @@ sourceCompatibility = 1.11
 targetCompatibility = 1.11
 
 def tomcatVersion = '9.0.41'
-def tomcatDirectory = '/opt/tomcat/9.0.41'
+def tomcatDirectory = System.getenv("CATALINA_HOME")
 
 // Environment variables to change
 subprojects {
@@ -71,7 +71,40 @@ task installWebDependency(type: Exec) {
     commandLine "npm", "install"
 }
 
+task clearTomcat(type: Delete) {
+    delete System.getenv("CATALINA_HOME") + "/work/Catalina/localhost"
+    delete System.getenv("CATALINA_HOME") + "/webapps/ScadaBR"
+    delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
+}
+
+task deployTomcat(type: Copy) {
+    from "build/libs/"
+    into System.getenv("CATALINA_HOME")+ "/webapps"
+    include('Scada-LTS.war')
+    rename('Scada-LTS.war', "ScadaBR.war")
+}
+
+task deploy(type: GradleBuild) {
+    tasks = ['clearTomcat', 'war', 'deployTomcat']
+}
+
+
 task run(type: Exec) {
-    workingDir tomcatDirectory + '/bin'
-    commandLine 'sh','-c', './catalina.sh', 'run'
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'run'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'run'
+    }
+}
+
+task runDebug(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'jdpa', 'run'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'jdpa', 'run'
+    }
 }
