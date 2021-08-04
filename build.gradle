@@ -59,6 +59,7 @@ war {
 task clearDockerDir(type: Delete) {
     delete files("docker/volumes/webapps/ScadaBR.war")
 }
+
 task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
     from "build/libs/"
     into "docker/volumes/webapps/"
@@ -88,7 +89,6 @@ task deploy(type: GradleBuild) {
     tasks = ['clearTomcat', 'war', 'deployTomcat']
 }
 
-
 task run(type: Exec) {
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         workingDir tomcatDirectory + '\\bin'
@@ -102,9 +102,17 @@ task run(type: Exec) {
 task runDebug(type: Exec) {
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         workingDir tomcatDirectory + '\\bin'
-        commandLine 'cmd', '/c', 'catalina.bat', 'jdpa', 'run'
+        commandLine 'cmd', '/c', 'catalina.bat', 'jpda', 'run'
     } else {
         workingDir tomcatDirectory + '/bin'
-        commandLine 'sh', './catalina.sh', 'jdpa', 'run'
+        commandLine 'sh', './catalina.sh', 'jpda', 'run'
     }
+}
+
+task buildRun(type: GradleBuild) {
+    tasks = ['clearTomcat', 'war', 'deployTomcat', 'run']
+}
+
+task buildRunDebug(type: GradleBuild) {
+    tasks = ['clearTomcat', 'war', 'deployTomcat', 'runDebug']
 }
