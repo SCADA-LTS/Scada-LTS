@@ -21,7 +21,6 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.springframework.dao.EmptyResultDataAccessException;

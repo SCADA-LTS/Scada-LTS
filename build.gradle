@@ -14,8 +14,12 @@ plugins {
     id 'java'
 }
 
+
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
+
+def tomcatVersion = '9.0.41'
+def tomcatDirectory = '/opt/tomcat/9.0.41'
 
 // Environment variables to change
 subprojects {
@@ -26,12 +30,13 @@ subprojects {
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
     providedCompile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
-    providedCompile fileTree(include: ['*.jar'], dir: System.getenv("CATALINA_HOME") + '/lib')
     providedCompile fileTree(include: ['*.jar'], dir: 'lib')
+    providedCompile 'org.apache.tomcat:tomcat-catalina:' + tomcatVersion
 }
 sourceSets {
     main {
@@ -64,4 +69,9 @@ task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
 task installWebDependency(type: Exec) {
     workingDir "./WebContent/resources"
     commandLine "npm", "install"
+}
+
+task run(type: Exec) {
+    workingDir tomcatDirectory + '/bin'
+    commandLine 'sh','-c', './catalina.sh', 'run'
 }
