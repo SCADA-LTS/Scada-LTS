@@ -116,3 +116,30 @@ task buildRun(type: GradleBuild) {
 task buildRunDebug(type: GradleBuild) {
     tasks = ['clearTomcat', 'war', 'deployTomcat', 'runDebug']
 }
+
+test {
+    filter {
+        includeTestsMatching "org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
+        includeTestsMatching "org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueCacheTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueFacadeTest"
+        includeTestsMatching "com.serotonin.mango.web.dwr.DataPointDetailsDwrTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueTimeTest"
+        includeTestsMatching "org.scada_lts.dao.PointValueDAOTest"
+        includeTestsMatching "com.serotonin.mango.view.component.ViewComponentTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.meta.ScriptExecutorTest"
+        includeTestsMatching "com.serotonin.mango.rt.scripting.ContextualizedScriptRTTestsSuite"
+        includeTestsMatching "org.scada_lts.service.ScheduledExecuteInactiveEventServiceTest"
+        includeTestsMatching "com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRtTest"
+        includeTestsMatching "org.scada_lts.service.CommunicationChannelTest"
+        includeTestsMatching "com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
+        includeTestsMatching "org.scada_lts.service.InactiveEventsProviderTest"
+        includeTestsMatching "org.scada_lts.utils.UpdateValuePointPropertiesTest"
+        includeTestsMatching "org.scada_lts.permissions.service.util.PermissionsTestsSuite"
+        includeTestsMatching "com.serotonin.mango.util.ViewControllerUtilsTest"
+        includeTestsMatching "org.scada_lts.permissions.migration.MigrationPermissionsTestsSuite"
+        includeTestsMatching "org.scada_lts.dao.pointvalues.PointValueAmChartDAOTest"
+        includeTestsMatching "br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
+    }
+}
