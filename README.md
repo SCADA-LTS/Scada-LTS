@@ -72,6 +72,14 @@ Commands with their explanations are listed below:
 | ```ant test-junit``` | Launch Java Unit Tests |
 | ```ant test-frontend-unit``` | Launch Vue.js tests |
 
+### Gradle Tasks
+| Command | Explanation |
+| ---- | ---- |
+| ```gradle war``` | Build Scada-LTS war file |
+| ```gradle run``` | Launch Tomcat instance |
+| ```gradle test``` | Launch Backend Unit Tests |
+| ```gradle scadalts-ui::testUi``` | Launch Frontend Unit Tests |
+
 ## SeroUtils library license
 
 Matthew Lohbihler <matthew@serotonin.ai> has granted us permission to use the SeroUtils.jar library for ScadaLTS team. ScadaLTS team can use the code seroUtils without limitation.

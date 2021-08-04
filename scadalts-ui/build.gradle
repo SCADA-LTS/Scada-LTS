@@ -16,6 +16,10 @@ task bundle(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'build']
 }
 
+task testUi(type: NpmTask) {
+    args = ['run-script', 'test:unit']
+}
+
 task clearResources(type: Delete, dependsOn: bundle) {
     delete files ("../WebContent/resources/js-ui")
 }
