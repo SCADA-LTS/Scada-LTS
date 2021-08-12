@@ -3,34 +3,39 @@ package org.scada_lts.permissions.service;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@CacheConfig(cacheNames = "watchListUserPermissions")
+@Service
 public class WatchListUserPermissionsService implements PermissionsService<WatchListAccess, User> {
 
     private final WatchListDAO watchListDAO;
-
-    public WatchListUserPermissionsService() {
-        this.watchListDAO = new WatchListDAO();
-    }
 
     public WatchListUserPermissionsService(WatchListDAO watchListDAO) {
         this.watchListDAO = watchListDAO;
     }
 
     @Override
-    public List<WatchListAccess> getPermissions(User user) {
-        return watchListDAO.selectWatchListPermissions(user.getId());
+    @Cacheable(key = "#object.id", unless = "#object == null")
+    public List<WatchListAccess> getPermissions(User object) {
+        return watchListDAO.selectWatchListPermissions(object.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(User user, List<WatchListAccess> toAddOrUpdate) {
-        watchListDAO.insertPermissions(user.getId(), toAddOrUpdate);
+    @CacheEvict(key = "#object.id", condition = "#object != null")
+    public void addOrUpdatePermissions(User object, List<WatchListAccess> toAddOrUpdate) {
+        watchListDAO.insertPermissions(object.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(User user, List<WatchListAccess> toRemove) {
-        watchListDAO.deletePermissions(user.getId(), toRemove);
+    @CacheEvict(key = "#object.id", condition = "#object != null")
+    public void removePermissions(User object, List<WatchListAccess> toRemove) {
+        watchListDAO.deletePermissions(object.getId(), toRemove);
     }
 
 }

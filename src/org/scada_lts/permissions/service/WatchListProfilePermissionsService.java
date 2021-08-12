@@ -2,39 +2,32 @@ package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.UsersProfileDAO;
-import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.scada_lts.dao.UsersProfileDaoCachable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+@Service
 public class WatchListProfilePermissionsService implements PermissionsService<WatchListAccess, UsersProfileVO>{
 
-    private final WatchListDAO watchListDAO;
-    private final UsersProfileDAO usersProfileDAO;
+    private final UsersProfileDaoCachable usersProfileDAO;
 
-    public WatchListProfilePermissionsService() {
-        this.watchListDAO = new WatchListDAO();
-        this.usersProfileDAO = new UsersProfileDAO();
-    }
-
-    public WatchListProfilePermissionsService(WatchListDAO watchListDAO, UsersProfileDAO usersProfileDAO) {
-        this.watchListDAO = watchListDAO;
+    public WatchListProfilePermissionsService(UsersProfileDaoCachable usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
     }
 
     @Override
-    public List<WatchListAccess> getPermissions(UsersProfileVO profile) {
-        return watchListDAO.selectWatchListPermissionsByProfileId(profile.getId());
+    public List<WatchListAccess> getPermissions(UsersProfileVO object) {
+        return usersProfileDAO.selectWatchListPermissionsByProfileId(object.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO profile, List<WatchListAccess> toAddOrUpdate) {
-        usersProfileDAO.insertWatchListUsersProfile(profile.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(UsersProfileVO object, List<WatchListAccess> toAddOrUpdate) {
+        usersProfileDAO.insertWatchListUsersProfile(object.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(UsersProfileVO profile, List<WatchListAccess> toRemove) {
-        usersProfileDAO.deleteWatchListUsersProfile(profile.getId(), toRemove);
+    public void removePermissions(UsersProfileVO object, List<WatchListAccess> toRemove) {
+        usersProfileDAO.deleteWatchListUsersProfile(object.getId(), toRemove);
     }
 }

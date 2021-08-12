@@ -54,15 +54,15 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
         PointEventDetectorDAO pointEventDetectorDAO = new OnlyMigrationPointEventDetectorDAO();
 
         PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService =
-                new WatchListProfilePermissionsService(watchListDAO, usersProfileDAO);
+                new WatchListProfilePermissionsService(usersProfileDAO);
         PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService =
-                new DataPointProfilePermissionsService(usersProfileDAO, dataPointUserDAO);
+                new DataPointProfilePermissionsService(usersProfileDAO);
         PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService =
-                new DataSourceProfilePermissionsService(usersProfileDAO, dataSourceDAO);
+                new DataSourceProfilePermissionsService(usersProfileDAO);
         PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService =
-                new ViewProfilePermissionsService(viewDAO, usersProfileDAO);
+                new ViewProfilePermissionsService(usersProfileDAO);
 
-        UsersProfileService usersProfileService = new UsersProfileService(usersProfileDAO, DAO.getInstance(), userDAO,
+        UsersProfileService usersProfileService = new UsersProfileService(usersProfileDAO, userDAO,
                 watchListPermissionsService, dataPointPermissionsService,
                 dataSourcePermissionsService, viewPermissionsService);
 

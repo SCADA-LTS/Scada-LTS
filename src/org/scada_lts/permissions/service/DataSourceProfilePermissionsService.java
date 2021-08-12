@@ -1,37 +1,32 @@
 package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.UsersProfileDaoCachable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DataSourceProfilePermissionsService implements PermissionsService<Integer, UsersProfileVO> {
 
-    private final DataSourceDAO dataSourceDAO;
-    private final UsersProfileDAO usersProfileDAO;
+    private final UsersProfileDaoCachable usersProfileDAO;
 
-    public DataSourceProfilePermissionsService() {
-        this.usersProfileDAO = new UsersProfileDAO();
-        this.dataSourceDAO = new DataSourceDAO();
-    }
-
-    public DataSourceProfilePermissionsService(UsersProfileDAO usersProfileDAO, DataSourceDAO dataPointUserDAO) {
+    public DataSourceProfilePermissionsService(UsersProfileDaoCachable usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
-        this.dataSourceDAO = dataPointUserDAO;
-    }
-    @Override
-    public List<Integer> getPermissions(UsersProfileVO profile) {
-        return dataSourceDAO.selectDataSourcePermissionsByProfileId(profile.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO profile, List<Integer> toAddOrUpdate) {
-        usersProfileDAO.insertDataSourceUsersProfile(profile.getId(), toAddOrUpdate);
+    public List<Integer> getPermissions(UsersProfileVO object) {
+        return usersProfileDAO.selectDataSourcePermissionsByProfileId(object.getId());
     }
 
     @Override
-    public void removePermissions(UsersProfileVO profile, List<Integer> toRemove) {
-        usersProfileDAO.deleteDataSourceUsersProfile(profile.getId(), toRemove);
+    public void addOrUpdatePermissions(UsersProfileVO object, List<Integer> toAddOrUpdate) {
+        usersProfileDAO.insertDataSourceUsersProfile(object.getId(), toAddOrUpdate);
+    }
+
+    @Override
+    public void removePermissions(UsersProfileVO object, List<Integer> toRemove) {
+        usersProfileDAO.deleteDataSourceUsersProfile(object.getId(), toRemove);
     }
 }

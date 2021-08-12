@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
@@ -51,6 +50,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
@@ -64,7 +64,7 @@ public class UsersDwr extends BaseDwr {
 			initData.put("admin", true);
 			initData.put("users", new UserDao().getUsers());
 			initData.put("usersProfiles",
-					new UsersProfileDao().getUsersProfiles());
+					new UsersProfileService().getUsersProfiles());
 
 			// Data sources
 			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
@@ -180,7 +180,7 @@ public class UsersDwr extends BaseDwr {
 			userDao.updateUserHideMenu(user);
 			userDao.updateUserScadaTheme(user);
 
-			UsersProfileDao profilesDao = new UsersProfileDao();
+			UsersProfileService profilesDao = new UsersProfileService();
 			if (usersProfileId == Common.NEW_ID) {
 				profilesDao.resetUserProfile(user);
 			} else {
@@ -270,8 +270,8 @@ public class UsersDwr extends BaseDwr {
 					"users.validate.badDelete"));
 		else {
 			new UserDao().deleteUser(id);
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			usersProfileDao.updatePermissions();
+			UsersProfileService profilesDao = new UsersProfileService();
+			profilesDao.updatePermissions();
 		}
 
 		return response;

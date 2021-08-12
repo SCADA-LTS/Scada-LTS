@@ -42,7 +42,6 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -91,6 +90,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -356,7 +356,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-        UsersProfileDao usersProfileDao = new UsersProfileDao();
+        UsersProfileService usersProfileDao = new UsersProfileService();
         usersProfileDao.updateDataPointPermissions();
         return getPoints();
     }

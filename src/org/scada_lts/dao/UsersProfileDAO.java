@@ -7,11 +7,13 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.XidUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.Collections;
@@ -19,9 +21,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class UsersProfileDAO {
+@Repository
+public class UsersProfileDAO implements UsersProfileDaoCachable {
 
     private static final Log LOG = LogFactory.getLog(UsersProfileDAO.class);
+
+    private static final String TABLE_NAME_USERS_PROFILES = "usersProfiles";
 
     private static final String COLUMN_NAME_USER_ID = "userId";
     private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
@@ -41,7 +46,7 @@ public class UsersProfileDAO {
             "up." + COLUMN_NAME_ID + ", " +
             "up." + COLUMN_NAME_XID + ", " +
             "up." + COLUMN_NAME_NAME + " " +
-            "from usersUsersProfiles uup left join usersProfiles up on " +
+            "from usersUsersProfiles uup left join " + TABLE_NAME_USERS_PROFILES + " up on " +
             "up." + COLUMN_NAME_ID + "=" +
             "uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
             "where uup." + COLUMN_NAME_USER_ID + "=? " +
@@ -53,7 +58,7 @@ public class UsersProfileDAO {
             "up." + COLUMN_NAME_ID + ", " +
             "up." + COLUMN_NAME_XID + ", " +
             "up." + COLUMN_NAME_NAME + " " +
-            "from usersProfiles up " +
+            "from " + TABLE_NAME_USERS_PROFILES + " up " +
             "where up." + COLUMN_NAME_ID + "=? ";
 
     private static final String USERS_PROFILE_SELECT_BY_XID = "" +
@@ -61,7 +66,7 @@ public class UsersProfileDAO {
             "up." + COLUMN_NAME_ID + ", " +
             "up." + COLUMN_NAME_XID + ", " +
             "up." + COLUMN_NAME_NAME + " " +
-            "from usersProfiles up " +
+            "from " + TABLE_NAME_USERS_PROFILES + " up " +
             "where up." + COLUMN_NAME_XID + "=? ";
 
     private static final String USERS_USERS_PROFILE_DELETE_BY_USER_ID = "" +
@@ -71,12 +76,12 @@ public class UsersProfileDAO {
 
     private static final String USERS_PROFILE_DELETE_BY_ID = "" +
             "delete " +
-            "from usersProfiles " +
+            "from " + TABLE_NAME_USERS_PROFILES + " " +
             "where " + COLUMN_NAME_ID + "=?";
 
     private static final String USERS_PROFILES_UPDATE_NAME_BY_ID = "" +
             "update " +
-            "usersProfiles up " +
+            TABLE_NAME_USERS_PROFILES + " up " +
             "set " +
             COLUMN_NAME_NAME + "=? " +
             "where " +
@@ -101,12 +106,12 @@ public class UsersProfileDAO {
             "u." + COLUMN_NAME_ID + ", " +
             "u." + COLUMN_NAME_NAME + ", " +
             "u." + COLUMN_NAME_XID + " " +
-            "from usersProfiles u order by " +
+            "from " + TABLE_NAME_USERS_PROFILES + " u order by " +
             "u." + COLUMN_NAME_NAME + " " +
             "limit ? offset ?";
 
     private static final String USERS_PROFILE_INSERT = "" +
-            "insert into usersProfiles (" +
+            "insert into " + TABLE_NAME_USERS_PROFILES + " (" +
             COLUMN_NAME_XID + ", " +
             COLUMN_NAME_NAME + "" +
             ") values (?, ?)";
@@ -229,6 +234,44 @@ public class UsersProfileDAO {
             + "and "
             + COLUMN_NAME_USER_PROFILE_ID+"=?";
 
+    private static final String WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
+            + "select "
+            + COLUMN_NAME_WATCH_LIST_ID+ ", "
+            + COLUMN_NAME_PERMISSION + " "
+            + "from "
+            + "watchListUsersProfiles "
+            + "where "
+            + COLUMN_NAME_USER_PROFILE_ID+ "=?";
+
+    private static final String VIEW_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
+            + "select "
+            + COLUMN_NAME_VIEW_ID+ ", "
+            + COLUMN_NAME_PERMISSION + " "
+            + "from "
+            + "viewUsersProfiles "
+            + "where "
+            + COLUMN_NAME_USER_PROFILE_ID+ "=?";
+
+    private static final String DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
+            + "select "
+            + COLUMN_NAME_DATA_SOURCE_ID+ ", "
+            + COLUMN_NAME_USER_PROFILE_ID + " "
+            + "from "
+            + "dataSourceUsersProfiles "
+            + "where "
+            + COLUMN_NAME_USER_PROFILE_ID+ "=?";
+
+    private static final String DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
+            + "select "
+            + COLUMN_NAME_DATA_POINT_ID+ ", "
+            + COLUMN_NAME_USER_PROFILE_ID+ ", "
+            + COLUMN_NAME_PERMISSION + " "
+            + "from "
+            + "dataPointUsersProfiles "
+            + "where "
+            + COLUMN_NAME_USER_PROFILE_ID+ "=?";
+
+
     private JdbcTemplate jdbcTemplate;
 
     public UsersProfileDAO() {
@@ -239,6 +282,7 @@ public class UsersProfileDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<UsersProfileVO> selectUserProfileByUserId(int userId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfileByUserId(int userId) userId:" + userId);
@@ -252,6 +296,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public Optional<UsersProfileVO> selectProfileById(int usersProfileId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfileById(int usersProfileId) id:" + usersProfileId);
@@ -266,6 +311,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public Optional<UsersProfileVO> selectProfileByXid(String usersProfileXid) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfileByXid(String usersProfileXid) id:" + usersProfileXid);
@@ -280,6 +326,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public List<UsersProfileVO> selectProfiles(int offset, int limit) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfiles(int offset, int limit) limit:" + limit + " offset:" + offset);
@@ -293,6 +340,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public List<Integer> selectUsersByProfileId(int usersProfileId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectUsersByProfileId(int usersProfileId) id:" + usersProfileId);
@@ -307,6 +355,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public int updateProfileName(String name, int usersProfileId) {
         if (LOG.isTraceEnabled())
             LOG.trace("updateProfileName(String name, int usersProfileId) id:" + usersProfileId + " name: " +  name);
@@ -320,6 +369,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public int deleteUserProfileByUserId(int userId) {
         if (LOG.isTraceEnabled())
             LOG.trace("deleteUserProfileByUserId(int userId) userId:" + userId);
@@ -333,6 +383,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public int deleteProfile(int profileId) {
         if (LOG.isTraceEnabled())
             LOG.trace("deleteProfile(int profileId) profileId:" + profileId);
@@ -346,6 +397,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public int insertUserProfile(int userId, int userProfileId) {
         if (LOG.isTraceEnabled())
             LOG.trace("insertUserProfile(int userId, int userProfileId) userId:" + userId + ", userProfileId:" + userProfileId);
@@ -359,6 +411,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public int insertProfile(String usersProfileXid, String usersProfileName) {
         if (LOG.isTraceEnabled())
             LOG.trace("insertProfile(String usersProfileXid, String usersProfileName) usersProfileXid:" + usersProfileXid + ", usersProfileName:" + usersProfileName);
@@ -380,6 +433,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public int[] insertDataPointUsersProfile(int profileId, List<DataPointAccess> toInsert) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("insertDataPointUsersProfile(int profileId, List<DataPointAccess> toInsert) profileId:" + profileId + "");
@@ -395,6 +449,7 @@ public class UsersProfileDAO {
                 .batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
+    @Override
     public int[] deleteDataPointUsersProfile(int profileId, List<DataPointAccess> toDelete) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("deleteDataPointUsersProfile(int profileId, List<DataPointAccess> toDelete) profileId:" + profileId);
@@ -410,6 +465,7 @@ public class UsersProfileDAO {
                 .batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
+    @Override
     public int[] insertDataSourceUsersProfile(int profileId, List<Integer> toInsert) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("insertDataSourceUsersProfile(int profileId, List<Integer> toInsert) profileId:" + profileId + "");
@@ -425,6 +481,7 @@ public class UsersProfileDAO {
                 .batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
+    @Override
     public int[] deleteDataSourceUsersProfile(int profileId, List<Integer> toDelete) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("deleteDataSourceUsersProfile(int profileId, List<Integer> toDelete) profileId:" + profileId);
@@ -440,6 +497,7 @@ public class UsersProfileDAO {
                 .batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
+    @Override
     public int[] insertViewUsersProfile(int profileId, List<ViewAccess> toInsert) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("insertViewUsersProfile(int profileId, List<DataPointAccess> toInsert) profileId:" + profileId + "");
@@ -455,6 +513,7 @@ public class UsersProfileDAO {
                 .batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
+    @Override
     public int[] deleteViewUsersProfile(int profileId, List<ViewAccess> toDelete) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("deleteViewUsersProfile(int profileId, List<Integer> toDelete) profileId:" + profileId);
@@ -470,6 +529,7 @@ public class UsersProfileDAO {
                 .batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
+    @Override
     public int[] insertWatchListUsersProfile(int profileId, List<WatchListAccess> toInsert) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("insertViewUsersProfile(int profileId, List<DataPointAccess> toInsert) profileId:" + profileId + "");
@@ -485,6 +545,7 @@ public class UsersProfileDAO {
                 .batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
+    @Override
     public int[] deleteWatchListUsersProfile(int profileId, List<WatchListAccess> toDelete) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("deleteWatchListUsersProfile(int profileId, List<Integer> toDelete) profileId:" + profileId);
@@ -500,6 +561,7 @@ public class UsersProfileDAO {
                 .batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
+    @Override
     public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
@@ -515,6 +577,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public List<ShareUser> selectViewShareUsers(int viewId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
@@ -530,6 +593,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public List<ShareUser> selectWatchListShareUsers(int watchListId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
@@ -545,6 +609,7 @@ public class UsersProfileDAO {
         }
     }
 
+    @Override
     public List<ShareUser> selectDataPointShareUsers(int dataPointId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectDataPointShareUsers(int dataPointId) dataPointId:" + dataPointId);
@@ -559,6 +624,76 @@ public class UsersProfileDAO {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public List<WatchListAccess> selectWatchListPermissionsByProfileId(int usersProfileId) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("selectWatchListPermissionsByProfileId(int usersProfileId) usersProfileId:" + usersProfileId);
+        }
+
+        return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+            WatchListAccess dataPointAccess = new WatchListAccess();
+            dataPointAccess.setId(rs.getInt(COLUMN_NAME_WATCH_LIST_ID));
+            dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
+            return dataPointAccess;
+        });
+
+    }
+
+    @Override
+    public List<ViewAccess> selectViewPermissionsByProfileId(int usersProfileId) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("selectViewPermissionsByUsersProfileId(final int usersProfileId) usersProfileId:" + usersProfileId);
+        }
+
+        return DAO.getInstance().getJdbcTemp().query(VIEW_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+            ViewAccess viewAccess = new ViewAccess();
+            viewAccess.setId(rs.getInt(COLUMN_NAME_VIEW_ID));
+            viewAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
+            return viewAccess;
+        });
+    }
+
+    @Override
+    public List<Integer> selectDataSourcePermissionsByProfileId(int profileId) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("selectDataSourcePermissionsByProfileId(int profileId) profileId:" + profileId);
+        }
+
+        return DAO.getInstance().getJdbcTemp()
+                .query(DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID,
+                        new Object[]{profileId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DATA_SOURCE_ID));
+    }
+
+    @Override
+    public List<DataPointAccess> selectDataPointPermissionsByProfileId(int profileId) {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("selectWatchListPermissionsByProfileId(int profileId) profileId:" + profileId);
+        }
+
+        return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
+            DataPointAccess dataPointAccess = new DataPointAccess();
+            dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
+            dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
+            return dataPointAccess;
+        });
+
+    }
+
+    @Override
+    public String generateUniqueXid(String prefix) {
+        String xid = XidUtils.generateXid(prefix);
+        while (!isXidUnique(xid, -1)) {
+            xid = XidUtils.generateXid(prefix);
+        }
+        return xid;
+    }
+
+    private boolean isXidUnique(String xid, int excludeId) {
+        return jdbcTemplate.queryForObject("select count(*) from " + TABLE_NAME_USERS_PROFILES
+                + " where xid=? and id<>?", new Object[] { xid, excludeId }, Integer.class) == 0;
+    }
+
 
     private class UsersProfileRowMapper implements RowMapper<UsersProfileVO> {
 

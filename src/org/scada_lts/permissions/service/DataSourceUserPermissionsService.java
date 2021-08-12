@@ -3,34 +3,38 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.DataSourceDAO;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@CacheConfig(cacheNames = "dataSourceUserPermissions")
+@Service
 public class DataSourceUserPermissionsService implements PermissionsService<Integer, User> {
 
     private final DataSourceDAO dataSourceDAO;
-
-    public DataSourceUserPermissionsService() {
-        this.dataSourceDAO = new DataSourceDAO();
-    }
 
     public DataSourceUserPermissionsService(DataSourceDAO dataSourceDAO) {
         this.dataSourceDAO = dataSourceDAO;
     }
 
     @Override
-    public List<Integer> getPermissions(User user) {
-        return dataSourceDAO.selectDataSourcePermissions(user.getId());
-    }
-
-
-    @Override
-    public void addOrUpdatePermissions(User user, List<Integer> toAddOrUpdate) {
-        dataSourceDAO.insertPermissions(user.getId(), toAddOrUpdate);
+    @Cacheable(key = "#object.id", unless = "#object == null")
+    public List<Integer> getPermissions(User object) {
+        return dataSourceDAO.selectDataSourcePermissions(object.getId());
     }
 
     @Override
-    public void removePermissions(User user, List<Integer> toRemove) {
-        dataSourceDAO.deletePermissions(user.getId(), toRemove);
+    @CacheEvict(key = "#object.id", condition = "#object != null")
+    public void addOrUpdatePermissions(User object, List<Integer> toAddOrUpdate) {
+        dataSourceDAO.insertPermissions(object.getId(), toAddOrUpdate);
+    }
+
+    @Override
+    @CacheEvict(key = "#object.id", condition = "#object != null")
+    public void removePermissions(User object, List<Integer> toRemove) {
+        dataSourceDAO.deletePermissions(object.getId(), toRemove);
     }
 }
