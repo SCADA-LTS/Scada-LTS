@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
@@ -33,6 +32,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersProfilesDwr {
 
@@ -41,7 +41,7 @@ public class UsersProfilesDwr {
 
 		initData.put("admin", true);
 
-		List<UsersProfileVO> profiles = new UsersProfileDao()
+		List<UsersProfileVO> profiles = new UsersProfileService()
 				.getUsersProfiles();
 		initData.put("profiles", profiles);
 
@@ -90,7 +90,7 @@ public class UsersProfilesDwr {
 			return new UsersProfileVO();
 		}
 
-		return new UsersProfileDao().getUserProfileById(id);
+		return new UsersProfileService().getUserProfileById(id);
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String name,
@@ -103,7 +103,7 @@ public class UsersProfilesDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 
-		UsersProfileDao userDao = new UsersProfileDao();
+		UsersProfileService userDao = new UsersProfileService();
 
 		UsersProfileVO profile;
 		if (id == Common.NEW_ID)
@@ -136,9 +136,9 @@ public class UsersProfilesDwr {
 	public DwrResponseI18n deleteUsersProfile(int profileId) {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
-		UsersProfileDao profileDao = new UsersProfileDao();
+		UsersProfileService userDao = new UsersProfileService();
 		try {
-			profileDao.deleteUserProfile(profileId);
+			userDao.deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

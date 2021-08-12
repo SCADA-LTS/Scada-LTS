@@ -30,7 +30,6 @@ public class UsersProfileServiceTest {
     @Before
     public void config() {
         this.usersProfileDAOMock = mock(UsersProfileDAO.class);
-        DAO daoMock = mock(DAO.class);
         UserDAO userDAOMock = mock(UserDAO.class);
 
         PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService = mock(PermissionsService.class);
@@ -38,7 +37,7 @@ public class UsersProfileServiceTest {
         PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService = mock(PermissionsService.class);
         PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService = mock(PermissionsService.class);
 
-        this.usersProfileService = new UsersProfileService(usersProfileDAOMock, daoMock, userDAOMock,
+        this.usersProfileService = new UsersProfileService(usersProfileDAOMock, userDAOMock,
                 watchListPermissionsService, dataPointPermissionsService, dataSourcePermissionsService, viewPermissionsService);
         this.user = TestUtils.newUser(123);
     }

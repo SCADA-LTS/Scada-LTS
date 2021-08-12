@@ -92,6 +92,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -359,7 +360,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-        UsersProfileDao usersProfileDao = new UsersProfileDao();
+        UsersProfileService usersProfileDao = new UsersProfileService();
         usersProfileDao.updateDataPointPermissions();
         return getPoints();
     }
@@ -1119,9 +1120,6 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                     "dsEdit.meta.test.scriptError", e.getMessage());
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
-        } catch (Exception e) {
-            LOG.error(infoErrorExecutionScript(e,"validateScript"));
-            throw e;
         }
 
         return response;

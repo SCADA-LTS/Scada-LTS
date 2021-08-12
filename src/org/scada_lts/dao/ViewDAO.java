@@ -215,15 +215,6 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_MVU_VIEW_ID+"=? and "
 				+ COLUMN_NAME_MVU_USER_ID+"=?";
 
-	private static final String WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
-			+ "select "
-			+ COLUMN_NAME_UP_VIEW_ID+ ", "
-			+ COLUMN_NAME_UP_PERMISSION + " "
-			+ "from "
-			+ "viewUsersProfiles "
-			+ "where "
-			+ COLUMN_NAME_UP_USER_PRFILE_ID+ "=?";
-
 	// @formatter:on
 	
 	// RowMapper
@@ -427,19 +418,6 @@ public class ViewDAO implements GenericDAO<View> {
 			return viewAccess;
 		});
 
-	}
-
-	public List<ViewAccess> selectViewPermissionsByProfileId(int usersProfileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectViewPermissionsByUsersProfileId(final int usersProfileId) usersProfileId:" + usersProfileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
-			ViewAccess viewAccess = new ViewAccess();
-			viewAccess.setId(rs.getInt(COLUMN_NAME_UP_VIEW_ID));
-			viewAccess.setPermission(rs.getInt(COLUMN_NAME_UP_PERMISSION));
-			return viewAccess;
-		});
 	}
 
 	public int[] insertPermissions(final int userId, final List<ViewAccess> toInsert) {

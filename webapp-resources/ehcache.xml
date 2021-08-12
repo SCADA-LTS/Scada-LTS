@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.ehcache.org/v3'
+        xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+                            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+    <cache alias="activeUsers">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="usersByUsername">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="usersById">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="dataPointProfilePermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="dataPointUserPermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="dataSourceProfilePermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="dataSourceUserPermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="viewProfilePermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="watchListProfilePermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="watchListUserPermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="viewUserPermissions">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="usersProfilesByUserId">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+
+    <cache alias="usersProfilesByXid">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="usersProfilesById">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="userIdsByProfileId">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="userIds">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+        <jsr107:mbeans enable-management="true" enable-statistics="true"/>
+    </cache>
+</config>

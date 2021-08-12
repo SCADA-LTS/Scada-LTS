@@ -18,15 +18,20 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
-        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
         http://www.springframework.org/schema/context 
-        http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
         http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+        http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+        http://www.springframework.org/schema/cache
+        http://www.springframework.org/schema/cache/spring-cache.xsd
+">
 
   <!-- DWR -->
   <bean id="CompoundEventsDwr" class="com.serotonin.mango.web.dwr.CompoundEventsDwr"/>
@@ -53,15 +58,85 @@
   <bean id="WatchListDwr" class="com.serotonin.mango.web.dwr.WatchListDwr"/>
   <bean id="ScriptsDwr" class="br.org.scadabr.web.dwr.ScriptsDwr"/>
   <bean id="UsersProfilesDwr" class="br.org.scadabr.web.dwr.UsersProfilesDwr"/>
-  
+
   <!-- i18n -->
   <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
   	<property name="defaultLocale" value="en"/>
   </bean>
-  
+
   <bean id="messageSource" class="com.serotonin.web.i18n.Utf8ResourceBundleMessageSource">
     <property name="basename"><value>messages</value></property>
   </bean>
-  
-  
+
+  <cache:annotation-driven cache-manager="ehCacheManager" />
+
+  <bean id="ehCacheManager" class="org.springframework.cache.jcache.JCacheCacheManager">
+    <property name="cacheManager" ref="ehcache"/>
+  </bean>
+
+  <bean id="ehcache" class="org.springframework.cache.jcache.JCacheManagerFactoryBean">
+    <property name="cacheManagerUri" value="classpath:/ehcache.xml"/>
+  </bean>
+
+  <bean id="dataPointUserPermissionsService" class="org.scada_lts.permissions.service.DataPointUserPermissionsService">
+    <constructor-arg ref="dataPointUserDAO"/>
+  </bean>
+
+  <bean id="dataSourceUserPermissionsService" class="org.scada_lts.permissions.service.DataSourceUserPermissionsService">
+    <constructor-arg ref="dataSourceDAO"/>
+  </bean>
+
+  <bean id="dataSourceProfilePermissionsService" class="org.scada_lts.permissions.service.DataSourceProfilePermissionsService">
+    <constructor-arg ref="usersProfileDAO"/>
+  </bean>
+
+  <bean id="dataPointProfilePermissionsService" class="org.scada_lts.permissions.service.DataPointProfilePermissionsService">
+    <constructor-arg ref="usersProfileDAO"/>
+  </bean>
+
+  <bean id="viewProfilePermissionsService" class="org.scada_lts.permissions.service.ViewProfilePermissionsService">
+    <constructor-arg ref="usersProfileDAO"/>
+  </bean>
+
+  <bean id="watchListProfilePermissionsService" class="org.scada_lts.permissions.service.WatchListProfilePermissionsService">
+    <constructor-arg ref="usersProfileDAO"/>
+  </bean>
+
+  <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO">
+    <constructor-arg ref="jdbcTemplate"/>
+  </bean>
+
+  <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO">
+  </bean>
+
+  <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO">
+  </bean>
+
+  <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO">
+  </bean>
+
+  <bean id="dataSourceDAO" class="org.scada_lts.dao.DataSourceDAO">
+  </bean>
+
+  <bean id="usersProfileService" class="org.scada_lts.mango.service.UsersProfileService">
+    <constructor-arg ref="usersProfileDAO"/>
+    <constructor-arg ref="userDAO"/>
+    <constructor-arg ref="watchListProfilePermissionsService"/>
+    <constructor-arg ref="dataPointProfilePermissionsService"/>
+    <constructor-arg ref="dataSourceProfilePermissionsService"/>
+    <constructor-arg ref="viewProfilePermissionsService"/>
+  </bean>
+
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" >
+    <property name="dataSource" ref="dbDataSource"/>
+  </bean>
+
+  <bean id="dbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
+  </bean>
+
+  <bean id="userDAO" class="org.scada_lts.dao.UserDAO">
+  </bean>
+
+  <bean id="springApplicationContext" class="org.scada_lts.utils.ApplicationContextProvider"/>
 </beans>

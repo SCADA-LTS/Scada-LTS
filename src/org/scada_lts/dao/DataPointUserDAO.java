@@ -46,15 +46,12 @@ public class DataPointUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataPointUserDAO.class);
 
-	private static final String COLUMN_NAME_ID = "userId";
 	private static final String COLUMN_NAME_DP_ID = "dataPointId";
 	private static final int COLUMN_INDEX_DP_ID = 1;
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final int COLUMN_INDEX_USER_ID = 2;
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final int COLUMN_INDEX_PERMISSION = 3;
-
-	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
 
 	// @formatter:off
 	private static final String DATA_POINT_USER_SELECT_WHERE_DP_ID = ""
@@ -85,16 +82,6 @@ public class DataPointUserDAO {
 	private static final String DATA_POINT_USER_DELETE_WHERE_DATA_POINT_ID = ""
 			+ "delete from dataPointUsers where "
 				+ COLUMN_NAME_DP_ID + "=? ";
-
-	private static final String DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
-			+ "select "
-			+ COLUMN_NAME_DP_ID+ ", "
-			+ COLUMN_NAME_USER_PROFILE_ID+ ", "
-			+ COLUMN_NAME_PERMISSION + " "
-			+ "from "
-			+ "dataPointUsersProfiles "
-			+ "where "
-			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
 
 	private static final String DATA_POINT_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
 			+"insert dataPointUsers ("
@@ -212,20 +199,6 @@ public class DataPointUserDAO {
 
 	public List<DataPointAccess> selectDataPointPermissions(int userId) {
 		return getDataPointAccessList(userId);
-	}
-
-	public List<DataPointAccess> selectDataPointPermissionsByProfileId(int profileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectWatchListPermissionsByProfileId(int profileId) profileId:" + profileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
-			DataPointAccess dataPointAccess = new DataPointAccess();
-			dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DP_ID));
-			dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
-			return dataPointAccess;
-		});
-
 	}
 
 	public int[] insertPermissions(int userId, List<DataPointAccess> toInsert) {

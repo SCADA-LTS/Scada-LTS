@@ -377,9 +377,8 @@ public class DataPointMigrationPermissionsCommandTest {
         profiles.put(profile.getId(), profile);
 
         UsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
-        DataPointUserDAO dataPointUserDAO = new DataPointUserDAOMemory(usersProfileDAO);
 
-        profilePermissionsService = new DataPointProfilePermissionsService(usersProfileDAO, dataPointUserDAO);
+        profilePermissionsService = new DataPointProfilePermissionsService(usersProfileDAO);
         userPermissionsService = new PermissionsServiceUserTestImpl<>(userPermissions);
 
         PermissionsService<WatchListAccess, User> watchListUserPermissionsService = new PermissionsServiceUserTestImpl<>(new HashMap<>());
@@ -421,13 +420,6 @@ public class DataPointMigrationPermissionsCommandTest {
         views.add(ViewTestUtils.newView(dataPoints, fromView1, new ShareUser(user.getId(), permissionView1)));
         views.add(ViewTestUtils.newView(dataPoints, fromView2, new ShareUser(user.getId(), permissionView2)));
 
-
-        DAO dao = mock(DAO.class);
-        when(dao.generateUniqueXid(UsersProfileVO.XID_PREFIX, "usersProfiles")).thenAnswer(a -> {
-            String pre = (String)a.getArguments()[0];
-            return pre + new Random().nextInt();
-        });
-
         MangoDataPoint dataPointService = mock(DataPointService.class);
         when(dataPointService.getDataPoint(anyInt())).thenAnswer(a -> {
             int id = (int)a.getArguments()[0];
@@ -443,7 +435,7 @@ public class DataPointMigrationPermissionsCommandTest {
         UserDAO userDAO = mock(UserDAO.class);
         when(userDAO.getUser(anyInt())).thenReturn(user);
 
-        usersProfileService = new UsersProfileService(usersProfileDAO, dao, userDAO,
+        usersProfileService = new UsersProfileService(usersProfileDAO, userDAO,
                 watchListPermissionsService, profilePermissionsService,
                 dataSourcePermissionsService, viewPermissionsService);
 

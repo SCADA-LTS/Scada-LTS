@@ -3,6 +3,7 @@ package utils;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.utils.XidUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -100,5 +101,22 @@ public class UsersProfileDAOMemory extends UsersProfileDAO {
     public int deleteProfile(int profileId) {
         profiles.entrySet().removeIf(a -> a.getValue().getId() == profileId);
         return 0;
+    }
+
+    @Override
+    public List<Integer> selectDataSourcePermissionsByProfileId(int profileId) {
+        UsersProfileVO profile = selectProfiles(0, Integer.MAX_VALUE).stream().filter(a -> a.getId() == profileId).findAny().orElse(null);
+        return profile == null ? Collections.emptyList() : profile.getDataSourcePermissions();
+    }
+
+    @Override
+    public List<DataPointAccess> selectDataPointPermissionsByProfileId(int profileId) {
+        UsersProfileVO profile = selectProfiles(0, Integer.MAX_VALUE).stream().filter(a -> a.getId() == profileId).findAny().orElse(null);
+        return profile == null ? Collections.emptyList() : profile.getDataPointPermissions();
+    }
+
+    @Override
+    public String generateUniqueXid(String prefix) {
+        return XidUtils.generateXid(prefix);
     }
 }

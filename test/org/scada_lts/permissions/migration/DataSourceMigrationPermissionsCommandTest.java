@@ -121,9 +121,8 @@ public class DataSourceMigrationPermissionsCommandTest {
         profiles.put(profile.getId(), profile);
 
         UsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
-        DataSourceDAO dataPointUserDAO = new DataSourceUserDAOMemory(usersProfileDAO);
 
-        profilePermissionsService = new DataSourceProfilePermissionsService(usersProfileDAO, dataPointUserDAO);
+        profilePermissionsService = new DataSourceProfilePermissionsService(usersProfileDAO);
         userPermissionsService = new PermissionsServiceUserTestImpl<>(userPermissions);
 
         PermissionsService<WatchListAccess, User> watchListUserPermissionsService = new PermissionsServiceUserTestImpl<>(new HashMap<>());
@@ -133,12 +132,6 @@ public class DataSourceMigrationPermissionsCommandTest {
         PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
         PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
         PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
-
-        DAO dao = mock(DAO.class);
-        when(dao.generateUniqueXid(UsersProfileVO.XID_PREFIX, "usersProfiles")).thenAnswer(a -> {
-            String pre = (String)a.getArguments()[0];
-            return pre + new Random().nextInt();
-        });
 
         MangoDataSource dataSourceService = mock(DataSourceService.class);
         when(dataSourceService.getDataSource(anyInt())).thenAnswer(a -> {
@@ -159,7 +152,7 @@ public class DataSourceMigrationPermissionsCommandTest {
         UserDAO userDAO = mock(UserDAO.class);
         when(userDAO.getUser(anyInt())).thenReturn(user);
 
-        usersProfileService = new UsersProfileService(usersProfileDAO, dao, userDAO,
+        usersProfileService = new UsersProfileService(usersProfileDAO, userDAO,
                 watchListPermissionsService, dataPointPermissionsService,
                 profilePermissionsService, viewPermissionsService);
 

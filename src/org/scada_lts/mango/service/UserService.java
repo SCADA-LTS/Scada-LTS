@@ -29,8 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.UserDaoCachable;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.*;
+import org.scada_lts.utils.ApplicationContextProvider;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,27 +49,38 @@ import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+
+@Service
 public class UserService implements MangoUser {
 
 	private static final Log LOG = LogFactory.getLog(UserService.class);
 
-	private UserDAO userDAO = new UserDAO();
+	private UserDaoCachable userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
-	private UsersProfileService usersProfileService = new UsersProfileService();
+	private UsersProfileService usersProfileService;
 
-	private PermissionsService<DataPointAccess, User> dataPointPermissionsService = new DataPointUserPermissionsService();
-	private PermissionsService<Integer, User> dataSourcePermissionsService = new DataSourceUserPermissionsService();
+	private PermissionsService<DataPointAccess, User> dataPointPermissionsService;
+	private PermissionsService<Integer, User> dataSourcePermissionsService;
 
-	private PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService = new DataPointProfilePermissionsService();
-	private PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService = new DataSourceProfilePermissionsService();
-	private PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService = new ViewProfilePermissionsService();
-	private PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService = new WatchListProfilePermissionsService();
+	private PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService;
+	private PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService;
+	private PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService;
+	private PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService;
 
 	public UserService() {
+		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
+		userDAO = (UserDaoCachable) context.getBean("userDAO");
+		dataPointPermissionsService = (PermissionsService<DataPointAccess, User>) context.getBean("dataPointUserPermissionsService");
+		dataSourcePermissionsService = (PermissionsService<Integer, User>) context.getBean("dataSourceUserPermissionsService");
+		dataPointProfilePermissionsService = (PermissionsService<DataPointAccess, UsersProfileVO>) context.getBean("dataPointProfilePermissionsService");
+		dataSourceProfilePermissionsService = (PermissionsService<Integer, UsersProfileVO>) context.getBean("dataSourceProfilePermissionsService");
+		viewProfilePermissionsService = (PermissionsService<ViewAccess, UsersProfileVO>) context.getBean("viewProfilePermissionsService");
+		watchListProfilePermissionsService = (PermissionsService<WatchListAccess, UsersProfileVO>) context.getBean("watchListProfilePermissionsService");
+		usersProfileService = (UsersProfileService) context.getBean("usersProfileService");
 	}
 
 	public UserService(UserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
