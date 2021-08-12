@@ -256,6 +256,16 @@ html > body .dojoTreeNodeLabelTitle {
 	text-align:center;
 }
 
+#viewContent button {
+  overflow: visible;
+  background: silver;
+  border-width: 3px;
+  border-color: gainsboro gray gray gainsboro;
+  border-style: solid;
+  padding: 1px 5px;
+  color: black;
+}
+
 @media screen and (max-width: 730px) {
 	#subHeader {
 		flex-direction: column;
