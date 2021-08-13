@@ -34,8 +34,7 @@
 				@item-expanded="fetchDataPointList"
 			>
 				<template v-slot:item.enabled="{ item }">
-					<!-- TODO: Make badge button color match the highest alarm level -->
-					<v-badge overlap :color="setAlarmColor(item.activeEvents)" dot :value="item.activeEvents > 0">
+					<v-badge overlap :color="setAlarmColor(item.maxAlarmLevel)" dot :value="item.maxAlarmLevel > 0">
 						<v-btn x-small icon fab elevation="0" @click="toggleDataSource(item)" :color="item.enabled ? 'primary' : 'error'">
 							<v-icon v-show="item.enabled">mdi-decagram</v-icon>
 							<v-icon v-show="!item.enabled">mdi-decagram-outline</v-icon>
@@ -46,8 +45,10 @@
 					{{$t(`datasource.type.${dataSources.get(item.type)}`)}}
 				</template>
 				<template v-slot:expanded-item="{ headers, item }">
+					<!-- Single Data Source Item Details Row -->
 					<td :colspan="headers.length" class="small-margin-top">
-						<v-row>
+						
+						<v-row class="data-source-item--details">
 							<v-col cols="12" class="flex">
 								<DataSourceDetails
 									:datasource="item"
@@ -57,8 +58,10 @@
 								></DataSourceDetails>
 							</v-col>
 						</v-row>
+						
 						<v-divider></v-divider>
-						<v-row class="datapoint-list" v-if="item.loaded">
+
+						<v-row class="data-source-item--datapoint-list" v-if="!item.loading">
 							<DataSourcePointList
 								:datasource="item"
 								:datasourceType="dataSources.get(item.type)"
@@ -67,10 +70,11 @@
 							></DataSourcePointList>
 						</v-row>
 						<v-skeleton-loader v-else type="article"> </v-skeleton-loader>
+
 					</td>
 				</template>
 			</v-data-table>
-			<v-skeleton-loader v-else type="article"> </v-skeleton-loader>
+			<v-skeleton-loader v-else type="article"></v-skeleton-loader>
 		</v-container>
 
 		<!-- Related dialog components -->
@@ -204,7 +208,7 @@ export default {
 			if (value) {
 				// Load data from REST API if threre is no datapoints.
 				if (!!item.datapoints && item.datapoints.length === 0) {
-					item.loaded = false;
+					item.loading = true;
 					await this.$store.dispatch('fetchDataPointsForDS', item.id);
 				}
 			}
@@ -301,7 +305,7 @@ export default {
 .flex {
 	display: flex;
 }
-.datapoint-list {
+.data-source-item--datapoint-list {
 	padding: 0 2%;
 }
 
@@ -310,7 +314,7 @@ export default {
 }
 
 @media (min-width: 1264px) {
-	.datapoint-list {
+	.data-source-item--datapoint-list {
 		padding: 0 3%;
 	}
 }

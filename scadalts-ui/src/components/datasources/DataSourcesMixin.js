@@ -5,7 +5,8 @@ import VirtualDataSourcePointList from './VirtualDataSource/list';
 
 import SnmpDataSource from './SnmpDataSource';
 import SnmpDataSourceEditor from './SnmpDataSource/config';
-import SnmpDataSroucePointEditor from './SnmpDataSource/point';
+import SnmpDataSourcePointEditor from './SnmpDataSource/point';
+import SnmpDataSourcePointList from './SnmpDataSource/list';
 
 /**
  * Data Sources Mixin
@@ -27,7 +28,8 @@ export const dataSourcesMixin = {
 
         'snmpdatasource': SnmpDataSource,
         'snmpdatasourceeditor': SnmpDataSourceEditor,
-        'snmpdatasourcepointeditor': SnmpDataSroucePointEditor,
+        'snmpdatasourcepointeditor': SnmpDataSourcePointEditor,
+        'snmpdatasourcepointlist': SnmpDataSourcePointList,
     },
 
     computed: {

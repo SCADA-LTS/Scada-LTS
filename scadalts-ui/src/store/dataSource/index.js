@@ -1,8 +1,9 @@
 import i18n from '@/i18n';
 import Axios from 'axios';
-import { reject } from 'core-js/fn/promise';
-import ScadaVirtualDataPoint from '../../components/datasources/models/VirtualDataPoint';
-import { datasourceApiMocks, datasourceDetailsMocks } from './mocks/datasourceapi';
+import GenericDataSource from '../../components/datasources/models/GenericDataSource';
+import SnmpDataPoint from '../../components/datasources/SnmpDataSource/SnmpDataPoint';
+import ScadaVirtualDataPoint from '../../components/datasources/VirtualDataSource/VirtualDataPoint';
+import { datasourceDetailsMocks } from './mocks/datasourceapi';
 
 /**
  * Data Source received form REST API
@@ -36,15 +37,21 @@ const ds = {
 	},
 	mutations: {
 		SET_DATA_SOURCE_LIST: (state, dataSourceList) => {
+			state.dataSourceList = [];
 			dataSourceList.forEach(dataSource => {
-				let ds = {
-					loaded: false,
-					detailsLoaded: false,
-					datapoints: [],
-					...dataSource
-				}
+				let ds = new GenericDataSource("DS");
+				ds.loadDataFromJson(dataSource);
 				state.dataSourceList.push(ds);
 			})
+		},
+		UPDATE_DATA_SOURCE: (state, dataSource) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSource.id);
+			datasource.name = dataSource.name;
+			datasource.xid = dataSource.xid;
+			datasource.description = dataSource.description;
+			datasource.connection = dataSource.connection;
+			datasource.updatePeriod = dataSource.updatePeriod;
+			datasource.updatePeriodType = dataSource.updatePeriodType;
 		},
 		REMOVE_DATA_SOURCE: (state, dataSourceId) => {
 			state.dataSourceList = state.dataSourceList.filter(ds => ds.id !== dataSourceId);
@@ -60,14 +67,14 @@ const ds = {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
 			datasource.enabled = !datasource.enabled;
 		},
-		SET_DATA_SOURCE_LOADING: (state, {dataSourceId, loaded}) => {
+		SET_DATA_SOURCE_LOADING: (state, {dataSourceId, loading}) => {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
-			datasource.loaded = loaded;
+			datasource.loading = loading;
 		},
 		SET_DATA_POINTS_FOR_DS: (state, {dataSourceId, dataPoints}) => {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
 			datasource.datapoints = dataPoints;
-			datasource.loaded = true;
+			datasource.loading = false;
 		},
 		ADD_DATA_POINT_IN_DS: (state, {dataSourceId, dataPoint}) => {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
@@ -125,23 +132,38 @@ const ds = {
 		},
 
 		async fetchDataPointsForDS({dispatch, commit}, dataSourceId) {
-			await commit('SET_DATA_SOURCE_LOADING',{dataSourceId, loaded:false});
+			await commit('SET_DATA_SOURCE_LOADING',{dataSourceId, loading:true});
 			return new Promise((resolve, reject) => {
 				//Single array of Data Point configuration.
 				//http://localhost:8080/ScadaBR/api/datapoint?id=X//
 				setTimeout(async () => {
-					let p1 = new ScadaVirtualDataPoint(2);
-					p1.initialSetup(3,"AG_T_Numeric_01","AG Test - Numeric",true);
-					p1.pointLocator.dataTypeId = 3;
-					p1.pointLocator.changeTypeId = 6;
-					p1.pointLocator.settable = true;
-					
-					let p2 = new ScadaVirtualDataPoint(2);
-					p2.initialSetup(2,"AG_T_Binary_01","AG Test - Binary", false, 'Extra text');
-					p2.pointLocator.dataTypeId = 1;
-					p2.pointLocator.changeTypeId = 7;
-					p2.pointLocator.settable = true;
-					const dataPoints = [p1, p2];
+					let p1, p2;
+					let dataPoints = [];
+					if (dataSourceId === 0) {
+						p1 = new ScadaVirtualDataPoint(2);
+						p1.initialSetup(3,"AG_T_Numeric_01","AG Test - Numeric",true);
+						p1.pointLocator.dataTypeId = 3;
+						p1.pointLocator.changeTypeId = 6;
+						p1.pointLocator.settable = true;
+						p2 = new ScadaVirtualDataPoint(2);
+						p2.initialSetup(2,"AG_T_Binary_01","AG Test - Binary", false, 'Extra text');
+						p2.pointLocator.dataTypeId = 1;
+						p2.pointLocator.changeTypeId = 7;
+						p2.pointLocator.settable = true;
+						dataPoints = [p1, p2];
+					} else if (dataSourceId === 2) {
+						p1 = new SnmpDataPoint(2);
+						p1.initialSetup(3,"AG_SNMP_Numeric_01","AG Test SNMP - Numeric",true);
+						p1.pointLocator.dataTypeId = 3;
+						p1.pointLocator.oid = "1.2.1.1.3.2.0"
+						p1.pointLocator.settable = true;
+						p2 = new SnmpDataPoint(2);
+						p2.initialSetup(2,"AG_SNMP_Binary_01","AG Test SNMP - Binary", false, 'Extra text');
+						p2.pointLocator.dataTypeId = 1;
+						p2.pointLocator.oid = "1.2.1.1.5.3.2"
+						p2.pointLocator.settable = true;
+						dataPoints = [p1, p2];
+					}
 					await commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints});
 					resolve();
 				}, 2000)
@@ -198,11 +220,12 @@ const ds = {
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns 
 		 */
-		 updateDataSource({dispatch}, datasource) {
+		 updateDataSource({commit, dispatch}, datasource) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
 					console.log(datasource);
+					commit('UPDATE_DATA_SOURCE', datasource);
 					const response = {
 						status: "OK",
 					}

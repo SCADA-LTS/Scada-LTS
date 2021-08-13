@@ -16,7 +16,7 @@
 </template>
 <script>
 import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
-import ScadaVirtualDataPoint from '../../components/datasources/models/VirtualDataPoint';
+import ScadaVirtualDataPoint from '../../components/datasources/VirtualDataSource/VirtualDataPoint';
 
 export default {
 	mixins: [dataSourceMixin],

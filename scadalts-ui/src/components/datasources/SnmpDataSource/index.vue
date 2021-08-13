@@ -11,7 +11,16 @@
 		</template>
 
 		<v-row>
-			<v-col> Radek SNMP </v-col>
+			<v-col>
+				<div>
+					<h3>SNMP Host testing</h3>
+					<v-text-field v-model="testingOid" @click:append="checkOid">
+						<v-icon slot="append">
+							mdi-send
+						</v-icon>
+					</v-text-field>
+				</div>
+			</v-col>
 		</v-row>
 	</DataSourceLoader>
 </template>
@@ -27,6 +36,7 @@ export default {
 	data() {
 		return {
 			ds: undefined,
+			testingOid: '1.2.3'
 		};
 	},
 
@@ -40,6 +50,9 @@ export default {
 			console.log(res);
 			this.ds = res;
 		},
+		checkOid(){
+			console.log(this.testingOid);
+		}
 	},
 };
 </script>
