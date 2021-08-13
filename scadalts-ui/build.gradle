@@ -31,7 +31,8 @@ task copyNewUiCss(type: Copy, dependsOn: clearResources) {
 }
 
 task copyNewUiJs(type: Copy, dependsOn: copyNewUiCss) {
-    from "dist/js/app.js" , "dist/js/chunk-vendors.js"
+    from "dist/js"
+    include "*.js"
     into "../WebContent/resources/js-ui/app/js"
 }
 

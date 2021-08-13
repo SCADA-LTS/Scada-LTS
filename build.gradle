@@ -54,6 +54,10 @@ sourceSets {
 war {
     dependsOn(':scadalts-ui:copyNewUiImages')
     from 'WebContent'
+    webInf {
+        from 'webapp-resources/'
+        into 'classes/'
+    }
 }
 
 task clearDockerDir(type: Delete) {

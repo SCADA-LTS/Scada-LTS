@@ -76,6 +76,10 @@ Commands with their explanations are listed below:
 | ```ant test-frontend-unit``` | Launch Vue.js tests |
 
 ### Gradle Tasks
+To run Gradle Task you have to use gradle version  **6.8.1** or similar
+with **Java version 11**. It should also work on other versions
+but you have to change the targetVersion in `build.gradle` file.
+
 | Command | Explanation |
 | ---- | ---- |
 | ```gradle war``` | Build Scada-LTS war file |
