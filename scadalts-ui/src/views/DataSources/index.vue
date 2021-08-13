@@ -90,6 +90,13 @@
 			title="Do you want to delete this data source?"
 			message="This operation connot be undone?"
 		></ConfirmationDialog>
+		<ConfirmationDialog
+			:btnvisible="false"
+			ref="deleteDataPoint"
+			@result="onDataPointDeleteConfirm"
+			title="Do you want to delete this data point?"
+			message="This operation connot be undone?"
+		></ConfirmationDialog>
 	</div>
 </template>
 <script>
@@ -141,7 +148,6 @@ export default {
 				},
 				{ text: '', value: 'data-table-expand' },
 			],
-			dataSourceList: [],
 			savingData: false,
 			operationQueue: null,
 		};
@@ -150,6 +156,9 @@ export default {
 	computed: {
 		dataSources() {
 			return this.$store.state.dataSource.dataSources;
+		}, 
+		dataSourceList() {
+			return this.$store.state.dataSource.dataSourceList;
 		}
 	},
 
@@ -182,12 +191,11 @@ export default {
 		async fetchDataSources() {
 			try {
 				this.tableLoaded = false;
-				this.dataSourceList = await this.$store.dispatch('getDataSources');
+				await this.$store.dispatch('getDataSources');
 				this.tableLoaded = true;
 			} catch (e) {
 				console.error(e);
 				this.tableLoaded = true;
-				this.dataSourceList = [];
 			}
 		},
 
@@ -197,8 +205,7 @@ export default {
 				// Load data from REST API if threre is no datapoints.
 				if (!!item.datapoints && item.datapoints.length === 0) {
 					item.loaded = false;
-					item.datapoints = await this.$store.dispatch('fetchDataPointsForDS', item.name);
-					item.loaded = true;
+					await this.$store.dispatch('fetchDataPointsForDS', item.id);
 				}
 			}
 		},
@@ -210,11 +217,17 @@ export default {
 
 		onDataPointDeletion({ item, datapoint }) {
 			console.debug("DataSources.index.vue::onDataPointDeletion()")
-			//TODO: MAKE CONFIRMATION DIALOG
-			console.log(item, datapoint);
-			item.datapoints = item.datapoints.filter((e) => {
-				return e.xid !== datapoint.xid;
-			});
+			this.$refs.deleteDataPoint.showDialog();
+			this.operationQueue = {item, datapoint};
+		},
+
+		onDataPointDeleteConfirm(event) {
+			if(event) {				
+				this.$store.dispatch('deleteDataPointDS', {
+					dataSourceId: this.operationQueue.item.id,
+					dataPointXid: this.operationQueue.datapoint.xid
+				});
+			}
 		},
 
 		createDataSource() {
@@ -223,26 +236,19 @@ export default {
 
 		onDataPointUpdate(event) {
 			console.debug("DataSources.index.vue::onDataPointUpdate()")
-			console.log(this.dataSourceList);
-			console.log(event);
-			let x = this.dataSourceList.find((e) => {
-				return e.id === event.dp.id;
+			this.$store.dispatch('updateDataPointDS', {
+				dataSourceId: event.dp.id,
+				dataPoint: event.e
 			});
-			let z = x.datapoints.find((e) => {
-				return e.xid === event.e.xid;
-			});
-			z = event.e;
-			console.log(z);
+			
 		},
 
 		onDataPointSaved(event) {
 			console.debug("DataSources.index.vue::onDataPointSaved()")
-			console.log(this.dataSourceList);
-			console.log(event);
-			let x = this.dataSourceList.find((e) => {
-				return e.id === event.dp.id;
+			this.$store.dispatch('createDataPointDS', {
+				dataSourceId: event.dp.id,
+				dataPoint: event.e
 			});
-			x.datapoints.push(event.e);
 		},
 
 		async onDataSourceUpdate(event) {
@@ -267,14 +273,12 @@ export default {
 
 		onDataSourceDeleteConfirm(evnet) {
 			if(evnet) {
-				this.dataSourceList = this.dataSourceList.filter((e) => {
-					return e.id !== this.operationQueue;
-				});
+				this.$store.dispatch("deleteDataSource", this.operationQueue);
 			}
 		},
 
 		toggleDataSource(ds){
-			ds.enabled = !ds.enabled;
+			this.$store.dispatch('toggleDataSource', ds.id);
 		},
 
 		async onDataSourceSaved(event) {
@@ -283,7 +287,6 @@ export default {
 			this.savingData = true;
 			try {
 				let resp = await this.$store.dispatch("createDataSource", event)
-				this.dataSourceList.push(resp);
 				console.log(resp);
 			} catch (error) {
 				console.error(error);

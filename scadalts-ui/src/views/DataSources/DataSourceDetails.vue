@@ -3,17 +3,18 @@
 		<component
 			:is="`${datasourceType}`"
 			:id="datasource.id"
+			:datasource="datasource"
 			ref="component"
 			@saved="onSaved"
 		/>
 
 		<v-spacer>			
 		</v-spacer>
-		<DataSourceEvents>
-		</DataSourceEvents>
+		<!-- <DataSourceEvents>
+		</DataSourceEvents> -->
 		<v-tooltip bottom>
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn icon elevation="0" v-bind="attrs" v-on="on">
+				<v-btn icon elevation="0" @click="enableAllPoints(datasource.id)" v-bind="attrs" v-on="on">
 					<v-icon> mdi-alert-decagram </v-icon>
 				</v-btn>
 			</template>
@@ -66,6 +67,10 @@ export default {
 			console.debug("DataSourceDetails.vue::deleteDataSource()")
 			this.$emit('deleted', this.datasource.id);
 		},
+
+		enableAllPoints(datasourceId) {
+			this.$store.dispatch("enableAllDataPoints", datasourceId);
+		}
 	},
 };
 </script>

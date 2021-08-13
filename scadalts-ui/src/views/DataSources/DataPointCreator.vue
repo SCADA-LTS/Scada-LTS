@@ -16,7 +16,7 @@
 </template>
 <script>
 import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
-import ScadaDataPoint from '../../components/datasources/models/DataPoint';
+import ScadaVirtualDataPoint from '../../components/datasources/models/VirtualDataPoint';
 
 export default {
 	mixins: [dataSourceMixin],
@@ -39,7 +39,7 @@ export default {
 				this.editMode = true;
 			} else {
 				this.editMode = false;
-				this.datapoint = new ScadaDataPoint(item.id);
+				this.datapoint = new ScadaVirtualDataPoint(item.id);
 			}
 			this.datasource = item;
 			this.datasourceType = `${datasourceType}pointeditor`;

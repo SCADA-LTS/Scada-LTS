@@ -139,6 +139,11 @@ export default {
 			this.$emit('delete', { item, datapoint });
 		},
 		toggleDataPoint(dp) {
+			// Enable on prduction code //
+			// this.$store.dispatch("toggleDataPoint", dp.id).then(() => {
+			// 	dp.enabled = !dp.enabled;
+			// });
+			
 			dp.enabled = !dp.enabled;
 			console.log(dp);
 		},

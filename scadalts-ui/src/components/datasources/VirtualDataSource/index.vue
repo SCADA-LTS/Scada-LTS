@@ -11,7 +11,7 @@
 		</template>
 
 		<v-row>
-			<v-col> Radek </v-col>
+			<v-col><!-- ROW FOR ADDITIONAL WIDGETS AND CONTENT --></v-col>
 		</v-row>
 
 	</DataSourceLoader>

@@ -224,3 +224,5 @@ export default {
 <style scoped>
 
 </style>
+
+<!-- TODO: Create DataSourceEvent component that will receive the props with events array -->

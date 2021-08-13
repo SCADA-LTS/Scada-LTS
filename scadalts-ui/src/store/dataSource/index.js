@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import Axios from 'axios';
 import { reject } from 'core-js/fn/promise';
+import ScadaVirtualDataPoint from '../../components/datasources/models/VirtualDataPoint';
 import { datasourceApiMocks, datasourceDetailsMocks } from './mocks/datasourceapi';
 
 /**
@@ -31,8 +32,60 @@ const ds = {
 			.set(1,"virtualdatasource")
 			.set(5, "snmpdatasource"),
 
+		dataSourceList: [],
 	},
-	mutations: {},
+	mutations: {
+		SET_DATA_SOURCE_LIST: (state, dataSourceList) => {
+			dataSourceList.forEach(dataSource => {
+				let ds = {
+					loaded: false,
+					detailsLoaded: false,
+					datapoints: [],
+					...dataSource
+				}
+				state.dataSourceList.push(ds);
+			})
+		},
+		REMOVE_DATA_SOURCE: (state, dataSourceId) => {
+			state.dataSourceList = state.dataSourceList.filter(ds => ds.id !== dataSourceId);
+		},
+		ADD_DATA_SOURCE: (state, dataSource) => {
+			state.dataSourceList.push(dataSource);
+		},
+		FETCH_DATA_SOURCE_DETAILS: (state, dataSource) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSource.id);
+			datasource = {...datasource, ...dataSource};
+		},
+		TOGGLE_DATA_SOURCE: (state, dataSourceId) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			datasource.enabled = !datasource.enabled;
+		},
+		SET_DATA_SOURCE_LOADING: (state, {dataSourceId, loaded}) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			datasource.loaded = loaded;
+		},
+		SET_DATA_POINTS_FOR_DS: (state, {dataSourceId, dataPoints}) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			datasource.datapoints = dataPoints;
+			datasource.loaded = true;
+		},
+		ADD_DATA_POINT_IN_DS: (state, {dataSourceId, dataPoint}) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			datasource.datapoints.push(dataPoint);
+		},
+		REMOVE_DATA_POINT_IN_DS: (state, {dataSourceId, dataPointXid}) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			datasource.datapoints = datasource.datapoints.filter(dp => dp.xid !== dataPointXid);
+		},
+		ENABLE_ALL_DATA_POINTS_IN_DS: (state, dataSourceId) => {
+			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			if(!!datasource.datapoints && datasource.datapoints.length > 0) {
+				datasource.datapoints.forEach(dp => {
+					dp.enabled = true;
+				});
+			}
+		}
+	},
 	actions: {
 
 		/**
@@ -41,10 +94,11 @@ const ds = {
 		 * @param {*} param0 
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
-		getDataSources({ dispatch }) {
+		getDataSources({ dispatch, commit }) {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					resolve(datasourceApiMocks)
+					commit('SET_DATA_SOURCE_LIST', datasourceDetailsMocks);
+					resolve()
 				}, 2000);
 				
 			});
@@ -61,148 +115,35 @@ const ds = {
 		 * @param {Number} dataSourceId - ID number of DataSource
 		 * @returns 
 		 */
-		fetchDataSourceDetails({dispatch}, dataSourceId) {
+		fetchDataSourceDetails({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve) => {
 				setTimeout(() => {
+					commit('FETCH_DATA_SOURCE_DETAILS', datasourceDetailsMocks[dataSourceId]);
 					resolve(datasourceDetailsMocks[dataSourceId]);
 				}, 1000);
 			})
 		},
 
-		fetchDataPointsForDS({dispatch}, dataSourceId) {
+		async fetchDataPointsForDS({dispatch, commit}, dataSourceId) {
+			await commit('SET_DATA_SOURCE_LOADING',{dataSourceId, loaded:false});
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					const data = [
-						{
-							id:3,
-							xid:"AG_T_Numeric_01",
-							name:"AG Test - Numeric",
-							description:null,
-							dataSourceId:2,
-							deviceName:"AggregationTests",
-							enabled:true,
-							pointFolderId:0,
-							loggingType:1,
-							intervalLoggingPeriodType:2,
-							intervalLoggingPeriod:15,
-							intervalLoggingType:1,
-							tolerance:0.0,
-							purgeType:7,
-							purgePeriod:1,
-							pointLocator:{
-								dataTypeId:3,
-								changeTypeId:6,
-								settable:true,
-								alternateBooleanChange:{
-									startValue:true,
-								},
-								brownianChange:{
-									startValue:"",
-									min:0.0,
-									max:0.0,
-									maxChange:0.0
-								},
-								incrementAnalogChange:{
-									startValue:"",
-									min:0.0,
-									max:0.0,
-									change:0.0,
-									roll:false
-								},
-								incrementMultistateChange:{
-									startValue:"",
-									values:[],
-									roll:false
-								},
-								noChange:{
-									startValue:""
-								},
-								randomAnalogChange:{
-									startValue:12,
-									min:10.0,
-									max:100.0
-								},
-								randomBooleanChange:{
-									startValue:true
-								},
-								randomMultistateChange:{
-									startValue:"",
-									values:[]
-								},
-								analogAttractorChange:{
-									startValue:"",
-									maxChange:0.0,
-									volatility:0.0,
-									attractionPointId:0
-								}
-							}
-						},
-						{
-							id:2,
-							xid:"AG_T_Binary_01",
-							name:"AG Test - Binary",
-							description:null,
-							dataSourceId:2,
-							deviceName:"AggregationTests",
-							enabled:true,
-							pointFolderId:0,
-							loggingType:1,
-							intervalLoggingPeriodType:2,
-							intervalLoggingPeriod:15,
-							intervalLoggingType:1,
-							tolerance:0.0,
-							purgeType:7,
-							purgePeriod:1,
-							pointLocator:{
-								dataTypeId:1,
-								changeTypeId:7,
-								settable:true,
-								alternateBooleanChange:{
-									startValue:true,
-								},
-								brownianChange:{
-									startValue:"",
-									min:0.0,
-									max:0.0,
-									maxChange:0.0
-								},
-								incrementAnalogChange:{
-									startValue:"",
-									min:0.0,
-									max:0.0,
-									change:0.0,
-									roll:false
-								},
-								incrementMultistateChange:{
-									startValue:"",
-									values:[],
-									roll:false
-								},
-								noChange:{
-									startValue:""
-								},
-								randomAnalogChange:{
-									startValue:"0",
-									min:0.0,
-									max:100.0
-								},
-								randomBooleanChange:{
-									startValue:true
-								},
-								randomMultistateChange:{
-									startValue:"",
-									values:[]
-								},
-								analogAttractorChange:{
-									startValue:"",
-									maxChange:0.0,
-									volatility:0.0,
-									attractionPointId:0
-								}
-							}
-						},
-					];
-					resolve(data);
+				//Single array of Data Point configuration.
+				//http://localhost:8080/ScadaBR/api/datapoint?id=X//
+				setTimeout(async () => {
+					let p1 = new ScadaVirtualDataPoint(2);
+					p1.initialSetup(3,"AG_T_Numeric_01","AG Test - Numeric",true);
+					p1.pointLocator.dataTypeId = 3;
+					p1.pointLocator.changeTypeId = 6;
+					p1.pointLocator.settable = true;
+					
+					let p2 = new ScadaVirtualDataPoint(2);
+					p2.initialSetup(2,"AG_T_Binary_01","AG Test - Binary", false, 'Extra text');
+					p2.pointLocator.dataTypeId = 1;
+					p2.pointLocator.changeTypeId = 7;
+					p2.pointLocator.settable = true;
+					const dataPoints = [p1, p2];
+					await commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints});
+					resolve();
 				}, 2000)
 			});
 		},
@@ -221,7 +162,7 @@ const ds = {
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
-		createDataSource({dispatch}, datasource) {
+		createDataSource({commit, dispatch}, datasource) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
@@ -237,6 +178,8 @@ const ds = {
 						loaded: false,
 						datapoints: [],
 					}
+					commit('ADD_DATA_SOURCE',response);
+
 					resolve(response);
 				}, 3000);
 			})
@@ -263,6 +206,16 @@ const ds = {
 					const response = {
 						status: "OK",
 					}
+					resolve(response);
+				}, 1000);
+			})
+		},
+
+		deleteDataSource({commit, dispatch}, dataSourceId) {
+			/* Mocking TODO: real method*/
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					commit("REMOVE_DATA_SOURCE", dataSourceId);
 					resolve(response);
 				}, 1000);
 			})
@@ -307,6 +260,56 @@ const ds = {
 					});
 			});
 		},
+
+		createDataPointDS({commit, dispatch}, {dataSourceId, dataPoint}) {
+			/* Mocking TODO: real method*/
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					commit("ADD_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
+					resolve();
+				}, 1000);
+			});
+		},
+
+		updateDataPointDS({commit, dispatch}, {dataSourceId, dataPoint}) {
+			/* Mocking TODO: real method*/
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					console.log(dataSourceId, dataPoint);
+					// commit("UPDATE_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
+					resolve();
+				}, 1000);
+			});
+		},
+
+		deleteDataPointDS({commit, dispatch}, {dataSourceId, dataPointXid}) {
+			/* Mocking TODO: real method*/
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					commit("REMOVE_DATA_POINT_IN_DS", {dataSourceId, dataPointXid});
+					resolve();
+				}, 1000);
+			});
+		},
+
+		enableAllDataPoints({commit, dispatch}, dataSourceId) {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					//TODO: SEND REQUEST TO API
+					commit('ENABLE_ALL_DATA_POINTS_IN_DS', dataSourceId);
+					resolve();
+				}, 1000);
+			});
+		},
+
+		toggleDataSource({commit, dispatch}, dataSourceId) {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					commit('TOGGLE_DATA_SOURCE', dataSourceId);
+					resolve();
+				}, 1000);
+			});
+		}
 	},
 
 	getters: {

@@ -1,5 +1,7 @@
 <template>
 	<div>
+
+		<!-- DataTypes.NUMERIC -->
 		<v-row :dense="true" v-if="datapoint.pointLocator.dataTypeId === DataTypes.NUMERIC">
 			<v-col cols="3">
 				Numeric
@@ -52,6 +54,7 @@
 			</v-col>
 		</v-row>
 
+		<!-- DataTypes.MULTISTATE -->
 		<v-row :dense="true" v-if="datapoint.pointLocator.dataTypeId === DataTypes.MULTISTATE">
 			<v-col cols="3">
 				Multistate
@@ -70,6 +73,7 @@
 			
 		</v-row>
 
+		<!-- DataTypes.BINARY -->
 		<v-row :dense="true" v-if="datapoint.pointLocator.dataTypeId === DataTypes.BINARY">
 			<v-col cols="3">
 				Binary
@@ -87,6 +91,7 @@
 			</v-col>
 		</v-row>
 
+		<!-- DataTypes.APLHANUMERIC -->
 		<v-row :dense="true" v-if="datapoint.pointLocator.dataTypeId === DataTypes.APLHANUMERIC">
 			<v-col cols="12"> Teerere </v-col>
 		</v-row>
