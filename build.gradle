@@ -51,6 +51,12 @@ sourceSets {
     }
 }
 
+processTestResources {
+    from(sourceSets.test.java.srcDirs) {
+        include '**/*.properties'
+    }
+}
+
 war {
     dependsOn(':scadalts-ui:copyNewUiImages')
     from 'WebContent'
@@ -114,11 +120,11 @@ task runDebug(type: Exec) {
 }
 
 task buildRun(type: GradleBuild) {
-    tasks = ['clearTomcat', 'war', 'deployTomcat', 'run']
+    tasks = ['clearTomcat', 'test', 'war', 'deployTomcat', 'run']
 }
 
 task buildRunDebug(type: GradleBuild) {
-    tasks = ['clearTomcat', 'war', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'test', 'war', 'deployTomcat', 'runDebug']
 }
 
 test {
