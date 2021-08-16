@@ -125,5 +125,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: $GITHUB_HEAD_REF
-          labels: $GITHUB_HEAD_REF
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
