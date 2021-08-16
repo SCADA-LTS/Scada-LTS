@@ -7,28 +7,31 @@ jobs:
     name: Compile and Test Scada-LTS application
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-7.0.85
+      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.52
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Set up JDK
-        uses: actions/setup-java@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
         with:
-          java-version: 11
-      - name: Install Tomcat
-        run: mkdir /home/runner/tomcat; cd /home/runner/tomcat; wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz; tar xvzf apache-tomcat-7.0.85.tar.gz
-      - name: Show Tomcat
-        run: ls $CATALINA_HOME
+          java-version: '11'
+          distribution: 'adopt'
       - name: Cache Tomcat
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
           path: /home/runner/tomcat
-      - name: Build Scada Application with Ant
-        run: ant -noinput -buildfile build.xml build-no-ui-skip-test
-      - name: JUnit Scada Application with Ant
-        run: ant -noinput -buildfile build.xml test-junit
+          restore-keys: |
+            ${{ runner.os }}-tomcat-
+      - name: Install Tomcat
+        run: mkdir /home/runner/tomcat; cd /home/runner/tomcat; wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.52/bin/apache-tomcat-9.0.52.tar.gz; tar xvzf apache-tomcat-7.0.85.tar.gz
+      - name: Show Tomcat
+        run: ls $CATALINA_HOME
+      - name: Test JUnit Scada Application
+        run: ./gradlew test
+      - name: Build Scada-LTS WAR Application
+        run: ./gradlew -PskipUi=true war
       - name: Cache Scada-LTS application
         uses: actions/cache@v2
         with:
@@ -52,12 +55,12 @@ jobs:
       - name: Install dependencies
         working-directory: ./scadalts-ui
         run: npm install
-#      - name: Run Frontend UnitTests
-#        working-directory: ./scadalts-ui
-#        run: npm run-script test:unit
+      - name: Run Frontend UnitTests
+        working-directory: ./scadalts-ui
+        run: npm run-script test:unit
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
-        run: npm run-script build-config -- 2.6.0 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
+        run: npm run-script build-config -- 2.6.9 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
       - name: Build User Interface
         working-directory: ./scadalts-ui
         run: npm run-script build
@@ -72,15 +75,16 @@ jobs:
     needs: [compile, buildui]
     runs-on: ubuntu-latest
     env:
-      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-7.0.85
+      CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.52
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: 'adopt'
       - name: Load Cached node modules
         uses: actions/cache@v2
         with:
@@ -100,9 +104,9 @@ jobs:
         working-directory: ./WebContent/resources
         run: npm install
       - name: Build Scada Application with Ant
-        run: ant -noinput -buildfile build.xml create-war
+        run: ./gradlew war
       - name: Deploy WAR artifact
         uses: actions/upload-artifact@v2
         with:
           name: Scada-LTS
-          path: ScadaBR.war
+          path: /build/libs/Scada-LTS.war

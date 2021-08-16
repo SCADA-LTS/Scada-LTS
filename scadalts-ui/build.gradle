@@ -65,5 +65,5 @@ task copyNewUiImages(type: Copy, dependsOn: copyNewUiFonts) {
     into "../WebContent/resources"
 }
 
-bundle.onlyIf { project.ext.get("buildUi") }
-clearResources.onlyIf { project.ext.get("buildUi") }
+bundle.onlyIf { !project.ext.get("buildUi") }
+clearResources.onlyIf { !project.ext.get("buildUi") }

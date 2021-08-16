@@ -24,7 +24,8 @@ def tomcatDirectory = System.getenv("CATALINA_HOME")
 // Environment variables to change
 subprojects {
     ext {
-        buildUi = true
+//        buildUi = true
+        buildUi = has("skipUi")&&(skipUi!=null)
     }
 }
 
