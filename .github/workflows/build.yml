@@ -29,9 +29,9 @@ jobs:
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - name: Test JUnit Scada Application
-        run: ./gradlew test
+        run: gradle test
       - name: Build Scada-LTS WAR Application
-        run: ./gradlew -PskipUi=true war
+        run: gradle -PskipUi=true war
       - name: Cache Scada-LTS application
         uses: actions/cache@v2
         with:
@@ -104,7 +104,7 @@ jobs:
         working-directory: ./WebContent/resources
         run: npm install
       - name: Build Scada Application with Ant
-        run: ./gradlew war
+        run: gradle war
       - name: Deploy WAR artifact
         uses: actions/upload-artifact@v2
         with:
