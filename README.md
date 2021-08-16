@@ -40,11 +40,14 @@ and make sure that your issue is not already reported. Try to write in english a
 # Development
 
 ## Building the application
-To build the application on your own environment you can use **Apache Ant** build tool.
+To build the application on your own environment you can use **Apache Ant** or **Gradle** build tool.
 
-We provide example **ant scripts** that can be used inside Scada-LTS project to perform specific operations.
+We provide example scripts that can be used inside Scada-LTS project to perform specific operations.
 Commands with their explanations are listed below:
-### Examples of run tasks
+
+###Ant tasks
+
+#### Examples of run tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant run``` | Start Scada-LTS application using Tomcat server |
@@ -56,7 +59,7 @@ Commands with their explanations are listed below:
 | ```ant build-run-debug``` | Build and start Scada-LTS application in debug mode |
 | ```ant build-skip-test-run-debug``` | Build and start Scada-LTS application in debug mode without tests |
 
-### Examples of build tasks
+#### Examples of build tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant build``` | Build complete Scada-LTS application |
@@ -66,11 +69,26 @@ Commands with their explanations are listed below:
 | ```ant update-ui``` | Update running application with latest frontend application changes |
 | ```ant create-war``` | Prepare WAR archive from existing resources<br/> _we suggest to perform **ant build** task before_ |
 
-### Examples of test tasks
+#### Examples of test tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant test-junit``` | Launch Java Unit Tests |
 | ```ant test-frontend-unit``` | Launch Vue.js tests |
+
+### Gradle Tasks
+To run Gradle Task you have to use gradle version  **6.8.1** or similar
+with **Java version 11**. It should also work on other versions
+but you have to change the targetVersion in `build.gradle` file.
+
+| Command | Explanation |
+| ---- | ---- |
+| ```gradle war``` | Build Scada-LTS war file |
+| ```gradle run``` | Launch Tomcat instance |
+| ```gradle runDebug``` | Launch Tomcat instance in debug mode |
+| ```gradle buildRun``` | Build and start Scada-LTS application |
+| ```gradle buildRunDebug``` | Build and start Scada-LTS application in debug mode |
+| ```gradle test``` | Launch Backend Unit Tests |
+| ```gradle scadalts-ui::testUi``` | Launch Frontend Unit Tests |
 
 ## SeroUtils library license
 

@@ -16,6 +16,10 @@ task bundle(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'build']
 }
 
+task testUi(type: NpmTask) {
+    args = ['run-script', 'test:unit']
+}
+
 task clearResources(type: Delete, dependsOn: bundle) {
     delete files ("../WebContent/resources/js-ui")
 }
@@ -27,11 +31,31 @@ task copyNewUiCss(type: Copy, dependsOn: clearResources) {
 }
 
 task copyNewUiJs(type: Copy, dependsOn: copyNewUiCss) {
-    from "dist/js/app.js" , "dist/js/chunk-vendors.js"
+    from "dist/js/chunk-vendors.js", "dist/js/app.js"
     into "../WebContent/resources/js-ui/app/js"
 }
 
-task copyNewUiFonts(type: Copy, dependsOn: copyNewUiJs) {
+task copyModernWatchListJs(type: Copy, dependsOn: copyNewUiJs) {
+    from "dist/js/pdfmake.js", "dist/js/xlsx.js", "dist/js/canvg.js", "dist/js/example-chart-cmp.js"
+    into "../WebContent/resources/js-ui/modernWatchList/js"
+}
+
+task copyViewsJs(type: Copy, dependsOn: copyModernWatchListJs) {
+    from "dist/js/simple-component-svg.js", "dist/js/live-alarms-component.js", "dist/js/isalive-component.js", "dist/js/test-component.js", "dist/js/cmp-component.js"
+    into "../WebContent/resources/js-ui/views/js"
+}
+
+task copyDataSourceJs(type: Copy, dependsOn: copyViewsJs) {
+    from "dist/js/sleep-and-reactivation-ds-component.js"
+    into "../WebContent/resources/js-ui/ds/js"
+}
+
+task copyPointHierarchyJs(type: Copy, dependsOn: copyDataSourceJs) {
+    from "dist/js/ph.js"
+    into "../WebContent/resources/js-ui/pointHierarchy/js"
+}
+
+task copyNewUiFonts(type: Copy, dependsOn: copyPointHierarchyJs) {
     from "dist/fonts"
     into "../WebContent/resources/js-ui/app/fonts"
 }
