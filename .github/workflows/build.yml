@@ -31,7 +31,7 @@ jobs:
       - name: Test JUnit Scada Application
         run: gradle test
       - name: Build Scada-LTS WAR Application
-        run: gradle -PskipUi=true war
+        run: gradle -PskipUi=true compileJava
       - name: Cache Scada-LTS application
         uses: actions/cache@v2
         with:
@@ -104,9 +104,9 @@ jobs:
         working-directory: ./WebContent/resources
         run: npm install
       - name: Build Scada Application with Ant
-        run: gradle war
+        run: gradle -PskipUi=true war
       - name: Deploy WAR artifact
         uses: actions/upload-artifact@v2
         with:
           name: Scada-LTS
-          path: /build/libs/Scada-LTS.war
+          path: ./build/libs/Scada-LTS.war
