@@ -25,7 +25,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-tomcat-
       - name: Install Tomcat
-        run: mkdir /home/runner/tomcat; cd /home/runner/tomcat; wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.52/bin/apache-tomcat-9.0.52.tar.gz; tar xvzf apache-tomcat-7.0.85.tar.gz
+        run: mkdir /home/runner/tomcat; cd /home/runner/tomcat; wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.52/bin/apache-tomcat-9.0.52.tar.gz; tar xvzf apache-tomcat-9.0.52.tar.gz
       - name: Show Tomcat
         run: ls $CATALINA_HOME
       - name: Test JUnit Scada Application
