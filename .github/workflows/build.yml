@@ -43,6 +43,13 @@ jobs:
     name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
     steps:
+      - name: Replace Characters
+        run: |
+          ref="${github_ref////-}"
+          echo $ref
+          echo "::set-env name=ref::$ref"
+        env:
+          github_ref: ${{github.ref}}
       - uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -53,9 +60,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./scadalts-ui/node_modules
-          key: ${{ runner.os }}-node-${{ github.ref}}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-$ref-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ github.ref}}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-$ref-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         if: steps.nodeCache.outputs.cache-hit != 'true'
         working-directory: ./scadalts-ui
@@ -101,7 +108,7 @@ jobs:
         with:
           path: ./scadalts-ui/node_modules
           restore-keys: |
-            ${{ runner.os }}-node-${{ github.ref}}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-$ref-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
         uses: actions/cache@v2
         with:
