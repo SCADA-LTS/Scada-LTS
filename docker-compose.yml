@@ -17,7 +17,6 @@ services:
         expose: ["3306"]
         volumes:
             -   ./docker/volumes/databases:/home/
-        network_mode: host
     tomcat:
         image: scadalts/scadalts:pr-1849
         ports: 
@@ -25,4 +24,5 @@ services:
         depends_on: 
             - database
         expose: ["8080", "8000"]
-        network_mode: host
+        links:
+            - database:database
