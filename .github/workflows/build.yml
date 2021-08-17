@@ -116,7 +116,7 @@ jobs:
       - name: Install static web-dependencies
         working-directory: ./WebContent/resources
         run: npm install
-      - name: Build Scada Application with Ant
+      - name: Build Scada Application
         run: gradle -PskipUi=true war
       - name: Save WAR file to cache
         uses: actions/cache@v2
@@ -145,6 +145,7 @@ jobs:
     needs: [ war ]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Load WAR file to cache
         uses: actions/cache@v2
         with:
