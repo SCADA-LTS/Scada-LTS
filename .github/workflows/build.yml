@@ -3,6 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
+
   compile:
     name: Compile and Test Scada-LTS application
     runs-on: ubuntu-latest
@@ -48,19 +49,29 @@ jobs:
         with:
           node-version: 12.x
       - name: Cache node modules
+        id: nodeCache
         uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ github.run_id }}
+          path: ./scadalts-ui/node_modules
+          key: ${{ runner.os }}-node-${{ github.ref}}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ github.ref}}-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.nodeCache.outputs.cache-hit != 'true'
         working-directory: ./scadalts-ui
         run: npm install
       - name: Run Frontend UnitTests
         working-directory: ./scadalts-ui
         run: npm run-script test:unit
+      - name: Get Scada-LTS latest release version
+        id: relver
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: SCADA-LTS
+          repo: Scada-LTS
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
-        run: npm run-script build-config -- 2.6.9 $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
+        run: npm run-script build-config -- ${{ steps.relver.outputs.release }} $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
       - name: Build User Interface
         working-directory: ./scadalts-ui
         run: npm run-script build
@@ -70,8 +81,8 @@ jobs:
           key: ${{ runner.os }}-frontend-${{ github.run_id }}
           path: ./scadalts-ui/dist
 
-  deploy:
-    name: Deploy Scada-LTS application
+  war:
+    name: Build WAR archive
     needs: [compile, buildui]
     runs-on: ubuntu-latest
     env:
@@ -88,8 +99,9 @@ jobs:
       - name: Load Cached node modules
         uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ github.run_id }}
+          path: ./scadalts-ui/node_modules
+          restore-keys: |
+            ${{ runner.os }}-node-${{ github.ref}}-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
         uses: actions/cache@v2
         with:
@@ -105,10 +117,37 @@ jobs:
         run: npm install
       - name: Build Scada Application with Ant
         run: gradle -PskipUi=true war
+      - name: Save WAR file to cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-war-${{ github.run_id }}
+          path: ./build/libs/Scada-LTS.war
+
+  deploy-artefact:
+    name: Deploy Scada-LTS as Artifact
+    needs: [war]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load WAR file to cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-war-${{ github.run_id }}
+          path: ./build/libs/Scada-LTS.war
       - name: Deploy WAR artifact
         uses: actions/upload-artifact@v2
         with:
           name: Scada-LTS
+          path: ./build/libs/Scada-LTS.war
+
+  deploy-docker:
+    name: Deploy Scada-LTS as Docker Image
+    needs: [ war ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load WAR file to cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
       - name: Login to Docker Hub
         uses: docker/login-action@v1
