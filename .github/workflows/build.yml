@@ -60,9 +60,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./scadalts-ui/node_modules
-          key: ${{ runner.os }}-node-${{ env.REF_NAME }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ env.github_ref }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.REF_NAME }}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-${{ env.github_ref }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         if: steps.nodeCache.outputs.cache-hit != 'true'
         working-directory: ./scadalts-ui
@@ -98,6 +98,13 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Replace Characters
+        run: |
+          REPO=${{ github.ref }}
+          REF_NAME="${REPO////_}"
+          echo $REF_NAME
+        env:
+          github_ref: $REF_NAME
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
@@ -108,7 +115,7 @@ jobs:
         with:
           path: ./scadalts-ui/node_modules
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.REF_NAME }}-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-${{ env.github_ref }}-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
         uses: actions/cache@v2
         with:
