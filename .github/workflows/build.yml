@@ -60,9 +60,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./scadalts-ui/node_modules
-          key: ${{ runner.os }}-node-$REF_NAME-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ env.REF_NAME }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-$REF_NAME-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-${{ env.REF_NAME }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         if: steps.nodeCache.outputs.cache-hit != 'true'
         working-directory: ./scadalts-ui
@@ -108,7 +108,7 @@ jobs:
         with:
           path: ./scadalts-ui/node_modules
           restore-keys: |
-            ${{ runner.os }}-node-$REF_NAME-${{ hashFiles('**/package-lock.json') }}
+            ${{ runner.os }}-node-${{ env.REF_NAME }}-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
         uses: actions/cache@v2
         with:
