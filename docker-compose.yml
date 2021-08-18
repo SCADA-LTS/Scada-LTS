@@ -17,7 +17,7 @@ services:
         expose: ["3306"]
         volumes:
             -   ./docker/volumes/databases:/home/
-    tomcat:
+    scadalts:
         image: scadalts/scadalts:master
         ports: 
             - "8080:8080"
