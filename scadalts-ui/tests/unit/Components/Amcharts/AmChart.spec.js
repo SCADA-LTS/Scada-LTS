@@ -305,7 +305,7 @@ context('💠️ AmChart - base class Tests', () => {
             let startTs = new Date("2020-06-23").getTime();
             let endTs = new Date("2020-06-24").getTime();
 
-            let requestUrl = `./api/amcharts/?startTs=${startTs}&endTs=${endTs}&ids=1,2&xid=1`;
+            let requestUrl = `./api/amcharts/by-xid?startTs=${startTs}&endTs=${endTs}&ids=1,2`;
 
             let pointValues = await chart.fetchPointValues(startTs, endTs)
 
