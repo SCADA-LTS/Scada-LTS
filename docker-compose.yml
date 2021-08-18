@@ -18,7 +18,7 @@ services:
         volumes:
             -   ./docker/volumes/databases:/home/
     tomcat:
-        image: scadalts/scadalts:pr-1849
+        image: scadalts/scadalts:master
         ports: 
             - "8080:8080"
         depends_on: 
