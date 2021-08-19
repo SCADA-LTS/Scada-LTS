@@ -167,75 +167,8 @@
 						</v-col>
 					</v-row>
 
-					<v-row v-if="databaseType">
-						<v-col cols="12" class="d-flex flex-row justify-space-between">
-							<h2>{{ $t('systemsettings.database.title') }}</h2>
-							<v-spacer></v-spacer>
-							<v-btn fab icon @click="initDatabaseSection()">
-								<v-icon>mdi-refresh</v-icon>
-							</v-btn>
-						</v-col>
+					<data-base-info-component></data-base-info-component>
 
-						<v-col cols="12">
-							<v-row v-if="schemaVersion">
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.schemaVersion') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ schemaVersion }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.size') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.databaseSize }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.file') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.filedataCount }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.total') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.filedataSize }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.histroy') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.historyCount }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.event') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.eventCount }}</p>
-								</v-col>
-
-								<v-col cols="12">
-									<p>{{ $t('systemsettings.database.top') }}</p>
-								</v-col>
-								<v-col
-									cols="12"
-									v-for="point in databaseInfo.topPoints"
-									v-bind:key="point.pointId"
-								>
-									<p>
-										{{ point.pointName }}<br />
-										(Point ID: {{ point.pointId }} - count: {{ point.count }})
-									</p>
-								</v-col>
-							</v-row>
-						</v-col>
-					</v-row>
 				</v-col>
 			</v-row>
 		</v-container>
@@ -331,6 +264,7 @@ import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent';
 import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
 import AmChartSettingsComponent from './AmChartSettingsComponent';
+import DataBaseInfoComponent from './DataBaseInfoComponent';
 
 export default {
 	el: '#systemsettings',
@@ -346,6 +280,7 @@ export default {
 		SmsDomainSettingsComponent,
 		ScadaConfigurationComponent,
 		AmChartSettingsComponent,
+		DataBaseInfoComponent,
 	},
 	filters: {
 		blank: function (value) {
@@ -385,17 +320,11 @@ export default {
 			this.getUserRole();
 		}
 		store.dispatch('getSystemInfoSettings');
-		this.initDatabaseSection();
 		this.loadClock();
 	},
 	methods: {
 		async getUserRole() {
 			this.isUserRoleAdmin = await store.dispatch('getUserRole');
-		},
-		initDatabaseSection() {
-			store.dispatch('getDatabaseType');
-			store.dispatch('getDatabaseSize');
-			store.dispatch('getSchemaVersion');
 		},
 
 		saveSystemInfoSettings() {
@@ -405,18 +334,6 @@ export default {
 					this.generateNotification(
 						'success',
 						i18n.t('systemsettings.notification.save.systeminfo'),
-					);
-				} else {
-					this.generateNotification('danger', i18n.t('systemsettings.notification.fail'));
-				}
-			});
-		},
-		saveDatabase(databaseType) {
-			this.$store.dispatch('saveDatabaseType', databaseType).then((resp) => {
-				if (resp) {
-					this.generateNotification(
-						'success',
-						i18n.t('systemsettings.notification.save.database'),
 					);
 				} else {
 					this.generateNotification('danger', i18n.t('systemsettings.notification.fail'));
@@ -500,20 +417,11 @@ export default {
 		},
 	},
 	computed: {
-		databaseType() {
-			return this.$store.state.systemSettings.databaseType;
-		},
-		databaseInfo() {
-			return this.$store.state.systemSettings.databaseInfo;
-		},
 		systemInfoSettings() {
 			return this.$store.state.systemSettings.systemInfoSettings;
 		},
 		systemStartupTime() {
 			return this.$store.state.systemSettings.systemStartupTime;
-		},
-		schemaVersion() {
-			return this.$store.state.systemSettings.schemaVersion;
 		},
 	},
 };

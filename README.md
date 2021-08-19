@@ -15,7 +15,7 @@ Code released under [the GPL license](https://github.com/SCADA-LTS/Scada-LTS/blo
 <h1><a style="color:#222222;" href="https://github.com/SCADA-LTS/Scada-LTS/wiki"><img src=https://github.githubassets.com/images/modules/logos_page/GitHub-Logo.png height="20px" /> Project Documentation</a></h1> 
 
 See our [GitHub Wiki](https://github.com/SCADA-LTS/Scada-LTS/wiki) page to take the first steps inside
-Scada-LTS project, follow the latest changes and share your contribution with [our team](https://github.com/SCADA-LTS/Scada-LTS/wiki/The-Team)!
+Scada-LTS project. There you can find **QuickStart Guide** how to run or build this application. Follow the latest changes and share your contribution with [our team](https://github.com/SCADA-LTS/Scada-LTS/wiki/The-Team)!
 There is also a Scada-LTS users community so if you had a problem feel free to ask questions on StackOverflow or our GitHub Discussions.
 For the developers we are preparing a complete code documentation that will contain all the REST API interfaces
 described with example usage. To do that we use Open API specification in version 3 that is compatible with
@@ -40,11 +40,37 @@ and make sure that your issue is not already reported. Try to write in english a
 # Development
 
 ## Building the application
-To build the application on your own environment you can use **Apache Ant** build tool.
+To build the application on your own environment you can use **Gradle** or **Apache Ant** build tool.
+Ant is now marked as `@depracated` because soon it will be removed from
+that project. If you want to start the development of Scada-LTS find quick-start 
+tutorial on our [GitHub Wiki](https://github.com/SCADA-LTS/Scada-LTS/wiki/Prepare-environment-to-develop-(IntelliJ-Community)) page.
 
-We provide example **ant scripts** that can be used inside Scada-LTS project to perform specific operations.
+We provide example scripts that can be used inside Scada-LTS project to perform specific operations.
 Commands with their explanations are listed below:
-### Examples of run tasks
+
+### Gradle Tasks
+To run Gradle Task you have to use gradle version  **6.8.1** or similar
+with **Java version 11**. It should also work on other versions
+but you have to change the targetVersion in `build.gradle` file.
+
+| Command | Explanation |
+| ---- | ---- |
+| ```gradle war``` | Build Scada-LTS war file |
+| ```gradle run``` | Launch Tomcat instance |
+| ```gradle runDebug``` | Launch Tomcat instance in debug mode |
+| ```gradle buildRun``` | Build and start Scada-LTS application |
+| ```gradle buildRunDebug``` | Build and start Scada-LTS application in debug mode |
+| ```gradle test``` | Launch Backend Unit Tests |
+| ```gradle scadalts-ui::testUi``` | Launch Frontend Unit Tests |
+| ```gradle -PskipUi=true buildRun``` | Build and start app without building UI |
+
+Using parameter `-PskipUi=true` you can reduce the compilation time for example if you
+made no change. More details how to build and develop the Frontend sub-project is described
+in [readme.md file in scadalts-ui](./scadalts-ui/README.md) directory.
+
+###Ant tasks
+`@depracated`
+#### Examples of run tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant run``` | Start Scada-LTS application using Tomcat server |
@@ -56,7 +82,7 @@ Commands with their explanations are listed below:
 | ```ant build-run-debug``` | Build and start Scada-LTS application in debug mode |
 | ```ant build-skip-test-run-debug``` | Build and start Scada-LTS application in debug mode without tests |
 
-### Examples of build tasks
+#### Examples of build tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant build``` | Build complete Scada-LTS application |
@@ -66,7 +92,7 @@ Commands with their explanations are listed below:
 | ```ant update-ui``` | Update running application with latest frontend application changes |
 | ```ant create-war``` | Prepare WAR archive from existing resources<br/> _we suggest to perform **ant build** task before_ |
 
-### Examples of test tasks
+#### Examples of test tasks
 | Command | Explanation |
 | ---- | ---- |
 | ```ant test-junit``` | Launch Java Unit Tests |
