@@ -1,6 +1,7 @@
 <template>
 	<v-dialog v-model="dialogVisible" max-width="800">
 		<component
+			v-if="dialogVisible"
 			:is="`${datasourceType}`"
 			:datapoint="datapoint"
 			:createMode="!editMode"
@@ -16,7 +17,6 @@
 </template>
 <script>
 import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
-import ScadaVirtualDataPoint from '../../components/datasources/VirtualDataSource/VirtualDataPoint';
 
 export default {
 	mixins: [dataSourceMixin],
@@ -33,16 +33,18 @@ export default {
 
 	methods: {
 		showDialog(item, datapoint, datasourceType) {
-			this.dialogVisible = true;
+			console.log(datapoint)
 			if (!!datapoint) {
 				this.datapoint = datapoint;
 				this.editMode = true;
 			} else {
 				this.editMode = false;
-				this.datapoint = new ScadaVirtualDataPoint(item.id);
+				this.datapoint = this.createInitialDataPoint(datasourceType, item.id);
 			}
 			this.datasource = item;
 			this.datasourceType = `${datasourceType}pointeditor`;
+			console.log(this.datapoint)
+			this.dialogVisible = true;
 		},
 
 		onCanceled() {

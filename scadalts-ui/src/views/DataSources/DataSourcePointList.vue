@@ -65,7 +65,7 @@
 							</v-list-item-icon>
 							<v-list-item-title> Details </v-list-item-title>
 						</v-list-item>
-						<v-list-item @click="createDataPoint(datasource, dp)">
+						<v-list-item @click="editDataPoint(datasource, dp)">
 							<v-list-item-icon>
 								<v-icon>mdi-pencil</v-icon>
 							</v-list-item-icon>
@@ -132,8 +132,11 @@ export default {
 	mixins: [dataSourceMixin],
 
 	methods: {
-		createDataPoint(item, datapoint = null) {
-			this.$emit('create', { item, datapoint });
+		editDataPoint(item, datapoint = null) {
+			this.$emit('edit', { item, datapoint });
+		},
+		createDataPoint(item) {
+			this.$emit('create', item);
 		},
 		deleteDataPoint(item, datapoint) {
 			this.$emit('delete', { item, datapoint });

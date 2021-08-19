@@ -42,11 +42,12 @@
 					</v-badge>
 				</template>
 				<template v-slot:item.type="{ item }">
-					{{$t(`datasource.type.${dataSources.get(item.type)}`)}}
+					{{$t(`datasource.type.${$store.getters.dataSourceTypeName(item.type)}`)}}
 				</template>
 				<template v-slot:expanded-item="{ headers, item }">
 					<!-- Single Data Source Item Details Row -->
-					<td :colspan="headers.length" class="small-margin-top">
+					<td :colspan="headers.length" class="small-margin-top"
+					  v-if="!!dataSources.get(item.type)">
 						
 						<v-row class="data-source-item--details">
 							<v-col cols="12" class="flex">
@@ -65,12 +66,19 @@
 							<DataSourcePointList
 								:datasource="item"
 								:datasourceType="dataSources.get(item.type)"
+								@edit="onDataPointEdit"
 								@create="onDataPointCreation"
 								@delete="onDataPointDeletion"
 							></DataSourcePointList>
 						</v-row>
 						<v-skeleton-loader v-else type="article"> </v-skeleton-loader>
 
+					</td>
+					<td :colspan="headers.length" class="small-margin-top" v-else>
+						<div>
+							This Data Source Type is not supportet yet. Please use
+							the classic Data Source page to edit that item.
+						</div>
 					</td>
 				</template>
 			</v-data-table>
@@ -214,9 +222,14 @@ export default {
 			}
 		},
 
-		onDataPointCreation({ item, datapoint }) {
-			console.debug("DataSources.index.vue::onDataPointCreation()")
+		onDataPointEdit({ item, datapoint }) {
+			console.debug("DataSources.index.vue::onDataPoinEdit()")
 			this.$refs.pointCreator.showDialog(item, datapoint, this.dataSources.get(item.type));
+		},
+
+		onDataPointCreation(item) {
+			console.debug("DataSources.index.vue::onDataPointCreation()")
+			this.$refs.pointCreator.showDialog(item, null, this.dataSources.get(item.type));
 		},
 
 		onDataPointDeletion({ item, datapoint }) {

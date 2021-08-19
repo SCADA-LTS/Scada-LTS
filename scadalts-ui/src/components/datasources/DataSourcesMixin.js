@@ -2,11 +2,13 @@ import VirtualDataSource from './VirtualDataSource';
 import VirtualDataSourceEditor from './VirtualDataSource/config';
 import VirtualDataSourcePointEditor from './VirtualDataSource/point';
 import VirtualDataSourcePointList from './VirtualDataSource/list';
+import VirtualDataPoint from './VirtualDataSource/VirtualDataPoint';
 
 import SnmpDataSource from './SnmpDataSource';
 import SnmpDataSourceEditor from './SnmpDataSource/config';
 import SnmpDataSourcePointEditor from './SnmpDataSource/point';
 import SnmpDataSourcePointList from './SnmpDataSource/list';
+import SnmpDataPoint from './SnmpDataSource/SnmpDataPoint';
 
 /**
  * Data Sources Mixin
@@ -19,6 +21,7 @@ import SnmpDataSourcePointList from './SnmpDataSource/list';
  * [Data Source Vuex]{@link ../../store/dataSource/index.js}
  * 
  */
+
 export const dataSourcesMixin = {
     components: {
         'virtualdatasource': VirtualDataSource,
@@ -32,11 +35,27 @@ export const dataSourcesMixin = {
         'snmpdatasourcepointlist': SnmpDataSourcePointList,
     },
 
+    methods: {
+        createInitialDataPoint(datasourceType, itemId) {
+            console.log(datasourceType, itemId);
+            switch (datasourceType) {
+                case 'virtualdatasource':
+                    return new VirtualDataPoint(itemId);
+                case 'snmpdatasource':
+                    return new SnmpDataPoint(itemId);
+                default:
+                    return null;
+            }
+        },
+    },
+
     computed: {
         dataSourceList() {
             return this.$store.getters.dataSourceList;
         }
-    }
+    },
+
+    
 }
 
 export default dataSourcesMixin;

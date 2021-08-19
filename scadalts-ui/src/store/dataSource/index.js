@@ -29,6 +29,10 @@ const ds = {
 			credentials: 'same-origin',
 		},
 
+		/**
+		 * Data Source Definitions
+		 * Add new Data Source types here
+		 */
 		dataSources: new Map()
 			.set(1,"virtualdatasource")
 			.set(5, "snmpdatasource"),
@@ -354,7 +358,13 @@ const ds = {
 				}
 			}
 			return -1;
+		},
+
+		dataSourceTypeName:(state) => (datasourceTypeId) => {
+			let ds = state.dataSources.get(datasourceTypeId);
+			return !!ds ? ds : "unrecognized";			
 		}
+
 	},
 };
 export default ds;

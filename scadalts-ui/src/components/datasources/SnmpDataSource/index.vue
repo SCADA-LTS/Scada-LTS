@@ -14,10 +14,9 @@
 			<v-col>
 				<div>
 					<h3>SNMP Host testing</h3>
-					<v-text-field v-model="testingOid" @click:append="checkOid">
-						<v-icon slot="append">
-							mdi-send
-						</v-icon>
+					<v-text-field v-model="testingOid" 
+						append-outer-icon="mdi-send"
+						@click:append-outer="checkOid">
 					</v-text-field>
 				</div>
 			</v-col>
