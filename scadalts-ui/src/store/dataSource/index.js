@@ -1,5 +1,6 @@
 import i18n from '@/i18n';
 import Axios from 'axios';
+import ModBusDataPoint from '../../components/datasources/ModBusIpDataSource/ModBusDataPoint';
 import GenericDataSource from '../../components/datasources/models/GenericDataSource';
 import SnmpDataPoint from '../../components/datasources/SnmpDataSource/SnmpDataPoint';
 import ScadaVirtualDataPoint from '../../components/datasources/VirtualDataSource/VirtualDataPoint';
@@ -35,6 +36,7 @@ const ds = {
 		 */
 		dataSources: new Map()
 			.set(1,"virtualdatasource")
+			.set(3, "modbusdatasource")
 			.set(5, "snmpdatasource"),
 
 		dataSourceList: [],
@@ -167,6 +169,10 @@ const ds = {
 						p2.pointLocator.oid = "1.2.1.1.5.3.2"
 						p2.pointLocator.settable = true;
 						dataPoints = [p1, p2];
+					} else if (dataSourceId === 3) {
+						p1 = new ModBusDataPoint(4);
+						p1.initialSetup(3,"AG_ModBus_Numeric_01","AG Test ModBus - Numeric",true);
+						dataPoints = [p1];
 					}
 					await commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints});
 					resolve();
@@ -333,6 +339,51 @@ const ds = {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
 					commit('TOGGLE_DATA_SOURCE', dataSourceId);
+					resolve();
+				}, 1000);
+			});
+		},
+
+		//ModBus DataSource methods
+		modbusNodeScan({dispatch}, datasourceId) {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					if(datasourceId === 1) {
+						let response = [
+							{
+								name: 'Point 1'
+							}
+						];
+						resolve(response);
+					} else {
+						reject();
+					}
+				}, 1000);
+			});
+		},
+
+		modbusNodeScanCancel({dispatch}, datasourceId) {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					resolve();
+				}, 1000);
+			})
+		},
+
+		modbusReadData({dispatch}, configuration) {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					let request = `${configuration.slaveId}/${configuration.range}`
+					console.log(request);
+					resolve();
+				}, 1000);
+			});
+		},
+
+		modbusPointLocatorTest({dispatch}, configuration) {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					console.log(configuration);
 					resolve();
 				}, 1000);
 			});

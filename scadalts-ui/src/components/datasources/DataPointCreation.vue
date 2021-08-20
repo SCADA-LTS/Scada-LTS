@@ -38,7 +38,11 @@
 						></v-text-field>
 					</v-col>
 					<v-col cols="6" :sm="2">
-						<v-checkbox v-model="datapoint.settable" label="Settable"></v-checkbox>
+						<v-checkbox 
+							v-model="datapoint.settable" 
+							label="Settable"
+							:disabled="settableDisabled"
+						></v-checkbox>
 					</v-col>
 					<v-col cols="12">
 						<v-text-field v-model="datapoint.desc" label="Description"></v-text-field>
@@ -81,6 +85,10 @@ export default {
 				};
 			},
 		},
+		settableDisabled: {
+			type: Boolean,
+			default: false,
+		}
 	},
 
 	data() {
