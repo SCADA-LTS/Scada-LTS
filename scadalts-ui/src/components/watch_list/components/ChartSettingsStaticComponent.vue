@@ -1,171 +1,171 @@
 <template>
-	<div class="col-xs-12">
-		<div class="flex-row flex-align-center col-xs-6">
-			<label for="static-sd" class="small-padd">{{
-				$t('modernwatchlist.settings.date.start')
-			}}</label>
-			<dropdown class="form-group">
-				<div class="input-group">
-					<input class="form-control" type="text" v-model="startDate" />
-					<div class="input-group-btn">
-						<btn class="dropdown-toggle">
-							<i class="glyphicon glyphicon-calendar"></i>
-						</btn>
-					</div>
-				</div>
-				<template slot="dropdown">
-					<li>
-						<datepicker
-							v-model="startDate"
-							format="yyyy/MM/dd"
-							:inline="true"
-							:monday-first="true"
-						/>
-					</li>
+	<v-row>
+		<v-col cols="3">
+			<v-menu
+				ref="start-date-menu"
+				:close-on-content-click="false"
+				:nudge-right="40"
+				transition="scale-transition"
+				offset-y
+				min-width="auto"
+				attach
+			>
+				<template v-slot:activator="{ on, attrs }">
+					<v-text-field
+						v-model="startDate"
+						:label="$t('modernwatchlist.settings.date.start')"
+						prepend-icon="mdi-calendar"
+						v-bind="attrs"
+						v-on="on"
+					></v-text-field>
 				</template>
-			</dropdown>
-			<dropdown class="form-group">
-				<div class="input-group">
-					<div class="input-group-btn">
-						<btn class="dropdown-toggle">
-							<i class="glyphicon glyphicon-time"></i>
-						</btn>
-					</div>
-				</div>
-				<template slot="dropdown">
-					<li style="padding: 10px">
-						<time-picker v-model="startTime" :show-meridian="false" />
-					</li>
+				<v-date-picker
+					v-model="startDate"
+					first-day-of-week="1"
+					no-title
+					scrollable
+				></v-date-picker>
+			</v-menu>
+		</v-col>
+		<v-col cols="3">
+			<v-menu
+				ref="start-time-menu"
+				:close-on-content-click="false"
+				:nudge-right="40"
+				transition="scale-transition"
+				offset-y
+				max-width="290px"
+				min-width="290px"
+				attach
+			>
+				<template v-slot:activator="{ on, attrs }">
+					<v-text-field
+						v-model="startTime"
+						:label="$t('modernwatchlist.settings.time.start')"
+						prepend-icon="mdi-clock-time-four-outline"
+						v-bind="attrs"
+						v-on="on"
+					></v-text-field>
 				</template>
-			</dropdown>
-		</div>
-		<div class="flex-row flex-align-center col-xs-6">
-			<label for="static-ed" class="small-padd">{{
-				$t('modernwatchlist.settings.date.end')
-			}}</label>
-			<dropdown class="form-group">
-				<div class="input-group">
-					<input class="form-control" type="text" v-model="endDate" />
-					<div class="input-group-btn">
-						<btn class="dropdown-toggle">
-							<i class="glyphicon glyphicon-calendar"></i>
-						</btn>
-					</div>
-				</div>
-				<template slot="dropdown">
-					<li>
-						<datepicker
-							v-model="endDate"
-							format="yyyy MM dd"
-							:inline="true"
-							:monday-first="true"
-						/>
-					</li>
+				<v-time-picker v-model="startTime" format="24hr" scrollable></v-time-picker>
+			</v-menu>
+		</v-col>
+
+		<v-col cols="3">
+			<v-menu
+				ref="end-date-menu"
+				:close-on-content-click="false"
+				:nudge-right="40"
+				transition="scale-transition"
+				offset-y
+				min-width="auto"
+				attach
+			>
+				<template v-slot:activator="{ on, attrs }">
+					<v-text-field
+						v-model="endDate"
+						:label="$t('modernwatchlist.settings.date.end')"
+						prepend-icon="mdi-calendar"
+						v-bind="attrs"
+						v-on="on"
+					></v-text-field>
 				</template>
-			</dropdown>
-			<dropdown class="form-group">
-				<div class="input-group">
-					<div class="input-group-btn">
-						<btn class="dropdown-toggle">
-							<i class="glyphicon glyphicon-time"></i>
-						</btn>
-					</div>
-				</div>
-				<template slot="dropdown">
-					<li style="padding: 10px">
-						<time-picker v-model="endTime" :show-meridian="false" />
-					</li>
+				<v-date-picker
+					v-model="endDate"
+					first-day-of-week="1"
+					no-title
+					scrollable
+				></v-date-picker>
+			</v-menu>
+		</v-col>
+		<v-col cols="3">
+			<v-menu
+				ref="end-time-menu"
+				:close-on-content-click="false"
+				:nudge-right="40"
+				transition="scale-transition"
+				offset-y
+				max-width="290px"
+				min-width="290px"
+				attach
+			>
+				<template v-slot:activator="{ on, attrs }">
+					<v-text-field
+						v-model="endTime"
+						:label="$t('modernwatchlist.settings.time.end')"
+						prepend-icon="mdi-clock-time-four-outline"
+						v-bind="attrs"
+						v-on="on"
+					></v-text-field>
 				</template>
-			</dropdown>
-		</div>
-	</div>
+				<v-time-picker v-model="endTime" format="24hr" scrollable></v-time-picker>
+			</v-menu>
+		</v-col>
+	</v-row>
 </template>
 <script>
-import Datepicker from 'vuejs-datepicker';
-
 export default {
 	name: 'ChartSettingsStaticComponent',
-
-	components: {
-		Datepicker,
-	},
-
-	props: ['watchListName'],
 
 	data() {
 		return {
 			CHART_TYPE: 'static',
-			startDate: new Date(),
-			startTime: new Date(),
-			endDate: new Date(),
-			endTime: new Date(),
+			startDate: '',
+			startTime: '',
+			endTime: '',
+			endDate: '',
 		};
 	},
 
-	mounted() {
-		this.loadSettings();
-	},
-
-	computed: {},
-
 	methods: {
-		applySettings() {
-			let chartProperties = {
-				type: this.CHART_TYPE,
-				refreshRate: null,
-				startDate: this.convertDate(this.startDate, this.startTime),
-				endDate: this.convertDate(this.endDate, this.endTime),
-			};
-			this.saveSettings();
-			return chartProperties;
-		},
-
-		loadSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListName}_P`));
+		loadSettings(watchListId) {
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${watchListId}_P`));
 			if (!!loadedData) {
 				if (loadedData.type === this.CHART_TYPE) {
-					this.startDate = new Date(loadedData.startDate);
-					this.startTime = new Date(loadedData.startTime);
-					this.endDate = new Date(loadedData.endDate);
-					this.endTime = new Date(loadedData.endTime);
+					this.startDate = loadedData.startDate;
+					this.startTime = loadedData.startTime;
+					this.endDate = loadedData.endDate;
+					this.endTime = loadedData.endTime;
 				}
+			} else {
+				let time = this.$date();
+				this.endDate = time.format('YYYY-MM-DD');
+				this.endTime = time.format('HH:mm');
+				time = time.subtract(1, 'hour');
+				this.startDate = time.format('YYYY-MM-DD');
+				this.startTime = time.format('HH:mm');
 			}
+			return {
+				type: this.CHART_TYPE,
+				refreshRate: null,
+				startDate: this.concatenateDateTime(this.startDate, this.startTime),
+				endDate: this.concatenateDateTime(this.endDate, this.endTime),
+			};
 		},
 
-		saveSettings() {
+		saveSettings(watchListId) {
 			let saveData = {
 				type: this.CHART_TYPE,
-				startDate: this.startDate.toString(),
-				startTime: this.startTime.toString(),
-				endDate: this.endDate.toString(),
-				endTime: this.endTime.toString(),
+				startDate: this.startDate,
+				startTime: this.startTime,
+				endDate: this.endDate,
+				endTime: this.endTime,
 			};
-			localStorage.setItem(`MWL_${this.watchListName}_P`, JSON.stringify(saveData));
+			localStorage.setItem(`MWL_${watchListId}_P`, JSON.stringify(saveData));
 		},
 
-		convertDate(date, time) {
-			if (!(time instanceof Date)) {
-				if (time === undefined || time === null) {
-					time = new Date();
-				} else {
-					time = new Date(time);
-				}
-			}
-			let dateString = this.formatDate(new Date(date));
-			let timeString = `${time.getHours()}:${time.getMinutes()}`;
-			return `${dateString} ${timeString}`;
-		},
-
-		formatDate(date) {
-			return (
-				date.getUTCFullYear() +
-				'/' +
-				('0' + (date.getUTCMonth() + 1)).slice(-2) +
-				'/' +
-				('0' + date.getUTCDate()).slice(-2)
-			);
+		concatenateDateTime(date, time) {
+			return `${date} ${time}`;
 		},
 	},
 };
 </script>
-<style scoped></style>
+<style scoped>
+.menuable__content__active .v-picker .v-picker__title {
+	height: 100px;
+}
+
+.row + .row {
+	margin-top: -12px;
+}
+</style>

@@ -65,8 +65,8 @@ public class Permission implements Serializable {
 	@Override
 	public String toString() {
 		return "Permission{" +
-				"permission=" + permission +
-				", id=" + id +
+				"id=" + id +
+				", permission=" + permission +
 				'}';
 	}
 }

@@ -20,6 +20,7 @@
 <script type="text/javascript" src="resources/jQuery/plugins/chosen/chosen.jquery.min.js"></script>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <div id="settingsEditorPopup" style="display:none;left:0px;top:0px;" class="windowDiv">
+  <div>
   <table cellpadding="0" cellspacing="0"><tr><td>
     <table width="100%">
       <tr>
@@ -54,6 +55,14 @@
         <td class="formLabel"><fmt:message key="viewEdit.settings.displayControls"/></td>
         <td class="formField"><input id="settingsControls" type="checkbox"/></td>
       </tr>
+      <tr>
+        <td class="formLabel"><fmt:message key="viewEdit.position.x"/></td>
+        <td class="formField"><input id="settingsPositionX" type="number"/></td></td>
+      </tr>
+      <tr>
+        <td class="formLabel"><fmt:message key="viewEdit.position.y"/></td>
+        <td class="formField"><input id="settingsPositionY" type="number"/></td></td>
+      </tr>
     </table>
   </td></tr></table>
   
@@ -67,6 +76,7 @@
         this.pointList = [];
         
         this.open = function(compId) {
+            document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;
             
             ViewDwr.getViewComponent(compId, function(comp) {
@@ -82,6 +92,8 @@
                 $set("settingsSettable", comp.settableOverride);
                 $set("settingsBkgdColor", comp.bkgdColorOverride);
                 $set("settingsControls", comp.displayControls);                
+                $set("settingsPositionX", comp.x);
+                $set("settingsPositionY", comp.y);
                 
                 settingsEditor.pointSelectChanged();
                 
@@ -105,9 +117,15 @@
         
         this.save = function() {
             hideContextualMessages("settingsEditorPopup");
+            let posX = $get("settingsPositionX");
+            let posY = $get("settingsPositionY");
+            [posX, posY] = validateComponentPosition(posX, posY);
+            updatePointPosition(settingsEditor.componentId,
+              posX, posY, "settingsPositionX", "settingsPositionY"
+            );
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
-                    $get("settingsControls"), function(response) {
+                    $get("settingsControls"), posX, posY, function(response) {
                 if (response.hasMessages) {
                     showDwrMessages(response.messages);
                 }
@@ -147,4 +165,5 @@
     }
     var settingsEditor = new SettingsEditor();
   </script>
+  </div>
 </div>

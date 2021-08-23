@@ -54,7 +54,15 @@ public class UsersProfileDAO {
             "up." + COLUMN_NAME_XID + ", " +
             "up." + COLUMN_NAME_NAME + " " +
             "from usersProfiles up " +
-            "where up." + COLUMN_NAME_USER_PROFILE_ID + "=? ";
+            "where up." + COLUMN_NAME_ID + "=? ";
+
+    private static final String USERS_PROFILE_SELECT_BY_XID = "" +
+            "select " +
+            "up." + COLUMN_NAME_ID + ", " +
+            "up." + COLUMN_NAME_XID + ", " +
+            "up." + COLUMN_NAME_NAME + " " +
+            "from usersProfiles up " +
+            "where up." + COLUMN_NAME_XID + "=? ";
 
     private static final String USERS_USERS_PROFILE_DELETE_BY_USER_ID = "" +
             "delete " +
@@ -249,6 +257,20 @@ public class UsersProfileDAO {
             LOG.trace("selectProfileById(int usersProfileId) id:" + usersProfileId);
         try {
             UsersProfileVO usersProfile = jdbcTemplate.queryForObject(USERS_PROFILE_SELECT_BY_ID, new Object[]{usersProfileId}, new UsersProfileRowMapper());
+            return Optional.ofNullable(usersProfile);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<UsersProfileVO> selectProfileByXid(String usersProfileXid) {
+        if (LOG.isTraceEnabled())
+            LOG.trace("selectProfileByXid(String usersProfileXid) id:" + usersProfileXid);
+        try {
+            UsersProfileVO usersProfile = jdbcTemplate.queryForObject(USERS_PROFILE_SELECT_BY_XID, new Object[]{usersProfileXid}, new UsersProfileRowMapper());
             return Optional.ofNullable(usersProfile);
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();

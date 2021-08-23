@@ -155,9 +155,14 @@ public class View implements Serializable, JsonSerializable {
 			viewComponent.validateDataPoint(owner, makeReadOnly);
 	}
 
-	public void validateViewComponents(User user, View view) {
+	public void validateViewComponents(User user) {
 		for (ViewComponent viewComponent : viewComponents)
-			viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
+			viewComponent.validateDataPoint(user, getUserAccess(user) == ShareUser.ACCESS_READ);
+	}
+
+	public void validateViewComponentsAnon(User user) {
+		for (ViewComponent viewComponent : viewComponents)
+			viewComponent.validateDataPoint(user, getAnonymousAccess() == ShareUser.ACCESS_READ);
 	}
 
 	public String getBackgroundFilename() {
@@ -427,11 +432,14 @@ public class View implements Serializable, JsonSerializable {
 						ShareUser.ACCESS_CODES.getCodeList());
 		}
 		
-		String resolution = json.getString("resolution");
-		if (resolution != null) {
-			
-			setResolution(Integer.parseInt(resolution));
-			
+		String resolutionText = json.getString("resolution");
+		if (resolutionText != null) {
+			int resolution = ResolutionView.RESOLUTION_VIEW_CODES.getId(resolutionText);
+			if (resolution == -1)
+				throw new LocalizableJsonException("emport.error.invalid",
+						"resolution", resolutionText,
+						ResolutionView.RESOLUTION_VIEW_CODES.getCodeList());
+			setResolution(resolution);
 		}
 
 		JsonArray jsonSharers = json.getJsonArray("sharingUsers");
@@ -455,5 +463,6 @@ public class View implements Serializable, JsonSerializable {
 				ShareUser.ACCESS_CODES.getCode(anonymousAccess));
 		map.put("viewComponents", viewComponents);
 		map.put("sharingUsers", viewUsers);
+		map.put("resolution", ResolutionView.RESOLUTION_VIEW_CODES.getCode(resolution));
 	}
 }
