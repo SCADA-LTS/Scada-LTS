@@ -410,69 +410,68 @@
 
     }
 
-        function showCssDialog() {
-                  let dialog = document.getElementById('css-editor-dialog');
-                  dialog.style.display = 'flex';
-                  initCustomCssData();
-                }
+    /* CUSTOM CSS JAVASCRIPT */
+    let customCssUrl = `./api/customcss/`;
 
-                function hideCssDialog() {
-                  let dialog = document.getElementById('css-editor-dialog');
-                  dialog.style.display = 'none';
-                }
+    function showCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'flex';
+      initCustomCssData();
+    }
 
-                function saveCssSettings() {
-                  hideCssDialog();
-                  saveCustomCssConfig();
-                }
+    function hideCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'none';
+    }
 
-                function initCustomCssData() {
-                  fetchCustomCssConfig().then((val) => {
-                    document.getElementById('cssEditor').value = val;
-                    updateCodeText(val, '#cssHighlightingContent');
-                  });
-                }
+    function saveCssSettings() {
+      hideCssDialog();
+      saveCustomCssConfig();
+    }
 
-                function fetchCustomCssConfig() {
-                  return new Promise((resolve, reject) => {
-                    let req = new XMLHttpRequest();
-                    const url = `./api/customcss`;
-                    req.open('GET', url, true);
-                    req.onload = () => {
-                      if (req.status === 200) {
-                        resolve(req.responseText);
-                      } else {
-                        reject(req.status);
-                      }
-                    };
-                    req.onerror = () => {
-                      reject(req.status);
-                    }
-                    req.send(null);
-                  });
-                }
+    function initCustomCssData() {
+      fetchCustomCssConfig().then((val) => {
+        document.getElementById('cssEditor').value = val;
+        updateCodeText(val, '#cssHighlightingContent');
+      });
+    }
 
-                function saveCustomCssConfig() {
-                  return new Promise((resolve, reject) => {
-                    let req = new XMLHttpRequest();
-                    const url = `./api/customcss`;
-                    req.open('POST', url, true);
-                    req.setRequestHeader('Content-type', 'application/text');
-                    req.onload = () => {
-                      if (req.status === 200) {
-                        resolve(req.responseText);
-                      } else {
-                        reject(req.status);
-                      }
-                    };
-                    req.onerror = () => {
-                      reject(req.status);
-                    }
-                    req.send(document.getElementById('cssEditor').value);
-                  });
-                }
-    
-    
+    function fetchCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('GET', customCssUrl, true);
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(null);
+      });
+    }
+
+    function saveCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('POST', customCssUrl, true);
+        req.setRequestHeader('Content-type', 'application/text');
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(document.getElementById('cssEditor').value);
+      });
+    }
   </script>
   
   <div class="borderDiv marB marR" style="float:left">
@@ -849,14 +848,14 @@
       <table>
           <tr>
             <td>
-              <span class="smallTitle">Custom Stylesheet</span>
+              <span class="smallTitle"><fmt:message key="systemSettings.customCss.title"/></span>
             </td>
           </tr>
       </table>
       <table>
         <tr>
           <td>
-            <button onclick="showCssDialog()">Edit file</button>
+            <button onclick="showCssDialog()"><fmt:message key="systemSettings.customCss.edit"/></button>
           </td>
         </tr>
       </table>
@@ -873,7 +872,7 @@
     <div id="css-editor-dialog">
       <div class="css-dialog-content">
         <div>
-          <h2>Edit custom.css file</h2>
+          <h2><fmt:message key="systemSettings.customCss.dialog.title"/></h2>
         </div>
         <div class="css-dialog-editor">
           <textarea
@@ -893,10 +892,10 @@
         <table>
           <tr>
             <td>
-              <button onclick="hideCssDialog()">Cancel</button>
+              <button onclick="hideCssDialog()"><fmt:message key="common.cancel"/></button>
             </td>
             <td>
-              <button onclick="saveCssSettings()">Save</button>
+              <button onclick="saveCssSettings()"><fmt:message key="common.save"/></button>
             </td>
           </tr>
         </table>
