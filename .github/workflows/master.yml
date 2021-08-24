@@ -1,7 +1,14 @@
-name: Scada-LTS PR development workflow
+name: Scada-LTS build stable version workflow
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+      - 'release/[0-9].[0-9]+.[0-9]+'
+    tags:
+      - 'v*'
+  release:
+    types: [published]
 jobs:
 
   compile:
