@@ -148,25 +148,25 @@ public class PointValueAdnnotationDaoTest extends TestDAO{
 		// read
 		  // TODO because valueAdnnotations don't have pk error when adnnotation more then one
 		  //find (adnnotations for every pointValues in test)
-		  PointValueAdnnotation pointValueAdnnotationNewLongText = pointValuesAdnnotationsDAO.findById(new Object[] {1});		  
+		  PointValueAdnnotation pointValueAdnnotationNewLongText = pointValuesAdnnotationsDAO.findByIdPointValueAdnnotation(new Object[] {1});
 		  boolean test1 = pointValueAdnnotationNewLongText.equals(pointValueAdnnotationAlphanumericLongText);
 		  assertTrue(test1);
 		  
-		  PointValueAdnnotation pointValueAdnnotationNewShortText = pointValuesAdnnotationsDAO.findById(new Object[] {2});		  
+		  PointValueAdnnotation pointValueAdnnotationNewShortText = pointValuesAdnnotationsDAO.findByIdPointValueAdnnotation(new Object[] {2});
 		  boolean test2 = pointValueAdnnotationNewShortText.equals(pointValueAdnnotationAlphanumericShortText);
 		  assertTrue(test2);
 		  
-		  PointValueAdnnotation pointValueAdnnotationNewImage1 = pointValuesAdnnotationsDAO.findById(new Object[] {3});		  
+		  PointValueAdnnotation pointValueAdnnotationNewImage1 = pointValuesAdnnotationsDAO.findByIdPointValueAdnnotation(new Object[] {3});
 		  boolean test3 = pointValueAdnnotationNewImage1.equals(pointValueAdnnotationImage1);
 		  assertTrue(test3);
 		  
-		  PointValueAdnnotation pointValueAdnnotationNewImage2 = pointValuesAdnnotationsDAO.findById(new Object[] {4});		  
+		  PointValueAdnnotation pointValueAdnnotationNewImage2 = pointValuesAdnnotationsDAO.findByIdPointValueAdnnotation(new Object[] {4});
 		  boolean test4 = pointValueAdnnotationNewImage2.equals(pointValueAdnnotationImage2);
 		  assertTrue(test4);
 				  
 		  //filtered (values for every type point)
-		  List<PointValueAdnnotation> valuesAdnnotationsFiltered = pointValuesAdnnotationsDAO.filtered(
-				  PointValueAdnnotationsDAO.POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID, 
+		  List<PointValueAdnnotation> valuesAdnnotationsFiltered = pointValuesAdnnotationsDAO.filteredPointValueAdnnotations(
+				  PointValueAdnnotationsDAO.POINT_VALUE_ADNNOTATIONS_FILTER_BASE_ON_POINT_VALUES_ID,
 				  new Object[]{1}, 10);
 		  boolean testFiltered = (valuesAdnnotationsFiltered.size() == 1);
 		  

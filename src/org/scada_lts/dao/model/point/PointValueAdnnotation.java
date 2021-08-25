@@ -17,7 +17,9 @@
  */
 package org.scada_lts.dao.model.point;
 
-/** 
+import com.serotonin.mango.rt.dataImage.SetPointSource;
+
+/**
  * Bean 
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
@@ -45,6 +47,29 @@ public class PointValueAdnnotation {
 		this.sourceType = sourceType;
 		this.sourceId = sourceId;
 	}
+
+	public static PointValueAdnnotation newInstance(String svalue, SetPointSource source, long pointValueId) {
+		Integer sourceType = null, sourceId = null;
+		if (source != null) {
+			sourceType = source.getSetPointSourceType();
+			sourceId = source.getSetPointSourceId();
+		} else {
+			sourceType = SetPointSource.Types.UNKNOWN;
+			sourceId = 1;
+		}
+
+		String shortString = null;
+		String longString = null;
+		if (svalue != null) {
+			if (svalue.length() > 128)
+				longString = svalue;
+			else
+				shortString = svalue;
+		}
+		return new PointValueAdnnotation(pointValueId, shortString, longString, sourceType, sourceId);
+	}
+
+
 	public String getChangeOwner() {
 		return changeOwner;
 	}

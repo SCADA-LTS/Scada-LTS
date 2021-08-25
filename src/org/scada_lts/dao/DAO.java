@@ -23,6 +23,7 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
+import com.serotonin.mango.db.DatabaseAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,8 +42,9 @@ public class DAO {
 
 	private static final Log LOG = LogFactory.getLog(DAO.class);
 	private NamedParameterJdbcTemplate namedParamJdbcTemplate;
-	private JdbcTemplate jdbcTemplate;	
+	private JdbcTemplate jdbcTemplate;
 	private static DAO instance;
+	private static DAO query;
 	private boolean test =false;
 	
 	private DAO() {
@@ -55,7 +57,13 @@ public class DAO {
 			LOG.error(e);
 		}
 	}
-	
+
+	private DAO(NamedParameterJdbcTemplate namedParamJdbcTemplate, JdbcTemplate jdbcTemplate) {
+        LOG.trace("Create DAO");
+	    this.namedParamJdbcTemplate = namedParamJdbcTemplate;
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
 	/**
 	 * Get id.
 	 * @return Method queryForObject() can also return "null"
@@ -69,6 +77,24 @@ public class DAO {
 			instance = new DAO();
 		} 
 		return instance;
+	}
+
+	public static DAO query() {
+		if (query == null) {
+			boolean dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
+			if(dbQueryEnabled) {
+				DatabaseAccess databaseAccess = Common.ctx.getDatabaseQueryAccess();
+				if (databaseAccess == null) {
+					throw new IllegalStateException("dbquery.enabled is true, you must definition datasource for dbquery or disabled in env.properties");
+				} else {
+					DataSource ds = databaseAccess.getDataSource();
+					NamedParameterJdbcTemplate namedParamJdbcTemplate = new NamedParameterJdbcTemplate(ds);
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+					query = new DAO(namedParamJdbcTemplate, jdbcTemplate);
+				}
+			}
+		}
+		return query;
 	}
 	
 	/**
@@ -97,7 +123,7 @@ public class DAO {
 	public JdbcTemplate getJdbcTemp() {
 		return jdbcTemplate;
 	}
-	
+
 	/**
 	 * Set jdbcTemplate
 	 * @see TestDAO

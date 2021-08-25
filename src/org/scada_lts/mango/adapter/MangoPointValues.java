@@ -42,7 +42,7 @@ public interface MangoPointValues {
 
 	long deletePointValuesWithMismatchedType(int dataPointId, int dataType);
 	
-	PointValueTime getPointValue(long id);
+	//PointValueTime getPointValue(long id);
 	
 	void clearUnsavedPointValues();
 	

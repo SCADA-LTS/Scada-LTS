@@ -55,6 +55,11 @@ public class ContextWrapper {
 				.getAttribute(Common.ContextKeys.DATABASE_ACCESS);
 	}
 
+	public DatabaseAccess getDatabaseQueryAccess() {
+		return (DatabaseAccess) ctx
+				.getAttribute(Common.ContextKeys.DATABASE_QUERY_ACCESS);
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<ImageSet> getImageSets() {
 		return (List<ImageSet>) ctx.getAttribute(Common.ContextKeys.IMAGE_SETS);

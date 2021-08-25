@@ -37,6 +37,10 @@ public class MySQLAccess extends BasePooledAccess {
         super(ctx);
     }
 
+    public MySQLAccess(ServletContext ctx, String dbPrefix) {
+        super(ctx, dbPrefix);
+    }
+
     @Override
     protected void initializeImpl(String propertyPrefix) {
         super.initializeImpl(propertyPrefix);
@@ -115,6 +119,7 @@ public class MySQLAccess extends BasePooledAccess {
         	LOG.info("BaseLineNotExist:"+baseLineNotExist);
         }
 
+        String migrationPackage = Common.getEnvironmentProfile().getString(getDbPrefix() + "migration.package");
         try {
             Flyway flyway = null;
 
@@ -124,7 +129,7 @@ public class MySQLAccess extends BasePooledAccess {
                     flyway = Flyway.configure()
                             .baselineOnMigrate(true)
                             .dataSource(getDataSource())
-                            .locations("org.scada_lts.dao.migration.mysql")
+                            .locations(migrationPackage)
                             .table("schema_version")
                             .load();
 
@@ -137,7 +142,7 @@ public class MySQLAccess extends BasePooledAccess {
                     flyway = Flyway.configure()
                             .baselineOnMigrate(true)
                             .dataSource(getDataSource())
-                            .locations("org.scada_lts.dao.migration.mysql")
+                            .locations(migrationPackage)
                             .table("schema_version")
                             .load();
                     //flayway.baseline();
@@ -147,7 +152,7 @@ public class MySQLAccess extends BasePooledAccess {
             if (flyway == null) {
                 flyway = Flyway.configure()
                         .dataSource(getDataSource())
-                        .locations("org.scada_lts.dao.migration.mysql")
+                        .locations(migrationPackage)
                         .table("schema_version")
                         .load();
             }

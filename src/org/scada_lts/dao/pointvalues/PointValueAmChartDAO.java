@@ -5,6 +5,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -58,6 +59,16 @@ public class PointValueAmChartDAO {
     private static final String CONDITION_DATA_TYPE = " AND " + COLUMN_DATA_TYPE + "=?";
     private static final String WHERE_DATA_POINT = " WHERE " + COLUMN_DATAPOINT_ID + "=?";
 
+    private JdbcOperations jdbcTemplate;
+
+    public PointValueAmChartDAO() {
+        this.jdbcTemplate = DAO.getInstance().getJdbcTemp();
+    }
+
+    public PointValueAmChartDAO(JdbcOperations jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     /**
      * Get Point Values from Time Range
      *
@@ -77,7 +88,7 @@ public class PointValueAmChartDAO {
 
         String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER;
 
-        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
+        List<DataPointSimpleValue> pvcList = jdbcTemplate.query(sqlQuery, new PointValueChartRowMapper());
 
         return convertToAmChartDataObject(pvcList);
 
@@ -90,7 +101,7 @@ public class PointValueAmChartDAO {
 
         String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER;
 
-        List<DataPointSimpleValue> pvcList = DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
+        List<DataPointSimpleValue> pvcList = jdbcTemplate.query(sqlQuery, new PointValueChartRowMapper());
 
         return convertToAmChartCompareDataObject(pvcList, pointIds[0]);
 
@@ -108,7 +119,7 @@ public class PointValueAmChartDAO {
             return Collections.emptyList();
         }
         QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(), startTs, endTs, intervalMs, limit);
-        return DAO.getInstance().getJdbcTemp().query(aggregationQuery.getQuery(),
+        return jdbcTemplate.query(aggregationQuery.getQuery(),
                 aggregationQuery.getArgs(), new PointValueChartRowMapper());
     }
 
@@ -119,7 +130,7 @@ public class PointValueAmChartDAO {
 
         String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + " LIMIT " + limit;
 
-        return DAO.getInstance().getJdbcTemp().query(sqlQuery, new PointValueChartRowMapper());
+        return jdbcTemplate.query(sqlQuery, new PointValueChartRowMapper());
     }
 
     public List<Map<String, Double>> convertToAmChartCompareDataObject(List<DataPointSimpleValue> result, int basePointId) {

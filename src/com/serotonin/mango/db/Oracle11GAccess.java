@@ -55,6 +55,10 @@ public class Oracle11GAccess extends BasePooledAccess {
 		super(ctx);
 	}
 
+	public Oracle11GAccess(ServletContext ctx, String dbPrefix) {
+		super(ctx, dbPrefix);
+	}
+
 	@Override
 	protected void initializeImpl(String propertyPrefix) {
 		super.initializeImpl(propertyPrefix);
@@ -92,9 +96,9 @@ public class Oracle11GAccess extends BasePooledAccess {
 		}
 		try {
 			Connection con = DriverManager.getConnection(Common
-					.getEnvironmentProfile().getString("db.url"), Common
-					.getEnvironmentProfile().getString("db.username"), Common
-					.getEnvironmentProfile().getString("db.password"));
+					.getEnvironmentProfile().getString(getDbPrefix() + "url"), Common
+					.getEnvironmentProfile().getString(getDbPrefix() + "username"), Common
+					.getEnvironmentProfile().getString(getDbPrefix() + "password"));
 
 			// Initialize object for ScripRunner
 			ScriptRunner sr = new ScriptRunner(con, false, false);

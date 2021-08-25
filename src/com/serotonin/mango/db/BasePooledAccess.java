@@ -50,18 +50,23 @@ abstract public class BasePooledAccess extends DatabaseAccess
         super(ctx);
     }
 
+    public BasePooledAccess(ServletContext ctx, String dbPrefix)
+    {
+        super(ctx, dbPrefix);
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     protected void initializeImpl(String propertyPrefix, String dataSourceName)
     {
         log.info("Initializing pooled connection manager");
 
-        if(Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasource", "false").equals("true"))
+        if(Common.getEnvironmentProfile().getString(propertyPrefix + getDbPrefix() + "datasource", "false").equals("true"))
         {
             try
             {
-                log.info("Looking for Datasource: " + Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasourceName"));
-                dataSource = (DataSource) new InitialContext().lookup(Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasourceName"));
+                log.info("Looking for Datasource: " + Common.getEnvironmentProfile().getString(propertyPrefix + getDbPrefix() + "datasourceName"));
+                dataSource = (DataSource) new InitialContext().lookup(Common.getEnvironmentProfile().getString(propertyPrefix + getDbPrefix() + "datasourceName"));
                 Connection conn = dataSource.getConnection();
                 log.info("DataSource meta: " + conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion());
                 dataSourceFound = true;
@@ -84,15 +89,15 @@ abstract public class BasePooledAccess extends DatabaseAccess
         dataSource = new BasicDataSource();
         ((BasicDataSource) dataSource).setDriverClassName(getDriverClassName());
         ((BasicDataSource) dataSource).setUrl(getUrl(propertyPrefix));
-        ((BasicDataSource) dataSource).setUsername(Common.getEnvironmentProfile().getString(propertyPrefix + "db.username"));
+        ((BasicDataSource) dataSource).setUsername(Common.getEnvironmentProfile().getString(propertyPrefix + getDbPrefix() + "username"));
         ((BasicDataSource) dataSource).setPassword(getDatabasePassword(propertyPrefix));
-        ((BasicDataSource) dataSource).setMaxActive(Common.getEnvironmentProfile().getInt(propertyPrefix + "db.pool.maxActive", 10));
-        ((BasicDataSource) dataSource).setMaxIdle(Common.getEnvironmentProfile().getInt(propertyPrefix + "db.pool.maxIdle", 10));
+        ((BasicDataSource) dataSource).setMaxActive(Common.getEnvironmentProfile().getInt(propertyPrefix + getDbPrefix() + "pool.maxActive", 10));
+        ((BasicDataSource) dataSource).setMaxIdle(Common.getEnvironmentProfile().getInt(propertyPrefix + getDbPrefix() + "pool.maxIdle", 10));
     }
 
     protected String getUrl(String propertyPrefix)
     {
-        return Common.getEnvironmentProfile().getString(propertyPrefix + "db.url");
+        return Common.getEnvironmentProfile().getString(propertyPrefix + getDbPrefix() + "url");
     }
 
     abstract protected String getDriverClassName();
