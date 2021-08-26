@@ -17,35 +17,11 @@
  */
 package org.scada_lts.dao.migration.query.mysql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.mango.service.UserService;
-import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-/**
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
- */
 public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     @Override

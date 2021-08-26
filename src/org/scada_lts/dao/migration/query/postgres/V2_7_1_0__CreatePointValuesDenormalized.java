@@ -23,9 +23,6 @@ import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
- */
 public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     @Override

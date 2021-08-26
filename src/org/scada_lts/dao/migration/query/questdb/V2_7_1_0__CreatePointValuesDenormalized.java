@@ -26,8 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import org.scada_lts.dao.DAO;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,14 +36,10 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.util.Optional;
 
-/**
- * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
- */
 public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
 
     private static final Log LOG = LogFactory.getLog(V2_7_1_0__CreatePointValuesDenormalized.class);
-    //private static final String CSV_PATH = System.getProperty("java.io.tmpdir") + "/pointValues.csv";
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -60,41 +54,11 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                 delete(csv);
             }
         });
-
-
-
-//
-//        if (hasValuesQuestDB(questJdbcTmp)) {
-//            Long pointValueId = getLatestIdQuestDB(questJdbcTmp);
-//            exportFromMysqlToCsv("where id > " + pointValueId);
-//        } else {
-//            exportFromMysqlToCsv("");
-//        }
-//
-//        importToQuestDb();
-//
-//        deleteCSVFile();
-    }
-
-    public boolean hasValuesQuestDB(JdbcTemplate jdbcTemplate) {
-        String query = "SELECT count(*) from pointValuesDenormalized;";
-
-        Long count = jdbcTemplate.queryForObject(query, (resultSet, i) -> resultSet.getLong(1));
-
-        return count != 0;
-    }
-
-    public Long getLatestIdQuestDB(JdbcTemplate jdbcTemplate) {
-        String query = "SELECT id FROM pointValuesDenormalized ORDER BY id desc LIMIT 1;";
-
-        Long pointValueId = jdbcTemplate.queryForObject(query, (resultSet, i) -> resultSet.getLong(1));
-
-        return pointValueId;
     }
 
     public static void exportFromMysqlToCsv(String condition, File csv) throws IOException, InterruptedException {
         String query = "select * from pointValuesDenormalized " + condition;
-        String [] exportFromMysqlCommand = {"mysql", "-u", "root", "-proot", "scadaltscommand", "-e", query, "-B"};
+        String [] exportFromMysqlCommand = {"mysql", "-u", "root", "-proot", "scadalts", "-e", query, "-B"};
 
         int result = new ProcessBuilder(exportFromMysqlCommand)
                 .redirectOutput(csv)
@@ -105,11 +69,13 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     public static void importToQuestDb(File csv) throws IOException, InterruptedException {
         /*String schema = "schema=[{\"name\":\"ts\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"}]";
-        String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValues&timestamp=ts&partitionBy=DAY"};
+        String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=ts&partitionBy=DAY"};
 
-        ProcessBuilder questProcessBuilder = new ProcessBuilder(importToQuestDbCommand);
-        Process questProcess = questProcessBuilder.start();
-        questProcess.waitFor();*/
+        int result = new ProcessBuilder(importToQuestDbCommand)
+                .start()
+                .waitFor();
+        LOG.info("QuestDb import finished: " + result);*/
+
 
         NameValuePair schema = new NameValuePair("schema", "[{\"name\":\"ts\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"}]");
         org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
