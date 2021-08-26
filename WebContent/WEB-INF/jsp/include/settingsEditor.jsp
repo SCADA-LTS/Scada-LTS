@@ -20,6 +20,7 @@
 <script type="text/javascript" src="resources/jQuery/plugins/chosen/chosen.jquery.min.js"></script>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <div id="settingsEditorPopup" style="display:none;left:0px;top:0px;" class="windowDiv">
+  <div>
   <table cellpadding="0" cellspacing="0"><tr><td>
     <table width="100%">
       <tr>
@@ -75,6 +76,7 @@
         this.pointList = [];
         
         this.open = function(compId) {
+            document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;
             
             ViewDwr.getViewComponent(compId, function(comp) {
@@ -163,4 +165,5 @@
     }
     var settingsEditor = new SettingsEditor();
   </script>
+  </div>
 </div>

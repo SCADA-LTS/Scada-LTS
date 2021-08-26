@@ -150,6 +150,10 @@ select, input, textarea {
 	border: 1px solid var(--slts-color-primary);
 	padding: var(--padding-default);
 }
+table select {
+    -webkit-appearance: revert;
+    appearance: revert;
+}
 input[type="checkbox"], input[type="radio"] {
 	color: var(--slts-color-primary);
 	border: 0;
@@ -173,6 +177,7 @@ input[type="checkbox"], input[type="radio"] {
 }
 .simpleRenderer, .simpleRenderer2 {
 	border: 1px solid var(--slts-color-primary);
+	background-color: var(--slts-color-background);
 	font-size: var(--slts-font-size--small);
 	padding:1px 5px;
     margin:0px;
@@ -249,6 +254,16 @@ html > body .dojoTreeNodeLabelTitle {
 
 #sltsFooter {
 	text-align:center;
+}
+
+#viewContent button {
+  overflow: visible;
+  background: silver;
+  border-width: 3px;
+  border-color: gainsboro gray gray gainsboro;
+  border-style: solid;
+  padding: 1px 5px;
+  color: black;
 }
 
 @media screen and (max-width: 730px) {

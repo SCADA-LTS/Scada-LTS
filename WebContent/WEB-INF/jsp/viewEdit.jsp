@@ -244,6 +244,7 @@
     }
 
     function updateViewComponentLocation(divId) {
+        updatePositionXY(divId);
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;

@@ -97,7 +97,7 @@ public class ViewGraphicLoader {
             else {
                 // Image file. Subtract the load path from the image path
                 String imagePath = file.getPath().substring(path.length());
-                if(imagePath.startsWith("/")) {
+                if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
                     imagePath=imagePath.substring(1);
                 }
                 // Replace Windows-style '\' path separators with '/'
