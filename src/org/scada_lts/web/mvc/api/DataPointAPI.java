@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -68,6 +69,37 @@ public class DataPointAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping(value = "/api/datapoints/datasource")
+    public ResponseEntity<List<JsonDataPoint>> getDataPointsFromDataSourceId(
+            @RequestParam() Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(id != null) {
+                    List<JsonDataPoint> result = new ArrayList<>();
+                    List<DataPointVO> list = dataPointService.getDataPoints(id, null);
+                    list.forEach(point -> result.add(new JsonDataPoint(
+                            point.getId(),
+                            point.getName(),
+                            point.getXid(),
+                            point.isEnabled(),
+                            point.getDescription(),
+                            point.getDataSourceName(),
+                            point.getPointLocator().getDataTypeId()
+                    )));
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(value = "/api/datapoints")

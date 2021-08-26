@@ -12,6 +12,10 @@ const watchListModule = {
 		getWatchListDetails({ dispatch }, watchlistId) {
 			return dispatch('requestGet', `/watch-lists/${watchlistId}`);
 		},
+
+		fetchWatchLists({ dispatch }) {
+			return dispatch('requestGet', '/watch-lists/');
+		}
 	},
 	getters: {},
 };

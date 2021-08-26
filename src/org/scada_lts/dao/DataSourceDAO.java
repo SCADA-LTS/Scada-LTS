@@ -52,6 +52,8 @@ public class DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
 
+	private static final String TABLE_NAME = "dataSources";
+
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_NAME = "name";
@@ -244,6 +246,12 @@ public class DataSourceDAO {
 		List<DataSourceVO<?>> objList = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT, new DataSourceRowMapper());
 		Collections.sort(objList, new DataSourceNameComparator());
 		return objList;
+	}
+
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
 	public List<DataSourceVO<?>> getDataSourcesPlc() {

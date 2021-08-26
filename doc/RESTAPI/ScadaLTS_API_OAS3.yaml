@@ -152,6 +152,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/JsonDataPoint'
+  /datapoints/datasource:
+    get:
+      tags:
+        - DataPointAPI
+      parameters:
+        - name: 'id'
+          description: 'DataSource ID'
+          in: 'query'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'Get more detailed Data Point object'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JsonDataPoint'
   /datapoint/getAll:
     get:
       tags:
@@ -215,12 +235,20 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                    xid:
-                      type: string
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
+  /userProfiles/:
+    get:
+      tags:
+        - UserProfilesAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
   /events/datapoint/{id}:
     get:
       tags:
@@ -277,12 +305,8 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                    xid:
-                      type: string
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
+
   /view/getByXid/{xid}:
     get:
       tags:

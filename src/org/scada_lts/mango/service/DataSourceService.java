@@ -27,6 +27,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -65,6 +66,10 @@ public class DataSourceService implements MangoDataSource {
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		return dataSourceDAO.getAllDataSources();
 	}
 
 	@Override

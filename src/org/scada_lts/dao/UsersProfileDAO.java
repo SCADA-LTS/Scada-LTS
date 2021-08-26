@@ -7,6 +7,8 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 public class UsersProfileDAO {
 
     private static final Log LOG = LogFactory.getLog(UsersProfileDAO.class);
+
+    private static final String TABLE_NAME = "usersProfiles";
 
     private static final String COLUMN_NAME_USER_ID = "userId";
     private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
@@ -237,6 +241,13 @@ public class UsersProfileDAO {
 
     public UsersProfileDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<ScadaObjectIdentifier> getUserProfiles() {
+        if (LOG.isTraceEnabled()) LOG.trace("getUserProfiles()");
+        ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+        return DAO.getInstance().getJdbcTemp()
+                .query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
     }
 
     public List<UsersProfileVO> selectUserProfileByUserId(int userId) {

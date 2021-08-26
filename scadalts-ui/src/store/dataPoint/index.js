@@ -180,6 +180,10 @@ const storeDataPoint = {
 				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
 			);
 		},
+
+		fetchDataPointsFromDataSource({ dispatch }, dataSourceId) {
+			return dispatch('requestGet', `/datapoints/datasource?id=${dataSourceId}`);
+		}
 	},
 
 	getters: {},
