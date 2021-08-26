@@ -7,6 +7,10 @@ import java.sql.SQLException;
 
 public class ScadaObjectIdentifierRowMapper implements RowMapper<ScadaObjectIdentifier> {
 
+    private static final String COLUMN_NAME_ID = "id";
+    private static final String COLUMN_NAME_XID = "xid";
+    private static final String COLUMN_NAME_NAME = "name";
+
     private final String idColumnName;
     private final String xidColumnName;
     private final String nameColumnName;
@@ -42,6 +46,20 @@ public class ScadaObjectIdentifierRowMapper implements RowMapper<ScadaObjectIden
         }
     }
 
+    public static ScadaObjectIdentifierRowMapper withDefaultNames() {
+        return new ScadaObjectIdentifierRowMapper.Builder()
+                .idColumnName(COLUMN_NAME_ID)
+                .xidColumnName(COLUMN_NAME_XID)
+                .nameColumnName(COLUMN_NAME_NAME)
+                .build();
+    }
+    public String selectScadaObjectIdFrom(String tableName) {
+        return "select " +
+                idColumnName + ", " +
+                xidColumnName + ", " +
+                nameColumnName + " " +
+                "FROM " + tableName;
+    }
     @Override
     public ScadaObjectIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new ScadaObjectIdentifier(

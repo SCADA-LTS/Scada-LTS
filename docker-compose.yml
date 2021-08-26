@@ -17,16 +17,12 @@ services:
         expose: ["3306"]
         volumes:
             -   ./docker/volumes/databases:/home/
-        network_mode: host
-    tomcat:
-        image: scadalts/scadalts:2.5.0
-        build: .
+    scadalts:
+        image: scadalts/scadalts:master
         ports: 
             - "8080:8080"
         depends_on: 
             - database
         expose: ["8080", "8000"]
-        volumes:
-        -   ./docker/volumes/webapps:/usr/local/tomcat/webapps
-#        -   ./build/libs/Scada-LTS.war:/usr/local/tomcat/webapps/ScadaBR.war
-        network_mode: host
+        links:
+            - database:database

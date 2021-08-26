@@ -11,9 +11,7 @@ public class V2_7_0_1__UserParameters extends BaseJavaMigration {
         final JdbcTemplate jdbcTmp = DAO.getInstance().getJdbcTemp();
 
         jdbcTmp.execute("ALTER TABLE users " +
-                "ADD hideMenu BOOLEAN, " +
-                "ADD theme VARCHAR(10);");
-
-        jdbcTmp.update("UPDATE users SET hideMenu = false, theme = 'DEFAULT';");
+                "ADD hideMenu BOOLEAN DEFAULT false, " +
+                "ADD theme VARCHAR(255) DEFAULT 'DEFAULT';");
     }
 }

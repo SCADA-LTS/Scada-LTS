@@ -2,7 +2,7 @@
 	<v-app class="small-panel">
 		<v-text-field v-model="url" placeholder="example.com" class="margin-small">
 			<template v-slot:append>
-				<v-btn icon @click="save()" color="success" :disabled="!enable_save" >
+				<v-btn icon @click="save()" color="success" :disabled="!enable_save">
 					<v-icon>mdi-content-save</v-icon>
 				</v-btn>
 			</template>
@@ -87,7 +87,6 @@ export default {
 .margin-small {
 	margin: 3px;
 }
-
 </style>
 <style>
 .small-panel .v-application--wrap {

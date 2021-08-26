@@ -244,6 +244,7 @@
     }
 
     function updateViewComponentLocation(divId) {
+        updatePositionXY(divId);
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;
@@ -393,8 +394,28 @@
         }
 
 	}
+  
+  function validateComponentPosition(positionX, positionY) {
+    canvasWidth = document.getElementById("viewBackground").width;
+    canvasHeight = document.getElementById("viewBackground").height;
+    positionX = !!positionX ? positionX : 0;
+    positionX = positionX < 0 ? 0 : positionX;
+    positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
+    positionY = !!positionY ? positionY : 0;
+    positionY = positionY < 0 ? 0 : positionY;
+    positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
+    return [positionX, positionY];
+  }
 
-    function revealPointControls(viewComponentId) {
+  function updatePointPosition(compId, posX, posY, referenceX, referenceY) {
+    var div = document.getElementById("c" + compId);
+    div.style.left = posX + "px";
+    div.style.top = posY + "px";
+    $set(referenceX, posX);
+    $set(referenceY, posY);
+  }
+  
+  function revealPointControls(viewComponentId) {
         showLayer("c" + viewComponentId + "Controls");
         var div = $("c" + viewComponentId);
         updateZIndexLabel(viewComponentId, div.style.zIndex);
@@ -510,6 +531,15 @@
                 </tr>
               </spring:bind>
 
+              <tr><td colspan="2"><hr style="margin: 5px 0;"></td></tr>
+
+              <tr>
+                <td colspan="2" align="center">
+                  <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
+                </td>
+              </tr>
+
             </table>
           </div>
         </td>
@@ -534,6 +564,12 @@
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
           <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
+        </td>
+
+        <td class="formLabelRequired" width="350"><fmt:message key="viewEdit.viewDelete"/></td>
+        <td class="formField" width="250">
+          <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
+          <input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
         </td>
 
       </tr>
@@ -568,17 +604,6 @@
             </tr>
 
             <tr><td colspan="3">&nbsp;</td></tr>
-
-            <tr>
-              <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
-                <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
-                <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
-                <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
-              </td>
-              <td></td>
-            </tr>
           </table>
         
           <div id="pointTemplate" onmouseover="revealPointControls(getViewComponentId(this))"

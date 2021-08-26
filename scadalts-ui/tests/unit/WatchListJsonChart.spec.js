@@ -12,36 +12,24 @@ const WATCHLIST_NAME = 'UnitTestWL';
  */
 function initWrapper() {
 	return prepareMountWrapper(
-		WatchListJsonChart, 
+		WatchListJsonChart,
 		{},
 		{
 			pointId: '1',
 			watchlistName: WATCHLIST_NAME,
 			width: 600,
 		},
-		{stubs: ['VApp']}
+		{ stubs: ['VApp'] },
 	);
 }
 
 global.localStorage = new LocalStorageMock();
 
 describe('WatchListJsonChart.vue Test', () => {
-
 	const wrapper = initWrapper();
 
 	it('Initialize blank JsonChart', () => {
 		expect(wrapper.name()).to.equal('WatchListJsonChart');
-		expect(wrapper.vm.pointId).to.equal('1');
-		expect(wrapper.vm.chartType).to.equal('live');
-	});
-
-	it('Change to Static chart', () => {
-		wrapper.find('#static-btn-1').trigger('click');
-		expect(wrapper.vm.chartType).to.equal('static');
-	});
-
-	it('Change to Compare chart', () => {
-		wrapper.find('#compare-btn-1').trigger('click');
-		expect(wrapper.vm.chartType).to.equal('compare');
+		
 	});
 });

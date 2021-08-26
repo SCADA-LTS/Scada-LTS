@@ -3,7 +3,7 @@
 		<v-col md="5" sm="12" xs="12" id="rl-section-details">
 			<v-row>
 				<v-col cols="12">
-					<h2>{{$t('recipientlistDetails.title')}}</h2>
+					<h2>{{ $t('recipientlistDetails.title') }}</h2>
 				</v-col>
 
 				<v-col cols="8">
@@ -34,7 +34,7 @@
 				</v-col>
 
 				<v-col cols="12" class="heading-action-buttons">
-					<h3>{{$t('recipientlistDetails.entries.title')}}</h3>
+					<h3>{{ $t('recipientlistDetails.entries.title') }}</h3>
 					<v-spacer></v-spacer>
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
@@ -49,7 +49,7 @@
 								><v-icon>mdi-account-plus</v-icon></v-btn
 							>
 						</template>
-						<span>{{$t('recipientlistDetails.entries.add.user')}}</span>
+						<span>{{ $t('recipientlistDetails.entries.add.user') }}</span>
 					</v-tooltip>
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
@@ -64,7 +64,7 @@
 								><v-icon>mdi-email-plus</v-icon></v-btn
 							>
 						</template>
-						<span>{{$t('recipientlistDetails.entries.add.mail')}}</span>
+						<span>{{ $t('recipientlistDetails.entries.add.mail') }}</span>
 					</v-tooltip>
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
@@ -79,13 +79,16 @@
 								><v-icon>mdi-phone-plus</v-icon></v-btn
 							>
 						</template>
-						<span>{{$t('recipientlistDetails.entries.add.sms')}}</span>
+						<span>{{ $t('recipientlistDetails.entries.add.sms') }}</span>
 					</v-tooltip>
 				</v-col>
 
 				<v-col cols="12" id="rl-section-recipients">
 					<v-list v-if="!!recipientList.entries">
-						<v-list-item v-for="(entry, index) in recipientList.entries" :key="`${entry}-${index}`">
+						<v-list-item
+							v-for="(entry, index) in recipientList.entries"
+							:key="`${entry}-${index}`"
+						>
 							<v-list-item-icon>
 								<v-icon v-show="entry.recipientType === TYPE_USER">mdi-account </v-icon>
 								<v-icon v-show="entry.recipientType === TYPE_MAIL">mdi-email </v-icon>
@@ -116,7 +119,7 @@
 		<v-col md="7" sm="12" xs="12" v-if="inactiveTime" id="section-active-time">
 			<v-row @mousedown="startSelecting">
 				<v-col cols="12" class="heading-action-buttons">
-					<h3>{{$t('recipientlistDetails.activetime.title')}}</h3>
+					<h3>{{ $t('recipientlistDetails.activetime.title') }}</h3>
 					<v-spacer></v-spacer>
 					<v-btn fab elevation="2" color="primary" small v-if="!edit" @click="save()">
 						<v-icon>mdi-content-save</v-icon>
@@ -124,17 +127,17 @@
 				</v-col>
 				<v-col cols="12" v-if="!loadingInactiveTime">
 					<div class="day">
-						<div>{{$t('recipientlistDetails.activetime.table.time')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.monday')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.tuesday')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.wednesday')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.thursday')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.friday')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.saturday')}}</div>
-						<div>{{$t('recipientlistDetails.activetime.table.day.sunday')}}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.time') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.monday') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.tuesday') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.wednesday') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.thursday') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.friday') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.saturday') }}</div>
+						<div>{{ $t('recipientlistDetails.activetime.table.day.sunday') }}</div>
 					</div>
 					<div v-for="h in 24" :key="h" class="day">
-						{{ formatHours(h-1) }}
+						{{ formatHours(h - 1) }}
 						<div v-for="d in 7" :key="d" class="hour">
 							<span
 								v-for="m in 4"
@@ -159,14 +162,19 @@
 		<v-dialog v-model="showRecipientDialog" max-width="300">
 			<v-card v-if="entry" id="dialog-recipient-add">
 				<v-form ref="form" v-model="valid">
-					<v-card-title> {{$t('recipientlistDetails.dialog.recipient.title')}} </v-card-title>
+					<v-card-title>
+						{{ $t('recipientlistDetails.dialog.recipient.title') }}
+					</v-card-title>
 					<v-card-text>
 						<v-row>
 							<v-col cols="12" v-if="entry.recipientType === TYPE_USER">
 								<v-select
 									v-model="userRecipient"
 									:items="userList"
-									:rules="[(v) => !!v || $t('recipientlistDetails.dialog.recipient.required.item')]"
+									:rules="[
+										(v) =>
+											!!v || $t('recipientlistDetails.dialog.recipient.required.item'),
+									]"
 									item-value="id"
 									item-text="username"
 									return-object
@@ -259,7 +267,7 @@ export default {
 			phoneRules: [
 				(v) =>
 					/\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/.test(
-						v
+						v,
 					) || this.$t('recipientlistDetails.dialog.recipient.valid.phone'),
 			],
 		};
@@ -332,7 +340,7 @@ export default {
 				this.$set(
 					this.inactiveTime[day][hour],
 					quarter,
-					!this.inactiveTime[day][hour][quarter]
+					!this.inactiveTime[day][hour][quarter],
 				);
 			}
 		},
@@ -341,7 +349,7 @@ export default {
 			this.$set(
 				this.inactiveTime[day][hour],
 				quarter,
-				!this.inactiveTime[day][hour][quarter]
+				!this.inactiveTime[day][hour][quarter],
 			);
 		},
 
@@ -354,7 +362,7 @@ export default {
 		 */
 		preSave() {
 			this.recipientList.inactiveIntervals = this.convertInactiveIntervals(
-				this.inactiveTime
+				this.inactiveTime,
 			);
 		},
 
