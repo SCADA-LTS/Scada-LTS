@@ -17,6 +17,7 @@ const storeSystemSettings = {
 		httpSettings: undefined,
 		miscSettings: undefined,
 		smsDomainSettings: undefined,
+		amchartsSettings: undefined,
 		systemStartupTime: undefined,
 		schemaVersion: undefined,
 		scadaConfig: undefined,
@@ -50,6 +51,9 @@ const storeSystemSettings = {
 		},
 		setSmsDomainSettings(state, smsDomainSettings) {
 			state.smsDomainSettings = smsDomainSettings;
+		},
+		setAmchartsSettings(state, amchartsSettings) {
+			state.amchartsSettings = amchartsSettings;
 		},
 		setSystemStartupTime(state, startupTime) {
 			state.systemStartupTime = new Date(Number(startupTime));
@@ -96,6 +100,7 @@ const storeSystemSettings = {
 
 		getDatabaseSize({ commit, dispatch }) {
 			return dispatch('requestGet', `/systemSettings/getDatabaseSize`).then((r) => {
+				r.topPoints = r.topPoints.slice(0, 10);
 				commit('setDatabaseInfo', r);
 				return r;
 			});
@@ -127,7 +132,7 @@ const storeSystemSettings = {
 				(r) => {
 					commit('setAuditEventTypes', r);
 					return r;
-				}
+				},
 			);
 		},
 
@@ -143,7 +148,7 @@ const storeSystemSettings = {
 				(r) => {
 					commit('setSystemEventTypes', r);
 					return r;
-				}
+				},
 			);
 		},
 
@@ -210,7 +215,21 @@ const storeSystemSettings = {
 		saveSmsDomainSettings({ state, dispatch }) {
 			return dispatch('requestPost', {
 				url: `/systemSettings/saveSMSDomain`,
-				data: {'domainName':state.smsDomainSettings},
+				data: { domainName: state.smsDomainSettings },
+			});
+		},
+
+		getAmchartsSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getAggregateSettings').then((r) => {
+				commit('setAmchartsSettings', r);
+				return r;
+			});
+		},
+
+		saveAmchartsSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveAggregateSettings',
+				data: state.amchartsSettings,
 			});
 		},
 
@@ -226,7 +245,6 @@ const storeSystemSettings = {
 				commit('setDefaultLoggingType', r.defaultLoggingType);
 				return r.defaultLoggingType;
 			});
-			
 		},
 
 		saveDefaultLoggingType({ state, dispatch }) {

@@ -9,6 +9,8 @@ import AlarmNotifications from './views/AlarmNotifications';
 import RecipientList from './views/RecipientList';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
+import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
+import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
 
 import store from './store/index';
 
@@ -96,6 +98,17 @@ const routing = new Router({
 			},
 		},
 		{
+			path: '/synoptic-panel',
+			name: 'synoptic-panel',
+			component: SynopticPanelMenu,
+			children: [
+				{
+					path: ':id',
+					component: SynopticPanelItem,
+				},
+			],
+		},
+		{
 			path: '/example-ph',
 			name: 'example-ph',
 			component: () =>
@@ -146,17 +159,10 @@ const routing = new Router({
 		{
 			path: '/example-chart-cmp',
 			name: 'example-chart-cmp',
+			// component: ExampleChartCmp,
 			component: () =>
 				import(
 					/* webpackChunkName: "example-chart-cmp" */ './views/components/ExampleChartCmp.vue'
-				),
-		},
-		{
-			path: '/example-step-line-chart-cmp',
-			name: 'example-step-line-chart-cmp',
-			component: () =>
-				import(
-					/* webpackChunkName: "step-line-chart-component" */ './views/components/ExampleStepLineChartCmp.vue'
 				),
 		},
 		{
@@ -167,6 +173,7 @@ const routing = new Router({
 					/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue'
 				),
 		},
+		
 	],
 });
 

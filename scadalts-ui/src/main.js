@@ -18,7 +18,6 @@ import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
 import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
-import StepLineChartComponent from './components/amcharts/StepLineChartComponent';
 import LineChartComponent from './components/amcharts/LineChartComponent';
 import RangeChartComponent from './components/amcharts/RangeChartComponent';
 
@@ -42,6 +41,7 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
 import * as uiv from 'uiv';
+import svgJS from './plugins/svg';
 
 library.add(
 	faCoffee,
@@ -51,7 +51,7 @@ library.add(
 	faFileMedicalAlt,
 	faInfo,
 	faListAlt,
-	faCogs,
+	faCogs
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
@@ -77,6 +77,8 @@ Vue.use(VueLodash, optionsLodash);
 Vue.use(VueCookie);
 Vue.use(VueDayjs);
 
+Vue.use(svgJS);
+
 Vue.config.devtools = true;
 
 new Vue({
@@ -88,7 +90,6 @@ new Vue({
 }).$mount('#app');
 
 Vue.use(uiv);
-
 
 if (window.document.getElementById('app-test') != undefined) {
 	new Vue({
@@ -102,21 +103,17 @@ if (window.document.getElementById('app-test') != undefined) {
 }
 
 if (window.document.getElementById('app-isalive') != undefined) {
+	const isAliveDom = document.getElementById('app-isalive');
 	new Vue({
 		store,
 		render: (h) =>
 			h(IsAlive, {
 				props: {
-					plabel: window.document.getElementById('app-isalive').getAttribute('plabel'),
-					ptimeWarning: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-warning'),
-					ptimeError: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-error'),
-					ptimeRefresh: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-refresh'),
+					plabel: isAliveDom.getAttribute('plabel'),
+					ptimeWarning: isAliveDom.getAttribute('ptime-warning'),
+					ptimeError: isAliveDom.getAttribute('ptime-error'),
+					ptimeRefresh: isAliveDom.getAttribute('ptime-refresh'),
+					feedbackUrl: isAliveDom.getAttribute('feedback-url'),
 				},
 			}),
 	}).$mount('#app-isalive');
@@ -196,89 +193,32 @@ if (window.document.getElementById('example-chart-cmp') != undefined) {
 }
 
 for (let x = 0; x < 10; x++) {
-	const chartId = `chart-step-line-${x}`;
-	if (window.document.getElementById(chartId) != undefined) {
-		new Vue({
-			render: (h) =>
-				h(StepLineChartComponent, {
-					props: {
-						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
-						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
-						color: window.document.getElementById(chartId).getAttribute('color'),
-						label: window.document.getElementById(chartId).getAttribute('label'),
-						startDate: window.document.getElementById(chartId).getAttribute('start-date'),
-						endDate: window.document.getElementById(chartId).getAttribute('end-date'),
-						refreshRate: window.document
-							.getElementById(chartId)
-							.getAttribute('refresh-rate'),
-						width: window.document.getElementById(chartId).getAttribute('width'),
-						height: window.document.getElementById(chartId).getAttribute('height'),
-						polylineStep: window.document
-							.getElementById(chartId)
-							.getAttribute('polyline-step'),
-						rangeValue: window.document
-							.getElementById(chartId)
-							.getAttribute('range-value'),
-						rangeColor: window.document
-							.getElementById(chartId)
-							.getAttribute('range-color'),
-						rangeLabel: window.document
-							.getElementById(chartId)
-							.getAttribute('range-label'),
-						showScrollbarX: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-x'),
-						showScrollbarY: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-y'),
-						showLegend: window.document
-							.getElementById(chartId)
-							.getAttribute('show-legned'),
-					},
-				}),
-		}).$mount(`#${chartId}`);
-	}
-}
-
-for (let x = 0; x < 10; x++) {
 	const chartId = `chart-line-${x}`;
-	if (window.document.getElementById(chartId) != undefined) {
+	const el = window.document.getElementById(chartId);
+	if (el != undefined) {
 		new Vue({
 			render: (h) =>
 				h(LineChartComponent, {
 					props: {
-						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
-						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
-						color: window.document.getElementById(chartId).getAttribute('color'),
-						label: window.document.getElementById(chartId).getAttribute('label'),
-						startDate: window.document.getElementById(chartId).getAttribute('start-date'),
-						endDate: window.document.getElementById(chartId).getAttribute('end-date'),
-						refreshRate: window.document
-							.getElementById(chartId)
-							.getAttribute('refresh-rate'),
-						width: window.document.getElementById(chartId).getAttribute('width'),
-						height: window.document.getElementById(chartId).getAttribute('height'),
-						polylineStep: window.document
-							.getElementById(chartId)
-							.getAttribute('polyline-step'),
-						rangeValue: window.document
-							.getElementById(chartId)
-							.getAttribute('range-value'),
-						rangeColor: window.document
-							.getElementById(chartId)
-							.getAttribute('range-color'),
-						rangeLabel: window.document
-							.getElementById(chartId)
-							.getAttribute('range-label'),
-						showScrollbarX: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-x'),
-						showScrollbarY: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-y'),
-						showLegend: window.document
-							.getElementById(chartId)
-							.getAttribute('show-legned'),
+						pointIds: el.getAttribute('point-ids'),
+						useXid: el.getAttribute('use-xid') !== null,
+						separateAxis: el.getAttribute('separate-axes') !== null,
+						stepLine: el.getAttribute('step-line') !== null,
+						startDate: el.getAttribute('start-date'),
+						endDate: el.getAttribute('end-date'),
+						refreshRate: el.getAttribute('refresh-rate'),
+						width: el.getAttribute('width') !== null ? el.getAttribute('width') : '500',
+						height: el.getAttribute('height') !== null ? el.getAttribute('height') : '400',
+						color: el.getAttribute('color'),
+						strokeWidth: Number(el.getAttribute('stroke-width')),
+						aggregation: Number(el.getAttribute('aggregation')),
+						showScrollbar: el.getAttribute('show-scrollbar') !== null,
+						showLegend: el.getAttribute('show-legned') !== null,
+						showBullets: el.getAttribute('show-bullets') !== null,
+						showExportMenu: el.getAttribute('show-export-menu') !== null,
+						smoothLine: Number(el.getAttribute('smooth-line')),
+						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
+						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
 					},
 				}),
 		}).$mount(`#${chartId}`);
@@ -287,42 +227,29 @@ for (let x = 0; x < 10; x++) {
 
 for (let x = 0; x < 10; x++) {
 	const chartId = `chart-range-${x}`;
-	if (window.document.getElementById(chartId) != undefined) {
+	const el = window.document.getElementById(chartId);
+	if (el != undefined) {
 		new Vue({
 			store,
 			vuetify,
 			render: (h) =>
 				h(RangeChartComponent, {
 					props: {
-						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
-						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
-						color: window.document.getElementById(chartId).getAttribute('color'),
-						width: window.document.getElementById(chartId).getAttribute('width'),
-						height: window.document.getElementById(chartId).getAttribute('height'),
-						polylineStep: window.document
-							.getElementById(chartId)
-							.getAttribute('polyline-step'),
-						rangeValue: window.document
-							.getElementById(chartId)
-							.getAttribute('range-value'),
-						rangeColor: window.document
-							.getElementById(chartId)
-							.getAttribute('range-color'),
-						rangeLabel: window.document
-							.getElementById(chartId)
-							.getAttribute('range-label'),
-						showScrollbarX: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-x'),
-						showScrollbarY: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-y'),
-						showLegend: window.document
-							.getElementById(chartId)
-							.getAttribute('show-legned'),
-						aggregation: window.document
-							.getElementById(chartId)
-							.getAttribute('aggregation'),
+						chartId: x,
+						pointIds: el.getAttribute('point-ids'),
+						useXid: el.getAttribute('use-xid') !== null,
+						separateAxis: el.getAttribute('separate-axes') !== null,
+						stepLine: el.getAttribute('step-line') !== null,
+						aggregation: Number(el.getAttribute('aggregation')),
+						strokeWidth: Number(el.getAttribute('stroke-width')),
+						showBullets: el.getAttribute('show-bullets') !== null,
+						showExportMenu: el.getAttribute('show-export-menu') !== null,
+						smoothLine: Number(el.getAttribute('smooth-line')),
+						width: el.getAttribute('width') !== null ? el.getAttribute('width') : '500',
+						height: el.getAttribute('height') !== null ? el.getAttribute('height') : '400',
+						color: el.getAttribute('color'),
+						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
+						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
 					},
 				}),
 		}).$mount(`#${chartId}`);
@@ -348,7 +275,7 @@ if (window.document.getElementById('live-alarms') != undefined) {
 	console.log(
 		`test+ ${window.document
 			.getElementById('live-alarms')
-			.getAttribute('show-acknowledge-btn')}`,
+			.getAttribute('show-acknowledge-btn')}`
 	);
 
 	new Vue({

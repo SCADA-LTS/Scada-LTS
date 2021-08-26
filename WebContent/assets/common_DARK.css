@@ -281,3 +281,13 @@ html > body .dojoTreeNodeLabelTitle {
 #viewContent select, div[id*=Content] select, div[id*=Content] textarea, td>select, #sltsContent table tr>td>select{
 	background-color: var(--slts-color-background);
 }
+
+#viewContent button {
+  overflow: visible;
+  background: silver;
+  border-width: 3px;
+  border-color: gainsboro gray gray gainsboro;
+  border-style: solid;
+  padding: 1px 5px;
+  color: black;
+}
