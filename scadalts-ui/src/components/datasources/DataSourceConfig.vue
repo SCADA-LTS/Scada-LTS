@@ -33,7 +33,8 @@
 						<v-text-field
 							v-model="datasource.xid"
 							label="DataSource Export Id"
-							:rules="[ruleNotNull]"
+							@blur="validateXidUnique"
+							:rules="[ruleNotNull, ruleUniqueXid]"
 							required
 						></v-text-field>
 					</v-col>
@@ -41,7 +42,7 @@
 				<v-row v-if="polling">
 					<v-col cols="6">
 						<v-text-field
-							v-model="datasource.updatePeriod"
+							v-model="datasource.updatePeriods"
 							label="Update Period"
 							:rules="[ruleNotNull, ruleOnlyNumber]"
 							required
@@ -109,8 +110,10 @@ export default {
 	data() {
 		return {
 			formValid: false,
+			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleOnlyNumber: (v) => !isNaN(v) || this.$t('validation.rule.onlyNumber'),
+			ruleUniqueXid: () => !this.xidUnique || 'Xid is already used!'
 		}
 	},
 
@@ -128,6 +131,15 @@ export default {
 		onUpdatePeriodTypeUpdate(value) {
 			this.datasource.updatePeriodType = value;
 		},
+
+		async validateXidUnique() {
+			try {
+				this.xidUnique = await this.$store.dispatch(
+					'requestGet', `/datapoint/validate?xid=${this.datasource.xid}`).unique;
+			} catch(e) {
+				this.xidUnique = true;
+			}
+		}
 
 	},
 };

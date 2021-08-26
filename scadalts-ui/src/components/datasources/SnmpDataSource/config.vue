@@ -92,7 +92,7 @@ export default {
 				return {
 					name: '',
 					xid: 'DS_VDS_',
-					updatePeriod: 5,
+					updatePeriods: 5,
 					updatePeriodType: 1,
 				};
 			},

@@ -24,7 +24,9 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.restlet.Response;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.json.JsonDataPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +35,8 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -68,6 +68,85 @@ public class DataPointAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping(value = "/api/datapoint/datasource")
+    public ResponseEntity<List<DataPointJson>> getDataPointsFromDataSource(
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String xid,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(id != null) {
+                    return new ResponseEntity<>(
+                            dataPointService.getDataPoints(id, null)
+                                    .stream().map(DataPointJson::new)
+                                    .collect(Collectors.toList()),
+                            HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/api/datapoint/validate")
+    public ResponseEntity<Map<String, Object>> isDataPointXidUnique(
+            @RequestParam String xid,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("unique", dataPointService.isXidUnique(xid, -1));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointVO> createDataPoint(
+            @RequestBody DataPointJson datapoint,
+            HttpServletRequest request
+    ) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                dataPointService.createDataPointConfiguration(datapoint.parseDataPointData());
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointVO> updateDataPoint(
+            @RequestBody DataPointJson datapoint,
+            HttpServletRequest request
+    ) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                dataPointService.updateDataPointConfiguration(datapoint.parseDataPointData());
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(value = "/api/datapoints")

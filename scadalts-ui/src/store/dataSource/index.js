@@ -52,6 +52,7 @@ const ds = {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSource.id);
 			datasource.name = dataSource.name;
 			datasource.xid = dataSource.xid;
+			datasource.type = dataSource.type;
 			datasource.description = dataSource.description;
 			datasource.connection = dataSource.connection;
 			datasource.updatePeriod = dataSource.updatePeriod;
@@ -106,12 +107,20 @@ const ds = {
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
 		getDataSources({ dispatch, commit }) {
+			
+
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					commit('SET_DATA_SOURCE_LIST', datasourceDetailsMocks);
-					resolve()
-				}, 2000);
-				
+				dispatch('requestGet', '/datasources').then(response => {
+					commit('SET_DATA_SOURCE_LIST', response);	
+					resolve();
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+				// setTimeout(() => {
+				// 	commit('SET_DATA_SOURCE_LIST', datasourceDetailsMocks);
+				// 	resolve()
+				// }, 2000);
 			});
 		},
 
@@ -127,11 +136,18 @@ const ds = {
 		 * @returns 
 		 */
 		fetchDataSourceDetails({commit, dispatch}, dataSourceId) {
-			return new Promise((resolve) => {
-				setTimeout(() => {
-					commit('FETCH_DATA_SOURCE_DETAILS', datasourceDetailsMocks[dataSourceId]);
-					resolve(datasourceDetailsMocks[dataSourceId]);
-				}, 1000);
+			return new Promise((resolve, reject) => {
+				dispatch('requestGet', `/datasource?id=${dataSourceId}`).then(response => {
+					commit('FETCH_DATA_SOURCE_DETAILS', response);	
+					resolve(response);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+				// setTimeout(() => {
+				// 	commit('FETCH_DATA_SOURCE_DETAILS', datasourceDetailsMocks[dataSourceId]);
+				// 	resolve(datasourceDetailsMocks[dataSourceId]);
+				// }, 1000);
 			})
 		},
 
@@ -140,37 +156,45 @@ const ds = {
 			return new Promise((resolve, reject) => {
 				//Single array of Data Point configuration.
 				//http://localhost:8080/ScadaBR/api/datapoint?id=X//
-				setTimeout(async () => {
-					let p1, p2;
-					let dataPoints = [];
-					if (dataSourceId === 0) {
-						p1 = new ScadaVirtualDataPoint(2);
-						p1.initialSetup(3,"AG_T_Numeric_01","AG Test - Numeric",true);
-						p1.pointLocator.dataTypeId = 3;
-						p1.pointLocator.changeTypeId = 6;
-						p1.pointLocator.settable = true;
-						p2 = new ScadaVirtualDataPoint(2);
-						p2.initialSetup(2,"AG_T_Binary_01","AG Test - Binary", false, 'Extra text');
-						p2.pointLocator.dataTypeId = 1;
-						p2.pointLocator.changeTypeId = 7;
-						p2.pointLocator.settable = true;
-						dataPoints = [p1, p2];
-					} else if (dataSourceId === 2) {
-						p1 = new SnmpDataPoint(2);
-						p1.initialSetup(3,"AG_SNMP_Numeric_01","AG Test SNMP - Numeric",true);
-						p1.pointLocator.dataTypeId = 3;
-						p1.pointLocator.oid = "1.2.1.1.3.2.0"
-						p1.pointLocator.settable = true;
-						p2 = new SnmpDataPoint(2);
-						p2.initialSetup(2,"AG_SNMP_Binary_01","AG Test SNMP - Binary", false, 'Extra text');
-						p2.pointLocator.dataTypeId = 1;
-						p2.pointLocator.oid = "1.2.1.1.5.3.2"
-						p2.pointLocator.settable = true;
-						dataPoints = [p1, p2];
-					}
-					await commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints});
+				dispatch('requestGet', `/datapoint/datasource?id=${dataSourceId}`)
+				.then(response => {
+					commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints: response});	
 					resolve();
-				}, 2000)
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+				// setTimeout(async () => {
+				// 	let p1, p2;
+				// 	let dataPoints = [];
+				// 	if (dataSourceId === 0) {
+				// 		p1 = new ScadaVirtualDataPoint(2);
+				// 		p1.initialSetup(3,"AG_T_Numeric_01","AG Test - Numeric",true);
+				// 		p1.pointLocator.dataTypeId = 3;
+				// 		p1.pointLocator.changeTypeId = 6;
+				// 		p1.pointLocator.settable = true;
+				// 		p2 = new ScadaVirtualDataPoint(2);
+				// 		p2.initialSetup(2,"AG_T_Binary_01","AG Test - Binary", false, 'Extra text');
+				// 		p2.pointLocator.dataTypeId = 1;
+				// 		p2.pointLocator.changeTypeId = 7;
+				// 		p2.pointLocator.settable = true;
+				// 		dataPoints = [p1, p2];
+				// 	} else if (dataSourceId === 2) {
+				// 		p1 = new SnmpDataPoint(2);
+				// 		p1.initialSetup(3,"AG_SNMP_Numeric_01","AG Test SNMP - Numeric",true);
+				// 		p1.pointLocator.dataTypeId = 3;
+				// 		p1.pointLocator.oid = "1.2.1.1.3.2.0"
+				// 		p1.pointLocator.settable = true;
+				// 		p2 = new SnmpDataPoint(2);
+				// 		p2.initialSetup(2,"AG_SNMP_Binary_01","AG Test SNMP - Binary", false, 'Extra text');
+				// 		p2.pointLocator.dataTypeId = 1;
+				// 		p2.pointLocator.oid = "1.2.1.1.5.3.2"
+				// 		p2.pointLocator.settable = true;
+				// 		dataPoints = [p1, p2];
+				// 	}
+				// 	await commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints});
+				// 	resolve();
+				// }, 2000)
 			});
 		},
 
@@ -191,23 +215,34 @@ const ds = {
 		createDataSource({commit, dispatch}, datasource) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					const response = {
-						id: 10,
-						xid: datasource.xid,
-						enabled: false,
-						name: datasource.name,
-						type: datasource.type,
-						connection: `${datasource.updatePeriod} ${datasource.updatePeriodType}`,
-						description: '',
-						activeEvents: null,
-						loaded: false,
-						datapoints: [],
-					}
+				datasource.id = -1;
+				dispatch('requestPost', {
+					url: `/datasource`,
+					data: datasource,
+				}).then(response => {
 					commit('ADD_DATA_SOURCE',response);
-
 					resolve(response);
-				}, 3000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+				// setTimeout(() => {
+				// 	const response = {
+				// 		id: 10,
+				// 		xid: datasource.xid,
+				// 		enabled: false,
+				// 		name: datasource.name,
+				// 		type: datasource.type,
+				// 		connection: `${datasource.updatePeriod} ${datasource.updatePeriodType}`,
+				// 		description: '',
+				// 		activeEvents: null,
+				// 		loaded: false,
+				// 		datapoints: [],
+				// 	}
+				// 	commit('ADD_DATA_SOURCE',response);
+
+				// 	resolve(response);
+				// }, 3000);
 			})
 		},
 
@@ -227,24 +262,42 @@ const ds = {
 		 updateDataSource({commit, dispatch}, datasource) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					console.log(datasource);
-					commit('UPDATE_DATA_SOURCE', datasource);
-					const response = {
-						status: "OK",
-					}
+				dispatch('requestPut', {
+					url: `/datasource`,
+					data: datasource,
+				}).then(response => {
+					commit('UPDATE_DATA_SOURCE',response);
 					resolve(response);
-				}, 1000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+				// setTimeout(() => {
+				// 	console.log(datasource);
+				// 	commit('UPDATE_DATA_SOURCE', datasource);
+				// 	const response = {
+				// 		status: "OK",
+				// 	}
+				// 	resolve(response);
+				// }, 1000);
 			})
 		},
 
 		deleteDataSource({commit, dispatch}, dataSourceId) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					commit("REMOVE_DATA_SOURCE", dataSourceId);
+				dispatch('requestDelete', `/datasource?id=${dataSourceId}`)
+				.then(response => {
+					commit('REMOVE_DATA_SOURCE',dataSourceId);
 					resolve(response);
-				}, 1000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+				// setTimeout(() => {
+				// 	commit("REMOVE_DATA_SOURCE", dataSourceId);
+				// 	resolve(response);
+				// }, 1000);
 			})
 		},
 
@@ -288,24 +341,54 @@ const ds = {
 			});
 		},
 
-		createDataPointDS({commit, dispatch}, {dataSourceId, dataPoint}) {
+		createDataPointDS({commit, dispatch}, {dataSource, dataPoint}) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					commit("ADD_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
+				dataPoint.dataSourceTypeId = dataSource.type;
+				dataPoint.dataSourceId = dataSource.id;
+				dataPoint.deviceName = `${dataSource.name} - ${dataPoint.name}`;
+				dataPoint.pointLocator.dataSourceTypeId = dataSource.type;
+				dispatch('requestPost', {
+					url: `/datapoint`,
+					data: dataPoint
+				}).then(response => {
+					console.log(response);
+					// commit('ADD_DATA_POINT_IN_DS',response);
 					resolve();
-				}, 1000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
 			});
+			// 	setTimeout(() => {
+			// 		commit("ADD_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
+			// 		resolve();
+			// 	}, 1000);
+			// });
 		},
 
-		updateDataPointDS({commit, dispatch}, {dataSourceId, dataPoint}) {
+		updateDataPointDS({commit, dispatch}, {dataSourceType, dataPoint}) {
 			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					console.log(dataSourceId, dataPoint);
-					// commit("UPDATE_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
+				dataPoint.pointLocator.dataSourceTypeId = dataSourceType;
+				dispatch('requestPut', {
+					url: `/datapoint`,
+					data: dataPoint,
+				}).then(response => {
+					console.log(response);
 					resolve();
-				}, 1000);
+					// commit('UPDATE_DATA_SOURCE',response);
+					// resolve(response);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
+
+				// setTimeout(() => {
+				// 	console.log(dataSourceId, dataPoint);
+				// 	// commit("UPDATE_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
+				// 	resolve();
+				// }, 1000);
 			});
 		},
 
@@ -331,10 +414,14 @@ const ds = {
 
 		toggleDataSource({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					commit('TOGGLE_DATA_SOURCE', dataSourceId);
+				dispatch('requestGet', `/datasource/toggle?id=${dataSourceId}`)
+				.then(() => {
+					commit('TOGGLE_DATA_SOURCE', dataSourceId);	
 					resolve();
-				}, 1000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
 			});
 		}
 	},

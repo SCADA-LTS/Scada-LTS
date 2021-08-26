@@ -30,15 +30,9 @@ import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.DataPointUserDAO;
-import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
-import org.scada_lts.dao.PointLinkDAO;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
@@ -264,6 +258,24 @@ public class DataPointService implements MangoDataPoint {
 		if (dp != null) {
 			setEventDetectors(dp);
 			setPointComments(dp);
+		}
+	}
+
+	public void updateDataPointConfiguration(DataPointVO dp) {
+		if(dp.getId() != Common.NEW_ID) {
+			DataPointVO existingDataPoint = getDataPoint(dp.getId());
+			existingDataPoint.setName(dp.getName());
+			existingDataPoint.setXid(dp.getXid());
+			existingDataPoint.setDescription(dp.getDescription());
+			existingDataPoint.setEnabled(dp.isEnabled());
+			existingDataPoint.setPointLocator(dp.getPointLocator());
+			updateDataPoint(existingDataPoint);
+		}
+	}
+
+	public void createDataPointConfiguration(DataPointVO dp) {
+		if(dp.getId() == Common.NEW_ID) {
+			insertDataPoint(dp);
 		}
 	}
 

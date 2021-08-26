@@ -19,6 +19,7 @@ export default {
     props: {
         id: {
             type: Number,
+            default: -1,
             required: true
         },
     },
@@ -28,7 +29,8 @@ export default {
             detailsLoaded: false,
             name: '',
             xid: '',
-            updatePeriod: 5,
+            type: 0,
+            updatePeriods: 5,
             updatePeriodType: 1,
         }
     },
@@ -68,7 +70,8 @@ export default {
                 let response = await this.$store.dispatch('fetchDataSourceDetails', this.id);
                 this.name = response.name;
                 this.xid = response.xid;
-                this.updatePeriod = response.updatePeriod;
+                this.type = response.type;
+                this.updatePeriods = response.updatePeriods;
                 this.updatePeriodType = response.updatePeriodType;
                 this.detailsLoaded = true;
                 return response;

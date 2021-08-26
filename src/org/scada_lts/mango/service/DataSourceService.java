@@ -18,6 +18,7 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -27,6 +28,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
+import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -65,6 +67,28 @@ public class DataSourceService implements MangoDataSource {
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+
+	public boolean toggleDataSource(int id) {
+
+		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
+		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(id);
+		if(vo.isEnabled()) {
+			if(rt != null) {
+				rt.terminate();
+			}
+			vo.setEnabled(false);
+		} else {
+			if(rt != null) {
+				rt.initialize();
+			} else {
+				vo.createDataSourceRT();
+			}
+			vo.setEnabled(true);
+		}
+		vo.setState(new UserChangeEnableStateDs());
+		Common.ctx.getRuntimeManager().saveDataSource(vo);
+		return vo.isEnabled();
 	}
 
 	@Override

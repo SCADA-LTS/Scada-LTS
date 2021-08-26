@@ -151,12 +151,7 @@ export default {
 				{
 					text: 'Connection',
 					align: 'center',
-					value: 'connection',
-				},
-				{
-					text: 'Status Description',
-					align: 'center',
-					value: 'description',
+					value: 'connectionDescription',
 				},
 				{ text: '', value: 'data-table-expand' },
 			],
@@ -254,7 +249,7 @@ export default {
 		onDataPointUpdate(event) {
 			console.debug("DataSources.index.vue::onDataPointUpdate()")
 			this.$store.dispatch('updateDataPointDS', {
-				dataSourceId: event.dp.id,
+				dataSourceType: event.dp.type,
 				dataPoint: event.e
 			});
 			
@@ -263,7 +258,7 @@ export default {
 		onDataPointSaved(event) {
 			console.debug("DataSources.index.vue::onDataPointSaved()")
 			this.$store.dispatch('createDataPointDS', {
-				dataSourceId: event.dp.id,
+				dataSource: event.dp,
 				dataPoint: event.e
 			});
 		},
@@ -271,7 +266,7 @@ export default {
 		async onDataSourceUpdate(event) {
 			console.debug("DataSources.index.vue::onDataSourceUpdate()")
 			this.savingData = true;
-			event.type = this.$store.getters.dataSourceTypeId(event.type)
+			// event.type = this.$store.getters.dataSourceTypeId(event.type)
 			try {
 				let resp = await this.$store.dispatch("updateDataSource", event)
 				console.log(resp);
