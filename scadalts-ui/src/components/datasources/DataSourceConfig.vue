@@ -33,8 +33,8 @@
 						<v-text-field
 							v-model="datasource.xid"
 							label="DataSource Export Id"
-							@blur="validateXidUnique"
-							:rules="[ruleNotNull, ruleUniqueXid]"
+							@input="checkXidUnique"
+							:rules="[ruleNotNull, ruleXidUnique]"
 							required
 						></v-text-field>
 					</v-col>
@@ -113,7 +113,7 @@ export default {
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleOnlyNumber: (v) => !isNaN(v) || this.$t('validation.rule.onlyNumber'),
-			ruleUniqueXid: () => !this.xidUnique || 'Xid is already used!'
+			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
 		}
 	},
 
@@ -132,14 +132,17 @@ export default {
 			this.datasource.updatePeriodType = value;
 		},
 
-		async validateXidUnique() {
+		async checkXidUnique() {
 			try {
-				this.xidUnique = await this.$store.dispatch(
-					'requestGet', `/datapoint/validate?xid=${this.datasource.xid}`).unique;
+				this.datasource.id = this.datasource.id || -1;
+				let resp = await this.$store.dispatch(
+					'requestGet', `/datasource/validate?xid=${this.datasource.xid}&id=${this.datasource.id}`);
+				this.xidUnique = resp.unique;
+				this.$refs.datasourceForm.validate();
 			} catch(e) {
-				this.xidUnique = true;
+				console.error("Failed to fetch data");
 			}
-		}
+		},
 
 	},
 };

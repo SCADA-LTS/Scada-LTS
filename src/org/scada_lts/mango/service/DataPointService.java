@@ -275,6 +275,7 @@ public class DataPointService implements MangoDataPoint {
 
 	public void createDataPointConfiguration(DataPointVO dp) {
 		if(dp.getId() == Common.NEW_ID) {
+			dp.setEventDetectors(new ArrayList<>());
 			insertDataPoint(dp);
 		}
 	}

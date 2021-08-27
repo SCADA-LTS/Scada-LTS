@@ -4,6 +4,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 
 public class DataPointJson {
+
     private int id;
     private String xid;
     private String name;
@@ -12,10 +13,9 @@ public class DataPointJson {
     private int dataSourceTypeId;
     private int dataSourceId;
     private String deviceName;
-    private DataPointLocatorAbstract<?> pointLocator;
+    private DataPointLocatorJson pointLocator;
 
-    public DataPointJson() {
-    }
+    public DataPointJson() {}
 
     public DataPointJson(DataPointVO dpVO) {
         this.id = dpVO.getId();
@@ -29,7 +29,7 @@ public class DataPointJson {
         this.pointLocator = DataPointLocatorJsonFactory.getDataPointLocatorJson(dpVO.getPointLocator());
     }
 
-    public DataPointVO parseDataPointData() {
+    public DataPointVO createDataPointVO() {
         DataPointVO dpVO = new DataPointVO();
         dpVO.setId(this.id);
         dpVO.setXid(this.xid);
@@ -107,11 +107,11 @@ public class DataPointJson {
         this.deviceName = deviceName;
     }
 
-    public DataPointLocatorAbstract<?> getPointLocator() {
+    public DataPointLocatorJson getPointLocator() {
         return pointLocator;
     }
 
-    public void setPointLocator(DataPointLocatorAbstract<?> pointLocator) {
+    public void setPointLocator(DataPointLocatorJson pointLocator) {
         this.pointLocator = pointLocator;
     }
 }

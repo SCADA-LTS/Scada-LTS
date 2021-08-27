@@ -24,9 +24,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.web.mvc.api.datasources.DataSourceFactory;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
-import org.scada_lts.web.mvc.api.datasources.GenericJsonDataSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
@@ -51,19 +50,17 @@ public class DataSourceAPI {
     DataSourceService dataSourceService = new DataSourceService();
 
     @GetMapping(value = "/api/datasources")
-    public ResponseEntity<List<GenericJsonDataSource>> getAllDataSources(HttpServletRequest request) {
+    public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
 
                 //TODO: Ensure DataSource access privileges.
                 //@see DataSourceEditDwr.java
-                List<GenericJsonDataSource> list = new ArrayList<>();
+                List<DataSourceJson> list;
                 List<DataSourceVO<?>> dataSources = dataSourceService.getDataSources();
 
-                for(DataSourceVO<?> ds: dataSources) {
-                    list.add(new GenericJsonDataSource(ds));
-                }
+                list = dataSources.stream().map(DataSourceJson::new).collect(Collectors.toList());
 
                 return new ResponseEntity<>(list, HttpStatus.OK);
             }
@@ -75,7 +72,7 @@ public class DataSourceAPI {
     }
 
     @GetMapping(value = "/api/datasource")
-    public ResponseEntity<GenericJsonDataSource> getDataSource(
+    public ResponseEntity<DataSourceJson> getDataSource(
             @RequestParam(required = false) Integer id,
             @RequestParam(required = false) String xid,
             HttpServletRequest request) {
@@ -90,7 +87,7 @@ public class DataSourceAPI {
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
-                return new ResponseEntity<>(DataSourceFactory.getDataSource(ds), HttpStatus.OK);
+                return new ResponseEntity<>(new DataSourceJson(ds), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -123,16 +120,35 @@ public class DataSourceAPI {
         }
     }
 
+    @GetMapping(value = "/api/datasource/validate")
+    public ResponseEntity<Map<String, Object>> isDataPointXidUnique(
+            @RequestParam String xid,
+            @RequestParam Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("unique", dataSourceService.isXidUnique(xid, id));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(value = "/api/datasource")
-    public ResponseEntity<String> createDataSource(
-            @RequestBody DataSourceJson<?> dataSource,
+    public ResponseEntity<DataSourceJson> createDataSource(
+            @RequestBody DataSourceJson dataSource,
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
 
                 if(dataSource != null) {
-                    DataSourceVO<?> vo = DataSourceFactory.parseDataSource(dataSource);
+                    DataSourceVO<?> vo = dataSource.createDataSourceVO();
                     if(vo != null) {
                         dataSourceService.saveDataSource(vo);
                         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -152,15 +168,15 @@ public class DataSourceAPI {
     }
 
     @PutMapping(value = "/api/datasource")
-    public ResponseEntity<String> updateDataSource(
-            @RequestBody DataSourceJson<?> dataSource,
+    public ResponseEntity<DataSourceJson> updateDataSource(
+            @RequestBody DataSourceJson dataSource,
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
 
                 if(dataSource != null) {
-                    DataSourceVO<?> vo = DataSourceFactory.parseDataSource(dataSource);
+                    DataSourceVO<?> vo = dataSource.createDataSourceVO();
                     if(vo != null) {
                         dataSourceService.saveDataSource(vo);
                         return new ResponseEntity<>(HttpStatus.CREATED);

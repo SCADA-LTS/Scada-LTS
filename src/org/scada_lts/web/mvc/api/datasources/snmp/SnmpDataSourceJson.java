@@ -1,9 +1,9 @@
-package org.scada_lts.web.mvc.api.datasources;
+package org.scada_lts.web.mvc.api.datasources.snmp;
 
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
+import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 
-public class SnmpDataSourceJson extends GenericJsonDataSource implements DataSourceJson<SnmpDataSourceVO> {
+public class SnmpDataSourceJson extends DataSourceJson {
 
     private String host;
     private int port;
@@ -51,7 +51,7 @@ public class SnmpDataSourceJson extends GenericJsonDataSource implements DataSou
     }
 
     @Override
-    public SnmpDataSourceVO convertDataSourceToVO() {
+    public SnmpDataSourceVO createDataSourceVO() {
         SnmpDataSourceVO vo = new SnmpDataSourceVO();
         vo.setId(this.getId());
         vo.setName(this.getName());

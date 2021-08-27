@@ -1,9 +1,9 @@
-package org.scada_lts.web.mvc.api.datasources;
+package org.scada_lts.web.mvc.api.datasources.virtual;
 
-import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.*;
+import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
-public class VirtualPointLocatorJson extends DataPointLocatorAbstract<VirtualPointLocatorVO> {
+public class VirtualPointLocatorJson extends DataPointLocatorJson {
 
     int changeTypeId;
     AlternateBooleanChangeVO alternateBooleanChange;
@@ -19,8 +19,7 @@ public class VirtualPointLocatorJson extends DataPointLocatorAbstract<VirtualPoi
     public VirtualPointLocatorJson() {}
 
     public VirtualPointLocatorJson(VirtualPointLocatorVO pointLocatorVO) {
-        this.setDataTypeId(pointLocatorVO.getDataTypeId());
-        this.setSettable(pointLocatorVO.isSettable());
+        super(pointLocatorVO);
         this.changeTypeId = pointLocatorVO.getChangeTypeId();
         this.alternateBooleanChange = pointLocatorVO.getAlternateBooleanChange();
         this.brownianChange = pointLocatorVO.getBrownianChange();

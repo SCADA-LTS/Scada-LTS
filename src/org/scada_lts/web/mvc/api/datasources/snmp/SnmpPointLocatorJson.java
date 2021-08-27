@@ -1,8 +1,9 @@
-package org.scada_lts.web.mvc.api.datasources;
+package org.scada_lts.web.mvc.api.datasources.snmp;
 
 import com.serotonin.mango.vo.dataSource.snmp.SnmpPointLocatorVO;
+import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
-public class SnmpPointLocatorJson extends DataPointLocatorAbstract<SnmpPointLocatorVO> {
+public class SnmpPointLocatorJson extends DataPointLocatorJson {
 
     String oid;
     String binary0Value;
@@ -13,8 +14,7 @@ public class SnmpPointLocatorJson extends DataPointLocatorAbstract<SnmpPointLoca
     public SnmpPointLocatorJson() {}
 
     public SnmpPointLocatorJson(SnmpPointLocatorVO pointLocatorVO) {
-        this.setDataTypeId(pointLocatorVO.getDataTypeId());
-        this.setSettable(pointLocatorVO.isSettable());
+        super(pointLocatorVO);
         this.oid = pointLocatorVO.getOid();
         this.binary0Value = pointLocatorVO.getBinary0Value();
         this.setType = pointLocatorVO.getSetType();

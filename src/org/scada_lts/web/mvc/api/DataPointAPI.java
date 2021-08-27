@@ -98,12 +98,13 @@ public class DataPointAPI {
     @GetMapping(value = "/api/datapoint/validate")
     public ResponseEntity<Map<String, Object>> isDataPointXidUnique(
             @RequestParam String xid,
+            @RequestParam Integer id,
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
                 Map<String, Object> response = new HashMap<>();
-                response.put("unique", dataPointService.isXidUnique(xid, -1));
+                response.put("unique", dataPointService.isXidUnique(xid, id));
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -121,7 +122,7 @@ public class DataPointAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                dataPointService.createDataPointConfiguration(datapoint.parseDataPointData());
+                dataPointService.createDataPointConfiguration(datapoint.createDataPointVO());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -139,7 +140,7 @@ public class DataPointAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                dataPointService.updateDataPointConfiguration(datapoint.parseDataPointData());
+                dataPointService.updateDataPointConfiguration(datapoint.createDataPointVO());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

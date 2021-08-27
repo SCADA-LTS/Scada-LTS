@@ -431,5 +431,6 @@
 	"uiv.enable": "Enable",
 	"uiv.modal.cancel": "Cancel",
 	"uiv.modal.ok": "OK",
-	"validation.rule.notNull": "Field must not be empty!"
+	"validation.rule.notNull": "Field must not be empty!",
+	"validation.rule.xid.notUnique": "Export ID is already used!"
 }

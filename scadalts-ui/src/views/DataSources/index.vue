@@ -7,6 +7,13 @@
 						<h1>Data Sources</h1>
 					</v-col>
 					<v-col cols="6" class="row justify-end" v-if="tableLoaded">
+						<v-text-field
+							v-model="search"
+							append-icon="mdi-magnify"
+							label="Search"
+							single-line
+							hide-details
+						></v-text-field>
 						<v-progress-circular
 							v-show="savingData"
       						:size="50"
@@ -28,6 +35,7 @@
 				:expanded.sync="expanded"
 				:sort-by="[]"
 				:sort-desc="[]"
+				:search="search"
 				item-key="name"
 				multi-sort
 				show-expand
@@ -132,6 +140,7 @@ export default {
 		return {
 			tableLoaded: false,
 			expanded: [],
+			search: '',
 			headers: [
 				{
 					text: 'Status',
@@ -149,9 +158,9 @@ export default {
 					value: 'type',
 				},
 				{
-					text: 'Connection',
+					text: 'Export ID',
 					align: 'center',
-					value: 'connectionDescription',
+					value: 'xid',
 				},
 				{ text: '', value: 'data-table-expand' },
 			],

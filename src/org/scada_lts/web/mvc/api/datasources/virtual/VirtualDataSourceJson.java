@@ -1,10 +1,9 @@
-package org.scada_lts.web.mvc.api.datasources;
+package org.scada_lts.web.mvc.api.datasources.virtual;
 
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
+import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 
-public class VirtualDataSourceJson extends GenericJsonDataSource implements DataSourceJson<VirtualDataSourceVO> {
+public class VirtualDataSourceJson extends DataSourceJson {
 
     private int updatePeriodType;
     private int updatePeriods;
@@ -18,7 +17,7 @@ public class VirtualDataSourceJson extends GenericJsonDataSource implements Data
     }
 
     @Override
-    public VirtualDataSourceVO convertDataSourceToVO() {
+    public VirtualDataSourceVO createDataSourceVO() {
         VirtualDataSourceVO vo = new VirtualDataSourceVO();
         vo.setId(this.getId());
         vo.setName(this.getName());

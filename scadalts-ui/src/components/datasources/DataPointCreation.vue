@@ -33,15 +33,16 @@
 						<v-text-field
 							v-model="datapoint.xid"
 							label="Data Point Export ID"
-							:rules="[ruleNotNull]"
-							requred
+							@input="checkXidUnique"
+							:rules="[ruleNotNull, ruleXidUnique]"
+							required
 						></v-text-field>
 					</v-col>
 					<v-col cols="6" :sm="2">
-						<v-checkbox v-model="datapoint.settable" label="Settable"></v-checkbox>
+						<v-checkbox v-model="datapoint.pointLocator.settable" label="Settable"></v-checkbox>
 					</v-col>
 					<v-col cols="12">
-						<v-text-field v-model="datapoint.desc" label="Description"></v-text-field>
+						<v-text-field v-model="datapoint.description" label="Description"></v-text-field>
 					</v-col>
 				</v-row>
 				<slot></slot>
@@ -77,7 +78,7 @@ export default {
 			type: Object,
 			default: () => {
 				return {
-					desc: '',
+					description: '',
 				};
 			},
 		},
@@ -86,7 +87,9 @@ export default {
 	data() {
 		return {
 			formValid: false,
-			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull')
+			xidUnique: true,
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
 
 		}
 	},
@@ -99,7 +102,20 @@ export default {
 
 		accept() {
 			console.debug("datasources.DataPointCreation.vue::accept()")
-			this.$emit('accept');
+			if(this.formValid) {
+				this.$emit('accept');
+			}
+		},
+
+		async checkXidUnique() {
+			try {
+				let resp = await this.$store.dispatch(
+					'requestGet', `/datapoint/validate?xid=${this.datapoint.xid}&id=${this.datapoint.id}`);
+				this.xidUnique = resp.unique;
+				this.$refs.datapointForm.validate();
+			} catch(e) {
+				console.error("Failed to fetch data");
+			}
 		},
 	},
 };
