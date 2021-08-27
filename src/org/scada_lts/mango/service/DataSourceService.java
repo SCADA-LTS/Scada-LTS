@@ -18,6 +18,7 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -146,6 +147,9 @@ public class DataSourceService implements MangoDataSource {
 	private void deleteInTransaction(final int dataSourceId) {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
+		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
+		//TODO: IMPORTANT: DataSources are not deleted from memory! They do not exist in database but
+		//objects are still inside RuntimeManager
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -211,5 +215,22 @@ public class DataSourceService implements MangoDataSource {
 	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
+	}
+
+	public DataSourceVO<?> createDataSource(DataSourceVO<?> dataSource) {
+		DataSourceVO<?> created = dataSourceDAO.create(dataSource);
+		Common.ctx.getRuntimeManager().saveDataSource(created);
+		return created;
+	}
+
+	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId) {
+		List<DataPointVO> pointList = dataPointService.getDataPoints(dataSourceId, null);
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
 	}
 }

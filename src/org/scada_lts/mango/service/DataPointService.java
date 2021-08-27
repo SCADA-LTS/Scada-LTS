@@ -21,8 +21,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import br.org.scadabr.db.dao.UsersProfileDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.view.chart.TableChartRenderer;
+import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.LogFactory;
@@ -276,7 +279,7 @@ public class DataPointService implements MangoDataPoint {
 	public void createDataPointConfiguration(DataPointVO dp) {
 		if(dp.getId() == Common.NEW_ID) {
 			dp.setEventDetectors(new ArrayList<>());
-			insertDataPoint(dp);
+			createDataPoint(dp);
 		}
 	}
 
@@ -322,14 +325,22 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public void deleteDataPoint(int dataPointId) {
 		try {
-			DataPointVO dp = getDataPoint(dataPointId);
+			//Note: See class DataSourceEditDWR::deletePoint
+			Common.ctx.getEventManager().cancelEventsForDataPoint(dataPointId);
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
+			UsersProfileDao upd = new UsersProfileDao();
+			upd.updateDataPointPermissions();
 		} catch (EmptyResultDataAccessException e) {
 			Log.error(e);
 			return;
 		}
+	}
+
+	public void deleteDataPoint(String dataPointXid) {
+		DataPointVO dp = getDataPoint(dataPointXid);
+		deleteDataPoint(dp.getId());
 	}
 
 	@Override
@@ -685,5 +696,13 @@ public class DataPointService implements MangoDataPoint {
 			LOG.error(ex.getMessage());
 			return Optional.empty();
 		}
+	}
+
+	public DataPointVO createDataPoint(DataPointVO dataPoint) {
+		dataPoint.setEventDetectors(new ArrayList<>());
+		dataPoint.setTextRenderer(new NoneRenderer());
+		DataPointVO created = dataPointDAO.create(dataPoint);
+		Common.ctx.getRuntimeManager().saveDataPoint(created);
+		return created;
 	}
 }

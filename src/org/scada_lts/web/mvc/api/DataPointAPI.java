@@ -115,15 +115,16 @@ public class DataPointAPI {
     }
 
     @PostMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointVO> createDataPoint(
+    public ResponseEntity<DataPointJson> createDataPoint(
             @RequestBody DataPointJson datapoint,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                dataPointService.createDataPointConfiguration(datapoint.createDataPointVO());
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(
+                        new DataPointJson(dataPointService.createDataPoint(datapoint.createDataPointVO())),
+                        HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -145,6 +146,28 @@ public class DataPointAPI {
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointVO> deleteDataPoint(
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String xid,
+            HttpServletRequest request
+    ) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(id != null) {
+                    dataPointService.deleteDataPoint(id);
+                } else if(xid != null) {
+                    dataPointService.deleteDataPoint(xid);
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

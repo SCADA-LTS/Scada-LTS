@@ -22,7 +22,7 @@
 								<span>
 									<span>{{ dp.xid }}</span
 									><br />
-									<span>{{ dp.desc }}</span>
+									<span>{{ dp.description }}</span>
 								</span>
 							</v-tooltip>
 						</v-col>
@@ -46,7 +46,7 @@
 							{{ dp.xid }}
 						</v-col>
 						<v-col>
-							{{ dp.desc }}
+							{{ dp.description }}
 						</v-col>
 					</v-row>
 				</v-list-item-subtitle>
@@ -59,7 +59,7 @@
 						</v-btn>
 					</template>
 					<v-list>
-						<v-list-item @click="showDataPoint(datasource, dp)">
+						<v-list-item @click="showDataPoint(dp)">
 							<v-list-item-icon>
 								<v-icon>mdi-information</v-icon>
 							</v-list-item-icon>
@@ -142,14 +142,14 @@ export default {
 			this.$emit('delete', { item, datapoint });
 		},
 		toggleDataPoint(dp) {
-			// Enable on prduction code //
-			// this.$store.dispatch("toggleDataPoint", dp.id).then(() => {
-			// 	dp.enabled = !dp.enabled;
-			// });
-			
-			dp.enabled = !dp.enabled;
-			console.log(dp);
+			this.$store.dispatch("toggleDataPoint", dp.id).then(() => {
+				dp.enabled = !dp.enabled;
+			});
 		},
+		showDataPoint(datapoint) {
+			this.$router.push({name: 'datapoint-details', params: {id: datapoint.id}})
+			this.$router.go();
+		}
 	},
 };
 </script>

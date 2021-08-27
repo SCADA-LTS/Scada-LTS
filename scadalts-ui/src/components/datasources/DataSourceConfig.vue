@@ -52,7 +52,7 @@
 						<UpdatePeriodType
 							:value="datasource.updatePeriodType"
 							@update="onUpdatePeriodTypeUpdate"
-							types="1,2,3,4,5"
+							types="1,2,3"
 						>
 						</UpdatePeriodType>
 					</v-col>

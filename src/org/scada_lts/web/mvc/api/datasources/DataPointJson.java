@@ -26,7 +26,7 @@ public class DataPointJson {
         this.dataSourceTypeId = dpVO.getDataSourceTypeId();
         this.dataSourceId = dpVO.getDataSourceId();
         this.deviceName = dpVO.getDeviceName();
-        this.pointLocator = DataPointLocatorJsonFactory.getDataPointLocatorJson(dpVO.getPointLocator());
+        this.pointLocator = DataSourcePointJsonFactory.getDataPointLocatorJson(dpVO.getPointLocator());
     }
 
     public DataPointVO createDataPointVO() {

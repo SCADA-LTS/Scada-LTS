@@ -24,7 +24,9 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
+import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -87,7 +89,7 @@ public class DataSourceAPI {
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
-                return new ResponseEntity<>(new DataSourceJson(ds), HttpStatus.OK);
+                return new ResponseEntity<>(DataSourcePointJsonFactory.getDataSourceJson(ds), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -139,6 +141,30 @@ public class DataSourceAPI {
         }
     }
 
+    @GetMapping(value = "/api/datasource/datapoints/enable")
+    public ResponseEntity<List<DataPointJson>> enableAllPointsInDS(
+            @RequestParam Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if (id != null) {
+                    return new ResponseEntity<>(
+                            dataSourceService.enableAllDataPointsInDS(id)
+                                    .stream().map(DataPointJson::new)
+                                    .collect(Collectors.toList()),
+                            HttpStatus.OK);
+                } else {
+                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(value = "/api/datasource")
     public ResponseEntity<DataSourceJson> createDataSource(
             @RequestBody DataSourceJson dataSource,
@@ -150,8 +176,9 @@ public class DataSourceAPI {
                 if(dataSource != null) {
                     DataSourceVO<?> vo = dataSource.createDataSourceVO();
                     if(vo != null) {
-                        dataSourceService.saveDataSource(vo);
-                        return new ResponseEntity<>(HttpStatus.CREATED);
+                        return new ResponseEntity<>(
+                                new DataSourceJson(dataSourceService.createDataSource(vo)),
+                                HttpStatus.CREATED);
                     } else {
                         LOG.error("DataSource JSON Type Not recoginized!");
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -48,9 +48,11 @@ import java.util.stream.Collectors;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class DataSourceDAO {
+public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
+
+	private static final String TABLE_NAME = "dataSources";
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -374,33 +376,84 @@ public class DataSourceDAO {
 
 	}
 
+	@Override
+	public DataSourceVO<?> create(DataSourceVO<?> entity) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + entity.toString());
+		}
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
+			new ArgumentPreparedStatementSetter(new Object[]{
+					entity.getXid(),
+					entity.getName(),
+					entity.getType().getId(),
+					new SerializationData().writeObject(entity)
+			}).setValues(ps);
+			return ps;
+		}, keyHolder);
+		entity.setId(keyHolder.getKey().intValue());
+		return entity;
+	}
+
+	@Override
+	public List<ScadaObjectIdentifier> getSimpleList() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getAll() {
+		return getDataSources();
+	}
+
+	@Override
+	public DataSourceVO<?> getById(int id) throws EmptyResultDataAccessException {
+		return getDataSource(id);
+	}
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void update(final DataSourceVO<?> dataSource) {
+	public int update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
 		}
 
-		DataSourceVO<?> oldDataSource = getDataSource(dataSource.getId());
-
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_UPDATE, new Object[]{
-				dataSource.getXid(),
-				dataSource.getName(),
-				new SerializationData().writeObject(dataSource),
-				dataSource.getId()}
-		);
+		try {
+			return DAO.getInstance().getJdbcTemp().update(
+					DATA_SOURCE_UPDATE,
+					dataSource.getXid(),
+					dataSource.getName(),
+					new SerializationData().writeObject(dataSource),
+					dataSource.getId());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.error("DataSource entity with id= " + dataSource.getId() + " does not exists!");
+			return DAO_EMPTY_RESULT;
+		} catch (Exception e) {
+			return DAO_EXCEPTION;
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void delete(int dataSourceId) {
+	public int delete(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int dataSourceId): dataSourceId" + dataSourceId);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, new Object[]{dataSourceId});
+		try {
+			DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, dataSourceId);
+			DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, dataSourceId);
+			DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, dataSourceId);
+			return 0;
+		} catch (Exception e) {
+			String message = "FAILED ON DELETING Data Source with ID: ";
+			LOG.error(message + dataSourceId);
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

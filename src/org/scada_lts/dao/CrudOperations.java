@@ -25,6 +25,9 @@ import java.util.List;
  */
 public interface CrudOperations<T> {
 
+    int DAO_EMPTY_RESULT = 0;
+    int DAO_EXCEPTION = -1;
+
     /**
      * Create object
      * Try to return the Object if it is possible.

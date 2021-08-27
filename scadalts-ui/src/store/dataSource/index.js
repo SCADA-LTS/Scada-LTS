@@ -117,10 +117,6 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-				// setTimeout(() => {
-				// 	commit('SET_DATA_SOURCE_LIST', datasourceDetailsMocks);
-				// 	resolve()
-				// }, 2000);
 			});
 		},
 
@@ -144,10 +140,6 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-				// setTimeout(() => {
-				// 	commit('FETCH_DATA_SOURCE_DETAILS', datasourceDetailsMocks[dataSourceId]);
-				// 	resolve(datasourceDetailsMocks[dataSourceId]);
-				// }, 1000);
 			})
 		},
 
@@ -164,37 +156,6 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-				// setTimeout(async () => {
-				// 	let p1, p2;
-				// 	let dataPoints = [];
-				// 	if (dataSourceId === 0) {
-				// 		p1 = new ScadaVirtualDataPoint(2);
-				// 		p1.initialSetup(3,"AG_T_Numeric_01","AG Test - Numeric",true);
-				// 		p1.pointLocator.dataTypeId = 3;
-				// 		p1.pointLocator.changeTypeId = 6;
-				// 		p1.pointLocator.settable = true;
-				// 		p2 = new ScadaVirtualDataPoint(2);
-				// 		p2.initialSetup(2,"AG_T_Binary_01","AG Test - Binary", false, 'Extra text');
-				// 		p2.pointLocator.dataTypeId = 1;
-				// 		p2.pointLocator.changeTypeId = 7;
-				// 		p2.pointLocator.settable = true;
-				// 		dataPoints = [p1, p2];
-				// 	} else if (dataSourceId === 2) {
-				// 		p1 = new SnmpDataPoint(2);
-				// 		p1.initialSetup(3,"AG_SNMP_Numeric_01","AG Test SNMP - Numeric",true);
-				// 		p1.pointLocator.dataTypeId = 3;
-				// 		p1.pointLocator.oid = "1.2.1.1.3.2.0"
-				// 		p1.pointLocator.settable = true;
-				// 		p2 = new SnmpDataPoint(2);
-				// 		p2.initialSetup(2,"AG_SNMP_Binary_01","AG Test SNMP - Binary", false, 'Extra text');
-				// 		p2.pointLocator.dataTypeId = 1;
-				// 		p2.pointLocator.oid = "1.2.1.1.5.3.2"
-				// 		p2.pointLocator.settable = true;
-				// 		dataPoints = [p1, p2];
-				// 	}
-				// 	await commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints});
-				// 	resolve();
-				// }, 2000)
 			});
 		},
 
@@ -206,14 +167,11 @@ const ds = {
 		 * valid DS Type and as a response sould be received DataSourceAPI object.
 		 * It sould contain a new generated ID.
 		 * 
-		 * --- MOCKED ---
-		 * 
 		 * @param {*} param0 
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
 		createDataSource({commit, dispatch}, datasource) {
-			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				datasource.id = -1;
 				dispatch('requestPost', {
@@ -226,23 +184,6 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-				// setTimeout(() => {
-				// 	const response = {
-				// 		id: 10,
-				// 		xid: datasource.xid,
-				// 		enabled: false,
-				// 		name: datasource.name,
-				// 		type: datasource.type,
-				// 		connection: `${datasource.updatePeriod} ${datasource.updatePeriodType}`,
-				// 		description: '',
-				// 		activeEvents: null,
-				// 		loaded: false,
-				// 		datapoints: [],
-				// 	}
-				// 	commit('ADD_DATA_SOURCE',response);
-
-				// 	resolve(response);
-				// }, 3000);
 			})
 		},
 
@@ -253,14 +194,11 @@ const ds = {
 		 * Send a PUT request to the Core aplication REST API to update existing
 		 * DataSource. 
 		 * 
-		 * --- MOCKED ---
-		 * 
 		 * @param {*} param0 
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns 
 		 */
 		 updateDataSource({commit, dispatch}, datasource) {
-			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				dispatch('requestPut', {
 					url: `/datasource`,
@@ -272,19 +210,10 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-				// setTimeout(() => {
-				// 	console.log(datasource);
-				// 	commit('UPDATE_DATA_SOURCE', datasource);
-				// 	const response = {
-				// 		status: "OK",
-				// 	}
-				// 	resolve(response);
-				// }, 1000);
 			})
 		},
 
 		deleteDataSource({commit, dispatch}, dataSourceId) {
-			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				dispatch('requestDelete', `/datasource?id=${dataSourceId}`)
 				.then(response => {
@@ -294,10 +223,6 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-				// setTimeout(() => {
-				// 	commit("REMOVE_DATA_SOURCE", dataSourceId);
-				// 	resolve(response);
-				// }, 1000);
 			})
 		},
 
@@ -342,7 +267,6 @@ const ds = {
 		},
 
 		createDataPointDS({commit, dispatch}, {dataSource, dataPoint}) {
-			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				dataPoint.dataSourceTypeId = dataSource.type;
 				dataPoint.dataSourceId = dataSource.id;
@@ -352,23 +276,19 @@ const ds = {
 					url: `/datapoint`,
 					data: dataPoint
 				}).then(response => {
-					console.log(response);
-					// commit('ADD_DATA_POINT_IN_DS',response);
+					commit('ADD_DATA_POINT_IN_DS', {
+						dataSourceId: dataSource.id,
+						dataPoint: response
+					});
 					resolve();
 				}).catch(error => {
 					console.error(error);
 					reject();
 				});
 			});
-			// 	setTimeout(() => {
-			// 		commit("ADD_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
-			// 		resolve();
-			// 	}, 1000);
-			// });
 		},
 
 		updateDataPointDS({commit, dispatch}, {dataSourceType, dataPoint}) {
-			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
 				dataPoint.pointLocator.dataSourceTypeId = dataSourceType;
 				dispatch('requestPut', {
@@ -383,32 +303,32 @@ const ds = {
 					console.error(error);
 					reject();
 				});
-
-				// setTimeout(() => {
-				// 	console.log(dataSourceId, dataPoint);
-				// 	// commit("UPDATE_DATA_POINT_IN_DS", {dataSourceId, dataPoint});
-				// 	resolve();
-				// }, 1000);
 			});
 		},
 
 		deleteDataPointDS({commit, dispatch}, {dataSourceId, dataPointXid}) {
-			/* Mocking TODO: real method*/
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
+				dispatch('requestDelete', `/datapoint?xid=${dataPointXid}`)
+				.then(response => {
 					commit("REMOVE_DATA_POINT_IN_DS", {dataSourceId, dataPointXid});
 					resolve();
-				}, 1000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
 			});
 		},
 
 		enableAllDataPoints({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					//TODO: SEND REQUEST TO API
-					commit('ENABLE_ALL_DATA_POINTS_IN_DS', dataSourceId);
+				dispatch('requestGet', `/datasource/datapoints/enable?id=${dataSourceId}`)
+				.then((resp) => {
+					commit('ENABLE_ALL_DATA_POINTS_IN_DS', dataSourceId);	
 					resolve();
-				}, 1000);
+				}).catch(error => {
+					console.error(error);
+					reject();
+				});
 			});
 		},
 

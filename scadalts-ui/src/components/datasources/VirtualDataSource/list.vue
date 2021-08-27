@@ -93,7 +93,9 @@
 
 		<!-- DataTypes.APLHANUMERIC -->
 		<v-row :dense="true" v-if="datapoint.pointLocator.dataTypeId === DataTypes.APLHANUMERIC">
-			<v-col cols="12"> Teerere </v-col>
+			<v-col cols="12">
+				Alphanumeric
+			</v-col>
 		</v-row>
 	</div>
 </template>
