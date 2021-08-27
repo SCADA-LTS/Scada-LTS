@@ -7,19 +7,18 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.service.MultiChangesHistoryService;
+import org.scada_lts.web.mvc.api.components.cmp.model.SetValueErrorsDTO;
 import org.scada_lts.web.mvc.api.components.cmp.model.SetValuePointDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import static org.scada_lts.utils.ChangeDataApiUtils.checkIfValuesCanBeSet;
 
 /**
  * @autor grzegorz.bylica@gmail.com on 24.09.2019
@@ -111,6 +110,48 @@ public class ChangeDataAPI {
                 LOG.trace(e);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(value = "/api/cmp/setsAllOrNone", produces = "application/json")
+    public ResponseEntity<SetValueErrorsDTO> setValuesAllOrNone(@RequestBody SetValuePointDTO[] xIDsValues, HttpServletRequest request) {
+        LOG.info("POST:/api/cmp/setsAllOrNone");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                SetValueErrorsDTO errors = checkIfValuesCanBeSet(user, xIDsValues);
+                if (!errors.getErrors().isEmpty()) {
+                    return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                for (SetValuePointDTO sv : xIDsValues) {
+                    dataPointService.savePointValue(user, sv.getValue(), sv.getXid());
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/api/cmp/sets", produces = "application/json")
+    public ResponseEntity<SetValueErrorsDTO> setValues(@RequestBody SetValuePointDTO[] xIDsValues, HttpServletRequest request) {
+        LOG.info("POST:/api/cmp/sets");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                SetValueErrorsDTO errors = checkIfValuesCanBeSet(user, xIDsValues);
+                for (SetValuePointDTO sv : xIDsValues) {
+                    if (errors.getErrors().stream().noneMatch(o -> o.getXid().equals(sv.getXid())))
+                        dataPointService.savePointValue(user, sv.getValue(), sv.getXid());
+                }
+                return new ResponseEntity<>(errors, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

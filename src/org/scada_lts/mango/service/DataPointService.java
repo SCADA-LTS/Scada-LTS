@@ -241,6 +241,11 @@ public class DataPointService implements MangoDataPoint {
 		setPointImpl(dpvo, value, user);
 	}
 
+	public void savePointValue(User user, String value, String xid) {
+		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
+		setPointImpl(dpvo, value, user);
+	}
+
 	private void setPointImpl(DataPointVO point, String valueStr, SetPointSource source) {
 		if (point == null)
 			return;
