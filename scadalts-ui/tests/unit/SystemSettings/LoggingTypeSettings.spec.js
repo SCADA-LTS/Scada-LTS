@@ -21,10 +21,10 @@ const modules = {
  */
 function initWrapper() {
 	return prepareMountWrapper(
-		DefaultLoggingTypeSettingsComponent, 
+		DefaultLoggingTypeSettingsComponent,
 		modules,
 		{},
-		{stubs: ['VSelect', 'VIcon']}
+		{ stubs: ['VSelect', 'VIcon'] },
 	);
 }
 

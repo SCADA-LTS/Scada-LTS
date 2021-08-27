@@ -20,6 +20,12 @@
 					</v-list-item-icon>
 					<v-list-item-title>{{ $t('plcalarms.notification') }}</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/synoptic-panel" v-if="isUserRoleAdmin">
+					<v-list-item-icon>
+						<v-icon>mdi-view-dashboard</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>{{$t('synopticpanels.titile')}}</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/datasources" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-database</v-icon>
@@ -129,7 +135,7 @@ export default {
 	mounted() {
 		this.$store.dispatch('getLocaleInfo');
 	},
-	
+
 	methods: {
 		logout() {
 			this.$store.dispatch('logoutUser');

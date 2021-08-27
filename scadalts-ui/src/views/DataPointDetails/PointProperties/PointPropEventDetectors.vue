@@ -19,7 +19,11 @@
 					</h3>
 				</v-col>
 				<v-col class="row justify-end">
-					<CreateEventDetectorDialog :data="data" @saved="addEventDetector" @savedfailed="addEventDetectorFail">
+					<CreateEventDetectorDialog
+						:data="data"
+						@saved="addEventDetector"
+						@savedfailed="addEventDetectorFail"
+					>
 					</CreateEventDetectorDialog>
 				</v-col>
 			</v-row>
@@ -389,7 +393,7 @@ export default {
 				'No Update Detector',
 				'Alphanumeric State Detector',
 				'Positive CUSUM',
-				'Negative CUSUM'
+				'Negative CUSUM',
 			];
 			return detectorsList[value - 1];
 		},
@@ -485,10 +489,11 @@ export default {
 							this.response.status = true;
 							this.response.message = this.$t('common.snackbar.delete.fail');
 						}
-					}).catch(() => {
+					})
+					.catch(() => {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.delete.fail');
-					})
+					});
 			}
 		},
 	},

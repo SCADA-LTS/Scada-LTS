@@ -150,7 +150,7 @@ export default {
 		async fetchDataPointDetails(datapointId) {
 			this.dataPointDetails = await this.$store.dispatch(
 				'getDataPointDetails',
-				datapointId
+				datapointId,
 			);
 		},
 
@@ -162,7 +162,7 @@ export default {
 			if (e) {
 				let resp = await this.$store.dispatch(
 					'toggleDataPoint',
-					this.dataPointDetails.id
+					this.dataPointDetails.id,
 				);
 				if (!!resp) {
 					this.dataPointDetails.enabled = resp.enabled;

@@ -465,4 +465,14 @@ span.dojoTreeNodeLabel span {
   height: 2rem;
 }
 
+#viewContent button {
+  overflow: visible;
+  background: silver;
+  border-width: 3px;
+  border-color: gainsboro gray gray gainsboro;
+  border-style: solid;
+  padding: 1px 5px;
+  color: black;
+}
+
 /*# sourceMappingURL=common.css.map */

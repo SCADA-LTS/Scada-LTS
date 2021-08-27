@@ -1,179 +1,169 @@
 {
-    "dataSources":[
-       {
-          "xid":"DS_592553",
-          "type":"VIRTUAL",
-          "updatePeriodType":"MINUTES",
-          "enabled":true,
-          "name":"DataPointTestDS",
-          "updatePeriods":1
-       }
-    ],
-    "dataPoints":[
-       {
-          "xid":"DP_TEST_0001",
-          "loggingType":"ON_CHANGE",
-          "intervalLoggingPeriodType":"MINUTES",
-          "intervalLoggingType":"INSTANT",
-          "purgeType":"YEARS",
-          "pointLocator":{
-             "dataType":"BINARY",
-             "changeType":{
-                "type":"RANDOM_BOOLEAN",
-                "startValue":"true"
-             },
-             "settable":true
-          },
-          "eventDetectors":[
-          ],
-          "engineeringUnits":"",
-          "chartColour":null,
-          "chartRenderer":null,
-          "dataSourceXid":"DS_592553",
-          "defaultCacheSize":1,
-          "description":null,
-          "deviceName":"DataPointTestDS",
-          "discardExtremeValues":false,
-          "discardHighLimit":1.7976931348623157E308,
-          "discardLowLimit":-1.7976931348623157E308,
-          "enabled":true,
-          "eventTextRenderer":{
-             "type":"EVENT_NONE"
-          },
-          "intervalLoggingPeriod":15,
-          "name":"Test Binary DP 01",
-          "purgePeriod":1,
-          "textRenderer":{
-             "type":"PLAIN",
-             "suffix":""
-          },
-          "tolerance":0.0
-       },
-       {
-          "xid":"DP_TEST_0002",
-          "loggingType":"ON_CHANGE",
-          "intervalLoggingPeriodType":"MINUTES",
-          "intervalLoggingType":"INSTANT",
-          "purgeType":"YEARS",
-          "pointLocator":{
-             "dataType":"MULTISTATE",
-             "changeType":{
-                "type":"RANDOM_MULTISTATE",
-                "startValue":"1",
-                "values":[
-                   1,
-                   2,
-                   3,
-                   4,
-                   5
-                ]
-             },
-             "settable":true
-          },
-          "eventDetectors":[
-          ],
-          "engineeringUnits":"",
-          "chartColour":null,
-          "chartRenderer":null,
-          "dataSourceXid":"DS_592553",
-          "defaultCacheSize":1,
-          "description":null,
-          "deviceName":"DataPointTestDS",
-          "discardExtremeValues":false,
-          "discardHighLimit":1.7976931348623157E308,
-          "discardLowLimit":-1.7976931348623157E308,
-          "enabled":true,
-          "eventTextRenderer":{
-             "type":"EVENT_NONE"
-          },
-          "intervalLoggingPeriod":15,
-          "name":"Test Multistate DP 01",
-          "purgePeriod":1,
-          "textRenderer":{
-             "type":"PLAIN",
-             "suffix":""
-          },
-          "tolerance":0.0
-       },
-       {
-          "xid":"DP_TEST_0003",
-          "loggingType":"ON_CHANGE",
-          "intervalLoggingPeriodType":"MINUTES",
-          "intervalLoggingType":"INSTANT",
-          "purgeType":"YEARS",
-          "pointLocator":{
-             "dataType":"NUMERIC",
-             "changeType":{
-                "type":"RANDOM_ANALOG",
-                "max":10.0,
-                "min":0.0,
-                "startValue":"1"
-             },
-             "settable":true
-          },
-          "eventDetectors":[
-          ],
-          "engineeringUnits":"",
-          "chartColour":null,
-          "chartRenderer":null,
-          "dataSourceXid":"DS_592553",
-          "defaultCacheSize":1,
-          "description":null,
-          "deviceName":"DataPointTestDS",
-          "discardExtremeValues":false,
-          "discardHighLimit":1.7976931348623157E308,
-          "discardLowLimit":-1.7976931348623157E308,
-          "enabled":true,
-          "eventTextRenderer":{
-             "type":"EVENT_NONE"
-          },
-          "intervalLoggingPeriod":15,
-          "name":"Test Numeric DP 01",
-          "purgePeriod":1,
-          "textRenderer":{
-             "type":"PLAIN",
-             "suffix":""
-          },
-          "tolerance":0.0
-       },
-       {
-          "xid":"DP_TEST_0004",
-          "loggingType":"ON_CHANGE",
-          "intervalLoggingPeriodType":"MINUTES",
-          "intervalLoggingType":"INSTANT",
-          "purgeType":"YEARS",
-          "pointLocator":{
-             "dataType":"ALPHANUMERIC",
-             "changeType":{
-                "type":"NO_CHANGE",
-                "startValue":"ExampleText"
-             },
-             "settable":true
-          },
-          "eventDetectors":[
-          ],
-          "engineeringUnits":"",
-          "chartColour":null,
-          "chartRenderer":null,
-          "dataSourceXid":"DS_592553",
-          "defaultCacheSize":1,
-          "description":null,
-          "deviceName":"DataPointTestDS",
-          "discardExtremeValues":false,
-          "discardHighLimit":1.7976931348623157E308,
-          "discardLowLimit":-1.7976931348623157E308,
-          "enabled":true,
-          "eventTextRenderer":{
-             "type":"EVENT_NONE"
-          },
-          "intervalLoggingPeriod":15,
-          "name":"Test Alphanumeric DP 01",
-          "purgePeriod":1,
-          "textRenderer":{
-             "type":"PLAIN",
-             "suffix":""
-          },
-          "tolerance":0.0
-       }
-    ]
- }
+	"dataSources": [
+		{
+			"xid": "DS_592553",
+			"type": "VIRTUAL",
+			"updatePeriodType": "MINUTES",
+			"enabled": true,
+			"name": "DataPointTestDS",
+			"updatePeriods": 1
+		}
+	],
+	"dataPoints": [
+		{
+			"xid": "DP_TEST_0001",
+			"loggingType": "ON_CHANGE",
+			"intervalLoggingPeriodType": "MINUTES",
+			"intervalLoggingType": "INSTANT",
+			"purgeType": "YEARS",
+			"pointLocator": {
+				"dataType": "BINARY",
+				"changeType": {
+					"type": "RANDOM_BOOLEAN",
+					"startValue": "true"
+				},
+				"settable": true
+			},
+			"eventDetectors": [],
+			"engineeringUnits": "",
+			"chartColour": null,
+			"chartRenderer": null,
+			"dataSourceXid": "DS_592553",
+			"defaultCacheSize": 1,
+			"description": null,
+			"deviceName": "DataPointTestDS",
+			"discardExtremeValues": false,
+			"discardHighLimit": 1.7976931348623157e308,
+			"discardLowLimit": -1.7976931348623157e308,
+			"enabled": true,
+			"eventTextRenderer": {
+				"type": "EVENT_NONE"
+			},
+			"intervalLoggingPeriod": 15,
+			"name": "Test Binary DP 01",
+			"purgePeriod": 1,
+			"textRenderer": {
+				"type": "PLAIN",
+				"suffix": ""
+			},
+			"tolerance": 0.0
+		},
+		{
+			"xid": "DP_TEST_0002",
+			"loggingType": "ON_CHANGE",
+			"intervalLoggingPeriodType": "MINUTES",
+			"intervalLoggingType": "INSTANT",
+			"purgeType": "YEARS",
+			"pointLocator": {
+				"dataType": "MULTISTATE",
+				"changeType": {
+					"type": "RANDOM_MULTISTATE",
+					"startValue": "1",
+					"values": [1, 2, 3, 4, 5]
+				},
+				"settable": true
+			},
+			"eventDetectors": [],
+			"engineeringUnits": "",
+			"chartColour": null,
+			"chartRenderer": null,
+			"dataSourceXid": "DS_592553",
+			"defaultCacheSize": 1,
+			"description": null,
+			"deviceName": "DataPointTestDS",
+			"discardExtremeValues": false,
+			"discardHighLimit": 1.7976931348623157e308,
+			"discardLowLimit": -1.7976931348623157e308,
+			"enabled": true,
+			"eventTextRenderer": {
+				"type": "EVENT_NONE"
+			},
+			"intervalLoggingPeriod": 15,
+			"name": "Test Multistate DP 01",
+			"purgePeriod": 1,
+			"textRenderer": {
+				"type": "PLAIN",
+				"suffix": ""
+			},
+			"tolerance": 0.0
+		},
+		{
+			"xid": "DP_TEST_0003",
+			"loggingType": "ON_CHANGE",
+			"intervalLoggingPeriodType": "MINUTES",
+			"intervalLoggingType": "INSTANT",
+			"purgeType": "YEARS",
+			"pointLocator": {
+				"dataType": "NUMERIC",
+				"changeType": {
+					"type": "RANDOM_ANALOG",
+					"max": 10.0,
+					"min": 0.0,
+					"startValue": "1"
+				},
+				"settable": true
+			},
+			"eventDetectors": [],
+			"engineeringUnits": "",
+			"chartColour": null,
+			"chartRenderer": null,
+			"dataSourceXid": "DS_592553",
+			"defaultCacheSize": 1,
+			"description": null,
+			"deviceName": "DataPointTestDS",
+			"discardExtremeValues": false,
+			"discardHighLimit": 1.7976931348623157e308,
+			"discardLowLimit": -1.7976931348623157e308,
+			"enabled": true,
+			"eventTextRenderer": {
+				"type": "EVENT_NONE"
+			},
+			"intervalLoggingPeriod": 15,
+			"name": "Test Numeric DP 01",
+			"purgePeriod": 1,
+			"textRenderer": {
+				"type": "PLAIN",
+				"suffix": ""
+			},
+			"tolerance": 0.0
+		},
+		{
+			"xid": "DP_TEST_0004",
+			"loggingType": "ON_CHANGE",
+			"intervalLoggingPeriodType": "MINUTES",
+			"intervalLoggingType": "INSTANT",
+			"purgeType": "YEARS",
+			"pointLocator": {
+				"dataType": "ALPHANUMERIC",
+				"changeType": {
+					"type": "NO_CHANGE",
+					"startValue": "ExampleText"
+				},
+				"settable": true
+			},
+			"eventDetectors": [],
+			"engineeringUnits": "",
+			"chartColour": null,
+			"chartRenderer": null,
+			"dataSourceXid": "DS_592553",
+			"defaultCacheSize": 1,
+			"description": null,
+			"deviceName": "DataPointTestDS",
+			"discardExtremeValues": false,
+			"discardHighLimit": 1.7976931348623157e308,
+			"discardLowLimit": -1.7976931348623157e308,
+			"enabled": true,
+			"eventTextRenderer": {
+				"type": "EVENT_NONE"
+			},
+			"intervalLoggingPeriod": 15,
+			"name": "Test Alphanumeric DP 01",
+			"purgePeriod": 1,
+			"textRenderer": {
+				"type": "PLAIN",
+				"suffix": ""
+			},
+			"tolerance": 0.0
+		}
+	]
+}

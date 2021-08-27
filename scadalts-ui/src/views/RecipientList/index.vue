@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<v-container fluid>
-			<h1>{{$t('recipientlist.title')}}</h1>
+			<h1>{{ $t('recipientlist.title') }}</h1>
 		</v-container>
 		<v-container fluid>
 			<v-card class="slts-card">
@@ -42,7 +42,7 @@
 												<v-icon> mdi-plus </v-icon>
 											</v-btn>
 										</v-fab-transition>
-										{{$t('recipientlist.list.create')}}
+										{{ $t('recipientlist.list.create') }}
 									</v-list-item-title>
 								</v-list-item-content>
 							</v-list-item>
@@ -59,7 +59,7 @@
 						></RecipientListDetails>
 						<v-row v-else>
 							<v-col cols="12">
-								<h3>{{$t('recipientlist.list.blank')}}</h3>
+								<h3>{{ $t('recipientlist.list.blank') }}</h3>
 							</v-col>
 						</v-row>
 					</v-col>
@@ -68,7 +68,7 @@
 		</v-container>
 		<v-dialog v-model="showRLCreationDialog" max-width="1200">
 			<v-card>
-				<v-card-title>{{$t('recipientlist.dialog.create.title')}}</v-card-title>
+				<v-card-title>{{ $t('recipientlist.dialog.create.title') }}</v-card-title>
 				<v-card-text class="dialog-card-text">
 					<RecipientListDetails
 						ref="recipientListDialog"
@@ -89,34 +89,36 @@
 		</v-dialog>
 		<ConfirmationDialog
 			:btnvisible="false"
-			ref="deleteRecipientDialog"
+			:dialog="deleteRecipientDialog"
 			@result="deleteRecipientDialogResult"
 			:title="$t('recipientlist.dialog.delete.title')"
 			:message="$t('recipientlist.dialog.delete.text')"
 		></ConfirmationDialog>
-		<v-snackbar v-model="response.status">
-			{{ response.message }}
+
+		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
+			{{ snackbar.message }}
 		</v-snackbar>
 	</div>
 </template>
 <script>
 import RecipientListDetails from './RecipientListDetails';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 /**
  * Recipient List component - View page.
- * 
+ *
  * Recipient list display all recipient lists from Scada-LTS application.
- * Previously it was named as Mailing List but now it can contains also 
+ * Previously it was named as Mailing List but now it can contains also
  * a phone numbers. Users can be notified using also that channel.
  * User are able to create, delete or modify Recipient Lists from that View.
- * 
+ *
  * Using REST API the Recipient Lists are provided to that component
- * but more detailed information about specific list is 
+ * but more detailed information about specific list is
  * passed to the "RecipientListDetails" component.
- * 
+ *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.0.1
  */
 export default {
 	name: 'RecipientList',
@@ -126,6 +128,8 @@ export default {
 		ConfirmationDialog,
 	},
 
+	mixins: [SnackbarMixin],
+
 	data() {
 		return {
 			showRLCreationDialog: false,
@@ -133,10 +137,7 @@ export default {
 			recipeintLists: undefined,
 			activeRecipientList: undefined,
 			blankRecipientList: undefined,
-			response: {
-				status: false,
-				message: '',
-			},
+			deleteRecipientDialog: false,
 		};
 	},
 
@@ -158,21 +159,21 @@ export default {
 		},
 
 		deleteRecipientList() {
-			this.$refs.deleteRecipientDialog.showDialog();
+			this.deleteRecipientDialog = true;
 		},
 
 		async deleteRecipientDialogResult(e) {
+			this.deleteRecipientDialog = false;
 			if (e) {
 				let resp = await this.$store.dispatch(
 					'deleteMailingList',
-					this.activeRecipientList.id
+					this.activeRecipientList.id,
 				);
-				this.showSnackBar(resp, 'deleted', 'delete');
-				if(!!resp.status) {
-					if(resp.status === 'deleted') {
-						this.activeRecipientList = null;
-						this.fetchRecipeintLists();
-					}
+				let operationSuccess = !!resp.status && resp.status === 'deleted';
+				this.showCrudSnackbar('delete', operationSuccess);
+				if (operationSuccess) {
+					this.activeRecipientList = null;
+					this.fetchRecipeintLists();
 				}
 			}
 		},
@@ -180,7 +181,7 @@ export default {
 		async createRecipientList() {
 			this.showRLCreationDialog = true;
 			this.blankRecipientList = JSON.parse(
-				JSON.stringify(this.$store.state.storeMailingList.mailingListTemplate)
+				JSON.stringify(this.$store.state.storeMailingList.mailingListTemplate),
 			);
 			this.blankRecipientList.xid = await this.$store.dispatch('getUniqueMailingListXid');
 		},
@@ -188,31 +189,17 @@ export default {
 		async addRecipientList() {
 			this.$refs.recipientListDialog.preSave();
 			let resp = await this.$store.dispatch('createMailingList', this.blankRecipientList);
-			this.showSnackBar(resp, 'created', 'add');
-			if(!!resp.status) {
-				if(resp.status === 'created') {
-					this.fetchRecipeintLists();
-				}
+			let operationSuccess = !!resp.status && resp.status === 'created';
+			this.showCrudSnackbar('add', operationSuccess);
+			if (operationSuccess) {
+				this.fetchRecipeintLists();
 			}
 			this.showRLCreationDialog = false;
 		},
 
 		updateRecipientList(resp) {
-			this.showSnackBar(resp, 'updated', 'update');
+			this.showCrudSnackbar('update', !!resp.status && resp.status === 'updated');
 		},
-
-		showSnackBar(resp, type, message) {
-			if (!!resp.status) {
-				if (resp.status === type) {
-					this.response.status = true;
-					this.response.message = this.$t(`common.snackbar.${message}.success`);
-				}
-			} else {
-				this.response.status = true;
-				this.response.message = this.$t(`common.snackbar.${message}.fail`);
-			}
-
-		}
 	},
 };
 </script>

@@ -1,12 +1,7 @@
-name: Simple Scada-LTS workflow
+name: Scada-LTS PR development workflow
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  push:
-    branches:
-      - 'master'
-    tags:
-      - 'v*'
 jobs:
 
   compile:
