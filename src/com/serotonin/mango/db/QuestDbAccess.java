@@ -27,6 +27,6 @@ public class QuestDbAccess extends PostgreSQLAccess {
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }
-        return true;
+        return false;
     }
 }

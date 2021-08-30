@@ -19,7 +19,8 @@ public class V2_7_1_0__CreateViewPointValuesDenormalized extends BaseJavaMigrati
     public void createViewForPointValues(JdbcTemplate jdbcTmp) {
         String createViewSQL = "CREATE OR REPLACE VIEW pointValuesDenormalized AS select \n" +
                 "pv.dataPointId, pv.dataType, \n" +
-                "pv.pointValue,  concat(date(from_unixtime(pv.ts * 0.001)), \"T\", time(from_unixtime(pv.ts * 0.001)), \"Z\") as ts, " +
+                "pv.pointValue, pv.ts, " +
+                "concat(date(from_unixtime(pv.ts * 0.001)), \"T\", time(from_unixtime(pv.ts * 0.001)), \"Z\") as timestamp, " +
                 "ifnull(pva.textPointValueShort, '') as textPointValueShort, \n" +
                 "ifnull(pva.textPointValueLong, '') as textPointValueLong, \n" +
                 "ifnull(pva.sourceType, '') as sourceType, ifnull(pva.sourceId, '') as sourceId,\n" +
