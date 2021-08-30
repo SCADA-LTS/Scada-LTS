@@ -69,7 +69,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     public static void importToQuestDb(File csv) throws IOException, InterruptedException {
         /*String schema = "schema=[{\"name\":\"timestamp\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"},{\"name\":\"ts\", \"type\": \"LONG\"}]";
-        String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=ts&partitionBy=DAY"};
+        String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY"};
 
         int result = new ProcessBuilder(importToQuestDbCommand)
                 .start()
@@ -79,7 +79,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
         NameValuePair schema = new NameValuePair("schema", "[{\"name\":\"timestamp\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"},{\"name\":\"ts\", \"type\": \"LONG\"}]");
         org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
-        PostMethod postMethod = new PostMethod("http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=ts&partitionBy=DAY");
+        PostMethod postMethod = new PostMethod("http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY");
         postMethod.addParameter(schema);
         MultipartRequestEntity entity = new MultipartRequestEntity(new Part[] {new FilePart("data", csv)}, postMethod.getParams());
         postMethod.setRequestEntity(entity);
