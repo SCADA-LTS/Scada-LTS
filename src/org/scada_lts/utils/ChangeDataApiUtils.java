@@ -34,7 +34,7 @@ public final class ChangeDataApiUtils {
             if (!isDatasourceEnabled(point))
                 msg.append("Datasource is not enabled;");
             if (!isValueValid(point, sv.getValue()))
-                msg.append("Value is invalid for this datapoint type");
+                msg.append("Value is invalid for this datapoint type;");
             if (!msg.toString().equals(""))
                 setValueErrorsDTO.getErrors().add(new SetValueErrorsDTO.PointError(point.getXid(), point.getName(), msg.toString()));
         }
