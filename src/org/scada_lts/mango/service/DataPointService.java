@@ -136,6 +136,8 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public DataPointVO getDataPoint(int id) {
 		DataPointVO dp = dataPointDAO.getDataPoint(id);
+		DataSourceVO<?> dataSource = Common.ctx.getRuntimeManager().getDataSource(dp.getDataSourceId());
+		dataSource.isEnabled();
 		setRelationalData(dp);
 		return dp;
 	}
