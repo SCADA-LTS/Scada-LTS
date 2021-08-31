@@ -22,6 +22,7 @@ const storeSystemSettings = {
 		schemaVersion: undefined,
 		scadaConfig: undefined,
 		defaultLoggingType: undefined,
+		dbQuerySettings: undefined,
 	},
 	mutations: {
 		setDatabaseType(state, databaseType) {
@@ -66,6 +67,9 @@ const storeSystemSettings = {
 		},
 		setDefaultLoggingType(state, defaultLoggingType) {
 			state.defaultLoggingType = defaultLoggingType;
+		},
+		setDbQuerySettings(state, dbQuerySettings) {
+			state.dbQuerySettings = dbQuerySettings;
 		},
 	},
 	actions: {
@@ -251,6 +255,20 @@ const storeSystemSettings = {
 			return dispatch('requestPost', {
 				url: `/systemSettings/saveDefaultLoggingType/${state.defaultLoggingType}`,
 				data: null,
+			});
+		},
+
+		getDbQuerySettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getDbQuerySettings').then((r) => {
+				commit('setDbQuerySettings', r);
+				return r;
+			});
+		},
+
+		saveDbQuerySettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveDbQuerySettings',
+				data: state.dbQuerySettings,
 			});
 		},
 

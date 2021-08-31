@@ -51,6 +51,10 @@
 									ref="amChartSettingsComponent"
 									@changed="componentChanged"
 								></AmChartSettingsComponent>
+                <DbQuerySettingsComponent
+                  ref="dbQuerySettingsComponent"
+                  @changed="componentChanged"
+                ></DbQuerySettingsComponent>
 								<ScadaConfigurationComponent></ScadaConfigurationComponent>
 							</v-row>
 						</v-col>
@@ -265,6 +269,7 @@ import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
 import AmChartSettingsComponent from './AmChartSettingsComponent';
 import DataBaseInfoComponent from './DataBaseInfoComponent';
+import DbQuerySettingsComponent from './DbQuerySettingsComponent';
 
 export default {
 	el: '#systemsettings',
@@ -281,6 +286,7 @@ export default {
 		ScadaConfigurationComponent,
 		AmChartSettingsComponent,
 		DataBaseInfoComponent,
+    DbQuerySettingsComponent,
 	},
 	filters: {
 		blank: function (value) {

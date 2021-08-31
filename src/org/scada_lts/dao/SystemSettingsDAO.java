@@ -23,6 +23,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
+import org.scada_lts.web.mvc.api.DbQuerySettings;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -114,6 +115,9 @@ public class SystemSettingsDAO {
 	public static final String AGGREGATION_ENABLED = "aggregationEnabled";
 	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
 	public static final String AGGREGATION_LIMIT_FACTOR = "aggregationLimitFactor";
+
+	//QueryDB
+	public static final String DB_QUERY_READ_ENABLED = "dbQueryReadEnabled";
 
 	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
 	private static final String DELETE_MANGO_VIEWS = "delete from mangoViews";
@@ -364,6 +368,9 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(AGGREGATION_ENABLED, aggregateSettings.isEnabled());
 		DEFAULT_VALUES.put(AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
 		DEFAULT_VALUES.put(AGGREGATION_VALUES_LIMIT, aggregateSettings.getValuesLimit());
+
+		DbQuerySettings dbQuerySettings = DbQuerySettings.fromEnvProperties();
+		DEFAULT_VALUES.put(DB_QUERY_READ_ENABLED, dbQuerySettings.isReadEnabled());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
