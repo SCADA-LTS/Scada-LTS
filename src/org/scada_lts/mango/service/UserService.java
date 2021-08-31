@@ -29,8 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.*;
+import org.scada_lts.web.mvc.api.json.JsonUser;
+import org.scada_lts.web.mvc.api.json.JsonUserInfo;
+import org.scada_lts.web.mvc.api.json.JsonUserPassword;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -237,5 +241,35 @@ public class UserService implements MangoUser {
 	private void updatePermissions(User user) {
 		updateDataSourcePermissions(user, dataSourcePermissionsService);
 		updateDataPointPermissions(user, dataPointPermissionsService);
+	}
+
+	public List<JsonUserInfo> getUserList() {
+		return userDAO.getUserList();
+	}
+
+	public JsonUser getUserDetails(int userId) {
+		return userDAO.getUserDetails(userId);
+	}
+
+	public JsonUser createUser(JsonUserPassword user) {
+		return userDAO.createUser(user);
+	}
+
+	public void updateUserDetails(JsonUser user) {
+		userDAO.updateUserDetails(user);
+	}
+
+	public void updateUserPassword(int userId, String newPassword) {
+		newPassword = Common.encrypt(newPassword);
+		userDAO.updateUserPassword(userId, newPassword);
+	}
+
+	public void updateUserPassword(int userId, String newPassword, String oldPassword) {
+		oldPassword = Common.encrypt(oldPassword);
+		if(oldPassword.equals(userDAO.getUser(userId).getPassword())) {
+			updateUserPassword(userId, newPassword);
+		} else {
+			LOG.warn("Password mismatch!");
+		}
 	}
 }

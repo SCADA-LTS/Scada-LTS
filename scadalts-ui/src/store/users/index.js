@@ -5,7 +5,7 @@ const storeUsers = {
 
 	actions: {
 		getAllUsers({ dispatch }) {
-			return dispatch('requestGet', `/user/getAll`);
+			return dispatch('requestGet', `/users/`);
 		},
 	},
 

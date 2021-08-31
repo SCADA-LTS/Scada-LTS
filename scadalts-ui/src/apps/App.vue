@@ -79,7 +79,14 @@
 					<v-list-item-content class="justify-center text-center">
 						<v-icon v-show="!user.admin">mdi-account</v-icon>
 						<v-icon v-show="user.admin">mdi-account-tie</v-icon>
-						<h3>{{ user.username }}</h3>
+						<h3>
+							<span v-if="!!user.firstName && !!user.lastName">
+								{{user.firstName}} {{user.lastName}}
+							</span>
+							<span v-else>
+								{{ user.username }}
+							</span>
+						</h3>
 						<p>{{ user.email }}</p>
 						<v-divider></v-divider>
 						<v-btn block text link href="./users.shtm">

@@ -62,6 +62,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private String password;
 	@JsonRemoteProperty
+	private String firstName;
+	@JsonRemoteProperty
+	private String lastName;
+	@JsonRemoteProperty
 	private String email;
 	@JsonRemoteProperty
 	private String phone;
@@ -114,9 +118,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public User() { }
 
-	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+	public User(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
 		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.phone = phone;
 		this.admin = admin;
@@ -209,6 +215,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void cancelTestingUtility() {
 		setTestingUtility(null);
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	// Properties

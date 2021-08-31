@@ -184,7 +184,7 @@ public class AuthenticationAPI {
 		if(user != null) {
 			try {
 				JsonUser jsonUser = new JsonUser(
-						user.getId(), user.getUsername(), user.getEmail(),
+						user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(),
 						user.getPhone(), user.isAdmin(), user.isDisabled(),
 						user.getHomeUrl(), user.getLastLogin()
 				);

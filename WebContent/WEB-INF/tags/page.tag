@@ -250,7 +250,14 @@
     <div id="navbarUserInfo">
       <c:if test="${!empty sessionUser}">
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-        <span class="userName">${sessionUser.username}</span>
+        <c:choose>
+            <c:when test="${!empty sessionUser.firstName}">
+              <span class="userName">${sessionUser.firstName} ${sessionUser.lastName}</span>
+            </c:when>
+            <c:otherwise>
+              <span class="userName">${sessionUser.username}</span>
+            </c:otherwise>
+        </c:choose>
       </c:if>
     </div>
 
