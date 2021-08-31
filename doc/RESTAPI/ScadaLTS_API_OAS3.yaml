@@ -203,6 +203,33 @@ paths:
                       type: string
                     description:
                       type: string
+  /datasource:
+    get:
+      tags:
+        - DataSourceAPI
+      parameters:
+      - name: 'xid'
+        description: 'DataSource XID'
+        in: 'path'
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled:
+                    type: boolean
+                  xid:
+                    type: string
+                  id:
+                    type: number
+                  name:
+                    type: string
   /datasource/getAll:
     get:
       tags:
