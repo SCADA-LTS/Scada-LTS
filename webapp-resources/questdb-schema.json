@@ -1,0 +1,43 @@
+[
+  {
+    "name":"dataPointId",
+    "type": "INT"
+  },
+  {
+    "name":"dataType",
+    "type": "INT"
+  },
+  {
+    "name":"ts",
+    "type": "LONG"
+  },
+  {
+    "name":"timestamp",
+    "type": "TIMESTAMP",
+    "pattern": "yyyy-MM-ddTHH:mm:ss.SSSZ"
+  },
+  {
+    "name":"textPointValueShort",
+    "type": "SYMBOL"
+  },
+  {
+    "name":"textPointValueLong",
+    "type": "SYMBOL"
+  },
+  {
+    "name":"sourceType",
+    "type": "INT"
+  },
+  {
+    "name":"sourceId",
+    "type": "INT"
+  },
+  {
+    "name":"username",
+    "type": "SYMBOL"
+  },
+  {
+    "name":"pointValue",
+    "type": "DOUBLE"
+  }
+]

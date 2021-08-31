@@ -68,7 +68,8 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 	private final static String  COLUMN_NAME_TEXT_POINT_VALUE_SHORT = "textPointValueShort";
 	private final static String  COLUMN_NAME_TEXT_POINT_VALUE_LONG = "textPointValueLong";
 	private final static String  COLUMN_NAME_SOURCE_TYPE = "sourceType";
-	private final static String  COLUMN_NAME_TIME_STAMP = "ts";
+	private final static String  COLUMN_NAME_TS = "ts";
+	private final static String  COLUMN_NAME_TIMESTAMP = "timestamp";
 	private final static String  COLUMN_NAME_SOURCE_ID = "sourceId";
 	private final static String  COLUMN_NAME_DATA_POINT_ID = "dataPointId";
 	private final static String  COLUMN_NAME_MIN_TIME_STAMP = "minTs";
@@ -82,7 +83,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			    + COLUMN_NAME_DATA_POINT_ID + ", "
 				+ COLUMN_NAME_DATA_TYPE + ", "
 				+ COLUMN_NAME_POINT_VALUE + ", "
-				+ COLUMN_NAME_TIME_STAMP + ", "
+				+ COLUMN_NAME_TS + ", "
 				+ COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
 				+ COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
 				+ COLUMN_NAME_SOURCE_TYPE + ", "
@@ -96,7 +97,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			+ COLUMN_NAME_DATA_POINT_ID + ", "
 			+ COLUMN_NAME_DATA_TYPE + ", "
 			+ COLUMN_NAME_POINT_VALUE + ", "
-			+ COLUMN_NAME_TIME_STAMP + ", "
+			+ COLUMN_NAME_TS + ", "
 			+ COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
 			+ COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
 			+ COLUMN_NAME_SOURCE_TYPE + ", "
@@ -150,21 +151,22 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			+ POINT_VALUE_SELECT
 			+ " where "
 				+ COLUMN_NAME_DATA_POINT_ID + "=? and "
-				+ COLUMN_NAME_TIME_STAMP +"=?";
+				+ COLUMN_NAME_TS +"=?";
 
 	private static final String POINT_VALUE_DENORMALIZED_INSERT = ""
 			+ "insert into pointValuesDenormalized ("
 			+ ""+COLUMN_NAME_DATA_POINT_ID + ", "
 			+ ""+COLUMN_NAME_DATA_TYPE + ", "
 			+ ""+COLUMN_NAME_POINT_VALUE + ", "
-			+ ""+COLUMN_NAME_TIME_STAMP + ", "
+			+ ""+COLUMN_NAME_TS + ", "
+			+ ""+COLUMN_NAME_TIMESTAMP + ", "
 			+ ""+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
 			+ ""+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
 			+ ""+COLUMN_NAME_SOURCE_TYPE + ", "
 			+ ""+COLUMN_NAME_SOURCE_ID + ", "
 			+ ""+COLUMN_NAME_USERNAME_IN_TABLE_USERS
 			+") "
-			+ "values (?,?,?,?,?,?,?,?,?)";
+			+ "values (?,?,?,?,?,?,?,?,?,?)";
 
 	private static final String POINT_VALUE_INCEPTION_DATA = " "
 			+"select "
@@ -180,34 +182,34 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			+ "from "
 				+ "pointValuesDenormalized "
 			+ "where "
-				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+">=? and "+COLUMN_NAME_TIME_STAMP+"<=?";
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+ COLUMN_NAME_TS +">=? and "+ COLUMN_NAME_TS +"<=?";
 
 	public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+" >= ? order by "+COLUMN_NAME_TIME_STAMP;
+			+ "pv."+ COLUMN_NAME_TS +" >= ? order by "+ COLUMN_NAME_TS;
 
 	public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+">=? and pv."+COLUMN_NAME_TIME_STAMP+"<? order by "+COLUMN_NAME_TIME_STAMP;
+			+ "pv."+ COLUMN_NAME_TS +">=? and pv."+ COLUMN_NAME_TS +"<? order by "+ COLUMN_NAME_TS;
 
 	public static final String POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc";
+			+ "order by pv."+ COLUMN_NAME_TS +" desc";
 
 	public static final String POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+"<? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP+" desc";
+			+ "pv."+ COLUMN_NAME_TS +"<? "
+			+ "order by pv."+ COLUMN_NAME_TS +" desc";
 
 	public static final String POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+"<? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
+			+ "pv."+ COLUMN_NAME_TS +"<? "
+			+ "order by pv."+ COLUMN_NAME_TS;
 
 	public static final String POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
 			+ "pv."+COLUMN_NAME_DATA_POINT_ID+"=? and "
-			+ "pv."+COLUMN_NAME_TIME_STAMP+"=? "
-			+ "order by pv."+COLUMN_NAME_TIME_STAMP;
+			+ "pv."+ COLUMN_NAME_TS +"=? "
+			+ "order by pv."+ COLUMN_NAME_TS;
 
 	public static final String POINT_VALUE_ID_OF_LAST_VALUE = ""
 			+ "select"
@@ -221,7 +223,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			+ "from "
 				+ "pointValuesDenormalized "
 			+ "where "
-				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<? "
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+ COLUMN_NAME_TS +"<? "
 			    + "and id not in (?) ";
 
 	public static final String POINT_VALUE_DELETE_BASE_ON_POINT_ID = ""
@@ -245,13 +247,13 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 
 	private static final String SELECT_MAX_TIME_WHERE_DATA_POINT_ID = ""
 			+ "select max("
-				+ COLUMN_NAME_TIME_STAMP + ") "
+				+ COLUMN_NAME_TS + ") "
 			+ "from pointValuesDenormalized where "
 				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
 
 	private static final String SELECT_MIN_TIME_WHERE_DATA_POINT_ID = ""
 			+ "select min("
-				+ COLUMN_NAME_TIME_STAMP + ") "
+				+ COLUMN_NAME_TS + ") "
 			+ "from pointValuesDenormalized where "
 				+ COLUMN_NAME_DATA_POINT_ID + "=? ";
 
@@ -269,7 +271,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 		public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
 			//TODO rewrite MangoValue
 			MangoValue value = createMangoValue(rs);
-			long time = rs.getLong(COLUMN_NAME_TIME_STAMP);
+			long time = rs.getLong(COLUMN_NAME_TS);
 
 			PointValue pv = new PointValue();
 			//pv.setId(rs.getLong(COLUMN_NAME_ID));
@@ -299,7 +301,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 		public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
 			//TODO rewrite MangoValue
 			MangoValue value = createMangoValue(rs);
-			long time = rs.getLong(COLUMN_NAME_TIME_STAMP);
+			long time = rs.getLong(COLUMN_NAME_TS);
 
 			PointValue pv = new PointValue();
 			//pv.setId(rs.getLong(COLUMN_NAME_ID));
@@ -445,7 +447,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 						+ "pv."+COLUMN_NAME_DATA_POINT_ID + ", "
 						+ "pv."+COLUMN_NAME_DATA_TYPE + ", "
 						+ "pv."+COLUMN_NAME_POINT_VALUE + ", "
-						+ "pv."+COLUMN_NAME_TIME_STAMP + ", "
+						+ "pv."+ COLUMN_NAME_TS + ", "
 						+ "pv."+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
 						+ "pv."+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
 						+ "pv."+COLUMN_NAME_SOURCE_TYPE + ", "
@@ -474,6 +476,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			 						entity.getPointValue().getValue().getDataType(),
 			 						getValueBaseOnType(entity.getPointValue().getValue().getDataType(), entity.getPointValue()),
 			 						entity.getPointValue().getTime(),
+									new Date(entity.getPointValue().getTime()),
 									null,
 									null,
 									null,
@@ -513,6 +516,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 					mangoValue.getDataType(),
 					getValueBaseOnType(mangoValue.getDataType(), pointValueTime),
 					pointValueTime.getTime(),
+					new Date(pointValueTime.getTime()),
 					pointValueAdnnotation.getTextPointValueShort(),
 					pointValueAdnnotation.getTextPointValueLong(),
 					pointValueAdnnotation.getSourceType(),
@@ -540,6 +544,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 			 						dataType,
 			 						dvalue,
 			 						time,
+									new Date(time),
 									null,
 									null,
 									null,
@@ -574,7 +579,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 		if(params.get(0).length == 4) {
 			List<Object[]> paramsExt = new ArrayList<>();
 			for (Object[] args : params) {
-				paramsExt.add(new Object[]{args[0], args[1], args[2], args[3], null, null, null, null, null});
+				paramsExt.add(new Object[]{args[0], args[1], args[2], args[3], new Date((long)args[3]), null, null, null, null, null});
 			}
 			jdbcTemplate.batchUpdate(POINT_VALUE_DENORMALIZED_INSERT,paramsExt);
 		} else
