@@ -54,15 +54,18 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         File schema = Paths.get(resource.toURI()).toFile();
         int limit = Common.getEnvironmentProfile().getInt("db.values.export.limit", 1001);
         boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);
+        boolean valuesImportEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.import.enabled", true);
 
-        MigrationSettings migrationSettings = MigrationSettings.builder()
-                .toRead(mysql)
-                .overwrite(overwrite)
-                .schema(schema)
-                .build();
+        if(valuesImportEnabled) {
+            MigrationSettings migrationSettings = MigrationSettings.builder()
+                    .toRead(mysql)
+                    .overwrite(overwrite)
+                    .schema(schema)
+                    .build();
 
-        for (int i = 0 ; migrationNext(PaginationParams.params(i, limit), migrationSettings); i += limit) {}
-
+            for (int i = 0; migrationNext(PaginationParams.params(i, limit), migrationSettings); i += limit) {
+            }
+        }
         final String createEmptyTableQuery = "CREATE TABLE IF NOT EXISTS pointValuesDenormalized (" +
                 "dataPointId INT, " +
                 "dataType INT, " +
