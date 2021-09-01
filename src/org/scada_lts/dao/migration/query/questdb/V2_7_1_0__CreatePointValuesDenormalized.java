@@ -84,7 +84,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                     exportedToCsv.set(true);
                     try {
                         if (csv.length() > 0) {
-                            int imported = importToQuestDb(schema, csv);
+                            int imported = importToQuestDb(schema, csv, false);
                             rowsImported.set(imported);
                         }
                     } finally {
@@ -125,8 +125,6 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
     private static String changePath(File file) {
         if(file.getAbsolutePath().contains("\\")) {
             return file.getAbsolutePath().replace("\\", "\\\\");
-        } else if (file.getAbsolutePath().contains("/")) {
-            return file.getAbsolutePath().replace("/", "//");
         }
         return file.getAbsolutePath();
     }
@@ -162,7 +160,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         return Optional.of(new File(csv));
     }
 
-    public static int importToQuestDb(File schema, File csv) {
+    public static int importToQuestDb(File schema, File csv, boolean overwrite) {
         /*String schema = "schema=[{\"name\":\"timestamp\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"},{\"name\":\"ts\", \"type\": \"LONG\"}]";
         String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY"};
 
@@ -171,7 +169,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                 .waitFor();
         LOG.info("QuestDb import finished: " + result);*/
         try {
-            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY");
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY&overwrite=" + overwrite);
             MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", schema), new FilePart("data", csv)}, postMethod.getParams());
             postMethod.setRequestEntity(entity);
             MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
