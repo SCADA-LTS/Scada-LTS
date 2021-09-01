@@ -100,7 +100,16 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         try {
             String secureFilePrivQuery = "SHOW VARIABLES LIKE \"secure_file_priv\"";
             String secureFilePriv = jdbcOperations.query(secureFilePrivQuery, (resultSet, i) -> resultSet.getString("Value")).get(0);
-            if(secureFilePriv != null && !secureFilePriv.isEmpty()) {
+            if(secureFilePriv == null) {
+                LOG.warn("The secure_file_priv constant in the mysql database has an empty null value set, this blocked the database from being exported to a file, set a value for this constant other than null:\n" +
+                        "1) Setting the value to empty will make it possible to export to any location;\n" +
+                        "2) Setting this parameter to a specific path will force the use of that particular path;\n" +
+                        "\n" +
+                        "The change requires a mysql server restart. Applies to mysql version 5.7.");
+                return Optional.empty();
+            }
+
+            if(!secureFilePriv.isEmpty()) {
                 File file = new File(secureFilePriv + File.separator + "pointValues" + System.currentTimeMillis() + ".csv");
                 return Optional.of(changePath(file));
             }
