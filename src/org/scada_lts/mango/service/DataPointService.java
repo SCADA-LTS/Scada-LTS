@@ -106,8 +106,8 @@ public class DataPointService implements MangoDataPoint {
 	private boolean dbQueryEnabled;
 
 	public DataPointService() {
-		this.pointValueAmChartCommandRepository = new PointValueAmChartDAO(DAO.getInstance().getJdbcTemp());
-		this.pointValueAmChartQueryRepository = new PointValueAmChartDAO(DAO.query().getJdbcTemp());
+		this.pointValueAmChartCommandRepository = new PointValueAmChartDAO(DAO.getInstance().getJdbcTemp(), false);
+		this.pointValueAmChartQueryRepository = new PointValueAmChartDAO(DAO.query().getJdbcTemp(), true);
 		this.dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
 	}
 
