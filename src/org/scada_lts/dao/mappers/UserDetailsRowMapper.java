@@ -57,6 +57,8 @@ public class UserDetailsRowMapper implements RowMapper<JsonUser> {
                 COLUMN_NAME_ID + ", " +
                 COLUMN_NAME_USERNAME + ", " +
                 COLUMN_NAME_PHONE + ", " +
+                COLUMN_NAME_FIRST_NAME + ", " +
+                COLUMN_NAME_LAST_NAME + ", " +
                 COLUMN_NAME_EMAIL + ", " +
                 COLUMN_NAME_ADMIN + ", " +
                 COLUMN_NAME_DISABLED + ", " +
