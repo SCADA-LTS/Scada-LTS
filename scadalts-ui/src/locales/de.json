@@ -235,6 +235,7 @@
 	"purge.dialog.title": "Datenpunktdaten jetzt löschen",
 	"purge.dialog.confirm.title": "Datenpunktdaten jetzt löschen",
 	"purge.dialog.confirm.text": "Dieser Vorgang kann nicht rückgängig gemacht werden",
+	"userDetails.title": "Benutzer-Details",
 	"systemsettings.alert.purgedata": "Durch diesen Vorgang werden Datenpunktverlaufsinhalte dauerhaft gelöscht. Fortsetzen?",
 	"systemsettings.alert.purgedata.title": "Daten löschen?",
 	"systemsettings.audit.title": "Alarm Prioritäten des Audits",
