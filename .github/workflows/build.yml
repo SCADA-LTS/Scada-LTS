@@ -36,7 +36,7 @@ jobs:
         if: always()
         with:
           check_name: Java JUnit Test Results
-          files: ./build/test-reports/**/*.xml
+          files: ./build/test-results/**/*.xml
       - name: Publish JUnit Test Results
         uses: actions/upload-artifact@v2
         with:
