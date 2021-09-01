@@ -53,8 +53,15 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         URL resource = V2_7_1_0__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
         File schema = Paths.get(resource.toURI()).toFile();
         int limit = Common.getEnvironmentProfile().getInt("db.values.export.limit", 1001);
+        boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);
 
-        for (int i = 0 ; migrationNext(schema, i, limit, mysql); i += limit) {}
+        MigrationSettings migrationSettings = MigrationSettings.builder()
+                .toRead(mysql)
+                .overwrite(overwrite)
+                .schema(schema)
+                .build();
+
+        for (int i = 0 ; migrationNext(PaginationParams.params(i, limit), migrationSettings); i += limit) {}
 
         final String createEmptyTableQuery = "CREATE TABLE IF NOT EXISTS pointValuesDenormalized (" +
                 "dataPointId INT, " +
@@ -72,27 +79,33 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     }
 
-    private static boolean migrationNext(File schema, int offset, int limit, JdbcOperations mysql) {
-        if(schema == null || !schema.exists() || offset < 0  || limit <= 0 || mysql == null) {
+    private static boolean migrationNext(PaginationParams paginationParams,
+                                         MigrationSettings migrationSettings) {
+        if(migrationSettings.getSchema() == null
+                || !migrationSettings.getSchema().exists()
+                || paginationParams.getOffset() < 0
+                || paginationParams.getLimit() <= 0
+                || migrationSettings.getToRead() == null) {
+            LOG.warn(migrationSettings);
             return false;
         }
         AtomicBoolean exportedToCsv = new AtomicBoolean(false);
         AtomicInteger rowsImported = new AtomicInteger(0);
-        createAccessDir(mysql)
-                .flatMap(path -> exportToCsv(path, offset, limit, mysql))
+        createAccessDir(migrationSettings.getToRead())
+                .flatMap(dir -> exportToCsv(dir, paginationParams, migrationSettings.getToRead()))
                 .ifPresent(csv -> {
                     exportedToCsv.set(true);
                     try {
                         if (csv.length() > 0) {
-                            int imported = importToQuestDb(schema, csv, false);
+                            int imported = importToQuestDb(csv, migrationSettings);
                             rowsImported.set(imported);
                         }
                     } finally {
                         delete(csv);
                     }
                 });
-        LOG.info("last offset: " + (offset + rowsImported.get()));
-        return exportedToCsv.get() && rowsImported.get() == limit;
+        LOG.info("last offset: " + (paginationParams.getOffset() + rowsImported.get()));
+        return exportedToCsv.get() && rowsImported.get() == paginationParams.getLimit();
     }
 
 
@@ -129,58 +142,41 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         return file.getAbsolutePath();
     }
 
-    public static Optional<File> exportToCsv(String csv, int offset, int limit, JdbcOperations jdbcOperations) {
-       /* String query = "select * from pointValuesDenormalized LIMIT " + limit + " OFFSET " + offset;
-        String [] exportFromMysqlCommand = {"mysql", "-u", "root", "-proot", "scadalts_12", "-e", query, "-B"};
-        try {
-           int result = new ProcessBuilder(exportFromMysqlCommand)
-                    .redirectOutput(csv)
-                    .start()
-                    .waitFor();
-            LOG.info("MySql export finished: " + result);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-
-        return result;*/
-
+    public static Optional<File> exportToCsv(String csv,
+                                             PaginationParams paginationParams,
+                                             JdbcOperations jdbcOperations) {
         String query = "SELECT * FROM (" +
                 "    SELECT 'dataPointId', 'dataType', 'pointValue', 'ts', 'timestamp', 'textPointValueShort', 'textPointValueLong', 'sourceType', 'sourceId', 'username' UNION ALL" +
                 "    (" +
-                "       SELECT * FROM pointValuesDenormalized LIMIT " + limit + " OFFSET " + offset + " " +
+                "       SELECT * FROM pointValuesDenormalized LIMIT " + paginationParams.getLimit() + " OFFSET " + paginationParams.getOffset() + " " +
                 "    )" +
                 ") result INTO OUTFILE '" + csv + "' FIELDS TERMINATED BY '\t' ENCLOSED BY '' LINES TERMINATED BY '\r\n';";
 
         try {
             jdbcOperations.execute(query);
+            LOG.info("MySql export finished: OK");
+            return Optional.of(new File(csv));
         } catch (Exception ex) {
+            LOG.info("MySql export finished: ERROR");
             LOG.error(ex.getMessage(), ex);
             return Optional.empty();
         }
-        return Optional.of(new File(csv));
     }
 
-    public static int importToQuestDb(File schema, File csv, boolean overwrite) {
-        /*String schema = "schema=[{\"name\":\"timestamp\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"},{\"name\":\"ts\", \"type\": \"LONG\"}]";
-        String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY"};
-
-        int result = new ProcessBuilder(importToQuestDbCommand)
-                .start()
-                .waitFor();
-        LOG.info("QuestDb import finished: " + result);*/
+    public static int importToQuestDb(File csv, MigrationSettings migrationSettings) {
         try {
-            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY&overwrite=" + overwrite);
-            MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", schema), new FilePart("data", csv)}, postMethod.getParams());
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY&overwrite=" + migrationSettings.isOverwrite());
+            MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", migrationSettings.getSchema()), new FilePart("data", csv)}, postMethod.getParams());
             postMethod.setRequestEntity(entity);
             MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
             HttpClient httpClient = new HttpClient(manager);
             httpClient.executeMethod(postMethod);
             String response = postMethod.getResponseBodyAsString();
-            LOG.info(response);
+            LOG.info("QuestDb import finished: \r\n" + response);
             return parseRowsImported(response);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            return -1;
+            return -3;
         }
     }
 
@@ -197,7 +193,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                 }
             }
         }
-        return -1;
+        return -2;
     }
 
     public static void delete(File csv) {
@@ -205,6 +201,98 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
             Files.delete(csv.toPath());
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
+        }
+    }
+
+    private static class PaginationParams {
+        int offset;
+        int limit;
+
+        private PaginationParams(int offset, int limit) {
+            this.offset = offset;
+            this.limit = limit;
+        }
+
+        public static PaginationParams params(int offset, int limit) {
+            return new PaginationParams(offset, limit);
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public int getLimit() {
+            return limit;
+        }
+
+        @Override
+        public String toString() {
+            return "PaginationParams{" +
+                    "offset=" + offset +
+                    ", limit=" + limit +
+                    '}';
+        }
+    }
+
+    private static class MigrationSettings {
+        File schema;
+        JdbcOperations toRead;
+        boolean overwrite;
+
+        private MigrationSettings(File schema, JdbcOperations toRead, boolean overwrite) {
+            this.schema = schema;
+            this.toRead = toRead;
+            this.overwrite = overwrite;
+        }
+
+        public static MigrationSettings.Builder builder() {
+            return new MigrationSettings.Builder();
+        }
+
+        private static class Builder {
+            File schema;
+            JdbcOperations toRead;
+            boolean overwrite;
+
+            public Builder schema(File schema) {
+                this.schema = schema;
+                return this;
+            }
+
+            public Builder toRead(JdbcOperations toRead) {
+                this.toRead = toRead;
+                return this;
+            }
+
+            public Builder overwrite(boolean overwrite) {
+                this.overwrite = overwrite;
+                return this;
+            }
+
+            public MigrationSettings build() {
+                return new MigrationSettings(schema, toRead, overwrite);
+            }
+        }
+
+        public File getSchema() {
+            return schema;
+        }
+
+        public JdbcOperations getToRead() {
+            return toRead;
+        }
+
+        public boolean isOverwrite() {
+            return overwrite;
+        }
+
+        @Override
+        public String toString() {
+            return "MigrationSettings{" +
+                    "schema=" + schema +
+                    ", jdbcOperations=" + toRead.getClass().getSimpleName() +
+                    ", overwrite=" + overwrite +
+                    '}';
         }
     }
 }
