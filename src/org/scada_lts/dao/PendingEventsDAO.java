@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -214,7 +215,9 @@ public class PendingEventsDAO {
 
 	protected Map<Integer, List<EventInstance>> getPendingEvents() {
 
-		List<Integer> users = new UserDAO().getAll();
+		List<Integer> users = new ArrayList<>();
+		new UserDAO().getAll()
+				.forEach(user -> users.add(user.getId()));
 
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 

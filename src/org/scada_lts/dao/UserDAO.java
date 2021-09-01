@@ -30,7 +30,7 @@ import java.util.List;
  *         person supporting and coreecting translation Jerzy Piejko
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserDAO {
+public class UserDAO implements CrudOperations<User> {
 
 	private static final Log LOG = LogFactory.getLog(UserDAO.class);
 
@@ -52,6 +52,9 @@ public class UserDAO {
 	private static final String COLUMN_NAME_LAST_NAME = "lastName";
 
 	private static final String TABLE_NAME = "users";
+
+	private static final int DAO_EMPTY_RESULT = 0;
+	private static final int DAO_EXCEPTION = -1;
 
 
 	// @formatter:off
@@ -236,13 +239,30 @@ public class UserDAO {
 		}
 	}
 
-	public List<Integer> getAll() {
+	@Override
+	public User create(User entity) {
+		return getUser(insert(entity));
+	}
+
+	@Override
+	public List<ScadaObjectIdentifier> getSimpleList() {
+		return null;
+	}
+
+	public List<User> getAll() {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getAll()");
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
+		return DAO.getInstance().getJdbcTemp()
+				.query(USER_SELECT, new UserRowMapper());
+
+	}
+
+	@Override
+	public User getById(int id) throws EmptyResultDataAccessException {
+		return getUser(id);
 	}
 
 	public User getUser(int id) {
@@ -344,26 +364,32 @@ public class UserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void update(final User user) {
+	public int update(final User user) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(User user) user:" + user);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE, new Object[]{
-				user.getUsername(),
-				user.getFirstName(),
-				user.getLastName(),
-				user.getPassword(),
-				user.getEmail(),
-				user.getPhone(),
-				DAO.boolToChar(user.isAdmin()),
-				DAO.boolToChar(user.isDisabled()),
-				user.getHomeUrl(),
-				user.getReceiveAlarmEmails(),
-				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-				user.getId()
-		});
+		try {
+			return DAO.getInstance().getJdbcTemp().update(USER_UPDATE,
+					user.getUsername(),
+					user.getFirstName(),
+					user.getLastName(),
+					user.getPassword(),
+					user.getEmail(),
+					user.getPhone(),
+					DAO.boolToChar(user.isAdmin()),
+					DAO.boolToChar(user.isDisabled()),
+					user.getHomeUrl(),
+					user.getReceiveAlarmEmails(),
+					DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+					user.getId());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.error("User entity with id=" + user.getId() + "does not exists!");
+			return DAO_EMPTY_RESULT;
+		} catch (Exception e) {
+			LOG.error(e);
+			return DAO_EXCEPTION;
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -393,13 +419,19 @@ public class UserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void delete(int userId) {
+	public int delete(int userId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int userId) userId:" + userId);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(USER_DELETE, new Object[]{userId});
+		try {
+			DAO.getInstance().getJdbcTemp().update(USER_DELETE, userId);
+			return 0;
+		} catch (Exception e) {
+			LOG.error("FAILED ON DELETING User with ID: " + userId);
+			LOG.error(e);
+			return DAO_EXCEPTION;
+		}
 	}
 
 	public List<JsonUserInfo> getUserList() {

@@ -1,9 +1,15 @@
 import WatchListJsonChart from '@/components/watch_list/WatchListJsonChart';
 
+import storeWatchList from '../mocks/store/watchListMock';
+
 import { expect } from 'chai';
 import { prepareMountWrapper, LocalStorageMock } from '../utils/testing-utils';
 
 const WATCHLIST_NAME = 'UnitTestWL';
+
+const modules = {
+	storeWatchList
+};
 
 /**
  * @private
@@ -13,6 +19,7 @@ const WATCHLIST_NAME = 'UnitTestWL';
 function initWrapper() {
 	return prepareMountWrapper(
 		WatchListJsonChart,
+		modules,
 		{},
 		{
 			pointId: '1',

@@ -141,13 +141,14 @@ public class OnlyMigrationUserDAO extends UserDAO {
 		}
 	}
 
-	public List<Integer> getAll() {
+	public List<User> getAll() {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getAll()");
 		}
 
-		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
+		return DAO.getInstance().getJdbcTemp()
+				.query(USER_SELECT, new UserRowMapper());
 	}
 
 	public User getUser(int id) {
@@ -247,33 +248,44 @@ public class OnlyMigrationUserDAO extends UserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void update(final User user) {
+	public int update(final User user) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(User user) user:" + user);
 		}
+		try {
+			return DAO.getInstance().getJdbcTemp().update(USER_UPDATE, new Object[]{
+					user.getUsername(),
+					user.getPassword(),
+					user.getEmail(),
+					user.getPhone(),
+					DAO.boolToChar(user.isAdmin()),
+					DAO.boolToChar(user.isDisabled()),
+					user.getHomeUrl(),
+					user.getReceiveAlarmEmails(),
+					DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+					user.getId()
+			});
+		} catch (EmptyResultDataAccessException e) {
+			return 0;
+		} catch (Exception e) {
+			return -1;
+		}
 
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE, new Object[]{
-				user.getUsername(),
-				user.getPassword(),
-				user.getEmail(),
-				user.getPhone(),
-				DAO.boolToChar(user.isAdmin()),
-				DAO.boolToChar(user.isDisabled()),
-				user.getHomeUrl(),
-				user.getReceiveAlarmEmails(),
-				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-				user.getId()
-		});
+
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void delete(int userId) {
+	public int delete(int userId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int userId) userId:" + userId);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(USER_DELETE, new Object[]{userId});
+		try {
+			DAO.getInstance().getJdbcTemp().update(USER_DELETE, new Object[]{userId});
+			return 0;
+		} catch (Exception e) {
+			return -1;
+		}
 	}
 }
