@@ -1,0 +1,11 @@
+name: "My CodeQL config"
+
+queries:
+  - uses: security-and-quality
+
+paths:
+  - WebContent/WEB-INF
+  - scadalts-ui
+paths-ignore:
+  - '*/*/node_modules'
+  - '**/*.test.js'

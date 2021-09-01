@@ -224,6 +224,14 @@
 			<test name="org.scada_lts.permissions.migration.MigrationPermissionsTestsSuite"
 				  haltonfailure="yes" todir="${build-project.test.report}">
 			</test>
+
+			<test name="org.scada_lts.dao.pointvalues.PointValueAmChartDAOTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">

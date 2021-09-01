@@ -161,6 +161,7 @@ class ValueToJSON implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private int id;
     private String value;
     private String formattedValue;
     private Long ts;
@@ -172,6 +173,7 @@ class ValueToJSON implements Serializable {
     private boolean enabled;
 
     void set(PointValueTime pvt, DataPointVO dpvo) {
+        setId(dpvo.getId());
         setValue(pvt.getValue());
         setTs(pvt.getTime());
         setName(dpvo.getName());
@@ -181,6 +183,18 @@ class ValueToJSON implements Serializable {
         setFormattedValue(textRenderer.getText(pvt, 1) + textRenderer.getMetaText());
         setEnabled(dpvo.isEnabled());
     }
+
+    void setDataPoint(DataPointVO dpvo) {
+        setId(dpvo.getId());
+        setName(dpvo.getName());
+        setXid(dpvo.getXid());
+        setTextRenderer(dpvo.getTextRenderer());
+        setChartColour(dpvo.getChartColour());
+    }
+
+    public void setId(int id) { this.id = id; }
+
+    public int getId() { return this.id; }
 
     public String getValue() {
         return value;
@@ -348,7 +362,10 @@ public class PointValueAPI {
                 ObjectMapper mapper = new ObjectMapper();
 
                 ValueToJSON v = new ValueToJSON();
-                v.set(pvt, dpvo);
+                if (pvt != null)
+                    v.set(pvt, dpvo);
+                else
+                    v.setDataPoint(dpvo);
 
                 json = mapper.writeValueAsString(v);
 
@@ -382,7 +399,10 @@ public class PointValueAPI {
                 ObjectMapper mapper = new ObjectMapper();
 
                 ValueToJSON v = new ValueToJSON();
-                v.set(pvt, dpvo);
+                if (pvt != null)
+                    v.set(pvt, dpvo);
+                else
+                    v.setDataPoint(dpvo);
 
                 json = mapper.writeValueAsString(v);
 

@@ -285,6 +285,10 @@ final class MigrationPermissionsUtils {
         }
     }
 
+    public static DataPointAccess generateDataPointAccess(ShareUser shareUser, DataPointVO dataPoint) {
+        return new DataPointAccess(dataPoint.getId(), !dataPoint.isSettable() && shareUser.getAccessType() > ShareUser.ACCESS_READ ? ShareUser.ACCESS_READ : shareUser.getAccessType());
+    }
+
     public static Map<Integer, List<DataPointVO>> findDataPointsFromViews(List<View> views) {
         Map<Integer, List<DataPointVO>> dataPoints = new HashMap<>();
         LOG.info("search-datapoints");
