@@ -60,6 +60,19 @@ public class UserDAO {
 				+ COLUMN_NAME_ID + " "
 			+ "from users ";
 
+	private static final String INIT_USER_INSERT = "" +
+			"insert into users (" +
+			COLUMN_NAME_USERNAME + ", " +
+			COLUMN_NAME_PASSWORD + ", " +
+			COLUMN_NAME_EMAIL + ", " +
+			COLUMN_NAME_PHONE + ", " +
+			COLUMN_NAME_ADMIN + ", " +
+			COLUMN_NAME_DISABLED + ", " +
+			COLUMN_NAME_HOME_URL + ", " +
+			COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", " +
+			COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") " +
+			"values (?,?,?,?,?,?,?,?,?) ";
+
 	private static final String USER_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -404,6 +417,27 @@ public class UserDAO {
 				.queryForObject(mapper.selectUserDetailsFromDatabase(userId), mapper);
 	}
 
+	public User initAdminUser(User user) {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(conn -> {
+			PreparedStatement ps = conn.prepareStatement(INIT_USER_INSERT, Statement.RETURN_GENERATED_KEYS);
+			new ArgumentPreparedStatementSetter(new Object[] {
+					user.getUsername(),
+					user.getPassword(),
+					user.getEmail(),
+					user.getPhone(),
+					DAO.boolToChar(user.isAdmin()),
+					DAO.boolToChar(user.isDisabled()),
+					user.getHomeUrl(),
+					user.getReceiveAlarmEmails(),
+					DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+			}).setValues(ps);
+			return ps;
+		}, keyHolder);
+		user.setId(keyHolder.getKey().intValue());
+		return user;
+	}
+
 	public JsonUser createUser(JsonUserPassword user) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(conn -> {
@@ -415,11 +449,11 @@ public class UserDAO {
 					user.getPassword(),
 					user.getEmail(),
 					user.getPhone(),
-					user.isAdmin(),
-					user.isDisabled(),
+					DAO.boolToChar(user.isAdmin()),
+					DAO.boolToChar(user.isDisabled()),
 					user.getHomeUrl(),
 					user.getReceiveAlarmEmails(),
-					user.isReceiveOwnAuditEvents(),
+					DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 					user.isHideMenu(),
 					user.getTheme()
 			}).setValues(ps);
