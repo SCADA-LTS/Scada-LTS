@@ -18,19 +18,26 @@
 package org.scada_lts.dao.migration.query.questdb;
 
 import com.serotonin.mango.Common;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
@@ -40,16 +47,16 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
 
-        File schema = new File("questdb-schema.json");
+        final JdbcOperations questdb = DAO.query().getJdbcTemp();
+        final JdbcOperations mysql = DAO.getInstance().getJdbcTemp();
+
+        URL resource = V2_7_1_0__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
+        File schema = Paths.get(resource.toURI()).toFile();
         int limit = Common.getEnvironmentProfile().getInt("db.values.export.limit", 1001);
 
-        int i;
-        for (i = 0 ; migrationNext(schema, i, limit); i = i + limit) {}
+        for (int i = 0 ; migrationNext(schema, i, limit, mysql); i += limit) {}
 
-
-        final JdbcTemplate jdbcTemplate = DAO.query().getJdbcTemp();
-
-        final String createEmptyQuery = "CREATE TABLE IF NOT EXISTS pointValuesDenormalized (" +
+        final String createEmptyTableQuery = "CREATE TABLE IF NOT EXISTS pointValuesDenormalized (" +
                 "dataPointId INT, " +
                 "dataType INT, " +
                 "pointValue DOUBLE, " +
@@ -61,34 +68,70 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                 "sourceId INT, " +
                 "username SYMBOL) timestamp(timestamp) PARTITION BY DAY;";
 
-        jdbcTemplate.execute(createEmptyQuery);
+        questdb.execute(createEmptyTableQuery);
 
     }
 
-    private boolean migrationNext(File schema, int offset, int limit) {
-
-        AtomicBoolean hasNext = new AtomicBoolean(true);
-        createCsvTemp().ifPresent(csv -> {
+    private static boolean migrationNext(File schema, int offset, int limit, JdbcOperations mysql) {
+        if(schema == null || !schema.exists() || offset < 0  || limit <= 0 || mysql == null) {
+            return false;
+        }
+        AtomicBoolean exportedToCsv = new AtomicBoolean(false);
+        AtomicInteger rowsImported = new AtomicInteger(0);
+        createAccessDir(mysql)
+                .flatMap(path -> exportToCsv(path, offset, limit, mysql))
+                .ifPresent(csv -> {
+                    exportedToCsv.set(true);
                     try {
-                        exportFromMysqlToCsv(csv, offset, limit);
-                        if(csv.length() > 0)
-                            importToQuestDb(schema, csv);
-                        else
-                            hasNext.set(false);
-                    } catch (Exception ex) {
-                        LOG.error(ex.getMessage(), ex);
+                        if (csv.length() > 0) {
+                            int imported = importToQuestDb(schema, csv, false);
+                            rowsImported.set(imported);
+                        }
                     } finally {
-                        LOG.info(offset);
                         delete(csv);
                     }
                 });
-        return hasNext.get();
+        LOG.info("last offset: " + (offset + rowsImported.get()));
+        return exportedToCsv.get() && rowsImported.get() == limit;
     }
 
-    public static int exportFromMysqlToCsv(File csv, int offset, int limit) {
-        String query = "select * from pointValuesDenormalized OFFSET " + offset + " LIMIT " + limit;
-        String [] exportFromMysqlCommand = {"mysql", "-u", "root", "-proot", "scadalts", "-e", query, "-B"};
 
+    private static Optional<String> createAccessDir(JdbcOperations jdbcOperations) {
+        try {
+            String secureFilePrivQuery = "SHOW VARIABLES LIKE \"secure_file_priv\"";
+            String secureFilePriv = jdbcOperations.query(secureFilePrivQuery, (resultSet, i) -> resultSet.getString("Value")).get(0);
+            if(secureFilePriv == null) {
+                LOG.warn("The secure_file_priv constant in the mysql database has an empty null value set, this blocked the database from being exported to a file, set a value for this constant other than null:\n" +
+                        "1) Setting the value to empty will make it possible to export to any location;\n" +
+                        "2) Setting this parameter to a specific path will force the use of that particular path;\n" +
+                        "\n" +
+                        "The change requires a mysql server restart. Applies to mysql version 5.7.");
+                return Optional.empty();
+            }
+
+            if(!secureFilePriv.isEmpty()) {
+                File file = new File(secureFilePriv + File.separator + "pointValues" + System.currentTimeMillis() + ".csv");
+                return Optional.of(changePath(file));
+            }
+            File file = File.createTempFile("pointValues",".csv");
+            delete(file);
+            return Optional.of(changePath(file));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return Optional.empty();
+        }
+    }
+
+    private static String changePath(File file) {
+        if(file.getAbsolutePath().contains("\\")) {
+            return file.getAbsolutePath().replace("\\", "\\\\");
+        }
+        return file.getAbsolutePath();
+    }
+
+    public static Optional<File> exportToCsv(String csv, int offset, int limit, JdbcOperations jdbcOperations) {
+       /* String query = "select * from pointValuesDenormalized LIMIT " + limit + " OFFSET " + offset;
+        String [] exportFromMysqlCommand = {"mysql", "-u", "root", "-proot", "scadalts_12", "-e", query, "-B"};
         try {
            int result = new ProcessBuilder(exportFromMysqlCommand)
                     .redirectOutput(csv)
@@ -99,10 +142,25 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
             LOG.error(e.getMessage(), e);
         }
 
-        return 0;
+        return result;*/
+
+        String query = "SELECT * FROM (" +
+                "    SELECT 'dataPointId', 'dataType', 'pointValue', 'ts', 'timestamp', 'textPointValueShort', 'textPointValueLong', 'sourceType', 'sourceId', 'username' UNION ALL" +
+                "    (" +
+                "       SELECT * FROM pointValuesDenormalized LIMIT " + limit + " OFFSET " + offset + " " +
+                "    )" +
+                ") result INTO OUTFILE '" + csv + "' FIELDS TERMINATED BY '\t' ENCLOSED BY '' LINES TERMINATED BY '\r\n';";
+
+        try {
+            jdbcOperations.execute(query);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+        return Optional.of(new File(csv));
     }
 
-    public static void importToQuestDb(File schema, File csv) throws IOException {
+    public static int importToQuestDb(File schema, File csv, boolean overwrite) {
         /*String schema = "schema=[{\"name\":\"timestamp\", \"type\": \"TIMESTAMP\", \"pattern\": \"yyyy-MM-ddTHH:mm:ss.SSSZ\"},{\"name\":\"textPointValueShort\", \"type\": \"SYMBOL\"},{\"name\":\"textPointValueLong\", \"type\": \"SYMBOL\"},{\"name\":\"sourceType\", \"type\": \"INT\"},{\"name\":\"sourceId\", \"type\": \"INT\"},{\"name\":\"username\", \"type\": \"SYMBOL\"},{\"name\":\"ts\", \"type\": \"LONG\"}]";
         String [] importToQuestDbCommand = {"curl", "-F", schema, "-F", "data=@" + csv.getAbsolutePath(), "http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY"};
 
@@ -110,12 +168,36 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                 .start()
                 .waitFor();
         LOG.info("QuestDb import finished: " + result);*/
+        try {
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY&overwrite=" + overwrite);
+            MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", schema), new FilePart("data", csv)}, postMethod.getParams());
+            postMethod.setRequestEntity(entity);
+            MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+            HttpClient httpClient = new HttpClient(manager);
+            httpClient.executeMethod(postMethod);
+            String response = postMethod.getResponseBodyAsString();
+            LOG.info(response);
+            return parseRowsImported(response);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return -1;
+        }
+    }
 
-        String code = sendFiles("http://localhost:9000/imp?overwrite=true&name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY",
-                "UTF-8", new FileWithInfo(schema, "Content-Type: application/octet-stream", "schema"),
-                new FileWithInfo(csv, "Content-Type: application/octet-stream", "data"));
-
-        LOG.info("QuestDb import finished: " + code);
+    private static int parseRowsImported(String response) {
+        String[] lines = response.split("\r\n");
+        for(String line: lines) {
+            if(line.contains("Rows imported")) {
+                LOG.info(line);
+                String[] cols = line.split("([|])");
+                try {
+                    return Integer.parseInt(cols[2].trim());
+                } catch (Exception ex) {
+                    return -1;
+                }
+            }
+        }
+        return -1;
     }
 
     public static void delete(File csv) {
@@ -123,80 +205,6 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
             Files.delete(csv.toPath());
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
-        }
-    }
-
-    private static Optional<File> createCsvTemp() {
-        try {
-            return Optional.of(File.createTempFile("pointValues",".csv"));
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-            return Optional.empty();
-        }
-    }
-
-    private static String sendFiles(String url, String charsetName, FileWithInfo... files) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
-        // connection.setConnectTimeout(10000);
-        // connection.setReadTimeout(10000);
-        connection.setDoOutput(true);
-        createRequest(connection, charsetName, files);
-        return responseToString(connection);
-    }
-
-    private static void createRequest(HttpURLConnection connection, String charsetName, FileWithInfo[] files) throws IOException {
-        String boundary = Long.toHexString(System.currentTimeMillis());
-        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-        connection.setRequestProperty("Expect", "100-continue");
-        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), charsetName))) {
-            for (FileWithInfo file : files) {
-                if (file.file.isDirectory()) {
-                    continue;
-                }
-                writer.println("--" + boundary);
-                writer.println("Content-Disposition: form-data; name=\"" + file.name + "\"; filename=\"" + file.file.getName() + "\"");
-                writer.println(file.contentType);
-                writer.println();
-                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file.file), charsetName))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        writer.println(line);
-                    }
-                }
-            }
-            writer.println();
-            writer.println("--" + boundary + "--");
-            writer.println();
-        }
-    }
-
-    private static String responseToString(HttpURLConnection connection) throws IOException {
-        int responseCode = connection.getResponseCode();
-        InputStream inputStream = getInputStream(responseCode, connection);
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(inputStream))) {
-            StringBuilder response = new StringBuilder();
-            String currentLine;
-
-            while ((currentLine = in.readLine()) != null)
-                response.append(currentLine);
-
-            return response.toString();
-        }
-    }
-
-    private static InputStream getInputStream(int responseCode, HttpURLConnection connection) throws IOException {
-        return responseCode >= 200 && responseCode <= 299 ?  connection.getInputStream() : connection.getErrorStream();
-    }
-
-    static class FileWithInfo {
-        private final File file;
-        private final String contentType;
-        private final String name;
-
-        public FileWithInfo(File file, String contentType, String name) {
-            this.file = file;
-            this.contentType = contentType;
-            this.name = name;
         }
     }
 }

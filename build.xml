@@ -394,7 +394,7 @@
 	<target name="run-debug" description="Start the Scada-LTS application in debug mode">
 		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
-			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
+			<arg value="${env.CATALINA_HOME}\bin\catalina.bat"/>
 			<arg value="jpda"/>
 			<arg value="run"/>
 		</exec>

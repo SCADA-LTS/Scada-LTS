@@ -29,6 +29,8 @@ public class PointValueAmChartDAO {
 
     private static final Log LOG = LogFactory.getLog(PointValueAmChartDAO.class);
 
+    private static final String TABLE_NAME_DENORMALIZED = "pointValuesDenormalized";
+
     private static final String TABLE_NAME = "pointValues";
     private static final String COLUMN_DATAPOINT_ID = "dataPointId";
     private static final String COLUMN_TIMESTAMP = "ts";
@@ -39,19 +41,19 @@ public class PointValueAmChartDAO {
     private static final String SELECT_VALUES = "SELECT " +
             COLUMN_DATAPOINT_ID + ", " +
             COLUMN_VALUE + ", " +
-            COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
+            COLUMN_TIMESTAMP + " FROM ";
     private static final String SELECT_ORDER = " ORDER BY " + COLUMN_TIMESTAMP + " ASC";
     private static final String SELECT_LIMIT = " LIMIT ?";
 
     private static final String SELECT_AVG_VALUES_FOR_AGGREGATION = "SELECT " + COLUMN_DATAPOINT_ID + ", " +
             "avg(" + COLUMN_VALUE + ") AS " + COLUMN_VALUE + ", " +
             "max(" + COLUMN_TIMESTAMP + ") AS " + COLUMN_TIMESTAMP + " " +
-            "FROM " + TABLE_NAME;
+            "FROM ";
 
     private static final String SELECT_MAX_VALUES_FOR_AGGREGATION = "SELECT " + COLUMN_DATAPOINT_ID + ", " +
             "max(" + COLUMN_VALUE + ") AS " + COLUMN_VALUE + ", " +
             "max(" + COLUMN_TIMESTAMP + ") AS " + COLUMN_TIMESTAMP + " " +
-            "FROM " + TABLE_NAME;
+            "FROM ";
 
     private static final String CONDITION_TIMESTAMP =" AND " + COLUMN_TIMESTAMP + " >=? AND " + COLUMN_TIMESTAMP + " <=?";
     private static final String GROUPBY_DATAPOINT_ID_TIMESTAMP = " GROUP BY " + COLUMN_DATAPOINT_ID + ", floor(" + COLUMN_TIMESTAMP + "/?)";
@@ -60,13 +62,15 @@ public class PointValueAmChartDAO {
     private static final String WHERE_DATA_POINT = " WHERE " + COLUMN_DATAPOINT_ID + "=?";
 
     private JdbcOperations jdbcTemplate;
+    private boolean denormalized;
 
     public PointValueAmChartDAO() {
         this.jdbcTemplate = DAO.getInstance().getJdbcTemp();
     }
 
-    public PointValueAmChartDAO(JdbcOperations jdbcTemplate) {
+    public PointValueAmChartDAO(JdbcOperations jdbcTemplate, boolean denormalized) {
         this.jdbcTemplate = jdbcTemplate;
+        this.denormalized = denormalized;
     }
 
     /**
@@ -86,7 +90,7 @@ public class PointValueAmChartDAO {
         String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
         String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
 
-        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER;
+        String sqlQuery = SELECT_VALUES + getTableName(denormalized) + selectDataPoints + selectTimestamp + SELECT_ORDER;
 
         List<DataPointSimpleValue> pvcList = jdbcTemplate.query(sqlQuery, new PointValueChartRowMapper());
 
@@ -99,7 +103,7 @@ public class PointValueAmChartDAO {
         String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
         String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
 
-        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER;
+        String sqlQuery = SELECT_VALUES + getTableName(denormalized) + selectDataPoints + selectTimestamp + SELECT_ORDER;
 
         List<DataPointSimpleValue> pvcList = jdbcTemplate.query(sqlQuery, new PointValueChartRowMapper());
 
@@ -118,7 +122,7 @@ public class PointValueAmChartDAO {
             LOG.warn(dataPointInfo(dataPoint));
             return Collections.emptyList();
         }
-        QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(), startTs, endTs, intervalMs, limit);
+        QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(), startTs, endTs, intervalMs, limit, denormalized);
         return jdbcTemplate.query(aggregationQuery.getQuery(),
                 aggregationQuery.getArgs(), new PointValueChartRowMapper());
     }
@@ -128,7 +132,7 @@ public class PointValueAmChartDAO {
         String selectDataPoints = prepareWhereDataPointIdsStatement(pointIds);
         String selectTimestamp = prepareWhereTimestampStatement(startTs, endTs);
 
-        String sqlQuery = SELECT_VALUES + selectDataPoints + selectTimestamp + SELECT_ORDER + " LIMIT " + limit;
+        String sqlQuery = SELECT_VALUES + getTableName(denormalized) + selectDataPoints + selectTimestamp + SELECT_ORDER + " LIMIT " + limit;
 
         return jdbcTemplate.query(sqlQuery, new PointValueChartRowMapper());
     }
@@ -240,9 +244,13 @@ public class PointValueAmChartDAO {
         }
     }
 
+    public static QueryArgs toAggregationQuery(int pointId, int dataType, long startTs, long endTs,
+                                               long intervalMs, int limit) {
+        return toAggregationQuery(pointId, dataType, startTs, endTs, intervalMs, limit, false);
+    }
 
     public static QueryArgs toAggregationQuery(int pointId, int dataType, long startTs, long endTs,
-                                         long intervalMs, int limit) {
+                                         long intervalMs, int limit, boolean denormalized) {
 
         String sqlQuery;
 
@@ -256,6 +264,7 @@ public class PointValueAmChartDAO {
         switch (dataType) {
             case DataTypes.BINARY:
                 sqlQuery = SELECT_MAX_VALUES_FOR_AGGREGATION +
+                        getTableName(denormalized) +
                         WHERE_DATA_POINT +
                         CONDITION_TIMESTAMP +
                         CONDITION_DATA_TYPE +
@@ -265,6 +274,7 @@ public class PointValueAmChartDAO {
                 break;
             case DataTypes.MULTISTATE:
                 sqlQuery = SELECT_VALUES +
+                        getTableName(denormalized) +
                         WHERE_DATA_POINT +
                         CONDITION_TIMESTAMP +
                         CONDITION_DATA_TYPE +
@@ -272,6 +282,7 @@ public class PointValueAmChartDAO {
                 break;
             case DataTypes.NUMERIC:
                 sqlQuery = SELECT_AVG_VALUES_FOR_AGGREGATION +
+                        getTableName(denormalized) +
                         WHERE_DATA_POINT +
                         CONDITION_TIMESTAMP +
                         CONDITION_DATA_TYPE +
@@ -281,6 +292,7 @@ public class PointValueAmChartDAO {
                 break;
             default:
                 sqlQuery = SELECT_VALUES +
+                        getTableName(denormalized) +
                         WHERE_DATA_POINT +
                         CONDITION_TIMESTAMP +
                         CONDITION_DATA_TYPE +
@@ -314,5 +326,9 @@ public class PointValueAmChartDAO {
 
     public static String dataPointInfo(DataPointVO dataPoint) {
         return MessageFormat.format("PointLocator is null for dataPoint: {0} (id: {1}, xid: {2}, dataSource: {3} (id:{4}))", dataPoint.getName(), dataPoint.getId(), dataPoint.getXid(), dataPoint.getDataSourceName(), dataPoint.getDataSourceId());
+    }
+
+    private static String getTableName(boolean denormalized) {
+        return (denormalized ? TABLE_NAME_DENORMALIZED : TABLE_NAME);
     }
 }
