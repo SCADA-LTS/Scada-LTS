@@ -51,11 +51,11 @@
 					<v-divider vertical class="divider-horizontal-margin"></v-divider>
 					<v-col md="8" sm="12" xs="12" id="userProfileDetails">
                         <UserProfileDetails
-							ref="userProfileDetails"
 							:userProfileId="activeUserProfile"
+							:edit="true"
 							v-if="activeUserProfile != -1"
                             :key="activeUserProfile"
-							@saved="updateUserProfile"
+							@update="onUserProfileUpdate"
 						></UserProfileDetails>
 						<v-row v-else>
 							<v-col cols="12">
@@ -70,11 +70,10 @@
 			<v-card>
 				<v-card-title>{{ $t('userprofile.dialog.create.title') }}</v-card-title>
 				<v-card-text class="dialog-card-text">
-					<!-- <RecipientListDetails
+					<UserProfileDetails
 						ref="userProfileDialog"
-						:userProfile="blankUserProfile"
-						:edit="true"
-					></RecipientListDetails> -->
+						@create="onUserProfileCreation"
+					></UserProfileDetails>
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
@@ -87,35 +86,49 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
-		<!-- <ConfirmationDialog
+		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="deleteRecipientDialog"
-			@result="deleteRecipientDialogResult"
-			:title="$t('recipientlist.dialog.delete.title')"
-			:message="$t('recipientlist.dialog.delete.text')"
-		></ConfirmationDialog> -->
+			:dialog="deleteUserProfileDialog"
+			@result="deleteUserProfileDialogResult"
+			title="Delete User Profile"
+			message="Are you sssure?"
+		></ConfirmationDialog>
 
-		<!-- <v-snackbar v-model="snackbar.visible" :color="snackbar.color">
+		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
 			{{ snackbar.message }}
-		</v-snackbar> -->
+		</v-snackbar>
 	</div>
 </template>
 <script>
 import UserProfileDetails from './UserProfileDetails.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
+
+/**
+ * User Profile List component - View Page
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
 export default {
 	name: 'UserProfilesPage',
 
     components: {
-        UserProfileDetails
+        UserProfileDetails,
+		ConfirmationDialog
     },
+
+	mixins: [SnackbarMixin],
 
 	data() {
 		return {
             userProfileListsLoaded: true,
             showUPCreationDialog: false,
             profileLists: [],
-            activeUserProfile: null,
+            activeUserProfile: -1,
 			blankUserProfile: null,
+			deleteUserProfileDialog: false,
+			operationQueue: null,
 		};
 	},
 
@@ -135,23 +148,68 @@ export default {
         },
 
         createUserProfile() {
-
-        },
-
-        updateUserProfile() {
-
+			this.showUPCreationDialog = true;
+			this.$refs.userProfileDialog.fetchUserProfileDetails();
         },
 
         addUserProfile() {
-
+			this.showUPCreationDialog = false;
+			this.$refs.userProfileDialog.createUserProfile();
         },
 
-        deleteUserProfile(userProfile) {
+		deleteUserProfile(userProfile) {
+			this.deleteUserProfileDialog = true;
+			this.operationQueue = userProfile.id;
+        },
 
-        }
+		async deleteUserProfileDialogResult(result) {
+			this.deleteUserProfileDialog = false;
+			if (result) {
+				try {
+					await this.$store.dispatch('deleteUserProfile', this.operationQueue);
+					this.showCrudSnackbar('delete')
+					this.profileLists = this.profileLists.filter(item => item.id !== this.operationQueue);
+					if(this.activeUserProfile === this.operationQueue) {
+						this.activeUserProfile = -1;
+					}
+				} catch (e) {
+					this.showCrudSmackbar('delete', false)
+					console.error(e);
+				}
+			}
+		},
+
+		/* EVENTS FROM CHILD COMPONENTS */
+		onUserProfileUpdate(result) {
+			if (result) {
+				this.showCrudSnackbar('update')
+			} else {
+				this.showCrudSnackbar('update', false)
+			}
+        },
+
+		onUserProfileCreation(result) {
+			if (result) {
+				this.showCrudSnackbar('add')
+				this.fetchUserProfileList();
+			} else {
+				this.showCrudSnackbar('add', false)
+			}
+		},
 		
 	},
 };
 </script>
 <style scoped>
+.slts-card {
+	min-height: 72vh;
+}
+.divider-horizontal-margin {
+	margin: 0 3.5%;
+	min-height: 72vh;
+}
+.dialog-card-text {
+	max-height: 74vh;
+	overflow-y: auto;
+}
 </style>

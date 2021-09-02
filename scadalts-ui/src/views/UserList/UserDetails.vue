@@ -76,62 +76,12 @@
 				
 			</v-row>
 		</v-col>
-		<v-col md="12" sm="12" xs="12" v-if="inactiveTime && !edit" id="section-active-time">
-			<v-row @mousedown="startSelecting">
-				<v-col cols="12" class="heading-action-buttons">
-					<h3>{{ $t('userDetails.permission.title') }}</h3>
-					<v-spacer></v-spacer>
-					<v-btn fab elevation="2" color="primary" small v-if="!edit" @click="save()">
-						<v-icon>mdi-content-save</v-icon>
-					</v-btn>
-				</v-col>
-				<v-col cols="12" v-if="!loadingInactiveTime">
-					<v-expansion-panels accordion>
-					<v-expansion-panel>
-						<v-expansion-panel-header>
-							<v-col cols="6">
-								<h4 style="white-space: nowrap">Datasource looooooooooooooooooooooooooooooooooooooong name {{ key }}</h4>
-							</v-col>
-							
-						</v-expansion-panel-header>
-						<v-expansion-panel-content>
-							<v-row >
-								<v-col cols="9">
-								{{$t('datapoint name')}}
-							</v-col>
-							<v-col cols="1">
-								{{$t('none')}}
-							</v-col>
-							<v-col cols="1">
-								{{$t('read')}}
-							</v-col>
-							<v-col cols="1">
-								{{$t('write')}}
-							</v-col>
-							</v-row>
-							<hr>
-							<v-row v-for="key in [1,4,5,3,9]" v-bind:key="key">
-								<v-col cols="9">
-									<p>datapoint {{ key }}</p>
-								</v-col>
-								<v-col cols="1">
-									<v-radio />
-								</v-col>
-								<v-col cols="1">
-									<v-radio />
-								</v-col>
-								<v-col cols="1">
-									<v-radio />
-								</v-col>
-							</v-row>
-						</v-expansion-panel-content>
-					</v-expansion-panel>
-				</v-expansion-panels>
-				</v-col>
-				<v-col cols="12" v-else>
-					<v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
-				</v-col>
-			</v-row>
+		<v-col md="12" sm="12" xs="12" v-if="edit" id="section-active-time">
+			<UserProfileDetails
+				:userEdit="true"
+				:userProfileId="activeUserId"
+				@profileIdChanged="onUserProfileIdChanged"
+			></UserProfileDetails>
 		</v-col>
 
 		<v-dialog v-model="showRecipientDialog" max-width="300">
@@ -194,6 +144,7 @@
 	</v-row>
 </template>
 <script>
+import UserProfileDetails from '../UserProfiles/UserProfileDetails';
 /**
  * Recipient List Details
  *
@@ -210,6 +161,10 @@
 export default {
 	name: 'RecipientListDetails',
 
+	components: {
+        UserProfileDetails,
+    },
+
 	props: {
 		recipientList: {
 			type: Object,
@@ -222,6 +177,7 @@ export default {
 
 	data() {
 		return {
+			activeUserId: -1,
 			TYPE_USER: 2,
 			TYPE_MAIL: 3,
 			TYPE_SMS: 4,
@@ -423,6 +379,10 @@ export default {
 				return `${hour}:00`;
 			}
 		},
+
+		onUserProfileIdChanged(event) {
+			console.log(event);
+		}
 	},
 };
 </script>
