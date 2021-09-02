@@ -264,6 +264,25 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 				+ COLUMN_NAME_DATA_POINT_ID + " "
 			+ "order by 2 desc ";
 
+	private final static String TABLE_NAME_TEMP = "temp";
+
+	private static final String CREATE_TEMP_TABLE_FOR_PARTITION = ""
+			+ "create table " + TABLE_NAME_TEMP + " as "
+			+ "(select * from pointValuesDenormalized where "
+			+ COLUMN_NAME_DATA_POINT_ID + " != ?"
+			+ "and "
+			+ COLUMN_NAME_TS + " < to_utc(?, 'Europe/Berlin'))";
+
+	private static final String DROP_PARTITION = ""
+			+ "alter table pointValuesDenormalized drop partition where "
+			+ COLUMN_NAME_TS + " < to_utc(?, 'Europe/Berlin'))";
+
+	private static final String INSERT_FROM_TEMP = ""
+			+ "insert into pointValuesDenormalized select * from "
+			+ TABLE_NAME_TEMP;
+
+	private static final String DELETE_TEMP_TABLE = "drop table " + TABLE_NAME_TEMP;
+
 	// @formatter:on
 
 	//RowMappers
@@ -682,6 +701,22 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 		Long lastId = jdbcTemplate.queryForObject(POINT_VALUE_ID_OF_LAST_VALUE, new Object[] { dataPointId }, Long.class );
     	return jdbcTemplate.update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time, lastId});
     }
+
+	public long createTempTable(int dataPointId, long time) {
+		return jdbcTemplate.update(CREATE_TEMP_TABLE_FOR_PARTITION, new Object[] {dataPointId, time*1000});
+	}
+
+	public long dropPartition(long time) {
+		return jdbcTemplate.update(DROP_PARTITION, new Object[] {time*1000});
+	}
+
+	public long insertFromTemp() {
+		return jdbcTemplate.update(INSERT_FROM_TEMP);
+	}
+
+	public long deleteTempTable() {
+		return jdbcTemplate.update(DELETE_TEMP_TABLE);
+	}
     
     public long deletePointValue(int dataPointId) {
     	return jdbcTemplate.update(POINT_VALUE_DELETE_BASE_ON_POINT_ID, new Object[] {dataPointId});

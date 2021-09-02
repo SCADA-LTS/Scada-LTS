@@ -483,6 +483,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return pointValueCommandRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
     }
 
+    public void deletePointValuesBeforeForDatapoint(int dataPointId, long time) {
+        pointValueQueryRepository.createTempTable(dataPointId, time);
+        pointValueQueryRepository.dropPartition(time);
+        pointValueQueryRepository.insertFromTemp();
+        pointValueQueryRepository.deleteTempTable();
+    }
+
     @Override
     public long dateRangeCount(int dataPointId, long from, long to) {
         return getPointValueRepository().dateRangeCount(dataPointId, from, to);
