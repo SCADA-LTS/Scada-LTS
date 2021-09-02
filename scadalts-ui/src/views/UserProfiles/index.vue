@@ -6,24 +6,27 @@
 		<v-container fluid>
 			<v-card class="slts-card">
 				<v-row>
+
 					<v-col md="3" sm="12" xs="12">
-						<v-list v-if="userProfileListsLoaded" id="userProfileListSection">
+						<v-list v-if="itemsListLoaded" id="userProfileListSection">
 							<v-list-item
 								v-for="item in profileLists"
 								:key="item.id"
-								@click="changeActiveUP(item)"
+								@click="changeActiveItem(item)"
 							>
 								<v-list-item-content>
 									<v-list-item-title>
 										{{ item.name }}
 									</v-list-item-title>
 								</v-list-item-content>
-								<v-list-item-action @click="deleteUserProfile(item)">
+								<v-list-item-action @click="openDeletionDialog(item)">
 									<v-icon> mdi-minus-circle </v-icon>
 								</v-list-item-action>
 							</v-list-item>
 						</v-list>
 						<v-skeleton-loader v-else type="list-item-two-line"></v-skeleton-loader>
+
+						<!-- Add new item -->
 						<v-list id="userProfileCreation">
 							<v-list-item>
 								<v-list-item-content>
@@ -37,7 +40,7 @@
 												right
 												x-small
 												fab
-												@click="createUserProfile()"
+												@click="openCreationDialog()"
 											>
 												<v-icon> mdi-plus </v-icon>
 											</v-btn>
@@ -47,8 +50,11 @@
 								</v-list-item-content>
 							</v-list-item>
 						</v-list>
+
 					</v-col>
+
 					<v-divider vertical class="divider-horizontal-margin"></v-divider>
+
 					<v-col md="8" sm="12" xs="12" id="userProfileDetails">
                         <UserProfileDetails
 							:userProfileId="activeUserProfile"
@@ -63,10 +69,13 @@
 							</v-col>
 						</v-row>
 					</v-col>
+
 				</v-row>
 			</v-card>
 		</v-container>
-		<v-dialog v-model="showUPCreationDialog" max-width="1200">
+
+		<!-- Creation Dialog -->
+		<v-dialog v-model="dialogCreationVisible" max-width="1200">
 			<v-card>
 				<v-card-title>{{ $t('userprofile.dialog.create.title') }}</v-card-title>
 				<v-card-text class="dialog-card-text">
@@ -77,7 +86,7 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn text @click="showUPCreationDialog = false">{{
+					<v-btn text @click="dialogCreationVisible = false">{{
 						$t('common.cancel')
 					}}</v-btn>
 					<v-btn text color="success" @click="addUserProfile()">{{
@@ -86,13 +95,16 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+
+		<!-- Deletion Dialog -->
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="deleteUserProfileDialog"
-			@result="deleteUserProfileDialogResult"
-			title="Delete User Profile"
-			message="Are you sssure?"
+			:dialog="dialogDeletionVisible"
+			@result="onDeleteDialogClose"
+			:title="$t('userprofile.dialog.delete.title')"
+			:message="$t('userprofile.dialog.delete.text')"
 		></ConfirmationDialog>
+
 
 		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
 			{{ snackbar.message }}
@@ -106,6 +118,9 @@ import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 /**
  * User Profile List component - View Page
+ * 
+ * This page is used to view and manage the user profiles. User
+ * profile is a set of permissions that can be assigned to a multiple users.
  * 
  * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0.0
@@ -122,13 +137,12 @@ export default {
 
 	data() {
 		return {
-            userProfileListsLoaded: true,
-            showUPCreationDialog: false,
+            itemsListLoaded: true,
             profileLists: [],
             activeUserProfile: -1,
-			blankUserProfile: null,
-			deleteUserProfileDialog: false,
 			operationQueue: null,
+			dialogCreationVisible: false,
+			dialogDeletionVisible: false,
 		};
 	},
 
@@ -138,44 +152,49 @@ export default {
 
 	methods: {
         async fetchUserProfileList() {
-            this.userProfileListsLoaded = false;
+            this.itemsListLoaded = false;
             this.profileLists = await this.$store.dispatch('getUserProfilesList');
-            this.userProfileListsLoaded = true;
+            this.itemsListLoaded = true;
         },
 
-        async changeActiveUP(userProfile) {
-            this.activeUserProfile = userProfile.id;
-        },
-
-        createUserProfile() {
-			this.showUPCreationDialog = true;
-			this.$refs.userProfileDialog.fetchUserProfileDetails();
+        async changeActiveItem(item) {
+            this.activeUserProfile = item.id;
         },
 
         addUserProfile() {
-			this.showUPCreationDialog = false;
+			this.dialogCreationVisible = false;
 			this.$refs.userProfileDialog.createUserProfile();
         },
 
-		deleteUserProfile(userProfile) {
-			this.deleteUserProfileDialog = true;
+		openCreationDialog() {
+			this.dialogCreationVisible = true;
+			this.$refs.userProfileDialog.fetchUserProfileDetails();
+        },
+
+		openDeletionDialog(userProfile) {
+			this.dialogDeletionVisible = true;
 			this.operationQueue = userProfile.id;
         },
 
-		async deleteUserProfileDialogResult(result) {
-			this.deleteUserProfileDialog = false;
+		onDeleteDialogClose(result) {
+			this.dialogDeletionVisible = false;
 			if (result) {
 				try {
-					await this.$store.dispatch('deleteUserProfile', this.operationQueue);
+					this.deleteUserProfile(this.operationQueue);
 					this.showCrudSnackbar('delete')
-					this.profileLists = this.profileLists.filter(item => item.id !== this.operationQueue);
-					if(this.activeUserProfile === this.operationQueue) {
-						this.activeUserProfile = -1;
-					}
 				} catch (e) {
 					this.showCrudSmackbar('delete', false)
 					console.error(e);
 				}
+			}
+		},
+
+		async deleteUserProfile(userProfileId) {
+			await this.$store.dispatch('deleteUserProfile', userProfileId);
+			
+			this.profileLists = this.profileLists.filter(item => item.id !== userProfileId);
+			if(this.activeUserProfile === userProfileId) {
+				this.activeUserProfile = -1;
 			}
 		},
 

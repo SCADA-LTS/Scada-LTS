@@ -1,14 +1,13 @@
 <template>
 <div>
-    <v-row v-if="userProfileLoadingProgress === 100">
+    <v-row v-if="userProfileLoadingProgress >= 100">
         <v-col cols="12" class="heading-action-buttons">
-            <h2>User Profile Details</h2>
+            <h2>{{ $t('userprofileDetails.title') }}</h2>
             <v-spacer></v-spacer>
             <v-btn fab elevation="2" 
                 color="primary" small 
                 v-if="saveButtonVisible" 
-                @click="updateUserProfile"
-            >
+                @click="updateUserProfile">
                 <v-icon>mdi-content-save</v-icon>
             </v-btn>
         </v-col>
@@ -17,14 +16,14 @@
             <v-row v-if="!userEdit">
                 <v-col cols="10">
                     <v-text-field 
-                        label="User Profile Name"
+                        :label="$t('userprofileDetails.form.name')"
                         type="text" 
                         v-model="userProfile.name"
                     ></v-text-field>
                 </v-col>
                 <v-col cols="2">
                     <v-text-field 
-                        label="Xid"
+                        :label="$t('userprofileDetails.form.xid')"
                         :disabled="true"
                         type="text" 
                         v-model="userProfile.xid"
@@ -34,9 +33,9 @@
             <v-row v-else>
                 <v-col cols="12">
                     <v-select
+                        :label="$t('userprofileDetails.form.selectedProfile')"
                         v-model="selectedProfile"
                         :items="userProfileList"
-                        label="User Profile"
                         item-text="name"
                         item-value="id"
                         @change="selectedUserProfileChanged"
@@ -50,7 +49,17 @@
         <v-col cols="12">
             <v-row v-if="!userEdit || (userEdit && selectedProfile === -1)">
                 <v-col cols="12" id="dataSourcesSection">
-                    <h4>DataSource and DataPoint permissions</h4>
+                    <v-row>
+                        <v-col>
+                            <h4>{{ $t('userprofileDetails.ds.title') }}</h4>
+                        </v-col>
+                        <v-col cols="4" class="flex jc--space-evenly radio-label--header">
+                            <span>{{$t('userprofileDetails.common.none')}}</span>
+                            <span>{{$t('userprofileDetails.common.read')}}</span>
+                            <span>{{$t('userprofileDetails.common.set')}}</span>
+                        </v-col>
+                    </v-row>
+                    
                     <v-treeview :items="dataSources" 
                         activatable 
                         :load-children="fetchDataPoints">
@@ -70,16 +79,37 @@
                             </v-row>
                             <v-row v-else>
                                 <v-col cols="12">
-                                    <v-checkbox v-model="item.permission"
-                                        @change="changePermissionsDataSource(item)"
-                                    ></v-checkbox>
+                                    <v-tooltip bottom>
+							            <template v-slot:activator="{ on, attrs }">
+                                            <div v-bind="attrs" v-on="on">
+                                                <v-checkbox v-model="item.permission" 
+                                                    @change="changePermissionsDataSource(item)"
+                                                ></v-checkbox>
+                                            </div>
+                                            
+							            </template>
+							            <span>{{
+								            $t('userprofileDetails.help.datasource')
+							            }}</span>
+						            </v-tooltip>
                                 </v-col>
                             </v-row>
                         </template>
                     </v-treeview>
                 </v-col>
+
                 <v-col cols="12" id="graphicalViewSection">
-                    <h4>Graphical Views permissions</h4>
+                    <v-row>
+                        <v-col>
+                            <h4>{{ $t('userprofileDetails.gv.title') }}</h4>
+                        </v-col>
+                        <v-col cols="4" class="flex jc--space-evenly radio-label--header">
+                            <span>{{$t('userprofileDetails.common.none')}}</span>
+                            <span>{{$t('userprofileDetails.common.read')}}</span>
+                            <span>{{$t('userprofileDetails.common.set')}}</span>
+                        </v-col>
+                    </v-row>
+                    
                     <v-list>
                         <v-list-item v-for="view in graphicalViews" :key="view.id">
                             <v-list-item-content>
@@ -105,8 +135,19 @@
                         </v-list-item>
                     </v-list>
                 </v-col>
+
                 <v-col cols="12" id="watchListSection">
-                    <h4>WatchLists permission</h4>
+                    <v-row>
+                        <v-col>
+                            <h4>{{ $t('userprofileDetails.wl.title') }}</h4>
+                        </v-col>
+                        <v-col cols="4" class="flex jc--space-evenly radio-label--header">
+                            <span>{{$t('userprofileDetails.common.none')}}</span>
+                            <span>{{$t('userprofileDetails.common.read')}}</span>
+                            <span>{{$t('userprofileDetails.common.set')}}</span>
+                        </v-col>
+                    </v-row>
+
                     <v-list>
                         <v-list-item v-for="watchList in watchLists" :key="watchList.id">
                             <v-list-item-content>
@@ -465,5 +506,15 @@ export default {
 .heading-action-buttons {
 	display: flex;
 	align-items: center;
+}
+.flex {
+    display: flex;
+}
+.jc--space-evenly {
+    justify-content: space-evenly;
+}
+.radio-label--header {
+    max-width: 220px;
+    padding: 16px;
 }
 </style>
