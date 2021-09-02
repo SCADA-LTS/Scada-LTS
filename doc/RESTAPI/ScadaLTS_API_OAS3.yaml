@@ -249,6 +249,76 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ScadaObjectIdentifier'
+    post:
+      tags:
+        - UserProfilesAPI
+      requestBody:
+        description: User Profile creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileVO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileVO'
+    put:
+      tags:
+        - UserProfilesAPI
+      requestBody:
+        description: User Profile update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileVO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileVO'
+  /userProfiles/{id}:
+    get:
+      tags:
+        - UserProfilesAPI
+      parameters:
+        - name: 'id'
+          description: 'User Profile ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileVO'
+    delete:
+      tags:
+        - UserProfilesAPI
+      parameters:
+        - name: 'id'
+          description: 'User Profile ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: number
+
   /events/datapoint/{id}:
     get:
       tags:
@@ -2850,6 +2920,46 @@ components:
           type: string
         vectorImage:
           type: string
+    UserProfileVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        name:
+          type: string
+        dataSourcePermissions:
+          type: array
+          items:
+            type: number
+        dataPointPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              dataPointId:
+                type: number
+              permission:
+                type: number
+        watchlistPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+              permission:
+                type: number
+        viewPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+              permission:
+                type: number
   parameters:
     Authorization:
       name: Authorization
