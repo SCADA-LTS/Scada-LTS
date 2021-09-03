@@ -1,0 +1,113 @@
+<template>
+<v-row>
+    <v-col id="watchListSection" v-if="!watchListsLoading">
+
+        <v-row>
+            <v-col>
+                <h4>{{ $t('userprofileDetails.wl.title') }}</h4>
+            </v-col>
+            <v-col cols="4" class="flex jc--space-evenly radio-label--header">
+                <span>{{$t('userprofileDetails.common.none')}}</span>
+                <span>{{$t('userprofileDetails.common.read')}}</span>
+                <span>{{$t('userprofileDetails.common.set')}}</span>
+            </v-col>
+        </v-row>
+
+        <v-list>
+            <v-list-item v-for="item in watchLists" :key="item.id">
+                <v-list-item-content>
+                    <v-list-item-title v-text="item.name"></v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-radio-group row 
+                                v-model="item.permission"
+                                @change="onPermissionChange(item)">
+                                <v-radio :value="0">
+                                </v-radio>
+                                <v-radio :value="1">
+                                </v-radio>
+                                <v-radio :value="2">
+                                </v-radio>
+                            </v-radio-group>
+                        </v-col>
+                    </v-row>
+                </v-list-item-action>
+            </v-list-item>
+        </v-list>
+
+    </v-col>
+    <v-col v-else>
+        <v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
+    </v-col>
+</v-row>
+</template>
+<script>
+/**
+ * Permissions WatchLists
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
+export default {
+    name: 'PermissionsWatchLists',
+
+    data() {
+        return {
+            watchLists: [],
+            watchListsLoading: false,
+        }
+    },
+
+    computed: {
+        permissions() {
+            return this.$store.state.userProfileModule.activeUserProfile.watchlistPermissions;
+        }
+    },
+
+    mounted() {
+        this.fetchData();
+    },
+
+    methods: {
+
+        async fetchData() {
+            this.watchListsLoading = true;
+            try {
+                let watchListList = await this.$store.dispatch('fetchWatchLists');
+                watchListList.forEach(wl => {
+                    this.watchLists.push({
+                        id: wl.id,
+                        name: wl.name,
+                        permission: 0
+                    });
+                });
+                this.initPermissions();
+            } catch (e) {
+                console.error(e);
+            } finally {
+                this.watchListsLoading = false;
+            }
+        },
+
+        initPermissions() {
+            this.permissions.forEach(entry => {
+                this.watchLists.find((item) => item.id === entry.id).permission = entry.permission;
+            });
+        },
+
+        onPermissionChange(item) {
+            this.$store.commit('UPDATE_PERMISSION_UP_WL', item);
+            this.$emit('change');
+        },
+
+    },
+
+
+    
+}
+</script>
+<style scoped>
+
+</style>

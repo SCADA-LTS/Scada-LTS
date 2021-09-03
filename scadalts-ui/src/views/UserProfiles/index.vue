@@ -62,6 +62,7 @@
 							v-if="activeUserProfile != -1"
                             :key="activeUserProfile"
 							@update="onUserProfileUpdate"
+							@copy="onCopyUserProfile"
 						></UserProfileDetails>
 						<v-row v-else>
 							<v-col cols="12">
@@ -167,9 +168,16 @@ export default {
         },
 
 		openCreationDialog() {
+			this.activeUserProfile = -1;
 			this.dialogCreationVisible = true;
-			this.$refs.userProfileDialog.fetchUserProfileDetails();
+			this.$refs.userProfileDialog.createBlankUserProfile();
         },
+
+		onCopyUserProfile(profileId) {
+			this.activeUserProfile = -1;
+			this.dialogCreationVisible = true;
+			this.$refs.userProfileDialog.createCopyOfUserProfile(profileId);
+		},
 
 		openDeletionDialog(userProfile) {
 			this.dialogDeletionVisible = true;

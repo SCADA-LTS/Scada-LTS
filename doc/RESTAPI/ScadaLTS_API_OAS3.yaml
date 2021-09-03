@@ -318,7 +318,17 @@ paths:
             application/json:
               schema:
                 type: number
-
+  /userProfiles/generateXid:
+    get:
+      tags:
+        - UserProfilesAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
   /events/datapoint/{id}:
     get:
       tags:
