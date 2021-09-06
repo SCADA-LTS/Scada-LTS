@@ -42,7 +42,7 @@
                     >
                         <v-radio :value="0"></v-radio>
                         <v-radio :value="1"></v-radio>
-                        <v-radio :value="2" :disabled="!!item.settable"></v-radio>
+                        <v-radio :value="2" :disabled="!item.settable"></v-radio>
                     </v-radio-group>
                 </div>
             </template>
