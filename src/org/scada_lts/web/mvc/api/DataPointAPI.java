@@ -88,7 +88,8 @@ public class DataPointAPI {
                             point.isEnabled(),
                             point.getDescription(),
                             point.getDataSourceName(),
-                            point.getPointLocator().getDataTypeId()
+                            point.getPointLocator().getDataTypeId(),
+                            point.getPointLocator().isSettable()
                     )));
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
@@ -127,7 +128,8 @@ public class DataPointAPI {
                             dp.isEnabled(),
                             dp.getDescription(),
                             dp.getDataSourceName(),
-                            dp.getPointLocator().getDataTypeId()
+                            dp.getPointLocator().getDataTypeId(),
+                            dp.getPointLocator().isSettable()
                     );
                     result.add(jdp);
                 }

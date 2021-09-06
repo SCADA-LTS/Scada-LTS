@@ -42,7 +42,7 @@
                     >
                         <v-radio :value="0"></v-radio>
                         <v-radio :value="1"></v-radio>
-                        <v-radio :value="2"></v-radio>
+                        <v-radio :value="2" :disabled="!!item.settable"></v-radio>
                     </v-radio-group>
                 </div>
             </template>
@@ -131,7 +131,8 @@ export default {
                     dataSource.children.push({
                         id: dp.id,
                         name: dp.name,
-                        permission: 0
+                        permission: 0,
+                        settable: dp.settable
                     });
                 });
                 this.initPermissionsDataPoint(dataSource.children);

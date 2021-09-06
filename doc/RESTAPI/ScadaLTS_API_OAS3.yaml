@@ -2320,6 +2320,8 @@ components:
           type: string
         typeId:
           type: number
+        settable:
+          type: boolean
     EventDTO:
       type: object
       properties:
