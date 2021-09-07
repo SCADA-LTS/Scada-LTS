@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.web.mvc.api.json.JsonUser;
@@ -264,12 +265,12 @@ public class UserService implements MangoUser {
 		userDAO.updateUserPassword(userId, newPassword);
 	}
 
-	public void updateUserPassword(int userId, String newPassword, String oldPassword) {
+	public void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException {
 		oldPassword = Common.encrypt(oldPassword);
 		if(oldPassword.equals(userDAO.getUser(userId).getPassword())) {
 			updateUserPassword(userId, newPassword);
 		} else {
-			LOG.warn("Password mismatch!");
+			throw new PasswordMismatchException();
 		}
 	}
 }

@@ -60,8 +60,8 @@ const routing = new Router({
 			},
 		},
 		{
-			path: '/user-list',
-			name: 'user-list',
+			path: '/users',
+			name: 'users',
 			component: UserList,
 			meta: {
 				requiresAuth: true

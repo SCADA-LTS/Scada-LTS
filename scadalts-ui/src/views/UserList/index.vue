@@ -1,17 +1,17 @@
 <template>
 	<div>
-		<v-container fluid>
+		<v-container fluid v-if="loggedUser.admin">
 			<h1>{{ $t('userList.title') }}</h1>
 		</v-container>
 		<v-container fluid>
 			<v-card class="slts-card">
-				<v-row>
-					<v-col md="2" sm="12" xs="12">
-						<v-list v-if="userListLoaded" id="recipientListSection">
+				<v-row class="flex-jc-center">
+					<v-col md="2" sm="12" xs="12" v-if="loggedUser.admin">
+						<v-list v-if="userListLoaded" id="usersList">
 							<v-list-item
-								v-for="item in recipeintLists"
+								v-for="item in userList"
 								:key="item.id"
-								@click="changeActiveRL(item)"
+								@click="showUserDetails(item)"
 							>
 								<v-list-item-content>
 									<v-list-item-title>
@@ -23,8 +23,10 @@
 								</v-list-item-action>
 							</v-list-item>
 						</v-list>
+						
 						<v-skeleton-loader v-else type="list-item-two-line"></v-skeleton-loader>
-						<v-list id="recipientListCreation">
+						
+						<v-list id="userCreation">
 							<v-list-item>
 								<v-list-item-content>
 									<v-list-item-title>
@@ -48,15 +50,19 @@
 							</v-list-item>
 						</v-list>
 					</v-col>
-					<v-divider vertical class="divider-horizontal-margin"></v-divider>
-					<v-col md="9" sm="12" xs="12" id="recipientListDetails">
+
+					<v-divider vertical class="divider-horizontal-margin" v-if="loggedUser.admin"></v-divider>
+					
+					<v-col md="9" sm="12" xs="12" id="userDetails">
 						<UserDetails
 							ref="recipientListDetails"
-							:recipientList="selectedUser"
+							:userDetails="selectedUser"
+							:userProfiles="userProfiles"
 							v-if="selectedUser"
 							:key="selectedUser.id"
 							@saved="updateUserList"
 						></UserDetails>
+
 						<v-row v-else>
 							<v-col cols="12">
 								<h3>{{ $t('userDetails.list.blank') }}</h3>
@@ -66,13 +72,15 @@
 				</v-row>
 			</v-card>
 		</v-container>
+		
 		<v-dialog v-model="showRLCreationDialog" max-width="1200" >
 			<v-card>
 				<v-card-title>{{ $t('userDetails.dialog.create.title') }}</v-card-title>
 				<v-card-text class="dialog-card-text">
 					<UserDetails style="padding:1rem"
 						ref="recipientListDialog"
-						:recipientList="blankUserList"
+						:userDetails="blankUserList"
+						:userProfiles="userProfiles"
 						:edit="true"
 					></UserDetails>
 				</v-card-text>
@@ -87,6 +95,7 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+
 		<ConfirmationDialog
 			:btnvisible="false"
 			:dialog="deleteUserDialog"
@@ -115,7 +124,8 @@ import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
  * passed to the "UserDetails" component.
  *
  * @author Sergio Selvaggi <sselvaggi@softq.pl>
- * @version 1.0.1
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.2
  */
 export default {
 	name: 'UserList',
@@ -131,26 +141,44 @@ export default {
 		return {
 			showRLCreationDialog: false,
 			userListLoaded: false,
-			recipeintLists: undefined,
-			selectedUser: undefined,
-			blankUserList: undefined,
+			userList: [],
+			userProfiles: [],
+			selectedUser: null,
+			blankUserList: null,
 			deleteUserDialog: false,
 		};
 	},
 
+	computed: {
+		loggedUser() {
+			return this.$store.state.loggedUser;
+		}
+	},
+
 	mounted() {
-		this.fetchUsers();
+		
+		if(!!this.loggedUser && this.loggedUser.admin) {
+			this.fetchUserList();
+			this.fetchUserProfiles();
+		} else {
+			this.showUserDetails(this.loggedUser);
+		}
 	},
 
 	methods: {
-		async fetchUsers() {
+		async fetchUserList() {
 			this.userListLoaded = false;
-			this.recipeintLists = await this.$store.dispatch('getAllUsers');
+			this.userList = await this.$store.dispatch('getAllUsers');
 			this.userListLoaded = true;
 		},
+		fetchUserProfiles() {
+			this.$store.dispatch('getUserProfilesList').then((r) => {
+				this.userProfiles = r;
+			});
+		},
 
-		changeActiveRL(item) {
-			this.$store.dispatch('getMailingList', item.id).then((resp) => {
+		showUserDetails(item) {
+			this.$store.dispatch('getUserDetails', item.id).then((resp) => {
 				this.selectedUser = resp;
 			});
 		},
@@ -220,5 +248,8 @@ export default {
 #recipientListSection {
 	max-height: 67vh;
 	overflow-y: auto;
+}
+.flex-jc-center {
+	justify-content: center;
 }
 </style>

@@ -6,6 +6,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.mvc.api.json.JsonUser;
 import org.scada_lts.web.mvc.api.json.JsonUserInfo;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -102,14 +104,16 @@ public class UsersAPI {
     }
 
     @PutMapping(value = "/password")
-    public ResponseEntity<String> createUser(
+    public ResponseEntity<Map<String, Object>> createUser(
             @RequestBody Map<String, Object> jsonBodyRequest,
             HttpServletRequest request
     ) {
+        Map<String, Object> result = new HashMap<>();
         try {
             User user = Common.getUser(request);
-            if(user != null) {
-                if(user.isAdmin()) {
+            if (user != null) {
+
+                if (user.isAdmin()) {
                     userService.updateUserPassword(
                             (Integer) jsonBodyRequest.get("userId"),
                             (String) jsonBodyRequest.get("password")
@@ -121,10 +125,15 @@ public class UsersAPI {
                             (String) jsonBodyRequest.get("current")
                     );
                 }
-                return new ResponseEntity<>(HttpStatus.OK);
+                result.put("status", "ok");
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+        } catch (PasswordMismatchException e1) {
+            result.put("status", "failed");
+            result.put("description", "validation.password.wrong");
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
