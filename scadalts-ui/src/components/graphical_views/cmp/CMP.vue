@@ -128,6 +128,9 @@
 						</div>
 					</section>
 				</div>
+				<div>
+					<btn size="xs" type="primary" @click="checkStatus()">Restart</btn>
+				</div>
 			</collapse>
 		</div>
 	</div>
@@ -288,18 +291,24 @@ export default {
 			this.insideState = 'Error';
 			this.processOfCheckingTheStatus = false;
 			this.counterForAnaliseInOrder = -1;
+			setTimeout(() => {
+				this.counterForAnaliseInOrder = 0;
+			}, 5000);
 		},
 		setErrorAndNotification(msg) {
 			this.errorResultingFromOperationControl = msg;
 			this.insideState = 'Error';
 			this.checkToNotificationError();
+			setTimeout(() => {
+				this.counterForAnaliseInOrder = 0;
+			}, 5000);
 		},
 		showFault() {
 			this.showFaultV = !this.showFaultV;
 			this.checkStatus();
 		},
 		checkStatus() {
-			this.newErros = [];
+			this.newErrors = [];
 			this.counterForAnaliseInOrder = 0;
 			this.processOfCheckingTheStatus = false;
 		},
@@ -426,7 +435,9 @@ export default {
 	},
 	created() {
 		try {
-			this.config = JSON.parse(this.strConfig);
+			console.log(this.pConfig);
+			this.config = JSON.parse(JSON.stringify(this.pConfig));
+			console.log(this.config);
 			this.controlsLevel0 = this.config.control.toChange;
 		} catch (e) {
 			this.setErrorAndNotification(e.message);
