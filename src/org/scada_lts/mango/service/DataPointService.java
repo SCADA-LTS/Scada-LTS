@@ -645,9 +645,14 @@ public class DataPointService implements MangoDataPoint {
 		if (pvcList.size() > limit) {
 			pvcList.clear();
 			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
-			return aggregateSortValues(startTs, endTs, pointIds, limit, intervalMs);
+			int revisedLimit = calculateLimit(aggregateSettings);
+			return aggregateSortValues(startTs, endTs, pointIds, revisedLimit, intervalMs);
 		}
 		return pvcList;
+	}
+
+	private int calculateLimit(AggregateSettings aggregateSettings) {
+		return aggregateSettings.getLimitFactor() > 1.0 ? (int)Math.ceil(aggregateSettings.getValuesLimit() * aggregateSettings.getLimitFactor()) + 1 : aggregateSettings.getValuesLimit() + 1;
 	}
 
 	private int[] getPointIds(List<DataPointVO> pointIds) {
