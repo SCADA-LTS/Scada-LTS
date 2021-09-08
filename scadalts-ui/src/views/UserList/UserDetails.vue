@@ -14,128 +14,136 @@
 					></ChangeUserPassword>
 
 
-					<v-btn fab elevation="2" color="primary" small @click="save()">
+					<v-btn fab elevation="2" color="primary" small @click="save()" :disabled="!valid">
 						<v-icon>mdi-content-save</v-icon>
 					</v-btn>
 					
 				</v-col>
-			
-				<v-col md="6" sm="12" xs="12">
-					<v-text-field 
-						:label="$t('userDetails.field.username')" 
-						:disabled="!edit"
-						:rules="[ruleRequired]"
-						v-model="userDetails.username"
-					></v-text-field>
-				</v-col>
 
-				<v-col md="6" sm="12" xs="12">
-					<v-select 
-						v-if="isAdmin"
-						:label="$t('userDetails.field.userprofile')"
-						:disabled="userDetails.admin"
-						v-model="userDetails.userProfile"
-						:items="userProfiles"
-						item-text="name"
-						item-value="id"
-					></v-select>
-					
-					<v-checkbox 
-						v-else
-						:label="$t('userDetails.field.receiveOwnAuditEvents')"
-						v-model="userDetails.receiveOwnAuditEvents"
-					></v-checkbox>
+				
+				<v-col cols="12">
+					<v-form v-model="valid" ref="form" >
+					<v-row>
+						<v-col md="6" sm="12" xs="12">
+							<v-text-field 
+								:label="$t('userDetails.field.username')" 
+								:disabled="!edit"
+								:rules="[ruleRequired]"
+								v-model="userDetails.username"
+							></v-text-field>
+						</v-col>
 
-				</v-col>
-				
-				
-				<v-col v-if="edit"  md="6" sm="12" xs="12">
-					<v-text-field  
-						type="password" 
-						:label="$t('userDetails.field.password')"
-						v-model="password"
-					></v-text-field>	
-				</v-col>
-				<v-col v-if="edit"  md="6" sm="12" xs="12">
-					<v-text-field  
-						type="password" 
-						:label="$t('userDetails.field.password.repeat')"
-						v-model="passwordRepeat"
-					></v-text-field>	
-				</v-col>
+						<v-col md="6" sm="12" xs="12">
+							<v-select 
+								v-if="isAdmin"
+								:label="$t('userDetails.field.userprofile')"
+								:disabled="userDetails.admin"
+								v-model="userDetails.userProfile"
+								:items="userProfiles"
+								item-text="name"
+								item-value="id"
+							></v-select>
 
-				<v-col md="6" sm="12" xs="12">
-					<v-text-field 
-						:label="$t('userDetails.field.firstName')"
-						v-model="userDetails.firstName"
-					></v-text-field>
+							<v-checkbox 
+								v-else
+								:label="$t('userDetails.field.receiveOwnAuditEvents')"
+								v-model="userDetails.receiveOwnAuditEvents"
+							></v-checkbox>
+
+						</v-col>
+
+
+						<v-col v-if="edit"  md="6" sm="12" xs="12">
+							<v-text-field  
+								type="password" 
+								:label="$t('userDetails.field.password')"
+								v-model="userPassword"
+								:rules="[ruleRequired]"
+							></v-text-field>	
+						</v-col>
+						<v-col v-if="edit"  md="6" sm="12" xs="12">
+							<v-text-field  
+								type="password" 
+								:label="$t('userDetails.field.password.repeat')"
+								v-model="passwordRepeat"
+								:rules="[ruleRequired, rulePasswordEqual]"
+							></v-text-field>	
+						</v-col>
+
+						<v-col md="6" sm="12" xs="12">
+							<v-text-field 
+								:label="$t('userDetails.field.firstName')"
+								v-model="userDetails.firstName"
+							></v-text-field>
+						</v-col>
+						<v-col md="6" sm="12" xs="12">
+							<v-text-field 
+								:label="$t('userDetails.field.lastName')"
+								v-model="userDetails.lastName"
+							></v-text-field>
+						</v-col>
+						<v-col md="6" sm="12" xs="12">
+							<v-text-field 
+								:label="$t('userDetails.field.email')" 
+								v-model="userDetails.email"
+								:rules="emailRules"
+								:disabled="!edit"
+							></v-text-field>
+						</v-col>
+						<v-col md="6" sm="12" xs="12">
+							<v-text-field 
+								:label="$t('userDetails.field.phone')"
+								:rules="phoneRules"
+								v-model="userDetails.phone"
+							></v-text-field>
+						</v-col>
+					</v-row>
+					<v-row>	
+						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+							<v-checkbox 
+								:label="$t('userDetails.field.admin')"
+								v-model="userDetails.admin"
+							></v-checkbox>
+						</v-col>
+						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+							<v-checkbox 
+								:label="$t('userDetails.field.disabled')"
+								v-model="userDetails.disabled"
+							></v-checkbox>
+						</v-col>
+						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+							<v-checkbox 
+								:label="$t('userDetails.field.receiveOwnAuditEvents')"
+								v-model="userDetails.receiveOwnAuditEvents"
+							></v-checkbox>
+						</v-col>
+						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
+							<v-checkbox 
+								:label="$t('userDetails.field.hideMenu')"
+								v-model="userDetails.hideMenu"
+							></v-checkbox>
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col md="6" sm="12" xs="12">
+							<v-select 
+								:label="$t('userDetails.field.receiveAlarmEmails')"
+								v-model="userDetails.receiveAlarmEmails"
+								:items="alarmLevels"
+								item-text="label"
+								item-value="id"
+							></v-select>
+						</v-col>
+						<v-col md="6" sm="12" xs="12">
+							<v-select 
+								:label="$t('userDetails.field.theme')"
+								v-model="userDetails.theme"
+								:items="themes"
+							></v-select>
+						</v-col>
+					</v-row>
+					</v-form>
 				</v-col>
-				<v-col md="6" sm="12" xs="12">
-					<v-text-field 
-						:label="$t('userDetails.field.lastName')"
-						v-model="userDetails.lastName"
-					></v-text-field>
-				</v-col>
-				<v-col md="6" sm="12" xs="12">
-					<v-text-field 
-						:label="$t('userDetails.field.email')" 
-						v-model="userDetails.email"
-						:rules="emailRules"
-						:disabled="!edit"
-					></v-text-field>
-				</v-col>
-				<v-col md="6" sm="12" xs="12">
-					<v-text-field 
-						:label="$t('userDetails.field.phone')"
-						:rules="phoneRules"
-						v-model="userDetails.phone"
-					></v-text-field>
-				</v-col>
-			</v-row>
-			<v-row>	
-				<v-col md="3" sm="6" xs="12" v-if="isAdmin">
-					<v-checkbox 
-						:label="$t('userDetails.field.admin')"
-						v-model="userDetails.admin"
-					></v-checkbox>
-				</v-col>
-				<v-col md="3" sm="6" xs="12" v-if="isAdmin">
-					<v-checkbox 
-						:label="$t('userDetails.field.disabled')"
-						v-model="userDetails.disabled"
-					></v-checkbox>
-				</v-col>
-				<v-col md="3" sm="6" xs="12" v-if="isAdmin">
-					<v-checkbox 
-						:label="$t('userDetails.field.receiveOwnAuditEvents')"
-						v-model="userDetails.receiveOwnAuditEvents"
-					></v-checkbox>
-				</v-col>
-				<v-col md="3" sm="6" xs="12" v-if="isAdmin">
-					<v-checkbox 
-						:label="$t('userDetails.field.hideMenu')"
-						v-model="userDetails.hideMenu"
-					></v-checkbox>
-				</v-col>
-			</v-row>
-			<v-row>
-				<v-col md="6" sm="12" xs="12">
-					<v-select 
-						:label="$t('userDetails.field.receiveAlarmEmails')"
-						v-model="userDetails.receiveAlarmEmails"
-						:items="alarmLevels"
-						item-text="label"
-						item-value="id"
-					></v-select>
-				</v-col>
-				<v-col md="6" sm="12" xs="12">
-					<v-select 
-						:label="$t('userDetails.field.theme')"
-						v-model="userDetails.theme"
-						:items="themes"
-					></v-select>
-				</v-col>
-				
 			</v-row>
 		</v-col>
 	</v-row>
@@ -168,6 +176,10 @@ export default {
 			type: Array,
 			default: [],
 		},
+		userPassword: {
+			type: String,
+			default: '',
+		},
 		edit: {
 			type: Boolean,
 			default: false,
@@ -176,8 +188,10 @@ export default {
 
 	data() {
 		return {
-			valid: true,
+			valid: false,
+			passwordRepeat: '',
 			ruleRequired: (v) => !!v || this.$t('form.validation.required'),
+			rulePasswordEqual: (v) => v === this.userPassword || this.$t('form.validation.passwordNotMatch'),
 			emailRules: [
 				(v) =>
 					/.+@.+\..+/.test(v) ||
@@ -189,6 +203,7 @@ export default {
 						v,
 					) || this.$t('recipientlistDetails.dialog.recipient.valid.phone'),
 			],
+			
 
 			themes: [
 				{
@@ -223,20 +238,14 @@ export default {
 	},
 
 	methods: {
-		
-		
+		save() {
+			if(this.isFormValid()) {
+				this.$emit('saved');
+			}
+		},
 
-		/**
-		 * Save Recipient List
-		 *
-		 * After saving emit the event for parent component to handle
-		 * the result of that operation
-		 */
-		async save() {
-			this.preSave();
-			let resp = await this.$store.dispatch('updateMailingList', this.recipientList);
-			this.$emit('saved', resp);
-			// console.log(this.convertInactiveIntervals(this.inactiveTime));
+		isFormValid() {
+			return this.$refs.form.validate()
 		},
 
 		onPasswordChanged(result) {

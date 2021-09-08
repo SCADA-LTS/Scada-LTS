@@ -105,7 +105,7 @@
 						</h3>
 						<p>{{ user.email }}</p>
 						<v-divider></v-divider>
-						<v-btn block text link href="./users.shtm">
+						<v-btn block text link href="#/users">
 							<span>Edit profile</span>
 							<v-icon>mdi-account-box</v-icon>
 						</v-btn>

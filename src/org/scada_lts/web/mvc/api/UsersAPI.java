@@ -1,11 +1,9 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.mvc.api.json.JsonUser;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +83,7 @@ public class UsersAPI {
     }
 
     @PutMapping(value = "/")
-    public ResponseEntity<String> createUser(
+    public ResponseEntity<String> updateUserDetails(
             @RequestBody JsonUser jsonUser,
             HttpServletRequest request
     ) {
@@ -104,7 +101,7 @@ public class UsersAPI {
     }
 
     @PutMapping(value = "/password")
-    public ResponseEntity<Map<String, Object>> createUser(
+    public ResponseEntity<Map<String, Object>> updateUserPassword(
             @RequestBody Map<String, Object> jsonBodyRequest,
             HttpServletRequest request
     ) {

@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -56,6 +57,7 @@ public class UserService implements MangoUser {
 
 	private UserDAO userDAO = new UserDAO();
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
+	private UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
@@ -253,11 +255,20 @@ public class UserService implements MangoUser {
 	}
 
 	public JsonUser createUser(JsonUserPassword user) {
-		return userDAO.createUser(user);
+		JsonUser createdUser = userDAO.createUser(user);
+		if(user.getUserProfile() > 0) {
+			usersProfileDAO.insertUserProfile(createdUser.getId(), user.getUserProfile());
+		}
+		return createdUser;
 	}
 
 	public void updateUserDetails(JsonUser user) {
 		userDAO.updateUserDetails(user);
+		if(user.getUserProfile() > 0) {
+			usersProfileDAO.insertUserProfile(user.getId(), user.getUserProfile());
+		} else {
+			usersProfileDAO.deleteUserProfileByUserId(user.getId());
+		}
 	}
 
 	public void updateUserPassword(int userId, String newPassword) {

@@ -191,7 +191,7 @@ export default {
 					this.deleteUserProfile(this.operationQueue);
 					this.showCrudSnackbar('delete')
 				} catch (e) {
-					this.showCrudSmackbar('delete', false)
+					this.showCrudSnackbar('delete', false)
 					console.error(e);
 				}
 			}

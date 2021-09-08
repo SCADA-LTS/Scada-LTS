@@ -1,5 +1,23 @@
 const storeUsers = {
-	state: {},
+	state: {
+		userTemplate: {
+			id: -1,
+			username: '',
+			firstName: '',
+			lastName: '',
+			email: '',
+			phone: '',
+			admin: false,
+			disabled: false,
+			homeUrl: '',
+			lastLogin: 0,
+			receiveAlarmEmails: 0,
+			receiveOwnAuditEvents: false,
+			theme: 'DEFAULT',
+			hideMenu: false,
+			userProfile: -1,
+		}
+	},
 
 	mutations: {},
 
@@ -17,6 +35,25 @@ const storeUsers = {
 				url: `/users/password`,
 				data: requestData
 			});
+		},
+
+		createUser({dispatch}, requestData) {
+			return dispatch('requestPost', {
+				url: `/users/`,
+				data: requestData
+			});
+
+		},
+
+		updateUser({dispatch}, requestData) {
+			return dispatch('requestPut', {
+				url: `/users/`,
+				data: requestData
+			});
+		},
+
+		deleteUser({dispatch}, id) {
+			return dispatch('requestDelete', `/users/${id}`);
 		}
 	},
 

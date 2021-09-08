@@ -18,7 +18,7 @@
 										{{ item.username }}
 									</v-list-item-title>
 								</v-list-item-content>
-								<v-list-item-action @click="deleteUser">
+								<v-list-item-action @click="openDeletionDialog(item.id)">
 									<v-icon> mdi-minus-circle </v-icon>
 								</v-list-item-action>
 							</v-list-item>
@@ -39,7 +39,7 @@
 												right
 												x-small
 												fab
-												@click="createUser()"
+												@click="openCreationDialog()"
 											>
 												<v-icon> mdi-plus </v-icon>
 											</v-btn>
@@ -55,12 +55,12 @@
 					
 					<v-col md="9" sm="12" xs="12" id="userDetails">
 						<UserDetails
-							ref="recipientListDetails"
+							ref="userDetailsComponent"
 							:userDetails="selectedUser"
 							:userProfiles="userProfiles"
 							v-if="selectedUser"
 							:key="selectedUser.id"
-							@saved="updateUserList"
+							@saved="onUpdateUserDetails"
 						></UserDetails>
 
 						<v-row v-else>
@@ -73,20 +73,21 @@
 			</v-card>
 		</v-container>
 		
-		<v-dialog v-model="showRLCreationDialog" max-width="1200" >
+		<v-dialog v-model="dialogCreationVisible" max-width="1200" >
 			<v-card>
 				<v-card-title>{{ $t('userDetails.dialog.create.title') }}</v-card-title>
 				<v-card-text class="dialog-card-text">
 					<UserDetails style="padding:1rem"
-						ref="recipientListDialog"
-						:userDetails="blankUserList"
+						ref="userCreationDialog"
+						:userDetails="createdUser"
 						:userProfiles="userProfiles"
+						:userPassword="userPassword"
 						:edit="true"
 					></UserDetails>
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn text @click="showRLCreationDialog = false">{{
+					<v-btn text @click="dialogCreationVisible = false">{{
 						$t('common.cancel')
 					}}</v-btn>
 					<v-btn text color="success" @click="addUser()">{{
@@ -98,10 +99,10 @@
 
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="deleteUserDialog"
-			@result="deleteUserDialogResult"
-			:title="$t('recipientlist.dialog.delete.title')"
-			:message="$t('recipientlist.dialog.delete.text')"
+			:dialog="dialogDeletionVisible"
+			@result="onDeleteDialogClose"
+			:title="$t('userDetails.dialog.delete.title')"
+			:message="$t('userDetails.dialog.delete.text')"
 		></ConfirmationDialog>
 
 		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
@@ -117,11 +118,9 @@ import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 /**
  * User List component - View page.
  *
- * User list display all recipient lists from Scada-LTS application.
- *
- * Using REST API the User Lists are provided to that component
- * but more detailed information about specific list is
- * passed to the "UserDetails" component.
+ * This page is used to display the list of users and 
+ * manage the user details. You can create, edit and delete users
+ * from that page. Communication is based on the HTTP requests.
  *
  * @author Sergio Selvaggi <sselvaggi@softq.pl>
  * @author Radoslaw Jajko <rjajko@softq.pl>
@@ -139,13 +138,15 @@ export default {
 
 	data() {
 		return {
-			showRLCreationDialog: false,
 			userListLoaded: false,
 			userList: [],
 			userProfiles: [],
 			selectedUser: null,
-			blankUserList: null,
-			deleteUserDialog: false,
+			createdUser: null,
+			userPassword: '',
+			dialogDeletionVisible: false,
+			dialogCreationVisible: false,
+			operationQueue: null,
 		};
 	},
 
@@ -174,6 +175,10 @@ export default {
 		fetchUserProfiles() {
 			this.$store.dispatch('getUserProfilesList').then((r) => {
 				this.userProfiles = r;
+				this.userProfiles.push({
+					"id": 0,
+					"name": this.$t('common.none'),
+				});
 			});
 		},
 
@@ -183,47 +188,61 @@ export default {
 			});
 		},
 
-		deleteUser() {
-			this.deleteUserDialog = true;
+		openDeletionDialog(itemId) {
+			this.operationQueue = itemId;
+			this.dialogDeletionVisible = true;
 		},
 
-		async deleteUserDialogResult(e) {
-			this.deleteUserDialog = false;
-			if (e) {
-				let resp = await this.$store.dispatch(
-					'deleteMailingList',
-					this.selectedUser.id,
-				);
-				let operationSuccess = !!resp.status && resp.status === 'deleted';
-				this.showCrudSnackbar('delete', operationSuccess);
-				if (operationSuccess) {
-					this.selectedUser = null;
-					this.fetchUsers();
-				}
+		onDeleteDialogClose(result) {
+			this.dialogDeletionVisible = false;
+			if (result) {
+				this.deleteUser(this.operationQueue);
 			}
 		},
 
-		async createUser() {
-			this.showRLCreationDialog = true;
-			this.blankUserList = JSON.parse(
-				JSON.stringify(this.$store.state.storeMailingList.mailingListTemplate),
-			);
-			this.blankUserList.xid = await this.$store.dispatch('getUniqueMailingListXid');
+		async deleteUser(userId) {
+			try {
+				await this.$store.dispatch('deleteUser', userId);
+			
+				this.userList = this.userList.filter(item => item.id !== userId);
+				if(this.selectedUser.id === userId) {
+					this.selectedUser = null;
+				}
+				this.showCrudSnackbar('delete')
+			} catch (e) {
+				this.showCrudSnackbar('delete', false)
+				console.error(e);
+			}			
 		},
+
+		openCreationDialog() {
+			this.selectedUser = null;
+			this.dialogCreationVisible = true;
+			this.createdUser = JSON.parse(JSON.stringify(
+				this.$store.state.storeUsers.userTemplate));
+        },
 
 		async addUser() {
-			this.$refs.recipientListDialog.preSave();
-			let resp = await this.$store.dispatch('createUser', this.blankUserList);
-			let operationSuccess = !!resp.status && resp.status === 'created';
-			this.showCrudSnackbar('add', operationSuccess);
-			if (operationSuccess) {
-				this.fetchUsers();
+			if(this.$refs.userCreationDialog.isFormValid()) {
+				this.dialogCreationVisible = false;
+				this.createdUser.password = this.userPassword;
+				try {
+					await this.$store.dispatch('createUser', this.createdUser);
+					this.showCrudSnackbar('add');
+					this.fetchUserList();
+				} catch (e) {
+					this.showCrudSnackbar('add', false);
+				}
 			}
-			this.showRLCreationDialog = false;
-		},
+        },
 
-		updateUserList(resp) {
-			this.showCrudSnackbar('update', !!resp.status && resp.status === 'updated');
+		async onUpdateUserDetails() {
+			try {
+				await this.$store.dispatch('updateUser', this.selectedUser);
+				this.showCrudSnackbar('update');
+			} catch (e) {
+				this.showCrudSnackbar('update', false);
+			}
 		},
 	},
 };
