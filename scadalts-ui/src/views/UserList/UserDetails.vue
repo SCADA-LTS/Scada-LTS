@@ -1,7 +1,7 @@
 <template>
-	<v-row v-if="!!userDetails" id="recipient-list-details">
+	<v-row v-if="!!userDetails" id="user-details">
 		
-		<v-col md="12" sm="12" xs="12" id="rl-section-details">
+		<v-col md="12" sm="12" xs="12" id="user-details-section">
 			<v-row>
 				<v-col v-if="!edit" cols="12" class="heading-action-buttons">
 					<h2>{{ $t('userDetails.title') }}</h2>
@@ -22,10 +22,11 @@
 
 				
 				<v-col cols="12">
-					<v-form v-model="valid" ref="form" >
+					<v-form v-model="valid" ref="form" id="user-details--form">
 					<v-row>
 						<v-col md="6" sm="12" xs="12">
 							<v-text-field 
+								id="user-form--username"
 								:label="$t('userDetails.field.username')" 
 								:disabled="!edit"
 								:rules="[ruleRequired]"
@@ -35,6 +36,7 @@
 
 						<v-col md="6" sm="12" xs="12">
 							<v-select 
+								id="user-form--userprofiles"
 								v-if="isAdmin"
 								:label="$t('userDetails.field.userprofile')"
 								:disabled="userDetails.admin"
@@ -42,10 +44,13 @@
 								:items="userProfiles"
 								item-text="name"
 								item-value="id"
+								append-outer-icon="mdi-account-multiple-plus"
+								@click:append-outer="openUserProfileDialog"
 							></v-select>
 
 							<v-checkbox 
 								v-else
+								id="user-form--audit-events"
 								:label="$t('userDetails.field.receiveOwnAuditEvents')"
 								v-model="userDetails.receiveOwnAuditEvents"
 							></v-checkbox>
@@ -55,6 +60,7 @@
 
 						<v-col v-if="edit"  md="6" sm="12" xs="12">
 							<v-text-field  
+								id="user-form--password"
 								type="password" 
 								:label="$t('userDetails.field.password')"
 								v-model="userPassword"
@@ -63,6 +69,7 @@
 						</v-col>
 						<v-col v-if="edit"  md="6" sm="12" xs="12">
 							<v-text-field  
+								id="user-form--password-repeat"
 								type="password" 
 								:label="$t('userDetails.field.password.repeat')"
 								v-model="passwordRepeat"
@@ -72,18 +79,21 @@
 
 						<v-col md="6" sm="12" xs="12">
 							<v-text-field 
+								id="user-form--first-name"
 								:label="$t('userDetails.field.firstName')"
 								v-model="userDetails.firstName"
 							></v-text-field>
 						</v-col>
 						<v-col md="6" sm="12" xs="12">
 							<v-text-field 
+								id="user-form--last-name"
 								:label="$t('userDetails.field.lastName')"
 								v-model="userDetails.lastName"
 							></v-text-field>
 						</v-col>
 						<v-col md="6" sm="12" xs="12">
 							<v-text-field 
+								id="user-form--email"
 								:label="$t('userDetails.field.email')" 
 								v-model="userDetails.email"
 								:rules="emailRules"
@@ -92,6 +102,7 @@
 						</v-col>
 						<v-col md="6" sm="12" xs="12">
 							<v-text-field 
+								id="user-form--phone"
 								:label="$t('userDetails.field.phone')"
 								:rules="phoneRules"
 								v-model="userDetails.phone"
@@ -101,24 +112,28 @@
 					<v-row>	
 						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
+								id="user-form--admin"
 								:label="$t('userDetails.field.admin')"
 								v-model="userDetails.admin"
 							></v-checkbox>
 						</v-col>
 						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
+								id="user-form--disabled"
 								:label="$t('userDetails.field.disabled')"
 								v-model="userDetails.disabled"
 							></v-checkbox>
 						</v-col>
 						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
+								id="user-form--audit-events"
 								:label="$t('userDetails.field.receiveOwnAuditEvents')"
 								v-model="userDetails.receiveOwnAuditEvents"
 							></v-checkbox>
 						</v-col>
 						<v-col md="3" sm="6" xs="12" v-if="isAdmin">
 							<v-checkbox 
+								id="user-form--hide-menu"
 								:label="$t('userDetails.field.hideMenu')"
 								v-model="userDetails.hideMenu"
 							></v-checkbox>
@@ -127,6 +142,7 @@
 					<v-row>
 						<v-col md="6" sm="12" xs="12">
 							<v-select 
+								id="user-form--alarm-events"
 								:label="$t('userDetails.field.receiveAlarmEmails')"
 								v-model="userDetails.receiveAlarmEmails"
 								:items="alarmLevels"
@@ -136,6 +152,7 @@
 						</v-col>
 						<v-col md="6" sm="12" xs="12">
 							<v-select 
+								id="user-form--theme"
 								:label="$t('userDetails.field.theme')"
 								v-model="userDetails.theme"
 								:items="themes"
@@ -146,10 +163,34 @@
 				</v-col>
 			</v-row>
 		</v-col>
+
+		<v-dialog v-model="userProfileDialogVisible" max-width="1000">
+			<v-card>
+				<v-card-title>
+					{{ $t('userprofile.dialog.create.title') }}
+				</v-card-title>
+				<v-card-text>
+					<UserProfileDetails
+						ref="userProfileDialog"
+						@create="onUserProfileCreation"
+					></UserProfileDetails>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn text @click="userProfileDialogVisible = false">
+						{{$t('common.cancel')}}
+					</v-btn>
+					<v-btn text color="success" @click="addUserProfile">
+						{{$t('common.ok')}}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-row>
 </template>
 <script>
 import ChangeUserPassword from './ChangeUserPassword'
+import UserProfileDetails from '../UserProfiles/UserProfileDetails'
 /**
  * User Details
  *
@@ -166,6 +207,7 @@ export default {
 
 	components: {
 		ChangeUserPassword,
+		UserProfileDetails
 	},
 
 	props: {
@@ -190,6 +232,7 @@ export default {
 		return {
 			valid: false,
 			passwordRepeat: '',
+			userProfileDialogVisible: false,
 			ruleRequired: (v) => !!v || this.$t('form.validation.required'),
 			rulePasswordEqual: (v) => v === this.userPassword || this.$t('form.validation.passwordNotMatch'),
 			emailRules: [
@@ -250,7 +293,20 @@ export default {
 
 		onPasswordChanged(result) {
 			this.$emit('passwordChanged', result);
-		}
+		},
+
+		openUserProfileDialog() {
+			this.userProfileDialogVisible = true;
+		},
+
+		addUserProfile() {
+			this.userProfileDialogVisible = false;
+			this.$refs.userProfileDialog.createUserProfile();
+        },
+
+		onUserProfileCreation(result) {
+			this.$emit('userProfileCreated', result);
+		},
 	},
 };
 </script>

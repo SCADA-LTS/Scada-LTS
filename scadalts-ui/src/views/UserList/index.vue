@@ -61,6 +61,8 @@
 							v-if="selectedUser"
 							:key="selectedUser.id"
 							@saved="onUpdateUserDetails"
+							@passwordChanged="onPasswordChanged"
+							@userProfileCreated="onUserProfileCreated"
 						></UserDetails>
 
 						<v-row v-else>
@@ -244,6 +246,19 @@ export default {
 				this.showCrudSnackbar('update', false);
 			}
 		},
+
+		onPasswordChanged(result) {
+			this.showCrudSnackbar('update', result);
+		},
+
+		onUserProfileCreated(result) {
+			this.showCrudSnackbar('add', result);
+			if(result) {
+				this.fetchUserProfiles();
+			}
+		}
+
+
 	},
 };
 </script>
@@ -264,8 +279,8 @@ export default {
 	max-height: 74vh;
 	overflow-y: auto;
 }
-#recipientListSection {
-	max-height: 67vh;
+#usersList {
+	max-height: 61vh;
 	overflow-y: auto;
 }
 .flex-jc-center {

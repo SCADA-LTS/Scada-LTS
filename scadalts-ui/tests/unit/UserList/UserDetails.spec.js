@@ -18,18 +18,6 @@ global.cancelAnimationFrame = window.clearTimeout;
 context('💠️ Test User Details Scenario', () => {
 	let wrapper2;
 
-    function getInput(order) {
-        return `#rl-section-details form .row div:nth-of-type(${order}) .v-input:first-of-type input`;
-    }
-
-    function getInputLabel(order) {
-        return `#rl-section-details form .row div:nth-of-type(${order}) .v-input:first-of-type`;
-    }
-
-    function getSelect(row, order) {
-        return `#rl-section-details form .row:nth-of-type(${row}) div:nth-of-type(${order}) .v-select:first-of-type`;
-    }
-
     describe('Component Initialization::exampleUser::nonAdmin', () => {
 
         before(() => {
@@ -44,28 +32,43 @@ context('💠️ Test User Details Scenario', () => {
         it('Is header and translation loaded', async() => {
             await wrapper2.vm.$nextTick();
             expect(wrapper2.get('h2').text()).to.equal('User Details');
+            const fromText = wrapper2.get('#user-details--form').text();
+            expect(fromText).to.include('Username');
+            expect(fromText).to.include('Receive audit events');
+            expect(fromText).to.include('First Name');
+            expect(fromText).to.include('Last Name');
+            expect(fromText).to.include('Email address');
+            expect(fromText).to.include('Phone number');
+            expect(fromText).to.include('Receive alarm emails');
+            expect(fromText).to.include('UI Theme');
         });
 
-        it('Is exampleUser data loaded', () => {
-            expect(wrapper2.get(getInput(1)).element.value).to.equal('unittester');
-            expect(wrapper2.get(getInput(3)).element.value).to.equal('Tester');
-            expect(wrapper2.get(getInput(4)).element.value).to.equal('Mock');
-            expect(wrapper2.get(getInput(5)).element.value).to.equal('test@mock.com');
-            expect(wrapper2.get(getInput(6)).element.value).to.equal('48121212');
+        it('Are sections for admin editor not visible', () => {
+            const fromText = wrapper2.get('#user-details--form').text();
+            expect(fromText).to.not.include('User Profile');
+            expect(fromText).to.not.include('Administrator');
+            expect(fromText).to.not.include('Hide Menu');
+            expect(fromText).to.not.include('Disabled');
         });
 
-        it('Are Username and Email address fields disabled', () => {
-            expect(wrapper2.find(getInput(1)).attributes().disabled).to.equal('disabled');
-            expect(wrapper2.find(getInput(5)).attributes().disabled).to.equal('disabled');
+        it('Is prop exampleUser data loaded', () => {
+            const fromHtml = wrapper2.get('#user-details--form');
+            
+            expect(fromHtml.find('#user-form--username').element.value).to.equal(exampleUser.username);
+            expect(fromHtml.find('#user-form--audit-events').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--first-name').element.value).to.equal(exampleUser.firstName);
+            expect(fromHtml.find('#user-form--last-name').element.value).to.equal(exampleUser.lastName);
+            expect(fromHtml.find('#user-form--email').element.value).to.equal(exampleUser.email);
+            expect(fromHtml.find('#user-form--phone').element.value).to.equal(exampleUser.phone);
         });
 
-        it('Are settings for admin user not visible', () => {
-            const componentBody = wrapper2.find('#rl-section-details form').text();
-            expect(componentBody).to.not.contain('Administrator');
-            expect(componentBody).to.not.contain('User Profile');
-            expect(componentBody).to.not.contain('Disabled');
-            expect(componentBody).to.not.contain('Hide menu');
-        });
+        it('Is Username and Email field disabled', () => {
+            const fromHtml = wrapper2.get('#user-details--form');
+
+            expect(fromHtml.find('#user-form--username').attributes().disabled).to.equal('disabled');
+            expect(fromHtml.find('#user-form--email').attributes().disabled).to.equal('disabled');
+        })
+
     }) 
 
     describe('Component Initialization::exampleUser::Admin', () => {
@@ -80,15 +83,21 @@ context('💠️ Test User Details Scenario', () => {
             wrapper2.vm.$store.state.loggedUser.admin = true;
         });
 
-        it('Is exampleUser data loaded for Admin', () => {
-            expect(wrapper2.get(getInput(1)).element.value).to.equal('unittester');
-            expect(wrapper2.find(getSelect(1,2)).props('items').length).to.equal(1);
-            expect(wrapper2.get(getInput(3)).element.value).to.equal('Tester');
-            expect(wrapper2.get(getInput(4)).element.value).to.equal('Mock');
-            expect(wrapper2.get(getInput(5)).element.value).to.equal('test@mock.com');
-            expect(wrapper2.get(getInput(6)).element.value).to.equal('48121212');
-            expect(wrapper2.find(getSelect(3, 1)).props('items').length).to.equal(5);
-            expect(wrapper2.find(getSelect(3, 2)).props('items').length).to.equal(3);
+        it('Is prop exampleUser data loaded', async () => {
+            const fromHtml = wrapper2.get('#user-details--form');
+        
+            expect(fromHtml.find('#user-form--username').element.value).to.equal(exampleUser.username);
+            expect(fromHtml.find('#user-form--userprofiles').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--first-name').element.value).to.equal(exampleUser.firstName);
+            expect(fromHtml.find('#user-form--last-name').element.value).to.equal(exampleUser.lastName);
+            expect(fromHtml.find('#user-form--email').element.value).to.equal(exampleUser.email);
+            expect(fromHtml.find('#user-form--phone').element.value).to.equal(exampleUser.phone);
+            expect(fromHtml.find('#user-form--admin').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--disabled').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--audit-events').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--hide-menu').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--alarm-events').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--theme').element.value).to.equal('');
         });
 
     })
@@ -106,30 +115,38 @@ context('💠️ Test User Details Scenario', () => {
         });
 
         it('Is exampleUser data loaded for Admin', () => {
-            expect(wrapper2.get(getInputLabel(1)).text()).to.equal('Username');
-            expect(wrapper2.get(getInputLabel(3)).text()).to.equal('Password');
-            expect(wrapper2.get(getInputLabel(4)).text()).to.equal('Repeat password');
-            expect(wrapper2.get(getInputLabel(5)).text()).to.equal('First Name');
-            expect(wrapper2.get(getInputLabel(6)).text()).to.equal('Last Name');
-            expect(wrapper2.get(getInputLabel(7)).text()).to.equal('Email address');
-            expect(wrapper2.get(getInputLabel(8)).text()).to.equal('Phone number');
+
+            const fromText = wrapper2.get('#user-details--form').text();
+            expect(fromText).to.include('Username');
+            expect(fromText).to.include('User Profile');
+            expect(fromText).to.include('Password');
+            expect(fromText).to.include('Repeat password');
+            expect(fromText).to.include('First Name');
+            expect(fromText).to.include('Last Name');
+            expect(fromText).to.include('Email address');
+            expect(fromText).to.include('Phone number');
+            
         });
 
         it('User creation - blank - no passing', () => {
             expect(wrapper2.vm.isFormValid()).to.equal(false);
         });
 
+        it('User creation - disable user profile if admnistrator', async() => { 
+            wrapper2.vm.userDetails.admin = true;
+            await wrapper2.vm.$nextTick();
+            expect(wrapper2.get('#user-form--userprofiles').find("input").attributes().disabled).to.equal('disabled');
+        })
+
         it('User creation - filled - passing', async() => {
-            await wrapper2.find(getInput(1)).setValue("mockedusertest");
-            await wrapper2.find(getInput(4)).setValue("pa$$word");
-            await wrapper2.find(getInput(7)).setValue("mocked@mail.com");
-            await wrapper2.find(getInput(8)).setValue("48123321");
+            wrapper2.get('#user-form--username').setValue("mockedusertest");
+            wrapper2.get('#user-form--password-repeat').setValue("pa$$word");
+            wrapper2.get('#user-form--email').setValue("mocked@mail.com");
+            wrapper2.get('#user-form--phone').setValue("48123321");
             await wrapper2.vm.$nextTick();
 
             expect(wrapper2.vm.isFormValid()).to.equal(true);
         });
-
-        
 
     })
 	
