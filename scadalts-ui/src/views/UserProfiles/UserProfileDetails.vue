@@ -13,14 +13,24 @@
                 @click="updateUserProfile">
                 <v-icon>mdi-content-save</v-icon>
             </v-btn>
-            <v-btn fab elevation="2" 
-                small 
-                @click="copyUserProfile">
-                <v-icon>mdi-content-copy</v-icon>
-            </v-btn>
+            <v-tooltip bottom>
+                <template v-slot:activator="{on, attrs}"> 
+                    <v-btn fab elevation="2" 
+                        v-bind="attrs" 
+                        v-on="on"
+                        small 
+                        @click="copyUserProfile">
+                        <v-icon>mdi-content-copy</v-icon>
+                    </v-btn>
+                </template>
+                <span>
+                    {{$t('common.createcopy')}}
+                </span>
+            </v-tooltip>
+            
         </v-col>
 
-		<v-col cols="10">
+		<v-col cols="8">
             <v-text-field 
                 :label="$t('userprofileDetails.form.name')"
                 type="text" 
@@ -36,8 +46,58 @@
             ></v-text-field>
         </v-col>
 
+        <v-col cols="2" class="flex justify-content-space-evenly">
+            <v-tooltip bottom>
+                <template v-slot:activator="{on, attrs}"> 
+                    <v-btn fab elevation="2"
+                        v-bind="attrs"
+						v-on="on"
+                        small
+                        @click="scrollTo('dataSourcesSection')"            
+                        ><v-icon>mdi-database</v-icon>
+                    </v-btn>
+                </template>
+                <span>
+                    {{$t('userprofileDetails.help.datasources')}}
+                </span>
+            </v-tooltip>
+            
+            
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{on, attrs}"> 
+                    <v-btn fab elevation="2"
+                        v-bind="attrs"
+						v-on="on"
+                        small
+                        @click="scrollTo('graphicalViewSection')"            
+                        ><v-icon>mdi-image</v-icon>
+                    </v-btn>
+                </template>
+                <span>
+                    {{$t('userprofileDetails.help.views')}}
+                </span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{on, attrs}"> 
+                    <v-btn fab elevation="2"
+                        v-bind="attrs"
+						v-on="on"
+                        small
+                        @click="scrollTo('watchListSection')"            
+                        ><v-icon>mdi-chart-line</v-icon>
+                    </v-btn>
+                </template>
+                <span>
+                    {{$t('userprofileDetails.help.watchlists')}}
+                </span>
+            </v-tooltip>
+                </v-col>
+
+
         <v-col cols="12">
-            <v-row>
+            <v-row class="permission-content">
                 <v-col cols="12">
                     <PermissionsDataSource
                         @change="onPermissionChanged"
@@ -251,6 +311,10 @@ export default {
                 return JSON.stringify(this.userProfile) !== JSON.stringify(this.userProfileRevert);
             }
         },
+
+        scrollTo(section) {
+			document.getElementById(section).scrollIntoView({behavior: "smooth"});
+		}
 	},
 };
 </script>
@@ -266,12 +330,31 @@ export default {
     justify-content: space-evenly;
 }
 .radio-label--header {
-    max-width: 220px;
-    padding: 16px;
+    float: right;
 }
+
+.permission-content {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.radio-label--header > span {
+    margin: 5px;
+}
+.radio-label--header > span:last-of-type {
+    margin-right: 2vw;
+}
+
+
 </style>
 <style scoped>
 .mar-right-small {
     margin-right: 10px;
+}
+.flex {
+    display: flex;
+}
+.justify-content-space-evenly {
+    justify-content: space-evenly;
 }
 </style>

@@ -239,4 +239,8 @@ export default {
 	max-height: 74vh;
 	overflow-y: auto;
 }
+#userProfileListSection {
+	max-height: 61vh;
+	overflow-y: auto;
+}
 </style>

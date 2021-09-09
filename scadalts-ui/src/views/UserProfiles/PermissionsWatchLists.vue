@@ -3,18 +3,32 @@
     <v-col id="watchListSection" v-if="!watchListsLoading">
 
         <v-row>
-            <v-col>
-                <h4>{{ $t('userprofileDetails.wl.title') }}</h4>
+            <v-col cols="4">
+                <h4>
+                    <v-icon>mdi-chart-line</v-icon> 
+                    {{ $t('userprofileDetails.wl.title') }}
+                </h4>
             </v-col>
-            <v-col cols="4" class="flex jc--space-evenly radio-label--header">
-                <span>{{$t('userprofileDetails.common.none')}}</span>
-                <span>{{$t('userprofileDetails.common.read')}}</span>
-                <span>{{$t('userprofileDetails.common.set')}}</span>
+            <v-col cols="4">
+                <v-text-field
+                    :placeholder="$t('common.search')"
+                    v-model="name"
+                    prepend-icon="mdi-magnify"
+                    dense
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+                <div class="radio-label--header">
+                    <span>{{$t('userprofileDetails.common.none')}}</span>
+                    <span>{{$t('userprofileDetails.common.read')}}</span>
+                    <span>{{$t('userprofileDetails.common.set')}}</span>
+                </div>
             </v-col>
         </v-row>
 
         <v-list>
-            <v-list-item v-for="item in watchLists" :key="item.id">
+            <v-list-item v-for="item in filterItemsByName" :key="item.id">
                 <v-list-item-content>
                     <v-list-item-title v-text="item.name"></v-list-item-title>
                 </v-list-item-content>
@@ -55,6 +69,7 @@ export default {
 
     data() {
         return {
+            name: '',
             watchLists: [],
             watchListsLoading: false,
         }
@@ -63,6 +78,14 @@ export default {
     computed: {
         permissions() {
             return this.$store.state.userProfileModule.activeUserProfile.watchlistPermissions;
+        },
+
+        filterItemsByName() {
+            if(!!this.name) {
+                return this.watchLists.filter(list => list.name.toLowerCase().includes(this.name.toLowerCase()));
+            } else {
+                return this.watchLists;
+            }      
         }
     },
 

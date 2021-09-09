@@ -6,13 +6,19 @@
 		<v-container fluid>
 			<v-card class="slts-card">
 				<v-row class="flex-jc-center">
-					<v-col md="2" sm="12" xs="12" v-if="loggedUser.admin">
+					<v-col md="3" sm="12" xs="12" v-if="loggedUser.admin">
 						<v-list v-if="userListLoaded" id="usersList">
 							<v-list-item
 								v-for="item in userList"
 								:key="item.id"
 								@click="showUserDetails(item)"
 							>
+								<v-list-item-icon>
+									<v-icon v-show="item.admin && !item.disabled">mdi-account-tie</v-icon>
+									<v-icon v-show="item.admin && item.disabled">mdi-account-tie-outline</v-icon>
+									<v-icon v-show="!item.admin && !item.disabled">mdi-account</v-icon>
+									<v-icon v-show="!item.admin && item.disabled">mdi-account-outline</v-icon>
+          						</v-list-item-icon>
 								<v-list-item-content>
 									<v-list-item-title>
 										{{ item.username }}
@@ -53,7 +59,7 @@
 
 					<v-divider vertical class="divider-horizontal-margin" v-if="loggedUser.admin"></v-divider>
 					
-					<v-col md="9" sm="12" xs="12" id="userDetails">
+					<v-col md="8" sm="12" xs="12" id="userDetails">
 						<UserDetails
 							ref="userDetailsComponent"
 							:userDetails="selectedUser"

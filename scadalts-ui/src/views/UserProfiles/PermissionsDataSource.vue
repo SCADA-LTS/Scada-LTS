@@ -4,17 +4,31 @@
 
         <v-row>
             <v-col>
-                <h4>{{ $t('userprofileDetails.ds.title') }}</h4>
+                <h4>
+                    <v-icon>mdi-database</v-icon> 
+                    {{ $t('userprofileDetails.ds.title') }}
+                </h4>
             </v-col>
-            <v-col cols="4" class="flex jc--space-evenly radio-label--header">
-                <span>{{$t('userprofileDetails.common.none')}}</span>
-                <span>{{$t('userprofileDetails.common.read')}}</span>
-                <span>{{$t('userprofileDetails.common.set')}}</span>
+            <v-col cols="4">
+                <v-text-field
+                    :placeholder="$t('common.search')"
+                    v-model="name"
+                    prepend-icon="mdi-magnify"
+                    dense
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+                <div class="radio-label--header">
+                    <span>{{$t('userprofileDetails.common.none')}}</span>
+                    <span>{{$t('userprofileDetails.common.read')}}</span>
+                    <span>{{$t('userprofileDetails.common.set')}}</span>
+                </div>
             </v-col>
         </v-row>
 
         <v-treeview
-            :items="dataSourceList"
+            :items="filterItemsByName"
             :load-children="fetchDataPointList"
             activatable
         >
@@ -66,6 +80,7 @@ export default {
 
     data() {
         return {
+            name: '',
             dataSourceList: [],
             dataSourceListLoading: false,
         }
@@ -78,6 +93,14 @@ export default {
 
         permissionsDP() {
             return this.$store.state.userProfileModule.activeUserProfile.dataPointPermissions;
+        },
+
+        filterItemsByName() {
+            if(!!this.name) {
+                return this.dataSourceList.filter(ds => ds.name.toLowerCase().includes(this.name.toLowerCase()));
+            } else {
+                return this.dataSourceList;
+            }      
         }
     },
 
