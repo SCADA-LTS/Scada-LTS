@@ -101,7 +101,7 @@ public class DataSourceService implements MangoDataSource {
 			List<DataPointVO> dataPointList = dataPointService.getDataPoints(dataSource.getId(), null);
 			for (DataPointVO dataPoint : dataPointList) {
 				dataPoint.setDataSourceName(dataPoint.getName());
-				dataPoint.setDeviceName(dataPoint.getName());
+				dataPoint.setDeviceName(dataSource.getName());
 				dataPointService.updateDataPoint(dataPoint);
 			}
 		}
