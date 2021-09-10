@@ -193,6 +193,8 @@ export default {
 		showUserDetails(item) {
 			this.$store.dispatch('getUserDetails', item.id).then((resp) => {
 				this.selectedUser = resp;
+			}).catch(() => {
+				this.selectedUser = null;
 			});
 		},
 
