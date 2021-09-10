@@ -66,20 +66,11 @@ public class UserService implements MangoUser {
 	private PermissionsService<DataPointAccess, User> dataPointPermissionsService;
 	private PermissionsService<Integer, User> dataSourcePermissionsService;
 
-	private PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService;
-	private PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService;
-	private PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService;
-	private PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService;
-
 	public UserService() {
 		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
 		userDAO = (UserDaoCachable) context.getBean("userDAO");
 		dataPointPermissionsService = (PermissionsService<DataPointAccess, User>) context.getBean("dataPointUserPermissionsService");
 		dataSourcePermissionsService = (PermissionsService<Integer, User>) context.getBean("dataSourceUserPermissionsService");
-		dataPointProfilePermissionsService = (PermissionsService<DataPointAccess, UsersProfileVO>) context.getBean("dataPointProfilePermissionsService");
-		dataSourceProfilePermissionsService = (PermissionsService<Integer, UsersProfileVO>) context.getBean("dataSourceProfilePermissionsService");
-		viewProfilePermissionsService = (PermissionsService<ViewAccess, UsersProfileVO>) context.getBean("viewProfilePermissionsService");
-		watchListProfilePermissionsService = (PermissionsService<WatchListAccess, UsersProfileVO>) context.getBean("watchListProfilePermissionsService");
 		usersProfileService = (UsersProfileService) context.getBean("usersProfileService");
 	}
 
@@ -87,11 +78,7 @@ public class UserService implements MangoUser {
 					   EventService eventService, PointValueService pointValueService,
 					   UsersProfileService usersProfileService,
 					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,
-					   PermissionsService<Integer, User> dataSourcePermissionsService,
-					   PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService,
-					   PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService,
-					   PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService,
-					   PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService) {
+					   PermissionsService<Integer, User> dataSourcePermissionsService) {
 		this.userDAO = userDAO;
 		this.userCommentDAO = userCommentDAO;
 		this.mailingListService = mailingListService;
@@ -100,10 +87,6 @@ public class UserService implements MangoUser {
 		this.usersProfileService = usersProfileService;
 		this.dataPointPermissionsService = dataPointPermissionsService;
 		this.dataSourcePermissionsService = dataSourcePermissionsService;
-		this.dataPointProfilePermissionsService = dataPointProfilePermissionsService;
-		this.dataSourceProfilePermissionsService = dataSourceProfilePermissionsService;
-		this.viewProfilePermissionsService = viewProfilePermissionsService;
-		this.watchListProfilePermissionsService = watchListProfilePermissionsService;
 	}
 
 	@Override
@@ -159,10 +142,10 @@ public class UserService implements MangoUser {
 
 			usersProfileService.getProfileByUser(user).ifPresent(a -> {
 				user.setUserProfileId(a.getId());
-				user.setDataPointProfilePermissions(dataPointProfilePermissionsService.getPermissions(a));
-				user.setDataSourcePermissions(dataSourceProfilePermissionsService.getPermissions(a));
-				user.setViewProfilePermissions(viewProfilePermissionsService.getPermissions(a));
-				user.setWatchListProfilePermissions(watchListProfilePermissionsService.getPermissions(a));
+				user.setDataPointProfilePermissions(a.getDataPointPermissions());
+				user.setDataSourcePermissions(a.getDataSourcePermissions());
+				user.setViewProfilePermissions(a.getViewPermissions());
+				user.setWatchListProfilePermissions(a.getWatchlistPermissions());
 			});
 		}
 	}

@@ -116,57 +116,6 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             COLUMN_NAME_NAME + "" +
             ") values (?, ?)";
 
-    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID = "" +
-            "select " +
-                "uup." + COLUMN_NAME_USER_ID + ", " +
-                "wlup." + COLUMN_NAME_PERMISSION + " " +
-            "from " +
-                "usersUsersProfiles uup " +
-            "left join " +
-                "watchListUsersProfiles wlup " +
-            "on " +
-                "wlup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
-            "where " +
-                "wlup." + COLUMN_NAME_WATCH_LIST_ID + "=?;";
-
-    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID = "" +
-            "select " +
-                "uup." + COLUMN_NAME_USER_ID + ", " +
-                "vup." + COLUMN_NAME_PERMISSION + " " +
-            "from " +
-                "usersUsersProfiles uup " +
-            "left join " +
-                "viewUsersProfiles vup " +
-            "on " +
-                "vup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
-            "where " +
-                "vup." + COLUMN_NAME_VIEW_ID + "=?;";
-
-    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID = "" +
-            "select " +
-                "uup." + COLUMN_NAME_USER_ID + ", " +
-                "dpup." + COLUMN_NAME_PERMISSION + " " +
-            "from " +
-                "usersUsersProfiles uup " +
-            "left join " +
-                "dataPointUsersProfiles dpup " +
-            "on " +
-                "dpup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
-            "where " +
-                "dpup." + COLUMN_NAME_DATA_POINT_ID + "=?;";
-
-    private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID = "" +
-            "select " +
-                "uup." + COLUMN_NAME_USER_ID + " " +
-            "from " +
-                "dataSourceUsersProfiles dsup " +
-            "left join " +
-                "usersUsersProfiles uup " +
-            "on " +
-                "dsup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
-            "where " +
-                "dsup." + COLUMN_NAME_DATA_SOURCE_ID + "=?;";
-
     private static final String DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
             +"insert dataPointUsersProfiles ("
             +COLUMN_NAME_DATA_POINT_ID+","
@@ -562,70 +511,6 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
     }
 
     @Override
-    public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
-        try {
-            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID,
-                    new Object[]{dataSourceId},
-                    new ShareUserRowMapper());
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public List<ShareUser> selectViewShareUsers(int viewId) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
-        try {
-            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
-                    new Object[]{viewId},
-                    new ShareUserRowMapper());
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public List<ShareUser> selectWatchListShareUsers(int watchListId) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
-        try {
-            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID,
-                    new Object[]{watchListId},
-                    new ShareUserRowMapper());
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public List<ShareUser> selectDataPointShareUsers(int dataPointId) {
-        if (LOG.isTraceEnabled())
-            LOG.trace("selectDataPointShareUsers(int dataPointId) dataPointId:" + dataPointId);
-        try {
-            return jdbcTemplate.query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID,
-                    new Object[]{dataPointId},
-                    new ShareUserRowMapper());
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
     public List<WatchListAccess> selectWatchListPermissionsByProfileId(int usersProfileId) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("selectWatchListPermissionsByProfileId(int usersProfileId) usersProfileId:" + usersProfileId);
@@ -703,17 +588,6 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             profile.setId(rs.getInt(COLUMN_NAME_ID));
             profile.setXid(rs.getString(COLUMN_NAME_XID));
             profile.setName(rs.getString(COLUMN_NAME_NAME));
-            return profile;
-        }
-    }
-
-    private class ShareUserRowMapper implements RowMapper<ShareUser> {
-
-        @Override
-        public ShareUser mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ShareUser profile = new ShareUser();
-            profile.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
-            profile.setAccessType(rs.getInt(COLUMN_NAME_PERMISSION));
             return profile;
         }
     }
