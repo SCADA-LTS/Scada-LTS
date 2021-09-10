@@ -1,5 +1,6 @@
 package org.scada_lts.dao;
 
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,6 +46,14 @@ public class UserDAO implements UserDaoCachable {
 	private final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
 	private final static String COLUMN_NAME_HIDE_MENU = "hideMenu";
 	private final static String COLUMN_NAME_THEME = "theme";
+
+	private static final String COLUMN_NAME_PERMISSION = "permission";
+	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_DATA_SOURCE_ID = "dataSourceId";
+	private static final String COLUMN_NAME_VIEW_ID = "viewId";
+	private static final String COLUMN_NAME_WATCH_LIST_ID = "watchListId";
+	private static final String COLUMN_NAME_USER_ID = "userId";
+	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
 
 
 	// @formatter:off
@@ -143,6 +153,57 @@ public class UserDAO implements UserDaoCachable {
 	private static final String USER_DELETE = ""
 			+ "delete from users where "
 				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"wlup." + COLUMN_NAME_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"watchListUsersProfiles wlup " +
+			"on " +
+			"wlup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"wlup." + COLUMN_NAME_WATCH_LIST_ID + "=?;";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"vup." + COLUMN_NAME_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"viewUsersProfiles vup " +
+			"on " +
+			"vup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"vup." + COLUMN_NAME_VIEW_ID + "=?;";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"dpup." + COLUMN_NAME_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"dataPointUsersProfiles dpup " +
+			"on " +
+			"dpup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"dpup." + COLUMN_NAME_DATA_POINT_ID + "=?;";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + " " +
+			"from " +
+			"dataSourceUsersProfiles dsup " +
+			"left join " +
+			"usersUsersProfiles uup " +
+			"on " +
+			"dsup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"dsup." + COLUMN_NAME_DATA_SOURCE_ID + "=?;";
 	// @formatter:on
 
 	private class UserRowMapper implements RowMapper<User> {
@@ -342,4 +403,78 @@ public class UserDAO implements UserDaoCachable {
 		DAO.getInstance().getJdbcTemp().update(USER_DELETE, new Object[]{userId});
 	}
 
+	@Override
+	public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID,
+					new Object[]{dataSourceId},
+					new ShareUserRowMapper());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<ShareUser> selectViewShareUsers(int viewId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
+					new Object[]{viewId},
+					new ShareUserRowMapper());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<ShareUser> selectWatchListShareUsers(int watchListId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID,
+					new Object[]{watchListId},
+					new ShareUserRowMapper());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<ShareUser> selectDataPointShareUsers(int dataPointId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectDataPointShareUsers(int dataPointId) dataPointId:" + dataPointId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID,
+					new Object[]{dataPointId},
+					new ShareUserRowMapper());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
+
+	private class ShareUserRowMapper implements RowMapper<ShareUser> {
+
+		@Override
+		public ShareUser mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ShareUser profile = new ShareUser();
+			profile.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
+			profile.setAccessType(rs.getInt(COLUMN_NAME_PERMISSION));
+			return profile;
+		}
+	}
 }

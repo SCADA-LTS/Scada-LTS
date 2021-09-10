@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "dataSourceUserPermissions")
+@CacheConfig(cacheNames = "permissions_user_datasource")
 @Service
 public class DataSourceUserPermissionsService implements PermissionsService<Integer, User> {
 
@@ -21,7 +21,7 @@ public class DataSourceUserPermissionsService implements PermissionsService<Inte
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null")
+    @Cacheable(key = "#object.id", unless = "#object == null || #result.isEmpty()")
     public List<Integer> getPermissions(User object) {
         return dataSourceDAO.selectDataSourcePermissions(object.getId());
     }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "watchListUserPermissions")
+@CacheConfig(cacheNames = "permissions_user_watchlist")
 @Service
 public class WatchListUserPermissionsService implements PermissionsService<WatchListAccess, User> {
 
@@ -21,7 +21,7 @@ public class WatchListUserPermissionsService implements PermissionsService<Watch
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null")
+    @Cacheable(key = "#object.id", unless = "#object == null || #result.isEmpty()")
     public List<WatchListAccess> getPermissions(User object) {
         return watchListDAO.selectWatchListPermissions(object.getId());
     }

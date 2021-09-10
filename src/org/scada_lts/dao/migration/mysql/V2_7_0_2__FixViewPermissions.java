@@ -77,9 +77,7 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
 
         UserService userService = new UserService(userDAO, userCommentDAO, null,
                 null, null, usersProfileService,
-                dataPointUserPermissionsService, dataSourceUserPermissionsService,
-                dataPointPermissionsService, dataSourcePermissionsService,
-                viewPermissionsService, watchListPermissionsService);
+                dataPointUserPermissionsService, dataSourceUserPermissionsService);
 
         List<User> users = userService.getUsersWithProfile().stream()
                 .filter(a -> !a.isAdmin())
@@ -87,12 +85,12 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
 
         if (!users.isEmpty()) {
 
-            ViewService viewService = new ViewService(viewDAO, new ViewGetShareUsers(viewDAO, usersProfileDAO));
+            ViewService viewService = new ViewService(viewDAO, new ViewGetShareUsers(viewDAO, userDAO));
             List<View> views = viewService.getViews();
 
             MangoDataPoint dataPointService = new OnlyMigrationDataPointService(dataPointDAO, userCommentDAO, pointEventDetectorDAO);
             MangoDataSource dataSourceService = new OnlyMigrationDataSourceService(dataSourceDAO, dataPointService);
-            WatchListService watchListService = new WatchListService(watchListDAO, new WatchListGetShareUsers(watchListDAO, usersProfileDAO));
+            WatchListService watchListService = new WatchListService(watchListDAO, new WatchListGetShareUsers(watchListDAO, userDAO));
 
             MigrationPermissionsService migrationPermissionsService = new MigrationPermissionsService(dataPointUserPermissionsService,
                     dataSourceUserPermissionsService, watchListUserPermissionsService, viewUserPermissionsService);

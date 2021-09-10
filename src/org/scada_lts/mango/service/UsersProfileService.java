@@ -68,7 +68,7 @@ public class UsersProfileService {
     public List<UsersProfileVO> getUsersProfiles(Comparator<UsersProfileVO> comparator) {
         return getProfiles(Integer.MAX_VALUE).stream()
                 .sorted(comparator)
-                .map(a -> populateUserProfilePermissions(a))
+                .map(this::populateUserProfilePermissions)
                 .collect(Collectors.toList());
     }
 
@@ -197,7 +197,8 @@ public class UsersProfileService {
         }
         return profiles.stream()
                 .filter(Objects::nonNull)
-                .max(Comparator.comparingInt(UsersProfileVO::getId));
+                .max(Comparator.comparingInt(UsersProfileVO::getId))
+                .map(this::populateUserProfilePermissions);
     }
 
     private boolean profileExistsWithThatName(UsersProfileVO profile) {
