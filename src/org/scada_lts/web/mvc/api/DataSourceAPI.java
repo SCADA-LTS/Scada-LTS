@@ -33,6 +33,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
@@ -77,7 +78,7 @@ public class DataSourceAPI {
                 list = dataSourceService.getDataSourcesPlc();
                 List<DataSourceSimpleJSON> result = new ArrayList<>();
                 for(DataSourceVO<?> ds: list) {
-                    DataSourceSimpleJSON d = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName());
+                    DataSourceSimpleJSON d = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
                     result.add(d);
                 }
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -90,15 +91,38 @@ public class DataSourceAPI {
         }
     }
 
+    @GetMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
+            @RequestParam(required = false) String xid,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if (xid != null){
+                    DataSourceVO ds = dataSourceService.getDataSource(xid);
+                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
+                    return new ResponseEntity<>(json,HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private class DataSourceSimpleJSON {
         private long id;
         private String xid;
         private String name;
+        private boolean enabled;
 
-        DataSourceSimpleJSON(long id, String xid, String name) {
+        DataSourceSimpleJSON(long id, String xid, String name, boolean enabled) {
             this.setId(id);
             this.setXid(xid);
             this.setName(name);
+            this.setEnabled(enabled);
         }
 
         public long getId() {
@@ -123,6 +147,18 @@ public class DataSourceAPI {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public boolean getEnabled() {
+            return enabled;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 

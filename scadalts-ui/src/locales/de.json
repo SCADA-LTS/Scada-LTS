@@ -52,6 +52,7 @@
 	"datapointDetails.pointProperties.toggle.dialog.title": "Datenpunkt umschalten",
 	"datapointDetails.pointProperties.toggle.dialog.text": "Möchten Sie den Datenpunktstatus ändern?",
 	"datapointDetails.pointProperties.toggle.help": "Datenpunktstatus umschalten",
+	"datapointDetails.pointProperties.toggle.datasourceDisabled": "Datenquelle ist deaktiviert",
 	"datapointDetails.pointProperties.chartRenderer": "Diagramm-Renderer",
 	"datapointDetails.pointProperties.chartRenderer.limit": "Limit",
 	"datapointDetails.pointProperties.chartRenderer.sum": "Summe einschließen",
