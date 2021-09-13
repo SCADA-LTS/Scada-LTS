@@ -30,6 +30,40 @@
         </resources>
     </cache>
 
+    <!-- share users -->
+    <cache alias="share_users_datasource">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="share_users_datapoint">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="share_users_view">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+    <cache alias="share_users_watchlist">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+
     <!-- profiles -->
     <!-- permissions profile -->
     <cache alias="permissions_profile_datasource">

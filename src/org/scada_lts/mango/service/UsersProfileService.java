@@ -128,18 +128,22 @@ public class UsersProfileService {
 
     public void updateWatchlistPermissions() {
         usersProfileDAO.resetWatchListPermissions();
+        userDAO.resetWatchListPermissions();
     }
 
     public void updateViewPermissions() {
         usersProfileDAO.resetViewPermissions();
+        userDAO.resetViewPermissions();
     }
 
     public void updateDataPointPermissions() {
         usersProfileDAO.resetDataPointPermissions();
+        userDAO.resetDataPointPermissions();
     }
 
     public void updateDataSourcePermissions() {
         usersProfileDAO.resetDataSourcePermissions();
+        userDAO.resetDataSourcePermissions();
     }
 
     public void updateProfile(UsersProfileVO profile) {
