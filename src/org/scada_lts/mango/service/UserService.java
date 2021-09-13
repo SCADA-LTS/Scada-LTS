@@ -240,20 +240,4 @@ public class UserService implements MangoUser {
 		usersProfileService.updateDataPointPermissions();
 		usersProfileService.updateDataSourcePermissions();
 	}
-
-	public void resetWatchListPermissions() {
-		userDAO.resetWatchListPermissions();
-	}
-
-	public void resetViewPermissions() {
-		userDAO.resetViewPermissions();
-	}
-
-	public void resetDataPointPermissions() {
-		userDAO.resetDataPointPermissions();
-	}
-
-	public void resetDataSourcePermissions() {
-		userDAO.resetDataSourcePermissions();
-	}
 }
