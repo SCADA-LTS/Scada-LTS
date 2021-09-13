@@ -17,8 +17,7 @@
  */
 package org.scada_lts.mango.service;
 
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
@@ -212,7 +211,10 @@ public class UserService implements MangoUser {
 		pointValueService.updatePointValueAnnotations(userId);
 		eventService.deleteUserEvent(userId);
 		eventService.updateEventAckUserId(userId);
+		//dataPointPermissionsService.removePermissions(userId, dataPointPermissionsService.getPermissions(userId));
+		//dataSourcePermissionsService.removePermissions(userId, dataSourcePermissionsService.getPermissions(userId));
 		userDAO.delete(userId);
+		usersProfileService.updatePermissions();
 	}
 
 	@Override
@@ -235,5 +237,23 @@ public class UserService implements MangoUser {
 	private void updatePermissions(User user) {
 		updateDataSourcePermissions(user, dataSourcePermissionsService);
 		updateDataPointPermissions(user, dataPointPermissionsService);
+		usersProfileService.updateDataPointPermissions();
+		usersProfileService.updateDataSourcePermissions();
+	}
+
+	public void resetWatchListPermissions() {
+		userDAO.resetWatchListPermissions();
+	}
+
+	public void resetViewPermissions() {
+		userDAO.resetViewPermissions();
+	}
+
+	public void resetDataPointPermissions() {
+		userDAO.resetDataPointPermissions();
+	}
+
+	public void resetDataSourcePermissions() {
+		userDAO.resetDataSourcePermissions();
 	}
 }

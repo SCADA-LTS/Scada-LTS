@@ -171,6 +171,8 @@ public class ViewService {
 		View v = new View();
 		v.setId(viewId);
 		viewDAO.delete(v);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateViewPermissions();
 	}
 
 	

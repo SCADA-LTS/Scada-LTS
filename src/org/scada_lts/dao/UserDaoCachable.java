@@ -19,10 +19,14 @@ public interface UserDaoCachable {
     @Cacheable(cacheNames = "users_list", key="'activeUsers'", unless = "#result.isEmpty()")
     List<User> getActiveUsers();
 
+    @Cacheable(cacheNames = "share_users_datasource", key="#dataSourceId", unless = "#result.isEmpty()")
     List<ShareUser> selectDataSourceShareUsers(int dataSourceId);
-    List<ShareUser> selectViewShareUsers(int viewId);
-    List<ShareUser> selectWatchListShareUsers(int watchListId);
+    @Cacheable(cacheNames = "share_users_datapoint", key="#dataPointId", unless = "#result.isEmpty()")
     List<ShareUser> selectDataPointShareUsers(int dataPointId);
+    @Cacheable(cacheNames = "share_users_view", key="#viewId", unless = "#result.isEmpty()")
+    List<ShareUser> selectViewShareUsers(int viewId);
+    @Cacheable(cacheNames = "share_users_watchlist", key="#watchListId", unless = "#result.isEmpty()")
+    List<ShareUser> selectWatchListShareUsers(int watchListId);
 
     @Cacheable(cacheNames = "users_by_username", unless = "#result == null")
     User getUser(String username);
@@ -34,7 +38,11 @@ public interface UserDaoCachable {
             evict = {
                     @CacheEvict(cacheNames = "users_list", allEntries = true),
                     @CacheEvict(cacheNames = "users", key = "#user.id"),
-                    @CacheEvict(cacheNames = "users_by_username", key = "#user.username")
+                    @CacheEvict(cacheNames = "users_by_username", key = "#user.username"),
+                    @CacheEvict(cacheNames = "share_users_datasource", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_view", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_watchlist", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_datapoint", allEntries = true)
             }
     )
     void update(User user);
@@ -79,7 +87,11 @@ public interface UserDaoCachable {
             evict = {
                     @CacheEvict(cacheNames = "users_list", allEntries = true),
                     @CacheEvict(cacheNames = "users", key = "#userId"),
-                    @CacheEvict(cacheNames = "users_by_username", allEntries = true)
+                    @CacheEvict(cacheNames = "users_by_username", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_datasource", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_view", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_watchlist", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_datapoint", allEntries = true)
             }
     )
     void delete(int userId);
@@ -88,8 +100,32 @@ public interface UserDaoCachable {
             evict = {
                     @CacheEvict(cacheNames = "users_list", allEntries = true),
                     @CacheEvict(cacheNames = "users", allEntries = true),
-                    @CacheEvict(cacheNames = "users_by_username", allEntries = true)
+                    @CacheEvict(cacheNames = "users_by_username", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_datasource", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_view", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_watchlist", allEntries = true),
+                    @CacheEvict(cacheNames = "share_users_datapoint", allEntries = true)
             }
     )
     int insert(User user);
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "share_users_datapoint", allEntries = true)
+    })
+    default void resetDataPointPermissions() {}
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "share_users_datasource", allEntries = true)
+    })
+    default void resetDataSourcePermissions() {}
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "share_users_view", allEntries = true)
+    })
+    default void resetViewPermissions() {}
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "share_users_watchlist", allEntries = true)
+    })
+    default void resetWatchListPermissions() {}
 }
