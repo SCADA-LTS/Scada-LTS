@@ -185,7 +185,8 @@
 	</v-card>
 </template>
 <script>
-import webSocketMixin from '@/utils/web-socket-utils'
+import webSocketMixin from '@/utils/web-socket-utils';
+import internetMixin from '@/utils/connection-status-utils';
 
 /**
  * Value History List for Data Point
@@ -205,7 +206,7 @@ export default {
 
 	props: ['data'],
 
-	mixins: [webSocketMixin],
+	mixins: [webSocketMixin, internetMixin],
 
 	data() {
 		return {
@@ -227,8 +228,12 @@ export default {
 			},
 
 			wsCallback: () => {				
-				this.wsSubscribeChannel(`datapoint/${this.data.id}/value`);
 				this.wsSubscribeTopic(`datapoint/${this.data.id}/value`, this.updatePointWs);		
+			},
+
+			onAppOnline: () => {
+				console.log("Application status: online");
+				this.fetchData();
 			},
 		};
 	},
@@ -249,7 +254,8 @@ export default {
 	methods: {
 
 		updatePointWs(data) {
-			this.pointValue = data.body;
+			console.log("updatePointWs", data);
+			this.pointValue = JSON.parse(data.body).value;
 			this.fetchData();
 		},
 

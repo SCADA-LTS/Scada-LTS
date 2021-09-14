@@ -23,6 +23,17 @@ export const webSocketUtilsMixin = {
     },
 
     methods: {
+
+        /**
+         * Hook before the Web Socket connection is setablished
+         * 
+         * Override this method to do something before the Web Socket
+         * connection is established.
+         */
+        wsBeforeConnect() {
+            if(this.wsDebug) console.debug("WebSocketUtils::wsBeforeConnect()")
+        },
+
         /**
          * Connect to a Web Socket 
          * 
@@ -36,6 +47,7 @@ export const webSocketUtilsMixin = {
          */
         wsConnect() {
             if(this.wsDebug) console.debug("WebSocketUtils::wsConnect()")
+            this.wsBeforeConnect();
             this.ws = initWebSocket(
                 this.$store.state.webSocketUrl,
                 this.wsCallback
