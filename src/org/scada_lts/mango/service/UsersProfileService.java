@@ -146,6 +146,11 @@ public class UsersProfileService {
         userDAO.resetDataSourcePermissions();
     }
 
+    public void updateDataSourcePointPermissions() {
+        updateDataPointPermissions();
+        updateDataSourcePermissions();
+    }
+
     public void updateProfile(UsersProfileVO profile) {
         setProfileName(profile.getName(), profile);
         saveRelationalData(profile);

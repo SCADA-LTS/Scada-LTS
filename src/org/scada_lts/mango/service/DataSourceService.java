@@ -90,6 +90,8 @@ public class DataSourceService implements MangoDataSource {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
 		}
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void updateDataSource(DataSourceVO<?> dataSource) {
@@ -105,6 +107,8 @@ public class DataSourceService implements MangoDataSource {
 				dataPointService.updateDataPoint(dataPoint);
 			}
 		}
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	@Override
@@ -115,12 +119,16 @@ public class DataSourceService implements MangoDataSource {
 		if (dataSource != null) {
 			deleteInTransaction(dataSourceId);
 		}
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	private void deleteInTransaction(final int dataSourceId) {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -181,10 +189,14 @@ public class DataSourceService implements MangoDataSource {
 	@Deprecated
 	public void deleteDataSourceUser(int userId) {
 		dataSourceDAO.deleteDataSourceUser(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 }

@@ -182,8 +182,8 @@ public class ViewEditContorller {
 
         new ViewDao().removeView(form.getView().getId());
 
-        UsersProfileService usersProfileDao = new UsersProfileService();
-        usersProfileDao.updateViewPermissions();
+        UsersProfileService usersProfileService = new UsersProfileService();
+        usersProfileService.updateViewPermissions();
         return getSuccessRedirectView(null);
     }
     

@@ -390,7 +390,7 @@
 	<target name="run-debug" description="Start the Scada-LTS application in debug mode">
 		<exec executable="cmd" osfamily="windows">
 			<arg value="/c"/>
-			<arg value="%CATALINA_HOME%\bin\catalina.bat"/>
+			<arg value="${env.CATALINA_HOME}\bin\catalina.bat"/>
 			<arg value="jpda"/>
 			<arg value="run"/>
 		</exec>
@@ -632,6 +632,7 @@
         <pathelement location="WebContent/WEB-INF/lib/xfire-core-1.2.6.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/cache-api-1.1.1.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/ehcache-3.9.4.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>

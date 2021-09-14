@@ -2,7 +2,6 @@ package br.org.scadabr.vo.importer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 	private static final int FIRST = 0;
 	private static final int SECOND = 1;
 
-	private UsersProfileService dao = new UsersProfileService();
+	private UsersProfileService usersProfileService = new UsersProfileService();
 
 	private String getJson(UsersProfileVO exportedUsersProfile) {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
@@ -94,7 +93,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedUsersProfile = dao
+		UsersProfileVO retrievedUsersProfile = usersProfileService
 				.getUserProfileByXid(exportedUsersProfile.getXid());
 
 		assertEquals(exportedUsersProfile.getXid(),
@@ -129,7 +128,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(dsId,
 				retrievedProfile.getDataSourcePermissions().get(FIRST));
 		assertEquals(1, retrievedProfile.getDataSourcePermissions().size());
@@ -168,7 +167,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(dp.getId(), retrievedProfile.getDataPointPermissions()
 				.get(FIRST).getDataPointId());
 		assertEquals(DataPointAccess.SET, retrievedProfile
@@ -208,7 +207,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(view.getId(),
 				retrievedProfile.getViewPermissions().get(FIRST).getId());
 		assertEquals(ShareUser.ACCESS_READ, retrievedProfile
@@ -249,7 +248,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(watchlist.getId(), retrievedProfile
 				.getWatchlistPermissions().get(FIRST).getId());
 		assertEquals(ShareUser.ACCESS_READ, retrievedProfile
@@ -290,7 +289,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		User retrievedUser = new UserDao().getUser(user.getId());
 
 		assertEquals(profileDataSourcePermissions,
@@ -785,10 +784,10 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		viewPermissions.add(new ViewAccess(view.getId(), ViewAccess.SET));
 		viewPermissions.add(new ViewAccess(view2.getId(), ViewAccess.SET));
 		oldProfile.setViewPermissions(viewPermissions);
-		dao.saveUsersProfile(oldProfile);
+		usersProfileService.saveUsersProfile(oldProfile);
 
 		oldProfile.apply(user);
-		dao.updateUsersProfile(user, oldProfile);
+		usersProfileService.updateUsersProfile(user, oldProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(PROFILE_NAME);
@@ -863,7 +862,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		UserDao userDao = new UserDao();
 		userDao.saveUser(user);
 		userDao.saveUser(user2);
-		dao.saveUsersProfile(oldUsersProfile);
+		usersProfileService.saveUsersProfile(oldUsersProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(PROFILE_NAME);
@@ -921,7 +920,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		View retrievedView = new ViewDao().getViews().get(FIRST);
 		WatchList retrievedWatchlist = mockWatchlistDao.getWatchList(watchlist
 				.getId());
-		UsersProfileVO retrievedProfile = dao
+		UsersProfileVO retrievedProfile = usersProfileService
 				.getUserProfileByXid(PROFILE_XID);
 
 		assertEquals(exportedUsersProfile.getXid(), retrievedProfile.getXid());
@@ -994,10 +993,10 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		List<ViewAccess> oldViewPermissions = new ArrayList<ViewAccess>();
 		oldViewPermissions.add(new ViewAccess(view.getId(), ViewAccess.SET));
 		oldProfile.setViewPermissions(oldViewPermissions);
-		dao.saveUsersProfile(oldProfile);
+		usersProfileService.saveUsersProfile(oldProfile);
 
 		oldProfile.apply(user);
-		dao.updateUsersProfile(user, oldProfile);
+		usersProfileService.updateUsersProfile(user, oldProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(sameName);
@@ -1024,14 +1023,14 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedOldProfile = dao
+		UsersProfileVO retrievedOldProfile = usersProfileService
 				.getUserProfileByXid(oldProfileXid);
 
-		UsersProfileVO retrievedImportedProfile = dao
+		UsersProfileVO retrievedImportedProfile = usersProfileService
 				.getUserProfileByXid(PROFILE_XID);
 
 		assertEquals(retrievedOldProfile.getName(),
 				retrievedImportedProfile.getName());
-		assertEquals(2, dao.getUsersProfiles().size());
+		assertEquals(2, usersProfileService.getUsersProfiles().size());
 	}
 }

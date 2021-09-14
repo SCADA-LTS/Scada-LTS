@@ -2,9 +2,10 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UserDaoCachable;
 import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.utils.ApplicationContextProvider;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
@@ -16,8 +17,9 @@ public class ViewGetShareUsers implements GetShareUsers<View> {
     private final UserDaoCachable userDAO;
 
     public ViewGetShareUsers() {
-        this.viewDAO = new ViewDAO();
-        this.userDAO = new UserDAO();
+        ApplicationContext context = ApplicationContextProvider.getApplicationContext();
+        this.viewDAO = (ViewDAO) context.getBean("viewDAO");
+        this.userDAO = (UserDaoCachable) context.getBean("userDAO");
     }
 
     public ViewGetShareUsers(ViewDAO viewDAO, UserDaoCachable userDAO) {

@@ -114,8 +114,8 @@ public class DataSourceListDwr extends BaseDwr {
 	public int deleteDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
 		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
-		UsersProfileService userDao = new UsersProfileService();
-		userDao.updateDataSourcePermissions();
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePermissions();
 		return dataSourceId;
 	}
 

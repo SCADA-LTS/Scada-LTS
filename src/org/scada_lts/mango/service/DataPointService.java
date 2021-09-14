@@ -232,13 +232,16 @@ public class DataPointService implements MangoDataPoint {
 
 			dpRT.updatePointValue(pvt);
 		}
-		
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	public void saveAPI(User user, String value, String xid) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
 		Permissions.ensureDataPointSetPermission(user, dpvo);
 		setPointImpl(dpvo, value, user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void setPointImpl(DataPointVO point, String valueStr, SetPointSource source) {
@@ -252,6 +255,8 @@ public class DataPointService implements MangoDataPoint {
 			MangoValue value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
 			Common.ctx.getRuntimeManager().setDataPointValue(point.getId(), value, source);
 		}
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void setRelationalData(List<DataPointVO> dpList) {
@@ -299,6 +304,8 @@ public class DataPointService implements MangoDataPoint {
 
 		updateDataPointShallow(dp);
 		saveEventDetectors(dp);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	@Override
@@ -313,6 +320,8 @@ public class DataPointService implements MangoDataPoint {
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
+			UsersProfileService usersProfileService = new UsersProfileService();
+			usersProfileService.updateDataSourcePointPermissions();
 		} catch (EmptyResultDataAccessException e) {
 			Log.error(e);
 			return;
@@ -341,6 +350,8 @@ public class DataPointService implements MangoDataPoint {
 
 			deleteDataPointImpl(idsWithCommaSB.toString());
 		}
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void beforePointDelete(int dpId) {
@@ -386,7 +397,8 @@ public class DataPointService implements MangoDataPoint {
 		}
 		watchListDAO.deleteWatchListPoints(dataPointIds);
 		dataPointDAO.deleteWithIn(dataPointIds);
-
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 		PointHierarchyDAO.cachedPointHierarchy = null;
 		MangoPointHierarchy.getInst().deleteDataPoint(dataPointIds);
 	}
@@ -469,6 +481,8 @@ public class DataPointService implements MangoDataPoint {
 				pointEventDetectorDAO.update(pointEventDetector);
 			}
 		}
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
@@ -494,6 +508,8 @@ public class DataPointService implements MangoDataPoint {
 
 		final List<Tuple<Integer,Integer>> ups = dataPointUserDAO.getDataPointUsers(fromDataPointId);
 		dataPointUserDAO.insert(ups, toDataPointId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void setPointComments(DataPointVO dp) {
@@ -573,11 +589,15 @@ public class DataPointService implements MangoDataPoint {
     @Deprecated
 	public void deleteDataPointUser(int userId) {
 		dataPointUserDAO.delete(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
     @Deprecated
 	public void insertPermissions(User user) {
 		dataPointUserDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {

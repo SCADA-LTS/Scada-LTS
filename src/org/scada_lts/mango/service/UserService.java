@@ -73,7 +73,7 @@ public class UserService implements MangoUser {
 		usersProfileService = (UsersProfileService) context.getBean("usersProfileService");
 	}
 
-	public UserService(UserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
+	public UserService(UserDaoCachable userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
 					   EventService eventService, PointValueService pointValueService,
 					   UsersProfileService usersProfileService,
 					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,
@@ -139,12 +139,12 @@ public class UserService implements MangoUser {
 			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
 			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
 
-			usersProfileService.getProfileByUser(user).ifPresent(a -> {
-				user.setUserProfileId(a.getId());
-				user.setDataPointProfilePermissions(a.getDataPointPermissions());
-				user.setDataSourcePermissions(a.getDataSourcePermissions());
-				user.setViewProfilePermissions(a.getViewPermissions());
-				user.setWatchListProfilePermissions(a.getWatchlistPermissions());
+			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
+				user.setUserProfileId(profile.getId());
+				user.setDataPointProfilePermissions(profile.getDataPointPermissions());
+				user.setDataSourcePermissions(profile.getDataSourcePermissions());
+				user.setViewProfilePermissions(profile.getViewPermissions());
+				user.setWatchListProfilePermissions(profile.getWatchlistPermissions());
 			});
 		}
 	}
@@ -154,8 +154,8 @@ public class UserService implements MangoUser {
 			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
 			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
 
-			usersProfileService.getProfileByUser(user).ifPresent(a -> {
-				user.setUserProfileId(a.getId());
+			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
+				user.setUserProfileId(profile.getId());
 			});
 		}
 	}

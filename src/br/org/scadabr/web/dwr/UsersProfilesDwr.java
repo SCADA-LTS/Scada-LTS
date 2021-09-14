@@ -103,13 +103,13 @@ public class UsersProfilesDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 
-		UsersProfileService userDao = new UsersProfileService();
+		UsersProfileService usersProfileService = new UsersProfileService();
 
 		UsersProfileVO profile;
 		if (id == Common.NEW_ID)
 			profile = new UsersProfileVO();
 		else
-			profile = userDao.getUserProfileById(id);
+			profile = usersProfileService.getUserProfileById(id);
 
 		profile.setName(name);
 		profile.setDataSourcePermissions(dataSourcePermissions);
@@ -120,7 +120,7 @@ public class UsersProfilesDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		try {
-			userDao.saveUsersProfile(profile);
+			usersProfileService.saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
 					"userProfiles.validate.nameUnique"));
@@ -136,9 +136,9 @@ public class UsersProfilesDwr {
 	public DwrResponseI18n deleteUsersProfile(int profileId) {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
-		UsersProfileService userDao = new UsersProfileService();
+		UsersProfileService usersProfileService = new UsersProfileService();
 		try {
-			userDao.deleteUserProfile(profileId);
+			usersProfileService.deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

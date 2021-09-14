@@ -168,8 +168,8 @@ public class WatchListDwr extends BaseDwr {
 		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
 				|| user.isAdmin()) {
 			watchListDao.deleteWatchList(watchListId);
-			UsersProfileService profilesDao = new UsersProfileService();
-			profilesDao.updateWatchlistPermissions();
+			UsersProfileService usersProfileService = new UsersProfileService();
+			usersProfileService.updateWatchlistPermissions();
 		} else
 			watchListDao.removeUserFromWatchList(watchListId, user.getId());
 	}

@@ -2,9 +2,10 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.WatchList;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UserDaoCachable;
 import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.scada_lts.utils.ApplicationContextProvider;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
@@ -16,8 +17,9 @@ public class WatchListGetShareUsers implements GetShareUsers<WatchList> {
     private final UserDaoCachable userDAO;
 
     public WatchListGetShareUsers() {
-        this.watchListDAO = new WatchListDAO();
-        this.userDAO = new UserDAO();
+        ApplicationContext context = ApplicationContextProvider.getApplicationContext();
+        this.watchListDAO = (WatchListDAO) context.getBean("watchListDAO");
+        this.userDAO = (UserDaoCachable) context.getBean("userDAO");
     }
 
     public WatchListGetShareUsers(WatchListDAO watchListDAO, UserDaoCachable userDAO) {

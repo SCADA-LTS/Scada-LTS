@@ -15,16 +15,16 @@ import java.util.Optional;
 @Component
 public interface UsersProfileDaoCachable extends GenerateXid {
 
-    @Cacheable(cacheNames = "profile_by_userid")
+    @Cacheable(cacheNames = "profile_by_userid", key = "#p0")
     List<UsersProfileVO> selectUserProfileByUserId(int userId);
-    @Cacheable(cacheNames = "profile_offset_limit")
+    @Cacheable(cacheNames = "profile_offset_limit", key = "#offset + ':' + #limit")
     List<UsersProfileVO> selectProfiles(int offset, int limit);
-    @Cacheable(cacheNames = "userids_by_profileid")
+    @Cacheable(cacheNames = "userids_by_profileid", key = "#p0")
     List<Integer> selectUsersByProfileId(int profileId);
 
-    @Cacheable(cacheNames = "profile_by_id")
+    @Cacheable(cacheNames = "profile_by_id", key = "#p0")
     Optional<UsersProfileVO> selectProfileById(int profileId);
-    @Cacheable(cacheNames = "profile_by_xid")
+    @Cacheable(cacheNames = "profile_by_xid", key = "#p0")
     Optional<UsersProfileVO> selectProfileByXid(String profileXid);
 
     @Caching(evict = {
@@ -48,10 +48,7 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     int updateProfileName(String profileName, int profileId);
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "userids_by_profileid", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "profile_by_userid", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
             @CacheEvict(cacheNames = "profile_offset_limit", allEntries = true)
     })
     int insertProfile(String profileXid, String profileName);
@@ -68,43 +65,33 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     })
     int deleteProfile(int profileId);
 
-    @Cacheable(cacheNames = "permissions_profile_watchlist")
-    List<WatchListAccess> selectWatchListPermissionsByProfileId(int profileId);
-    @CacheEvict(cacheNames = "permissions_profile_watchlist", key = "#p0")
-    int[] insertWatchListUsersProfile(int profileId, List<WatchListAccess> toInsert);
-    @CacheEvict(cacheNames = "permissions_profile_watchlist", key = "#p0")
-    int[] deleteWatchListUsersProfile(int profileId, List<WatchListAccess> toDelete);
-
-    @Cacheable(cacheNames = "permissions_profile_view")
-    List<ViewAccess> selectViewPermissionsByProfileId(int profileId);
-    @CacheEvict(cacheNames = "permissions_profile_view", key = "#p0")
-    int[] insertViewUsersProfile(int profileId, List<ViewAccess> toInsert);
-    @CacheEvict(cacheNames = "permissions_profile_view", key = "#p0")
-    int[] deleteViewUsersProfile(int profileId, List<ViewAccess> toDelete);
-
-    @Cacheable(cacheNames = "permissions_profile_datasource")
+    @Cacheable(cacheNames = "permissions_profile_datasource", key = "#p0")
     List<Integer> selectDataSourcePermissionsByProfileId(int profileId);
     @CacheEvict(cacheNames = "permissions_profile_datasource", key = "#p0")
     int[] insertDataSourceUsersProfile(int profileId, List<Integer> toInsert);
     @CacheEvict(cacheNames = "permissions_profile_datasource", key = "#p0")
     int[] deleteDataSourceUsersProfile(int profileId, List<Integer> toDelete);
 
-    @Cacheable(cacheNames = "permissions_profile_datapoint")
+    @Cacheable(cacheNames = "permissions_profile_datapoint", key = "#p0")
     List<DataPointAccess> selectDataPointPermissionsByProfileId(int profileId);
     @CacheEvict(cacheNames = "permissions_profile_datapoint", key = "#p0")
     int[] insertDataPointUsersProfile(int profileId, List<DataPointAccess> toInsert);
     @CacheEvict(cacheNames = "permissions_profile_datapoint", key = "#p0")
     int[] deleteDataPointUsersProfile(int profileId, List<DataPointAccess> toDelete);
 
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_userid", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
-            @CacheEvict(cacheNames = "userids_by_profileid", allEntries = true),
-            @CacheEvict(cacheNames = "permissions_profile_datapoint", allEntries = true),
-            @CacheEvict(cacheNames = "profile_offset_limit", allEntries = true)
-    })
-    default void resetDataPointPermissions() {}
+    @Cacheable(cacheNames = "permissions_profile_view", key = "#p0")
+    List<ViewAccess> selectViewPermissionsByProfileId(int profileId);
+    @CacheEvict(cacheNames = "permissions_profile_view", key = "#p0")
+    int[] insertViewUsersProfile(int profileId, List<ViewAccess> toInsert);
+    @CacheEvict(cacheNames = "permissions_profile_view", key = "#p0")
+    int[] deleteViewUsersProfile(int profileId, List<ViewAccess> toDelete);
+
+    @Cacheable(cacheNames = "permissions_profile_watchlist", key = "#p0")
+    List<WatchListAccess> selectWatchListPermissionsByProfileId(int profileId);
+    @CacheEvict(cacheNames = "permissions_profile_watchlist", key = "#p0")
+    int[] insertWatchListUsersProfile(int profileId, List<WatchListAccess> toInsert);
+    @CacheEvict(cacheNames = "permissions_profile_watchlist", key = "#p0")
+    int[] deleteWatchListUsersProfile(int profileId, List<WatchListAccess> toDelete);
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_by_userid", allEntries = true),
@@ -115,6 +102,16 @@ public interface UsersProfileDaoCachable extends GenerateXid {
             @CacheEvict(cacheNames = "profile_offset_limit", allEntries = true)
     })
     default void resetDataSourcePermissions() {}
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "profile_by_userid", allEntries = true),
+            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
+            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
+            @CacheEvict(cacheNames = "userids_by_profileid", allEntries = true),
+            @CacheEvict(cacheNames = "permissions_profile_datapoint", allEntries = true),
+            @CacheEvict(cacheNames = "profile_offset_limit", allEntries = true)
+    })
+    default void resetDataPointPermissions() {}
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_by_userid", allEntries = true),

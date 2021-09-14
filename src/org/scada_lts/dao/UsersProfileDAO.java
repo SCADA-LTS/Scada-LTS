@@ -394,8 +394,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getDataPointId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -410,8 +409,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getDataPointId(), profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -426,8 +424,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a, profileId, a})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -442,8 +439,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a, profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -458,8 +454,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -474,8 +469,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -490,8 +484,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -506,8 +499,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp()
-                .batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return jdbcTemplate.batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -516,7 +508,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectWatchListPermissionsByProfileId(int usersProfileId) usersProfileId:" + usersProfileId);
         }
 
-        return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+        return jdbcTemplate.query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
             WatchListAccess dataPointAccess = new WatchListAccess();
             dataPointAccess.setId(rs.getInt(COLUMN_NAME_WATCH_LIST_ID));
             dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
@@ -531,7 +523,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectViewPermissionsByUsersProfileId(final int usersProfileId) usersProfileId:" + usersProfileId);
         }
 
-        return DAO.getInstance().getJdbcTemp().query(VIEW_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+        return jdbcTemplate.query(VIEW_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
             ViewAccess viewAccess = new ViewAccess();
             viewAccess.setId(rs.getInt(COLUMN_NAME_VIEW_ID));
             viewAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
@@ -545,8 +537,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectDataSourcePermissionsByProfileId(int profileId) profileId:" + profileId);
         }
 
-        return DAO.getInstance().getJdbcTemp()
-                .query(DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID,
+        return jdbcTemplate.query(DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID,
                         new Object[]{profileId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DATA_SOURCE_ID));
     }
 
@@ -556,7 +547,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectWatchListPermissionsByProfileId(int profileId) profileId:" + profileId);
         }
 
-        return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
+        return jdbcTemplate.query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
             DataPointAccess dataPointAccess = new DataPointAccess();
             dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
             dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));

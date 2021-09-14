@@ -180,13 +180,13 @@ public class UsersDwr extends BaseDwr {
 			userDao.updateUserHideMenu(user);
 			userDao.updateUserScadaTheme(user);
 
-			UsersProfileService profilesDao = new UsersProfileService();
+			UsersProfileService usersProfileService = new UsersProfileService();
 			if (usersProfileId == Common.NEW_ID) {
-				profilesDao.resetUserProfile(user);
+				usersProfileService.resetUserProfile(user);
 			} else {
-				UsersProfileVO profile = profilesDao.getUserProfileById(usersProfileId);
+				UsersProfileVO profile = usersProfileService.getUserProfileById(usersProfileId);
 				profile.apply(user);
-				profilesDao.updateUsersProfile(user, profile);
+				usersProfileService.updateUsersProfile(user, profile);
 			}
 
 			// If admin grant permissions to all WL and GViews
@@ -270,8 +270,8 @@ public class UsersDwr extends BaseDwr {
 					"users.validate.badDelete"));
 		else {
 			new UserDao().deleteUser(id);
-			UsersProfileService profilesDao = new UsersProfileService();
-			profilesDao.updatePermissions();
+			UsersProfileService usersProfileService = new UsersProfileService();
+			usersProfileService.updatePermissions();
 		}
 
 		return response;
