@@ -155,6 +155,7 @@ export default {
 			dialogDeletionVisible: false,
 			dialogCreationVisible: false,
 			operationQueue: null,
+			retriesCounter: 0,
 		};
 	},
 
@@ -165,16 +166,30 @@ export default {
 	},
 
 	mounted() {
-		
-		if(!!this.loggedUser && this.loggedUser.admin) {
-			this.fetchUserList();
-			this.fetchUserProfiles();
-		} else {
-			this.showUserDetails(this.loggedUser);
-		}
+		this.initializeUserList();
 	},
 
 	methods: {
+
+		initializeUserList() {
+			if(!!this.loggedUser && this.loggedUser.admin) {
+				this.fetchUserList();
+				this.fetchUserProfiles();
+			} else if(!!this.loggedUser) {
+				this.showUserDetails(this.loggedUser);
+			} else {
+				if(this.retriesCounter < 3) {
+					this.retriesCounter++;
+					setTimeout(() => {
+						this.initializeUserList();
+					}, 1000);
+				} else {
+					throw new Error('Unable to initialize user list. User data are unavailable.');
+				}
+			}
+		},
+
+
 		async fetchUserList() {
 			this.userListLoaded = false;
 			this.userList = await this.$store.dispatch('getAllUsers');

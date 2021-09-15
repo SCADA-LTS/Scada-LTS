@@ -477,6 +477,7 @@
 	"userDetails.field.userprofile": "User Profile",
 	"userDetails.field.firstName": "First Name",
 	"userDetails.field.lastName": "Last Name",
+	"userDetails.field.homeurl": "Home URL address",
 	"userDetails.field.email": "Email address",
 	"userDetails.field.phone": "Phone number",
 	"userDetails.field.admin": "Administrator",

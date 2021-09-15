@@ -334,7 +334,7 @@ export default {
 }
 
 .permission-content {
-    max-height: 70vh;
+    max-height: 60vh;
     overflow: auto;
 }
 

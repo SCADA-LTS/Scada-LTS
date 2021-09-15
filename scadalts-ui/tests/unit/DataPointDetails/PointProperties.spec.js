@@ -4,11 +4,13 @@ import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointProperties from '@/views/DataPointDetails/PointProperties';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
 global.requestAnimationFrame = (cb) => cb();

@@ -14,7 +14,7 @@
 					></ChangeUserPassword>
 
 
-					<v-btn fab elevation="2" color="primary" small @click="save()" :disabled="!valid">
+					<v-btn class="small-margin" fab elevation="2" color="primary" small @click="save()" :disabled="!valid">
 						<v-icon>mdi-content-save</v-icon>
 					</v-btn>
 					
@@ -44,8 +44,8 @@
 								:items="userProfiles"
 								item-text="name"
 								item-value="id"
-								append-outer-icon="mdi-account-multiple-plus"
-								@click:append-outer="openUserProfileDialog"
+								prepend-icon="mdi-account-multiple-plus"
+								@click:prepend="openUserProfileDialog"
 							></v-select>
 
 							<v-checkbox 
@@ -104,7 +104,6 @@
 							<v-text-field 
 								id="user-form--phone"
 								:label="$t('userDetails.field.phone')"
-								:rules="phoneRules"
 								v-model="userDetails.phone"
 							></v-text-field>
 						</v-col>
@@ -136,7 +135,15 @@
 								id="user-form--hide-menu"
 								:label="$t('userDetails.field.hideMenu')"
 								v-model="userDetails.hideMenu"
+								:disabled="userDetails.admin"
 							></v-checkbox>
+						</v-col>
+						<v-col cols="12" v-if="isAdmin">
+							<v-text-field
+								id="user-form--homeurl"
+								:label="$t('userDetails.field.homeurl')"
+								v-model="userDetails.homeUrl"
+							></v-text-field>
 						</v-col>
 					</v-row>
 					<v-row>
@@ -239,12 +246,6 @@ export default {
 				(v) =>
 					/.+@.+\..+/.test(v) ||
 					this.$t('recipientlistDetails.dialog.recipient.valid.mail'),
-			],
-			phoneRules: [
-				(v) =>
-					/\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/.test(
-						v,
-					) || this.$t('recipientlistDetails.dialog.recipient.valid.phone'),
 			],
 			
 

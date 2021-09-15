@@ -81,11 +81,12 @@ export default {
         },
 
         filterItemsByName() {
+            let result = this.watchLists;
+            result = result.filter(list => list.name !== '(unnamed)');
             if(!!this.name) {
-                return this.watchLists.filter(list => list.name.toLowerCase().includes(this.name.toLowerCase()));
-            } else {
-                return this.watchLists;
-            }      
+                result = result.filter(list => list.name.toLowerCase().includes(this.name.toLowerCase()));
+            } 
+            return result;   
         }
     },
 

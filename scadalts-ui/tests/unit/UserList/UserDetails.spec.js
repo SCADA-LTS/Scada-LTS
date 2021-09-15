@@ -49,6 +49,7 @@ context('💠️ Test User Details Scenario', () => {
             expect(fromText).to.not.include('Administrator');
             expect(fromText).to.not.include('Hide Menu');
             expect(fromText).to.not.include('Disabled');
+            expect(fromText).to.not.include('Home URL address');
         });
 
         it('Is prop exampleUser data loaded', () => {
@@ -98,6 +99,7 @@ context('💠️ Test User Details Scenario', () => {
             expect(fromHtml.find('#user-form--hide-menu').element.value).to.equal('');
             expect(fromHtml.find('#user-form--alarm-events').element.value).to.equal('');
             expect(fromHtml.find('#user-form--theme').element.value).to.equal('');
+            expect(fromHtml.find('#user-form--homeurl').element.value).to.equal('');
         });
 
     })
@@ -136,13 +138,13 @@ context('💠️ Test User Details Scenario', () => {
             wrapper2.vm.userDetails.admin = true;
             await wrapper2.vm.$nextTick();
             expect(wrapper2.get('#user-form--userprofiles').find("input").attributes().disabled).to.equal('disabled');
+            expect(wrapper2.get('#user-form--hide-menu').find("input").attributes().disabled).to.equal('disabled');
         })
 
         it('User creation - filled - passing', async() => {
             wrapper2.get('#user-form--username').setValue("mockedusertest");
             wrapper2.get('#user-form--password-repeat').setValue("pa$$word");
             wrapper2.get('#user-form--email').setValue("mocked@mail.com");
-            wrapper2.get('#user-form--phone').setValue("48123321");
             await wrapper2.vm.$nextTick();
 
             expect(wrapper2.vm.isFormValid()).to.equal(true);

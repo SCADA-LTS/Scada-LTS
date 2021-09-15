@@ -4,11 +4,13 @@ import dataPoint from '../../mocks/store/dataPointMock';
 
 import PointPropTextRenderer from '@/views/DataPointDetails/PointProperties/PointPropTextRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
 /**
