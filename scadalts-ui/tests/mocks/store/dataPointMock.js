@@ -49,6 +49,12 @@ export const dataPoint = {
 				resolve(true);
 			});
 		},
+
+		getDataPointValue({ dispatch }, datapointId) {
+			return new Promise((resolve, reject) => {
+				resolve({value: 10});
+			})
+		},
 	},
 };
 

@@ -472,7 +472,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 	@Override
 	public void notifyWebSocketSubscribers(MangoValue message) {
-		DataPointServiceWebSocket.getInstance().notifyValueSubscribers(message, this.vo.getId());
+		DataPointServiceWebSocket ws = DataPointServiceWebSocket.getInstance();
+		if(ws != null) {
+			ws.notifyValueSubscribers(message, this.vo.getId());
+		}
 	}
 
 	class EventNotifyWorkItem implements WorkItem {
