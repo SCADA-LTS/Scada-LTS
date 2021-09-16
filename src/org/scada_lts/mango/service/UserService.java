@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -254,7 +255,14 @@ public class UserService implements MangoUser {
 		return userDAO.getUserDetails(userId);
 	}
 
+	public boolean isUsernameUnique(String username) {
+		return userDAO.usernameUnique(username);
+	}
+
 	public JsonUser createUser(JsonUserPassword user) {
+		if(!userDAO.usernameUnique(user.getUsername())) {
+			throw new EntityNotUniqueException("That username already exists!");
+		}
 		JsonUser createdUser = userDAO.createUser(user);
 		if(user.getUserProfile() > 0) {
 			usersProfileDAO.insertUserProfile(createdUser.getId(), user.getUserProfile());

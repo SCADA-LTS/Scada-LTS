@@ -466,6 +466,7 @@
 	"uiv.enable": "Enable",
 	"uiv.modal.cancel": "Cancel",
 	"uiv.modal.ok": "OK",
+	"form.validation.usernameNotUnique": "That username is already taken!",
 	"form.validation.required": "That field is required!",
 	"form.validation.passwordNotMatch": "Passwords does not match!",
 	"validation.password.wrong": "Wrong password!",

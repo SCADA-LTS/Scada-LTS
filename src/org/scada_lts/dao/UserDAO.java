@@ -470,6 +470,15 @@ public class UserDAO implements CrudOperations<User> {
 		return user;
 	}
 
+	public boolean usernameUnique(String username) {
+		try {
+			User user = DAO.getInstance().getJdbcTemp().queryForObject(USER_SELECT_WHERE_USERNAME, new Object[]{username}, new UserRowMapper());
+			return false;
+		} catch (EmptyResultDataAccessException e) {
+			return true;
+		}
+	}
+
 	public JsonUser createUser(JsonUserPassword user) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(conn -> {

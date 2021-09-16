@@ -4,6 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.mvc.api.json.JsonUser;
@@ -65,6 +66,24 @@ public class UsersAPI {
         }
     }
 
+    @GetMapping(value = "/validate")
+    public ResponseEntity<Map<String, Object>> isUsernameUnique(
+            @RequestParam String username,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("unique", userService.isUsernameUnique(username));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(value = "/")
     public ResponseEntity<JsonUser> createUser(
             @RequestBody JsonUserPassword jsonUser,
@@ -72,11 +91,13 @@ public class UsersAPI {
             ) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if (user != null) {
                 return new ResponseEntity<>(userService.createUser(jsonUser), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+        } catch (EntityNotUniqueException e1) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -91,6 +112,10 @@ public class UsersAPI {
             User user = Common.getUser(request);
             if(user != null) {
                 userService.updateUserDetails(jsonUser);
+                if(jsonUser.getId() == user.getId()) {
+                    Common.setUser(request, userService.getUser(user.getId()));
+                }
+
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

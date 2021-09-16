@@ -166,7 +166,10 @@ export default {
 
         initPermissionsDataPoint(datapointList) {
             this.permissionsDP.forEach(entry => {
-                datapointList.find((item) => item.id === entry.dataPointId).permission = entry.permission;
+                let dp = datapointList.find((item) => item.id === entry.dataPointId);
+                if(!!dp) {
+                    dp.permission = entry.permission;
+                };
             });
         },
 

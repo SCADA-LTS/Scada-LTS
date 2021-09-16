@@ -29,7 +29,8 @@
 								id="user-form--username"
 								:label="$t('userDetails.field.username')" 
 								:disabled="!edit"
-								:rules="[ruleRequired]"
+								@input="checkUsernameUnique"
+								:rules="[ruleRequired, ruleUsernameUnique]"
 								v-model="userDetails.username"
 							></v-text-field>
 						</v-col>
@@ -240,8 +241,10 @@ export default {
 			valid: false,
 			passwordRepeat: '',
 			userProfileDialogVisible: false,
+			usernameUnique: true,
 			ruleRequired: (v) => !!v || this.$t('form.validation.required'),
 			rulePasswordEqual: (v) => v === this.userPassword || this.$t('form.validation.passwordNotMatch'),
+			ruleUsernameUnique: () => this.usernameUnique || this.$t('form.validation.usernameNotUnique'),
 			emailRules: [
 				(v) =>
 					/.+@.+\..+/.test(v) ||
@@ -308,6 +311,20 @@ export default {
 		onUserProfileCreation(result) {
 			this.$emit('userProfileCreated', result);
 		},
+
+		async checkUsernameUnique() {
+			try {
+				if(this.edit) {
+					let resp = await this.$store.dispatch(
+						'requestGet', `/users/validate?username=${this.userDetails.username}`
+					);
+					this.usernameUnique = resp.unique;
+					this.$refs.form.validate();
+				}
+			} catch (e) {
+				console.error("Failed to check unique of username!");
+			}
+		}
 	},
 };
 </script>
