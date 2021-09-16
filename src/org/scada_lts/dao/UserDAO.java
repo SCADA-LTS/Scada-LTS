@@ -47,15 +47,6 @@ public class UserDAO implements UserDaoCachable {
 	private final static String COLUMN_NAME_HIDE_MENU = "hideMenu";
 	private final static String COLUMN_NAME_THEME = "theme";
 
-	private static final String COLUMN_NAME_PERMISSION = "permission";
-	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
-	private static final String COLUMN_NAME_DATA_SOURCE_ID = "dataSourceId";
-	private static final String COLUMN_NAME_VIEW_ID = "viewId";
-	private static final String COLUMN_NAME_WATCH_LIST_ID = "watchListId";
-	private static final String COLUMN_NAME_USER_ID = "userId";
-	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
-
-
 	// @formatter:off
 	private static final String USER_SELECT_ID = ""
 			+ "select "

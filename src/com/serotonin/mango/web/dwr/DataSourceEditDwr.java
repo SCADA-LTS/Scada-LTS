@@ -1119,6 +1119,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                     "dsEdit.meta.test.scriptError", e.getMessage());
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
+        } catch (Exception e) {
+            LOG.error(infoErrorExecutionScript(e, "validateScript: " + script));
+            throw e;
         }
 
         return response;
