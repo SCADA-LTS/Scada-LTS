@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permissions_user_datasource")
 @Service
+@CacheConfig(cacheNames = "permission_datasource_list_by_user")
 public class DataSourceUserPermissionsService implements PermissionsService<Integer, User> {
 
     private final DataSourceDAO dataSourceDAO;

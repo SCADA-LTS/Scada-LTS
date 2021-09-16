@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permissions_user_view")
+@CacheConfig(cacheNames = "permission_view_list_by_user")
 @Service
 public class ViewUserPermissionsService implements PermissionsService<ViewAccess, User> {
 

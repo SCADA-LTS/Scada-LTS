@@ -90,8 +90,6 @@ public class DataSourceService implements MangoDataSource {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
 		}
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	private void updateDataSource(DataSourceVO<?> dataSource) {
@@ -107,8 +105,6 @@ public class DataSourceService implements MangoDataSource {
 				dataPointService.updateDataPoint(dataPoint);
 			}
 		}
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	@Override

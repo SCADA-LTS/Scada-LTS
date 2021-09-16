@@ -8,54 +8,65 @@
         <jsr107:defaults jsr-107-compliant-atomics="true" enable-management="true" enable-statistics="true"/>
     </service>
 
-    <cache-template name="user_cache_template">
+    <cache-template name="cache_template">
         <expiry>
             <none/>
         </expiry>
-        <heap>200</heap>
+        <heap>100</heap>
     </cache-template>
 
-    <cache-template name="profile_cache_template">
+    <cache-template name="list_cache_template">
+        <key-type>java.lang.Integer</key-type>
+        <value-type>java.util.List</value-type>
         <expiry>
             <none/>
         </expiry>
-        <heap>200</heap>
-    </cache-template>
-
-    <cache-template name="permissions_cache_template">
-        <expiry>
-            <none/>
-        </expiry>
-        <heap>1000</heap>
+        <heap>100</heap>
     </cache-template>
 
     <!-- user -->
-    <cache alias="user_list" uses-template="user_cache_template"/>
-    <cache alias="user_by_id" uses-template="user_cache_template"/>
-    <cache alias="user_by_username" uses-template="user_cache_template"/>
+    <cache alias="user_by_id" uses-template="cache_template">
+        <key-type>java.lang.Integer</key-type>
+        <value-type>com.serotonin.mango.vo.User</value-type>
+    </cache>
+    <cache alias="user_by_username" uses-template="cache_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>com.serotonin.mango.vo.User</value-type>
+    </cache>
+    <cache alias="user_list" uses-template="cache_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
 
     <!-- profile -->
-    <cache alias="profile_by_userid" uses-template="profile_cache_template"/>
-    <cache alias="profile_by_xid" uses-template="profile_cache_template"/>
-    <cache alias="profile_by_id" uses-template="profile_cache_template"/>
-    <cache alias="userids_by_profileid" uses-template="profile_cache_template"/>
-    <cache alias="profile_offset_limit" uses-template="profile_cache_template"/>
+    <cache alias="profile_by_id" uses-template="cache_template">
+        <key-type>java.lang.Integer</key-type>
+        <value-type>br.org.scadabr.vo.usersProfiles.UsersProfileVO</value-type>
+    </cache>
+    <cache alias="profile_by_xid" uses-template="cache_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>br.org.scadabr.vo.usersProfiles.UsersProfileVO</value-type>
+    </cache>
+    <cache alias="profile_list_offset_limit" uses-template="cache_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <cache alias="profile_list_by_userid" uses-template="list_cache_template"/>
+    <cache alias="userid_list_by_profileid" uses-template="list_cache_template"/>
 
     <!-- share user -->
-    <cache alias="share_user_datasource" uses-template="permissions_cache_template"/>
-    <cache alias="share_user_datapoint" uses-template="permissions_cache_template"/>
-    <cache alias="share_user_view" uses-template="permissions_cache_template"/>
-    <cache alias="share_user_watchlist" uses-template="permissions_cache_template"/>
+    <cache alias="share_user_list_by_view" uses-template="list_cache_template"/>
+    <cache alias="share_user_list_by_watchlist" uses-template="list_cache_template"/>
 
-    <!-- permissions user -->
-    <cache alias="permissions_user_datasource" uses-template="permissions_cache_template"/>
-    <cache alias="permissions_user_datapoint" uses-template="permissions_cache_template"/>
-    <cache alias="permissions_user_view" uses-template="permissions_cache_template"/>
-    <cache alias="permissions_user_watchlist" uses-template="permissions_cache_template"/>
+    <!-- by user -->
+    <cache alias="permission_datasource_list_by_user" uses-template="list_cache_template"/>
+    <cache alias="permission_datapoint_list_by_user" uses-template="list_cache_template"/>
+    <cache alias="permission_view_list_by_user" uses-template="list_cache_template"/>
+    <cache alias="permission_watchlist_list_by_user" uses-template="list_cache_template"/>
 
-    <!-- permissions profile -->
-    <cache alias="permissions_profile_datasource" uses-template="permissions_cache_template"/>
-    <cache alias="permissions_profile_datapoint" uses-template="permissions_cache_template"/>
-    <cache alias="permissions_profile_view" uses-template="permissions_cache_template"/>
-    <cache alias="permissions_profile_watchlist" uses-template="permissions_cache_template"/>
+    <!-- by profile -->
+    <cache alias="permission_datasource_list_by_profile" uses-template="list_cache_template"/>
+    <cache alias="permission_datapoint_list_by_profile" uses-template="list_cache_template"/>
+    <cache alias="permission_view_list_by_profile" uses-template="list_cache_template"/>
+    <cache alias="permission_watchlist_list_by_profile" uses-template="list_cache_template"/>
 </config>

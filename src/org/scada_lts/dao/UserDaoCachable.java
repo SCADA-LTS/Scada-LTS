@@ -1,6 +1,5 @@
 package org.scada_lts.dao;
 
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,21 +11,12 @@ import java.util.List;
 @Component
 public interface UserDaoCachable {
 
-    @Cacheable(cacheNames = "user_list", key="'userIds'", unless = "#result.isEmpty()")
+    @Cacheable(cacheNames = "user_list", key="'userIds'")
     List<Integer> getAll();
-    @Cacheable(cacheNames = "user_list", key="'users'", unless = "#result.isEmpty()")
+    @Cacheable(cacheNames = "user_list", key="'users'")
     List<User> getUsers();
-    @Cacheable(cacheNames = "user_list", key="'activeUsers'", unless = "#result.isEmpty()")
+    @Cacheable(cacheNames = "user_list", key="'activeUsers'")
     List<User> getActiveUsers();
-
-    @Cacheable(cacheNames = "share_user_datasource", key = "#p0", unless = "#result.isEmpty()")
-    List<ShareUser> selectDataSourceShareUsers(int dataSourceId);
-    @Cacheable(cacheNames = "share_user_datapoint", key = "#p0", unless = "#result.isEmpty()")
-    List<ShareUser> selectDataPointShareUsers(int dataPointId);
-    @Cacheable(cacheNames = "share_user_view", key = "#p0", unless = "#result.isEmpty()")
-    List<ShareUser> selectViewShareUsers(int viewId);
-    @Cacheable(cacheNames = "share_user_watchlist", key = "#p0", unless = "#result.isEmpty()")
-    List<ShareUser> selectWatchListShareUsers(int watchListId);
 
     @Cacheable(cacheNames = "user_by_username", key = "#p0", unless = "#result == null")
     User getUser(String username);
@@ -38,11 +28,7 @@ public interface UserDaoCachable {
             evict = {
                     @CacheEvict(cacheNames = "user_list", allEntries = true),
                     @CacheEvict(cacheNames = "user_by_id", key = "#user.id"),
-                    @CacheEvict(cacheNames = "user_by_username", key = "#user.username"),
-                    @CacheEvict(cacheNames = "share_user_datasource", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_view", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_watchlist", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_datapoint", allEntries = true)
+                    @CacheEvict(cacheNames = "user_by_username", key = "#user.username")
             }
     )
     void update(User user);
@@ -73,14 +59,6 @@ public interface UserDaoCachable {
             }
     )
     void updateHomeUrl(int userId, String homeUrl);
-
-    @Caching (
-            evict = {
-                    @CacheEvict(cacheNames = "user_list", allEntries = true),
-                    @CacheEvict(cacheNames = "user_by_id", key = "#p0"),
-                    @CacheEvict(cacheNames = "user_by_username", allEntries = true)
-            }
-    )
     void updateLogin(int userId);
 
     @Caching (
@@ -88,10 +66,12 @@ public interface UserDaoCachable {
                     @CacheEvict(cacheNames = "user_list", allEntries = true),
                     @CacheEvict(cacheNames = "user_by_id", key = "#p0"),
                     @CacheEvict(cacheNames = "user_by_username", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_datasource", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_view", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_watchlist", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_datapoint", allEntries = true)
+                    @CacheEvict(cacheNames = "permission_datasource_list_by_user", key = "#p0"),
+                    @CacheEvict(cacheNames = "permission_datapoint_list_by_user", key = "#p0"),
+                    @CacheEvict(cacheNames = "permission_watchlist_list_by_user", key = "#p0"),
+                    @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#p0"),
+                    @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
+                    @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true)
             }
     )
     void delete(int userId);
@@ -99,33 +79,9 @@ public interface UserDaoCachable {
     @Caching (
             evict = {
                     @CacheEvict(cacheNames = "user_list", allEntries = true),
-                    @CacheEvict(cacheNames = "user_by_id", allEntries = true),
-                    @CacheEvict(cacheNames = "user_by_username", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_datasource", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_view", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_watchlist", allEntries = true),
-                    @CacheEvict(cacheNames = "share_user_datapoint", allEntries = true)
+                    @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
+                    @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true)
             }
     )
     int insert(User user);
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "share_user_datasource", allEntries = true)
-    })
-    default void resetDataSourcePermissions() {}
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "share_user_datapoint", allEntries = true)
-    })
-    default void resetDataPointPermissions() {}
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "share_user_view", allEntries = true)
-    })
-    default void resetViewPermissions() {}
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "share_user_watchlist", allEntries = true)
-    })
-    default void resetWatchListPermissions() {}
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permissions_user_watchlist")
+@CacheConfig(cacheNames = "permission_watchlist_list_by_user")
 @Service
 public class WatchListUserPermissionsService implements PermissionsService<WatchListAccess, User> {
 

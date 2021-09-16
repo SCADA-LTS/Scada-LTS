@@ -19,6 +19,7 @@
 package org.scada_lts.dao;
 
 import java.sql.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -214,6 +215,19 @@ public class ViewDAO implements GenericDAO<View> {
 			+ "where "
 				+ COLUMN_NAME_MVU_VIEW_ID+"=? and "
 				+ COLUMN_NAME_MVU_USER_ID+"=?";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"vup." + COLUMN_NAME_UP_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"viewUsersProfiles vup " +
+			"on " +
+			"vup." + COLUMN_NAME_UP_USER_PRFILE_ID + "=uup." + COLUMN_NAME_UP_USER_PRFILE_ID + " " +
+			"where " +
+			"vup." + COLUMN_NAME_UP_VIEW_ID + "=?;";
 
 	// @formatter:on
 	
@@ -475,4 +489,19 @@ public class ViewDAO implements GenericDAO<View> {
 						.nameColumnName(COLUMN_NAME_NAME)
 						.build());
     }
+
+	public List<ShareUser> selectViewShareUsers(int viewId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
+					new Object[]{viewId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
 }

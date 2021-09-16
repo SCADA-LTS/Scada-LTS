@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permissions_user_datapoint")
+@CacheConfig(cacheNames = "permission_datapoint_list_by_user")
 @Service
 public class DataPointUserPermissionsService implements PermissionsService<DataPointAccess, User> {
 

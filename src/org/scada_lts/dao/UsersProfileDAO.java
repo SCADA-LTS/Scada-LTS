@@ -253,6 +253,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             UsersProfileVO usersProfile = jdbcTemplate.queryForObject(USERS_PROFILE_SELECT_BY_ID, new Object[]{usersProfileId}, new UsersProfileRowMapper());
             return Optional.ofNullable(usersProfile);
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("usersProfileId: " + usersProfileId + ", msg: " + ex.getMessage());
             return Optional.empty();
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -268,6 +269,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             UsersProfileVO usersProfile = jdbcTemplate.queryForObject(USERS_PROFILE_SELECT_BY_XID, new Object[]{usersProfileXid}, new UsersProfileRowMapper());
             return Optional.ofNullable(usersProfile);
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("usersProfileXid: " + usersProfileXid + ", msg: " + ex.getMessage());
             return Optional.empty();
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -297,6 +299,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             return jdbcTemplate.query(USERS_SELECT_BY_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) ->
                     rs.getInt(COLUMN_NAME_USER_ID));
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("usersProfileId: " + usersProfileId + ", msg: " + ex.getMessage());
             return Collections.emptyList();
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -311,6 +314,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         try {
             return jdbcTemplate.update(USERS_PROFILES_UPDATE_NAME_BY_ID, name, usersProfileId);
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("name: " + name + ", usersProfileId: " + usersProfileId + ", msg: " + ex.getMessage());
             return 0;
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -339,6 +343,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         try {
             return jdbcTemplate.update(USERS_PROFILE_DELETE_BY_ID, profileId);
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("profileId: " + profileId + ", msg: " + ex.getMessage());
             return 0;
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -353,6 +358,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         try {
             return jdbcTemplate.update(USERS_USERS_PROFILE_INSERT, userProfileId, userId);
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("userId: " + userId + ", userProfileId: " + userProfileId + ", msg: " + ex.getMessage());
             return 0;
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -375,6 +381,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             }, keyHolder);
             return keyHolder.getKey().intValue();
         } catch (EmptyResultDataAccessException ex) {
+            LOG.warn("usersProfileXid: " + usersProfileXid + ", usersProfileName: " + usersProfileName + ", msg: " + ex.getMessage());
             return -1;
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);

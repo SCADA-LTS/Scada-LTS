@@ -58,7 +58,7 @@ public class ViewService {
 	public ViewService() {
 		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
 		this.viewDAO = (ViewDAO) context.getBean("viewDAO");
-		this.viewGetShareUsers = (ViewGetShareUsers) context.getBean("viewGetShareUsers");
+		this.viewGetShareUsers = (GetShareUsers<View>) context.getBean("viewGetShareUsers");
 		this.usersProfileService = (UsersProfileService) context.getBean("usersProfileService");
 	}
 
@@ -120,7 +120,6 @@ public class ViewService {
 			}
 		}
 		usersPermissions.put(userId, allPermissions);
-		usersProfileService.updateViewPermissions();
 		return allPermissions;
 	}
 	
@@ -170,7 +169,6 @@ public class ViewService {
 
 		//TODO why don't update
 		usersPermissions.clear();
-		usersProfileService.updateViewPermissions();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -196,7 +194,6 @@ public class ViewService {
 			usersPermissions.remove(shareUser.getUserId());
 			// updateViewUsersPermissions(shareUser.getUserId());
 		}
-		usersProfileService.updateViewPermissions();
 	}	
 	
 	public void removeUserFromView(int viewId, int userId) {

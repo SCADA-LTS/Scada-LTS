@@ -52,7 +52,7 @@ public class WatchListService implements MangoWatchList {
 	public WatchListService() {
 		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
 		this.watchListDAO = (WatchListDAO) context.getBean("watchListDAO");
-		this.getShareUsers = (WatchListGetShareUsers) context.getBean("watchListGetShareUsers");
+		this.getShareUsers = (GetShareUsers<WatchList>) context.getBean("watchListGetShareUsers");
 		this.usersProfileService = (UsersProfileService) context.getBean("usersProfileService");
 	}
 
@@ -111,7 +111,6 @@ public class WatchListService implements MangoWatchList {
 	private void setWatchListUsers(WatchList watchList) {
 		List<ShareUser> watchListUsers = getShareUsers.getShareUsersWithProfile(watchList);
 		watchList.setWatchListUsers(watchListUsers);
-		usersProfileService.updateWatchlistPermissions();
 	}
 
 	@Override
@@ -122,7 +121,6 @@ public class WatchListService implements MangoWatchList {
 	@Override
 	public void saveSelectedWatchList(int userId, int watchListId) {
 		watchListDAO.updateUsers(userId, watchListId);
-		usersProfileService.updateWatchlistPermissions();
 	}
 
 	@Override
@@ -150,7 +148,6 @@ public class WatchListService implements MangoWatchList {
 		watchListDAO.deleteWatchListPoints(watchList.getId());
 
 		watchListDAO.addPointsForWatchList(watchList);
-        usersProfileService.updateWatchlistPermissions();
         //sharing an object doesn't work
 		//saveWatchListUsers(watchList);
 	}
@@ -161,7 +158,6 @@ public class WatchListService implements MangoWatchList {
 
         // Add in all of the entries.
 		watchListDAO.addWatchListUsers(watchList);
-		usersProfileService.updateWatchlistPermissions();
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

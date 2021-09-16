@@ -140,12 +140,10 @@
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
     <constructor-arg ref="watchListDAO"/>
-    <constructor-arg ref="userDAO"/>
   </bean>
 
   <bean id="viewGetShareUsers" class="org.scada_lts.permissions.service.ViewGetShareUsers">
     <constructor-arg ref="viewDAO"/>
-    <constructor-arg ref="userDAO"/>
   </bean>
 
   <bean id="springApplicationContext" class="org.scada_lts.utils.ApplicationContextProvider"/>

@@ -18,6 +18,7 @@
 package org.scada_lts.dao.watchlist;
 
 import java.sql.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.ShareUserRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -253,6 +255,19 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "where "
 			+ COLUMN_NAME_WLU_WATCHLIST_ID+"=? and "
 			+ COLUMN_NAME_WLU_USER_ID+"=?";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"wlup." + COLUMN_NAME_WLUP_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"watchListUsersProfiles wlup " +
+			"on " +
+			"wlup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"wlup." + COLUMN_NAME_WLP_WATCHLIST_ID + "=?;";
 
 	// @formatter:on
 	
@@ -486,5 +501,20 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(WATCHLIST_USER_DELETE_BASE_ON_WATCHLIST_ID_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<ShareUser> selectWatchListShareUsers(int watchListId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID,
+					new Object[]{watchListId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
 	}
 }
