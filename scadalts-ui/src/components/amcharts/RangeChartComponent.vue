@@ -224,6 +224,9 @@ export default {
 			if (!!this.smoothLine) {
 				this.chartClass.smoothLine(this.smoothLine);
 			}
+			if (!!this.webSocketEnabled) {
+				this.chartClass.withWebSocketUpdate();
+			}
 			this.chartClass = this.chartClass.build();
 
 			this.chartLoading = true;
