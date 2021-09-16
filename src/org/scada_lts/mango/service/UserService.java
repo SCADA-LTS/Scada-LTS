@@ -211,8 +211,6 @@ public class UserService implements MangoUser {
 		pointValueService.updatePointValueAnnotations(userId);
 		eventService.deleteUserEvent(userId);
 		eventService.updateEventAckUserId(userId);
-		//dataPointPermissionsService.removePermissions(userId, dataPointPermissionsService.getPermissions(userId));
-		//dataSourcePermissionsService.removePermissions(userId, dataSourcePermissionsService.getPermissions(userId));
 		userDAO.delete(userId);
 		usersProfileService.updatePermissions();
 	}
