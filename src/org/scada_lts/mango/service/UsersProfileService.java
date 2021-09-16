@@ -127,19 +127,19 @@ public class UsersProfileService {
     }
 
     public void updateWatchlistPermissions() {
-        usersProfileDAO.resetWatchListPermissions();
+        usersProfileDAO.resetCacheWatchListPermissions();
     }
 
     public void updateViewPermissions() {
-        usersProfileDAO.resetViewPermissions();
+        usersProfileDAO.resetCacheViewPermissions();
     }
 
     public void updateDataPointPermissions() {
-        usersProfileDAO.resetDataPointPermissions();
+        usersProfileDAO.resetCacheDataPointPermissions();
     }
 
     public void updateDataSourcePermissions() {
-        usersProfileDAO.resetDataSourcePermissions();
+        usersProfileDAO.resetCacheDataSourcePermissions();
     }
 
     public void updateProfile(UsersProfileVO profile) {

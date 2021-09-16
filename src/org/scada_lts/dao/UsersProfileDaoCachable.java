@@ -29,13 +29,17 @@ public interface UsersProfileDaoCachable extends GenerateXid {
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_list_by_userid", key = "#p0"),
-            @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true)
+            @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int deleteUserProfileByUserId(int userId);
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_list_by_userid", key = "#p0"),
-            @CacheEvict(cacheNames = "userid_list_by_profileid", key = "#p1")
+            @CacheEvict(cacheNames = "userid_list_by_profileid", key = "#p1"),
+            @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int insertUserProfile(int userId, int profileId);
 
@@ -49,7 +53,9 @@ public interface UsersProfileDaoCachable extends GenerateXid {
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
-            @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true)
+            @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     int insertProfile(String profileXid, String profileName);
 
@@ -130,7 +136,7 @@ public interface UsersProfileDaoCachable extends GenerateXid {
             @CacheEvict(cacheNames = "permission_datasource_list_by_profile", allEntries = true),
             @CacheEvict(cacheNames = "permission_datasource_list_by_user", allEntries = true)
     })
-    default void resetDataSourcePermissions() {}
+    default void resetCacheDataSourcePermissions() {}
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
@@ -141,7 +147,7 @@ public interface UsersProfileDaoCachable extends GenerateXid {
             @CacheEvict(cacheNames = "permission_datapoint_list_by_profile", allEntries = true),
             @CacheEvict(cacheNames = "permission_datapoint_list_by_user", allEntries = true)
     })
-    default void resetDataPointPermissions() {}
+    default void resetCacheDataPointPermissions() {}
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
@@ -153,7 +159,7 @@ public interface UsersProfileDaoCachable extends GenerateXid {
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
-    default void resetViewPermissions() {}
+    default void resetCacheViewPermissions() {}
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
@@ -165,5 +171,5 @@ public interface UsersProfileDaoCachable extends GenerateXid {
             @CacheEvict(cacheNames = "permission_watchlist_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_watchlist", allEntries = true)
     })
-    default void resetWatchListPermissions() {}
+    default void resetCacheWatchListPermissions() {}
 }
