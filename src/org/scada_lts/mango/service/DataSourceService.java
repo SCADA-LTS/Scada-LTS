@@ -115,8 +115,6 @@ public class DataSourceService implements MangoDataSource {
 		if (dataSource != null) {
 			deleteInTransaction(dataSourceId);
 		}
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePointPermissions();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -124,7 +122,7 @@ public class DataSourceService implements MangoDataSource {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePointPermissions();
+		usersProfileService.updatePermissions();
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -186,13 +184,13 @@ public class DataSourceService implements MangoDataSource {
 	public void deleteDataSourceUser(int userId) {
 		dataSourceDAO.deleteDataSourceUser(userId);
 		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePointPermissions();
+		usersProfileService.updateDataSourcePermissions();
 	}
 
 	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
 		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePointPermissions();
+		usersProfileService.updatePermissions();
 	}
 }
