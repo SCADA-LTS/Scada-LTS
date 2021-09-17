@@ -77,31 +77,11 @@
 	</DataSourceConfig>
 </template>
 <script>
-import DataSourceConfig from '../DataSourceConfig';
+import DataSourceConfigMixin from '../DataSourceConfigMixin';
 
 export default {
-	components: {
-		DataSourceConfig,
-	},
 
-	props: {
-		datasource: {
-			required: false,
-			type: Object,
-			default: () => {
-				return {
-					name: '',
-					xid: 'DS_VDS_',
-					updatePeriods: 5,
-					updatePeriodType: 1,
-				};
-			},
-		},
-		createMode: {
-			type: Boolean,
-			default: true,
-		},
-	},
+	mixins: [DataSourceConfigMixin],
 
 	data() {
 		return {
@@ -196,15 +176,6 @@ export default {
 		}
 	},
 
-	methods: {
-		cancel() {
-			this.$emit('canceled');
-		},
-
-		save() {
-			this.$emit('saved', this.datasource);
-		},
-	},
 };
 </script>
 <style></style>

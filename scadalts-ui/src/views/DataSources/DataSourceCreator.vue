@@ -1,6 +1,6 @@
 <template>
 	<v-dialog v-model="dialogVisible" max-width="800">
-		<component :is="`${selectedType}editor`" @canceled="onCanceled()" @saved="onSaved($event)">
+		<component :is="`${selectedType}editor`" ref="datasourceDialog" @canceled="onCanceled()" @saved="onSaved($event)">
 			<template v-slot:title> Create Data Log</template>
 			<template v-slot:selector>
                 <v-select
@@ -28,6 +28,9 @@ export default {
 	methods: {
 		showDialog() {
 			this.dialogVisible = true;
+			this.$nextTick().then(() => {
+				this.$refs.datasourceDialog.onShow();
+			});
 		},
 
         onCanceled() {

@@ -14,42 +14,14 @@
 	</DataSourceConfig>
 </template>
 <script>
-import DataSourceConfig from '../DataSourceConfig';
+import DataSourceConfigMixin from '../DataSourceConfigMixin';
 
 export default {
-	components: {
-		DataSourceConfig,
-	},
 
-	props: {
-		createMode: {
-			type: Boolean,
-			default: true,
-		},
-		datasource: {
-			required: false,
-			type: Object,
-			default: () => {
-				return {
-					name: '',
-					xid: 'DS_VDS_',
-					updatePeriods: 5,
-					updatePeriodType: 2,
-				};
-			},
-		},
-	},
+	mixins: [DataSourceConfigMixin],
+	
 
 	methods: {
-		cancel() {
-			this.$emit('canceled');
-		},
-
-		save() {
-			console.debug("VirtualDataSource.config.vue::save()")
-			this.$emit('saved', this.datasource);
-		},
-
 		onUpdatePeriodTypeUpdate(value) {
 			this.datasource.updatePeriodType = value;
 		}

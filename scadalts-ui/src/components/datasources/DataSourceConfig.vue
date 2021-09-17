@@ -57,7 +57,10 @@
 						</UpdatePeriodType>
 					</v-col>
 				</v-row>
+
+				<!-- Other component definition slot -->
 				<slot></slot>
+
 			</v-form>
 		</v-card-text>
 
@@ -77,7 +80,18 @@
 </template>
 <script>
 import UpdatePeriodType from '@/layout/forms/UpdatePeriodType';
-
+/**
+ * DataSource Configuration Component
+ * 
+ * Base component for configuring a DataSource that handle the common logic for
+ * each type of DataSource. It provide the edit such values as Name, Xid and UpdatePeriod.
+ * In <slot> tag there are provided the DataSource specific component definition.
+ * This component handle the logic for creation and update of DataSource so in 
+ * the child component that methods are not needed.
+ * 
+ * @author Radoslaw Jajko <rjajko@softq.pl>
+ * @version 1.0.0
+ */
 export default {
 	components: {
 		UpdatePeriodType,
@@ -105,6 +119,14 @@ export default {
 				};
 			},
 		},
+	},
+
+	mounted() {
+		if(this.creator) {
+			this.$store.dispatch('getUniqueDataSourceXid').then(resp => {
+				this.datasource.xid = resp;
+			});
+		}
 	},
 
 	data() {

@@ -159,6 +159,10 @@ const ds = {
 			});
 		},
 
+		getUniqueDataSourceXid({dispatch}) {
+			return dispatch("requestGet", "/datasource/generateUniqueXid");
+		},
+
 		/**
 		 * Create Data Source
 		 * 

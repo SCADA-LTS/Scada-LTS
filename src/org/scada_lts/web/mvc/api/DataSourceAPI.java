@@ -165,6 +165,20 @@ public class DataSourceAPI {
         }
     }
 
+    @GetMapping(value = "/api/datasource/generateUniqueXid")
+    public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return new ResponseEntity<>(dataSourceService.generateUniqueXid(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(value = "/api/datasource")
     public ResponseEntity<DataSourceJson> createDataSource(
             @RequestBody DataSourceJson dataSource,
