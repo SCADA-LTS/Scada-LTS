@@ -209,9 +209,9 @@ const ds = {
 				dispatch('requestPut', {
 					url: `/datasource`,
 					data: datasource,
-				}).then(response => {
-					commit('UPDATE_DATA_SOURCE',response);
-					resolve(response);
+				}).then(() => {
+					commit('UPDATE_DATA_SOURCE',datasource);
+					resolve(datasource);
 				}).catch(error => {
 					console.error(error);
 					reject();
@@ -349,52 +349,51 @@ const ds = {
 					reject();
 				});
 			});
-		}
+		},
 
 		//ModBus DataSource methods
-        		modbusNodeScan({dispatch}, datasourceId) {
-        			return new Promise((resolve, reject) => {
-        				setTimeout(() => {
-        					if(datasourceId === 1) {
-        						let response = [
-        							{
-        								name: 'Point 1'
-        							}
-        						];
-        						resolve(response);
-        					} else {
-        						reject();
+        modbusNodeScan({dispatch}, datasourceId) {
+        	return new Promise((resolve, reject) => {
+        		setTimeout(() => {
+        			if(datasourceId === 1) {
+        				let response = [
+        					{
+        						name: 'Point 1'
         					}
-        				}, 1000);
-        			});
-        		},
+        				];
+        				resolve(response);
+        			} else {
+        				reject();
+        			}
+        		}, 1000);
+        	});
+        },
 
-        		modbusNodeScanCancel({dispatch}, datasourceId) {
-        			return new Promise((resolve, reject) => {
-        				setTimeout(() => {
-        					resolve();
-        				}, 1000);
-        			})
-        		},
+        modbusNodeScanCancel({dispatch}, datasourceId) {
+        	return new Promise((resolve, reject) => {
+        		setTimeout(() => {
+        			resolve();
+        		}, 1000);
+        	})
+        },
 
-        		modbusReadData({dispatch}, configuration) {
-        			return new Promise((resolve, reject) => {
-        				setTimeout(() => {
-        					let request = `${configuration.slaveId}/${configuration.range}`
-        					console.log(request);
-        					resolve();
-        				}, 1000);
-        			});
-        		},
+        modbusReadData({dispatch}, configuration) {
+        	return new Promise((resolve, reject) => {
+        		setTimeout(() => {
+        			let request = `${configuration.slaveId}/${configuration.range}`
+        			console.log(request);
+        			resolve();
+        		}, 1000);
+        	});
+        },
 
-        		modbusPointLocatorTest({dispatch}, configuration) {
-        			return new Promise((resolve, reject) => {
-        				setTimeout(() => {
-        					console.log(configuration);
-        					resolve();
-        				}, 1000);
-        			});
-        		}
+        modbusPointLocatorTest({dispatch}, configuration) {
+			configuration.pointLocator.dataSourceTypeId = 3;
+			return dispatch('requestPost', {
+				url: `/datasources/modbusip/testpointlocator`,
+				data: configuration
+			});
+        }
 	},
 
 	getters: {

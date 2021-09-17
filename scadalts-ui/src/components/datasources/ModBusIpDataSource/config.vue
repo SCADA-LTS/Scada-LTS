@@ -78,65 +78,36 @@
 	</DataSourceConfig>
 </template>
 <script>
-import DataSourceConfig from '../DataSourceConfig';
+import DataSourceConfigMixin from '../DataSourceConfigMixin';
 
 export default {
-	components: {
-		DataSourceConfig,
-	},
 
-	props: {
-		createMode: {
-			type: Boolean,
-			default: true,
-		},
-		datasource: {
-			required: false,
-			type: Object,
-			default: () => {
-				return {
-					name: '',
-					xid: 'DS_VDS_',
-					updatePeriod: 5,
-					updatePeriodType: 2,
-				};
-			},
-		},
-	},
-
+	mixins: [DataSourceConfigMixin],
+	
     data() {
         return {
             transportTypes: [
 				{
 					text: 'TCP',
-					value: 0
+					value: "TCP"
 				},
                 {
 					text: 'TCP with Keep-alive',
-					value: 1
+					value: "TCP_KEEP_ALIVE"
 				},
 				{
 					text: 'UDP',
-					value: 2
+					value: "UDP"
 				},
 				{
 					text: 'TCP Listener',
-					value: 3
+					value: "TCP_LISTENER"
 				}
 			],
         }
     },
 
 	methods: {
-		cancel() {
-			this.$emit('canceled');
-		},
-
-		save() {
-			console.debug("ModBusIpDataSource.config.vue::save()")
-			this.$emit('saved', this.datasource);
-		},
-
 		onUpdatePeriodTypeUpdate(value) {
 			this.datasource.updatePeriodType = value;
 		}

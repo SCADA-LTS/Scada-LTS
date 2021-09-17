@@ -12,19 +12,12 @@
 
 		<v-row>
 			<v-col>
-				<PointLocatorTest>
+				<PointLocatorTest
+					:datasource="ds">
 				</PointLocatorTest>
 			</v-col>
-			<v-col>
-				<ReadData>
-				</ReadData>
-			</v-col>
-			<v-col>
-				<NodeScan :datasource="ds">
-				</NodeScan>
-			</v-col>
 			
-			
+			<!-- TODO: Implement ReadData Component and NodeScan -->
 		</v-row>
 
 	</DataSourceLoader>

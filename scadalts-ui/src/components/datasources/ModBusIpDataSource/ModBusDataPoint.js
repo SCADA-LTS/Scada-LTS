@@ -23,7 +23,6 @@ export class ModBusDataPoint {
             dataTypeId: 3,
             settable: true,
             relinquishable: false,
-            
         }
     }
 

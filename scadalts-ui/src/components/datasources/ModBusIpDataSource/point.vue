@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<DataPointCreation
+            v-if="!pointLocatorTest"
 			title="ModBus IP Data Point"
 			:creator="createMode"
 			:datapoint="datapoint"
@@ -84,6 +85,73 @@
 
 			
 		</DataPointCreation>
+        <div v-else>
+            <v-row>
+                <v-col cols="2">
+                    <v-text-field
+                        label="Slave id"
+                        v-model="datapoint.pointLocator.slaveId"
+                    ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                    <v-select
+                        label="Register range"
+                        v-model="datapoint.pointLocator.range"
+                        :items="registerRanges"
+                        @change="changeRegisterRange"
+                    ></v-select>
+                </v-col>
+                <v-col cols="6">
+                    <v-select
+                        label="Modbus data type"
+                        v-model="datapoint.pointLocator.modbusDataType"
+                        :items="modbusDataTypes"
+                        :disabled="modbusDataTypeDiabled"
+                        @change="changeModbusDataType"
+                    ></v-select>
+                </v-col>
+                
+                <v-col cols="2">
+                    <v-text-field
+                        label="Offset"
+                        v-model="datapoint.pointLocator.offset"
+                    ></v-text-field>
+                </v-col>
+                    
+                <v-col v-if="settingsCharVisible">
+                    <v-text-field
+                        label="Number of registers"
+                        v-model="datapoint.pointLocator.registerCount"
+                    ></v-text-field>
+                </v-col>
+                <v-col v-if="settingsCharVisible">
+                    <v-text-field
+                        label="Character encoding"
+                        v-model="datapoint.pointLocator.charset"
+                    ></v-text-field>
+                </v-col>
+                    
+                <v-col v-if="settingsBinaryVisible">
+                    <v-text-field
+                        label="Bit"
+                        v-model="datapoint.pointLocator.bit"
+                    ></v-text-field>
+                </v-col>
+                
+                <v-col v-if="settingsNumericVisible">
+                    <v-text-field
+                        label="Multiplier"
+                        v-model="datapoint.pointLocator.multiplier"
+                    ></v-text-field>
+                </v-col>
+                <v-col v-if="settingsNumericVisible">
+                    <v-text-field
+                        label="Additive"
+                        v-model="datapoint.pointLocator.additive"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+        </div>
 	</div>
 </template>
 <script>
@@ -107,6 +175,10 @@ export default {
 			default: false,
 			type: Boolean,
 		},
+        pointLocatorTest: {
+            default: false,
+            type: Boolean,
+        }
 	},
 
 	data() {
