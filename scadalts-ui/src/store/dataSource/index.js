@@ -1,5 +1,6 @@
 import i18n from '@/i18n';
 import Axios from 'axios';
+import ModBusDataPoint from '../../components/datasources/ModBusIpDataSource/ModBusDataPoint';
 import GenericDataSource from '../../components/datasources/models/GenericDataSource';
 import SnmpDataPoint from '../../components/datasources/SnmpDataSource/SnmpDataPoint';
 import ScadaVirtualDataPoint from '../../components/datasources/VirtualDataSource/VirtualDataPoint';
@@ -35,6 +36,7 @@ const ds = {
 		 */
 		dataSources: new Map()
 			.set(1,"virtualdatasource")
+			.set(3, "modbusdatasource")
 			.set(5, "snmpdatasource"),
 
 		dataSourceList: [],
@@ -107,11 +109,11 @@ const ds = {
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
 		getDataSources({ dispatch, commit }) {
-			
+
 
 			return new Promise((resolve, reject) => {
 				dispatch('requestGet', '/datasources').then(response => {
-					commit('SET_DATA_SOURCE_LIST', response);	
+					commit('SET_DATA_SOURCE_LIST', response);
 					resolve();
 				}).catch(error => {
 					console.error(error);
@@ -134,7 +136,7 @@ const ds = {
 		fetchDataSourceDetails({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve, reject) => {
 				dispatch('requestGet', `/datasource?id=${dataSourceId}`).then(response => {
-					commit('FETCH_DATA_SOURCE_DETAILS', response);	
+					commit('FETCH_DATA_SOURCE_DETAILS', response);
 					resolve(response);
 				}).catch(error => {
 					console.error(error);
@@ -150,7 +152,7 @@ const ds = {
 				//http://localhost:8080/ScadaBR/api/datapoint?id=X//
 				dispatch('requestGet', `/datapoint/datasource?id=${dataSourceId}`)
 				.then(response => {
-					commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints: response});	
+					commit('SET_DATA_POINTS_FOR_DS', {dataSourceId, dataPoints: response});
 					resolve();
 				}).catch(error => {
 					console.error(error);
@@ -170,7 +172,7 @@ const ds = {
 		 * DataSource. Based on the typeID of datasource it should create a 
 		 * valid DS Type and as a response sould be received DataSourceAPI object.
 		 * It sould contain a new generated ID.
-		 * 
+		 *
 		 * @param {*} param0 
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
@@ -197,7 +199,7 @@ const ds = {
 		 * 
 		 * Send a PUT request to the Core aplication REST API to update existing
 		 * DataSource. 
-		 * 
+		 *
 		 * @param {*} param0 
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns 
@@ -327,7 +329,7 @@ const ds = {
 			return new Promise((resolve, reject) => {
 				dispatch('requestGet', `/datasource/datapoints/enable?id=${dataSourceId}`)
 				.then((resp) => {
-					commit('ENABLE_ALL_DATA_POINTS_IN_DS', dataSourceId);	
+					commit('ENABLE_ALL_DATA_POINTS_IN_DS', dataSourceId);
 					resolve();
 				}).catch(error => {
 					console.error(error);
@@ -340,7 +342,7 @@ const ds = {
 			return new Promise((resolve, reject) => {
 				dispatch('requestGet', `/datasource/toggle?id=${dataSourceId}`)
 				.then(() => {
-					commit('TOGGLE_DATA_SOURCE', dataSourceId);	
+					commit('TOGGLE_DATA_SOURCE', dataSourceId);
 					resolve();
 				}).catch(error => {
 					console.error(error);
@@ -348,6 +350,51 @@ const ds = {
 				});
 			});
 		}
+
+		//ModBus DataSource methods
+        		modbusNodeScan({dispatch}, datasourceId) {
+        			return new Promise((resolve, reject) => {
+        				setTimeout(() => {
+        					if(datasourceId === 1) {
+        						let response = [
+        							{
+        								name: 'Point 1'
+        							}
+        						];
+        						resolve(response);
+        					} else {
+        						reject();
+        					}
+        				}, 1000);
+        			});
+        		},
+
+        		modbusNodeScanCancel({dispatch}, datasourceId) {
+        			return new Promise((resolve, reject) => {
+        				setTimeout(() => {
+        					resolve();
+        				}, 1000);
+        			})
+        		},
+
+        		modbusReadData({dispatch}, configuration) {
+        			return new Promise((resolve, reject) => {
+        				setTimeout(() => {
+        					let request = `${configuration.slaveId}/${configuration.range}`
+        					console.log(request);
+        					resolve();
+        				}, 1000);
+        			});
+        		},
+
+        		modbusPointLocatorTest({dispatch}, configuration) {
+        			return new Promise((resolve, reject) => {
+        				setTimeout(() => {
+        					console.log(configuration);
+        					resolve();
+        				}, 1000);
+        			});
+        		}
 	},
 
 	getters: {

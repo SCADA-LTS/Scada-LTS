@@ -56,5 +56,34 @@ export const datasourceDetailsMocks = [
         trapEnabled: true,
         trapPort: 162,
         localAddress: '',
+    },
+    {
+        id: 3,
+        xid: "MOCK_DS_115",
+        enabled: true,
+        name: "DataSourceMock ModBusIP - 01",
+        type: 3,
+        connection: 'localhost',
+        description: 'Mocked SNMP',
+        activeEvents: 0,
+        updatePeriod: 5,
+        updatePeriodType: 1,
+
+        quantize: true,
+        timeout: 500,
+        retries: 3,
+        contiguousBatches: true,
+        createSlaveMonitorPoints: false,
+        maxReadBitCount: 2000,
+        maxReadRegisterCount: 125,
+        maxWriteRegisterCount: 120,
+
+
+        transportType: 'localhost',
+        host: 'localhost',
+        port:'502',
+        encapsulated: false,
+        createSockerMonitorPort: false,
+        
     }
 ]
