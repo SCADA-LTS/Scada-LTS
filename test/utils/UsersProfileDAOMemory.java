@@ -18,7 +18,7 @@ public class UsersProfileDAOMemory extends UsersProfileDAO {
 
     public UsersProfileDAOMemory(Map<Integer, UsersProfileVO> profiles,
                                  Map<Integer, UsersProfileVO> userProfiles) {
-        super(null);
+        super();
         this.profiles = profiles;
         this.userProfiles = userProfiles;
     }

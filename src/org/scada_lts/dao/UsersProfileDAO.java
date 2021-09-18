@@ -220,23 +220,12 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             + "where "
             + COLUMN_NAME_USER_PROFILE_ID+ "=?";
 
-
-    private JdbcTemplate jdbcTemplate;
-
-    public UsersProfileDAO() {
-        this.jdbcTemplate = DAO.getInstance().getJdbcTemp();
-    }
-
-    public UsersProfileDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public List<UsersProfileVO> selectUserProfileByUserId(int userId) {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfileByUserId(int userId) userId:" + userId);
         try {
-            return jdbcTemplate.query(USERS_USERS_PROFILES_SELECT_BY_USER_ID, new Object[]{userId}, new UsersProfileRowMapper());
+            return DAO.getInstance().getJdbcTemp().query(USERS_USERS_PROFILES_SELECT_BY_USER_ID, new Object[]{userId}, new UsersProfileRowMapper());
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         } catch (Exception ex) {
@@ -250,7 +239,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfileById(int usersProfileId) id:" + usersProfileId);
         try {
-            UsersProfileVO usersProfile = jdbcTemplate.queryForObject(USERS_PROFILE_SELECT_BY_ID, new Object[]{usersProfileId}, new UsersProfileRowMapper());
+            UsersProfileVO usersProfile = DAO.getInstance().getJdbcTemp().queryForObject(USERS_PROFILE_SELECT_BY_ID, new Object[]{usersProfileId}, new UsersProfileRowMapper());
             return Optional.ofNullable(usersProfile);
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("usersProfileId: " + usersProfileId + ", msg: " + ex.getMessage());
@@ -266,7 +255,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfileByXid(String usersProfileXid) id:" + usersProfileXid);
         try {
-            UsersProfileVO usersProfile = jdbcTemplate.queryForObject(USERS_PROFILE_SELECT_BY_XID, new Object[]{usersProfileXid}, new UsersProfileRowMapper());
+            UsersProfileVO usersProfile = DAO.getInstance().getJdbcTemp().queryForObject(USERS_PROFILE_SELECT_BY_XID, new Object[]{usersProfileXid}, new UsersProfileRowMapper());
             return Optional.ofNullable(usersProfile);
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("usersProfileXid: " + usersProfileXid + ", msg: " + ex.getMessage());
@@ -282,7 +271,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("selectProfiles(int offset, int limit) limit:" + limit + " offset:" + offset);
         try {
-            return jdbcTemplate.query(USERS_PROFILE_SELECT_ORDER_BY_NAME_LIMIT_OFFSET, new Object[]{limit, offset}, new UsersProfileRowMapper());
+            return DAO.getInstance().getJdbcTemp().query(USERS_PROFILE_SELECT_ORDER_BY_NAME_LIMIT_OFFSET, new Object[]{limit, offset}, new UsersProfileRowMapper());
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         } catch (Exception ex) {
@@ -296,7 +285,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("selectUsersByProfileId(int usersProfileId) id:" + usersProfileId);
         try {
-            return jdbcTemplate.query(USERS_SELECT_BY_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) ->
+            return DAO.getInstance().getJdbcTemp().query(USERS_SELECT_BY_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) ->
                     rs.getInt(COLUMN_NAME_USER_ID));
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("usersProfileId: " + usersProfileId + ", msg: " + ex.getMessage());
@@ -312,7 +301,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("updateProfileName(String name, int usersProfileId) id:" + usersProfileId + " name: " +  name);
         try {
-            return jdbcTemplate.update(USERS_PROFILES_UPDATE_NAME_BY_ID, name, usersProfileId);
+            return DAO.getInstance().getJdbcTemp().update(USERS_PROFILES_UPDATE_NAME_BY_ID, name, usersProfileId);
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("name: " + name + ", usersProfileId: " + usersProfileId + ", msg: " + ex.getMessage());
             return 0;
@@ -327,7 +316,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("deleteUserProfileByUserId(int userId) userId:" + userId);
         try {
-            return jdbcTemplate.update(USERS_USERS_PROFILE_DELETE_BY_USER_ID, userId);
+            return DAO.getInstance().getJdbcTemp().update(USERS_USERS_PROFILE_DELETE_BY_USER_ID, userId);
         } catch (EmptyResultDataAccessException ex) {
             return 0;
         } catch (Exception ex) {
@@ -341,7 +330,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("deleteProfile(int profileId) profileId:" + profileId);
         try {
-            return jdbcTemplate.update(USERS_PROFILE_DELETE_BY_ID, profileId);
+            return DAO.getInstance().getJdbcTemp().update(USERS_PROFILE_DELETE_BY_ID, profileId);
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("profileId: " + profileId + ", msg: " + ex.getMessage());
             return 0;
@@ -356,7 +345,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
         if (LOG.isTraceEnabled())
             LOG.trace("insertUserProfile(int userId, int userProfileId) userId:" + userId + ", userProfileId:" + userProfileId);
         try {
-            return jdbcTemplate.update(USERS_USERS_PROFILE_INSERT, userProfileId, userId);
+            return DAO.getInstance().getJdbcTemp().update(USERS_USERS_PROFILE_INSERT, userProfileId, userId);
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("userId: " + userId + ", userProfileId: " + userProfileId + ", msg: " + ex.getMessage());
             return 0;
@@ -372,7 +361,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("insertProfile(String usersProfileXid, String usersProfileName) usersProfileXid:" + usersProfileXid + ", usersProfileName:" + usersProfileName);
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((Connection connection) -> {
+            DAO.getInstance().getJdbcTemp().update((Connection connection) -> {
                 PreparedStatement ps = connection
                         .prepareStatement(USERS_PROFILE_INSERT, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, usersProfileXid);
@@ -401,7 +390,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getDataPointId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -416,7 +405,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getDataPointId(), profileId})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -431,7 +420,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a, profileId, a})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -446,7 +435,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a, profileId})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -461,7 +450,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -476,7 +465,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -491,7 +480,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -506,7 +495,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
                 .map(a -> new Object[] {a.getId(), profileId})
                 .collect(Collectors.toList());
 
-        return jdbcTemplate.batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp().batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -515,7 +504,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectWatchListPermissionsByProfileId(int usersProfileId) usersProfileId:" + usersProfileId);
         }
 
-        return jdbcTemplate.query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+        return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
             WatchListAccess dataPointAccess = new WatchListAccess();
             dataPointAccess.setId(rs.getInt(COLUMN_NAME_WATCH_LIST_ID));
             dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
@@ -530,7 +519,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectViewPermissionsByUsersProfileId(final int usersProfileId) usersProfileId:" + usersProfileId);
         }
 
-        return jdbcTemplate.query(VIEW_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
+        return DAO.getInstance().getJdbcTemp().query(VIEW_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
             ViewAccess viewAccess = new ViewAccess();
             viewAccess.setId(rs.getInt(COLUMN_NAME_VIEW_ID));
             viewAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
@@ -544,7 +533,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectDataSourcePermissionsByProfileId(int profileId) profileId:" + profileId);
         }
 
-        return jdbcTemplate.query(DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID,
+        return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID,
                         new Object[]{profileId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DATA_SOURCE_ID));
     }
 
@@ -554,7 +543,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
             LOG.trace("selectWatchListPermissionsByProfileId(int profileId) profileId:" + profileId);
         }
 
-        return jdbcTemplate.query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
+        return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
             DataPointAccess dataPointAccess = new DataPointAccess();
             dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DATA_POINT_ID));
             dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
@@ -573,7 +562,7 @@ public class UsersProfileDAO implements UsersProfileDaoCachable {
     }
 
     private boolean isXidUnique(String xid, int excludeId) {
-        return jdbcTemplate.queryForObject("select count(*) from " + TABLE_NAME_USERS_PROFILES
+        return DAO.getInstance().getJdbcTemp().queryForObject("select count(*) from " + TABLE_NAME_USERS_PROFILES
                 + " where xid=? and id<>?", new Object[] { xid, excludeId }, Integer.class) == 0;
     }
 

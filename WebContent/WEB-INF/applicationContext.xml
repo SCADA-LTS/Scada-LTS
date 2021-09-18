@@ -103,7 +103,6 @@
   </bean>
 
   <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO">
-    <constructor-arg ref="jdbcTemplate2"/>
   </bean>
 
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO">
@@ -128,14 +127,6 @@
     <constructor-arg ref="dataPointProfilePermissionsService"/>
     <constructor-arg ref="dataSourceProfilePermissionsService"/>
     <constructor-arg ref="viewProfilePermissionsService"/>
-  </bean>
-
-  <bean id="jdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate" >
-    <property name="dataSource" ref="dbDataSource"/>
-  </bean>
-
-  <bean id="dbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
   </bean>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
