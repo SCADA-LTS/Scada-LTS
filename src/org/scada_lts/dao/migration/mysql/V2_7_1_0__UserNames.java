@@ -7,8 +7,8 @@ import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V2_7_0_5__UserNames extends BaseJavaMigration {
-    private static final Log LOG = LogFactory.getLog(V2_7_0_5__UserNames.class);
+public class V2_7_1_0__UserNames extends BaseJavaMigration {
+    private static final Log LOG = LogFactory.getLog(V2_7_1_0__UserNames.class);
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -25,8 +25,7 @@ public class V2_7_0_5__UserNames extends BaseJavaMigration {
                     " ADD lastName VARCHAR(255) DEFAULT '';";
             jdbcTemplate.execute(alterSql);
         } catch (Exception e) {
-            LOG.error("Exception during v2.7.0.5 Migration!");
-            LOG.error(e);
+            LOG.error(e.getMessage());
         }
     }
 }

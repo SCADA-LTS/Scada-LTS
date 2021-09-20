@@ -30,7 +30,7 @@ import java.util.List;
  *         person supporting and coreecting translation Jerzy Piejko
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserDAO implements CrudOperations<User> {
+public class UserDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserDAO.class);
 
@@ -239,28 +239,19 @@ public class UserDAO implements CrudOperations<User> {
 		}
 	}
 
-	@Override
 	public User create(User entity) {
 		return getUser(insert(entity));
 	}
 
-	@Override
-	public List<ScadaObjectIdentifier> getSimpleList() {
-		return null;
-	}
-
-	public List<User> getAll() {
+	public List<Integer> getAll() {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getAll()");
 		}
 
-		return DAO.getInstance().getJdbcTemp()
-				.query(USER_SELECT, new UserRowMapper());
-
+		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
 	}
 
-	@Override
 	public User getById(int id) throws EmptyResultDataAccessException {
 		return getUser(id);
 	}
@@ -364,32 +355,24 @@ public class UserDAO implements CrudOperations<User> {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public int update(final User user) {
+	public void update(final User user) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(User user) user:" + user);
 		}
-		try {
-			return DAO.getInstance().getJdbcTemp().update(USER_UPDATE,
-					user.getUsername(),
-					user.getFirstName(),
-					user.getLastName(),
-					user.getPassword(),
-					user.getEmail(),
-					user.getPhone(),
-					DAO.boolToChar(user.isAdmin()),
-					DAO.boolToChar(user.isDisabled()),
-					user.getHomeUrl(),
-					user.getReceiveAlarmEmails(),
-					DAO.boolToChar(user.isReceiveOwnAuditEvents()),
-					user.getId());
-		} catch (EmptyResultDataAccessException e) {
-			LOG.error("User entity with id=" + user.getId() + "does not exists!");
-			return DAO_EMPTY_RESULT;
-		} catch (Exception e) {
-			LOG.error(e);
-			return DAO_EXCEPTION;
-		}
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE,
+				user.getUsername(),
+				user.getFirstName(),
+				user.getLastName(),
+				user.getPassword(),
+				user.getEmail(),
+				user.getPhone(),
+				DAO.boolToChar(user.isAdmin()),
+				DAO.boolToChar(user.isDisabled()),
+				user.getHomeUrl(),
+				user.getReceiveAlarmEmails(),
+				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.getId());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -419,19 +402,12 @@ public class UserDAO implements CrudOperations<User> {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public int delete(int userId) {
+	public void delete(int userId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int userId) userId:" + userId);
 		}
-		try {
-			DAO.getInstance().getJdbcTemp().update(USER_DELETE, userId);
-			return 0;
-		} catch (Exception e) {
-			LOG.error("FAILED ON DELETING User with ID: " + userId);
-			LOG.error(e);
-			return DAO_EXCEPTION;
-		}
+		DAO.getInstance().getJdbcTemp().update(USER_DELETE, userId);
 	}
 
 	public List<JsonUserInfo> getUserList() {
@@ -449,6 +425,15 @@ public class UserDAO implements CrudOperations<User> {
 				.queryForObject(mapper.selectUserDetailsFromDatabase(userId), mapper);
 	}
 
+	/**
+	 * Initialize Admin user
+	 *
+	 * First time initialization. Generate the default admin user
+	 * for the Scada-LTS application. Invoke that method only once
+	 * during the first application run.
+	 * @param user - User Data to be saved
+	 * @return User with ID number.
+	 */
 	public User initAdminUser(User user) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(conn -> {

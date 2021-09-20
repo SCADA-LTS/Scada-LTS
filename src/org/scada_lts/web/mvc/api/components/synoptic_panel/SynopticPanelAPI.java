@@ -96,17 +96,12 @@ public class SynopticPanelAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                switch (synopticPanelService.updateSynopticPanel(requestBody)) {
-                    case 1:
-                        return new ResponseEntity<>(requestBody, HttpStatus.OK);
-                    case 0:
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                    default:
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                return new ResponseEntity<>(synopticPanelService.updateSynopticPanel(requestBody), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

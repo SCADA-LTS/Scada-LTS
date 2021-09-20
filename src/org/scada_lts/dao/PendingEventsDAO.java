@@ -215,8 +215,7 @@ public class PendingEventsDAO {
 
 	protected Map<Integer, List<EventInstance>> getPendingEvents() {
 
-		List<Integer> users = new ArrayList<>();
-		new UserDAO().getAll().forEach(user -> users.add(user.getId()));
+		List<Integer> users = new UserDAO().getAll();
 
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 
