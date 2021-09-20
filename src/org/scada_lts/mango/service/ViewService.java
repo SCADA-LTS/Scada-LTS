@@ -33,9 +33,7 @@ import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
-import org.scada_lts.utils.ApplicationContextProvider;
-import org.scada_lts.utils.GetBeanUtils;
-import org.springframework.context.ApplicationContext;
+import org.scada_lts.utils.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -57,10 +55,9 @@ public class ViewService {
 	private UsersProfileService usersProfileService;
 
 	public ViewService() {
-		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-		this.viewDAO = (ViewDAO) context.getBean("viewDAO");
-		this.viewGetShareUsers = GetBeanUtils.getViewGetShareUsersBean(context);
-		this.usersProfileService = GetBeanUtils.getUsersProfileServiceBean(context);
+		this.viewDAO = ApplicationBeans.getBean("viewDAO", ViewDAO.class);
+		this.viewGetShareUsers = ApplicationBeans.getViewGetShareUsersBean();
+		this.usersProfileService = ApplicationBeans.getUsersProfileService();
 	}
 
 	public ViewService(ViewDAO viewDAO, ViewGetShareUsers viewGetShareUsers, UsersProfileService usersProfileService) {

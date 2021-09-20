@@ -29,9 +29,7 @@ import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.*;
-import org.scada_lts.utils.ApplicationContextProvider;
-import org.scada_lts.utils.GetBeanUtils;
-import org.springframework.context.ApplicationContext;
+import org.scada_lts.utils.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -65,11 +63,10 @@ public class UserService implements MangoUser {
 	private PermissionsService<Integer, User> dataSourcePermissionsService;
 
 	public UserService() {
-		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-		userDAO = GetBeanUtils.getUserDaoBean(context);
-		dataPointPermissionsService = GetBeanUtils.getDataPointUserPermissionsServiceBean(context);
-		dataSourcePermissionsService = GetBeanUtils.getDataSourceUserPermissionsServiceBean(context);
-		usersProfileService = GetBeanUtils.getUsersProfileServiceBean(context);
+		userDAO = ApplicationBeans.getUserDaoBean();
+		dataPointPermissionsService = ApplicationBeans.getDataPointUserPermissionsServiceBean();
+		dataSourcePermissionsService = ApplicationBeans.getDataSourceUserPermissionsServiceBean();
+		usersProfileService = ApplicationBeans.getUsersProfileService();
 	}
 
 	public UserService(IUserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,

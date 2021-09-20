@@ -14,9 +14,7 @@ import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.utils.ApplicationContextProvider;
-import org.scada_lts.utils.GetBeanUtils;
-import org.springframework.context.ApplicationContext;
+import org.scada_lts.utils.ApplicationBeans;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -39,13 +37,12 @@ public class UsersProfileService {
 
 
     public UsersProfileService() {
-        ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-        usersProfileDAO = GetBeanUtils.getUsersProfileDaoBean(context);
-        userDAO = GetBeanUtils.getUserDaoBean(context);
-        dataPointPermissionsService = GetBeanUtils.getDataPointProfilePermissionsServiceBean(context);
-        dataSourcePermissionsService = GetBeanUtils.getDataSourceProfilePermissionsServiceBean(context);
-        viewPermissionsService = GetBeanUtils.getViewProfilePermissionsServiceBean(context);
-        watchListPermissionsService = GetBeanUtils.getWatchListProfilePermissionsServiceBean(context);
+        usersProfileDAO = ApplicationBeans.getUsersProfileDaoBean();
+        userDAO = ApplicationBeans.getUserDaoBean();
+        dataPointPermissionsService = ApplicationBeans.getDataPointProfilePermissionsService();
+        dataSourcePermissionsService = ApplicationBeans.getDataSourceProfilePermissionsService();
+        viewPermissionsService = ApplicationBeans.getViewProfilePermissionsService();
+        watchListPermissionsService = ApplicationBeans.getWatchListProfilePermissionsService();
     }
 
     public UsersProfileService(IUsersProfileDAO usersProfileDAO, IUserDAO userDAO,

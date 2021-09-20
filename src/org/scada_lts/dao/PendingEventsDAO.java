@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
-import org.scada_lts.utils.ApplicationContextProvider;
+import org.scada_lts.utils.ApplicationBeans;
 import org.scada_lts.utils.EventTypeUtil;
 
 
@@ -36,8 +36,6 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.LocalizableMessageParseException;
-import org.scada_lts.utils.GetBeanUtils;
-import org.springframework.context.ApplicationContext;
 
 /**
  * DAO for Pending Events.
@@ -121,8 +119,7 @@ public class PendingEventsDAO {
 	private IUserDAO userDAO;
 
 	public PendingEventsDAO() {
-		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-		this.userDAO = GetBeanUtils.getUserDaoBean(context);
+		this.userDAO = ApplicationBeans.getUserDaoBean();
 	}
 
 	public PendingEventsDAO(IUserDAO userDAO) {

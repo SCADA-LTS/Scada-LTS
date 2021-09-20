@@ -3,10 +3,6 @@ package org.scada_lts.permissions.service;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import org.scada_lts.dao.ViewDAO;
-import org.scada_lts.utils.ApplicationContextProvider;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

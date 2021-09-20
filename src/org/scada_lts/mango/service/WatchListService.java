@@ -24,9 +24,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
 import org.scada_lts.permissions.service.GetShareUsers;
-import org.scada_lts.utils.ApplicationContextProvider;
-import org.scada_lts.utils.GetBeanUtils;
-import org.springframework.context.ApplicationContext;
+import org.scada_lts.utils.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,10 +48,9 @@ public class WatchListService implements MangoWatchList {
 	private UsersProfileService usersProfileService;
 
 	public WatchListService() {
-		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-		this.watchListDAO = (WatchListDAO) context.getBean("watchListDAO");
-		this.getShareUsers = GetBeanUtils.getWatchListGetShareUsersBean(context);
-		this.usersProfileService = GetBeanUtils.getUsersProfileServiceBean(context);
+		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
+		this.getShareUsers = ApplicationBeans.getWatchListGetShareUsersBean();
+		this.usersProfileService = ApplicationBeans.getUsersProfileService();
 	}
 
 	public WatchListService(WatchListDAO watchListDAO, GetShareUsers<WatchList> getShareUsers, UsersProfileService usersProfileService) {

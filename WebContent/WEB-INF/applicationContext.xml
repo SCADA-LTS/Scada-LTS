@@ -78,9 +78,9 @@
     <property name="cacheManagerUri" value="classpath:/ehcache.xml"/>
   </bean>
 
-  <bean id="springApplicationContext" class="org.scada_lts.utils.ApplicationContextProvider"/>
+  <bean id="applicationBeans" class="org.scada_lts.utils.ApplicationBeans"/>
 
-  <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO"/>
+  <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
   <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO"/>
   <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
@@ -101,31 +101,6 @@
 
   <bean id="dataSourceUserPermissionsService" class="org.scada_lts.permissions.service.DataSourceUserPermissionsService">
     <constructor-arg ref="dataSourceDAO"/>
-  </bean>
-
-  <bean id="dataSourceProfilePermissionsService" class="org.scada_lts.permissions.service.DataSourceProfilePermissionsService">
-    <constructor-arg ref="usersProfileDAO"/>
-  </bean>
-
-  <bean id="dataPointProfilePermissionsService" class="org.scada_lts.permissions.service.DataPointProfilePermissionsService">
-    <constructor-arg ref="usersProfileDAO"/>
-  </bean>
-
-  <bean id="viewProfilePermissionsService" class="org.scada_lts.permissions.service.ViewProfilePermissionsService">
-    <constructor-arg ref="usersProfileDAO"/>
-  </bean>
-
-  <bean id="watchListProfilePermissionsService" class="org.scada_lts.permissions.service.WatchListProfilePermissionsService">
-    <constructor-arg ref="usersProfileDAO"/>
-  </bean>
-
-  <bean id="usersProfileService" class="org.scada_lts.mango.service.UsersProfileService">
-    <constructor-arg ref="usersProfileDAO"/>
-    <constructor-arg ref="userDAO"/>
-    <constructor-arg ref="watchListProfilePermissionsService"/>
-    <constructor-arg ref="dataPointProfilePermissionsService"/>
-    <constructor-arg ref="dataSourceProfilePermissionsService"/>
-    <constructor-arg ref="viewProfilePermissionsService"/>
   </bean>
 
   <!-- Cachable -->
@@ -156,35 +131,10 @@
   </bean>
 
   <bean id="dataSourceUserPermissionsServiceWithCache" class="org.scada_lts.permissions.cache.DataSourceUserPermissionsServiceWithCache">
-    <constructor-arg ref="dataSourceUserPermissionsService"/>
+    <constructor-arg ref="dataSourceUserPermissionsService" />
   </bean>
 
   <bean id="dataPointUserPermissionsServiceWithCache" class="org.scada_lts.permissions.cache.DataPointUserPermissionsServiceWithCache">
     <constructor-arg ref="dataPointUserPermissionsService"/>
-  </bean>
-
-  <bean id="dataSourceProfilePermissionsServiceWithCache" class="org.scada_lts.permissions.service.DataSourceProfilePermissionsService">
-    <constructor-arg ref="usersProfileDaoWithCache"/>
-  </bean>
-
-  <bean id="dataPointProfilePermissionsServiceWithCache" class="org.scada_lts.permissions.service.DataPointProfilePermissionsService">
-    <constructor-arg ref="usersProfileDaoWithCache"/>
-  </bean>
-
-  <bean id="viewProfilePermissionsServiceWithCache" class="org.scada_lts.permissions.service.ViewProfilePermissionsService">
-    <constructor-arg ref="usersProfileDaoWithCache"/>
-  </bean>
-
-  <bean id="watchListProfilePermissionsServiceWithCache" class="org.scada_lts.permissions.service.WatchListProfilePermissionsService">
-    <constructor-arg ref="usersProfileDaoWithCache"/>
-  </bean>
-
-  <bean id="usersProfileServiceWithCache" class="org.scada_lts.mango.service.UsersProfileService">
-    <constructor-arg ref="usersProfileDaoWithCache"/>
-    <constructor-arg ref="userDaoWithCache"/>
-    <constructor-arg ref="watchListProfilePermissionsServiceWithCache"/>
-    <constructor-arg ref="dataPointProfilePermissionsServiceWithCache"/>
-    <constructor-arg ref="dataSourceProfilePermissionsServiceWithCache"/>
-    <constructor-arg ref="viewProfilePermissionsServiceWithCache"/>
   </bean>
 </beans>
