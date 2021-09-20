@@ -17,17 +17,17 @@ public class WatchListProfilePermissionsService implements PermissionsService<Wa
     }
 
     @Override
-    public List<WatchListAccess> getPermissions(UsersProfileVO object) {
-        return usersProfileDAO.selectWatchListPermissionsByProfileId(object.getId());
+    public List<WatchListAccess> getPermissions(UsersProfileVO profile) {
+        return usersProfileDAO.selectWatchListPermissionsByProfileId(profile.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO object, List<WatchListAccess> toAddOrUpdate) {
-        usersProfileDAO.insertWatchListUsersProfile(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(UsersProfileVO profile, List<WatchListAccess> toAddOrUpdate) {
+        usersProfileDAO.insertWatchListUsersProfile(profile.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(UsersProfileVO object, List<WatchListAccess> toRemove) {
-        usersProfileDAO.deleteWatchListUsersProfile(object.getId(), toRemove);
+    public void removePermissions(UsersProfileVO profile, List<WatchListAccess> toRemove) {
+        usersProfileDAO.deleteWatchListUsersProfile(profile.getId(), toRemove);
     }
 }

@@ -17,18 +17,18 @@ public class WatchListUserPermissionsService implements PermissionsService<Watch
     }
 
     @Override
-    public List<WatchListAccess> getPermissions(User object) {
-        return watchListDAO.selectWatchListPermissions(object.getId());
+    public List<WatchListAccess> getPermissions(User user) {
+        return watchListDAO.selectWatchListPermissions(user.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(User object, List<WatchListAccess> toAddOrUpdate) {
-        watchListDAO.insertPermissions(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(User user, List<WatchListAccess> toAddOrUpdate) {
+        watchListDAO.insertPermissions(user.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(User object, List<WatchListAccess> toRemove) {
-        watchListDAO.deletePermissions(object.getId(), toRemove);
+    public void removePermissions(User user, List<WatchListAccess> toRemove) {
+        watchListDAO.deletePermissions(user.getId(), toRemove);
     }
 
 }

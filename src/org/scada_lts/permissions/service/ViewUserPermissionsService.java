@@ -18,17 +18,17 @@ public class ViewUserPermissionsService implements PermissionsService<ViewAccess
     }
 
     @Override
-    public List<ViewAccess> getPermissions(User object) {
-        return viewDAO.selectViewPermissions(object.getId());
+    public List<ViewAccess> getPermissions(User user) {
+        return viewDAO.selectViewPermissions(user.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(User object, List<ViewAccess> toAddOrUpdate) {
-        viewDAO.insertPermissions(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(User user, List<ViewAccess> toAddOrUpdate) {
+        viewDAO.insertPermissions(user.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(User object, List<ViewAccess> toRemove) {
-        viewDAO.deletePermissions(object.getId(), toRemove);
+    public void removePermissions(User user, List<ViewAccess> toRemove) {
+        viewDAO.deletePermissions(user.getId(), toRemove);
     }
 }
