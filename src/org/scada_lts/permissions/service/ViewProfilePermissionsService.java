@@ -17,17 +17,17 @@ public class ViewProfilePermissionsService implements PermissionsService<ViewAcc
     }
 
     @Override
-    public List<ViewAccess> getPermissions(UsersProfileVO object) {
-        return usersProfileDAO.selectViewPermissionsByProfileId(object.getId());
+    public List<ViewAccess> getPermissions(UsersProfileVO profile) {
+        return usersProfileDAO.selectViewPermissionsByProfileId(profile.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO object, List<ViewAccess> toAddOrUpdate) {
-        usersProfileDAO.insertViewUsersProfile(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(UsersProfileVO profile, List<ViewAccess> toAddOrUpdate) {
+        usersProfileDAO.insertViewUsersProfile(profile.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(UsersProfileVO object, List<ViewAccess> toRemove) {
-        usersProfileDAO.deleteViewUsersProfile(object.getId(), toRemove);
+    public void removePermissions(UsersProfileVO profile, List<ViewAccess> toRemove) {
+        usersProfileDAO.deleteViewUsersProfile(profile.getId(), toRemove);
     }
 }

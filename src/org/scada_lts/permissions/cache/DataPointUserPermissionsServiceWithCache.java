@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permission_datapoint_list_by_user")
 @Service
+@CacheConfig(cacheNames = "permission_datapoint_list_by_user")
 public class DataPointUserPermissionsServiceWithCache implements PermissionsService<DataPointAccess, User> {
 
     private final PermissionsService<DataPointAccess, User> service;
@@ -21,7 +21,7 @@ public class DataPointUserPermissionsServiceWithCache implements PermissionsServ
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null")
+    @Cacheable(key = "#object.id", condition = "#object != null")
     public List<DataPointAccess> getPermissions(User object) {
         return service.getPermissions(object);
     }

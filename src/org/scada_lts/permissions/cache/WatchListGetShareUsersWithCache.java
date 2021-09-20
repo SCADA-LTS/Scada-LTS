@@ -21,19 +21,19 @@ public class WatchListGetShareUsersWithCache implements GetShareUsers<WatchList>
     }
 
     @Override
-    @Cacheable(key = "'shareUsers' + #object.id", unless = "#object == null")
+    @Cacheable(key = "'shareUsers' + #object.id", condition = "#object != null")
     public List<ShareUser> getShareUsers(WatchList object) {
         return getShareUsers.getShareUsers(object);
     }
 
     @Override
-    @Cacheable(key = "'shareUsersFromProfile' + #object.id", unless = "#object == null")
+    @Cacheable(key = "'shareUsersFromProfile' + #object.id", condition = "#object != null")
     public List<ShareUser> getShareUsersFromProfile(WatchList object) {
         return getShareUsers.getShareUsersFromProfile(object);
     }
 
     @Override
-    @Cacheable(key = "'shareUsersWithProfile' + #object.id", unless = "#object == null")
+    @Cacheable(key = "'shareUsersWithProfile' + #object.id", condition = "#object != null")
     public List<ShareUser> getShareUsersWithProfile(WatchList object) {
         return getShareUsers.getShareUsersWithProfile(object);
     }

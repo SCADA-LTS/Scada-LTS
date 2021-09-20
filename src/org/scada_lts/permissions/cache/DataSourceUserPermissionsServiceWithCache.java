@@ -21,7 +21,7 @@ public class DataSourceUserPermissionsServiceWithCache implements PermissionsSer
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null")
+    @Cacheable(key = "#object.id", condition = "#object != null")
     public List<Integer> getPermissions(User object) {
         return service.getPermissions(object);
     }

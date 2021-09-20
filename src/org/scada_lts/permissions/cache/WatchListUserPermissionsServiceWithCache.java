@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permission_watchlist_list_by_user")
 @Service
+@CacheConfig(cacheNames = "permission_watchlist_list_by_user")
 public class WatchListUserPermissionsServiceWithCache implements PermissionsService<WatchListAccess, User> {
 
     private final PermissionsService<WatchListAccess, User> service;
@@ -21,7 +21,7 @@ public class WatchListUserPermissionsServiceWithCache implements PermissionsServ
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null")
+    @Cacheable(key = "#object.id", condition = "#object != null")
     public List<WatchListAccess> getPermissions(User object) {
         return service.getPermissions(object);
     }

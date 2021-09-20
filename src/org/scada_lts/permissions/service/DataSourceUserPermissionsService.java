@@ -17,17 +17,17 @@ public class DataSourceUserPermissionsService implements PermissionsService<Inte
     }
 
     @Override
-    public List<Integer> getPermissions(User object) {
-        return dataSourceDAO.selectDataSourcePermissions(object.getId());
+    public List<Integer> getPermissions(User user) {
+        return dataSourceDAO.selectDataSourcePermissions(user.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(User object, List<Integer> toAddOrUpdate) {
-        dataSourceDAO.insertPermissions(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(User user, List<Integer> toAddOrUpdate) {
+        dataSourceDAO.insertPermissions(user.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(User object, List<Integer> toRemove) {
-        dataSourceDAO.deletePermissions(object.getId(), toRemove);
+    public void removePermissions(User user, List<Integer> toRemove) {
+        dataSourceDAO.deletePermissions(user.getId(), toRemove);
     }
 }

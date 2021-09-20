@@ -18,17 +18,17 @@ public class DataPointProfilePermissionsService implements PermissionsService<Da
     }
 
     @Override
-    public List<DataPointAccess> getPermissions(UsersProfileVO user) {
-        return usersProfileDAO.selectDataPointPermissionsByProfileId(user.getId());
+    public List<DataPointAccess> getPermissions(UsersProfileVO profile) {
+        return usersProfileDAO.selectDataPointPermissionsByProfileId(profile.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO object, List<DataPointAccess> toAddOrUpdate) {
-        usersProfileDAO.insertDataPointUsersProfile(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(UsersProfileVO profile, List<DataPointAccess> toAddOrUpdate) {
+        usersProfileDAO.insertDataPointUsersProfile(profile.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(UsersProfileVO object, List<DataPointAccess> toRemove) {
-        usersProfileDAO.deleteDataPointUsersProfile(object.getId(), toRemove);
+    public void removePermissions(UsersProfileVO profile, List<DataPointAccess> toRemove) {
+        usersProfileDAO.deleteDataPointUsersProfile(profile.getId(), toRemove);
     }
 }

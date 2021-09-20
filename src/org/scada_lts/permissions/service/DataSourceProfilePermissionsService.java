@@ -16,17 +16,17 @@ public class DataSourceProfilePermissionsService implements PermissionsService<I
     }
 
     @Override
-    public List<Integer> getPermissions(UsersProfileVO object) {
-        return usersProfileDAO.selectDataSourcePermissionsByProfileId(object.getId());
+    public List<Integer> getPermissions(UsersProfileVO profile) {
+        return usersProfileDAO.selectDataSourcePermissionsByProfileId(profile.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO object, List<Integer> toAddOrUpdate) {
-        usersProfileDAO.insertDataSourceUsersProfile(object.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(UsersProfileVO profile, List<Integer> toAddOrUpdate) {
+        usersProfileDAO.insertDataSourceUsersProfile(profile.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(UsersProfileVO object, List<Integer> toRemove) {
-        usersProfileDAO.deleteDataSourceUsersProfile(object.getId(), toRemove);
+    public void removePermissions(UsersProfileVO profile, List<Integer> toRemove) {
+        usersProfileDAO.deleteDataSourceUsersProfile(profile.getId(), toRemove);
     }
 }

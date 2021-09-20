@@ -4,11 +4,9 @@ import com.serotonin.mango.vo.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public interface UserCachable {
 
     String CACHE_ENABLED_KEY = "user.cache.enabled";

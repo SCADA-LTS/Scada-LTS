@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permission_view_list_by_user")
 @Service
+@CacheConfig(cacheNames = "permission_view_list_by_user")
 public class ViewUserPermissionsServiceWithCache implements PermissionsService<ViewAccess, User> {
 
     private final ViewUserPermissionsService service;
@@ -23,7 +23,7 @@ public class ViewUserPermissionsServiceWithCache implements PermissionsService<V
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null")
+    @Cacheable(key = "#object.id", condition = "#object != null")
     public List<ViewAccess> getPermissions(User object) {
         return service.getPermissions(object);
     }

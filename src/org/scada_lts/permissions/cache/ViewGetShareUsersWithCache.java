@@ -20,19 +20,19 @@ public class ViewGetShareUsersWithCache implements GetShareUsers<View> {
     }
 
     @Override
-    @Cacheable(key = "'shareUsers' + #object.id", unless = "#object == null")
+    @Cacheable(key = "'shareUsers' + #object.id", condition = "#object != null")
     public List<ShareUser> getShareUsers(View object) {
         return getShareUsers.getShareUsers(object);
     }
 
     @Override
-    @Cacheable(key = "'shareUsersFromProfile' + #object.id", unless = "#object == null")
+    @Cacheable(key = "'shareUsersFromProfile' + #object.id", condition = "#object != null")
     public List<ShareUser> getShareUsersFromProfile(View object) {
         return getShareUsers.getShareUsersFromProfile(object);
     }
 
     @Override
-    @Cacheable(key = "'shareUsersWithProfile' + #object.id", unless = "#object == null")
+    @Cacheable(key = "'shareUsersWithProfile' + #object.id", condition = "#object != null")
     public List<ShareUser> getShareUsersWithProfile(View object) {
         return getShareUsers.getShareUsersWithProfile(object);
     }
