@@ -37,7 +37,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
-import org.scada_lts.mango.service.*;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.mango.service.MailingListService;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
@@ -610,7 +613,7 @@ public class RuntimeManager {
 	}
 
 	public long purgeDataPointValues(int dataPointId) {
-		long count = new PointValueService().deletePointValues(dataPointId);
+		long count = new PointValueDao().deletePointValues(dataPointId);
 		updateDataPointValuesRT(dataPointId);
 		return count;
 		//TODO not allow the deletion of data should be switched to a new database
