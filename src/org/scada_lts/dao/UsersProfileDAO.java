@@ -390,7 +390,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a.getDataPointId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_POINT_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -405,7 +406,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a.getDataPointId(), profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_POINT_USERS_PROFILE_DELETE_DATA_POINT_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -420,7 +422,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a, profileId, a})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_SOURCE_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -435,7 +438,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a, profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(DATA_SOURCE_USERS_PROFILE_DELETE_DATA_SOURCE_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -450,7 +454,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(VIEW_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -465,7 +470,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a.getId(), profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(VIEW_USERS_PROFILE_DELETE_VIEW_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
@@ -480,7 +486,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a.getId(), profileId, a.getPermission(), a.getPermission()})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(WATCH_LIST_USERS_PROFILE_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
     }
 
     @Override
@@ -495,7 +502,8 @@ public class UsersProfileDAO implements IUsersProfileDAO {
                 .map(a -> new Object[] {a.getId(), profileId})
                 .collect(Collectors.toList());
 
-        return DAO.getInstance().getJdbcTemp().batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
+        return DAO.getInstance().getJdbcTemp()
+                .batchUpdate(WATCH_LIST_USERS_PROFILE_DELETE_WATCH_LIST_ID_AND_USER_PROFILE_ID, batchArgs, argTypes);
     }
 
     @Override
