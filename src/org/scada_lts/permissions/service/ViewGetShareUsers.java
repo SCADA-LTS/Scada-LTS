@@ -14,28 +14,20 @@ import java.util.List;
 import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
 
 @Service
-@CacheConfig(cacheNames = "share_user_list_by_view")
 public class ViewGetShareUsers implements GetShareUsers<View> {
 
     private final ViewDAO viewDAO;
-
-    public ViewGetShareUsers() {
-        ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-        this.viewDAO = (ViewDAO) context.getBean("viewDAO");
-    }
 
     public ViewGetShareUsers(ViewDAO viewDAO) {
         this.viewDAO = viewDAO;
     }
 
     @Override
-    @Cacheable(key = "'shareUsers' + #object.id", unless = "#object == null || #result.isEmpty()")
     public List<ShareUser> getShareUsers(View object) {
         return viewDAO.getShareUsers(object.getId());
     }
 
     @Override
-    @Cacheable(key = "'shareUsersFromProfile' + #object.id", unless = "#object == null || #result.isEmpty()")
     public List<ShareUser> getShareUsersFromProfile(View object) {
         return viewDAO.selectViewShareUsers(object.getId());
     }

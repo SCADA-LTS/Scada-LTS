@@ -1,4 +1,4 @@
-package org.scada_lts.dao;
+package org.scada_lts.dao.cache;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -10,15 +10,11 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
-public interface UsersProfileDaoCachable extends GenerateXid {
+public interface UsersProfileCachable {
 
-    @Cacheable(cacheNames = "profile_by_id", key = "#p0")
-    Optional<UsersProfileVO> selectProfileById(int profileId);
-    @Cacheable(cacheNames = "profile_by_xid", key = "#p0")
-    Optional<UsersProfileVO> selectProfileByXid(String profileXid);
+    String CACHE_ENABLED_KEY = "usersprofile.cache.enabled";
 
     @Cacheable(cacheNames = "profile_list_by_userid", key = "#p0")
     List<UsersProfileVO> selectUserProfileByUserId(int userId);
@@ -44,8 +40,6 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     int insertUserProfile(int userId, int profileId);
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_id", key = "#p1"),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true)
     })
@@ -60,8 +54,6 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     int insertProfile(String profileXid, String profileName);
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_id", key = "#p0"),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "userid_list_by_profileid", key = "#p0"),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
@@ -128,8 +120,6 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     int[] deleteWatchListUsersProfile(int profileId, List<WatchListAccess> toDelete);
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
@@ -139,8 +129,6 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     default void resetCacheDataSourcePermissions() {}
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
@@ -150,8 +138,6 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     default void resetCacheDataPointPermissions() {}
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),
@@ -162,8 +148,6 @@ public interface UsersProfileDaoCachable extends GenerateXid {
     default void resetCacheViewPermissions() {}
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "profile_by_id", allEntries = true),
-            @CacheEvict(cacheNames = "profile_by_xid", allEntries = true),
             @CacheEvict(cacheNames = "userid_list_by_profileid", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_offset_limit", allEntries = true),
             @CacheEvict(cacheNames = "profile_list_by_userid", allEntries = true),

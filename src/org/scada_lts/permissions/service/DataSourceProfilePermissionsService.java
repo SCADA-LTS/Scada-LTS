@@ -1,7 +1,7 @@
 package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.UsersProfileDaoCachable;
+import org.scada_lts.dao.IUsersProfileDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 @Service
 public class DataSourceProfilePermissionsService implements PermissionsService<Integer, UsersProfileVO> {
 
-    private final UsersProfileDaoCachable usersProfileDAO;
+    private final IUsersProfileDAO usersProfileDAO;
 
-    public DataSourceProfilePermissionsService(UsersProfileDaoCachable usersProfileDAO) {
+    public DataSourceProfilePermissionsService(IUsersProfileDAO usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
     }
 

@@ -9,12 +9,13 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.UserDaoCachable;
-import org.scada_lts.dao.UsersProfileDaoCachable;
+import org.scada_lts.dao.IUserDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.ApplicationContextProvider;
+import org.scada_lts.utils.GetBeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +30,8 @@ public class UsersProfileService {
     private static final Log LOG = LogFactory.getLog(UsersProfileService.class);
     private static final String LIST_SIZE_IS_GREATER_THAN_1 = "The user has more than one profile assigned. \nuserId: {0},\nprofiles: {1}\n";
 
-    private final UsersProfileDaoCachable usersProfileDAO;
-    private final UserDaoCachable userDAO;
+    private final IUsersProfileDAO usersProfileDAO;
+    private final IUserDAO userDAO;
     private final PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService;
     private final PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService;
     private final PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService;
@@ -39,16 +40,15 @@ public class UsersProfileService {
 
     public UsersProfileService() {
         ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-        usersProfileDAO = (UsersProfileDaoCachable) context.getBean("usersProfileDAO");
-        userDAO = (UserDaoCachable) context.getBean("userDAO");
-        dataPointPermissionsService = (PermissionsService<DataPointAccess, UsersProfileVO>) context.getBean("dataPointProfilePermissionsService");
-        dataSourcePermissionsService = (PermissionsService<Integer, UsersProfileVO>) context.getBean("dataSourceProfilePermissionsService");
-        viewPermissionsService = (PermissionsService<ViewAccess, UsersProfileVO>) context.getBean("viewProfilePermissionsService");
-        watchListPermissionsService = (PermissionsService<WatchListAccess, UsersProfileVO>) context.getBean("watchListProfilePermissionsService");
-
+        usersProfileDAO = GetBeanUtils.getUsersProfileDaoBean(context);
+        userDAO = GetBeanUtils.getUserDaoBean(context);
+        dataPointPermissionsService = GetBeanUtils.getDataPointProfilePermissionsServiceBean(context);
+        dataSourcePermissionsService = GetBeanUtils.getDataSourceProfilePermissionsServiceBean(context);
+        viewPermissionsService = GetBeanUtils.getViewProfilePermissionsServiceBean(context);
+        watchListPermissionsService = GetBeanUtils.getWatchListProfilePermissionsServiceBean(context);
     }
 
-    public UsersProfileService(UsersProfileDaoCachable usersProfileDAO, UserDaoCachable userDAO,
+    public UsersProfileService(IUsersProfileDAO usersProfileDAO, IUserDAO userDAO,
                                PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService,
                                PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService,
                                PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService,
@@ -127,19 +127,19 @@ public class UsersProfileService {
     }
 
     public void updateWatchlistPermissions() {
-        usersProfileDAO.resetCacheWatchListPermissions();
+        usersProfileDAO.resetWatchListPermissions();
     }
 
     public void updateViewPermissions() {
-        usersProfileDAO.resetCacheViewPermissions();
+        usersProfileDAO.resetViewPermissions();
     }
 
     public void updateDataPointPermissions() {
-        usersProfileDAO.resetCacheDataPointPermissions();
+        usersProfileDAO.resetDataPointPermissions();
     }
 
     public void updateDataSourcePermissions() {
-        usersProfileDAO.resetCacheDataSourcePermissions();
+        usersProfileDAO.resetDataSourcePermissions();
     }
 
     public void updateProfile(UsersProfileVO profile) {

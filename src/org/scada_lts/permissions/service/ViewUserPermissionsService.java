@@ -4,14 +4,10 @@ package org.scada_lts.permissions.service;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.ViewDAO;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@CacheConfig(cacheNames = "permission_view_list_by_user")
 @Service
 public class ViewUserPermissionsService implements PermissionsService<ViewAccess, User> {
 
@@ -22,19 +18,16 @@ public class ViewUserPermissionsService implements PermissionsService<ViewAccess
     }
 
     @Override
-    @Cacheable(key = "#object.id", unless = "#object == null || #result.isEmpty()")
     public List<ViewAccess> getPermissions(User object) {
         return viewDAO.selectViewPermissions(object.getId());
     }
 
     @Override
-    @CacheEvict(key = "#object.id", condition = "#object != null")
     public void addOrUpdatePermissions(User object, List<ViewAccess> toAddOrUpdate) {
         viewDAO.insertPermissions(object.getId(), toAddOrUpdate);
     }
 
     @Override
-    @CacheEvict(key = "#object.id", condition = "#object != null")
     public void removePermissions(User object, List<ViewAccess> toRemove) {
         viewDAO.deletePermissions(object.getId(), toRemove);
     }

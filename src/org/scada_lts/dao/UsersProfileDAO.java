@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class UsersProfileDAO implements UsersProfileDaoCachable {
+public class UsersProfileDAO implements IUsersProfileDAO {
 
     private static final Log LOG = LogFactory.getLog(UsersProfileDAO.class);
 

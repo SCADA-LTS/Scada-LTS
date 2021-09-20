@@ -36,6 +36,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.LocalizableMessageParseException;
+import org.scada_lts.utils.GetBeanUtils;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -117,14 +118,14 @@ public class PendingEventsDAO {
 
 	// @formatter:on
 
-	private UserDaoCachable userDAO;
+	private IUserDAO userDAO;
 
 	public PendingEventsDAO() {
 		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-		this.userDAO = (UserDaoCachable) context.getBean("userDAO");
+		this.userDAO = GetBeanUtils.getUserDaoBean(context);
 	}
 
-	public PendingEventsDAO(UserDaoCachable userDAO) {
+	public PendingEventsDAO(IUserDAO userDAO) {
 		this.userDAO = userDAO;
 	}
 

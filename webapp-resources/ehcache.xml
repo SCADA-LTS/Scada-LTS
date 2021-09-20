@@ -25,28 +25,12 @@
     </cache-template>
 
     <!-- user -->
-    <cache alias="user_by_id" uses-template="cache_template">
-        <key-type>java.lang.Integer</key-type>
-        <value-type>com.serotonin.mango.vo.User</value-type>
-    </cache>
-    <cache alias="user_by_username" uses-template="cache_template">
-        <key-type>java.lang.String</key-type>
-        <value-type>com.serotonin.mango.vo.User</value-type>
-    </cache>
     <cache alias="user_list" uses-template="cache_template">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
     <!-- profile -->
-    <cache alias="profile_by_id" uses-template="cache_template">
-        <key-type>java.lang.Integer</key-type>
-        <value-type>br.org.scadabr.vo.usersProfiles.UsersProfileVO</value-type>
-    </cache>
-    <cache alias="profile_by_xid" uses-template="cache_template">
-        <key-type>java.lang.String</key-type>
-        <value-type>br.org.scadabr.vo.usersProfiles.UsersProfileVO</value-type>
-    </cache>
     <cache alias="profile_list_offset_limit" uses-template="cache_template">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
@@ -55,8 +39,14 @@
     <cache alias="userid_list_by_profileid" uses-template="list_cache_template"/>
 
     <!-- share user -->
-    <cache alias="share_user_list_by_view" uses-template="list_cache_template"/>
-    <cache alias="share_user_list_by_watchlist" uses-template="list_cache_template"/>
+    <cache alias="share_user_list_by_view" uses-template="cache_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <cache alias="share_user_list_by_watchlist" uses-template="cache_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
 
     <!-- by user -->
     <cache alias="permission_datasource_list_by_user" uses-template="list_cache_template"/>

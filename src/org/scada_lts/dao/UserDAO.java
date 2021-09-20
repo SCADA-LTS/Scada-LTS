@@ -1,6 +1,5 @@
 package org.scada_lts.dao;
 
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,7 +26,7 @@ import java.util.List;
  */
 
 @Repository
-public class UserDAO implements UserDaoCachable {
+public class UserDAO implements IUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserDAO.class);
 

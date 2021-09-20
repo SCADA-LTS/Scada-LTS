@@ -18,7 +18,6 @@
 package org.scada_lts.mango.service;
 
 
-import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
@@ -27,11 +26,11 @@ import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.UserDaoCachable;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.utils.ApplicationContextProvider;
+import org.scada_lts.utils.GetBeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -54,7 +53,7 @@ public class UserService implements MangoUser {
 
 	private static final Log LOG = LogFactory.getLog(UserService.class);
 
-	private UserDaoCachable userDAO;
+	private IUserDAO userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
 
 	private MailingListService mailingListService = new MailingListService();
@@ -67,13 +66,13 @@ public class UserService implements MangoUser {
 
 	public UserService() {
 		ApplicationContext context = ApplicationContextProvider.getApplicationContext();
-		userDAO = (UserDaoCachable) context.getBean("userDAO");
-		dataPointPermissionsService = (PermissionsService<DataPointAccess, User>) context.getBean("dataPointUserPermissionsService");
-		dataSourcePermissionsService = (PermissionsService<Integer, User>) context.getBean("dataSourceUserPermissionsService");
-		usersProfileService = (UsersProfileService) context.getBean("usersProfileService");
+		userDAO = GetBeanUtils.getUserDaoBean(context);
+		dataPointPermissionsService = GetBeanUtils.getDataPointUserPermissionsServiceBean(context);
+		dataSourcePermissionsService = GetBeanUtils.getDataSourceUserPermissionsServiceBean(context);
+		usersProfileService = GetBeanUtils.getUsersProfileServiceBean(context);
 	}
 
-	public UserService(UserDaoCachable userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
+	public UserService(IUserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
 					   EventService eventService, PointValueService pointValueService,
 					   UsersProfileService usersProfileService,
 					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,
