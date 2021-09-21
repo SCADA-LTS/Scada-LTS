@@ -252,7 +252,6 @@ for (let x = 0; x < 10; x++) {
 						color: el.getAttribute('color'),
 						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
 						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
-						webSocketEnabled: el.getAttribute('web-socket-enabled') !== null,
 					},
 				}),
 		}).$mount(`#${chartId}`);
