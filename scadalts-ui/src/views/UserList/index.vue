@@ -91,6 +91,7 @@
 						:userProfiles="userProfiles"
 						:userPassword="userPassword"
 						:edit="true"
+						@userProfileCreated="onUserProfileCreated"
 					></UserDetails>
 				</v-card-text>
 				<v-card-actions>
