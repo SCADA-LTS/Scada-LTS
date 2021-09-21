@@ -50,6 +50,10 @@ const ds = {
 					});
 			});
 		},
+
+		fetchDataSourcesList({dispatch}) {
+			return dispatch('requestGet', '/datasource/getAll');
+		}
 	},
 	getters: {},
 };

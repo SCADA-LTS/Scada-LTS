@@ -14,7 +14,7 @@ plugins {
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
 
-def tomcatVersion = '9.0.41'
+def tomcatVersion = '9.0.53'
 def tomcatDirectory = System.getenv("CATALINA_HOME")
 
 // Environment variables to change
@@ -25,7 +25,6 @@ subprojects {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 

@@ -77,6 +77,10 @@ public class ViewService {
 		}
 		return views;
 	}
+
+	public List<ScadaObjectIdentifier> getAllViews() {
+		return viewDAO.getSimpleList();
+	}
 	
 	public List<IdName> getViewNames(int userId, int userProfileId) {
 		return viewDAO.getViewNames(userId, userProfileId);
