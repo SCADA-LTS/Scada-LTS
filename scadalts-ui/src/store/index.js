@@ -8,6 +8,7 @@ import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
 import alarms from './alarms';
 import storeUsers from './users';
+import userProfileModule from './userProfiles';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
@@ -34,6 +35,7 @@ export default new Vuex.Store({
 		pointHierarchy,
 		alarms,
 		storeUsers,
+		userProfileModule,
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,

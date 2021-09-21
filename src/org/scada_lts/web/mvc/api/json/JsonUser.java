@@ -6,25 +6,52 @@ public class JsonUser {
 
     private int id = Common.NEW_ID;
     private String username;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
     private boolean admin;
     private boolean disabled;
     private String homeUrl;
     private long lastLogin;
+    private int receiveAlarmEmails;
+    private boolean receiveOwnAuditEvents;
+    private String theme;
+    private boolean hideMenu;
+    private int userProfile;
 
     public JsonUser() {
     }
 
-    public JsonUser(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+    public JsonUser(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
         this.id = id;
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.admin = admin;
         this.disabled = disabled;
         this.homeUrl = homeUrl;
         this.lastLogin = lastLogin;
+    }
+
+    public JsonUser(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin, int receiveAlarmEmails, boolean receiveOwnAuditEvents, String theme, boolean hideMenu, int userProfile) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.admin = admin;
+        this.disabled = disabled;
+        this.homeUrl = homeUrl;
+        this.lastLogin = lastLogin;
+        this.receiveAlarmEmails = receiveAlarmEmails;
+        this.receiveOwnAuditEvents = receiveOwnAuditEvents;
+        this.theme = theme;
+        this.hideMenu = hideMenu;
+        this.userProfile = userProfile;
     }
 
     public int getId() {
@@ -41,6 +68,22 @@ public class JsonUser {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -89,5 +132,45 @@ public class JsonUser {
 
     public void setLastLogin(long lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public int getReceiveAlarmEmails() {
+        return receiveAlarmEmails;
+    }
+
+    public void setReceiveAlarmEmails(int receiveAlarmEmails) {
+        this.receiveAlarmEmails = receiveAlarmEmails;
+    }
+
+    public boolean isReceiveOwnAuditEvents() {
+        return receiveOwnAuditEvents;
+    }
+
+    public void setReceiveOwnAuditEvents(boolean receiveOwnAuditEvents) {
+        this.receiveOwnAuditEvents = receiveOwnAuditEvents;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public boolean isHideMenu() {
+        return hideMenu;
+    }
+
+    public void setHideMenu(boolean hideMenu) {
+        this.hideMenu = hideMenu;
+    }
+
+    public int getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(int userProfile) {
+        this.userProfile = userProfile;
     }
 }

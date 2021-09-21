@@ -31,6 +31,17 @@ jobs:
         run: ls $CATALINA_HOME
       - name: Test JUnit Scada Application
         run: gradle test
+      - name: Show JUnit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          check_name: Java JUnit Test Results
+          files: ./build/test-results/**/*.xml
+      - name: Publish JUnit Test Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: junit-java-test-results
+          path: ./build/test-reports/
       - name: Build Scada-LTS WAR Application
         run: gradle -PskipUi=true compileJava
       - name: Cache Scada-LTS application
@@ -63,6 +74,17 @@ jobs:
       - name: Run Frontend UnitTests
         working-directory: ./scadalts-ui
         run: npm run-script test:unit
+      - name: Show Mocha Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          check_name: Java Script Mocha Unit Test Results
+          files: ./scadalts-ui/test-results.xml
+      - name: Publish Mocha Test Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: mocha-js-test-results
+          path: ./scadalts-ui/test-results.xml
       - name: Get Scada-LTS latest release version
         id: relver
         uses: pozetroninc/github-action-get-latest-release@master
