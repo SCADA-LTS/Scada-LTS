@@ -2,6 +2,8 @@ import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 
 import axios from 'axios';
+import { initWebSocket } from '../../web-socket';
+import store from '../../store';
 
 export class AmChart {
 	constructor(build) {
@@ -29,6 +31,8 @@ export class AmChart {
 		this.aggregateApiSettings = build.aggregateApiSettings;
 
 		this.refreshRate = build.refreshRate;
+		this.webSocketEnabled = build.webSocketEnabled;
+		this.webSocketInstance = null;
 		this.isCompareMode = build.isCompareMode;
 		this.lastUpdate = 0;
 		this.liveUpdateInterval = null;
@@ -77,6 +81,10 @@ export class AmChart {
 		if (!!this.refreshRate && this.refreshRate > 1000) {
 			this.startLiveUpdate();
 		}
+
+		if (!!this.webSocketEnabled) {
+			this.startLiveWebSocketUpdate();
+		}
 	}
 
 	/**
@@ -105,6 +113,72 @@ export class AmChart {
 	}
 
 	/**
+	 * Start Live Update based on the WebSocket messages
+	 * 
+	 * Connect to the WebSocket server and listen for a updates
+	 * on dedicated channels. Listen to PointValue update messages.
+	 * When the message is received, update chart PointValue.
+	 */
+	startLiveWebSocketUpdate() {
+		let pointIds = this.pointIds.split(',');
+		this.webSocketInstance = initWebSocket(
+			store.state.webSocketUrl,
+			() => {
+				pointIds.forEach(pointId => {
+					this.webSocketInstance.subscribe(`/topic/datapoint/${pointId}/value`, this.updateWebSocketPointValue.bind(this));
+				});
+			}
+		);
+	}
+
+	/**
+	 * Stop Live Update based on the WebSocket connection
+	 * 
+	 * Disconnect the WebSocket connection with the server.
+	 * Delete the webSocketInstance variable.
+	 */
+	stopLiveWebSocketUpdate() {
+		if(!!this.webSocketInstance) {
+			this.webSocketInstance.disconnect();
+			this.webSocketInstance = null;
+			console.log('WebSocket disconnected');
+		}
+	}
+
+	/**
+	 * Update Point Value based on the WebSocket messages
+	 * 
+	 * Add a new value to chart using a callback to the
+	 * WebSocket onMessage event. Parse data and add it.
+	 * @private
+	 * @param {String} data - WebSocket message
+	 */
+	updateWebSocketPointValue(data) {
+		let pointValue = JSON.parse(data.body);
+		let point = { date: new Date().getTime() }
+		pointValue.value = this.convertBinaryPointValue(pointValue.value);
+		point[pointValue.pointId] = pointValue.value;
+		this.chart.addData(point);
+	}
+
+	/**
+	 * Convert text Binary value to number
+	 * 
+	 * @private
+	 * @param {String} pointValue - Point Value recieved from the server
+	 * @returns {Number} - Point Value converted to Number
+	 */
+	convertBinaryPointValue(pointValue) {
+		if(pointValue === "true") {
+			pointValue = 1;
+		}
+		if(pointValue === "false") {
+			pointValue = 0;
+		}
+		return pointValue;
+	}
+
+	/**
 	 * Stop Live Update
 	 *
 	 * Useful when user navigate between
@@ -123,6 +197,7 @@ export class AmChart {
 	 */
 	disposeChart() {
 		if (!!this.chart) {
+			this.stopLiveWebScoketUpdate();
 			this.stopLiveUpdate();
 			this.chart.dispose();
 		}
@@ -672,6 +747,11 @@ export class AmChartBuilder {
 	 */
 	withLiveUpdate(refreshRate) {
 		this.refreshRate = refreshRate;
+		return this;
+	}
+
+	withWebSocketUpdate() {
+		this.webSocketEnabled = true;
 		return this;
 	}
 
