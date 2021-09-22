@@ -1,9 +1,5 @@
 [
   {
-    "name":"dataPointId",
-    "type": "INT"
-  },
-  {
     "name":"dataType",
     "type": "INT"
   },

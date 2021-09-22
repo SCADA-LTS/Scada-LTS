@@ -16,8 +16,4 @@ public interface IPointValueCommand {
     Object[] create(int pointId, int dataType, double dvalue, long time);
     Object[] create(PointValue entity);
     Object[] createNoTransaction(int pointId, int dataType, double dvalue, long time);
-    long createTempTable(int dataPointId, long time);
-    long dropPartition(long time);
-    long insertFromTemp();
-    long deleteTempTable();
 }

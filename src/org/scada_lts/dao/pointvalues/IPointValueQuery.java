@@ -29,4 +29,6 @@ public interface IPointValueQuery {
     List<PointValue> findAllWithUserName();
     List<PointValue> findByIdAndTs(long id, long ts);
     List<PointValue> filtered(String filter, Object[] argsFilter, long limit);
+
+    void createTableForDatapoint(int pointId);
 }

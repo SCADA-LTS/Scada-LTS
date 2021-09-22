@@ -17,10 +17,7 @@
  */
 package org.scada_lts.mango.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,14 +82,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     private IPointValueAdnnotationsDAO pointValueAnnotationsCommandRepository;
     private IPointValueDAO pointValueCommandRepository;
-    private IPointValueDenormalizedDAO pointValueQueryRepository;
+    private IPointValueQuestDbDAO pointValueQueryRepository;
 
     private boolean dbQueryEnabled;
     private boolean dbWriteEnabled;
 
     public PointValueService() {
         pointValueCommandRepository = IPointValueDAO.newCommandRespository();
-        pointValueQueryRepository = IPointValueDenormalizedDAO.newQueryRespository();
+        pointValueQueryRepository = IPointValueQuestDbDAO.newQueryRespository();
         pointValueAnnotationsCommandRepository = IPointValueAdnnotationsDAO.newCommandRepository();
         dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled",
                 false);
@@ -412,10 +409,17 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return lst;
     }
 
+    private boolean getFilterFromQueryDb() {
+        boolean readEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.read.enabled", true);
+        return dbQueryEnabled && readEnabled;
+    }
+
 
     public List<PointValueTime> getPointValues(int dataPointId, long since) {
         List<PointValue> lst =  getPointValueRepository().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
+                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP
+                        .replace("$from", String.valueOf(since*1000)):
+                        PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
                 new Object[]{dataPointId, since}, GenericDaoCR.NO_LIMIT);
         return getLstPointValueTime(lst);
     }
@@ -423,14 +427,19 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     public List<PointValueTime> getPointValuesBetween(int dataPointId,
                                                       long from, long to) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO,
+                getFilterFromQueryDb() ?
+                        PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO
+                                .replace("$from", String.valueOf(from*1000))
+                                .replace("$to", String.valueOf(to*1000)) :
+                        PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO,
                 new Object[]{dataPointId, from, to}, GenericDaoCR.NO_LIMIT);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getLatestPointValues(int dataPointId, int limit) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
+                        PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId}, limit);
         return getLstPointValueTime(lst);
     }
@@ -438,7 +447,8 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     public List<PointValueTime> getLatestPointValues(int dataPointId,
                                                      int limit, long before) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
+                        PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, before}, limit);
         return getLstPointValueTime(lst);
     }
@@ -458,7 +468,9 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
+                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID
+                        .replace("$to", String.valueOf(time*1000)):
+                        PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, time}, 1);
         if (lst != null && lst.size() > 0) {
             return lst.get(0).getPointValue();
@@ -469,7 +481,9 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public PointValueTime getPointValueAt(int dataPointId, long time) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
+                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID
+                        .replace("$time", String.valueOf(time*1000)):
+                        PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
                     new Object[]{dataPointId, time}, 1);
 
         if (lst != null && lst.size() > 0) {
@@ -480,14 +494,9 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     }
 
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
+        if (dbQueryEnabled)
+            pointValueQueryRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
         return pointValueCommandRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
-    }
-
-    public void deletePointValuesBeforeForDatapoint(int dataPointId, long time) {
-        pointValueQueryRepository.createTempTable(dataPointId, time);
-        pointValueQueryRepository.dropPartition(time);
-        pointValueQueryRepository.insertFromTemp();
-        pointValueQueryRepository.deleteTempTable();
     }
 
     @Override
@@ -517,7 +526,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     @Override
     public List<Long> getFiledataIds() {
-        return getPointValueRepository().getFiledataIds();
+        return pointValueCommandRepository.getFiledataIds();
     }
 
     /**
@@ -710,11 +719,15 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     @Override
     public long deletePointValues(int dataPointId) {
+        if (dbQueryEnabled)
+            pointValueQueryRepository.deletePointValue(dataPointId);
         return pointValueCommandRepository.deletePointValue(dataPointId);
     }
 
     @Override
     public long deleteAllPointValue() {
+        if (dbQueryEnabled)
+            pointValueQueryRepository.deleteAllPointData();
         return pointValueCommandRepository.deleteAllPointData();
     }
 
@@ -820,14 +833,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return pointValueCommandRepository;
     }
 
-
     private IPointValueAdnnotationsDAO getPointValueAnnotationsRepository() {
-        boolean readEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.read.enabled",
-                true);
-        if(dbQueryEnabled && readEnabled) {
-            return pointValueQueryRepository;
-        }
         return pointValueAnnotationsCommandRepository;
+    }
+
+    public void createTableForDatapoint(int dpId) {
+        if (dbQueryEnabled) {
+            pointValueQueryRepository.createTableForDatapoint(dpId);
+        }
     }
 }
 

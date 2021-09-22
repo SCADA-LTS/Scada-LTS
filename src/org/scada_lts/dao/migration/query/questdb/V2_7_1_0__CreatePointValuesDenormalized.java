@@ -18,6 +18,7 @@
 package org.scada_lts.dao.migration.query.questdb;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -29,12 +30,14 @@ import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,6 +59,8 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);
         boolean valuesImportEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.import.enabled", true);
 
+        List<DataPointVO> dataPoints = new DataPointDAO().getDataPoints();
+
         if(overwrite) {
             try {
                 String dropQuery = "DROP TABLE pointValuesDenormalized";
@@ -73,7 +78,9 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                     .schema(schema)
                     .build();
 
-            for (int i = 0; migrationNext(PaginationParams.params(i, limit), migrationSettings); i += limit) {
+            for (DataPointVO dataPoint : dataPoints) {
+                for (int i = 0; migrationNext(PaginationParams.params(i, limit, dataPoint.getId()), migrationSettings); i += limit) {
+                }
             }
         }
 
@@ -111,7 +118,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                     exportedToCsv.set(true);
                     try {
                         if (csv.length() > 0) {
-                            int imported = importToQuestDb(csv, migrationSettings);
+                            int imported = importToQuestDb(csv, migrationSettings, paginationParams.getDataPointId());
                             rowsImported.set(imported);
                         }
                     } finally {
@@ -160,9 +167,10 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                                              PaginationParams paginationParams,
                                              JdbcOperations jdbcOperations) {
         String query = "SELECT * FROM (" +
-                "    SELECT 'dataPointId', 'dataType', 'pointValue', 'ts', 'timestamp', 'textPointValueShort', 'textPointValueLong', 'sourceType', 'sourceId', 'username' UNION ALL" +
+                "    SELECT 'dataType', 'pointValue', 'ts', 'timestamp', 'textPointValueShort', 'textPointValueLong', 'sourceType', 'sourceId', 'username' UNION ALL" +
                 "    (" +
-                "       SELECT * FROM pointValuesDenormalized LIMIT " + paginationParams.getLimit() + " OFFSET " + paginationParams.getOffset() + " " +
+                "       SELECT dataType, pointValue, ts, timestamp, textPointValueShort, textPointValueLong, sourceType, sourceId, username " +
+                " FROM pointValuesDenormalized WHERE dataPointId = " + paginationParams.getDataPointId() + " LIMIT " + paginationParams.getLimit() + " OFFSET " + paginationParams.getOffset() + " " +
                 "    )" +
                 ") result INTO OUTFILE '" + csv + "' FIELDS TERMINATED BY '\t' ENCLOSED BY '' LINES TERMINATED BY '\r\n';";
 
@@ -177,9 +185,9 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         }
     }
 
-    public static int importToQuestDb(File csv, MigrationSettings migrationSettings) {
+    public static int importToQuestDb(File csv, MigrationSettings migrationSettings, int dataPointId) {
         try {
-            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=DAY&overwrite=" + migrationSettings.isOverwrite());
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues" + dataPointId + "&timestamp=timestamp&partitionBy=DAY&overwrite=" + migrationSettings.isOverwrite());
             MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", migrationSettings.getSchema()), new FilePart("data", csv)}, postMethod.getParams());
             postMethod.setRequestEntity(entity);
             MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
@@ -221,14 +229,16 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
     private static class PaginationParams {
         int offset;
         int limit;
+        int dataPointId;
 
-        private PaginationParams(int offset, int limit) {
+        private PaginationParams(int offset, int limit, int dataPointId) {
             this.offset = offset;
             this.limit = limit;
+            this.dataPointId = dataPointId;
         }
 
-        public static PaginationParams params(int offset, int limit) {
-            return new PaginationParams(offset, limit);
+        public static PaginationParams params(int offset, int limit, int dataPointId) {
+            return new PaginationParams(offset, limit, dataPointId);
         }
 
         public int getOffset() {
@@ -237,6 +247,10 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
         public int getLimit() {
             return limit;
+        }
+
+        public int getDataPointId() {
+            return dataPointId;
         }
 
         @Override

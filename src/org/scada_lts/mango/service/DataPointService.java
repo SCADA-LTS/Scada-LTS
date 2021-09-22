@@ -101,6 +101,8 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
+	private static final PointValueService pointValueService = new PointValueService();
+
 	private PointValueAmChartDAO pointValueAmChartCommandRepository;
 	private PointValueAmChartDAO pointValueAmChartQueryRepository;
 	private boolean dbQueryEnabled;
@@ -294,8 +296,10 @@ public class DataPointService implements MangoDataPoint {
 			dp.defaultTextRenderer();
 		}
 
-		dp.setId(dataPointDAO.insert(dp));
+		int dpId = dataPointDAO.insert(dp);
+		dp.setId(dpId);
 		saveEventDetectors(dp);
+		pointValueService.createTableForDatapoint(dpId);
 	}
 
 	@Override
