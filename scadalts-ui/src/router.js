@@ -4,9 +4,11 @@ import Alarms from './views/Alarms';
 import About from './views/About';
 import LoginPage from './views/LoginPage';
 import HistoricalAlarms from './views/HistoricalAlarms';
+import UserList from './views/UserList';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
 import RecipientList from './views/RecipientList';
+import UserProfiles from './views/UserProfiles';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
 import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
@@ -58,6 +60,14 @@ const routing = new Router({
 			},
 		},
 		{
+			path: '/users',
+			name: 'users',
+			component: UserList,
+			meta: {
+				requiresAuth: true
+			},
+		},
+		{
 			path: '/system-settings',
 			name: 'system-settings',
 			component: SystemSettings,
@@ -77,6 +87,14 @@ const routing = new Router({
 			path: '/recipient-list',
 			name: 'recipient-list',
 			component: RecipientList,
+			meta: {
+				requiresAuth: true
+			},
+		},
+		{
+			path: '/user-profiles',
+			name: 'user-profiles',
+			component: UserProfiles,
 			meta: {
 				requiresAuth: true
 			},

@@ -9,6 +9,19 @@
 		>
 			{{ errorMessage.message }}
 		</v-alert>
+
+		<div v-if="!!showControls" class="control-panel">
+			<div v-if="!!chartClass && !!chartClass.webSocketEnabled">
+				<v-btn v-if="!!chartClass.webSocketInstance"
+					fab elevation="1" small @click="stopWsLiveUpdate">
+					STOP
+				</v-btn>
+				<v-btn v-else fab elevation="1" small @click="startWsLiveUpdate">
+					START
+				</v-btn>
+			</div>
+		</div>
+
 		<div
 			v-bind:style="{ height: this.height + 'px', width: this.width + 'px' }"
 			ref="chartdiv"
@@ -51,6 +64,10 @@ export default {
 		showBullets: { type: Boolean },
 		showExportMenu: { type: String },
 		smoothLine: { type: Number },
+		serverValuesLimit: { type: Number },
+		serverLimitFactor: { type: Number },
+		webSocketEnabled: { type: Boolean },
+		showControls: { type: Boolean },
 	},
 
 	data() {
@@ -65,7 +82,7 @@ export default {
 	},
 
 	beforeDestroy() {
-		this.close()
+		this.close();
 	},
 
 	methods: {
@@ -78,6 +95,9 @@ export default {
 
 			if (!!this.useXid) {
 				this.chartClass.xid();
+			}
+			if(!!this.serverValuesLimit) {
+				this.chartClass.setApiAggregation(this.serverValuesLimit, this.serverLimitFactor);
 			}
 			if(!!this.separateAxis) {
 				this.chartClass.separateAxis();
@@ -119,6 +139,9 @@ export default {
 			if (!!this.smoothLine) {
 				this.chartClass.smoothLine(this.smoothLine);
 			}
+			if (!!this.webSocketEnabled) {
+				this.chartClass.withWebSocketUpdate();
+			}
 			this.chartClass = this.chartClass.build();
 
 			this.chartClass.createChart().catch((e) => {
@@ -139,8 +162,23 @@ export default {
 		close() {
 			this.chartClass.disposeChart();
 		},
+
+		startWsLiveUpdate() {
+			this.stopWsLiveUpdate();
+			this.chartClass.startLiveWebSocketUpdate();
+		},
+
+		stopWsLiveUpdate() {
+			this.chartClass.stopLiveWebSocketUpdate();
+		}
 	},
 };
 </script>
 <style scoped>
+.control-panel {
+	position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10;
+}
 </style>

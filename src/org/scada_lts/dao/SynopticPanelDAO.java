@@ -126,21 +126,19 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
     }
 
     @Override
-    public int update(SynopticPanel entity) throws EmptyResultDataAccessException {
+    public SynopticPanel update(SynopticPanel entity) throws EmptyResultDataAccessException {
         try {
-            return DAO.getInstance().getJdbcTemp().update(
+            DAO.getInstance().getJdbcTemp().update(
                     SP_UPDATE,
                     entity.getXid(),
                     entity.getName(),
                     entity.getVectorImage(),
                     entity.getComponentData(),
                     entity.getId());
+            return entity;
         } catch (EmptyResultDataAccessException e) {
             LOG.error("Synoptic Panel entity with id= " + entity.getId() + " does not exists!");
-            return DAO_EMPTY_RESULT;
-        } catch (Exception e) {
-            LOG.error(e);
-            return DAO_EXCEPTION;
+            throw e;
         }
     }
 

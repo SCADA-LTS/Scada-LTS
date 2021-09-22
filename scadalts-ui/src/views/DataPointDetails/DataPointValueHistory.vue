@@ -185,7 +185,8 @@
 	</v-card>
 </template>
 <script>
-import { initWebSocket } from '@/web-socket.js'
+import webSocketMixin from '@/utils/web-socket-utils';
+import internetMixin from '@/utils/connection-status-utils';
 
 /**
  * Value History List for Data Point
@@ -198,12 +199,14 @@ import { initWebSocket } from '@/web-socket.js'
  * @param {number} data - Point Details object with data.
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.1
+ * @version 1.2
  */
 export default {
 	name: 'DataPointValueHistory',
 
 	props: ['data'],
+
+	mixins: [webSocketMixin, internetMixin],
 
 	data() {
 		return {
@@ -223,8 +226,15 @@ export default {
 				ts: null,
 				value: null,
 			},
-			stompClient: undefined,
-			socket: undefined,
+
+			wsCallback: () => {				
+				this.wsSubscribeTopic(`datapoint/${this.data.id}/value`, this.updatePointWs);		
+			},
+
+			onAppOnline: () => {
+				console.log("Application status: online");
+				this.fetchData();
+			},
 		};
 	},
 
@@ -239,40 +249,18 @@ export default {
 	mounted() {
 		this.fetchData();
 		this.hideSkeleton = true;
-		this.connect();
-	},
-
-	beforeDestroy() {
-		this.disconnect();
 	},
 
 	methods: {
 
-		connect() {
-			let callback = () => {
-				this.stompClient.subscribe(`/ws/datapoint/${this.data.id}/value`, () => {});
-				this.stompClient.subscribe(`/topic/datapoint/${this.data.id}/value`, tick => {
-					this.pointValue = tick.body;
-					this.fetchData();
-				});
-			}
-
-			this.stompClient = initWebSocket(
-				this.$store.state.webSocketUrl,
-				callback,
-			);
+		updatePointWs(data) {
+			console.log("updatePointWs", data);
+			this.pointValue = JSON.parse(data.body).value;
+			this.fetchData();
 		},
 
-		disconnect() {
-			if(!!this.stompClient) {
-				this.stompClient.send(`/ws/datapoint/${this.data.id}/value/unsub`)
-				this.stompClient.disconnect();
-			}
-		},
-
-		reconnect() {
-			this.disconnect();
-			this.connect();
+		wsBeforeDisconnect() {
+			this.ws.send(`/ws-scada/datapoint/${this.data.id}/value/unsub`)
 		},
 
 		async fetchData() {

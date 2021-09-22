@@ -42,6 +42,22 @@
 						{{ $t('recipientlist.title') }}
 					</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/users">
+					<v-list-item-icon>
+						<v-icon>mdi-account</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>
+						{{ $t('userList.title') }}
+					</v-list-item-title>
+				</v-list-item>
+				<v-list-item link href="#/user-profiles" v-if="isUserRoleAdmin">
+					<v-list-item-icon>
+						<v-icon>mdi-account-group</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>
+						{{ $t('userprofiles.title') }}
+					</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-tune</v-icon>
@@ -79,10 +95,17 @@
 					<v-list-item-content class="justify-center text-center">
 						<v-icon v-show="!user.admin">mdi-account</v-icon>
 						<v-icon v-show="user.admin">mdi-account-tie</v-icon>
-						<h3>{{ user.username }}</h3>
+						<h3>
+							<span v-if="!!user.firstName && !!user.lastName">
+								{{user.firstName}} {{user.lastName}}
+							</span>
+							<span v-else>
+								{{ user.username }}
+							</span>
+						</h3>
 						<p>{{ user.email }}</p>
 						<v-divider></v-divider>
-						<v-btn block text link href="./users.shtm">
+						<v-btn block text link href="#/users">
 							<span>Edit profile</span>
 							<v-icon>mdi-account-box</v-icon>
 						</v-btn>

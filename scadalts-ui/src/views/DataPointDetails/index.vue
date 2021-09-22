@@ -1,5 +1,5 @@
 <template>
-	<div v-if="dataPointDetails">
+	<div v-if="dataPointDetails && datasource">
 		<v-container fluid>
 			<ConfirmationDialog
 				:btnvisible="false"
@@ -20,14 +20,16 @@
 									v-bind="attrs"
 									v-on="on"
 									@click="toggleDataPoint"
-									:color="dataPointDetails.enabled ? 'primary' : 'error'"
+									:color="datasource.enabled ? (dataPointDetails.enabled ? 'primary' : 'error') : 'warning'"
 								>
 									<v-icon v-show="dataPointDetails.enabled">mdi-decagram</v-icon>
 									<v-icon v-show="!dataPointDetails.enabled">mdi-decagram-outline</v-icon>
 								</v-btn>
 							</template>
 							<span class="help-message">{{
-								$t('datapointDetails.pointProperties.toggle.help')
+								datasource.enabled ?
+								$t('datapointDetails.pointProperties.toggle.help') :
+								$t('datapointDetails.pointProperties.toggle.datasourceDisabled')
 							}}</span>
 						</v-tooltip>
 						{{ dataPointDetails.name }}
@@ -120,6 +122,7 @@ export default {
 			newComment: '',
 			dataPointDetails: undefined,
 			confirmToggleDialog: false,
+			datasource: null,
 			chartRefreshRate: 10000,
 			chartWidth: 500,
 			response: {
@@ -153,10 +156,19 @@ export default {
 				'getDataPointDetails',
 				datapointId,
 			);
-		},
+			this.datasource = await this.$store.dispatch(
+				'getDatasourceByXid',
+				this.dataPointDetails.dataSourceXid,
+			);
 
-		toggleDataPoint() {
-			this.confirmToggleDialog = true;
+		},
+		async toggleDataPoint() {
+			if (this.datasource.enabled) {
+				this.confirmToggleDialog = true;
+				console.log()
+			} else {
+				this.datasourceDisabled = true;
+			}
 		},
 
 		async toggleDataPointDialog(e) {

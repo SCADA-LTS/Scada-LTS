@@ -252,7 +252,6 @@ public class OnlyMigrationUserDAO extends UserDAO {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(User user) user:" + user);
 		}
-
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE, new Object[]{
 				user.getUsername(),
 				user.getPassword(),
@@ -265,6 +264,7 @@ public class OnlyMigrationUserDAO extends UserDAO {
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 				user.getId()
 		});
+
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

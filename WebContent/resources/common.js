@@ -225,6 +225,21 @@ function hideLayer(node) {
     getNodeIfString(node).style.visibility = "hidden";
 }
 
+function updatePositionXY(compId) {
+    updateXY("static", compId);
+    updateXY("settings", compId);
+    updateXY("compound", compId);
+}
+
+function updateXY(name, compId) {
+    var id = compId.substring(1);
+    if (document.getElementById(name + id) != null) {
+        var pDim = getNodeBounds($(compId));
+        $set(name + "PositionX", pDim.x);
+        $set(name + "PositionY", pDim.y);
+    }
+}
+
 function setZIndex(node, amt) {
     node = getNodeIfString(node);
     node.style.zIndex = amt;
