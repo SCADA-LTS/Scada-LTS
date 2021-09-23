@@ -315,7 +315,6 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			out.writeInt(dataPoint.getId());
 	}
 
-	@Deprecated
 	protected DataPointVO readDataPoint(ObjectInputStream in)
 			throws IOException {
 		return new DataPointDao().getDataPoint(in.readInt());
