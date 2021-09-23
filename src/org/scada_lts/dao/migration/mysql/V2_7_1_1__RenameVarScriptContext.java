@@ -17,10 +17,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
 
     private static final Log LOG = LogFactory.getLog(V2_7_1_1__RenameVarScriptContext.class);
+
+    private static final Pattern REGEX = Pattern.compile("^p[0-9]+$");
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -95,8 +98,9 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
     private String updateScript(String script, List<IntValuePair> pointsOnContext) {
         String updated = script;
         for (IntValuePair point : pointsOnContext) {
-            if (point.getValue().matches("^p[0-9]+$")) {
-                String xid = new DataPointDAO().getDataPoint(point.getKey()).getXid();
+            if (REGEX.matcher(point.getValue()).matches()) {
+                DataPointVO dp = new DataPointDAO().getDataPoint(point.getKey());
+                String xid = dp.getXid();
                 updated = updated.replaceAll("(?<![a-zA-Z0-9])" + point.getValue() + "(?![a-zA-Z0-9])", xid.toLowerCase().trim());
             }
         }
@@ -105,7 +109,7 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
 
     private void updatePointsOnContext(List<IntValuePair> pointsOnContext) {
         for (IntValuePair point : pointsOnContext) {
-            if (point.getValue().matches("^p[0-9]+$")) {
+            if (REGEX.matcher(point.getValue()).matches()) {
                 DataPointVO dataPointVO = new DataPointDAO().getDataPoint(point.getKey());
                 point.setValue(dataPointVO.getXid().toLowerCase().trim());
             }
