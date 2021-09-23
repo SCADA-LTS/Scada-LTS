@@ -248,8 +248,9 @@ abstract public class CompoundComponent extends ViewComponent {
             int len = in.readInt();
             for (int i = 0; i < len; i++) {
                 String childId = in.readUTF();
-                DataPointVO dataPoint = readDataPoint(in);
-                setDataPoint(childId, dataPoint);
+                DataPointVO dataPoint = readDataPointIfExists(in);
+                if(dataPoint != null)
+                    setDataPoint(childId, dataPoint);
             }
         }
     }

@@ -196,7 +196,7 @@ abstract public class PointComponent extends ViewComponent {
 
         // Switch on the version of the class so that version changes can be elegantly handled.
         if (ver == 1) {
-            dataPoint = readDataPoint(in);
+            dataPoint = readDataPointIfExists(in);
             nameOverride = SerializationHelper.readSafeUTF(in);
             settableOverride = in.readBoolean();
             bkgdColorOverride = SerializationHelper.readSafeUTF(in);
