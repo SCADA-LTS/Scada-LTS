@@ -21,11 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -249,9 +245,8 @@ abstract public class CompoundComponent extends ViewComponent {
             int len = in.readInt();
             for (int i = 0; i < len; i++) {
                 String childId = in.readUTF();
-                DataPointVO dataPoint = readDataPointIfExists(in);
-                if(dataPoint != null)
-                    setDataPoint(childId, dataPoint);
+                int dataPointId = in.readInt();
+                getDataPoint(dataPointId).ifPresent(dataPoint -> setDataPoint(childId, dataPoint));
             }
         }
     }
@@ -293,11 +288,15 @@ abstract public class CompoundComponent extends ViewComponent {
         map.put("children", jsonChildren);
     }
 
-    private DataPointVO readDataPointIfExists(ObjectInputStream in)
-            throws IOException {
-        int id = in.readInt();
-        if(id > 0)
-            return new DataPointDao().getDataPoint(id);
-        return null;
+    private Optional<DataPointVO> getDataPoint(int dataPointId) {
+        return isSetDataPoint(dataPointId) ? Optional.ofNullable(readDataPoint(dataPointId)) : Optional.empty();
+    }
+
+    private boolean isSetDataPoint(int dataPointId) {
+        return dataPointId > 0;
+    }
+
+    private DataPointVO readDataPoint(int id) {
+        return new DataPointDao().getDataPoint(id);
     }
 }
