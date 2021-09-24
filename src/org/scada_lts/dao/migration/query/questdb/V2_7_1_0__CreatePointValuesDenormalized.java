@@ -18,7 +18,6 @@
 package org.scada_lts.dao.migration.query.questdb;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -30,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.DataPointDAO;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import java.io.*;
@@ -59,7 +57,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);
         boolean valuesImportEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.import.enabled", true);
 
-        List<DataPointVO> dataPoints = new DataPointDAO().getDataPoints();
+        List<Integer> dataPoints = mysql.queryForList("select dataPointId from pointValues group by dataPointId order by dataPointId", Integer.class);
 
         if(overwrite) {
             try {
@@ -78,8 +76,9 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                     .schema(schema)
                     .build();
 
-            for (DataPointVO dataPoint : dataPoints) {
-                for (int i = 0; migrationNext(PaginationParams.params(i, limit, dataPoint.getId()), migrationSettings); i += limit) {
+            for (int dataPoint : dataPoints) {
+                LOG.info("Datapoint: " + dataPoint);
+                for (int i = 0; migrationNext(PaginationParams.params(i, limit, dataPoint), migrationSettings); i += limit) {
                 }
             }
         }

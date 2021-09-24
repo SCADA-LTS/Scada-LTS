@@ -14,11 +14,11 @@
   },
   {
     "name":"textPointValueShort",
-    "type": "SYMBOL"
+    "type": "STRING"
   },
   {
     "name":"textPointValueLong",
-    "type": "SYMBOL"
+    "type": "STRING"
   },
   {
     "name":"sourceType",
@@ -30,7 +30,7 @@
   },
   {
     "name":"username",
-    "type": "SYMBOL"
+    "type": "STRING"
   },
   {
     "name":"pointValue",
