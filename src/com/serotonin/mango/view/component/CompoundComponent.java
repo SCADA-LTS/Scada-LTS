@@ -32,6 +32,7 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonValue;
+import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -290,5 +291,13 @@ abstract public class CompoundComponent extends ViewComponent {
                 jsonSerializeDataPoint(jsonChildren, child.getId(), (PointComponent) child.getViewComponent());
         }
         map.put("children", jsonChildren);
+    }
+
+    private DataPointVO readDataPointIfExists(ObjectInputStream in)
+            throws IOException {
+        int id = in.readInt();
+        if(id > 0)
+            return new DataPointDao().getDataPoint(id);
+        return null;
     }
 }
