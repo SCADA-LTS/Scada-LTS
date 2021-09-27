@@ -54,8 +54,7 @@ public final class SendMsgUtils {
             validateAddresses(evt, notificationType, internetAddresses, alias);
 
             // Send the email.
-            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
-            emailNotificationWorkItem.execute();
+            EmailNotificationWorkItem.queueMsg(internetAddresses, content, afterWork, sendEmailConfig);
             return true;
 
         } catch (Exception e) {
@@ -87,8 +86,7 @@ public final class SendMsgUtils {
             validateAddresses(evt, notificationType, internetAddresses, alias);
 
             // Send the email.
-            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
-            emailNotificationWorkItem.execute();
+            EmailNotificationWorkItem.queueMsg(internetAddresses, content, afterWork, sendEmailConfig);
             return true;
 
         } catch (Exception e) {
@@ -103,6 +101,7 @@ public final class SendMsgUtils {
                                  String alias) {
         try {
 
+            SendEmailConfig.validateSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -114,6 +113,8 @@ public final class SendMsgUtils {
             }
             String[] toAddrs = addresses.toArray(new String[0]);
             MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
+
+            validateAddresses(evt, notificationType, convertToInternetAddresses(toAddrs), alias);
 
             // Send the email.
             EmailWorkItem.queueEmail(toAddrs, content);
@@ -131,6 +132,7 @@ public final class SendMsgUtils {
                                String alias) {
         try {
 
+            SendEmailConfig.validateSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -143,6 +145,8 @@ public final class SendMsgUtils {
 
             MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
+
+            validateAddresses(evt, notificationType, convertToInternetAddresses(toAddrs), alias);
 
             EmailWorkItem.queueEmail(toAddrs, content);
             return true;
@@ -197,8 +201,8 @@ public final class SendMsgUtils {
 
         String messageErrorEventInstance = "Event Instance null \n";
         String messageErrorNotyficationType = "Notification type is null \n";
-        String messageErrorEmails = "Don't have e-mail \n";
-        String messageErrorAlias = "Don't have alias\n";
+        String messageErrorEmails = " Don't have e-mail \n";
+        String messageErrorAlias = " Don't have alias\n";
         String messages = "";
         if (evt == null || evt.getEventType() == null) messages += messageErrorEventInstance;
         if (notificationType == null) messages += messageErrorNotyficationType;
@@ -214,7 +218,7 @@ public final class SendMsgUtils {
     private static void validateAddresses(EventInstance evt, NotificationType notificationType,
                                           InternetAddress[] internetAddresses, String alias) throws Exception {
 
-        String messageErrorEmails = "Don't have e-mail \n";
+        String messageErrorEmails = " Don't have e-mail \n";
         String messages = "";
         if (internetAddresses == null || internetAddresses.length == 0) messages += messageErrorEmails;
 
@@ -248,5 +252,12 @@ public final class SendMsgUtils {
             return " " + dataPoint.getDescription();
         else
             return " " + dataPoint.getName();
+    }
+
+    private static InternetAddress[] toInternetAddresses(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias) throws Exception {
+        String[] toAddrs = addresses.toArray(new String[0]);
+        InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+        validateAddresses(evt, notificationType, internetAddresses, alias);
+        return internetAddresses;
     }
 }
