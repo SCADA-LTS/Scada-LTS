@@ -253,11 +253,4 @@ public final class SendMsgUtils {
         else
             return " " + dataPoint.getName();
     }
-
-    private static InternetAddress[] toInternetAddresses(EventInstance evt, NotificationType notificationType, Set<String> addresses, String alias) throws Exception {
-        String[] toAddrs = addresses.toArray(new String[0]);
-        InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
-        validateAddresses(evt, notificationType, internetAddresses, alias);
-        return internetAddresses;
-    }
 }
