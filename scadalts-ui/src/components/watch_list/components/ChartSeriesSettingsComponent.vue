@@ -1,6 +1,6 @@
 <template>
 	<div class="chartVuetify">
-		<v-btn fab @click.stop="openModal()">
+		<v-btn small icon @click.stop="openModal()">
 			<v-icon>mdi-cog</v-icon>
 		</v-btn>
 		<v-dialog v-model="isModalVisible" width="800">
@@ -53,10 +53,14 @@
 											</v-col>
 											<v-col md="6" sm="12" xs="12" class="button-space-double">
 												<v-btn-toggle v-model="s.type" dense mandatory>
-													<v-btn value="LineSeries">{{
+													<v-btn value="LineSeries">
+														<v-icon>mdi-chart-areaspline-variant</v-icon>
+															{{
 														$t('modernwatchlist.chartseries.series.line')
 													}}</v-btn>
-													<v-btn value="StepLineSeries">{{
+													<v-btn value="StepLineSeries">
+														<v-icon>mdi-chart-histogram</v-icon>
+														{{
 														$t('modernwatchlist.chartseries.series.stepline')
 													}}</v-btn>
 												</v-btn-toggle>

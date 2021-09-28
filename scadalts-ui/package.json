@@ -56,6 +56,7 @@
 		"vue-property-decorator": "7.3.0",
 		"vue-router": "3.0.1",
 		"vue-underscore": "0.1.4",
+		"vuedraggable": "^2.24.3",
 		"vuejs-datepicker": "1.6.2",
 		"vuejs-logger": "1.5.3",
 		"vuetify": "2.4.8",

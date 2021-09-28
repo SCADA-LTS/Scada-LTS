@@ -42,6 +42,7 @@ module.exports = {
 	devServer: {
 		proxy: {
 			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
+			'^//pointHierarchy/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^/ws-scada/*': {
 				target: 'http://localhost:8080/ScadaBR',
 				ws: true,
