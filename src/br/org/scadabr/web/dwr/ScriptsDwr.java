@@ -10,18 +10,12 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.web.dwr.DwrResponseI18n;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class ScriptsDwr extends BaseDwr {
-
-	private static final Log LOG = LogFactory.getLog(ScriptsDwr.class);
-
 
 	public List<DataPointVO> getPoints() {
 		List<DataPointVO> allPoints = new DataPointDao().getDataPoints(
@@ -82,8 +76,7 @@ public class ScriptsDwr extends BaseDwr {
 				return true;
 			}
 		} catch (Exception e) {
-			LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, "scriptId: " + scriptId);
-			LOG.error(e.getMessage(), e);
+			e.printStackTrace();
 		}
 
 		return false;

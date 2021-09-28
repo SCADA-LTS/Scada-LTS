@@ -35,7 +35,6 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.meta.ResultTypeException;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.link.PointLinkRT;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -45,16 +44,11 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
 
 /**
  * @author Matthew Lohbihler
  */
 public class PointLinksDwr extends BaseDwr {
-    private static final Log LOG = LogFactory.getLog(PointLinksDwr.class);
     public Map<String, Object> init() {
         User user = Common.getUser();
         Map<String, Object> data = new HashMap<String, Object>();
@@ -170,10 +164,6 @@ public class PointLinksDwr extends BaseDwr {
             }
             catch (ResultTypeException e) {
                 message = e.getLocalizableMessage();
-            }
-            catch (Exception e) {
-                LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, "validateScript");
-                throw e;
             }
         }
 

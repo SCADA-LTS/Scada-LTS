@@ -36,17 +36,12 @@ import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.util.DateUtils;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.timer.AbstractTimer;
 import com.serotonin.timer.CronExpression;
 import com.serotonin.timer.OneTimeTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
 
 /**
  * @author Matthew Lohbihler
@@ -64,8 +59,6 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     protected Map<String, IDataPoint> context;
     boolean initialized;
     TimerTask timerTask;
-
-    private final static Log LOG = LogFactory.getLog(MetaPointLocatorRT.class);
 
     public MetaPointLocatorRT(MetaPointLocatorVO vo) {
         this.vo = vo;
@@ -270,14 +263,9 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             }
             catch (ScriptException e) {
                 handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
-                LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, dataPoint, dataSource);
             }
             catch (ResultTypeException e) {
                 handleError(runtime, e.getLocalizableMessage());
-                LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, dataPoint, dataSource);
-            } catch (Exception e) {
-                LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, dataPoint, dataSource);
-                throw e;
             }
         }
         finally {

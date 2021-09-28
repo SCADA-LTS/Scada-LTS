@@ -34,7 +34,6 @@ import com.serotonin.mango.rt.dataImage.types.*;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
@@ -66,8 +65,6 @@ import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.monitor.IntegerMonitor;
 import com.serotonin.util.queue.ObjectQueue;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
-
 /**
  * Base on the PointValueDao
  *
@@ -82,8 +79,6 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
-
-    private static final Log LOG = LogFactory.getLog(PointValueService.class);
 
     public PointValueService() {
 
@@ -672,7 +667,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
             dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
         } catch (Exception e) {
-            LoggingScriptUtils.loggingErrorExecutionScript(e, LOG, "dataPointXid: " + xid);
+            //
         }
     }
 

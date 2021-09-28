@@ -7,14 +7,8 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.event.EventHandlerVO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import static com.serotonin.mango.util.LoggingScriptUtils.loggingErrorExecutionScript;
 
 public class ScriptHandlerRT extends EventHandlerRT {
-
-	private static final Log LOG = LogFactory.getLog(ScriptHandlerRT.class);
 
 	public ScriptHandlerRT(EventHandlerVO vo) {
 		this.vo = vo;
@@ -28,10 +22,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			try {
 				script.createScriptRT().execute();
 			} catch (ScriptException e) {
-				loggingErrorExecutionScript(e, LOG, script);
-			} catch (Exception e) {
-				loggingErrorExecutionScript(e, LOG, script);
-				throw e;
+				e.printStackTrace();
 			}
 		}
 	}
@@ -44,10 +35,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			try {
 				script.createScriptRT().execute();
 			} catch (ScriptException e) {
-				loggingErrorExecutionScript(e, LOG, script);
-			} catch (Exception e) {
-				loggingErrorExecutionScript(e, LOG, script);
-				throw e;
+				e.printStackTrace();
 			}
 		}
 	}
