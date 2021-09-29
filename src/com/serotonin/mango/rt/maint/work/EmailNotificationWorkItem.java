@@ -2,11 +2,9 @@ package com.serotonin.mango.rt.maint.work;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.SendEmailConfig;
-import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.email.EmailSender;
 
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 
