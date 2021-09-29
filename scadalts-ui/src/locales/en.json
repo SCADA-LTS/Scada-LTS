@@ -18,6 +18,7 @@
 	"common.none": "None",
 	"common.update": "Update",
 	"common.reset": "Reset",
+	"common.close": "Close",
 	"about": "This is an about page (i18n test) locales",
 	"alarmlevels.critical": "Critical",
 	"alarmlevels.information": "Information",
@@ -500,5 +501,9 @@
 	"watchlist.settings.chartBigger": "Bigger chart",
 	"watchlist.list.PointWatcher": "Point value dashboard",
 	"watchlist.datapoint.disabled": "Data Point is not available!",
-	"watchlist.list.PointChart": "DataPoint chart"
+	"watchlist.list.PointChart": "DataPoint chart",
+	"watchlist.dialog.delete.title": "Delete Watch List",
+	"watchlist.dialog.delete.text": "Are you sure? That operation can not be undone?",
+	"watchlist.datapoint.pointvalue.set": "Set value:",
+	"watchlist.datapoint.pointvalue.new": "New value:"
 }

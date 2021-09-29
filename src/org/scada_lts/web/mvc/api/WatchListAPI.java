@@ -2,7 +2,9 @@ package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -109,6 +111,39 @@ public class WatchListAPI {
         }
     }
 
+	@GetMapping(value = "/generateXid")
+	public ResponseEntity<String> getUniqueXid(HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null && user.isAdmin()) {
+				return new ResponseEntity<>(watchListService.generateUniqueXid(), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/validate")
+	public ResponseEntity<Map<String, Object>> isXidUnique(
+			@RequestParam String xid,
+			@RequestParam Integer id,
+			HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				Map<String, Object> response = new HashMap<>();
+				response.put("unique", watchListService.isXidUnique(xid, id));
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
     @PostMapping(value = "")
 	public ResponseEntity<JsonWatchList> createWatchList(
 			@RequestBody JsonWatchList jsonWatchList,
@@ -150,7 +185,7 @@ public class WatchListAPI {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<String> deleteWatchList(
-			@RequestParam("id") Integer watchListId,
+			@PathVariable("id") Integer watchListId,
 			HttpServletRequest request
 	) {
 		try {

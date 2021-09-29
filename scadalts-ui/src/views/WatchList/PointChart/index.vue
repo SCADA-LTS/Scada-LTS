@@ -98,10 +98,10 @@
 import AmChart from '../../../components/amcharts/AmChart';
 import AmChartConfigurator from '../../../components/amcharts/AmChartConfigurator';
 
-import ChartSettingsLiveComponent from '../../../components/watch_list/components/ChartSettingsLiveComponent'
-import ChartSettingsStaticComponent from '../../../components/watch_list/components/ChartSettingsStaticComponent'
-import ChartSeriesSettingsComponent from '../../../components/watch_list/components/ChartSeriesSettingsComponent'
-import ChartSettingsCompareComponent from '../../../components/watch_list/components/ChartSettingsCompareComponent'
+import ChartSettingsLiveComponent from './ChartSettingsLiveComponent'
+import ChartSettingsStaticComponent from './ChartSettingsStaticComponent'
+import ChartSeriesSettingsComponent from './ChartSeriesSettingsComponent'
+import ChartSettingsCompareComponent from './ChartSettingsCompareComponent'
 
 /**
  *
@@ -149,17 +149,18 @@ export default {
 
 	computed: {
 		pointList() {
-			return this.$store.state.watchListModule2.pointWatcher;
+			return this.$store.state.watchListModule.pointWatcher;
 		},
 
 		activeWatchList() {
-			return this.$store.state.watchListModule2.activeWatchList;
+			return this.$store.state.watchListModule.activeWatchList;
 		},
 	},
 
-	mounted() {
-		// this.fetchDataPointDetails();
-		// this.init();
+	mounted() { },
+
+	beforeDestroy() {
+		this.disposeChart();
 	},
 
 	watch: {
@@ -191,9 +192,15 @@ export default {
 				.createYAxis('logAxis', null, false, true)
 				.createYAxis('binAxis', null, true);
 
-			const pl = this.pointList;
-			for (let i = 0; i < pl.length; i++) {
-				await this.config.createSeries(pl[i].id);
+			if(this.chartProperties.type === 'compare') {
+				const pl = this.chartProperties.comparePoints;
+				await this.config.createSeries(pl[0].pointId);
+				await this.config.createSeries(pl[1].pointId, 'valueAxis2', 'dateAxis2', 'date2');
+			} else {
+				const pl = this.pointList;
+				for (let i = 0; i < pl.length; i++) {
+					await this.config.createSeries(pl[i].id);
+				}
 			}
 			this.config = this.config.build();
 		},
@@ -245,6 +252,7 @@ export default {
 		},
 
         saveConfiguration() {
+			console.log(this.config);
 			this.config.saveChartConfiguration();
 		},
 

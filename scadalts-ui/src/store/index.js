@@ -13,8 +13,7 @@ import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
-import watchListModule from './modernWatchList';
-import watchListModule2 from './watchList';
+import watchListModule from './watchList';
 
 import axios from 'axios';
 
@@ -42,7 +41,6 @@ export default new Vuex.Store({
 		storeAlarmsNotifications,
 		SynopticPanelModule,
 		watchListModule,
-		watchListModule2
 	},
 	state: {
 		loggedUser: null,

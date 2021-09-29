@@ -12,20 +12,26 @@
                 <h2>{{$t(`watchlist.settings.title`)}}</h2>
             </v-card-title>
             <v-card-text>
+                <v-form v-model="valid" ref="form">
                 <section>
                     <v-row>
                         <v-col cols="8">
                             <v-text-field
+                                dense
                                 :label="$t(`watchlist.settings.name`)"
-                                v-model="watchListDetails.name">
-                            </v-text-field>
+                                v-model="watchListDetails.name"
+                                :rules="[ruleRequired]"
+                            ></v-text-field>
                         </v-col>
                         <v-col cols="4">
                             <v-text-field
+                                dense
                                 :label="$t(`common.xid`)"
                                 :disabled="!create"
-                                v-model="watchListDetails.xid">
-                            </v-text-field>
+                                v-model="watchListDetails.xid"
+                                @input="checkXidUnique"
+                                :rules="[ruleRequired, ruleXidUnique]"
+                            ></v-text-field>
                         </v-col>
                     </v-row>
                 </section>
@@ -97,16 +103,14 @@
                         </template>
                     </v-treeview>    
                 </section>
+                </v-form>
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn text @click="closeDialog">
                     {{$t(`common.cancel`)}}
                 </v-btn>
-                <v-btn text v-if="!create" @click="revert">
-                    {{$t(`common.reset`)}}
-                </v-btn>              
-                <v-btn text v-if="create" color="primary" @click="createWatchList">
+                <v-btn text v-if="create" color="primary" @click="createWatchList" :disabled="!valid">
                     {{$t(`common.create`)}}
                 </v-btn>
                 <v-btn text v-else color="primary" @click="updateWatchList">
@@ -129,16 +133,10 @@ export default {
     name: 'WatchListConfig',
 
     props: {
-        // watchListDetails: {
-        //     type: Object,
-        //     required: true
-        // },
-
         create: {
             type: Boolean,
             default: false
         }
-
     },
 
 
@@ -146,32 +144,28 @@ export default {
     data() {
         return {
             dialog: false,
-            // watchList: null,
             isDPListLoading: false,
             searchDataPoint:null,
             datapointsList: [],
+            xidUnique: true,
+            valid: false,
+			ruleRequired: (v) => !!v || this.$t('form.validation.required'),
+            ruleXidUnique: () => this.xidUnique || this.$t('common.snackbar.xid.not.unique'),
         }
     },
 
     mounted() {
-        // if(this.create) {
-
-            
-        // } else {
-        //     this.watchList = this.watchListDetails;
-        // }
-        
         this.loadWatchListData();
     },
 
     computed: {
         datapointHierarchy() {
-            return this.$store.state.watchListModule2.datapointHierarchy;
+            return this.$store.state.watchListModule.datapointHierarchy;
         },
         
         watchListDetails: {
             get() {
-                return this.$store.state.watchListModule2.activeWatchList;
+                return this.$store.state.watchListModule.activeWatchList;
             },
             set(newValue) {
                 return this.$store.dispatch('updateActiveWatchList', newValue);
@@ -226,9 +220,15 @@ export default {
 
         },
 
-        showDialog() {
+        async showDialog() {
             if(this.create) {
-                this.$store.commit('SET_BLANK_ACTIVE_WATCHLIST');
+                let xid;
+                try {
+                    xid = await this.$store.dispatch('getWatchListUniqueXid')
+                } catch (e) {
+                    console.error("Failed to get unique WatchList XID");
+                }
+                this.$store.commit('SET_BLANK_ACTIVE_WATCHLIST', xid);
             }
             this.dialog = true;
         },
@@ -237,19 +237,35 @@ export default {
             this.dialog = false;
         },
 
-        revert() {
-
-        },
-
         createWatchList() {
-            this.$emit('create');
-            this.closeDialog();
+            if(this.isFormValid()) {
+                this.$emit('create');
+                this.closeDialog();
+            }
         },
 
         updateWatchList() {
             this.$emit('update');
             this.closeDialog();
-        }
+        },
+
+        isFormValid() {
+            return this.$refs.form.validate();
+        },
+
+        async checkXidUnique() {
+			try {
+				if(this.create) {
+					let resp = await this.$store.dispatch(
+						'requestGet', `/watch-lists/validate?xid=${this.watchListDetails.xid}&id=${this.watchListDetails.id}`
+					);
+					this.xidUnique = resp.unique;
+					this.$refs.form.validate();
+				}
+			} catch (e) {
+				console.error("Failed to check unique of xid!");
+			}
+		}
     },
 
 

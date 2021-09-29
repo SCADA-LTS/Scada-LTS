@@ -2,7 +2,9 @@
  * @author Radoslaw Jajko
  *
  */
-
+import { searchDataPointInHierarchy } from './utils';
+import WatchListPoint from '@/models/WatchListPoint'
+import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 
  const watchListModule = {
 	state: {
@@ -22,11 +24,11 @@
             state.activeWatchList = watchList;
         },
 
-        SET_BLANK_ACTIVE_WATCHLIST(state) {
+        SET_BLANK_ACTIVE_WATCHLIST(state, uniqueXid = "WL_00001") {
             state.activeWatchList = {
                 id: -1,
                 name: '',
-                xid: '',
+                xid: uniqueXid,
                 userId: '',
                 pointList: [],
                 watchListUsers: [],
@@ -112,11 +114,17 @@
     },
 
 	actions: {
-        getWatchListDetails({ dispatch, commit }, watchlistId) {
+
+        // --- REST-API CRUD SECTION --- //
+        getAllWatchLists({ dispatch }) {
+            return dispatch('requestGet', '/watch-lists/');
+        },
+
+        getWatchListDetails({ dispatch, commit }, id) {
             return new Promise(async (resolve, reject) => {
                 try {
-                    let watchList = await dispatch('requestGet', `/watch-lists/${watchlistId}`);
-                    let details = loadWatchListDetails(watchlistId);
+                    let watchList = await dispatch('requestGet', `/watch-lists/${id}`);
+                    let details = loadWatchListDetails(id);
                     if(!!details) {
                         watchList.horizontal = details.horizontal;
                         watchList.biggerChart = details.biggerChart;
@@ -124,6 +132,7 @@
                         watchList.horizontal = true;
                         watchList.biggerChart = false;
                     }
+                    watchList.user = await dispatch('getUserDetails', watchList.userId);
                     commit('SET_ACTIVE_WATCHLIST', watchList);
                     resolve(watchList);
                 } catch (e) {
@@ -132,29 +141,39 @@
             })
 		},
 
-        async loadWatchListPointHierarchyNode({ state, dispatch, commit }, node) {
-            console.debug(`Loading Point Hierarchy for WatchList...\nNodeID: ${node.id}`);
-            
+        getWatchListUniqueXid({ dispatch }) {
+			return dispatch('requestGet', `/watch-lists/generateXid`);
+		},
+
+        createWatchList({dispatch, state}) {
+            saveWatchListDetails(state.activeWatchList);
+            return dispatch('requestPost', {
+                url: '/watch-lists',
+                data: state.activeWatchList,
+            });
+        },
+
+        updateWatchList({dispatch, state}) {
+            saveWatchListDetails(state.activeWatchList);
+            return dispatch('requestPut', {
+                url: '/watch-lists',
+                data: state.activeWatchList,
+            });
+
+        },
+
+        deleteWatchList({dispatch, state}) {
+            return dispatch('requestDelete', `/watch-lists/${state.activeWatchList.id}`);
+        },
+
+        // --- WATCHLIST POINT HIERARCHY SECTION --- //
+        async loadWatchListPointHierarchyNode({ state, dispatch, commit }, node) {            
             let pointHierarchy = await dispatch('fetchPointHierarchyNode', node.id);
             let responseArray = [];
             pointHierarchy.forEach(ph => {
-                let item = {
-                    name: ph.title,
-                    xid: ph.xid,
-                    folder: ph.folder,
-                    id: ph.folder ? `f${ph.key}` : `p${ph.key}`,
-                }
-                if(ph.folder) {
-                    item.children = [];
-                } else {
-                    if(!!state.activeWatchList) {
-                        item.selected = !!state.activeWatchList.pointList.find(p => p.id === ph.key);
-                    } else {
-                        item.selected = false;
-                    }
-                    
-                }
-                responseArray.push(item);
+                responseArray.push(
+                    new WatchListPointHierarchyNode(ph, state.activeWatchList)
+                );
             });
 
             if(!!node.parentNode) {
@@ -172,19 +191,9 @@
                     let pv = await dispatch('getDataPointValue', datapointId);
                     let pe = await dispatch('fetchDataPointEvents', {datapointId, limit:10})
                     console.log(pv);
-                    let pointData = {
-                        id: dp.id,
-                        xid: dp.xid,
-                        name: dp.name,
-                        description: dp.description,
-                        enabled: dp.enabled,
-                        settable: dp.pointLocator.settable,
-                        type: dp.pointLocator.dataTypeId,
-                        value: pv.value,
-                        timestamp: new Date(pv.ts).toLocaleTimeString(),
-                        events: pe,
-                    }
-                    commit('ADD_POINT_TO_WATCHER', pointData);
+                    let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe);
+
+                    commit('ADD_POINT_TO_WATCHER', pointData2);
                     resolve(pointData);
                 } catch (e) {
                     reject(e);
@@ -223,52 +232,11 @@
             return state.activeWatchList;
         },
 
-
-        createWatchList({dispatch, state}) {
-            saveWatchListDetails(state.activeWatchList);
-            return dispatch('requestPost', {
-                url: '/watch-lists',
-                data: state.activeWatchList,
-            });
-        },
-
-        updateWatchList({dispatch, state}) {
-            saveWatchListDetails(state.activeWatchList);
-            return dispatch('requestPut', {
-                url: '/watch-lists',
-                data: state.activeWatchList,
-            });
-
-        },
-
-        deleteWatchList({dispatch, state}) {
-            return dispatch('requestDelete', `/watch-lists/${state.activeWatchList.id}`);
-        }
-
     },
 
 	getters: {},
 };
 export default watchListModule;
-
-function searchDataPointInHierarchy(array, elementId) {
-    if(!!array && array.length > 0) {
-        let result = array.find(item => (!item.folder && Number(item.id.slice(1)) === elementId));
-        if(!!result) {
-            console.debug("Found!")
-            return result;
-        } else {
-            console.debug("Not found in that level\nSearching in")
-            for(let i = 0; i < array.length; i++) {
-                if(array[i].folder && !!array[i].children && array[i].children.length > 0) {
-                    return searchDataPointInHierarchy(array[i].children, elementId);
-                }
-            }            
-        }
-    }
-    return null;
-    
-}
 
 function saveWatchListDetails(watchList) {
     let saveData = {

@@ -26,20 +26,21 @@
                 </span>
             </div>
             <div class="list-item--value">
-                <transition name="slide-fade" mode="out-in">
-                    <span v-if="point.enabled" class="list-item-content--value" :key="point.timestamp">
-                        <span class="list-item-content--value-number">
-                            {{point.value}}
-                        </span>
-                        <span class="list-item-content--value-ts">
-                            {{point.timestamp}}
-                        </span>
-                        
+                    <span v-if="point.enabled" class="list-item-content--value">
+                        <transition name="slide-fade" mode="out-in">
+                            <span class="list-item-content--value-number" :key="point.value">
+                                {{point.value}}
+                            </span>
+                        </transition>
+                        <transition name="slide-fade-2" mode="out-in">
+                            <span class="list-item-content--value-ts" :key="point.timestamp">
+                                {{point.timestamp}}
+                            </span>
+                        </transition>
                     </span>
                     <span v-else class="list-item-content--value">
                         {{$t('watchlist.datapoint.disabled')}}
                     </span>
-                </transition>
             </div>
             <div class="list-item--action-buttons">
                 <v-menu :close-on-content-click="false" offset-y>
@@ -93,6 +94,7 @@ import PointValueSet from './PointValueSet';
 import EventScadaItem from '@/layout/lists/events/EventScadaItem';
 
 import webSocketMixin from '@/utils/web-socket-utils';
+import WatchListPoint from '@/models/WatchListPoint';
 
 /**
  * 
@@ -141,7 +143,7 @@ export default {
 
     computed: {
         pointList() {
-            return this.$store.state.watchListModule2.pointWatcher;
+            return this.$store.state.watchListModule.pointWatcher;
         }
     },
 
@@ -195,19 +197,9 @@ export default {
                         datapointId: datapointId,
                         limit: 10,
                     });
-                    let pointData = {
-                        id: point.id,
-                        xid: point.xid,
-                        name: point.name,
-                        description: point.description,
-                        enabled: point.enabled,
-                        settable: point.pointLocator.settable,
-                        type: point.pointLocator.dataTypeId,
-                        value: pv.value,
-                        timestamp: new Date(pv.ts).toLocaleTimeString(),
-                        events: pointEvents
-                    }
-                    resolve(pointData);
+                    let pointData2 = new WatchListPoint().createWatchListPoint(point, pv, pointEvents);
+                    
+                    resolve(pointData2);
                 } catch (e) {
                     reject(e);
                 }
@@ -327,7 +319,7 @@ export default {
     font-style: italic;
     color: #0000008f;
 }
-.slide-fade-enter-active {
+.slide-fade-enter-active, .slide-fade-2-enter-active {
     background-color: var(--v-accent-darken1);
     color: var(--v-secondary-lighten5);
     border-radius: 7px;

@@ -1,74 +1,107 @@
 <template>
 	<div>
 		<v-container fluid class="slts-page-header">
-            <v-row align="center">
-                <v-col xs="12" md="6">
-                    <h1>{{$t('watchlist.title')}}</h1>
-                </v-col>
+			<v-row align="center">
+				<v-col xs="12" md="6" class="slts--title">
+					<h1>
+                        <span>
+                            {{ $t('watchlist.title') }}
+                        </span>
+                        <v-tooltip bottom v-if="activeWatchList && activeWatchList.id !== -1">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-icon v-bind="attrs" v-on="on">mdi-account</v-icon>
+                            </template>
+                            <div>
+                                <span class="tooltip--username">Owner: {{ activeWatchList.user.username }}</span><br>
+                                <span>{{ activeWatchList.user.firstName }} {{ activeWatchList.user.lastName }}</span>
+                            </div>
+                        </v-tooltip>
+                        
+                    </h1>
+				</v-col>
 
-                <v-col xs="12" md="4" class="row justify-end">
-                    <WatchListConfig 
-                        :create="true"
-                        @create="createWatchList"
-                        class="header-settings--buttons"
-                    ></WatchListConfig>
-                    <WatchListConfig 
-                        v-if="selectedWatchList"
-                        :key="selectedWatchList.id"
-                        @update="updateWatchList"
-                        class="header-settings--buttons"
-                    ></WatchListConfig>
-                    <v-btn fab elevation="1"
-                        v-if="selectedWatchList"
-                        @click="deleteWatchList"
-                        class="header-settings--buttons"
-                        ><v-icon>mdi-minus-circle</v-icon>
-                    </v-btn>
-                </v-col>
-                <v-col xs="12" md="2">
-                    <v-select
-                        :label="$t(`watchlist.header.select`)"
-                        dense
-                        :items="watchLists"
-                        item-text="name"
-                        item-value="id"
-                        @change="fetchWatchListDetails"
-                    ></v-select>
-                </v-col>
-            </v-row>
+				<v-col xs="12" md="4" class="slts--toolbar row justify-end">
+					<WatchListConfig
+						:create="true"
+						@create="createWatchList"
+						class="header-settings--buttons"
+					></WatchListConfig>
+					<WatchListConfig
+						v-if="activeWatchList"
+						:key="activeWatchList.id"
+						@update="updateWatchList"
+						class="header-settings--buttons"
+					></WatchListConfig>
+					<v-btn
+						fab
+						elevation="1"
+						v-if="activeWatchList"
+						@click="openDeletionDialog"
+						class="header-settings--buttons"
+						><v-icon>mdi-minus-circle</v-icon>
+					</v-btn>
+				</v-col>
+				<v-col xs="12" md="2" class="slts--selectbox">
+					<v-select
+						:label="$t(`watchlist.header.select`)"
+						dense
+						:items="watchListsArray"
+						item-text="name"
+						item-value="id"
+						@change="fetchWatchListDetails"
+					></v-select>
+				</v-col>
+			</v-row>
 		</v-container>
 
-		<v-container fluid class="slts-page-content" v-if="selectedWatchList && selectedWatchList.id !== -1" :key="selectedWatchList.id">
+		<v-container
+			fluid
+			class="slts-page-content"
+			v-if="activeWatchList && activeWatchList.id !== -1"
+			:key="activeWatchList.id"
+		>
 			<v-card class="slts-card">
 				<v-row class="flex-jc-center">
-                    <draggable
-                        :list="watchListItems"
-                        handle=".dragHandle"
-                        @end="saveWatchListLayout"
-                    >
-                    <v-col v-for="cmp in watchListItems" :key="cmp.id" class="watchlist-component" :class="componentStyleClass(cmp)">
-                        <v-icon class="dragHandle">mdi-drag-vertical</v-icon>
-                        <span>{{$t(`watchlist.list.${cmp.component}`)}}</span>
-                        
-                            <div v-if="cmp.component === 'PointWatcher'">
-                                <PointWatcher
-                                    :dataPointList="selectedWatchList.pointList"
-                                ></PointWatcher>
-                            </div>
-                            <div v-else>
-                                <PointChart>
-                                </PointChart>
-                            </div>
-                    </v-col>
-                    </draggable>
+					<draggable
+						:list="watchListComponents"
+						handle=".dragHandle"
+						@end="saveWatchListLayout"
+					>
+						<v-col
+							v-for="cmp in watchListComponents"
+							:key="cmp.id"
+							class="watchlist-component"
+							:class="componentStyleClass(cmp)"
+						>
+							<v-icon class="dragHandle">mdi-drag-vertical</v-icon>
+							<span>{{ $t(`watchlist.list.${cmp.component}`) }}</span>
+
+							<div v-if="cmp.component === 'PointWatcher'">
+								<PointWatcher :dataPointList="activeWatchList.pointList"></PointWatcher>
+							</div>
+							<div v-else>
+								<PointChart> </PointChart>
+							</div>
+						</v-col>
+					</draggable>
 				</v-row>
 			</v-card>
 		</v-container>
-        
+
+        <ConfirmationDialog
+			:btnvisible="false"
+			:dialog="dialogDeletionVisible"
+			@result="onDeleteDialogClose"
+			:title="$t('watchlist.dialog.delete.title')"
+			:message="$t('watchlist.dialog.delete.text')"
+		></ConfirmationDialog>
 	</div>
 </template>
 <script>
-import draggable from "vuedraggable";
+import draggable from 'vuedraggable';
+
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+
 
 import PointWatcher from './PointWatcher';
 import PointChart from './PointChart/index.vue';
@@ -80,120 +113,131 @@ import WatchListConfig from './WatchListConfig';
 export default {
 	name: 'WatchList',
 
-    components: {
-        PointWatcher,
-        PointChart,
-        WatchListConfig,
-        draggable
-    },
+	components: {
+		PointWatcher,
+		PointChart,
+		WatchListConfig,
+        ConfirmationDialog,
+		draggable,
+	},
 
 	data() {
 		return {
-            // selectedWatchList: null,
-            blankWatchList: {
-                id: -1,
-                name: '',
-                xid: '',
-                pointList: [],
-            },
-            watchLists: [],
-            watchListItems: [{
-                id: 0,
-                component: 'PointWatcher',
-            },
-            {
-                id: 1,
-                component: 'PointChart',
-            }],
-			
+            dialogDeletionVisible: false,
+			watchListsArray: [],
+			watchListComponents: [
+				{
+					id: 0,
+					component: 'PointWatcher',
+				},
+				{
+					id: 1,
+					component: 'PointChart',
+				},
+			],
 		};
 	},
-    computed: {
-        selectedWatchList: {
-            get() {
-                return this.$store.state.watchListModule2.activeWatchList;
-            },
-            set(newValue) {
-                return this.$store.dispatch('updateActiveWatchList', newValue);
-            }
-        },
-
-    },
+	computed: {
+		activeWatchList: {
+			get() {
+				return this.$store.state.watchListModule.activeWatchList;
+			},
+			set(newValue) {
+				return this.$store.dispatch('updateActiveWatchList', newValue);
+			},
+		},
+	},
 
 	mounted() {
-        this.fetchWatchLists();
+		this.fetchWatchLists();
+	},
+
+    beforeDestroy() {
+        this.$store.commit('UPDATE_ACTIVE_WATCHLIST', null);
     },
 
 	methods: {
-        async fetchWatchLists() {
-            this.watchLists = await this.$store.dispatch('fetchWatchLists');
-            this.loadWatchListLayout();
-        },
+		async fetchWatchLists() {
+			this.watchListsArray = await this.$store.dispatch('getAllWatchLists');
+			this.loadWatchListLayout();
+		},
 
-        async fetchWatchListDetails(watchListId) {
-            await this.$store.dispatch('getWatchListDetails', watchListId);
-            this.loadWatchListLayout();
-            // this.selectedWatchList = watchListId;
-        },
+		async fetchWatchListDetails(watchListId) {
+			await this.$store.dispatch('getWatchListDetails', watchListId);
+			this.loadWatchListLayout();
+			// this.activeWatchList = watchListId;
+		},
 
-        removePoint(point) {
-            this.dataPointList = this.dataPointList.filter(p => p.id !== point.id);
-        },
+		removePoint(point) {
+			this.dataPointList = this.dataPointList.filter((p) => p.id !== point.id);
+		},
 
-        createWatchList() {
-            this.$store.dispatch('createWatchList').then(resp => {
-                this.watchLists.push({
-                    id: resp.id,
-                    xid: resp.xid,
-                    name: resp.name,
-                });
-            });
-        },
+		createWatchList() {
+			this.$store.dispatch('createWatchList').then((resp) => {
+				this.watchListsArray.push({
+					id: resp.id,
+					xid: resp.xid,
+					name: resp.name,
+				});
+			});
+		},
 
-        updateWatchList() {
-            this.$store.dispatch('updateWatchList');
-        },
+		updateWatchList() {
+			this.$store.dispatch('updateWatchList');
+		},
 
-        deleteWatchList() {
-            this.$store.dispatch('deleteWatchList').then(() => {
-                this.watchLists = this.watchLists.filter(wl => wl.id !== this.selectedWatchList.id);
-                this.$store.commit('UPDATE_ACTIVE_WATCHLIST', null);
-            });
-            
-            
-        },
+        
 
-        componentStyleClass(item) {
-            if(this.selectedWatchList.horizontal) {
-                return 'watchlist-component--horizontal';
-            } else {
-                if(this.selectedWatchList.biggerChart) {
-                    console.log('biggerChart');
-                    if(item.component === 'PointChart') {
-                        return 'watchlist-component--bigger-chart';
-                    } else {
-                        return 'watchlist-component--smaller-list';
-                    }
-                } else {
-                    return 'watchlist-component--vertical';
-                }
+		deleteWatchList() {
+			this.$store.dispatch('deleteWatchList').then(() => {
+				this.watchListsArray = this.watchListsArray.filter(
+					(wl) => wl.id !== this.activeWatchList.id
+				);
+				this.$store.commit('UPDATE_ACTIVE_WATCHLIST', null);
+			});
+		},
 
-            }
-        },
+        openDeletionDialog() {
+			this.dialogDeletionVisible = true;
+		},
 
-        saveWatchListLayout() {
-            localStorage.setItem(`MWLDL_${this.selectedWatchList.id}`, JSON.stringify(this.watchListItems));
-            
-        }, 
-        loadWatchListLayout() {
-            let data = JSON.parse(localStorage.getItem(`MWLDL_${this.selectedWatchList.id}`));
-            if(!!data) {
-                this.watchListItems = data;
-            }
-        }
+        onDeleteDialogClose(result) {
+			this.dialogDeletionVisible = false;
+			if (result) {
+				this.deleteWatchList();
+			}
+		},
 
+		componentStyleClass(item) {
+			if (this.activeWatchList.horizontal) {
+				return 'watchlist-component--horizontal';
+			} else {
+				if (this.activeWatchList.biggerChart) {
+					console.log('biggerChart');
+					if (item.component === 'PointChart') {
+						return 'watchlist-component--bigger-chart';
+					} else {
+						return 'watchlist-component--smaller-list';
+					}
+				} else {
+					return 'watchlist-component--vertical';
+				}
+			}
+		},
 
-    },
+		saveWatchListLayout() {
+			localStorage.setItem(
+				`MWLDL_${this.activeWatchList.id}`,
+				JSON.stringify(this.watchListComponents)
+			);
+		},
+		loadWatchListLayout() {
+			let data = JSON.parse(localStorage.getItem(`MWLDL_${this.activeWatchList.id}`));
+			if (!!data) {
+				this.watchListComponents = data;
+			}
+		},
+	},
 };
 </script>
 <style scoped>
@@ -217,18 +261,23 @@ export default {
 	justify-content: center;
 }
 .watchlist-component--vertical {
-    width: 50%;
-    float: left;
+	width: 50%;
+	float: left;
 }
 .watchlist-component--bigger-chart {
-    width: 60%;
-    float: left;
+	width: 65%;
+	float: left;
 }
 .watchlist-component--smaller-list {
-    width: 40%;
-    float: left;
+	width: 35%;
+	float: left;
 }
 .header-settings--buttons {
-    margin: 0 5px;
+	margin: 0 5px;
+}
+
+.tooltip--username {
+    font-size: 12px;
+    font-style: italic;
 }
 </style>
