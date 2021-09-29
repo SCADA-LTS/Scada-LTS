@@ -240,15 +240,10 @@ public final class SendMsgUtils {
         return addresses.toArray(new InternetAddress[]{});
     }
 
-    public static String getDataPointMessage(DataPointVO dataPoint) {
-        DataPointRT point = Common.ctx.getRuntimeManager().getDataPoint(dataPoint.getId());
-        if (dataPoint.getEventTextRenderer() != null &&
-                !dataPoint.getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
-                dataPoint.getEventTextRenderer().getText(point.getPointValue().getValue()) != null &&
-                (!dataPoint.getEventTextRenderer().getText(point.getPointValue().getValue()).equals(""))) {
-            return " " + dataPoint.getEventTextRenderer().getText(point.getPointValue().getValue());
-        }
-        else if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
+    public static String getDataPointMessage(DataPointVO dataPoint, LocalizableMessage shortMsg) {
+        if (shortMsg.getKey().equals("event.detector.shortMessage") && shortMsg.getArgs().length == 2) {
+            return " " + shortMsg.getArgs()[1];
+        } else if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
             return " " + dataPoint.getDescription();
         else
             return " " + dataPoint.getName();
