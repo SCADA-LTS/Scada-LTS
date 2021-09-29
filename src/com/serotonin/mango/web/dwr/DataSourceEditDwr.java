@@ -42,7 +42,6 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
@@ -92,6 +91,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -359,8 +359,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-        UsersProfileDao usersProfileDao = new UsersProfileDao();
-        usersProfileDao.updateDataPointPermissions();
+        UsersProfileService usersProfileService = new UsersProfileService();
+        usersProfileService.updateDataPointPermissions();
         return getPoints();
     }
 
@@ -1120,7 +1120,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
         } catch (Exception e) {
-            LOG.error(infoErrorExecutionScript(e,"validateScript"));
+            LOG.error(infoErrorExecutionScript(e, "validateScript: " + script));
             throw e;
         }
 

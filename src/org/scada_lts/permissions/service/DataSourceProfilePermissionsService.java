@@ -1,28 +1,23 @@
 package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DataSourceProfilePermissionsService implements PermissionsService<Integer, UsersProfileVO> {
 
-    private final DataSourceDAO dataSourceDAO;
-    private final UsersProfileDAO usersProfileDAO;
+    private final IUsersProfileDAO usersProfileDAO;
 
-    public DataSourceProfilePermissionsService() {
-        this.usersProfileDAO = new UsersProfileDAO();
-        this.dataSourceDAO = new DataSourceDAO();
-    }
-
-    public DataSourceProfilePermissionsService(UsersProfileDAO usersProfileDAO, DataSourceDAO dataPointUserDAO) {
+    public DataSourceProfilePermissionsService(IUsersProfileDAO usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
-        this.dataSourceDAO = dataPointUserDAO;
     }
+
     @Override
     public List<Integer> getPermissions(UsersProfileVO profile) {
-        return dataSourceDAO.selectDataSourcePermissionsByProfileId(profile.getId());
+        return usersProfileDAO.selectDataSourcePermissionsByProfileId(profile.getId());
     }
 
     @Override
