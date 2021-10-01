@@ -14,6 +14,7 @@ import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
 import watchListModule from './watchList';
+import webSocketModule from './websocketStore';
 
 import axios from 'axios';
 
@@ -41,6 +42,7 @@ export default new Vuex.Store({
 		storeAlarmsNotifications,
 		SynopticPanelModule,
 		watchListModule,
+		webSocketModule,
 	},
 	state: {
 		loggedUser: null,
@@ -135,6 +137,9 @@ export default new Vuex.Store({
 		async getUserInfo({ state, dispatch, commit }) {
 			state.loggedUser = await dispatch('requestGet', '/auth/user');
 			commit('updateWebSocketUrl');
+			commit('INIT_WEBSOCKET_URL');
+			commit('INIT_WEBSOCKET');
+
 		},
 
 		/**

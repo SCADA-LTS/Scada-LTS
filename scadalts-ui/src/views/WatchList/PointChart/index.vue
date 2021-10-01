@@ -1,14 +1,13 @@
 <template>
 	<div class="datapointList">
 		<v-row class="wl-chart-settings" dense>
-            <v-col cols="12" class="flex jc--space-between">
-                <v-btn-toggle v-model="chartType" dense>
+			<v-col cols="12" class="flex jc--space-between">
+				<v-btn-toggle v-model="chartType" dense>
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
 							<v-btn value="live" v-bind="attrs" v-on="on">
 								<v-icon>mdi-chart-line</v-icon>
 								{{ $t('modernwatchlist.chart.panel.live') }}
-								
 							</v-btn>
 						</template>
 						<span>{{ $t('modernwatchlist.chart.panel.live.tooltip') }}</span>
@@ -19,7 +18,6 @@
 							<v-btn value="static" v-bind="attrs" v-on="on">
 								<v-icon>mdi-chart-bar</v-icon>
 								{{ $t('modernwatchlist.chart.panel.static') }}
-								
 							</v-btn>
 						</template>
 						<span>{{ $t('modernwatchlist.chart.panel.static.tooltip') }}</span>
@@ -30,42 +28,35 @@
 							<v-btn value="compare" v-bind="attrs" v-on="on">
 								<v-icon>mdi-chart-gantt</v-icon>
 								{{ $t('modernwatchlist.chart.panel.compare') }}
-								
 							</v-btn>
 						</template>
 						<span>{{ $t('modernwatchlist.chart.panel.compare.tooltip') }}</span>
 					</v-tooltip>
 				</v-btn-toggle>
 
-                <div class="flex jc--flex-end">
-                    <v-tooltip bottom>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn small icon @click="updateSettings()" v-bind="attrs" v-on="on">
-							<v-icon>mdi-refresh</v-icon>
-						</v-btn>
-					</template>
-					<span>{{ $t('modernwatchlist.chart.panel.apply.tooltip') }}</span>
-				</v-tooltip>
+				<div class="flex jc--flex-end">
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn small icon @click="updateSettings()" v-bind="attrs" v-on="on">
+								<v-icon>mdi-refresh</v-icon>
+							</v-btn>
+						</template>
+						<span>{{ $t('modernwatchlist.chart.panel.apply.tooltip') }}</span>
+					</v-tooltip>
 
-				<div v-if="config">
-					<ChartSeriesSettingsComponent
-						:series="config.getSeriesConfiguration()"
-						:chartConfig="config.configuration"
-						:watchListName="activeWatchList.id"
-						@saved="onSettingsSaved"
-						@deleted="onSettingsDeleted"
-					></ChartSeriesSettingsComponent>
+					<div v-if="config && !!config.getSeriesConfiguration">
+						<ChartSeriesSettingsComponent
+							:series="config.getSeriesConfiguration()"
+							:chartConfig="config.configuration"
+							:watchListName="activeWatchList.id"
+							@saved="onSettingsSaved"
+							@deleted="onSettingsDeleted"
+						></ChartSeriesSettingsComponent>
+					</div>
 				</div>
-                </div>
+			</v-col>
 
-                
-            </v-col>
-
-			<v-col
-				id="wl-chart-type-settings"
-				cols="12"
-				v-if="!!activeWatchList"
-			>
+			<v-col id="wl-chart-type-settings" cols="12" v-if="!!activeWatchList">
 				<ChartSettingsLiveComponent
 					ref="csLiveComponent"
 					v-show="chartType === 'live'"
@@ -82,7 +73,6 @@
 					v-show="chartType === 'compare'"
 				></ChartSettingsCompareComponent>
 			</v-col>
-
 		</v-row>
 		<v-row no-gutters>
 			<v-col cols="12" id="wl-chart-container">
@@ -98,10 +88,10 @@
 import AmChart from '../../../components/amcharts/AmChart';
 import AmChartConfigurator from '../../../components/amcharts/AmChartConfigurator';
 
-import ChartSettingsLiveComponent from './ChartSettingsLiveComponent'
-import ChartSettingsStaticComponent from './ChartSettingsStaticComponent'
-import ChartSeriesSettingsComponent from './ChartSeriesSettingsComponent'
-import ChartSettingsCompareComponent from './ChartSettingsCompareComponent'
+import ChartSettingsLiveComponent from './ChartSettingsLiveComponent';
+import ChartSettingsStaticComponent from './ChartSettingsStaticComponent';
+import ChartSeriesSettingsComponent from './ChartSeriesSettingsComponent';
+import ChartSettingsCompareComponent from './ChartSettingsCompareComponent';
 
 /**
  *
@@ -112,7 +102,7 @@ import ChartSettingsCompareComponent from './ChartSettingsCompareComponent'
 export default {
 	name: 'PointChart',
 
-    components: {
+	components: {
 		ChartSettingsLiveComponent,
 		ChartSettingsStaticComponent,
 		ChartSeriesSettingsComponent,
@@ -157,10 +147,11 @@ export default {
 		},
 	},
 
-	mounted() { },
+	mounted() {},
 
 	beforeDestroy() {
 		this.disposeChart();
+		this.config = null;
 	},
 
 	watch: {
@@ -174,13 +165,13 @@ export default {
 
 	methods: {
 		async init() {
-            this.chartLoading = true;
+			this.chartLoading = true;
 			this.initSettings();
 			this.loadSettings();
-            this.chartLoading = false;
+			this.chartLoading = false;
 			await this.initDefaultConfiguration();
 			this.initChart();
-            this.renderChart();
+			this.renderChart();
 		},
 
 		async initDefaultConfiguration() {
@@ -192,7 +183,7 @@ export default {
 				.createYAxis('logAxis', null, false, true)
 				.createYAxis('binAxis', null, true);
 
-			if(this.chartProperties.type === 'compare') {
+			if (this.chartProperties.type === 'compare') {
 				const pl = this.chartProperties.comparePoints;
 				await this.config.createSeries(pl[0].pointId);
 				await this.config.createSeries(pl[1].pointId, 'valueAxis2', 'dateAxis2', 'date2');
@@ -210,48 +201,47 @@ export default {
 			console.log(pointIds);
 			this.chartClass = new AmChart(this.$refs.chartdiv, 'xychart', pointIds)
 				.startTime(this.chartProperties.startDate)
-                .endTime(this.chartProperties.endDate)
+				.endTime(this.chartProperties.endDate)
 				.makeFromConfig(this.config.getConfiguration());
 
-            const refreshRate = this.chartProperties.refreshRate;
-			if(!!refreshRate && refreshRate >= 5000) {
+			const refreshRate = this.chartProperties.refreshRate;
+			if (!!refreshRate && refreshRate >= 5000) {
 				this.chartClass.withLiveUpdate(refreshRate);
-			} else if (!!refreshRate && refreshRate === -1) { 
+			} else if (!!refreshRate && refreshRate === -1) {
 				this.chartClass.withWebSocketUpdate();
 			}
-			if(this.chartProperties.type === 'compare') {
+			if (this.chartProperties.type === 'compare') {
 				this.chartClass.compare();
 			}
 			this.chartClass = this.chartClass.build();
-
 		},
 
-        renderChart() {
+		renderChart() {
 			this.chartClass.createChart().catch((e) => {
 				console.log(e);
-				if(e.message === 'No data from that range!') {
+				if (e.message === 'No data from that range!') {
 					this.response = {
 						status: true,
 						color: 'warning',
-						message: e.message
-					}
+						message: e.message,
+					};
 				} else {
 					this.response = {
 						status: true,
 						color: 'error',
-						message: `Failed to load chart!: ${e.message}`
-					}
+						message: `Failed to load chart!: ${e.message}`,
+					};
 				}
 			});
 		},
 
-        disposeChart() {
-			if(!!this.chartClass) {
+		disposeChart() {
+			if (!!this.chartClass) {
 				this.chartClass.disposeChart();
 			}
 		},
 
-        saveConfiguration() {
+		saveConfiguration() {
 			console.log(this.config);
 			this.config.saveChartConfiguration();
 		},
@@ -261,7 +251,9 @@ export default {
 		},
 
 		initSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.activeWatchList.id}_P`));
+			let loadedData = JSON.parse(
+				localStorage.getItem(`MWL_${this.activeWatchList.id}_P`)
+			);
 			this.chartType = !!loadedData ? loadedData.type : 'live';
 		},
 
@@ -287,7 +279,6 @@ export default {
 		onSettingsSaved() {
 			this.saveConfiguration();
 			this.updateSettings();
-			
 		},
 
 		onSettingsDeleted() {
@@ -296,7 +287,7 @@ export default {
 		},
 
 		getComponentType(type) {
-			switch(type) {
+			switch (type) {
 				case 'live':
 					return this.$refs.csLiveComponent;
 				case 'static':
@@ -304,11 +295,9 @@ export default {
 				case 'compare':
 					return this.$refs.csCompareComponent;
 				default:
-					throw new Error("Chart type not recognized!");
+					throw new Error('Chart type not recognized!');
 			}
-		}
-
-
+		},
 	},
 };
 </script>
@@ -318,13 +307,13 @@ export default {
 	height: 600px;
 }
 .flex {
-    display: flex;
+	display: flex;
 }
 .jc--space-between {
-    justify-content: space-between;
+	justify-content: space-between;
 }
 .jc--flex-end {
-    justify-content: flex-end;
+	justify-content: flex-end;
 }
 .wl-chart-settings {
 	margin: 2px;

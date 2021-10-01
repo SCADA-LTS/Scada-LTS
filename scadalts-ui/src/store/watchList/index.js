@@ -195,7 +195,7 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
                     let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe);
 
                     commit('ADD_POINT_TO_WATCHER', pointData2);
-                    resolve(pointData);
+                    resolve(pointData2);
                 } catch (e) {
                     reject(e);
                 }

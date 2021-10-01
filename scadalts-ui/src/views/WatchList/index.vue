@@ -85,6 +85,7 @@
 
 							<div v-if="cmp.component === 'PointWatcher'">
 								<PointWatcher
+									:key="activeWatchList.id"
 									:dataPointList="activeWatchList.pointList"
 									:permissions="userRights"
 								></PointWatcher>
@@ -192,7 +193,6 @@ export default {
 		async fetchWatchListDetails(watchListId) {
 			await this.$store.dispatch('getWatchListDetails', watchListId);
 			this.loadWatchListLayout();
-			// this.activeWatchList = watchListId;
 		},
 
 		removePoint(point) {
