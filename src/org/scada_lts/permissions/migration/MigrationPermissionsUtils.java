@@ -280,7 +280,11 @@ final class MigrationPermissionsUtils {
             PointComponent pointComponent = (PointComponent) viewComponent;
             if(pointComponent.tgetDataPoint() != null) {
                 LOG.info(dataPointInfo("Found ", pointComponent.tgetDataPoint()));
-                dataPoints.add(pointComponent.tgetDataPoint());
+                DataPointVO dataPoint = pointComponent.tgetDataPoint();
+                if(dataPoint.getPointLocator() != null) {
+                    dataPoint.setSettable(dataPoint.getPointLocator().isSettable());
+                }
+                dataPoints.add(dataPoint);
             }
         }
     }
@@ -298,6 +302,17 @@ final class MigrationPermissionsUtils {
         });
         LOG.info("search-datapoints end");
         return dataPoints;
+    }
+
+    public static Set<DataPointAccess> selectDataPointAccesses(Map<Integer, List<DataPointVO>> dataPointsFromViews, Set<DataPointAccess> dataPointAccesses, View view, ShareUser shareUser) {
+        return dataPointsFromViews.get(view.getId()).stream()
+                .map(dataPoint -> generateDataPointAccess(shareUser, dataPoint))
+                .filter(access -> includeAccessIfNotContainsOrHigherPermission(dataPointAccesses, access))
+                .collect(Collectors.toSet());
+    }
+
+    private static boolean includeAccessIfNotContainsOrHigherPermission(Set<DataPointAccess> dataPointAccesses, DataPointAccess access) {
+        return dataPointAccesses.isEmpty() || dataPointAccesses.stream().allMatch(a -> a.getDataPointId() != access.getDataPointId() || a.getPermission() < access.getPermission());
     }
 
     private static <T extends Permission> BiPredicate<T, List<T>> containsPermission() {
