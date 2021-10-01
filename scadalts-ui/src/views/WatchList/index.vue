@@ -2,32 +2,36 @@
 	<div>
 		<v-container fluid class="slts-page-header">
 			<v-row align="center">
-				<v-col xs="12" md="6" class="slts--title">
+				<v-col xs="12" sm="6" md="6" class="slts--title">
 					<h1>
-                        <span>
-                            {{ $t('watchlist.title') }}
-                        </span>
-                        <v-tooltip bottom v-if="activeWatchList && activeWatchList.id !== -1">
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-icon v-bind="attrs" v-on="on">mdi-account</v-icon>
-                            </template>
-                            <div>
-                                <span class="tooltip--username">Owner: {{ activeWatchList.user.username }}</span><br>
-                                <span>{{ activeWatchList.user.firstName }} {{ activeWatchList.user.lastName }}</span>
-                            </div>
-                        </v-tooltip>
-                        
-                    </h1>
+						<span>
+							{{ $t('watchlist.title') }}
+						</span>
+						<v-tooltip bottom v-if="activeWatchList && activeWatchList.id !== -1">
+							<template v-slot:activator="{ on, attrs }">
+								<v-icon v-bind="attrs" v-on="on">mdi-account</v-icon>
+							</template>
+							<div>
+								<span class="tooltip--username"
+									>Owner: {{ activeWatchList.user.username }}</span
+								><br />
+								<span
+									>{{ activeWatchList.user.firstName }}
+									{{ activeWatchList.user.lastName }}</span
+								>
+							</div>
+						</v-tooltip>
+					</h1>
 				</v-col>
 
-				<v-col xs="12" md="4" class="slts--toolbar row justify-end">
+				<v-col xs="12" sm="6" md="4" class="slts--toolbar row justify-end">
 					<WatchListConfig
 						:create="true"
 						@create="createWatchList"
 						class="header-settings--buttons"
 					></WatchListConfig>
 					<WatchListConfig
-						v-if="activeWatchList"
+						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 2"
 						:key="activeWatchList.id"
 						@update="updateWatchList"
 						class="header-settings--buttons"
@@ -35,14 +39,15 @@
 					<v-btn
 						fab
 						elevation="1"
-						v-if="activeWatchList"
+						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 2"
 						@click="openDeletionDialog"
 						class="header-settings--buttons"
 						><v-icon>mdi-minus-circle</v-icon>
 					</v-btn>
 				</v-col>
-				<v-col xs="12" md="2" class="slts--selectbox">
+				<v-col xs="12" sm="12" md="2" class="slts--selectbox">
 					<v-select
+						v-model="watchListSelectBox"
 						:label="$t(`watchlist.header.select`)"
 						dense
 						:items="watchListsArray"
@@ -73,14 +78,19 @@
 							class="watchlist-component"
 							:class="componentStyleClass(cmp)"
 						>
-							<v-icon class="dragHandle">mdi-drag-vertical</v-icon>
+							<v-icon class="dragHandle" v-if="userRights === 2"
+								>mdi-drag-vertical</v-icon
+							>
 							<span>{{ $t(`watchlist.list.${cmp.component}`) }}</span>
 
 							<div v-if="cmp.component === 'PointWatcher'">
-								<PointWatcher :dataPointList="activeWatchList.pointList"></PointWatcher>
+								<PointWatcher
+									:dataPointList="activeWatchList.pointList"
+									:permissions="userRights"
+								></PointWatcher>
 							</div>
 							<div v-else>
-								<PointChart> </PointChart>
+								<PointChart></PointChart>
 							</div>
 						</v-col>
 					</draggable>
@@ -88,7 +98,7 @@
 			</v-card>
 		</v-container>
 
-        <ConfirmationDialog
+		<ConfirmationDialog
 			:btnvisible="false"
 			:dialog="dialogDeletionVisible"
 			@result="onDeleteDialogClose"
@@ -101,7 +111,6 @@
 import draggable from 'vuedraggable';
 
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-
 
 import PointWatcher from './PointWatcher';
 import PointChart from './PointChart/index.vue';
@@ -117,13 +126,14 @@ export default {
 		PointWatcher,
 		PointChart,
 		WatchListConfig,
-        ConfirmationDialog,
+		ConfirmationDialog,
 		draggable,
 	},
 
 	data() {
 		return {
-            dialogDeletionVisible: false,
+			watchListSelectBox: -1,
+			dialogDeletionVisible: false,
 			watchListsArray: [],
 			watchListComponents: [
 				{
@@ -146,15 +156,32 @@ export default {
 				return this.$store.dispatch('updateActiveWatchList', newValue);
 			},
 		},
+
+		userRights() {
+			const user = this.$store.state.loggedUser;
+			if (!!user && !!this.activeWatchList) {
+				if (!!user.admin || user.id === this.activeWatchList.user.id) {
+					return 2;
+				} else {
+					let entry = this.activeWatchList.watchListUsers.find(
+						(p) => p.userId === user.id
+					);
+					if (!!entry) {
+						return entry.accessType;
+					}
+				}
+			}
+			return 0;
+		},
 	},
 
 	mounted() {
 		this.fetchWatchLists();
 	},
 
-    beforeDestroy() {
-        this.$store.commit('UPDATE_ACTIVE_WATCHLIST', null);
-    },
+	beforeDestroy() {
+		this.$store.commit('UPDATE_ACTIVE_WATCHLIST', null);
+	},
 
 	methods: {
 		async fetchWatchLists() {
@@ -179,14 +206,13 @@ export default {
 					xid: resp.xid,
 					name: resp.name,
 				});
+				this.watchListSelectBox = resp.id;
 			});
 		},
 
 		updateWatchList() {
 			this.$store.dispatch('updateWatchList');
 		},
-
-        
 
 		deleteWatchList() {
 			this.$store.dispatch('deleteWatchList').then(() => {
@@ -197,11 +223,11 @@ export default {
 			});
 		},
 
-        openDeletionDialog() {
+		openDeletionDialog() {
 			this.dialogDeletionVisible = true;
 		},
 
-        onDeleteDialogClose(result) {
+		onDeleteDialogClose(result) {
 			this.dialogDeletionVisible = false;
 			if (result) {
 				this.deleteWatchList();
@@ -232,10 +258,13 @@ export default {
 			);
 		},
 		loadWatchListLayout() {
-			let data = JSON.parse(localStorage.getItem(`MWLDL_${this.activeWatchList.id}`));
-			if (!!data) {
-				this.watchListComponents = data;
+			if(!!this.activeWatchList) {
+				let data = JSON.parse(localStorage.getItem(`MWLDL_${this.activeWatchList.id}`));
+				if (!!data) {
+					this.watchListComponents = data;
+				}
 			}
+			
 		},
 	},
 };
@@ -277,7 +306,7 @@ export default {
 }
 
 .tooltip--username {
-    font-size: 12px;
-    font-style: italic;
+	font-size: 12px;
+	font-style: italic;
 }
 </style>

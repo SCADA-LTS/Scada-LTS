@@ -12,6 +12,7 @@
 					<v-row>
 						<v-col cols="12">
 							<v-text-field
+								autofocus
 								v-model="user.username"
 								:label="$t('loginPage.username')"
 								:rules="[(v) => !!v || $t('loginPage.validation.username')]"
@@ -56,6 +57,14 @@ export default {
 		};
 	},
 
+	created() {
+		window.addEventListener('keyup', this.getEnterKey);
+	},
+
+	beforeDestroy() {
+		window.removeEventListener('keyup', this.getEnterKey);
+	},
+
 	methods: {
 		login() {
             this.errorMessage = '';
@@ -71,6 +80,13 @@ export default {
                 });
 			}
 		},
+
+		getEnterKey(e) {
+			if(e.keyCode === 13) {
+				this.$refs.loginForm.validate();
+				this.login();
+			}
+		}
 	},
 };
 </script>

@@ -44,12 +44,7 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
         },
 
         REMOVE_POINT_FROM_WATCHLIST(state, point) {
-            console.log("IMPORTANNNNT")
-            console.log(point);
-            console.log(state.activeWatchList);
-            console.log(state.pointWatcher);
             let x = searchDataPointInHierarchy(state.datapointHierarchy, point.id);
-            console.log(x);
             if(!!x) {
                 x.selected = false;
             }
@@ -68,8 +63,6 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
         },
 
         ADD_POINT_TO_WATCHLIST(state, point) {
-            console.log(point);
-            console.log(state.activeWatchList);
             if(!!state.activeWatchList) {
                 let p = {
                     id: point.id,
@@ -85,7 +78,6 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
         },
 
         UPDATE_POINT_VALUE(state, data) {
-            console.log(data);
             let point = JSON.parse(data.body);
             let dp = state.pointWatcher.find(p => p.id === point.pointId);
             if(!!dp) {
@@ -146,19 +138,29 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 		},
 
         createWatchList({dispatch, state}) {
-            saveWatchListDetails(state.activeWatchList);
-            return dispatch('requestPost', {
-                url: '/watch-lists',
-                data: state.activeWatchList,
+            return new Promise((resolve, reject) => {
+                saveWatchListDetails(state.activeWatchList);
+                dispatch('requestPost', {
+                    url: '/watch-lists',
+                    data: state.activeWatchList,
+                }).then((resp) => {
+                    dispatch('getWatchListDetails', resp.id);
+                    resolve(resp);
+                }).catch((e) => {
+                    reject(e);
+                });
             });
         },
 
-        updateWatchList({dispatch, state}) {
+        updateWatchList({dispatch, state, commit}) {
             saveWatchListDetails(state.activeWatchList);
-            return dispatch('requestPut', {
+            dispatch('requestPut', {
                 url: '/watch-lists',
                 data: state.activeWatchList,
+            }).then(() => {
+                commit('SET_ACTIVE_WATCHLIST', state.activeWatchList);
             });
+            
 
         },
 
@@ -190,7 +192,6 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
                     let dp = await dispatch('getDataPointDetails', datapointId);
                     let pv = await dispatch('getDataPointValue', datapointId);
                     let pe = await dispatch('fetchDataPointEvents', {datapointId, limit:10})
-                    console.log(pv);
                     let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe);
 
                     commit('ADD_POINT_TO_WATCHER', pointData2);
@@ -234,7 +235,14 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 
     },
 
-	getters: {},
+	getters: {
+        watchListConfigChanged(state) {    
+            if(!!state.activeWatchList && !!state.activeWatchListRevert) {
+                return JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
+            }
+            return false;            
+        }
+    },
 };
 export default watchListModule;
 

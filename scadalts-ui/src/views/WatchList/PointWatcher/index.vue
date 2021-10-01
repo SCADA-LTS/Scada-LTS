@@ -13,7 +13,7 @@
             <div class="list-item--content">
                 <div class="list-item--prefix">
                     <v-icon class="dragHandle">mdi-drag-vertical</v-icon>
-                    <v-btn x-small icon fab v-if="point.settable" @click="showPointValueSetDialog(point)">
+                    <v-btn x-small icon fab v-if="point.settable && permissions === 2" @click="showPointValueSetDialog(point)">
                         <v-icon>mdi-circle-edit-outline</v-icon>
                     </v-btn>
                     
@@ -28,9 +28,11 @@
             <div class="list-item--value">
                     <span v-if="point.enabled" class="list-item-content--value">
                         <transition name="slide-fade" mode="out-in">
-                            <span class="list-item-content--value-number" :key="point.value">
-                                {{point.value}}
-                            </span>
+                            <PointValueRenderer class="list-item-content--value-number" 
+                                :key="point.value"
+                                :pointRawValue="point.value"
+                                :textRenderer="point.textRenderer">
+                            </PointValueRenderer>
                         </transition>
                         <transition name="slide-fade-2" mode="out-in">
                             <span class="list-item-content--value-ts" :key="point.timestamp">
@@ -67,7 +69,7 @@
                 <v-btn small icon fab :href="`#/datapoint-details/${point.id}`">
                     <v-icon>mdi-information-outline</v-icon>
                 </v-btn>
-                <v-btn small icon fab @click="deletePointFromList(point)">
+                <v-btn small icon fab @click="deletePointFromList(point)" v-if="permissions === 2">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </div>
@@ -92,6 +94,7 @@
 import draggable from "vuedraggable";
 import PointValueSet from './PointValueSet';
 import EventScadaItem from '@/layout/lists/events/EventScadaItem';
+import PointValueRenderer from './PointValueRenderer';
 
 import webSocketMixin from '@/utils/web-socket-utils';
 import WatchListPoint from '@/models/WatchListPoint';
@@ -109,6 +112,7 @@ export default {
 
     components: {
         draggable,
+        PointValueRenderer,
         EventScadaItem,
         PointValueSet
     },
@@ -117,12 +121,17 @@ export default {
         dataPointList: {
             type: Array,
             required: true
+        },
+
+        permissions: {
+            type: Number,
+            default: 0
         }
     },
 
     data() {
         return {
-
+            drag: false,
             showDialog: false,
             activeDataPoint: null,
             wsDebug: true,

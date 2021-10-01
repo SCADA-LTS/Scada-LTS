@@ -36,12 +36,12 @@
 					<v-row id="chart-series-settings">
 						<v-col cols="12">
 							<v-tabs v-model="tab" background-color="primary" dark>
-								<v-tab v-for="s in series" :key="s">
+								<v-tab v-for="(s, index) in series" :key="index">
 									{{ s.name }}
 								</v-tab>
 							</v-tabs>
 							<v-tabs-items v-model="tab">
-								<v-tab-item v-for="s in series" :key="s">
+								<v-tab-item v-for="(s, index) in series" :key="index">
 									<v-card class="paggin-top-small series-settings limit-height">
 										<v-row>
 											<v-col md="6" sm="12" xs="12">

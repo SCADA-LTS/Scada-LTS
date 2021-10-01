@@ -2,10 +2,19 @@
 <div class="datapointList">
     <v-dialog max-width="500" v-model="dialog">
         <template v-slot:activator="{on, attrs}">
-             <v-btn fab elevation="1" v-bind="attrs" v-on="on" @click="showDialog">
-                <v-icon v-if="create">mdi-plus</v-icon>
-                <v-icon v-else>mdi-pencil</v-icon>
-            </v-btn>
+            <v-badge v-bind="attrs" v-on="on" 
+                bordered 
+                overlap 
+                color="warning" 
+                icon="mdi-content-save"
+                :value="!create && $store.getters.watchListConfigChanged"
+            >
+                <v-btn fab elevation="1"  @click="showDialog">
+                    <v-icon v-if="create">mdi-plus</v-icon>
+                    <v-icon v-else>mdi-pencil</v-icon>
+                </v-btn>
+            </v-badge>
+             
         </template>
         <v-card v-if="!!watchListDetails">
             <v-card-title>

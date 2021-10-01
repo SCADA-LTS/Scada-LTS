@@ -37,6 +37,7 @@
 		"bootstrap": "3.4.1",
 		"core-js": "2.6.5",
 		"css-loader": "3.2.0",
+		"decimal-format": "^2.0.2",
 		"install": "0.13.0",
 		"moment": "2.22.2",
 		"roboto-fontface": "*",

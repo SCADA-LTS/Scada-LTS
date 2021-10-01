@@ -45,6 +45,11 @@ export class WatchListPoint {
             suffix: dataPoint.textRenderer.suffix,
             rangeValues: dataPoint.textRenderer.rangeValues,
             conversionExponent: dataPoint.textRenderer.conversionExponent,
+            oneColour: dataPoint.textRenderer.oneColour,
+            oneLabel: dataPoint.textRenderer.oneLabel,
+            zeroColour: dataPoint.textRenderer.zeroColour,
+            zeroLabel: dataPoint.textRenderer.zeroLabel,
+            multistateValues: dataPoint.textRenderer.multistateValues,
         };
         return this;
     }
