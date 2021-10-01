@@ -78,7 +78,7 @@ jobs:
           repo: Scada-LTS
       - name: Prepare Application Vairables
         working-directory: ./scadalts-ui
-        run: npm run-script build-config -- ${{ steps.relver.outputs.release }} $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
+        run: npm run-script build-config -- ${{ steps.relver.outputs.release }} $GITHUB_RUN_ID $GITHUB_REF $GITHUB_SHA $GITHUB_ACTOR
       - name: Build User Interface
         working-directory: ./scadalts-ui
         run: npm run-script build
