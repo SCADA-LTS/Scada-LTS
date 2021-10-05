@@ -179,11 +179,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			testingUtility.cancel();
 	}
 
-	// Convenience method for JSPs
-	public boolean isDataSourcePermission() {
-		return Permissions.hasDataSourcePermission(this);
-	}
-
 	//
 	// Testing utility management
 	public <T extends TestingUtility> T getTestingUtility(Class<T> requiredClass) {
