@@ -125,6 +125,43 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.lastLogin = lastLogin;
 	}
 
+	public User(User user) {
+		this.id = user.id;
+		this.username = user.username;
+		this.password = user.password;
+		this.email = user.email;
+		this.phone = user.phone;
+		this.admin = user.admin;
+		this.disabled = user.disabled;
+		this.dataSourcePermissions = new ArrayList<>(user.dataSourcePermissions);
+		this.dataPointPermissions = new ArrayList<>(user.dataPointPermissions);
+		this.dataSourceProfilePermissions = new ArrayList<>(user.dataSourceProfilePermissions);
+		this.dataPointProfilePermissions = new ArrayList<>(user.dataPointProfilePermissions);
+		this.watchListProfilePermissions = new ArrayList<>(user.watchListProfilePermissions);
+		this.viewProfilePermissions = new ArrayList<>(user.viewProfilePermissions);
+		this.selectedWatchList = user.selectedWatchList;
+		this.homeUrl = user.homeUrl;
+		this.lastLogin = user.lastLogin;
+		this.receiveAlarmEmails = user.receiveAlarmEmails;
+		this.receiveOwnAuditEvents = user.receiveOwnAuditEvents;
+		this.theme = user.theme;
+		this.hideMenu = user.hideMenu;
+		this.userProfile = user.userProfile;
+		this.view = user.view;
+		this.watchList = user.watchList;
+		this.editPoint = user.editPoint;
+		this.editDataSource = user.editDataSource;
+		this.testingUtility = user.testingUtility;
+		this.reportImageData = user.reportImageData;
+		this.editPublisher = user.editPublisher;
+		this.importTask = user.importTask;
+		this.muted = user.muted;
+		this.dataExportDefinition = user.dataExportDefinition;
+		this.eventExportDefinition = user.eventExportDefinition;
+		this.attributes = user.attributes;
+		this.uploadedProject = user.uploadedProject;
+	}
+
 	/**
 	 * Used for various display purposes.
 	 */
@@ -639,4 +676,26 @@ public class User implements SetPointSource, HttpSessionBindingListener,
     public void setViewProfilePermissions(List<ViewAccess> viewProfilePermissions) {
         this.viewProfilePermissions = viewProfilePermissions;
     }
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", email='" + email + '\'' +
+				", phone='" + phone + '\'' +
+				", admin=" + admin +
+				", disabled=" + disabled +
+				", homeUrl='" + homeUrl + '\'' +
+				", lastLogin=" + lastLogin +
+				", receiveAlarmEmails=" + receiveAlarmEmails +
+				", receiveOwnAuditEvents=" + receiveOwnAuditEvents +
+				", theme='" + theme + '\'' +
+				", hideMenu=" + hideMenu +
+				", userProfile=" + userProfile +
+				", muted=" + muted +
+				", attributes=" + attributes +
+				'}';
+	}
 }

@@ -31,12 +31,12 @@ public class UserDaoWithCache implements IUserDAO {
 
     @Override
     public User getUser(String username) {
-        return getUsers().stream().filter(a -> a.getUsername().equals(username)).findAny().orElse(null);
+        return getUsers().stream().filter(a -> a.getUsername().equals(username)).findAny().map(User::new).orElse(null);
     }
 
     @Override
     public User getUser(int id) {
-        return getUsers().stream().filter(a -> a.getId() == id).findAny().orElse(null);
+        return getUsers().stream().filter(a -> a.getId() == id).findAny().map(User::new).orElse(null);
     }
 
     @Override

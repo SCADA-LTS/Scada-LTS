@@ -8,6 +8,7 @@ import org.scada_lts.dao.IUsersProfileDAO;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UsersProfileDaoWithCache implements IUsersProfileDAO {
 
@@ -21,17 +22,19 @@ public class UsersProfileDaoWithCache implements IUsersProfileDAO {
 
     @Override
     public Optional<UsersProfileVO> selectProfileById(int profileId) {
-        return selectProfiles(0, Integer.MAX_VALUE).stream().filter(a -> a.getId() == profileId).findAny();
+        return selectProfiles(0, Integer.MAX_VALUE).stream().filter(a -> a.getId() == profileId).map(UsersProfileVO::new).findAny();
     }
 
     @Override
     public Optional<UsersProfileVO> selectProfileByXid(String profileXid) {
-        return selectProfiles(0, Integer.MAX_VALUE).stream().filter(a -> a.getXid().equals(profileXid)).findAny();
+        return selectProfiles(0, Integer.MAX_VALUE).stream().filter(a -> a.getXid().equals(profileXid)).map(UsersProfileVO::new).findAny();
     }
 
     @Override
     public List<UsersProfileVO> selectUserProfileByUserId(int userId) {
-        return usersProfileCache.selectUserProfileByUserId(userId);
+        return usersProfileCache.selectUserProfileByUserId(userId).stream()
+                .map(UsersProfileVO::new)
+                .collect(Collectors.toList());
     }
 
     @Override
