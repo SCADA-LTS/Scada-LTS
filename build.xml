@@ -228,6 +228,14 @@
 			<test name="br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.dao.NewInstanceUserTest"
+				  haltonfailure="yes" >
+			</test>
+
+			<test name="org.scada_lts.dao.NewInstanceUsersProfileTest"
+				  haltonfailure="yes" >
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 
