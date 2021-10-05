@@ -41,6 +41,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.stereotype.Service;
@@ -473,6 +474,26 @@ public class EventService implements MangoEvent {
 
 	public List<EventDTO> getDataPointEventsWithLimit(int datapointId, int limit, int offset) {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
+	}
+
+	public SQLPageWithTotal<EventDTO> getEventsWithLimit(int alarmLevel,
+														 int eventSourceType,
+														 String status,
+														 String keywords,
+														 int typeRef,
+														 String[] sortBy,
+														 boolean[] sortDesc,
+														 int limit,
+														 int offset) {
+		return eventDAO.findEvents(alarmLevel,
+		eventSourceType,
+		status,
+		keywords,
+		typeRef,
+		sortBy,
+		sortDesc,
+		limit,
+		offset);
 	}
 
 }

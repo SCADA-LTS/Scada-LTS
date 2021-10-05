@@ -104,11 +104,34 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoints")
-    public ResponseEntity<List<JsonDataPoint>> getDataPoints(HttpServletRequest request) {
+    public ResponseEntity<List<JsonDataPoint>> getDataPoints(
+            @RequestParam(value="keywordSearch", required = false) String searchText,
+            HttpServletRequest request
+    ) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
                 List<DataPointVO> lstDP;
+
+                if (searchText != null) {
+                    String[] keywords = searchText.split("\\s+");
+                    List<JsonDataPoint> result = new ArrayList<>();
+                    for (DataPointVO dp: dataPointService.searchDataPoints(keywords)){
+                        JsonDataPoint jdp = new JsonDataPoint(
+                                dp.getId(),
+                                dp.getName(),
+                                dp.getXid(),
+                                dp.isEnabled(),
+                                dp.getDescription(),
+                                dp.getDataSourceName(),
+                                dp.getPointLocator().getDataTypeId(),
+                                dp.getPointLocator().isSettable()
+                        );
+
+                        result.add(jdp);
+                    }
+                    return new ResponseEntity<List<JsonDataPoint>>(result, HttpStatus.OK);
+                }
 
                 Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
                     @Override

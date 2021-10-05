@@ -31,6 +31,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
 import org.scada_lts.utils.QueryUtils;
+import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.dao.DataAccessException;
@@ -433,6 +434,27 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"ORDER BY activeTs DESC " +
 			"LIMIT ? OFFSET ?";
 
+	private static final String SELECT_SPECIFIC_EVENTS_WITH_LIMIT = "" +
+			"SELECT " +
+			"e." + COLUMN_NAME_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
+			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
+			"e." + COLUMN_NAME_RTN_TS + ", " +
+			"e." + COLUMN_NAME_RTN_CAUSE + ", " +
+			"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
+			"e." + COLUMN_NAME_MESSAGE + ", " +
+			"e." + COLUMN_NAME_ACT_TS + ", " +
+			"u." + COLUMN_NAME_USER_NAME + ", " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
+			"FROM events e " +
+			"LEFT JOIN users u ON u.id=e.ackUserId " +
+			"WHERE typeId=? AND typeRef1=? " +
+			"ORDER BY activeTs DESC " +
+			"LIMIT ? OFFSET ?";
+
 	private static final String SELECT_SPECIFIC_EVENT_USER_COMMENTS = "" +
 			"SELECT " +
 			"uc." + COLUMN_NAME_COMMENT_TEXT + ", " +
@@ -608,8 +630,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE)
 			);
 
-			result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
+			//result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
 			return result;
+		}
+	}
+
+	private class TotalRowMapper implements RowMapper<Integer> {
+		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getInt("TOTAL");
 		}
 	}
 
@@ -626,7 +654,94 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 * @return List of Events
 	 */
 	public List<EventDTO> findEventsWithLimit(int typeId, int typeRef, int limit, int offset) {
-		return  (List<EventDTO>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT, new Object[]{typeId, typeRef, limit, offset}, new EventDTORowMapper());
+		return (List<EventDTO>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT, new Object[]{typeId, typeRef, limit, offset}, new EventDTORowMapper());
+	}
+	/**
+	 * Select from Database Event Rows containing specific Type and Reference
+	 * To increase performance there is provided a pagination function.
+	 * This events containing also UserComments objects.
+	 *
+	 * @param alarmLevel
+	 * @param eventSourceType
+	 * @param status
+	 * @param keywords
+	 * @param typeRef
+	 * @param sortBy
+	 * @param sortDesc
+	 * @param limit
+	 * @param offset
+	 *
+	 * @return List of Events
+	 */
+	public SQLPageWithTotal<EventDTO> findEvents(
+			int alarmLevel,
+			int eventSourceType,
+			String status,
+			String keywords,
+			int typeRef,
+			String[] sortBy,
+			boolean[] sortDesc,
+			int limit,
+			int offset) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT SQL_CALC_FOUND_ROWS " +
+				"e." + COLUMN_NAME_ID + ", " +
+				"e." + COLUMN_NAME_TYPE_ID + ", " +
+				"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
+				"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+				"e." + COLUMN_NAME_ACTIVE_TS + ", " +
+				"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
+				"e." + COLUMN_NAME_RTN_TS + ", " +
+				"e." + COLUMN_NAME_RTN_CAUSE + ", " +
+				"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
+				"e." + COLUMN_NAME_MESSAGE + ", " +
+				"e." + COLUMN_NAME_ACT_TS + ", " +
+				"u." + COLUMN_NAME_USER_NAME + ", " +
+				"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
+		"FROM events e LEFT JOIN users u ON u.id=e.ackUserId ");
+
+		sql.append("WHERE 1=1 ");
+		if (alarmLevel != 0) {
+			sql.append("AND e."+COLUMN_NAME_ALARM_LEVEL+"=? ");
+			params.add(alarmLevel);
+		}
+
+		if (eventSourceType != 0) {
+			sql.append("AND e."+COLUMN_NAME_TYPE_ID+"=? ");
+			params.add(eventSourceType);
+		}
+
+		if (!"*".equals(status)) {
+			sql.append("AND e."+COLUMN_NAME_TYPE_ID+"=? ");
+			params.add(eventSourceType);
+		}
+
+		if (!"".equals(keywords)) {
+			sql.append("AND e."+COLUMN_NAME_MESSAGE+" LIKE %?% ");
+			params.add(keywords);
+		}
+
+
+		if (sortBy.length != 0) {
+
+			List<String> sorting = new ArrayList<String>();
+			for (int i = 0; i < sortBy.length; i++) {
+				sorting.add(sortBy[i] + " " + (sortDesc[i] ? "DESC " : "ASC "));
+			}
+			sql.append("ORDER BY "+String.join(", ", sorting));
+		}
+
+		if (limit != 0) {
+			sql.append("LIMIT " + limit + " " );
+		}
+
+		if (offset != 0) {
+			sql.append("OFFSET " + offset + " " );
+		}
+		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), new EventDTORowMapper());
+		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
+		return new SQLPageWithTotal<EventDTO>(page, total);
 	}
 
 	@Override
