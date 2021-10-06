@@ -167,12 +167,14 @@ public class PointLinksDwr extends BaseDwr {
             }
             catch (ScriptException e) {
                 message = new LocalizableMessage("common.default", e.getMessage());
+                LOG.warn(infoErrorExecutionScript(e, "validateScript"));
             }
             catch (ResultTypeException e) {
                 message = e.getLocalizableMessage();
+                LOG.warn(infoErrorExecutionScript(e, "validateScript"));
             }
             catch (Exception e) {
-                LOG.error(infoErrorExecutionScript(e, "validateScript"));
+                LOG.warn(infoErrorExecutionScript(e, "validateScript"));
                 throw e;
             }
         }
