@@ -28,9 +28,9 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			try {
 				script.createScriptRT().execute();
 			} catch (ScriptException e) {
-				LOG.error(infoErrorExecutionScript(e, script), e);
+				LOG.warn(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
-				LOG.error(infoErrorExecutionScript(e, script));
+				LOG.warn(infoErrorExecutionScript(e, script));
 				throw e;
 			}
 		}
@@ -44,9 +44,9 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			try {
 				script.createScriptRT().execute();
 			} catch (ScriptException e) {
-				LOG.error(infoErrorExecutionScript(e, script), e);
+				LOG.warn(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
-				LOG.error(infoErrorExecutionScript(e, script));
+				LOG.warn(infoErrorExecutionScript(e, script));
 				throw e;
 			}
 		}

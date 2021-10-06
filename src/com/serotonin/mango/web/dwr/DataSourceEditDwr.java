@@ -1114,13 +1114,16 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                         DateFunctions.getTime(pvt.getTime()));
         } catch (DataPointStateException e) {
             response.addMessage("context", e.getLocalizableMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (ScriptException e) {
             response.addContextualMessage("script",
                     "dsEdit.meta.test.scriptError", e.getMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
-            LOG.error(infoErrorExecutionScript(e, "validateScript: " + script));
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
             throw e;
         }
 

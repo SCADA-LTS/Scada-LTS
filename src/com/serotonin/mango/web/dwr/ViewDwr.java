@@ -965,7 +965,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-		    LOG.error(infoErrorExecutionScript(e, script), e);
+		    LOG.warn(infoErrorExecutionScript(e, script), e);
 		}
 
 		return false;

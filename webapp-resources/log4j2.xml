@@ -94,6 +94,42 @@
         <Logger name="com.serotonin.mango" level="info"/>
         <Logger name="org.scada_lts.permissions.migration" level="info"/>
 
+        <!-- Script Logging Error -->
+        <Logger name="com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.rt.link.PointLinkRT" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.rt.event.handlers.ScriptHandlerRT" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="br.org.scadabr.web.dwr.ScriptsDwr" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.web.dwr.DataSourceEditDwr" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.web.dwr.ViewDwr" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.web.dwr.PointLinksDwr" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="org.scada_lts.web.mvc.controller.ScriptController" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="org.scada_lts.mango.service.PointValueService" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.view.component.ScriptComponent" level="error" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <!-- -->
+
+
         <Logger name="com.serotonin.modbus4j.ip.listener" level="debug">
             <AppenderRef ref="ASYNC_MODBUS"/>
         </Logger>
