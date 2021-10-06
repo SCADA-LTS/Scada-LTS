@@ -220,7 +220,7 @@ export default {
 		BtnGroup,
 		HistoryCMP,
 	},
-	props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp'],
+	props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp', 'pStartLate'],
 	data() {
 		return {
 			open: false,
@@ -244,6 +244,7 @@ export default {
 			showFaultV: false,
 			checkIfThereAreSharesToConfirmValue: true,
 			xIdViewAndIdCmp: this.pxIdViewAndIdCmp,
+			startLate: this.pStartLate,
 		};
 	},
 	methods: {
@@ -426,27 +427,28 @@ export default {
 	},
 	created() {
 		try {
-			this.config = JSON.parse(this.strConfig);
-			this.controlsLevel0 = this.config.control.toChange;
+			this.config = JSON.parse(this.strConfig)
+			this.controlsLevel0 = this.config.control.toChange
 		} catch (e) {
-			this.setErrorAndNotification(e.message);
+			this.setErrorAndNotification(e.message)
 		}
 		if (this.timeRefresh) {
-			setInterval(
-				function () {
-					try {
-						this.checkStatus();
-					} catch (e) {
-						console.log(e);
-					}
-				}.bind(this),
+			setTimeout(
+				function() {setInterval(
+					function () {
+						try {
+							this.checkStatus()
+						} catch (e) {
+							console.log(e);
+						}
+					}.bind(this),
 				this.timeRefresh,
-			);
+			)}.bind(this), this.startLate)
 		}
 	},
 	mounted() {
-		console.log(`CMP pxIdViewAndIdCmp:${this.xIdViewAndIdCmp}`);
-		this.checkStatus();
+		console.log(`CMP pxIdViewAndIdCmp:${this.xIdViewAndIdCmp}`)
+		this.checkStatus()
 	},
 	filters: {
 		moment: function (date) {
