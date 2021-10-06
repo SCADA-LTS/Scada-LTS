@@ -28,6 +28,7 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
@@ -177,6 +178,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		// Terminate any testing utility
 		if (testingUtility != null)
 			testingUtility.cancel();
+	}
+
+	// Convenience method for JSPs
+	@JsonIgnore
+	public boolean isDataSourcePermission() {
+		return Permissions.hasDataSourcePermission(this);
 	}
 
 	//
