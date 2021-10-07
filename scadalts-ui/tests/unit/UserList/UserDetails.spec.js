@@ -24,7 +24,6 @@ context('💠️ Test User Details Scenario', () => {
             wrapper2 = prepareMountWrapper(UserDetails, modules, {
                 userDetails: exampleUser,
                 userProfiles: [{id:0, name: "None"}],
-                userPassword: '',
                 edit: false,
             });
         });
@@ -78,7 +77,6 @@ context('💠️ Test User Details Scenario', () => {
             wrapper2 = prepareMountWrapper(UserDetails, modules, {
                 userDetails: exampleUser,
                 userProfiles: [{id:0, name: "None"}],
-                userPassword: '',
                 edit: false,
             });
             wrapper2.vm.$store.state.loggedUser.admin = true;
@@ -110,10 +108,10 @@ context('💠️ Test User Details Scenario', () => {
             wrapper2 = prepareMountWrapper(UserDetails, modules, {
                 userDetails: blankUser,
                 userProfiles: [{id:0, name: "None"}],
-                userPassword: 'pa$$word',
                 edit: true,
             });
             wrapper2.vm.$store.state.loggedUser.admin = true;
+            wrapper2.vm.userPassword = 'pa$$word';
         });
 
         it('Is exampleUser data loaded for Admin', () => {
