@@ -1074,21 +1074,6 @@ function updateChartComparatorComponent(idPrefix, width, height) {
 	
 }
 
-
-function isVarName(str) {
-    if (typeof str !== 'string') {
-        return false;
-    }
-
-    if (str.trim() !== str) {
-        return false;
-    }
-
-    try {
-        new Function(str, 'var ' + str);
-    } catch (_) {
-        return false;
-    }
-
-    return true;
+function changeToValidVarName(xid) {
+    return xid.replace(/[^a-zA-Z0-9_]/g, "");
 }

@@ -24,6 +24,7 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
     private static final Log LOG = LogFactory.getLog(V2_7_1_1__RenameVarScriptContext.class);
 
     private static final Pattern REGEX = Pattern.compile("^p[0-9]+$");
+    private static final Pattern REGEX_XID = Pattern.compile("[^a-zA-Z0-9_]");
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -101,7 +102,7 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
             if (REGEX.matcher(point.getValue()).matches()) {
                 DataPointVO dp = new DataPointDAO().getDataPoint(point.getKey());
                 String xid = dp.getXid();
-                updated = updated.replaceAll("(?<![a-zA-Z0-9])" + point.getValue() + "(?![a-zA-Z0-9])", xid.toLowerCase().trim());
+                updated = updated.replaceAll("(?<![a-zA-Z0-9])" + point.getValue() + "(?![a-zA-Z0-9])", changeToValidVarName(xid));
             }
         }
         return updated;
@@ -111,7 +112,7 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
         for (IntValuePair point : pointsOnContext) {
             if (REGEX.matcher(point.getValue()).matches()) {
                 DataPointVO dataPointVO = new DataPointDAO().getDataPoint(point.getKey());
-                point.setValue(dataPointVO.getXid().toLowerCase().trim());
+                point.setValue(changeToValidVarName(dataPointVO.getXid()));
             }
         }
     }
@@ -119,6 +120,10 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
     private void updateMetaDataPoint(MetaPointLocatorVO locator) {
         locator.setScript(updateScript(locator.getScript(), locator.getContext()));
         updatePointsOnContext(locator.getContext());
+    }
+
+    private String changeToValidVarName(String xid) {
+        return REGEX_XID.matcher(xid).replaceAll("");
     }
 
 }

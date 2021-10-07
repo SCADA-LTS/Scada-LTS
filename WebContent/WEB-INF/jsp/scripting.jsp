@@ -201,10 +201,7 @@
     function addToContextArray(pointId) {
         var data = getElement(pointsArray, pointId);
         if (data) {
-            var scriptVarName = data.xid.toLowerCase().trim();
-            if (!isVarName(scriptVarName)) {
-                alert("Invalid var name: " + data.xid + ". Change to valid, before saving!");
-            }
+            var scriptVarName = changeToValidVarName(data.xid);
             // Missing names imply that the point was deleted, so ignore.
             addElementToContextArray(data, pointId, scriptVarName);
         }
