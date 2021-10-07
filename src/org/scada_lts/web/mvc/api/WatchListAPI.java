@@ -16,6 +16,7 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -136,6 +137,39 @@ public class WatchListAPI {
 				Map<String, Object> response = new HashMap<>();
 				response.put("unique", watchListService.isXidUnique(xid, id));
 				return new ResponseEntity<>(response, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/order/{id}")
+	public ResponseEntity<Map<Integer, Integer>> getPointOrder(
+			@PathVariable("id") int id,
+			HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				return new ResponseEntity<>(watchListService.getDataPointOrder(id).getPointIds(), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping(value = "/order/")
+	public ResponseEntity<String> getPointOrder(
+			@RequestBody JsonDataPointOrder orderData,
+			HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				watchListService.setDataPointOrder(orderData);
+				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}

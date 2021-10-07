@@ -501,6 +501,7 @@
 	"watchlist.settings.chartBigger": "Bigger chart",
 	"watchlist.list.PointWatcher": "Point value dashboard",
 	"watchlist.datapoint.disabled": "Data Point is not available!",
+	"watchlist.datapoint.ds.disabled": "Data Source is probably not availalbe!",
 	"watchlist.list.PointChart": "DataPoint chart",
 	"watchlist.dialog.delete.title": "Delete Watch List",
 	"watchlist.dialog.delete.text": "Are you sure? That operation can not be undone?",

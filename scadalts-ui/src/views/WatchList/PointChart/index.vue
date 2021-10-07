@@ -303,7 +303,7 @@ export default {
 </script>
 <style scoped>
 .chartContainer {
-	min-width: 650px;
+	min-width: 550px;
 	height: 600px;
 }
 .flex {

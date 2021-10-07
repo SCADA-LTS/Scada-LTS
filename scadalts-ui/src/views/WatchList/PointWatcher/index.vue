@@ -4,7 +4,7 @@
 			<draggable
 				:list="pointList"
 				handle=".dragHandle"
-				@end="drag = false"
+				@end="checkMove"
 				@start="drag = true"
 				v-bind="{ animation: 200 }"
 			>
@@ -13,7 +13,7 @@
 						class="list-item--container"
 						v-for="point in pointList"
 						:key="point.id"
-						:class="{ disabled: !point.enabled }"
+						:class="{ disabled: !point.enabled || !point.dataSourceEnabled }"
 					>
 						<div class="list-item--content">
 							<div class="list-item--prefix">
@@ -28,6 +28,9 @@
 									<v-icon>mdi-circle-edit-outline</v-icon>
 								</v-btn>
 							</div>
+							<span class="list-item-content--dsname" v-if="!hideDataSourceName">
+								{{ point.dataSourceName }}
+							</span>
 							<span class="list-item-content--name">
 								{{ point.name }}
 							</span>
@@ -35,11 +38,14 @@
 								v-if="!!point.description"
 								class="list-item-content--desc text--description"
 							>
-								{{ point.description }}
+								({{ point.description }})
 							</span>
 						</div>
 						<div class="list-item--value">
-							<span v-if="point.enabled" class="list-item-content--value">
+							<span
+								v-if="point.enabled && point.dataSourceEnabled"
+								class="list-item-content--value"
+							>
 								<transition name="slide-fade" mode="out-in">
 									<PointValueRenderer
 										class="list-item-content--value-number"
@@ -55,8 +61,11 @@
 									</span>
 								</transition>
 							</span>
-							<span v-else class="list-item-content--value">
+							<span v-if="!point.enabled" class="list-item-content--value">
 								{{ $t('watchlist.datapoint.disabled') }}
+							</span>
+							<span v-if="!point.dataSourceEnabled" class="list-item-content--value">
+								{{ $t('watchlist.datapoint.ds.disabled') }}
 							</span>
 						</div>
 						<div class="list-item--action-buttons">
@@ -125,11 +134,11 @@
 </template>
 <script>
 import draggable from 'vuedraggable';
+
 import PointValueSet from './PointValueSet';
-import EventScadaItem from '@/layout/lists/events/EventScadaItem';
 import PointValueRenderer from './PointValueRenderer';
 
-import webSocketMixin from '@/utils/web-socket-utils';
+import EventScadaItem from '@/layout/lists/events/EventScadaItem';
 import WatchListPoint from '@/models/WatchListPoint';
 
 /**
@@ -158,6 +167,10 @@ export default {
 			type: Number,
 			default: 0,
 		},
+		hideDataSourceName: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -176,16 +189,30 @@ export default {
 
 	mounted() {
 		this.fetchDataPointDetails();
-        this.$store.state.webSocketModule.webSocket.subscribe(`/topic/alarm`, this.wsOnEventRaised)
+		this.$store.state.webSocketModule.webSocket.subscribe(
+			`/topic/alarm`,
+			this.wsOnEventRaised
+		);
 	},
 
 	watch: {
 		pointList(oldValue, newValue) {
 			if (oldValue.length !== newValue.length) {
 				this.pointList.forEach((p) => {
-                    this.$store.state.webSocketModule.webSocket.subscribe(`/topic/datapoint/${p.id}/enabled`, this.updatePointEnabled)
+					if (!p.wsEnable) {
+						p.wsEnable = this.$store.state.webSocketModule.webSocket.subscribe(
+							`/topic/datapoint/${p.id}/enabled`,
+							this.updatePointEnabled
+						);
+					}
+
 					if (p.enabled) {
-                        this.$store.state.webSocketModule.webSocket.subscribe(`/topic/datapoint/${p.id}/value`, this.updatePointValue)
+						if (!p.wsValue) {
+							p.wsValue = this.$store.state.webSocketModule.webSocket.subscribe(
+								`/topic/datapoint/${p.id}/value`,
+								this.updatePointValue
+							);
+						}
 					}
 				});
 			}
@@ -213,6 +240,7 @@ export default {
 				reuqests.push(this.getDataPointDetails(dataPoint.id));
 			});
 			Promise.all(reuqests).then((r) => {
+				r.sort((a, b) => a.order - b.order);
 				this.$store.commit('SET_POINT_WATCHER', r);
 			});
 		},
@@ -226,10 +254,14 @@ export default {
 						datapointId: datapointId,
 						limit: 10,
 					});
+					let ds = await this.$store.dispatch('getDatasourceByXid', point.dataSourceXid);
+					let map = this.$store.getters.getWatchListPointOrder;
 					let pointData2 = new WatchListPoint().createWatchListPoint(
 						point,
 						pv,
-						pointEvents
+						pointEvents,
+						ds,
+						map.get(String(datapointId))
 					);
 
 					resolve(pointData2);
@@ -238,8 +270,9 @@ export default {
 				}
 			});
 		},
+
 		checkMove: function (e) {
-			console.log('Future index: ');
+			this.drag = false;
 		},
 
 		countActiveEvents(eventTable) {
@@ -343,9 +376,14 @@ export default {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
+.list-item-content--dsname {
+	color: #0000008f;
+	margin-right: 5px;
+}
 .text--description {
 	font-style: italic;
 	color: #0000008f;
+	margin-left: 10px;
 }
 .slide-fade-enter-active,
 .slide-fade-2-enter-active {

@@ -18,7 +18,9 @@
 package org.scada_lts.dao.watchlist;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -28,6 +30,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -262,6 +265,27 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "where "
 			+ COLUMN_NAME_WLU_WATCHLIST_ID+"=? and "
 			+ COLUMN_NAME_WLU_USER_ID+"=?";
+
+	private static final String SELECT_DATAPOINT_ORDER_FOR_WATCHLIST =""
+			+"SELECT "
+			+ COLUMN_NAME_WLP_DATA_POINT_ID + ", "
+			+ COLUMN_NAME_WLP_SORT_ORDER + " "
+			+ "FROM watchListPoints "
+			+ "WHERE " + COLUMN_NAME_WLP_WATCHLIST_ID + "=?";
+
+	private static final String DELETE_DATAPOINT_ORDER_FOR_WATCHLIST = "" +
+			"DELETE FROM watchListPoints " +
+			"WHERE " + COLUMN_NAME_WLP_WATCHLIST_ID + "=?";
+
+	private static final String PUT_DATAPOINT_ORDER_FOR_WATCHLIST = "" +
+			"INSERT (" +
+			COLUMN_NAME_WLP_WATCHLIST_ID + "," +
+			COLUMN_NAME_WLP_DATA_POINT_ID + "," +
+			COLUMN_NAME_WLP_SORT_ORDER + ") " +
+			"VALUES (?,?,?)";
+
+
+
 
 	// @formatter:on
 	
@@ -509,5 +533,33 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(WATCHLIST_USER_DELETE_BASE_ON_WATCHLIST_ID_USER_ID, batchArgs, argTypes);
+	}
+
+	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
+		if(LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointOrder()");
+		}
+
+		JsonDataPointOrder order = new JsonDataPointOrder();
+		List<Map<String, Object>> rows = DAO.getInstance().getJdbcTemp().queryForList(SELECT_DATAPOINT_ORDER_FOR_WATCHLIST, watchListId);
+		for (Map row : rows) {
+			order.addPointOrder((Integer) row.get(COLUMN_NAME_WLP_DATA_POINT_ID), (Integer) row.get(COLUMN_NAME_WLP_SORT_ORDER));
+		}
+		return order;
+
+	}
+
+	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
+
+		//Delete all order
+		DAO.getInstance().getJdbcTemp().update(DELETE_DATAPOINT_ORDER_FOR_WATCHLIST, pointOrder.getWatchListId());
+
+		List<Object[]> batchArgs = pointOrder.getPointIds().entrySet().stream()
+				.map(a -> new Object[]{pointOrder.getWatchListId(), a.getKey(), a.getValue()})
+				.collect(Collectors.toList());
+
+		DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCH_LIST_POINTS_INSERT, batchArgs);
+
 	}
 }

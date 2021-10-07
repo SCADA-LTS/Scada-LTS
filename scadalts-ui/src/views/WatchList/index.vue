@@ -59,45 +59,7 @@
 			</v-row>
 		</v-container>
 
-		<v-container
-			fluid
-			class="slts-page-content"
-			v-if="activeWatchList && activeWatchList.id !== -1"
-			:key="activeWatchList.id"
-		>
-			<v-card class="slts-card">
-				<v-row class="flex-jc-center">
-					<draggable
-						:list="watchListComponents"
-						handle=".dragHandle"
-						@end="saveWatchListLayout"
-					>
-						<v-col
-							v-for="cmp in watchListComponents"
-							:key="cmp.id"
-							class="watchlist-component"
-							:class="componentStyleClass(cmp)"
-						>
-							<v-icon class="dragHandle" v-if="userRights === 2"
-								>mdi-drag-vertical</v-icon
-							>
-							<span>{{ $t(`watchlist.list.${cmp.component}`) }}</span>
-
-							<div v-if="cmp.component === 'PointWatcher'">
-								<PointWatcher
-									:key="activeWatchList.id"
-									:dataPointList="activeWatchList.pointList"
-									:permissions="userRights"
-								></PointWatcher>
-							</div>
-							<div v-else>
-								<PointChart></PointChart>
-							</div>
-						</v-col>
-					</draggable>
-				</v-row>
-			</v-card>
-		</v-container>
+		<router-view @routeChanged="onRouteChanged"></router-view>
 
 		<ConfirmationDialog
 			:btnvisible="false"
@@ -136,16 +98,6 @@ export default {
 			watchListSelectBox: -1,
 			dialogDeletionVisible: false,
 			watchListsArray: [],
-			watchListComponents: [
-				{
-					id: 0,
-					component: 'PointWatcher',
-				},
-				{
-					id: 1,
-					component: 'PointChart',
-				},
-			],
 		};
 	},
 	computed: {
@@ -187,16 +139,10 @@ export default {
 	methods: {
 		async fetchWatchLists() {
 			this.watchListsArray = await this.$store.dispatch('getAllWatchLists');
-			this.loadWatchListLayout();
 		},
 
 		async fetchWatchListDetails(watchListId) {
-			await this.$store.dispatch('getWatchListDetails', watchListId);
-			this.loadWatchListLayout();
-		},
-
-		removePoint(point) {
-			this.dataPointList = this.dataPointList.filter((p) => p.id !== point.id);
+			this.$router.push({ path: `/watch-list/${watchListId}` });
 		},
 
 		createWatchList() {
@@ -234,37 +180,8 @@ export default {
 			}
 		},
 
-		componentStyleClass(item) {
-			if (this.activeWatchList.horizontal) {
-				return 'watchlist-component--horizontal';
-			} else {
-				if (this.activeWatchList.biggerChart) {
-					console.log('biggerChart');
-					if (item.component === 'PointChart') {
-						return 'watchlist-component--bigger-chart';
-					} else {
-						return 'watchlist-component--smaller-list';
-					}
-				} else {
-					return 'watchlist-component--vertical';
-				}
-			}
-		},
-
-		saveWatchListLayout() {
-			localStorage.setItem(
-				`MWLDL_${this.activeWatchList.id}`,
-				JSON.stringify(this.watchListComponents)
-			);
-		},
-		loadWatchListLayout() {
-			if(!!this.activeWatchList) {
-				let data = JSON.parse(localStorage.getItem(`MWLDL_${this.activeWatchList.id}`));
-				if (!!data) {
-					this.watchListComponents = data;
-				}
-			}
-			
+		onRouteChanged(id) {
+			this.watchListSelectBox = id;
 		},
 	},
 };

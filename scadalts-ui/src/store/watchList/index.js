@@ -6,15 +6,15 @@ import { searchDataPointInHierarchy } from './utils';
 import WatchListPoint from '@/models/WatchListPoint'
 import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 
- const watchListModule = {
-	state: {
+const watchListModule = {
+    state: {
         activeWatchList: null,
         activeWatchListRevert: null,
         pointWatcher: [], //More detailed information about the point
         datapointHierarchy: [],
     },
 
-	mutations: {
+    mutations: {
         SET_ACTIVE_WATCHLIST(state, watchList) {
             state.activeWatchList = watchList;
             state.activeWatchListRevert = JSON.parse(JSON.stringify(watchList));
@@ -45,10 +45,10 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 
         REMOVE_POINT_FROM_WATCHLIST(state, point) {
             let x = searchDataPointInHierarchy(state.datapointHierarchy, point.id);
-            if(!!x) {
+            if (!!x) {
                 x.selected = false;
             }
-            if(!!state.activeWatchList) {
+            if (!!state.activeWatchList) {
                 state.activeWatchList.pointList = state.activeWatchList.pointList.filter(p => p.id !== point.id);
                 state.pointWatcher = state.pointWatcher.filter(p => p.id !== point.id);
             }
@@ -57,13 +57,13 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 
         CHECK_POINT_IN_PH(state, pointId) {
             let x = searchDataPointInHierarchy(state.datapointHierarchy, pointId);
-            if(!!x) {
+            if (!!x) {
                 x.selected = true;
             }
         },
 
         ADD_POINT_TO_WATCHLIST(state, point) {
-            if(!!state.activeWatchList) {
+            if (!!state.activeWatchList) {
                 let p = {
                     id: point.id,
                     xid: point.xid,
@@ -80,7 +80,7 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
         UPDATE_POINT_VALUE(state, data) {
             let point = JSON.parse(data.body);
             let dp = state.pointWatcher.find(p => p.id === point.pointId);
-            if(!!dp) {
+            if (!!dp) {
                 dp.value = point.value;
                 dp.timestamp = new Date().toLocaleString();
             }
@@ -89,7 +89,7 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
 
         UPDATE_POINT_EVENTS(state, data) {
             let dp = state.pointWatcher.find(p => p.id === data.dpId);
-            if(!!dp) {
+            if (!!dp) {
                 dp.events = data.event;
             }
         },
@@ -97,33 +97,74 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
         UPDATE_POINT_STATE(state, data) {
             let point = JSON.parse(data.body);
             let dp = state.pointWatcher.find(p => p.id === point.pointId);
-            if(!!dp) {
+            if (!!dp) {
                 dp.enabled = point.enabled;
-                state.pointWatcher.push({id:-1})
+                if (point.enabled) {
+                    dp.dataSourceEnabled = true;
+                }
+                state.pointWatcher.push({ id: -1 })
                 state.pointWatcher = state.pointWatcher.filter(p => p.id !== -1);
             }
         }
     },
 
-	actions: {
+    actions: {
 
         // --- REST-API CRUD SECTION --- //
         getAllWatchLists({ dispatch }) {
             return dispatch('requestGet', '/watch-lists/');
         },
 
+
+        getWatchListPointOrder({ dispatch }, id) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    let orderMap = new Map();
+                    let result = await dispatch('requestGet', `/watch-lists/order/${id}`);
+                    Object.keys(result).forEach(key => {
+                        orderMap.set(key, result[key]);
+                    });
+                    resolve(orderMap);
+                } catch (e) {
+                    console.error(e);
+                    reject(new Map());
+                }
+            });
+        },
+
+        updateWatchListPointOrder({ state, dispatch }, watchListId) {
+            let data = {
+                watchListId,
+                pointIds: {}
+            };
+            for (let order = 0; order < state.pointWatcher.length; order++) {
+                data.pointIds[state.pointWatcher[order].id] = order;
+            }
+            console.log(data);
+
+            return dispatch('requestPut', {
+                url: '/watch-lists/order/',
+                data
+            });
+        },
+
+
+
         getWatchListDetails({ dispatch, commit }, id) {
             return new Promise(async (resolve, reject) => {
                 try {
+                    console.log("Details")
                     let watchList = await dispatch('requestGet', `/watch-lists/${id}`);
                     let details = loadWatchListDetails(id);
-                    if(!!details) {
+                    if (!!details) {
                         watchList.horizontal = details.horizontal;
                         watchList.biggerChart = details.biggerChart;
                     } else {
                         watchList.horizontal = true;
                         watchList.biggerChart = false;
                     }
+
+                    watchList.pointOrder = await dispatch('getWatchListPointOrder', id);
                     watchList.user = await dispatch('getUserDetails', watchList.userId);
                     commit('SET_ACTIVE_WATCHLIST', watchList);
                     resolve(watchList);
@@ -131,20 +172,25 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
                     reject(e);
                 }
             })
-		},
+        },
 
         getWatchListUniqueXid({ dispatch }) {
-			return dispatch('requestGet', `/watch-lists/generateXid`);
-		},
+            return dispatch('requestGet', `/watch-lists/generateXid`);
+        },
 
-        createWatchList({dispatch, state}) {
+        createWatchList({ dispatch, state }) {
             return new Promise((resolve, reject) => {
-                saveWatchListDetails(state.activeWatchList);
+
                 dispatch('requestPost', {
                     url: '/watch-lists',
                     data: state.activeWatchList,
-                }).then((resp) => {
-                    dispatch('getWatchListDetails', resp.id);
+                }).then(async (resp) => {
+                    let horizontal = state.activeWatchList.horizontal;
+                    let biggerChart = state.activeWatchList.biggerChart;
+                    await dispatch('getWatchListDetails', resp.id);
+                    state.activeWatchList.horizontal = horizontal;
+                    state.activeWatchList.biggerChart = biggerChart;
+                    saveWatchListDetails(state.activeWatchList);
                     resolve(resp);
                 }).catch((e) => {
                     reject(e);
@@ -152,24 +198,28 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
             });
         },
 
-        updateWatchList({dispatch, state, commit}) {
+        updateWatchList({ dispatch, state, commit }) {
             saveWatchListDetails(state.activeWatchList);
             dispatch('requestPut', {
                 url: '/watch-lists',
                 data: state.activeWatchList,
             }).then(() => {
                 commit('SET_ACTIVE_WATCHLIST', state.activeWatchList);
+                dispatch('updateWatchListPointOrder', state.activeWatchList.id).catch(e => {
+                    console.error(e);
+                    console.error("Failed to update WatchList Point Order");
+                });
             });
-            
+
 
         },
 
-        deleteWatchList({dispatch, state}) {
+        deleteWatchList({ dispatch, state }) {
             return dispatch('requestDelete', `/watch-lists/${state.activeWatchList.id}`);
         },
 
         // --- WATCHLIST POINT HIERARCHY SECTION --- //
-        async loadWatchListPointHierarchyNode({ state, dispatch, commit }, node) {            
+        async loadWatchListPointHierarchyNode({ state, dispatch, commit }, node) {
             let pointHierarchy = await dispatch('fetchPointHierarchyNode', node.id);
             let responseArray = [];
             pointHierarchy.forEach(ph => {
@@ -178,22 +228,24 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
                 );
             });
 
-            if(!!node.parentNode) {
+            if (!!node.parentNode) {
                 node.parentNode.push(...responseArray);
             } else {
                 commit('SET_DATAPOINT_HIERARCHY', responseArray);
             }
         },
 
-        loadWatchListDataPointDetails({state, dispatch, commit}, datapointId) {
+        loadWatchListDataPointDetails({ state, dispatch, commit }, datapointId) {
             console.debug(`Loading DataPoint Details for WatchList...\nDataPointID: ${datapointId}`);
             return new Promise(async (resolve, reject) => {
                 try {
                     let dp = await dispatch('getDataPointDetails', datapointId);
                     let pv = await dispatch('getDataPointValue', datapointId);
-                    let pe = await dispatch('fetchDataPointEvents', {datapointId, limit:10})
-                    let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe);
-
+                    let pe = await dispatch('fetchDataPointEvents', { datapointId, limit: 10 })
+                    console.log(dp);
+                    let ds = await dispatch('getDatasourceByXid', dp.dataSourceXid);
+                    let order = state.activeWatchList.pointOrder.get(datapointId);
+                    let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe, ds, order);
                     commit('ADD_POINT_TO_WATCHER', pointData2);
                     resolve(pointData2);
                 } catch (e) {
@@ -202,12 +254,12 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
             });
         },
 
-        updateWatchListEventList({state, dispatch, commit}) {
+        updateWatchListEventList({ state, dispatch, commit }) {
             return new Promise((resolve) => {
                 state.pointWatcher.forEach(async p => {
                     try {
-                        let pe = await dispatch('fetchDataPointEvents', {datapointId: p.id, limit:10});
-                        commit('UPDATE_POINT_EVENTS', {dpId: p.id, event: pe});
+                        let pe = await dispatch('fetchDataPointEvents', { datapointId: p.id, limit: 10 });
+                        commit('UPDATE_POINT_EVENTS', { dpId: p.id, event: pe });
                     } catch (e) {
                         console.error(e);
                     }
@@ -216,31 +268,38 @@ import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
             });
         },
 
-        updateWatchListEvent({dispatch, commit}, datapointId) {
+        updateWatchListEvent({ dispatch, commit }, datapointId) {
             return new Promise(async (resolve, reject) => {
                 try {
-                    let pe = await dispatch('fetchDataPointEvents', {datapointId, limit:10});
-                    commit('UPDATE_POINT_EVENTS', {dpId: datapointId, event: pe});
+                    let pe = await dispatch('fetchDataPointEvents', { datapointId, limit: 10 });
+                    commit('UPDATE_POINT_EVENTS', { dpId: datapointId, event: pe });
                     resolve();
-                } catch(e) {
+                } catch (e) {
                     reject(e);
                 }
             });
         },
 
-        updateActiveWatchList({commit, state}, newValue) {
+        updateActiveWatchList({ commit, state }, newValue) {
             commit('UPDATE_ACTIVE_WATCHLIST', newValue);
             return state.activeWatchList;
         },
 
     },
 
-	getters: {
-        watchListConfigChanged(state) {    
-            if(!!state.activeWatchList && !!state.activeWatchListRevert) {
+    getters: {
+        watchListConfigChanged(state) {
+            if (!!state.activeWatchList && !!state.activeWatchListRevert) {
                 return JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
             }
-            return false;            
+            return false;
+        },
+
+        getWatchListPointOrder(state) {
+            if (!!state.activeWatchList) {
+                return state.activeWatchList.pointOrder;
+            }
+            return null;
         }
     },
 };
