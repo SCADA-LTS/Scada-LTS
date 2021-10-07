@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorInitializationScript;
 
 public class ScriptHandlerRT extends EventHandlerRT {
 
@@ -22,8 +23,14 @@ public class ScriptHandlerRT extends EventHandlerRT {
 
 	@Override
 	public void eventInactive(EventInstance evt) {
-		ScriptVO<?> script = new ScriptDao().getScript(vo
-				.getInactiveScriptCommand());
+		ScriptVO<?> script;
+		try {
+			script = new ScriptDao().getScript(vo
+					.getInactiveScriptCommand());
+		} catch (Exception ex) {
+			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
+			throw ex;
+		}
 		if (script != null) {
 			try {
 				script.createScriptRT().execute();
@@ -38,8 +45,14 @@ public class ScriptHandlerRT extends EventHandlerRT {
 
 	@Override
 	public void eventRaised(EventInstance evt) {
-		ScriptVO<?> script = new ScriptDao().getScript(vo
-				.getActiveScriptCommand());
+		ScriptVO<?> script;
+		try {
+			script = new ScriptDao().getScript(vo
+					.getActiveScriptCommand());
+		} catch (Exception ex) {
+			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
+			throw ex;
+		}
 		if (script != null) {
 			try {
 				script.createScriptRT().execute();
