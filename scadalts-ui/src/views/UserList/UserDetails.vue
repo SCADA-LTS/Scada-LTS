@@ -66,6 +66,7 @@
 								:label="$t('userDetails.field.password')"
 								v-model="userPassword"
 								:rules="[ruleRequired]"
+								@input="emitPassword"
 							></v-text-field>	
 						</v-col>
 						<v-col v-if="edit"  md="6" sm="12" xs="12">
@@ -75,6 +76,7 @@
 								:label="$t('userDetails.field.password.repeat')"
 								v-model="passwordRepeat"
 								:rules="[ruleRequired, rulePasswordEqual]"
+								@input="emitPassword"
 							></v-text-field>	
 						</v-col>
 
@@ -114,6 +116,7 @@
 							<v-checkbox 
 								id="user-form--admin"
 								:label="$t('userDetails.field.admin')"
+								:disabled="$store.state.loggedUser.username === userDetails.username"
 								v-model="userDetails.admin"
 							></v-checkbox>
 						</v-col>
@@ -121,6 +124,7 @@
 							<v-checkbox 
 								id="user-form--disabled"
 								:label="$t('userDetails.field.disabled')"
+								:disabled="$store.state.loggedUser.username === userDetails.username"
 								v-model="userDetails.disabled"
 							></v-checkbox>
 						</v-col>
@@ -226,10 +230,6 @@ export default {
 			type: Array,
 			default: [],
 		},
-		userPassword: {
-			type: String,
-			default: '',
-		},
 		edit: {
 			type: Boolean,
 			default: false,
@@ -239,6 +239,7 @@ export default {
 	data() {
 		return {
 			valid: false,
+			userPassword: '',
 			passwordRepeat: '',
 			userProfileDialogVisible: false,
 			usernameUnique: true,
@@ -324,7 +325,15 @@ export default {
 			} catch (e) {
 				console.error("Failed to check unique of username!");
 			}
+		},
+
+		emitPassword() {
+			if(this.userPassword === this.passwordRepeat) {
+				this.$emit('passwordInput', this.userPassword);
+			}
+
 		}
+
 	},
 };
 </script>
