@@ -42,7 +42,6 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -91,12 +90,12 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -380,16 +379,16 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public List<EventInstanceBean> getAlarms() {
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
-        List<EventInstance> events = new EventDao()
-                .getPendingEventsForDataSource(ds.getId(), Common.getUser()
-                        .getId());
-        Collections.sort(events, new Comparator<EventInstance>() {
+        List<EventInstance> events = new EventService()
+                .getPendingEventsForDataSourceLimit(ds.getId(), Common.getUser()
+                        .getId(), 100);
+        /*Collections.sort(events, new Comparator<EventInstance>() {
             @Override
             public int compare(EventInstance lhs, EventInstance rhs) {
                 // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
                 return lhs.getActiveTimestamp() > rhs.getActiveTimestamp() ? -1 : (lhs.getActiveTimestamp() < rhs.getActiveTimestamp()) ? 1 : 0;
             }
-        });
+        });*/
         List<EventInstanceBean> beans = new ArrayList<EventInstanceBean>();
         if (events != null) {
             for (EventInstance event : events)

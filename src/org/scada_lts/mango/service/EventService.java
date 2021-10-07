@@ -37,7 +37,6 @@ import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -157,6 +156,21 @@ public class EventService implements MangoEvent {
 		return lst;
 		
 	}
+
+	@Override
+	public List<EventInstance> getPendingEventsLimit(int typeId, int typeRef1, int userId, int limit) {
+
+		List<EventInstance> lst;
+		if (typeRef1 == -1) {
+			lst = eventDAO.getPendingEventsLimit(typeId, userId, limit);
+		} else {
+			lst = eventDAO.getPendingEventsLimit(typeId, typeRef1, userId, limit);
+		}
+		attachRelationInfo(lst);
+
+		return lst;
+
+	}
 	
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
@@ -190,7 +204,12 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {	
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
-	}	
+	}
+
+	@Override
+	public List<EventInstance> getPendingEventsForDataSourceLimit(int dataSourceId, int userId, int limit) {
+		return getPendingEventsLimit(EventType.EventSources.DATA_SOURCE, dataSourceId, userId, limit);
+	}
 	
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
@@ -207,7 +226,7 @@ public class EventService implements MangoEvent {
 			  results = PendingEventsCache.getInstance().getPendingEvents(userId);
 			} else {
 			
-				results = eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS);				
+				results = eventDAO.getPendingEventsLimit(userId, MAX_PENDING_EVENTS);
 				attachRelationalInfo(results);
 			}
 		} catch (SchedulerException | IOException e) {

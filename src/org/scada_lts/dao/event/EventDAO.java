@@ -744,6 +744,24 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		
 	}
 
+	public List<EventInstance> getPendingEventsLimit(int typeId, int userId, int limit) {
+
+		Object[] args = new Object[] {typeId, userId, DAO.boolToChar(true), limit};
+		String myLimit = LIMIT+" ? ";
+
+		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_USER + myLimit, args, new UserEventRowMapper() );
+
+	}
+
+	public List<EventInstance> getPendingEventsLimit(int typeId, int typeRef1, int userId, int limit) {
+
+		Object[] args = new Object[] {typeId, typeRef1, userId, DAO.boolToChar(true), limit};
+		String myLimit = LIMIT+" ? ";
+
+		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where " + EVENT_FILTER_TYPE_REF_USER + myLimit, args, new UserEventRowMapper());
+
+	}
+
 	public void attachRelationalInfo(EventInstance event) {
 		List<UserComment> lstUserComments = (List<UserComment>) DAO.getInstance().getJdbcTemp().query(EVENT_COMMENT_SELECT, new Object[] { event.getId() }, new UserCommentRowMapper() );
 		event.setEventComments(lstUserComments); 

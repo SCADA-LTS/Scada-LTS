@@ -108,6 +108,8 @@ public interface MangoEvent {
 	int getHighestUnsilencedAlarmLevel(int userId);
 
 	EventInstance getEvent(int eventId);
-	
 
+	List<EventInstance> getPendingEventsLimit(int typeId, int typeRef1, int userId, int limit);
+
+	List<EventInstance> getPendingEventsForDataSourceLimit(int dataSourceId, int userId, int limit);
 }
