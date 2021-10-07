@@ -42,8 +42,10 @@ import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -226,10 +228,14 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
-		
+
 		new UserCommentDAO().insert(comment, UserComment.TYPE_EVENT, eventId);
-		 
+
 		return eventDAO.findById(new Object[]{eventId});
+	}
+
+	public int insertEventComment(int userId, int eventId, String commentText) {
+		return eventDAO.insertUserComment(userId, eventId, commentText);
 	}
 	
 	@Override
@@ -376,7 +382,7 @@ public class EventService implements MangoEvent {
 		//TODO very slow We not use
 		eventDAO.attachRelationalInfo(event);
 	}
-	
+
 	@Override
 	public void insertEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		eventDAO.insertEventHandler(typeId, typeRef1, typeRef2, handler);
@@ -476,16 +482,26 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
-	public SQLPageWithTotal<EventDTO> getEventsWithLimit(int alarmLevel,
-														 int eventSourceType,
-														 String status,
-														 String keywords,
-														 int typeRef,
-														 String[] sortBy,
-														 boolean[] sortDesc,
-														 int limit,
-														 int offset) {
-		return eventDAO.findEvents(alarmLevel,
+	public SQLPageWithTotal<EventDTO> getEventsWithLimit(
+														String startDate,
+														String endDate,
+														String startTime,
+														String endTime,
+														int alarmLevel,
+														int eventSourceType,
+														String status,
+														String keywords,
+														int typeRef,
+														String[] sortBy,
+														boolean[] sortDesc,
+														int limit,
+														int offset) {
+		return eventDAO.findEvents(
+				startDate,
+				endDate,
+				startTime,
+				endTime,
+				alarmLevel,
 		eventSourceType,
 		status,
 		keywords,
@@ -496,4 +512,7 @@ public class EventService implements MangoEvent {
 		offset);
 	}
 
+	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
+		return eventDAO.findCommentsByEventId(eventId);
+	}
 }

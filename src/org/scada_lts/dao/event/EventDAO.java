@@ -32,6 +32,7 @@ import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
 import org.scada_lts.utils.QueryUtils;
 import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.dao.DataAccessException;
@@ -42,6 +43,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,7 +124,20 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	//------------- User events
 	//TODO rewrite to another class
 	private static final String COLUMN_NAME_USER_EVENTS_ID="id";
-	
+
+	private static String EVENT_FIELDS = "e." + COLUMN_NAME_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
+			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
+			"e." + COLUMN_NAME_RTN_TS + ", " +
+			"e." + COLUMN_NAME_RTN_CAUSE + ", " +
+			"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
+			"e." + COLUMN_NAME_MESSAGE + ", " +
+			"e." + COLUMN_NAME_ACT_TS + ", " +
+			"u." + COLUMN_NAME_USER_NAME + ", " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " ";
 	
 	// @formatter:off
 	private static final String BASIC_EVENT_SELECT = ""
@@ -635,6 +650,46 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public int insertUserComment(final int userId, final int eventId, final String commentText) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insert(final DataPointVO dataPoint) userId:" + userId + " eventId:"+eventId);
+		}
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		return DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement("INSERT INTO userComments (userId, commentType, typeKey, ts, commentText) VALUES (?,1,?,CURRENT_TIMESTAMP,?)", Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter(new Object[] {
+						userId,
+						eventId,
+						commentText
+				}).setValues(ps);
+				return ps;
+			}
+		}, keyHolder);
+
+	}
+
+	private class EventCommentDTORowMapper implements RowMapper<EventCommentDTO> {
+		public EventCommentDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EventCommentDTO result = new EventCommentDTO(
+					rs.getInt("userId"),
+					rs.getString("username"),
+					rs.getInt("commentType"),
+					rs.getInt("typeKey"),
+					rs.getString("ts"),
+					rs.getString("commentText")
+			);
+
+			//result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
+			return result;
+		}
+	}
+
 	private class TotalRowMapper implements RowMapper<Integer> {
 		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return rs.getInt("TOTAL");
@@ -674,6 +729,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 * @return List of Events
 	 */
 	public SQLPageWithTotal<EventDTO> findEvents(
+			String startDate,
+			String endDate,
+			String startTime,
+			String endTime,
 			int alarmLevel,
 			int eventSourceType,
 			String status,
@@ -685,46 +744,72 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			int offset) {
 		List<Object> params = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT SQL_CALC_FOUND_ROWS " +
-				"e." + COLUMN_NAME_ID + ", " +
-				"e." + COLUMN_NAME_TYPE_ID + ", " +
-				"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
-				"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
-				"e." + COLUMN_NAME_ACTIVE_TS + ", " +
-				"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
-				"e." + COLUMN_NAME_RTN_TS + ", " +
-				"e." + COLUMN_NAME_RTN_CAUSE + ", " +
-				"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
-				"e." + COLUMN_NAME_MESSAGE + ", " +
-				"e." + COLUMN_NAME_ACT_TS + ", " +
-				"u." + COLUMN_NAME_USER_NAME + ", " +
-				"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
-		"FROM events e LEFT JOIN users u ON u.id=e.ackUserId ");
+		String select = "SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS;
 
-		sql.append("WHERE 1=1 ");
+		String groupBy = " GROUP BY " + EVENT_FIELDS;
+
+		StringBuilder from = new StringBuilder();
+		from.append(" FROM events e LEFT JOIN users u ON u.id=e.ackUserId ");
+
+		StringBuilder where = new StringBuilder();
+		where.append(" WHERE 1=1 ");
+
+		if (!"".equals(startDate)) {
+			where.append(" AND e."+COLUMN_NAME_ACTIVE_TS+" >= (UNIX_TIMESTAMP(?)*1000) ");
+			String start = startDate+' '+startTime;
+			params.add(start);
+		}
+		if (!"".equals(endDate)) {
+			where.append(" AND e."+COLUMN_NAME_ACTIVE_TS+" <= ((UNIX_TIMESTAMP(?)+60)*1000) ");
+			String end = endDate+' '+endTime;
+			params.add(end);
+		}
 		if (alarmLevel != 0) {
-			sql.append("AND e."+COLUMN_NAME_ALARM_LEVEL+"=? ");
+			where.append(" AND e."+COLUMN_NAME_ALARM_LEVEL+">=? ");
 			params.add(alarmLevel);
 		}
 
 		if (eventSourceType != 0) {
-			sql.append("AND e."+COLUMN_NAME_TYPE_ID+"=? ");
+			where.append(" AND e."+COLUMN_NAME_TYPE_ID+"=? ");
 			params.add(eventSourceType);
 		}
 
 		if (!"*".equals(status)) {
-			sql.append("AND e."+COLUMN_NAME_TYPE_ID+"=? ");
+			where.append(" AND e."+COLUMN_NAME_TYPE_ID+"=? ");
 			params.add(eventSourceType);
 		}
 
 		if (!"".equals(keywords)) {
-			sql.append("AND e."+COLUMN_NAME_MESSAGE+" LIKE %?% ");
-			params.add(keywords);
-		}
+			String sqlSearchKeywordsFields;
 
+			from.append(" LEFT JOIN userComments uc ON uc.typeKey=e.id " );
+			boolean joinWithDataSource = eventSourceType == 0 || eventSourceType == 3;
+			if (joinWithDataSource) {
+				from.append(" LEFT JOIN dataPoints dp ON dp.id = e.typeRef1" );
+				from.append(" LEFT JOIN dataSources ds ON ds.id = dp.dataSourceId" );
+				sqlSearchKeywordsFields = " AND ( e."+COLUMN_NAME_MESSAGE+" LIKE ? OR ( uc.commentText LIKE ?) OR (dp.xid LIKE ? OR dp.pointName LIKE ? OR ds.xid LIKE ? OR ds.name LIKE ? ))  " ;
+			} else {
+				sqlSearchKeywordsFields = " AND ( e."+COLUMN_NAME_MESSAGE+" LIKE ? OR ( uc.commentText LIKE ?)  )  ";
+			}
+
+			for (String keyword : keywords.split("\\s*,\\s*")) {
+				where.append(sqlSearchKeywordsFields);
+				params.add("%"+keyword+"%");
+				params.add("%"+keyword+"%");
+				if (joinWithDataSource) {
+					params.add("%"+keyword+"%");
+					params.add("%"+keyword+"%");
+					params.add("%"+keyword+"%");
+					params.add("%"+keyword+"%");
+				}
+			}
+		}
+		sql.append(select);
+		sql.append(from.toString());
+		sql.append(where.toString());
+		sql.append(groupBy);
 
 		if (sortBy.length != 0) {
-
 			List<String> sorting = new ArrayList<String>();
 			for (int i = 0; i < sortBy.length; i++) {
 				sorting.add(sortBy[i] + " " + (sortDesc[i] ? "DESC " : "ASC "));
@@ -1266,6 +1351,18 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		String args = QueryUtils.getArgsIn(ids.size());
 		String query = EVENT_HANDLER_SELECT_ID_IN.replace("?", args);
 		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventHandlerRowMapper());
+	}
+
+	@Transactional(readOnly = true)
+	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		sql.append("SELECT uc.userId as userId, u.username as username, uc.commentType as commentType, uc.typeKey as typeKey, uc.ts as ts, uc.commentText as commentText " +
+				" FROM userComments uc LEFT JOIN users u ON u.id = uc.userId WHERE uc.typeKey=? " +
+				" ORDER BY uc.ts DESC;");
+		params.add(eventId);
+		List<EventCommentDTO> result = DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), new EventCommentDTORowMapper());
+		return (List<EventCommentDTO>) result ;
 	}
 
 }
