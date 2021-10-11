@@ -246,12 +246,14 @@ export default {
 
 		async showDialog() {
 			if (this.create) {
+				this.$emit("createStarted", true);
 				let xid;
 				try {
 					xid = await this.$store.dispatch('getWatchListUniqueXid');
 				} catch (e) {
 					console.error('Failed to get unique WatchList XID');
 				}
+				this.loadWatchListData();
 				this.$store.commit('SET_BLANK_ACTIVE_WATCHLIST', xid);
 			}
 			this.dialog = true;

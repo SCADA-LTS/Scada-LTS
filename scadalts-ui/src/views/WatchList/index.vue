@@ -27,6 +27,7 @@
 				<v-col xs="12" sm="6" md="4" class="slts--toolbar row justify-end">
 					<WatchListConfig
 						:create="true"
+						@createStarted="onCreateStarted"
 						@create="createWatchList"
 						class="header-settings--buttons"
 					></WatchListConfig>
@@ -53,7 +54,7 @@
 						:items="watchListsArray"
 						item-text="name"
 						item-value="id"
-						@change="fetchWatchListDetails"
+						@change="navToWatchListDetails"
 					></v-select>
 				</v-col>
 			</v-row>
@@ -141,7 +142,7 @@ export default {
 			this.watchListsArray = await this.$store.dispatch('getAllWatchLists');
 		},
 
-		async fetchWatchListDetails(watchListId) {
+		async navToWatchListDetails(watchListId) {
 			this.$router.push({ path: `/watch-list/${watchListId}` });
 		},
 
@@ -153,6 +154,7 @@ export default {
 					name: resp.name,
 				});
 				this.watchListSelectBox = resp.id;
+				this.navToWatchListDetails(resp.id);
 			});
 		},
 
@@ -178,6 +180,11 @@ export default {
 			if (result) {
 				this.deleteWatchList();
 			}
+		},
+
+		onCreateStarted() {
+			this.watchListSelectBox = -1;
+			this.$router.push({ path: `/watch-list/` });
 		},
 
 		onRouteChanged(id) {
