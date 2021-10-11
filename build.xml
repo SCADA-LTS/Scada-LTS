@@ -232,6 +232,10 @@
 			<test name="br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.scripting.ScriptMigrationTestSuite"
+				  haltonfailure="yes" todir="${build-project.test.report}">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">
