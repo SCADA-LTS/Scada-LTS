@@ -234,7 +234,6 @@ export default {
 		},
 
 		watchDateAxisChagne(series) {
-			console.log(series);
 			if (series.xAxis == 'dateAxis2') {
 				series.dataFields.dateX = 'date';
 			} else if (series.xAxis == 'dateAxis1') {

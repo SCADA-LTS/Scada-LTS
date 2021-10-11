@@ -231,7 +231,6 @@ export default {
 		},
 
 		addDataPointSearch() {
-			console.log(this.searchDataPoint);
 			if (!!this.searchDataPoint) {
 				let data = {
 					id: this.searchDataPoint.id,

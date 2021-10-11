@@ -12,6 +12,7 @@ const watchListModule = {
         activeWatchListRevert: null,
         pointWatcher: [], //More detailed information about the point
         datapointHierarchy: [],
+        pointMoved: false,
     },
 
     mutations: {
@@ -37,6 +38,17 @@ const watchListModule = {
 
         SET_POINT_WATCHER(state, pointArray) {
             state.pointWatcher = pointArray
+        },
+
+        SET_POINT_MOVED(state, pointListOrder) {
+            let change = false;
+            for(let i = 0; i < pointListOrder.length; i++) {
+                change = pointListOrder[i].order !== i;
+                if(change) {
+                    break;
+                }
+            }
+            state.pointMoved = change;
         },
 
         SET_DATAPOINT_HIERARCHY(state, datapointHierarchy) {
@@ -140,7 +152,6 @@ const watchListModule = {
             for (let order = 0; order < state.pointWatcher.length; order++) {
                 data.pointIds[state.pointWatcher[order].id] = order;
             }
-            console.log(data);
 
             return dispatch('requestPut', {
                 url: '/watch-lists/order/',
@@ -153,7 +164,6 @@ const watchListModule = {
         getWatchListDetails({ dispatch, commit }, id) {
             return new Promise(async (resolve, reject) => {
                 try {
-                    console.log("Details")
                     let watchList = await dispatch('requestGet', `/watch-lists/${id}`);
                     let details = loadWatchListDetails(id);
                     if (!!details) {
@@ -242,7 +252,6 @@ const watchListModule = {
                     let dp = await dispatch('getDataPointDetails', datapointId);
                     let pv = await dispatch('getDataPointValue', datapointId);
                     let pe = await dispatch('fetchDataPointEvents', { datapointId, limit: 10 })
-                    console.log(dp);
                     let ds = await dispatch('getDatasourceByXid', dp.dataSourceXid);
                     let order = state.activeWatchList.pointOrder.get(datapointId);
                     let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe, ds, order);
@@ -289,10 +298,14 @@ const watchListModule = {
 
     getters: {
         watchListConfigChanged(state) {
+            let change = false;
             if (!!state.activeWatchList && !!state.activeWatchListRevert) {
-                return JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
+                change = JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
             }
-            return false;
+            if(!!state.pointMoved) {
+                change = true;
+            }
+            return change;
         },
 
         getWatchListPointOrder(state) {

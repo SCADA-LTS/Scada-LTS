@@ -148,7 +148,6 @@ export default {
 				return 'watchlist-component--horizontal';
 			} else {
 				if (this.activeWatchList.biggerChart) {
-					console.log('biggerChart');
 					if (item.component === 'PointChart') {
 						return 'watchlist-component--bigger-chart';
 					} else {

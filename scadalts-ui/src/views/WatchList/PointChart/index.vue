@@ -198,7 +198,6 @@ export default {
 
 		initChart() {
 			let pointIds = this.pointList.map((p) => p.id).join(',');
-			console.log(pointIds);
 			this.chartClass = new AmChart(this.$refs.chartdiv, 'xychart', pointIds)
 				.startTime(this.chartProperties.startDate)
 				.endTime(this.chartProperties.endDate)
@@ -218,7 +217,6 @@ export default {
 
 		renderChart() {
 			this.chartClass.createChart().catch((e) => {
-				console.log(e);
 				if (e.message === 'No data from that range!') {
 					this.response = {
 						status: true,
@@ -242,7 +240,6 @@ export default {
 		},
 
 		saveConfiguration() {
-			console.log(this.config);
 			this.config.saveChartConfiguration();
 		},
 

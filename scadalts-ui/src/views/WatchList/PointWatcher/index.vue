@@ -273,6 +273,7 @@ export default {
 
 		checkMove: function (e) {
 			this.drag = false;
+			this.$store.commit('SET_POINT_MOVED', this.pointList);
 		},
 
 		countActiveEvents(eventTable) {
@@ -311,7 +312,6 @@ export default {
 		},
 
 		deletePointFromList(point) {
-			console.log('Delete point: ', point);
 			this.$store.commit('REMOVE_POINT_FROM_WATCHLIST', point);
 			this.pointList = this.pointList.filter((p) => p.id !== point.id);
 		},
