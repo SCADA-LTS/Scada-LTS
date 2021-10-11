@@ -14,12 +14,9 @@ import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.adapter.MangoDataPoint;
-import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
@@ -44,10 +41,10 @@ final class MigrationPermissionsUtils {
                                Map<Accesses, UsersProfileVO> profiles,
                                MigrationPermissionsService migrationPermissionsService,
                                MigrationDataService migrationDataService) {
-        Set<DataPointAccess> dataPointAccesses = reduceToObjectExisting(dataPointAccessesFromView, migrationDataService.getDataPointService());
-        Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService.getDataSourceService());
-        Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService.getWatchListService()::getWatchList, "watchlist: ");
-        Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService.getViewService()::getView, "view: ");
+        Set<DataPointAccess> dataPointAccesses = reduceToObjectExistingDataPoint(dataPointAccessesFromView, migrationDataService::getDataPoint);
+        Set<Integer> dataSourceAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getDataSourceUserPermissionsService()), migrationDataService::getDataSource);
+        Set<WatchListAccess> watchListAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getWatchListUserPermissionsService()), migrationDataService::getWatchList, "watchlist: ");
+        Set<ViewAccess> viewAccesses = reduceToObjectExisting(accessesBy(user, migrationPermissionsService.getViewUserPermissionsService()), migrationDataService::getView, "view: ");
 
         Accesses fromUser = new Accesses(viewAccesses, watchListAccesses, dataPointAccesses, dataSourceAccesses);
         Accesses fromProfile = fromProfile(user, profiles);
@@ -61,7 +58,7 @@ final class MigrationPermissionsUtils {
     }
 
     static void verifyUserWatchListPermissions(User user, UsersProfileService usersProfileService,
-                                               WatchListService watchListService,
+                                               MigrationDataService watchListService,
                                                PermissionsService<WatchListAccess, User> watchListUserPermissionsService) {
         UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
 
@@ -76,7 +73,7 @@ final class MigrationPermissionsUtils {
 
 
     static void verifyUserViewPermissions(User user, UsersProfileService usersProfileService,
-                                          ViewService viewService,
+                                          MigrationDataService viewService,
                                           PermissionsService<ViewAccess, User> viewUserPermissionsService) {
         UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
 
@@ -90,7 +87,7 @@ final class MigrationPermissionsUtils {
     }
 
     static void verifyUserDataSourcePermissions(User user, UsersProfileService usersProfileService,
-                                                MangoDataSource dataSourceService,
+                                                MigrationDataService dataSourceService,
                                                 PermissionsService<Integer, User> dataSourceUserPermissionsService) {
         UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
 
@@ -100,11 +97,11 @@ final class MigrationPermissionsUtils {
 
         verifyUserPermissions(dataSourceUserPermissionsService, user, usersProfile,
                 usersProfile::getDataSourcePermissions, containsPermission(1),
-                existsObject(dataSourceService));
+                existsDataSource(dataSourceService));
     }
 
     static void verifyUserDataPointPermissions(User user, UsersProfileService usersProfileService,
-                                               MangoDataPoint dataPointService,
+                                               MigrationDataService dataPointService,
                                                PermissionsService<DataPointAccess, User> dataPointUserPermissionsService) {
         UsersProfileVO usersProfile = usersProfileService.getUserProfileById(user.getUserProfile());
 
@@ -114,11 +111,11 @@ final class MigrationPermissionsUtils {
 
         verifyUserPermissions(dataPointUserPermissionsService, user, usersProfile,
                 usersProfile::getDataPointPermissions, containsPermission(new DataPointAccess()),
-                existsObject(dataPointService));
+                existsDataPoint(dataPointService));
     }
 
     static void verifyUserWatchListPermissions(User user, UsersProfileVO usersProfile,
-                                               WatchListService watchListService,
+                                               MigrationDataService watchListService,
                                                Set<WatchListAccess> oldAccesses) {
 
         verifyUserPermissions(oldAccesses, user, usersProfile,
@@ -128,7 +125,7 @@ final class MigrationPermissionsUtils {
 
 
     static void verifyUserViewPermissions(User user, UsersProfileVO usersProfile,
-                                          ViewService viewService,
+                                          MigrationDataService viewService,
                                           Set<ViewAccess> oldAccesses) {
         verifyUserPermissions(oldAccesses, user, usersProfile,
                 usersProfile::getViewPermissions, containsPermission(),
@@ -136,20 +133,20 @@ final class MigrationPermissionsUtils {
     }
 
     static void verifyUserDataSourcePermissions(User user, UsersProfileVO usersProfile,
-                                                MangoDataSource dataSourceService,
+                                                MigrationDataService dataSourceService,
                                                 Set<Integer> oldAccesses) {
         verifyUserPermissions(oldAccesses, user, usersProfile,
                 usersProfile::getDataSourcePermissions, containsPermission(1),
-                existsObject(dataSourceService));
+                existsDataSource(dataSourceService));
     }
 
     static void verifyUserDataPointPermissions(User user, UsersProfileVO usersProfile,
-                                               MangoDataPoint dataPointService,
+                                               MigrationDataService dataPointService,
                                                Set<DataPointAccess> oldAccesses) {
 
         verifyUserPermissions(oldAccesses, user, usersProfile,
                 usersProfile::getDataPointPermissions, containsPermission(new DataPointAccess()),
-                existsObject(dataPointService));
+                existsDataPoint(dataPointService));
     }
 
     static Accesses fromProfile(User user, Map<Accesses, UsersProfileVO> profiles) {
@@ -198,7 +195,14 @@ final class MigrationPermissionsUtils {
 
     static void updatePermissions(User user, Accesses accesses, UsersProfileService usersProfileService,
                                   Map<Accesses, UsersProfileVO> profiles) {
-        updatePermissions(user, "profile_", usersProfileService, accesses, profiles);
+        String prefix = "profile";
+        if(user.getUserProfile() != Common.NEW_ID)
+            prefix = profiles.values().stream()
+                    .filter(usersProfileVO -> usersProfileVO.getId() == user.getUserProfile())
+                    .map(UsersProfileVO::getName)
+                    .findAny()
+                    .orElse(prefix);
+        updatePermissions(user, prefix + "_", usersProfileService, accesses, profiles);
     }
 
     static void printTime(long start, String msg) {
@@ -206,10 +210,10 @@ final class MigrationPermissionsUtils {
     }
 
     static Accesses reduceToObjectExisting(Accesses accesses, MigrationDataService migrationDataService) {
-        return new Accesses(reduceToObjectExisting(accesses.getViewAccesses(), migrationDataService.getViewService()::getView, "view: "),
-                reduceToObjectExisting(accesses.getWatchListAccesses(), migrationDataService.getWatchListService()::getWatchList, "watchlist: "),
-                reduceToObjectExisting(accesses.getDataPointAccesses(), migrationDataService.getDataPointService()),
-                reduceToObjectExisting(accesses.getDataSourceAccesses(), migrationDataService.getDataSourceService()));
+        return new Accesses(reduceToObjectExisting(accesses.getViewAccesses(), migrationDataService::getView, "view: "),
+                reduceToObjectExisting(accesses.getWatchListAccesses(), migrationDataService::getWatchList, "watchlist: "),
+                reduceToObjectExistingDataPoint(accesses.getDataPointAccesses(), migrationDataService::getDataPoint),
+                reduceToObjectExisting(accesses.getDataSourceAccesses(), migrationDataService::getDataSource));
     }
 
     static <T extends Permission> Set<T> reduceToObjectExisting(Set<T> objects, IntFunction<?> verify, String msg) {
@@ -219,14 +223,14 @@ final class MigrationPermissionsUtils {
                 .collect(Collectors.toSet());
     }
 
-    static Set<Integer> reduceToObjectExisting(Set<Integer> objects, MangoDataSource verify) {
+    static Set<Integer> reduceToObjectExisting(Set<Integer> objects, IntFunction<?> verify) {
         return objects.stream()
                 .map(a -> exists(verify, a) ? a : null)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
-    static Set<DataPointAccess> reduceToObjectExisting(Set<DataPointAccess> objects, MangoDataPoint verify) {
+    static Set<DataPointAccess> reduceToObjectExistingDataPoint(Set<DataPointAccess> objects, IntFunction<?> verify) {
         return objects.stream()
                 .map(a -> exists(verify, a) ? a : null)
                 .filter(Objects::nonNull)
@@ -333,12 +337,12 @@ final class MigrationPermissionsUtils {
         return (access) -> exists(verify, access, "object: ");
     }
 
-    private static Predicate<Integer> existsObject(MangoDataSource dataSourceService) {
-        return (access) ->  exists(dataSourceService, access);
+    private static Predicate<Integer> existsDataSource(MigrationDataService dataSourceService) {
+        return (access) ->  exists(dataSourceService::getDataSource, access);
     }
 
-    private static Predicate<DataPointAccess> existsObject(MangoDataPoint dataPointService) {
-        return (access) ->  exists(dataPointService, access);
+    private static Predicate<DataPointAccess> existsDataPoint(MigrationDataService dataPointService) {
+        return (access) ->  exists(dataPointService::getDataPoint, access);
     }
 
     private static <T, S extends PermissionsService<T, User>> void verifyUserPermissions(S permissionsService, User user,
@@ -351,7 +355,8 @@ final class MigrationPermissionsUtils {
         fromUserAccesses.forEach(permission -> {
             boolean transferred = containsPermission.test(permission, fromProfile.get());
             boolean exists = existsObject.test(permission);
-            String msg = verifyInfo(permission, user, transferred, exists, usersProfile);
+            boolean ok = transferred || !exists || isNonPermission(permission);
+            String msg = verifyInfo(permission, user, transferred, exists, ok, usersProfile);
             LOG.info(iterationInfo(msg, i.incrementAndGet(), fromUserAccesses.size()));
         });
     }
@@ -365,9 +370,14 @@ final class MigrationPermissionsUtils {
         oldAccesses.forEach(permission -> {
             boolean transferred = containsPermission.test(permission, fromProfile.get());
             boolean exists = existsObject.test(permission);
-            String msg = verifyInfo(permission, user, transferred, exists, usersProfile);
+            boolean ok = transferred || !exists || isNonPermission(permission);
+            String msg = verifyInfo(permission, user, transferred, exists, ok, usersProfile);
             LOG.info(iterationInfo(msg, i.incrementAndGet(), oldAccesses.size()));
         });
+    }
+
+    private static <T> boolean isNonPermission(T permission) {
+        return permission instanceof Permission ? isNonPermission((Permission) permission) : (permission instanceof DataPointAccess && isNonPermission((DataPointAccess) permission));
     }
 
     private static UsersProfileVO createProfile(String prefix, UsersProfileService usersProfileService, Accesses key) {
@@ -439,9 +449,9 @@ final class MigrationPermissionsUtils {
         }
     }
 
-    private static boolean exists(MangoDataPoint dataPointService, DataPointAccess a) {
+    private static boolean exists(IntFunction<?> verify, DataPointAccess a) {
         try {
-            DataPointVO object = dataPointService.getDataPoint(a.getDataPointId());
+            Object object = verify.apply(a.getDataPointId());
             if(object == null) {
                 LOG.info("datapoint: " +  a.getDataPointId() + ", msg: does not exist");
                 return false;
@@ -453,9 +463,9 @@ final class MigrationPermissionsUtils {
         }
     }
 
-    private static boolean exists(MangoDataSource dataSourceService, Integer a) {
+    private static boolean exists(IntFunction<?> verify, Integer a) {
         try {
-            DataSourceVO object = dataSourceService.getDataSource(a);
+            Object object = verify.apply(a);
             if(object == null) {
                 LOG.info("datasource: " +  a + ", msg: does not exist");
                 return false;
@@ -465,5 +475,13 @@ final class MigrationPermissionsUtils {
             LOG.warn("datasource: " + a + ", msg: " + (ex.getMessage() == null ? "no message" : ex.getMessage()));
             return false;
         }
+    }
+
+    private static boolean isNonPermission(Permission permission) {
+        return permission.getPermission() < 1;
+    }
+
+    private static boolean isNonPermission(DataPointAccess permission) {
+        return permission.getPermission() < 1;
     }
 }

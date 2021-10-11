@@ -28,28 +28,25 @@ class ComplementPermissionsCommand extends AbstractMeasurmentCommand {
     private final Map<Accesses, UsersProfileVO> profiles;
     private final MigrationPermissionsService migrationPermissionsService;
     private final MigrationDataService migrationDataService;
-    private final List<View> views;
 
     ComplementPermissionsCommand(Map<Accesses, UsersProfileVO> profiles,
                                  MigrationPermissionsService migrationPermissionsService,
-                                 MigrationDataService migrationDataService,
-                                 List<View> views) {
+                                 MigrationDataService migrationDataService) {
         this.profiles = profiles;
         this.migrationPermissionsService = migrationPermissionsService;
         this.migrationDataService = migrationDataService;
-        this.views = views;
     }
 
     @Override
     public void work(List<User> users) {
         AtomicInteger userIte = new AtomicInteger();
 
-        Map<Integer, List<DataPointVO>> dataPointsFromViews = findDataPointsFromViews(views);
+        Map<Integer, List<DataPointVO>> dataPointsFromViews = findDataPointsFromViews(migrationDataService.getViews());
         users.forEach(user -> {
             long start = System.nanoTime();
             String msg = iterationInfo(userInfo(user), userIte.incrementAndGet(), users.size());
             LOG.info(msg);
-            List<View> viewsWithAccess = views.stream()
+            List<View> viewsWithAccess = migrationDataService.getViews().stream()
                     .filter(view -> view.getUserAccess(user) > ShareUser.ACCESS_NONE)
                     .collect(Collectors.toList());
 

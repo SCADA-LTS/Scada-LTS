@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 @RunWith(Parameterized.class)
 public class AccessesTest {
 
-    @Parameterized.Parameters(name= "{index}: \nbase: {0}, toCompare: {1}, \nidentical: {2}\n\n")
+    @Parameterized.Parameters(name= "{index}: \nbase: {0}, toCompare: {1}, \nequals: {2}\n\n")
     public static Object[][] accesses() {
 
         Accesses base = new Accesses(Stream.of(new ViewAccess(1, 1), new ViewAccess(2, 2)).collect(Collectors.toSet()),

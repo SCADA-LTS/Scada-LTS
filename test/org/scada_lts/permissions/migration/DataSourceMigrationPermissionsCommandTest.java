@@ -133,21 +133,26 @@ public class DataSourceMigrationPermissionsCommandTest {
         PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
         PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
 
-        MangoDataSource dataSourceService = mock(DataSourceService.class);
-        when(dataSourceService.getDataSource(anyInt())).thenAnswer(a -> {
-            int id = (int) a.getArguments()[0];
-            DataSourceVO<VirtualDataSourceVO> ds = new VirtualDataSourceVO();
-            ds.setId(id);
-            return ds;
-        });
+        List<DataSourceVO<?>> dataSources = new ArrayList<>();
+        DataSourceVO<VirtualDataSourceVO> ds1 = new VirtualDataSourceVO();
+        ds1.setId(dataSourceId1);
+        DataSourceVO<VirtualDataSourceVO> ds2 = new VirtualDataSourceVO();
+        ds2.setId(dataSourceId2);
+        DataSourceVO<VirtualDataSourceVO> ds3 = new VirtualDataSourceVO();
+        ds3.setId(dataSourceId3);
+        DataSourceVO<VirtualDataSourceVO> ds4 = new VirtualDataSourceVO();
+        ds4.setId(dataSourceId4);
+        DataSourceVO<VirtualDataSourceVO> ds5 = new VirtualDataSourceVO();
+        ds5.setId(dataSourceId5);
+
+        dataSources.add(ds1);
+        dataSources.add(ds2);
+        dataSources.add(ds3);
+        dataSources.add(ds4);
+        dataSources.add(ds5);
 
         views = new ArrayList<>();
         views.add(new View());
-
-        ViewService viewService = mock(ViewService.class);
-        when(viewService.getViews()).thenReturn(views);
-        WatchListService watchListService = mock(WatchListService.class);
-        MangoDataPoint dataPointService = mock(DataPointService.class);
 
         UserDAO userDAO = mock(UserDAO.class);
         when(userDAO.getUser(anyInt())).thenReturn(user);
@@ -159,8 +164,10 @@ public class DataSourceMigrationPermissionsCommandTest {
         migrationPermissionsService = new MigrationPermissionsService(dataPointUserPermissionsService,
                 userPermissionsService, watchListUserPermissionsService, viewUserPermissionsService);
 
-        migrationDataService = new MigrationDataService(dataPointService,
-                dataSourceService, viewService, watchListService, usersProfileService);
+        migrationDataService = new MigrationDataService(new HashMap<>(),
+                dataSources.stream().collect(Collectors.toMap(DataSourceVO::getId, a -> a)),
+                views.stream().collect(Collectors.toMap(View::getId, a -> a)),
+                new HashMap<>(), usersProfileService);
     }
 
     @After
@@ -171,8 +178,7 @@ public class DataSourceMigrationPermissionsCommandTest {
     @Test
     public void when_execute_for_user_and_profile_accesses_then_same_accesses() {
         //given:
-        MigrationPermissions migrationCommand = MigrationPermissions
-                .newMigration(migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService);
 
         //when:
         migrationCommand.execute(users);
@@ -193,8 +199,7 @@ public class DataSourceMigrationPermissionsCommandTest {
     @Test
     public void when_execute_for_user_and_profile_accesses_then_same_profile_accesses() {
         //given:
-        MigrationPermissions migrationCommand = MigrationPermissions
-                .newMigration(migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService);
 
         //when:
         migrationCommand.execute(users);
