@@ -236,6 +236,10 @@
 			<test name="org.scada_lts.dao.NewInstanceUsersProfileTest"
 				  haltonfailure="yes" >
 			</test>
+
+			<test name="br.org.scadabr.vo.EqualsHashcodePermissionTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 
