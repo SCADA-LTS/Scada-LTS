@@ -91,12 +91,12 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -380,8 +380,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public List<EventInstanceBean> getAlarms() {
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
-        List<EventInstance> events = new EventDao()
-                .getPendingEventsForDataSource(ds.getId(), Common.getUser()
+        List<EventInstance> events = new EventService()
+                .getPendingSimpleEventsForDataSource(ds.getId(), Common.getUser()
                         .getId());
         Collections.sort(events, new Comparator<EventInstance>() {
             @Override
