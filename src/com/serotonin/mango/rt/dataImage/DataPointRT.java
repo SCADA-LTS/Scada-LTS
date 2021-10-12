@@ -478,6 +478,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 	}
 
+	public void notifyWebSocketStateSubscribers(boolean enabled) {
+		DataPointServiceWebSocket ws = DataPointServiceWebSocket.getInstance();
+		if(ws != null) {
+			ws.notifyStateSubscribers(enabled, this.vo.getId());
+		}
+	}
+
 	class EventNotifyWorkItem implements WorkItem {
 		private final DataPointListener listener;
 		private final PointValueTime oldValue;
@@ -545,6 +552,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 
 		initializeIntervalLogging();
+		notifyWebSocketStateSubscribers(true);
 	}
 
 	public void terminate() {
@@ -557,6 +565,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			}
 		}
 		Common.ctx.getEventManager().cancelEventsForDataPoint(vo.getId());
+		notifyWebSocketStateSubscribers(false);
 	}
 
 	public void joinTermination() {

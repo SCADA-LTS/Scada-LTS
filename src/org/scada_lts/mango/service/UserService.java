@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
 
@@ -272,10 +273,10 @@ public class UserService implements MangoUser {
 
 	public void updateUserDetails(JsonUser user) {
 		userDAO.updateUserDetails(user);
+		Optional<UsersProfileVO> profile = usersProfileService.getProfileByUserId(user.getId());
+		profile.ifPresent(a -> usersProfileDAO.deleteUserProfileByUserId(user.getId()));
 		if(user.getUserProfile() > 0) {
 			usersProfileDAO.insertUserProfile(user.getId(), user.getUserProfile());
-		} else {
-			usersProfileDAO.deleteUserProfileByUserId(user.getId());
 		}
 	}
 

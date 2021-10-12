@@ -14,6 +14,8 @@ import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
 import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
+import WatchList from './views/WatchList';
+import WatchListItem from './views/WatchList/WatchListItem';
 
 import store from './store/index';
 
@@ -134,6 +136,17 @@ const routing = new Router({
 					component: SynopticPanelItem,
 				},
 			],
+		},
+		{
+			path: '/watch-list',
+			name: 'watch-list',
+			component: WatchList,
+			children: [
+				{
+					path: ':id',
+					component: WatchListItem,
+				}
+			]
 		},
 		{
 			path: '/example-ph',

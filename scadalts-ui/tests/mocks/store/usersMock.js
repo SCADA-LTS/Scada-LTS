@@ -34,7 +34,16 @@ const storeUsersMock = {
 					reject();
 				}
 			});
-		}
+		},
+
+		requestGet({dispatch}, url) {
+			return new Promise((resolve, reject) => {
+				resolve({
+					unique: true
+				})
+			});
+		},
+
 	},
 
 	getters: {},

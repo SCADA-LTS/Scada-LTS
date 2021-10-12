@@ -197,7 +197,7 @@ export class AmChart {
 	 */
 	disposeChart() {
 		if (!!this.chart) {
-			this.stopLiveWebScoketUpdate();
+			this.stopLiveWebSocketUpdate();
 			this.stopLiveUpdate();
 			this.chart.dispose();
 		}

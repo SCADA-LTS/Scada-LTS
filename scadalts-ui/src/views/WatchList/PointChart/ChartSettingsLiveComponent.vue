@@ -1,7 +1,8 @@
 <template>
-<v-row>
+<v-row class="tiny-margin">
 	<v-col xs="3">
 		<v-text-field
+			dense
 			v-model="startTime"
 			:label="$t('modernwatchlist.settings.live.time.label')"
 			type="number"
@@ -10,6 +11,7 @@
 	
 	<v-col xs="3">
 		<v-select
+			dense
 			v-model="startTimeMultiplier"
 			:items="timeOptions"
 			item-value="value"
@@ -19,6 +21,7 @@
 
 	<v-col xs="6">
 		<v-select
+			dense
 			v-model="refreshRate"
 			:items="performanceOptions"
 			item-value="value"
@@ -61,14 +64,9 @@ export default {
 			refreshRate: 10000,
 			performanceOptions: [
 				{
-					id: 0,
-					text: this.$t('modernwatchlist.settings.live.performance.1'),
-					value: 1000,
-				},
-				{
-					id: 1,
-					text: this.$t('modernwatchlist.settings.live.performance.2'),
-					value: 2000,
+					id: -1,
+					text: this.$t('modernwatchlist.settings.live.performance.websocket'),
+					value: -1,
 				},
 				{
 					id: 2,
@@ -124,4 +122,11 @@ export default {
 	},
 };
 </script>
-<style scoped></style>
+<style scoped>
+.tiny-margin {
+	margin: 2px;
+}
+.tiny-margin > .col {
+	padding: 5px 10px 0 10px;
+}
+</style>

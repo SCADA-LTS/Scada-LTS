@@ -15,7 +15,6 @@ import CMP from './components/graphical_views/cmp/CMP';
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
 import LineChartComponent from './components/amcharts/LineChartComponent';
@@ -181,15 +180,6 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 	new Vue({
 		render: (h) => h(ExportImportPointHierarchy),
 	}).$mount('#export-import-ph');
-}
-
-if (window.document.getElementById('example-chart-cmp') != undefined) {
-	new Vue({
-		store,
-		vuetify,
-		i18n,
-		render: (h) => h(WatchListJsonChart),
-	}).$mount('#example-chart-cmp');
 }
 
 for (let x = 0; x < 10; x++) {

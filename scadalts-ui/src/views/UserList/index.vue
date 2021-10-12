@@ -89,9 +89,9 @@
 						ref="userCreationDialog"
 						:userDetails="createdUser"
 						:userProfiles="userProfiles"
-						:userPassword="userPassword"
 						:edit="true"
 						@userProfileCreated="onUserProfileCreated"
+						@passwordInput="onPasswordInput"
 					></UserDetails>
 				</v-card-text>
 				<v-card-actions>
@@ -250,10 +250,11 @@ export default {
 
 		async addUser() {
 			if(this.$refs.userCreationDialog.isFormValid()) {
+				let requestData = this.createdUser;
 				this.dialogCreationVisible = false;
-				this.createdUser.password = this.userPassword;
+				requestData.password = this.userPassword;
 				try {
-					await this.$store.dispatch('createUser', this.createdUser);
+					await this.$store.dispatch('createUser', requestData);
 					this.showCrudSnackbar('add');
 					this.fetchUserList();
 				} catch (e) {
@@ -261,6 +262,10 @@ export default {
 				}
 			}
         },
+
+		onPasswordInput(password) {
+			this.userPassword = password;
+		},
 
 		async onUpdateUserDetails() {
 			try {
