@@ -54,6 +54,18 @@ public class MigrationDataService {
         return watchLists.get(id);
     }
 
+    public List<WatchList> getWatchLists() {
+        return new ArrayList<>(watchLists.values());
+    }
+
+    public List<DataPointVO> getDataPoints() {
+        return new ArrayList<>(dataPoints.values());
+    }
+
+    public List<DataSourceVO<?>> getDataSources() {
+        return new ArrayList<>(dataSources.values());
+    }
+
     public UsersProfileService getUsersProfileService() {
         return usersProfileService;
     }

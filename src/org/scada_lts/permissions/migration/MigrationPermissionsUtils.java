@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.scada_lts.permissions.migration.InfoUtils.*;
 
-final class MigrationPermissionsUtils {
+public final class MigrationPermissionsUtils {
 
     private static final Log LOG = LogFactory.getLog(MigrationPermissionsUtils.class);
 
@@ -51,9 +51,9 @@ final class MigrationPermissionsUtils {
 
         Accesses accesses = MigrationPermissionsUtils.merge(fromUser, fromProfile);
 
-        if(!accesses.isEmpty())
+        if(!accesses.isEmpty()) {
             updatePermissions(user, accesses, migrationDataService.getUsersProfileService(), profiles);
-        else
+        } else
             LOG.info(userInfo(user) + " no permissions.");
     }
 
@@ -193,45 +193,54 @@ final class MigrationPermissionsUtils {
         return dataPointAccessesFromView;
     }
 
-    static void updatePermissions(User user, Accesses accesses, UsersProfileService usersProfileService,
+    public static void updatePermissions(User user, Accesses accesses, UsersProfileService usersProfileService,
                                   Map<Accesses, UsersProfileVO> profiles) {
         if(user.getUserProfile() != Common.NEW_ID
                 && updateProfile(user, accesses, usersProfileService, profiles)) {
                 return;
         }
-        updatePermissions(user,  "profile_", usersProfileService, accesses, profiles);
+        updatePermissions(user, user.getUsername() +  "_", usersProfileService, accesses, profiles);
     }
 
-    private static boolean updateProfile(User user, Accesses accesses, UsersProfileService usersProfileService, Map<Accesses, UsersProfileVO> profiles) {
-        final String prefix = profiles.values().stream()
+    private static boolean updateProfile(User user, Accesses currentKey, UsersProfileService usersProfileService,
+                                         Map<Accesses, UsersProfileVO> profiles) {
+        Optional<UsersProfileVO> fromUserProfile = profiles.values().stream()
                 .filter(usersProfileVO -> usersProfileVO.getId() == user.getUserProfile())
-                .map(UsersProfileVO::getName)
-                .findAny()
-                .orElse("profile");
-        Optional<UsersProfileVO> usersProfileOpt = profiles.values().stream()
-                .filter(usersProfileVO -> usersProfileVO.getName().contains(prefix + "_"))
                 .findAny();
+        final String prefix = fromUserProfile.map(UsersProfileVO::getName).orElse("profile");
 
-        if(usersProfileOpt.isPresent()) {
-            UsersProfileVO profile = usersProfileOpt.get();
-            Accesses keyOld = new Accesses(profile);
+        if(fromUserProfile.isPresent()) {
+            UsersProfileVO profile = fromUserProfile.get();
+            Accesses fromUserKey = new Accesses(profile);
+            Accesses formUserUpdateKey = merge(currentKey, fromUserKey);
 
-            Accesses key = merge(accesses, keyOld);
-            profile.setDataPointPermissions(new ArrayList<>(key.getDataPointAccesses()));
-            profile.setDataSourcePermissions(new ArrayList<>(key.getDataSourceAccesses()));
-            profile.setViewPermissions(new ArrayList<>(key.getViewAccesses()));
-            profile.setWatchlistPermissions(new ArrayList<>(key.getWatchListAccesses()));
-            try {
-                usersProfileService.saveUsersProfile(profile);
-                profiles.remove(keyOld);
-                profiles.put(key, profile);
-                updatePermissions(user, profile.getName() + "_", usersProfileService, key, profiles);
-            } catch (DAOException e) {
-                LOG.warn(e.getMessage());
-                return false;
+            Optional<UsersProfileVO> existWithPrefixProfile = profiles.values().stream()
+                    .filter(usersProfileVO -> usersProfileVO.getName().contains(prefix + "_"))
+                    .findAny();
+
+            if(existWithPrefixProfile.isPresent()) {
+
+                UsersProfileVO withPrefixProfile = existWithPrefixProfile.get();
+                Accesses withPrefixProfileKey = new Accesses(withPrefixProfile);
+                Accesses withPrefixProfileUpdateKey = merge(currentKey, withPrefixProfileKey);
+                withPrefixProfile.setDataPointPermissions(new ArrayList<>(withPrefixProfileUpdateKey.getDataPointAccesses()));
+                withPrefixProfile.setDataSourcePermissions(new ArrayList<>(withPrefixProfileUpdateKey.getDataSourceAccesses()));
+                withPrefixProfile.setViewPermissions(new ArrayList<>(withPrefixProfileUpdateKey.getViewAccesses()));
+                withPrefixProfile.setWatchlistPermissions(new ArrayList<>(withPrefixProfileUpdateKey.getWatchListAccesses()));
+                try {
+                    usersProfileService.saveUsersProfile(withPrefixProfile);
+                    profiles.remove(withPrefixProfileKey);
+                    profiles.put(withPrefixProfileUpdateKey, withPrefixProfile);
+                    updatePermissions(user, prefix + "_", usersProfileService, withPrefixProfileUpdateKey, profiles);
+                } catch (DAOException e) {
+                    LOG.warn(e.getMessage());
+                    return false;
+                }
+            } else {
+                updatePermissions(user, prefix + "_", usersProfileService, formUserUpdateKey, profiles);
             }
         } else {
-            updatePermissions(user, prefix + "_", usersProfileService, accesses, profiles);
+            updatePermissions(user, prefix + "_", usersProfileService, currentKey, profiles);
         }
         return true;
     }
@@ -268,7 +277,7 @@ final class MigrationPermissionsUtils {
                 .collect(Collectors.toSet());
     }
 
-    static Accesses merge(Accesses accesses1, Accesses accesses2) {
+    public static Accesses merge(Accesses accesses1, Accesses accesses2) {
         Set<ViewAccess> viewAccesses = PermissionsUtils.merge(accesses1.getViewAccesses(), accesses2.getViewAccesses());
         Set<WatchListAccess> watchListAccesses = PermissionsUtils.merge(accesses1.getWatchListAccesses(), accesses2.getWatchListAccesses());
         Set<Integer> dataSourceAccesses = PermissionsUtils.mergeInt(accesses1.getDataSourceAccesses(), accesses2.getDataSourceAccesses());

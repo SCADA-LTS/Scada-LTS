@@ -27,7 +27,7 @@ public class Accesses {
         this.dataSourceAccesses = new HashSet<>(dataSourceAccesses);
     }
 
-    Accesses(UsersProfileVO usersProfile) {
+    public Accesses(UsersProfileVO usersProfile) {
         this.dataPointAccesses = selectDataPointAccesses(new HashSet<>(usersProfile.getDataPointPermissions()));
         this.dataSourceAccesses = new HashSet<>(usersProfile.getDataSourcePermissions());
         this.watchListAccesses = selectGeneric(new HashSet<>(usersProfile.getWatchlistPermissions()));

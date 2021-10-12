@@ -4,9 +4,7 @@ import br.org.scadabr.db.utils.TestUtils;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
@@ -17,10 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.dao.*;
-import org.scada_lts.mango.adapter.MangoDataPoint;
-import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.*;
-import org.scada_lts.permissions.service.DataPointProfilePermissionsService;
 import org.scada_lts.permissions.service.DataSourceProfilePermissionsService;
 import org.scada_lts.permissions.service.PermissionsService;
 import utils.*;
@@ -120,7 +115,7 @@ public class DataSourceMigrationPermissionsCommandTest {
         Map<Integer, UsersProfileVO> profiles = new HashMap<>();
         profiles.put(profile.getId(), profile);
 
-        UsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
+        IUsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
 
         profilePermissionsService = new DataSourceProfilePermissionsService(usersProfileDAO);
         userPermissionsService = new PermissionsServiceUserTestImpl<>(userPermissions);

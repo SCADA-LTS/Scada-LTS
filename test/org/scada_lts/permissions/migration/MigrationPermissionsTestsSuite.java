@@ -9,7 +9,8 @@ import org.junit.runners.Suite;
         DataSourceMigrationPermissionsCommandTest.class,
         MigrationPermissionsUtilsTest.class,
         GenerateDataPointPermissionTest.class,
-        AccessesTest.class
+        AccessesTest.class,
+        MigrationUpdatePermissionsTest.class
 })
 public class MigrationPermissionsTestsSuite {
 }
