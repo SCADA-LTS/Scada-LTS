@@ -148,5 +148,6 @@ test {
         includeTestsMatching "br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
         includeTestsMatching "org.scada_lts.dao.NewInstanceUserTest"
         includeTestsMatching "org.scada_lts.dao.NewInstanceUsersProfileTest"
+        includeTestsMatching "br.org.scadabr.vo.EqualsHashcodePermissionTest"
     }
 }

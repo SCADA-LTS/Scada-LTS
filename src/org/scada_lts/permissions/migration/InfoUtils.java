@@ -19,8 +19,8 @@ final class InfoUtils {
         return MessageFormat.format("view: {0} (id: {1}, xid: {2})", view.getName(), view.getId(), view.getXid());
     }
 
-    static <T> String verifyInfo(T permission, User user, boolean transfered, boolean exists, UsersProfileVO profile) {
-        return MessageFormat.format("transferred: {0} (exists: {1}) {2} {3} {4}", transfered, exists,
+    static <T> String verifyInfo(T permission, User user, boolean transfered, boolean exists, boolean ok, UsersProfileVO profile) {
+        return MessageFormat.format("ok: {0} (transferred: {1}, exists: {2}) {3} {4} {5}", ok, transfered, exists,
                 permissionInfo(permission), userInfo(user), profileInfo(profile));
     }
 

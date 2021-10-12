@@ -15,10 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
-import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.*;
 import utils.*;
@@ -375,7 +374,7 @@ public class DataPointMigrationPermissionsCommandTest {
         Map<Integer, UsersProfileVO> profiles = new HashMap<>();
         profiles.put(profile.getId(), profile);
 
-        UsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
+        IUsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
 
         profilePermissionsService = new DataPointProfilePermissionsService(usersProfileDAO);
         userPermissionsService = new PermissionsServiceUserTestImpl<>(userPermissions);
@@ -432,16 +431,7 @@ public class DataPointMigrationPermissionsCommandTest {
         views.add(ViewTestUtils.newView(dataPoints, fromView2, new ShareUser(user.getId(), permissionView2)));
 
         MangoDataPoint dataPointService = mock(DataPointService.class);
-        when(dataPointService.getDataPoint(anyInt())).thenAnswer(a -> {
-            int id = (int)a.getArguments()[0];
-            return dataPoints.stream().filter(dataPoint -> dataPoint.getId() == id).findAny().orElse(null);
-        });
-
-        ViewService viewService = mock(ViewService.class);
-        when(viewService.getViews()).thenReturn(views);
-
-        MangoDataSource dataSourceService = mock(DataSourceService.class);
-        WatchListService watchListService = mock(WatchListService.class);
+        when(dataPointService.getDataPoints(null, false)).thenReturn(dataPoints);
 
         UserDAO userDAO = mock(UserDAO.class);
         when(userDAO.getUser(anyInt())).thenReturn(user);
@@ -453,8 +443,10 @@ public class DataPointMigrationPermissionsCommandTest {
         migrationPermissionsService = new MigrationPermissionsService(userPermissionsService,
                 dataSourceUserPermissionsService, watchListUserPermissionsService, viewUserPermissionsService);
 
-        migrationDataService = new MigrationDataService(dataPointService,
-                dataSourceService, viewService, watchListService, usersProfileService);
+        migrationDataService = new MigrationDataService(dataPoints.stream().collect(Collectors.toMap(DataPointVO::getId, a -> a)),
+                        new HashMap<>(),
+                        views.stream().collect(Collectors.toMap(View::getId, a -> a)),
+                        new HashMap<>(), usersProfileService);
     }
 
     @After
@@ -465,8 +457,7 @@ public class DataPointMigrationPermissionsCommandTest {
     @Test
     public void when_execute_for_user_and_profile_accesses_then_same_accesses() {
         //given:
-        MigrationPermissions migrationCommand = MigrationPermissions
-                .newMigration(migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService);
 
         //when:
         migrationCommand.execute(users);
@@ -488,8 +479,7 @@ public class DataPointMigrationPermissionsCommandTest {
     @Test
     public void when_execute_for_user_and_profile_accesses_then_same_profile_accesses() {
         //given:
-        MigrationPermissions migrationCommand = MigrationPermissions
-                .newMigration(migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService);
 
         //when:
         migrationCommand.execute(users);

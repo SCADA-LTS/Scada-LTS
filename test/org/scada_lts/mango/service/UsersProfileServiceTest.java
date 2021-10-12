@@ -8,7 +8,6 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.permissions.service.*;

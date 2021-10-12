@@ -10,8 +10,7 @@ public interface MigrationPermissions {
     String getName();
 
     static MigrationPermissions newMigration(MigrationPermissionsService migrationPermissionsService,
-                                             MigrationDataService migrationDataService,
-                                             List<View> views) {
-        return new MigrationPermissionsCommand(migrationPermissionsService, migrationDataService, views);
+                                             MigrationDataService migrationDataService) {
+        return new MigrationPermissionsCommand(migrationPermissionsService, migrationDataService);
     }
 }
