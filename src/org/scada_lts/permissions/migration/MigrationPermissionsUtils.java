@@ -195,14 +195,45 @@ final class MigrationPermissionsUtils {
 
     static void updatePermissions(User user, Accesses accesses, UsersProfileService usersProfileService,
                                   Map<Accesses, UsersProfileVO> profiles) {
-        String prefix = "profile";
-        if(user.getUserProfile() != Common.NEW_ID)
-            prefix = profiles.values().stream()
-                    .filter(usersProfileVO -> usersProfileVO.getId() == user.getUserProfile())
-                    .map(UsersProfileVO::getName)
-                    .findAny()
-                    .orElse(prefix);
-        updatePermissions(user, prefix + "_", usersProfileService, accesses, profiles);
+        if(user.getUserProfile() != Common.NEW_ID
+                && updateProfile(user, accesses, usersProfileService, profiles)) {
+                return;
+        }
+        updatePermissions(user,  "profile_", usersProfileService, accesses, profiles);
+    }
+
+    private static boolean updateProfile(User user, Accesses accesses, UsersProfileService usersProfileService, Map<Accesses, UsersProfileVO> profiles) {
+        final String prefix = profiles.values().stream()
+                .filter(usersProfileVO -> usersProfileVO.getId() == user.getUserProfile())
+                .map(UsersProfileVO::getName)
+                .findAny()
+                .orElse("profile");
+        Optional<UsersProfileVO> usersProfileOpt = profiles.values().stream()
+                .filter(usersProfileVO -> usersProfileVO.getName().contains(prefix + "_"))
+                .findAny();
+
+        if(usersProfileOpt.isPresent()) {
+            UsersProfileVO profile = usersProfileOpt.get();
+            Accesses keyOld = new Accesses(profile);
+
+            Accesses key = merge(accesses, keyOld);
+            profile.setDataPointPermissions(new ArrayList<>(key.getDataPointAccesses()));
+            profile.setDataSourcePermissions(new ArrayList<>(key.getDataSourceAccesses()));
+            profile.setViewPermissions(new ArrayList<>(key.getViewAccesses()));
+            profile.setWatchlistPermissions(new ArrayList<>(key.getWatchListAccesses()));
+            try {
+                usersProfileService.saveUsersProfile(profile);
+                profiles.remove(keyOld);
+                profiles.put(key, profile);
+                updatePermissions(user, profile.getName() + "_", usersProfileService, key, profiles);
+            } catch (DAOException e) {
+                LOG.warn(e.getMessage());
+                return false;
+            }
+        } else {
+            updatePermissions(user, prefix + "_", usersProfileService, accesses, profiles);
+        }
+        return true;
     }
 
     static void printTime(long start, String msg) {
