@@ -499,8 +499,7 @@
 	"uiv.modal.cancel": "Cancel",
 	"uiv.modal.ok": "OK",
 	"validation.rule.notNull": "Field must not be empty!",
-	"validation.rule.xid.notUnique": "Export ID is already used!"
-	"uiv.modal.ok": "OK",
+	"validation.rule.xid.notUnique": "Export ID is already used!",
 	"form.validation.usernameNotUnique": "That username is already taken!",
 	"form.validation.required": "That field is required!",
 	"form.validation.passwordNotMatch": "Passwords does not match!",

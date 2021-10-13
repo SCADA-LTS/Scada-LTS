@@ -17,7 +17,6 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -31,14 +30,9 @@ import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +50,6 @@ public class DataSourceAPI {
 
     DataSourceService dataSourceService = new DataSourceService();
 
-    @GetMapping(value = "/api/datasource/getAll")
-    public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
     @GetMapping(value = "/api/datasources")
     public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
         try {
@@ -264,8 +256,8 @@ public class DataSourceAPI {
         }
     }
 
-    @RequestMapping(value = "/api/datasource/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
+    @GetMapping(value = "/api/datasource/getAll")
+    public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
         LOG.info("/api/datasource/getAll");
 
         try {
@@ -274,46 +266,6 @@ public class DataSourceAPI {
                 return new ResponseEntity<>(dataSourceService.getAllDataSources(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-            if (user != null) {
-                class DatasourceJSON implements Serializable {
-                    private long id;
-                    private String xid;
-
-                    DatasourceJSON(long id,String xid) {
-                        this.setId(id);
-                        this.setXid(xid);
-                    }
-
-                    public long getId() { return id; }
-                    public void setId(long id) { this.id = id; }
-                    public String getXid() {
-                        return xid;
-                    }
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
-
-                List<DataSourceVO<?>> lstDS;
-                if (user.isAdmin()) {
-                    lstDS = dataSourceService.getDataSources();
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
-
-                List<DatasourceJSON> lst = new ArrayList<DatasourceJSON>();
-                for (DataSourceVO<?> ds:lstDS) {
-
-                    DatasourceJSON dsJ = new DatasourceJSON(ds.getId(), ds.getXid());
-                    lst.add(dsJ);
-                }
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
-
-                return new ResponseEntity<String>(json,HttpStatus.OK);
             }
         } catch (Exception e) {
             LOG.error(e);
@@ -344,26 +296,26 @@ public class DataSourceAPI {
         }
     }
 
-    @GetMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
-            @RequestParam(required = false) String xid,
-            HttpServletRequest request) {
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                if (xid != null){
-                    DataSourceVO ds = dataSourceService.getDataSource(xid);
-                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
-                    return new ResponseEntity<>(json,HttpStatus.OK);
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @GetMapping(value = "/api/datasource")
+//    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
+//            @RequestParam(required = false) String xid,
+//            HttpServletRequest request) {
+//        try {
+//            User user = Common.getUser(request);
+//            if(user != null) {
+//                if (xid != null){
+//                    DataSourceVO ds = dataSourceService.getDataSource(xid);
+//                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
+//                    return new ResponseEntity<>(json,HttpStatus.OK);
+//                }
+//            } else {
+//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//            }
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     private class DataSourceSimpleJSON {
         private long id;

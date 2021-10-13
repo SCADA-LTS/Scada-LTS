@@ -19,7 +19,6 @@ package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
+public class DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
 
@@ -382,7 +381,6 @@ public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
 
 	}
 
-	@Override
 	public DataSourceVO<?> create(DataSourceVO<?> entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + entity.toString());
@@ -403,7 +401,6 @@ public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
 		return entity;
 	}
 
-	@Override
 	public List<ScadaObjectIdentifier> getSimpleList() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 
@@ -411,12 +408,10 @@ public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
-	@Override
 	public List<DataSourceVO<?>> getAll() {
 		return getDataSources();
 	}
 
-	@Override
 	public DataSourceVO<?> getById(int id) throws EmptyResultDataAccessException {
 		return getDataSource(id);
 	}
@@ -437,9 +432,9 @@ public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
 					dataSource.getId());
 		} catch (EmptyResultDataAccessException e) {
 			LOG.error("DataSource entity with id= " + dataSource.getId() + " does not exists!");
-			return DAO_EMPTY_RESULT;
+			return 0;
 		} catch (Exception e) {
-			return DAO_EXCEPTION;
+			return -1;
 		}
 	}
 

@@ -274,7 +274,7 @@ const ds = {
 
 		fetchDataSourcesList({dispatch}) {
 			return dispatch('requestGet', '/datasource/getAll');
-		}
+		},
 
 		createDataPointDS({commit, dispatch}, {dataSource, dataPoint}) {
 			return new Promise((resolve, reject) => {

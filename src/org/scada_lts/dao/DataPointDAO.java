@@ -52,7 +52,7 @@ import com.serotonin.mango.vo.DataPointVO;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 @Repository
-public class DataPointDAO implements CrudOperations<DataPointVO> {
+public class DataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
 
@@ -321,7 +321,6 @@ public class DataPointDAO implements CrudOperations<DataPointVO> {
 	 * @param entity Object to create
 	 * @return DataPointVO entity with unique ID number
 	 */
-	@Override
 	public DataPointVO create(DataPointVO entity) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		DAO.getInstance().getJdbcTemp().update(connection -> {
@@ -339,19 +338,16 @@ public class DataPointDAO implements CrudOperations<DataPointVO> {
 		return entity;
 	}
 
-	@Override
 	public List<ScadaObjectIdentifier> getSimpleList() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 		return DAO.getInstance().getJdbcTemp()
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 
-	@Override
 	public List<DataPointVO> getAll() {
 		return null;
 	}
 
-	@Override
 	public DataPointVO getById(int id) throws EmptyResultDataAccessException {
 		return getDataPoint(id);
 	}
@@ -372,10 +368,10 @@ public class DataPointDAO implements CrudOperations<DataPointVO> {
 					dataPoint.getId());
 		} catch (EmptyResultDataAccessException e) {
 			LOG.error("Data Point entity with id= " + dataPoint.getId() + " does not exists!");
-			return DAO_EMPTY_RESULT;
+			return 0;
 		} catch (Exception e) {
 			LOG.error(e);
-			return DAO_EXCEPTION;
+			return -1;
 		}
 	}
 
@@ -395,7 +391,7 @@ public class DataPointDAO implements CrudOperations<DataPointVO> {
 			String message = "FAILED ON DELETING DataPoint witj ID: ";
 			LOG.error(message + id);
 			LOG.error(e);
-			return DAO_EXCEPTION;
+			return -1;
 		}
 	}
 
