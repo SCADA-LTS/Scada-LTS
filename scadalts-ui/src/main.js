@@ -15,7 +15,6 @@ import CMP from './components/graphical_views/cmp/CMP';
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
 import LineChartComponent from './components/amcharts/LineChartComponent';
@@ -183,15 +182,6 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 	}).$mount('#export-import-ph');
 }
 
-if (window.document.getElementById('example-chart-cmp') != undefined) {
-	new Vue({
-		store,
-		vuetify,
-		i18n,
-		render: (h) => h(WatchListJsonChart),
-	}).$mount('#example-chart-cmp');
-}
-
 for (let x = 0; x < 10; x++) {
 	const chartId = `chart-line-${x}`;
 	const el = window.document.getElementById(chartId);
@@ -219,6 +209,8 @@ for (let x = 0; x < 10; x++) {
 						smoothLine: Number(el.getAttribute('smooth-line')),
 						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
 						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
+						webSocketEnabled: el.getAttribute('web-socket-enabled') !== null,
+						showControls: el.getAttribute('show-controls') !== null,
 					},
 				}),
 		}).$mount(`#${chartId}`);

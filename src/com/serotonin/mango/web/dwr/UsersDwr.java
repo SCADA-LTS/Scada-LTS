@@ -113,6 +113,7 @@ public class UsersDwr extends BaseDwr {
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String username,
+			String firstName, String lastName,
 			String password, String email, String phone, boolean admin,
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
@@ -133,6 +134,8 @@ public class UsersDwr extends BaseDwr {
 		else
 			user = userDao.getUser(id);
 		user.setUsername(username);
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
 		if (!StringUtils.isEmpty(password))
 			user.setPassword(Common.encrypt(password));
 		user.setEmail(email);
@@ -206,9 +209,10 @@ public class UsersDwr extends BaseDwr {
 		return response;
 	}
 
-	public DwrResponseI18n saveUser(int id, String password, String email,
-			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId, String theme) {
+	public DwrResponseI18n saveUser(int id, String firstName, String lastName,
+									String password, String email, String phone,
+									int receiveAlarmEmails, boolean receiveOwnAuditEvents, int usersProfileId,
+									String theme) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -222,6 +226,8 @@ public class UsersDwr extends BaseDwr {
 		if (!StringUtils.isEmpty(password))
 			updateUser.setPassword(Common.encrypt(password));
 		updateUser.setEmail(email);
+		updateUser.setFirstName(firstName);
+		updateUser.setLastName(lastName);
 		updateUser.setPhone(phone);
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);

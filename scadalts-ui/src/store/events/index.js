@@ -4,6 +4,23 @@ const storeEvents = {
 	mutations: {},
 
 	actions: {
+		searchEvents({ dispatch }, payload) {
+			return dispatch('requestPost', {
+				url:`/events/search`,
+				data: {
+					alarmLevel: payload.alarmLevel,
+					eventSourceType: payload.eventSourceType,
+					status: payload.status,
+					keywords: payload.keywords,
+					datapoint: null,
+					limit: 10,
+					offset: 10 * (payload.page-1),
+					sortBy: payload.sortBy,
+					sortDesc: payload.sortDesc
+				}
+			});
+		},
+
 		fetchDataPointEvents({ dispatch }, payload) {
 			let url = `/events/datapoint/${payload.datapointId}`;
 

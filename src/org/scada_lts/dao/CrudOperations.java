@@ -72,7 +72,7 @@ public interface CrudOperations<T> {
      * @param entity Object to create
      * @return Operation result
      */
-    public int update(T entity);
+    public T update(T entity);
 
     /**
      * Delete object

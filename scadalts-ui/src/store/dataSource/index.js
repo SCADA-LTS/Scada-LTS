@@ -104,8 +104,8 @@ const ds = {
 
 		/**
 		 * Get All DataSources
-		 * 
-		 * @param {*} param0 
+		 *
+		 * @param {*} param0
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
 		getDataSources({ dispatch, commit }) {
@@ -124,14 +124,14 @@ const ds = {
 
 		/**
 		 * Get DataSource Details
-		 * 
-		 * Details are dependend on the DataSource Type. 
-		 * The logic to parse that data should be written 
+		 *
+		 * Details are dependend on the DataSource Type.
+		 * The logic to parse that data should be written
 		 * in speficic datasource component.
-		 * 
-		 * @param {*} param0 
+		 *
+		 * @param {*} param0
 		 * @param {Number} dataSourceId - ID number of DataSource
-		 * @returns 
+		 * @returns
 		 */
 		fetchDataSourceDetails({commit, dispatch}, dataSourceId) {
 			return new Promise((resolve, reject) => {
@@ -167,13 +167,13 @@ const ds = {
 
 		/**
 		 * Create Data Source
-		 * 
+		 *
 		 * Send a POST request to the Core aplication REST API to create a new
-		 * DataSource. Based on the typeID of datasource it should create a 
+		 * DataSource. Based on the typeID of datasource it should create a
 		 * valid DS Type and as a response sould be received DataSourceAPI object.
 		 * It sould contain a new generated ID.
 		 *
-		 * @param {*} param0 
+		 * @param {*} param0
 		 * @param {Object} datasource - DataSource object from Creator component.
 		 * @returns {Promise<DataSourceAPI>} DataSource JSON from API
 		 */
@@ -196,13 +196,13 @@ const ds = {
 
 		/**
 		 * Update Data Source
-		 * 
-		 * Send a PUT request to the Core aplication REST API to update existing
-		 * DataSource. 
 		 *
-		 * @param {*} param0 
+		 * Send a PUT request to the Core aplication REST API to update existing
+		 * DataSource.
+		 *
+		 * @param {*} param0
 		 * @param {Object} datasource - DataSource object from Creator component.
-		 * @returns 
+		 * @returns
 		 */
 		 updateDataSource({commit, dispatch}, datasource) {
 			return new Promise((resolve, reject) => {
@@ -271,6 +271,10 @@ const ds = {
 					});
 			});
 		},
+
+		fetchDataSourcesList({dispatch}) {
+			return dispatch('requestGet', '/datasource/getAll');
+		}
 
 		createDataPointDS({commit, dispatch}, {dataSource, dataPoint}) {
 			return new Promise((resolve, reject) => {
@@ -419,7 +423,7 @@ const ds = {
 
 		dataSourceTypeName:(state) => (datasourceTypeId) => {
 			let ds = state.dataSources.get(datasourceTypeId);
-			return !!ds ? ds : "unrecognized";			
+			return !!ds ? ds : "unrecognized";
 		}
 
 	},

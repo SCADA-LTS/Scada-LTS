@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
@@ -30,6 +31,10 @@ import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +56,8 @@ public class DataSourceAPI {
 
     DataSourceService dataSourceService = new DataSourceService();
 
+    @GetMapping(value = "/api/datasource/getAll")
+    public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
     @GetMapping(value = "/api/datasources")
     public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
         try {
@@ -263,6 +270,10 @@ public class DataSourceAPI {
 
         try {
             User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(dataSourceService.getAllDataSources(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
             if (user != null) {
                 class DatasourceJSON implements Serializable {
@@ -304,12 +315,9 @@ public class DataSourceAPI {
 
                 return new ResponseEntity<String>(json,HttpStatus.OK);
             }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -323,7 +331,7 @@ public class DataSourceAPI {
                 list = dataSourceService.getDataSourcesPlc();
                 List<DataSourceSimpleJSON> result = new ArrayList<>();
                 for(DataSourceVO<?> ds: list) {
-                    DataSourceSimpleJSON d = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName());
+                    DataSourceSimpleJSON d = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
                     result.add(d);
                 }
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -336,15 +344,38 @@ public class DataSourceAPI {
         }
     }
 
+    @GetMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
+            @RequestParam(required = false) String xid,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if (xid != null){
+                    DataSourceVO ds = dataSourceService.getDataSource(xid);
+                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
+                    return new ResponseEntity<>(json,HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private class DataSourceSimpleJSON {
         private long id;
         private String xid;
         private String name;
+        private boolean enabled;
 
-        DataSourceSimpleJSON(long id, String xid, String name) {
+        DataSourceSimpleJSON(long id, String xid, String name, boolean enabled) {
             this.setId(id);
             this.setXid(xid);
             this.setName(name);
+            this.setEnabled(enabled);
         }
 
         public long getId() {
@@ -369,6 +400,18 @@ public class DataSourceAPI {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public boolean getEnabled() {
+            return enabled;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 

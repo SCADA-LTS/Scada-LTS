@@ -23,6 +23,7 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.UserDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.serotonin.mango.Common;
@@ -740,7 +741,7 @@ public class V1__BaseVersion extends BaseJavaMigration {
 	   	   user.setDisabled(false);
 	   	   user.setDataSourcePermissions(new LinkedList<Integer>());
 	   	   user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-	   	   new UserDao().saveUser(user);
+	   	   new UserDAO().initAdminUser(user);
 	             	   
 	   	   // Record the current version.
 	   	   new SystemSettingsDAO().setValue(

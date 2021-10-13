@@ -14,7 +14,11 @@ const gv = {
 	},
 	state: {},
 	mutations: {},
-	actions: {},
+	actions: {
+		fetchGraphicalViewsList({dispatch}) {
+			return dispatch('requestGet', '/view/getAll');
+		}
+	},
 	getters: {},
 };
 export default gv;

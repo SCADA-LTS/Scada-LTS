@@ -57,6 +57,14 @@ export default {
 		};
 	},
 
+	created() {
+		window.addEventListener('keyup', this.getEnterKey);
+	},
+
+	beforeDestroy() {
+		window.removeEventListener('keyup', this.getEnterKey);
+	},
+
 	methods: {
 		login() {
             this.errorMessage = '';
@@ -72,6 +80,13 @@ export default {
                 });
 			}
 		},
+
+		getEnterKey(e) {
+			if(e.keyCode === 13) {
+				this.$refs.loginForm.validate();
+				this.login();
+			}
+		}
 	},
 };
 </script>

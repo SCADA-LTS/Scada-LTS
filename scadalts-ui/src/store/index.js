@@ -9,11 +9,13 @@ import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
 import alarms from './alarms';
 import storeUsers from './users';
+import userProfileModule from './userProfiles';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
-import watchListModule from './modernWatchList';
+import watchListModule from './watchList';
+import webSocketModule from './websocketStore';
 
 import axios from 'axios';
 
@@ -36,11 +38,13 @@ export default new Vuex.Store({
 		pointHierarchy,
 		alarms,
 		storeUsers,
+		userProfileModule,
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,
 		SynopticPanelModule,
 		watchListModule,
+		webSocketModule,
 	},
 	state: {
 		loggedUser: null,
@@ -62,7 +66,7 @@ export default new Vuex.Store({
 			
 			
 		},
-		webSocketUrl: 'http://localhost:8080/ScadaBR/ws/alarmLevel',
+		webSocketUrl: 'http://localhost:8080/ScadaBR/ws-scada/alarmLevel',
 
 		timePeriods: [
 			{ id: 1, label: i18n.t('common.timeperiod.seconds') },
@@ -86,10 +90,13 @@ export default new Vuex.Store({
 	mutations: {
 		updateWebSocketUrl(state) {
 			let locale = window.location.pathname.split('/')[1];
+			if(!!locale) {
+				locale += '/';
+			}
     		let protocol = window.location.protocol;
     		let host = window.location.host.split(":");
 
-			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}/ws/alarmLevel`;
+			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
 		}
 	},
 	actions: {
@@ -132,6 +139,9 @@ export default new Vuex.Store({
 		async getUserInfo({ state, dispatch, commit }) {
 			state.loggedUser = await dispatch('requestGet', '/auth/user');
 			commit('updateWebSocketUrl');
+			commit('INIT_WEBSOCKET_URL');
+			commit('INIT_WEBSOCKET');
+
 		},
 
 		/**

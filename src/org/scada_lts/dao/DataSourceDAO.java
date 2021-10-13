@@ -248,6 +248,12 @@ public class DataSourceDAO implements CrudOperations<DataSourceVO<?>>{
 		return objList;
 	}
 
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
 	public List<DataSourceVO<?>> getDataSourcesPlc() {
 		List<DataSourceVO<?>> list = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_PLC_SELECT, new DataSourceRowMapper());
 		return list;

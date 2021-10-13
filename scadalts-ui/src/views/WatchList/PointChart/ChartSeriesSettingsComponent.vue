@@ -1,6 +1,6 @@
 <template>
 	<div class="chartVuetify">
-		<v-btn fab @click.stop="openModal()">
+		<v-btn small icon @click.stop="openModal()">
 			<v-icon>mdi-cog</v-icon>
 		</v-btn>
 		<v-dialog v-model="isModalVisible" width="800">
@@ -36,12 +36,12 @@
 					<v-row id="chart-series-settings">
 						<v-col cols="12">
 							<v-tabs v-model="tab" background-color="primary" dark>
-								<v-tab v-for="s in series" :key="s">
+								<v-tab v-for="(s, index) in series" :key="index">
 									{{ s.name }}
 								</v-tab>
 							</v-tabs>
 							<v-tabs-items v-model="tab">
-								<v-tab-item v-for="s in series" :key="s">
+								<v-tab-item v-for="(s, index) in series" :key="index">
 									<v-card class="paggin-top-small series-settings limit-height">
 										<v-row>
 											<v-col md="6" sm="12" xs="12">
@@ -53,10 +53,14 @@
 											</v-col>
 											<v-col md="6" sm="12" xs="12" class="button-space-double">
 												<v-btn-toggle v-model="s.type" dense mandatory>
-													<v-btn value="LineSeries">{{
+													<v-btn value="LineSeries">
+														<v-icon>mdi-chart-areaspline-variant</v-icon>
+															{{
 														$t('modernwatchlist.chartseries.series.line')
 													}}</v-btn>
-													<v-btn value="StepLineSeries">{{
+													<v-btn value="StepLineSeries">
+														<v-icon>mdi-chart-histogram</v-icon>
+														{{
 														$t('modernwatchlist.chartseries.series.stepline')
 													}}</v-btn>
 												</v-btn-toggle>
@@ -230,7 +234,6 @@ export default {
 		},
 
 		watchDateAxisChagne(series) {
-			console.log(series);
 			if (series.xAxis == 'dateAxis2') {
 				series.dataFields.dateX = 'date';
 			} else if (series.xAxis == 'dateAxis1') {
