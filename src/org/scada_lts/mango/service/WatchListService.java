@@ -19,12 +19,14 @@ package org.scada_lts.mango.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
 import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.WatchListGetShareUsers;
+import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -153,6 +155,14 @@ public class WatchListService implements MangoWatchList {
 
         // Add in all of the entries.
 		watchListDAO.addWatchListUsers(watchList);
+	}
+
+	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
+		return watchListDAO.getDataPointOrder(watchListId);
+	}
+
+	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
+		watchListDAO.setDataPointOrder(pointOrder);
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

@@ -104,16 +104,17 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoints")
-    public ResponseEntity<List<JsonDataPoint>> getDataPoints(HttpServletRequest request,
-    @RequestParam(value="keywordSearch", required = false) String keywordSearch
+    public ResponseEntity<List<JsonDataPoint>> getDataPoints(
+            @RequestParam(value="keywordSearch", required = false) String searchText,
+            HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
                 List<DataPointVO> lstDP;
 
-                if (keywordSearch != "") {
-                    String[] keywords = keywordSearch.split("\\s+");
+                if (searchText != null) {
+                    String[] keywords = searchText.split("\\s+");
                     List<JsonDataPoint> result = new ArrayList<>();
                     for (DataPointVO dp: dataPointService.searchDataPoints(keywords)){
                         JsonDataPoint jdp = new JsonDataPoint(
