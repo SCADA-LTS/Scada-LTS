@@ -100,21 +100,25 @@ public class V2_7_1_1__RenameVarScriptContext extends BaseJavaMigration {
         String updated = script;
         for (IntValuePair point : pointsOnContext) {
             if (REGEX.matcher(point.getValue()).matches()) {
-                DataPointVO dp = new DataPointDAO().getDataPoint(point.getKey());
-                String xid = dp.getXid();
-                updated = updated.replaceAll("(?<![a-zA-Z0-9])" + point.getValue() + "(?![a-zA-Z0-9])", changeToValidVarName(xid));
+                DataPointVO dp = new DataPointDAO().getDataPointById(point.getKey());
+                if (dp != null) {
+                    String xid = dp.getXid();
+                    updated = updated.replaceAll("(?<![a-zA-Z0-9])" + point.getValue() + "(?![a-zA-Z0-9])", changeToValidVarName(xid));
+                }
             }
         }
         return updated;
     }
 
     private void updatePointsOnContext(List<IntValuePair> pointsOnContext) {
-        for (IntValuePair point : pointsOnContext) {
-            if (REGEX.matcher(point.getValue()).matches()) {
-                DataPointVO dataPointVO = new DataPointDAO().getDataPoint(point.getKey());
-                point.setValue(changeToValidVarName(dataPointVO.getXid()));
-            }
-        }
+        pointsOnContext.stream()
+                .filter(point -> REGEX.matcher(point.getValue()).matches())
+                .forEach(point -> {
+                    DataPointVO dataPointVO = new DataPointDAO().getDataPointById(point.getKey());
+                    if (dataPointVO != null) {
+                        point.setValue(changeToValidVarName(dataPointVO.getXid()));
+                    }
+                });
     }
 
     private void updateMetaDataPoint(MetaPointLocatorVO locator) {

@@ -198,6 +198,21 @@ public class DataPointDAO {
 		
 	}
 
+	public DataPointVO getDataPointById(int id) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointById(int id) id:" + id);
+		}
+
+		String templateSelectWhereId = DATA_POINT_SELECT + " where dp." + COLUMN_NAME_ID + "=? ";
+
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(templateSelectWhereId, new Object[]{id}, new DataPointRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
 	public DataPointVO getDataPoint(String xid) {
 
 		if (LOG.isTraceEnabled()) {
