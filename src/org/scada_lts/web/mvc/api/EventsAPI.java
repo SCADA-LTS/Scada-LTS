@@ -15,10 +15,7 @@ import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
-import org.scada_lts.web.mvc.api.json.JsonDataPoint;
-import org.scada_lts.web.mvc.api.json.JsonEvent;
-import org.scada_lts.web.mvc.api.json.JsonEventComment;
-import org.scada_lts.web.mvc.api.json.JsonEventSearch;
+import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -88,12 +85,60 @@ public class EventsAPI {
      */
     @PutMapping(value = "/ack/{id}")
     public ResponseEntity<String> acknowledgeEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
-        LOG.info("GET::/api/events/ack/" + eventId);
+        LOG.info("PUT::/api/events/ack/" + eventId);
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 Date time = new Date();
                 eventService.ackEvent(eventId, time.getTime(), user.getId(), 0);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Acknowledge specific Event Alarm from REST API
+     *
+     * @param eventId Event ID number
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PutMapping(value = "/silence/{id}")
+    public ResponseEntity<String> silenceEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
+        LOG.info("PUT::/api/events/silence/" + eventId);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                eventService.silenceEvent(eventId, time.getTime(), user.getId(), 0);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Acknowledge specific Event Alarm from REST API
+     *
+     * @param eventId Event ID number
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PutMapping(value = "/disilence/{id}")
+    public ResponseEntity<String> disilenceEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
+        LOG.info("PUT::/api/events/disilence/" + eventId);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                eventService.disilenceEvent(eventId, time.getTime(), user.getId(), 0);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -116,23 +161,8 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                SQLPageWithTotal<EventDTO> result = eventService.getEventsWithLimit(
-                        query.getStartDate(),
-                        query.getEndDate(),
-                        query.getStartTime(),
-                        query.getEndTime(),
-                        query.getAlarmLevel(),
-                        query.getEventSourceType(),
-                        query.getStatus(),
-                        query.getKeywords(),
-                        0,
-                        query.getSortBy(),
-                        query.getSortDesc(),
-                        query.getLimit(),
-                        query.getOffset());
-
+                SQLPageWithTotal<EventDTO> result = eventService.getEventsWithLimit(query.getStartDate(), query.getEndDate(), query.getStartTime(), query.getStartTime(), query.getAlarmLevel(), query.getEventSourceType(), query.getStatus(), query.getKeywords(), 0, user.getId(), query.getSortBy(), query.getSortDesc(), query.getLimit(), query.getOffset());
                 return new ResponseEntity<SQLPageWithTotal<EventDTO>>(result, HttpStatus.OK);
-
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -165,7 +195,7 @@ public class EventsAPI {
     }
 
     /**
-     * Get Event by id
+     * Publish comment
      *
      * @param eventId Event ID number
      * @param request     HTTP request with user data
@@ -187,4 +217,134 @@ public class EventsAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * Acknowledge all Events Alarm from REST API
+     *
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PostMapping(value = "/ackAll")
+    public ResponseEntity<String> acknowledgeAllEvents(HttpServletRequest request) {
+        LOG.info("GET::/api/events/ackAll");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                eventService.ackAllPending(time.getTime(), user.getId(), 0);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Silence all Events Alarm from REST API
+     *
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PostMapping(value = "/silenceAll")
+    public ResponseEntity<String> silenceAllEvents(HttpServletRequest request) {
+        LOG.info("GET::/api/events/silenceAll");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                eventService.silenceAll(time.getTime(), user.getId(), 0);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Acknowledge selected Events Alarm from REST API
+     *
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PostMapping(value = "/ackSelected")
+    public ResponseEntity<String> acknowledgeSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+        LOG.info("GET::/api/events/ackSelected");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                List <Integer> ids = new ArrayList<Integer>();
+                for (String id: query.getIds().split(",")) {
+                    ids.add(Integer.parseInt(id.trim()));
+                }
+                eventService.ackSelected(time.getTime(), user.getId(), 0, ids);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Silence selected Events Alarm from REST API
+     *
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PostMapping(value = "/silenceSelected")
+    public ResponseEntity<String> silenceSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+        LOG.info("GET::/api/events/silenceSelectedEvents");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                List <Integer> ids = new ArrayList<Integer>();
+                for (String id: query.getIds().split(",")) {
+                    ids.add(Integer.parseInt(id.trim()));
+                }
+                eventService.silenceEvents(ids, time.getTime(), user.getId(), 0);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Silence selected Events Alarm from REST API
+     *
+     * @param request Request containing user data
+     * @return Response
+     */
+    @PostMapping(value = "/disilenceSelected")
+    public ResponseEntity<String> disilenceSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+        LOG.info("GET::/api/events/disilenceSelectedEvents");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                Date time = new Date();
+                List <Integer> ids = new ArrayList<Integer>();
+                for (String id: query.getIds().split(",")) {
+                    ids.add(Integer.parseInt(id.trim()));
+                }
+                eventService.disilenceEvents(ids, time.getTime(), user.getId(), 0);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }

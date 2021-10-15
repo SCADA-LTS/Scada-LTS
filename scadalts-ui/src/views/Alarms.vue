@@ -2,14 +2,37 @@
 	<div class="alarms">
 		<!--        <p>{{$route.name}}</p>-->
 
+		<v-card>
+			<v-tabs
+			v-model="tab"
+			background-color="secondary"
+			dark
+			@change="changeTab"
+			>
+				<v-tab
+					v-for="item in items"
+					:key="item.tab"
+				>
+					{{ item.content }}
+				</v-tab>
+			</v-tabs>
+
+		</v-card>
+
+
+
 		<AlarmsComponent></AlarmsComponent>
+		
+		
+		 
 	</div>
 </template>
 
 <script>
 import Components from '@min-gb/vuejs-components';
 import AlarmsComponent from '../components/graphical_views/AlarmsComponent';
-
+import EventList from '../views/EventList.vue';
+// 
 export default {
 	el: '#alarms',
 	name: 'alarms',
@@ -17,7 +40,20 @@ export default {
 		AlarmsComponent,
 		...Components,
 	},
-	methods: {},
+	data () {
+      return {
+        tab: null,
+        items: [
+			{ tab: 'alarms', content: 'Pending' },
+			{ tab: 'event-list', content: 'System' },
+		],
+      }
+    },
+	methods: {
+		changeTab(index) {
+			this.$router.push({ path: `/${this.items[index].tab}` });
+		}
+	},
 };
 </script>
 

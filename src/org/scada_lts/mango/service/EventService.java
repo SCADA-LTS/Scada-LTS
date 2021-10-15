@@ -128,6 +128,41 @@ public class EventService implements MangoEvent {
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
 		ackEvent(eventId, time, userId, alternateAckSource, true);
 	}
+
+	@Override
+	public void silenceEvent(int eventId, long time, int userId, int alternateAckSource) {
+		userEventDAO.silenceEvent(eventId, userId);
+	}
+
+	@Override
+	public void disilenceEvent(int eventId, long time, int userId, int alternateAckSource) {
+		userEventDAO.disilenceEvent(eventId, userId);
+	}
+
+	@Override
+	public void silenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource) {
+		userEventDAO.silenceEvents(eventIds, userId);
+	}
+
+	@Override
+	public void disilenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource) {
+		userEventDAO.disilenceEvents(eventIds, userId);
+	}
+
+	@Override
+	public void ackAllPending(long time, int userId, int alternateAckSource) {
+		eventDAO.ackAllPending(time, userId, alternateAckSource);
+	}
+
+	@Override
+	public void silenceAll(long time, int userId, int alternateAckSource) {
+		eventDAO.silenceAll(time, userId, alternateAckSource);
+	}
+
+	@Override
+	public void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids) {
+		eventDAO.ackAllPendingSelected(time, userId, alternateAckSource, ids);
+	}
 	
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
@@ -492,6 +527,7 @@ public class EventService implements MangoEvent {
 														String status,
 														String keywords,
 														int typeRef,
+														int userId,
 														String[] sortBy,
 														boolean[] sortDesc,
 														int limit,
@@ -506,6 +542,7 @@ public class EventService implements MangoEvent {
 		status,
 		keywords,
 		typeRef,
+		userId,
 		sortBy,
 		sortDesc,
 		limit,

@@ -91,6 +91,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_ACT_USER_ID = "ackUserId";
 	private static final String COLUMN_NAME_USER_NAME = "username";
 	private static final String COLUMN_NAME_ALTERNATE_ACK_SOURCE = "alternateAckSource";
+	private static final String COLUMN_NAME_DATAPOINT_XID = "xid";
 	private static final String COLUMN_NAME_SILENCED = "silenced";
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
 	private static final String COLUMN_NAME_USER_ID = "userId";
@@ -137,10 +138,12 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_MESSAGE + ", " +
 			"e." + COLUMN_NAME_ACT_TS + ", " +
 			"u." + COLUMN_NAME_USER_NAME + ", " +
-			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " ";
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + ", " +
+			"dp."+ COLUMN_NAME_DATAPOINT_XID + ", " +
+			"ue."+ COLUMN_NAME_SILENCED + " ";
 	
 	// @formatter:off
-	private static final String BASIC_EVENT_SELECT = ""
+	private static final java.lang.String BASIC_EVENT_SELECT = ""
 			+"select "
 				+ "e."+COLUMN_NAME_ID+", "
 				+ "e."+COLUMN_NAME_TYPE_ID+", "
@@ -234,6 +237,31 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		  + "where "
 				+ COLUMN_NAME_ID+"=? and "
 				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+
+	private static final String EVENT_ACT_ALL ="" +
+			"update "
+			+" events set "
+			+ COLUMN_NAME_ACT_TS+"=?, "
+			+ COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+ "where "
+			+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+
+	private static final String EVENT_SILENCE_ALL ="" +
+			"UPDATE "
+			+ "userEvents SET "
+			+ COLUMN_NAME_ALARM_SILENCED+"='Y' "
+			+ "WHERE userId=? ";
+
+	private static final String EVENT_ACT_IDS ="" +
+			"update "
+			+"events set "
+			+ COLUMN_NAME_ACT_TS+"=?, "
+			+ COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+ "where "
+			+ COLUMN_NAME_ID+" rlike ? and "
+			+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 	
 	public static final String EVENT_FILTER_ACTIVE=" "
 			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+ COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0)";
@@ -642,7 +670,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					rs.getString(COLUMN_NAME_MESSAGE),
 					rs.getLong(COLUMN_NAME_ACT_TS),
 					rs.getString(COLUMN_NAME_USER_NAME),
-					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE)
+					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
+					rs.getString(COLUMN_NAME_DATAPOINT_XID),
+					rs.getString(COLUMN_NAME_SILENCED).equals("Y")
 			);
 
 			//result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
@@ -738,6 +768,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			String status,
 			String keywords,
 			int typeRef,
+			int userId,
 			String[] sortBy,
 			boolean[] sortDesc,
 			int limit,
@@ -750,9 +781,12 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		StringBuilder from = new StringBuilder();
 		from.append(" FROM events e LEFT JOIN users u ON u.id=e.ackUserId ");
+		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
+		from.append(" JOIN userEvents ue ON ue.eventId = e.id " );
 
 		StringBuilder where = new StringBuilder();
-		where.append(" WHERE 1=1 ");
+		where.append(" WHERE (u.id=? OR u.admin = 'Y') ");
+		params.add(userId);
 
 		if (!"".equals(startDate)) {
 			where.append(" AND e."+COLUMN_NAME_ACTIVE_TS+" >= (UNIX_TIMESTAMP(?)*1000) ");
@@ -774,18 +808,19 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			params.add(eventSourceType);
 		}
 
-		if (!"*".equals(status)) {
-			where.append(" AND e."+COLUMN_NAME_TYPE_ID+"=? ");
-			params.add(eventSourceType);
+		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
+			where.append(" AND e.rtnApplicable='Y' and e.rtnTs is null ");
+		} else if (EventsDwr.STATUS_RTN.equals(status)) {
+			where.append(" AND e.rtnApplicable='Y' and e.rtnTs is not null ");
+		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
+			where.append(" AND e.rtnApplicable='N' ");
 		}
 
 		if (!"".equals(keywords)) {
 			String sqlSearchKeywordsFields;
-
 			from.append(" LEFT JOIN userComments uc ON uc.typeKey=e.id " );
 			boolean joinWithDataSource = eventSourceType == 0 || eventSourceType == 3;
 			if (joinWithDataSource) {
-				from.append(" LEFT JOIN dataPoints dp ON dp.id = e.typeRef1" );
 				from.append(" LEFT JOIN dataSources ds ON ds.id = dp.dataSourceId" );
 				sqlSearchKeywordsFields = " AND ( e."+COLUMN_NAME_MESSAGE+" LIKE ? OR ( uc.commentText LIKE ?) OR (dp.xid LIKE ? OR dp.pointName LIKE ? OR ds.xid LIKE ? OR ds.name LIKE ? ))  " ;
 			} else {
@@ -804,6 +839,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				}
 			}
 		}
+
 		sql.append(select);
 		sql.append(from.toString());
 		sql.append(where.toString());
@@ -812,7 +848,12 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		if (sortBy.length != 0) {
 			List<String> sorting = new ArrayList<String>();
 			for (int i = 0; i < sortBy.length; i++) {
-				sorting.add(sortBy[i] + " " + (sortDesc[i] ? "DESC " : "ASC "));
+				if ("status".equals(sortBy[i])) {
+					sorting.add(" rtnApplicable " + (sortDesc[i] ? "DESC " : "ASC "));
+					sorting.add(" rtnTs " + (sortDesc[i] ? "DESC " : "ASC "));
+				} else {
+					sorting.add(sortBy[i] + " " + (sortDesc[i] ? "DESC " : "ASC "));
+				}
 			}
 			sql.append("ORDER BY "+String.join(", ", sorting));
 		}
@@ -825,6 +866,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			sql.append("OFFSET " + offset + " " );
 		}
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), new EventDTORowMapper());
+
+		List<Integer> datapointIds = new ArrayList<Integer>();
+		for (EventDTO eventDto: page) {
+			if (eventDto.getTypeId()== 1) {
+				datapointIds.add(eventDto.getTypeRef2());
+			}
+		}
+
 		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
 		return new SQLPageWithTotal<EventDTO>(page, total);
 	}
@@ -920,8 +969,39 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 				
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT, new Object[]  { actTS, userId, alternateAckSource, eventId } );
-			
+
 	}
+
+	public void ackAllPending(long actTS, long userId, int alternateAckSource) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
+		}
+		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_ALL, new Object[]  { actTS, userId, alternateAckSource } );
+	}
+
+	public void silenceAll(long actTS, long userId, int alternateAckSource) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
+		}
+		DAO.getInstance().getJdbcTemp().update( EVENT_SILENCE_ALL, new Object[]  { userId } );
+	}
+
+
+
+	public void ackAllPendingSelected(long actTS, long userId, int alternateAckSource, List<Integer> ids) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
+		}
+		StringJoiner joiner = new StringJoiner("|", "^(", ")$");
+
+		for (int id: ids) {
+			joiner.add((String.valueOf(id)));
+		}
+
+		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_IDS, new Object[]  { actTS, userId, alternateAckSource, joiner.toString() } );
+	}
+
 	
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {	
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where "+ EVENT_FILTER_FOR_DATA_POINT, new Object[]{dataPointId, userId}, new UserEventRowMapper());

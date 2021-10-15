@@ -234,7 +234,7 @@ public class Common {
 
 	public static User getUser(HttpServletRequest request) {
 		// Check first to see if the user object is in the request.
-		User user = (User) request.getAttribute(SESSION_USER);
+			User user = (User) request.getAttribute(SESSION_USER);
 		if (user != null)
 			return user;
 
