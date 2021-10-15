@@ -9,6 +9,7 @@ import AlarmNotifications from './views/AlarmNotifications';
 import RecipientList from './views/RecipientList';
 import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
+import ExampleCmp from './views/components/ExampleCmp';
 
 import store from './store/index';
 
@@ -138,10 +139,11 @@ const routing = new Router({
 		{
 			path: '/example-cmp',
 			name: 'example-cmp',
-			component: () =>
-				import(
-					/* webpackChunkName: "cmp-component" */ './views/components/ExampleCmp.vue'
-				),
+			// component: () =>
+			// 	import(
+			// 		/* webpackChunkName: "cmp-component" */ './views/components/ExampleCmp.vue'
+			// 	),
+			component: ExampleCmp
 		},
 		{
 			path: '/example-chart-cmp',

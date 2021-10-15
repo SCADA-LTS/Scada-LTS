@@ -104,7 +104,7 @@
 
 						<hr />
 						<!--<btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>-->
-						<p class="cmp-small-info">v0.1.0.16</p>
+						<p class="cmp-small-info">v0.1.0.20</p>
 						<btn size="xs" type="primary" v-on:click="refreshHistory()" class="cmp-small-info">refresh history</btn>
 			
 						<div>
@@ -152,68 +152,6 @@ class ChangeDataDTO {
 		this.value = value;
 		this.resultOperationSave = resultOperationSave;
 		this.error = error;
-	}
-}
-
-/**
- * @author grzegorz.bylica@gmail.com
- */
-class ApiCMP {
-
-	constructor(context) {
-		this.context = context;
-	}
-
-	get(xIds, myTimeOut) {
-		return new Promise((resolve, reject) => {
-			try {
-				const apiCMPCheck = `./api/cmp/get/${xIds}`;
-				if (xIds.length > 0) {
-					httpClient
-						.get(apiCMPCheck, { timeout: myTimeOut })
-						.then((response) => {
-							resolve(response);
-						})
-						.catch((error) => {
-							reject(error);
-						});
-				} else {
-					const reason = new Error('Probably not have data');
-					reject(reason);
-				}
-			} catch (e) {
-				reject(e);
-			}
-		});
-	}
-
-	set(newData, xidViewAndIdCmp, interpretedState, myTimeOut) {
-		// console.log("interpetedState:"+JSON.stringify(interpretedState))
-		// console.log("interpetedState:"+interpretedState)
-		return new Promise((resolve, reject) => {
-			try {
-				if (newData.length > 0) {
-					httpClient({
-						method: 'post',
-						url: `./api/cmp/set/${xidViewAndIdCmp}/${interpretedState}`,
-						headers: {},
-						timeout: myTimeOut,
-						data: newData,
-					})
-						.then((response) => {
-							resolve(response);
-						})
-						.catch((error) => {
-							reject(error);
-						});
-				} else {
-					const reason = new Error('Probably not have data');
-					reject(reason);
-				}
-			} catch (e) {
-				reject(e);
-			}
-		});
 	}
 }
 
@@ -290,310 +228,350 @@ export default {
 		};
 	},
 	methods: {
-		refreshHistory() {
-			this.$refs.refHistoryCMP.loadData()
-			if (this.debugRequest) console.log(`${this.label} refresh history()`)
-		},
-		endChecking() {
-			this.insideState = this.config.state.analiseInOrder[
-				this.counterForAnaliseInOrder
-			].name;
-			this.disabledChange = !!this.config.state.analiseInOrder[
-				this.counterForAnaliseInOrder
-			].disable;
-			if (this.disabledChange) {
-				this.show = false;
-				if (this.showFaultV == true) {
-					this.showFaultV = false;
-					this.newErrors = [];
-				}
-			}
-			this.processOfCheckingTheStatus = false;
-			this.counterForAnaliseInOrder = -1;
-			this.checkToNotificationError();
-			if (this.debugRequest) console.log(`${this.label} endChecking()`)
-		},
-		checkToNotificationError() {
-			if (
-				this.errorsNotification != this.newErrors.length > 0 ||
-				this.errorsNotification != this.errorResultingFromOperationControl.length > 0
-			) {
-				this.errorsNotification =
-					this.newErrors.length > 0 || this.errorResultingFromOperationControl.length > 0;
-			}
-			this.errors = this.newErrors;
-			if (this.errorResultingFromOperationControl.length > 0) {
-				this.errors.push(this.errorResultingFromOperationControl);
-			}
-			this.newErrors = [];
-			this.errorResultingFromOperationControl = '';
-			if (this.debugRequest) console.log(`${this.label} checkToNotificationError()`)
-		},
-		setErrorAndStopAnaliseInOrder(msg) {
-			this.newErrors.push(msg);
-			this.insideState = 'Error';
-			this.processOfCheckingTheStatus = false;
-			this.counterForAnaliseInOrder = -1;
-			if (this.debugRequest) console.log(`${this.label} setErrorAndStopAnaliseInOrder()`)
-		},
-		setErrorAndNotification(msg) {
-			this.errorResultingFromOperationControl = msg;
-			this.insideState = 'Error';
-			this.checkToNotificationError();
-			if (this.debugRequest) console.log(`${this.label} setErrorAndNotification()`)
-		},
-		showFault() {
-			this.showFaultV = !this.showFaultV;
-			this.checkStatus();
-			if (this.debugRequest) console.log(`${this.label} showFault()`)
-		},
-		checkStatus() {
-			this.newErros = [];
-			this.counterForAnaliseInOrder = 0;
-			this.processOfCheckingTheStatus = false;
-			this.errorsNotification = false;
-			if (this.debugRequest) console.log(`${this.label} checkStatus()`)
-		},
-		setActionLeve0(action) {
-			// get action by name action
-			
-			let foundLevel = _.findWhere(this.controlsLevel0, { name: action });
-			let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu;
+    refreshHistory() {
+      this.$refs.refHistoryCMP.loadData()
+      if (this.debugRequest) console.log(`${this.label} refresh history()`)
+    },
+    endChecking() {
+      this.insideState = this.config.state.analiseInOrder[
+          this.counterForAnaliseInOrder
+          ].name;
+      this.disabledChange = !!this.config.state.analiseInOrder[
+          this.counterForAnaliseInOrder
+          ].disable;
+      if (this.disabledChange) {
+        this.show = false;
+        if (this.showFaultV == true) {
+          this.showFaultV = false;
+          this.newErrors = [];
+        }
+      }
+      this.processOfCheckingTheStatus = false;
+      this.counterForAnaliseInOrder = -1;
+      this.checkToNotificationError();
+      if (this.debugRequest) console.log(`${this.label} endChecking()`)
+    },
+    checkToNotificationError() {
+      if (
+          this.errorsNotification != this.newErrors.length > 0 ||
+          this.errorsNotification != this.errorResultingFromOperationControl.length > 0
+      ) {
+        this.errorsNotification =
+            this.newErrors.length > 0 || this.errorResultingFromOperationControl.length > 0;
+      }
+      this.errors = this.newErrors;
+      if (this.errorResultingFromOperationControl.length > 0) {
+        this.errors.push(this.errorResultingFromOperationControl);
+      }
+      this.newErrors = [];
+      this.errorResultingFromOperationControl = '';
+      if (this.debugRequest) console.log(`${this.label} checkToNotificationError()`)
+    },
+    setErrorAndStopAnaliseInOrder(msg) {
+      this.newErrors.push(msg);
+      this.insideState = 'Error';
+      this.processOfCheckingTheStatus = false;
+      this.counterForAnaliseInOrder = -1;
+      if (this.debugRequest) console.log(`${this.label} setErrorAndStopAnaliseInOrder()`)
+    },
+    setErrorAndNotification(msg) {
+      this.errorResultingFromOperationControl = msg;
+      this.insideState = 'Error';
+      this.checkToNotificationError();
+      if (this.debugRequest) console.log(`${this.label} setErrorAndNotification()`)
+    },
+    showFault() {
+      this.showFaultV = !this.showFaultV;
+      this.checkStatus();
+      if (this.debugRequest) console.log(`${this.label} showFault()`)
+    },
+    checkStatus() {
+      this.newErros = [];
+      this.counterForAnaliseInOrder = 0;
+      this.processOfCheckingTheStatus = false;
+      this.errorsNotification = false;
+      if (this.debugRequest) console.log(`${this.label} checkStatus()`)
+    },
+    setActionLeve0(action) {
+      // get action by name action
 
-			// check the action have runDirectlyBeforeShowSubMenu (and currently status is different then action)
-			if (runDirectlyBeforeShowSubMenu == true) {
-				let newData = [];
-				// if action have runDirectlyBeforeShowSubMenu true then first run command then ok check next level
-				let toSave = foundLevel.save;
-				for (let i = 0; i < toSave.length; i++) {
-					let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {
-						def: toSave[i].refDefPoint,
-					});
-					let change = new ChangeDataDTO(xid.xid, toSave[i].value, '', '');
-					newData.push(change);
-				}
-				if (newData.length > 0) {
-					new ApiCMP(this)
-						.set(newData, this.xIdViewAndIdCmp, action, this.timeOut)
-						.then((response) => {
-							//refreshHistory()
-							// rxjs
-							let found = _.findWhere(this.context.controlsLevel0, { name: action });
-							if (found.toChange != undefined) {
-								if (this.context.controlsLevel1 != found.toChange)
-									this.context.controlsLevel1 = found.toChange;
-							} else {
-								this.context.controlsLevel1 = [];
-							}
-							this.context.selectActionLevel1 = '';
-							//
-						})
-						.catch((er) => {
-							this.context.setErrorAndNotification(er.message);
-							//refreshHistory()
-						});
-				}
-			} else {
-				if (this.selectActionLevel0 == action) {
-					this.selectActionLevel0 = '';
-				} else {
-					this.selectActionLevel0 = action;
-					let found = _.findWhere(this.controlsLevel0, { name: action });
-					if (found.toChange != undefined) {
-						this.controlsLevel1 = found.toChange;
-					} else {
-						this.controlsLevel1 = [];
-					}
-					this.selectActionLevel1 = '';
-				}
-			}
-			if (this.debugRequest) console.log(`${this.label} setActionLeve0()`)
-		},
-		setActionLevel1(action) {
-			//refreshHistory()
-			if (this.selectActionLevel1 == action) {
-				this.selectActionLevel1 = '';
-			} else {
-				this.selectActionLevel1 = action;
-			}
-			if (this.debugRequest) console.log(`${this.label} setActionLevel1()`)
-		},
-		tryChangeModePLC() {
-			let newData = [];
-			let action = null;
-			let control = null;
-			if (this.selectActionLevel1 != '') {
-				action = this.selectActionLevel1;
-				control = this.controlsLevel1;
-			} else if (this.selectActionLevel0 != '') {
-				action = this.selectActionLevel0;
-				control = this.controlsLevel0;
-			} else {
-				// Nothing to do;
-			}
-			if (action != null) {
-				let foundLevel = _.findWhere(control, { name: action });
-				let toSave = foundLevel.save;
-				for (let i = 0; i < toSave.length; i++) {
-					let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {
-						def: toSave[i].refDefPoint,
-					});
-					let change = new ChangeDataDTO(xid.xid, toSave[i].value, '', '');
-					newData.push(change);
-				}
-				if (newData.length > 0) {
-					new ApiCMP()
-						.set(newData, this.xIdViewAndIdCmp, action, this.timeOut)
-						.then((response) => {
-							this.show = false;
-						})
-						.catch((er) => {
-							this.setErrorAndNotification(er.message);
-						});
-				}
-			}
-			if (this.debugRequest) console.log(`${this.label} tryChangeModePLC()`)
-		},
-		checkIfThereAreSharesToConfirm() {
-			let result = false;
+      let foundLevel = _.findWhere(this.controlsLevel0, {name: action});
+      let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu;
 
-			if (typeof this.controlsLevel1 === 'object' && this.controlsLevel1.length > 0) {
-				result = true;
-			} else {
-				for (let i = 0; i < this.controlsLevel0.length; i++) {
-					let runDirectlyBeforeShowSubMenu = !!this.controlsLevel0[i]
-						.runDirectlyBeforeShowSubMenu;
-					if (runDirectlyBeforeShowSubMenu == false) {
-						result = true;
-						break;
-					}
-				}
-			}
-			if (this.debugRequest) console.log(`${this.label} checkIfThereAreSharesToConfirm()`)
-			return result;
-		},
-		close() {
-			this.show = false;
-			if (this.debugRequest) console.log(`${this.label} close()`)
-		},
-		callback (msg) {
-			if (this.debugRequest) console.log(`${this.label} callback()`)
-        	this.$notify(`Modal dismissed with msg '${msg}'.`)
-      	},
+      // check the action have runDirectlyBeforeShowSubMenu (and currently status is different then action)
+      if (runDirectlyBeforeShowSubMenu == true) {
+        let newData = [];
+        // if action have runDirectlyBeforeShowSubMenu true then first run command then ok check next level
+        let toSave = foundLevel.save;
+        for (let i = 0; i < toSave.length; i++) {
+          let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {
+            def: toSave[i].refDefPoint,
+          });
+          let change = new ChangeDataDTO(xid.xid, toSave[i].value, '', '');
+          newData.push(change);
+        }
+        if (newData.length > 0) {
+          this.set(newData, this.xIdViewAndIdCmp, action, this.timeOut)
+              .then((response) => {
+                //refreshHistory()
+                // rxjs
+                let found = _.findWhere(this.context.controlsLevel0, {name: action});
+                if (found.toChange != undefined) {
+                  if (this.context.controlsLevel1 != found.toChange)
+                    this.context.controlsLevel1 = found.toChange;
+                } else {
+                  this.context.controlsLevel1 = [];
+                }
+                this.context.selectActionLevel1 = '';
+                //
+              })
+              .catch((er) => {
+                this.context.setErrorAndNotification(er.message);
+              });
+        }
+      } else {
+        if (this.selectActionLevel0 == action) {
+          this.selectActionLevel0 = '';
+        } else {
+          this.selectActionLevel0 = action;
+          let found = _.findWhere(this.controlsLevel0, {name: action});
+          if (found.toChange != undefined) {
+            this.controlsLevel1 = found.toChange;
+          } else {
+            this.controlsLevel1 = [];
+          }
+          this.selectActionLevel1 = '';
+        }
+      }
+      if (this.debugRequest) console.log(`${this.label} setActionLeve0()`)
+    },
+    setActionLevel1(action) {
+
+      if (this.selectActionLevel1 == action) {
+        this.selectActionLevel1 = '';
+      } else {
+        this.selectActionLevel1 = action;
+      }
+      if (this.debugRequest) console.log(`${this.label} setActionLevel1()`)
+    },
+    tryChangeModePLC() {
+      let newData = [];
+      let action = null;
+      let control = null;
+      if (this.selectActionLevel1 != '') {
+        action = this.selectActionLevel1;
+        control = this.controlsLevel1;
+      } else if (this.selectActionLevel0 != '') {
+        action = this.selectActionLevel0;
+        control = this.controlsLevel0;
+      } else {
+        // Nothing to do;
+      }
+      if (action != null) {
+        let foundLevel = _.findWhere(control, {name: action});
+        let toSave = foundLevel.save;
+        for (let i = 0; i < toSave.length; i++) {
+          let xid = _.findWhere(this.config.control.definitionPointToSaveValue, {
+            def: toSave[i].refDefPoint,
+          });
+          let change = new ChangeDataDTO(xid.xid, toSave[i].value, '', '');
+          newData.push(change);
+        }
+        if (newData.length > 0) {
+          set(newData, this.xIdViewAndIdCmp, action, this.timeOut)
+              .then((response) => {
+                this.show = false;
+              })
+              .catch((er) => {
+                this.setErrorAndNotification(er.message);
+              });
+        }
+      }
+      if (this.debugRequest) console.log(`${this.label} tryChangeModePLC()`)
+    },
+    checkIfThereAreSharesToConfirm() {
+      let result = false;
+
+      if (typeof this.controlsLevel1 === 'object' && this.controlsLevel1.length > 0) {
+        result = true;
+      } else {
+        for (let i = 0; i < this.controlsLevel0.length; i++) {
+          let runDirectlyBeforeShowSubMenu = !!this.controlsLevel0[i]
+              .runDirectlyBeforeShowSubMenu;
+          if (runDirectlyBeforeShowSubMenu == false) {
+            result = true;
+            break;
+          }
+        }
+      }
+      if (this.debugRequest) console.log(`${this.label} checkIfThereAreSharesToConfirm()`)
+      return result;
+    },
+    close() {
+      this.show = false;
+      if (this.debugRequest) console.log(`${this.label} close()`)
+    },
+    callback(msg) {
+      if (this.debugRequest) console.log(`${this.label} callback()`)
+      this.$notify(`Modal dismissed with msg '${msg}'.`)
+    },
 		analizeInOrder() {
-			console.log("work analizeInOrder from function")
-			this.newErros = [];
-			this.counterForAnaliseInOrder = 0;
-			this.processOfCheckingTheStatus = false;
+      console.log("work analizeInOrder from function")
+      this.newErros = [];
+      this.counterForAnaliseInOrder = 0;
+      this.processOfCheckingTheStatus = false;
 
-			if (this.counterForAnaliseInOrder >= 0) {
-				this.processOfCheckingTheStatus = true;
+      if (this.counterForAnaliseInOrder >= 0) {
+        this.processOfCheckingTheStatus = true;
 
-				let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder]
-					.toChecked;
-				let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
-				if (points != undefined && points.length > 0) {
-					let xIDs = [];
-					for (let j = 0; j < points.length; j++) {
-						if (points[j].last == 'true') {
-							if (this.insideState != name) {
-								this.insideState = name;
-							}
-							this.endChecking();
-							break;
-						} else {
-							xIDs.push(points[j].xid);
-						}
-					}
-					console.log("dupa")
-					if (xIDs.length > 0) {
-						new ApiCMP()
-							.get(xIDs, this.timeOut)
-							.then((response) => {
-								if (response.data.length > 0) {
-									let toCheck = [];
-									for (let k = 0; k < points.length; k++) {
-										let entry = points[k];
-										try {
-											for (let z = 0; z < response.data.length; z++) {
-												if (
-													response.data[z].xid.toUpperCase().trim() ==
-													entry.xid.toUpperCase().trim()
-												) {
-													entry.value = response.data[z].value;
-													toCheck.push(entry);
-													break;
-												}
-											}
-											if (entry.value == undefined) {
-												this.setErrorAndStopAnaliseInOrder(
-													'The device did not retain data',
-												);
-												return;
-											}
-										} catch (e) {
-											console.log("dupa5")
-											console.error(e)
-											this.setErrorAndStopAnaliseInOrder(e.message);
-											return;
-										}
-									}
+        let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder]
+            .toChecked;
+        let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
+        if (points != undefined && points.length > 0) {
+          let xIDs = [];
+          for (let j = 0; j < points.length; j++) {
+            if (points[j].last == 'true') {
+              if (this.insideState != name) {
+                this.insideState = name;
+              }
+              this.endChecking();
+              break;
+            } else {
+              xIDs.push(points[j].xid);
+            }
+            }
+            if (xIDs.length > 0) {
+              this.get(xIDs, this.timeOut)
+                .then((response) => {
+                  if (response.data.length > 0) {
+                    let toCheck = [];
+                    for (let k = 0; k < points.length; k++) {
+                      let entry = points[k];
+                      try {
+                        for (let z = 0; z < response.data.length; z++) {
+                          if (
+                              response.data[z].xid.toUpperCase().trim() ==
+                              entry.xid.toUpperCase().trim()
+                          ) {
+                            entry.value = response.data[z].value;
+                            toCheck.push(entry);
+                            break;
+                          }
+                        }
+                        if (entry.value == undefined) {
+                          this.setErrorAndStopAnaliseInOrder(
+                              'The device did not retain data',
+                          );
+                          return;
+                        }
+                      } catch (e) {
+                        console.error(e)
+                        this.setErrorAndStopAnaliseInOrder(e.message);
+                        return;
+                      }
+                    }
 
-									let condition = '';
-									for (let e = 0; e < toCheck.length; e++) {
-										if (!!toCheck[e].toNoteError == true) {
-											if (this.showFaultV) {
-												this.newErrors.push(toCheck[e].describe);
-											} else {
-												let check = eval(
-													'(' + toCheck[e].value + toCheck[e].equals + ')',
-												);
-												if (!!check == true) {
-													this.newErrors.push(toCheck[e].describe);
-												}
-											}
-										}
-										console.log("dupa1")
-										let bitOperator =
-											toCheck[e].bitOperatorToThePreviousCondition != undefined
-												? toCheck[e].bitOperatorToThePreviousCondition
-												: '';
-										condition +=
-											bitOperator + '(' + toCheck[e].value + toCheck[e].equals + ')';
-									}
+                    let condition = '';
+                    for (let e = 0; e < toCheck.length; e++) {
+                      if (!!toCheck[e].toNoteError == true) {
+                        if (this.showFaultV) {
+                          this.newErrors.push(toCheck[e].describe);
+                        } else {
+                          let check = eval(
+                              '(' + toCheck[e].value + toCheck[e].equals + ')',
+                          );
+                          if (!!check == true) {
+                            this.newErrors.push(toCheck[e].describe);
+                          }
+                        }
+                      }
+                      let bitOperator =
+                          toCheck[e].bitOperatorToThePreviousCondition != undefined
+                              ? toCheck[e].bitOperatorToThePreviousCondition
+                              : '';
+                      condition +=
+                          bitOperator + '(' + toCheck[e].value + toCheck[e].equals + ')';
+                    }
 
-									let resultCondition = eval(condition);
-									console.log("dupa2")
-									if (!!resultCondition == true) {
-										this.endChecking();
-									} else {
-											
-										if (this.debugRequest) console.log(`${this.label} analizeInOrder() if for counter\n
+                    let resultCondition = eval(condition);
+                    if (!!resultCondition == true) {
+                      this.endChecking();
+                    } else {
+
+                      if (this.debugRequest) console.log(`${this.label} analizeInOrder() if for counter\n
 											this.config.state.analiseInOrder.length: ${this.this.config.state.analiseInOrder.length} \n
 											this.counterForAnaliseInOrder: ${this.this.config.state.analiseInOrder.length} \n
 											this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1: ${this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1}`)
-											
-										if (
-											this.config.state.analiseInOrder.length >
-											this.counterForAnaliseInOrder - 1
-										) {
-											this.counterForAnaliseInOrder++;
-										}
-									}
-								}
-								
-							})
-							.catch((er) => {
-								console.log("dupa3")
-								console.error(er)
-								this.setErrorAndNotification(er.message);
-							});
-					}
-				}
-			}
-			if (this.debugRequest) console.log(`${this.label} analizeInOrder() - run directly, counterForAnaliseInOrder: ${this.counterForAnaliseInOrder}`)
-		}
-		
+
+                      if (
+                          this.config.state.analiseInOrder.length >
+                          this.counterForAnaliseInOrder - 1
+                      ) {
+                        this.counterForAnaliseInOrder++;
+                        this.analizeInOrder()
+                      }
+                    }
+                  }
+
+                })
+                .catch((er) => {
+                  console.error(er)
+                  this.setErrorAndNotification(er.message);
+                });
+            }
+          }
+          if (this.debugRequest) console.log(`${this.label} analizeInOrder() - run directly, counterForAnaliseInOrder: ${this.counterForAnaliseInOrder}`)
+        }
+      },
+      get(xIds, myTimeOut) {
+        return new Promise((resolve, reject) => {
+          try {
+            const apiCMPCheck = `./api/cmp/get/${xIds}`;
+            if (xIds.length > 0) {
+              httpClient
+                  .get(apiCMPCheck, { timeout: myTimeOut })
+                  .then((response) => {
+                    resolve(response);
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
+            } else {
+              const reason = new Error('Probably not have data');
+              reject(reason);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        });
+      },
+
+      set(newData, xidViewAndIdCmp, interpretedState, myTimeOut) {
+        return new Promise((resolve, reject) => {
+          try {
+            if (newData.length > 0) {
+              httpClient({
+                method: 'post',
+                url: `./api/cmp/set/${xidViewAndIdCmp}/${interpretedState}`,
+                headers: {},
+                timeout: myTimeOut,
+                data: newData,
+              })
+                  .then((response) => {
+                    resolve(response);
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
+            } else {
+              const reason = new Error('Probably not have data');
+              reject(reason);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
 	},
 	created() {
 		try {
@@ -602,55 +580,15 @@ export default {
 		} catch (e) {
 			this.setErrorAndNotification(e.message)
 		}
-
-		if (this.timeRefresh) {
-			// setTimeout(
-			// 	function() {setInterval(
-			// 		function () {
-			// 			try {
-			// 				if (this.runDirectly) {
-			// 					this.analizeInOrder()
-			// 				} else {
-			// 					this.checkStatus()
-			// 				}
-			// 			} catch (e) {
-			// 				console.log(e);
-			// 			}
-			// 		}.bind(this),
-			// 	this.timeRefresh,
-			// );}.bind(this),
-			//  this.startLate)
-			
-			setInterval( ()=> {
-				try {
-			 				// if (this.runDirectly) {
-
-			 				 	this.analizeInOrder()
-			 				// } else {
-			 				//this.checkStatus()
-			 				//}
-							 //this.analizeInOrder()
-			 			} catch (e) {
-			 				console.log(e);
-			 			}
-			}
-			 		// function () {
-			 		// 	try {
-			 		// 		// if (this.runDirectly) {
-			 		// 		// 	this.analizeInOrder()
-			 		// 		// } else {
-			 		// 		this.checkStatus()
-			 		// 		//}
-					// 		 //this.analizeInOrder()
-			 		// 	} catch (e) {
-			 		// 		console.log(e);
-			 		// 	}
-			 		//}.bind(this),
-			,
-			 	this.timeRefresh
-			)
-			 
-		}
+    if (this.timeRefresh) {
+      setInterval( ()=> {
+        try {
+          this.analizeInOrder()
+        } catch (e) {
+          console.log(e);
+        }
+      }, this.timeRefresh ).bind(this);
+    }
 	},
 	mounted() {
 		console.log(`CMP pxIdViewAndIdCmp:${this.xIdViewAndIdCmp}`)
@@ -663,11 +601,10 @@ export default {
 				timeOut: ${this.timeOut}\n
 				runDirectly: ${this.runDirectly}\n
 				debugRequest: ${this.debugRequest}\n`)
-
-			//strConfig: this.pConfig,
+			  //strConfig: this.pConfig,
 		}
 		this.checkStatus()
-		
+    
 	},
 	filters: {
 		moment: function (date) {
@@ -693,116 +630,19 @@ export default {
 		},
 		insideState: function (val, oldVal) {
 			if (val != oldVal) {
-				let found = _.findWhere(this.controlsLevel0, {
-					name: this.insideState,
-				});
-				if (found != undefined) {
-					if (found.toChange != undefined) {
-						this.controlsLevel1 = found.toChange;
-					} else {
-						this.controlsLevel1 = [];
-					}
-					this.selectActionLevel0 = found.name;
-					this.selectActionLevel1 = '';
-				}
-			}
-		},
-		counterForAnaliseInOrder: function (val, oldVal) {
-
-			if ( this.runDirectly == false && this.counterForAnaliseInOrder >= 0) {
-				this.processOfCheckingTheStatus = true;
-
-				let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder]
-					.toChecked;
-				let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
-				if (points != undefined && points.length > 0) {
-					let xIDs = [];
-					for (let j = 0; j < points.length; j++) {
-						if (points[j].last == 'true') {
-							if (this.insideState != name) {
-								this.insideState = name;
-							}
-							this.endChecking();
-							break;
-						} else {
-							xIDs.push(points[j].xid);
-						}
-					}
-
-					if (xIDs.length > 0) {
-						new ApiCMP()
-							.get(xIDs, this.timeOut)
-							.then((response) => {
-								if (response.data.length > 0) {
-									let toCheck = [];
-									for (let k = 0; k < points.length; k++) {
-										let entry = points[k];
-										try {
-											for (let z = 0; z < response.data.length; z++) {
-												if (
-													response.data[z].xid.toUpperCase().trim() ==
-													entry.xid.toUpperCase().trim()
-												) {
-													entry.value = response.data[z].value;
-													toCheck.push(entry);
-													break;
-												}
-											}
-											if (entry.value == undefined) {
-												this.setErrorAndStopAnaliseInOrder(
-													'The device did not retain data',
-												);
-												return;
-											}
-										} catch (e) {
-											this.setErrorAndStopAnaliseInOrder(e.message);
-											return;
-										}
-									}
-
-									let condition = '';
-									for (let e = 0; e < toCheck.length; e++) {
-										if (!!toCheck[e].toNoteError == true) {
-											if (this.showFaultV) {
-												this.newErrors.push(toCheck[e].describe);
-											} else {
-												let check = eval(
-													'(' + toCheck[e].value + toCheck[e].equals + ')',
-												);
-												if (!!check == true) {
-													this.newErrors.push(toCheck[e].describe);
-												}
-											}
-										}
-
-										let bitOperator =
-											toCheck[e].bitOperatorToThePreviousCondition != undefined
-												? toCheck[e].bitOperatorToThePreviousCondition
-												: '';
-										condition +=
-											bitOperator + '(' + toCheck[e].value + toCheck[e].equals + ')';
-									}
-
-									let resultCondition = eval(condition);
-
-									if (!!resultCondition == true) {
-										this.endChecking();
-									} else {
-										if (
-											this.config.state.analiseInOrder.length >
-											this.counterForAnaliseInOrder - 1
-										) {
-											this.counterForAnaliseInOrder++;
-										}
-									}
-								}
-							})
-							.catch((er) => {
-								this.setErrorAndNotification(er.message);
-							});
-					}
-				}
-			}
+        let found = _.findWhere(this.controlsLevel0, {
+          name: this.insideState,
+        });
+        if (found != undefined) {
+          if (found.toChange != undefined) {
+            this.controlsLevel1 = found.toChange;
+          } else {
+            this.controlsLevel1 = [];
+          }
+          this.selectActionLevel0 = found.name;
+          this.selectActionLevel1 = '';
+        }
+      }
 		},
 		controlsLevel0: function (val, oldVal) {
 			this.checkIfThereAreSharesToConfirmValue = this.checkIfThereAreSharesToConfirm();
@@ -810,7 +650,7 @@ export default {
 		controlsLevel1: function (val, oldV) {
 			this.checkIfThereAreSharesToConfirmValue = this.checkIfThereAreSharesToConfirm();
 		},
-	},
+	}
 };
 </script>
 
