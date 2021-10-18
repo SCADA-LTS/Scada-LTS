@@ -104,7 +104,7 @@
 
 						<hr />
 						<!--<btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>-->
-						<p class="cmp-small-info">v0.1.0.16</p>
+						<p class="cmp-small-info">v0.0.9</p>
 						<btn size="xs" type="primary" v-on:click="refreshHistory()" class="cmp-small-info">refresh history</btn>
 			
 						<div>
@@ -159,18 +159,13 @@ class ChangeDataDTO {
  * @author grzegorz.bylica@gmail.com
  */
 class ApiCMP {
-
-	constructor(context) {
-		this.context = context;
-	}
-
-	get(xIds, myTimeOut) {
+	get(xIds) {
 		return new Promise((resolve, reject) => {
 			try {
 				const apiCMPCheck = `./api/cmp/get/${xIds}`;
 				if (xIds.length > 0) {
 					httpClient
-						.get(apiCMPCheck, { timeout: myTimeOut })
+						.get(apiCMPCheck, { timeout: 5000 })
 						.then((response) => {
 							resolve(response);
 						})
@@ -187,7 +182,7 @@ class ApiCMP {
 		});
 	}
 
-	set(newData, xidViewAndIdCmp, interpretedState, myTimeOut) {
+	set(newData, xidViewAndIdCmp, interpretedState) {
 		// console.log("interpetedState:"+JSON.stringify(interpretedState))
 		// console.log("interpetedState:"+interpretedState)
 		return new Promise((resolve, reject) => {
@@ -197,7 +192,7 @@ class ApiCMP {
 						method: 'post',
 						url: `./api/cmp/set/${xidViewAndIdCmp}/${interpretedState}`,
 						headers: {},
-						timeout: myTimeOut,
+						timeout: 5000,
 						data: newData,
 					})
 						.then((response) => {
@@ -225,40 +220,7 @@ export default {
 		BtnGroup,
 		HistoryCMP,
 	},
-	props: {
-		pConfig : {
-			type: String,
-			required: true,
-		},
-		pLabel : {
-			type: String,
-			required: true,
-		},
-		pTimeRefresh : {
-			type: Number,
-			required: true,
-		},
-		pxIdViewAndIdCmp: {
-			type: String,
-		},
-		pStartLate: {
-			type: Number,
-			default: 5000,
-		},
-		pTimeOut: {
-			type: Number,
-			default: 7000,
-		},
-		pRunDirectly: {
-			type: Boolean,
-			default: false,
-		},
-		pDebugRequest: {
-			type: Boolean,
-			default: false,
-		}
-	},
-	// ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp', 'pStartLate', 'pTimeOut', 'pRunDirectly', 'pDebugRequest'],
+	props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp'],
 	data() {
 		return {
 			open: false,
@@ -282,17 +244,11 @@ export default {
 			showFaultV: false,
 			checkIfThereAreSharesToConfirmValue: true,
 			xIdViewAndIdCmp: this.pxIdViewAndIdCmp,
-			startLate: this.pStartLate, 	 
-			timeOut: this.pTimeOut,  		 // TODO set default value 5000 < pTimeRefresh
-			runDirectly: this.pRunDirectly,  // value false mean use watch; true mean start calculate 
-			debugRequest: this.pDebugRequest, 
-
 		};
 	},
 	methods: {
 		refreshHistory() {
 			this.$refs.refHistoryCMP.loadData()
-			if (this.debugRequest) console.log(`${this.label} refresh history()`)
 		},
 		endChecking() {
 			this.insideState = this.config.state.analiseInOrder[
@@ -311,7 +267,6 @@ export default {
 			this.processOfCheckingTheStatus = false;
 			this.counterForAnaliseInOrder = -1;
 			this.checkToNotificationError();
-			if (this.debugRequest) console.log(`${this.label} endChecking()`)
 		},
 		checkToNotificationError() {
 			if (
@@ -327,32 +282,26 @@ export default {
 			}
 			this.newErrors = [];
 			this.errorResultingFromOperationControl = '';
-			if (this.debugRequest) console.log(`${this.label} checkToNotificationError()`)
 		},
 		setErrorAndStopAnaliseInOrder(msg) {
 			this.newErrors.push(msg);
 			this.insideState = 'Error';
 			this.processOfCheckingTheStatus = false;
 			this.counterForAnaliseInOrder = -1;
-			if (this.debugRequest) console.log(`${this.label} setErrorAndStopAnaliseInOrder()`)
 		},
 		setErrorAndNotification(msg) {
 			this.errorResultingFromOperationControl = msg;
 			this.insideState = 'Error';
 			this.checkToNotificationError();
-			if (this.debugRequest) console.log(`${this.label} setErrorAndNotification()`)
 		},
 		showFault() {
 			this.showFaultV = !this.showFaultV;
 			this.checkStatus();
-			if (this.debugRequest) console.log(`${this.label} showFault()`)
 		},
 		checkStatus() {
 			this.newErros = [];
 			this.counterForAnaliseInOrder = 0;
 			this.processOfCheckingTheStatus = false;
-			this.errorsNotification = false;
-			if (this.debugRequest) console.log(`${this.label} checkStatus()`)
 		},
 		setActionLeve0(action) {
 			// get action by name action
@@ -373,23 +322,23 @@ export default {
 					newData.push(change);
 				}
 				if (newData.length > 0) {
-					new ApiCMP(this)
-						.set(newData, this.xIdViewAndIdCmp, action, this.timeOut)
+					new ApiCMP()
+						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
 							//refreshHistory()
 							// rxjs
-							let found = _.findWhere(this.context.controlsLevel0, { name: action });
+							let found = _.findWhere(this.controlsLevel0, { name: action });
 							if (found.toChange != undefined) {
-								if (this.context.controlsLevel1 != found.toChange)
-									this.context.controlsLevel1 = found.toChange;
+								if (this.controlsLevel1 != found.toChange)
+									this.controlsLevel1 = found.toChange;
 							} else {
-								this.context.controlsLevel1 = [];
+								this.controlsLevel1 = [];
 							}
-							this.context.selectActionLevel1 = '';
+							this.selectActionLevel1 = '';
 							//
 						})
 						.catch((er) => {
-							this.context.setErrorAndNotification(er.message);
+							this.setErrorAndNotification(er.message);
 							//refreshHistory()
 						});
 				}
@@ -407,7 +356,6 @@ export default {
 					this.selectActionLevel1 = '';
 				}
 			}
-			if (this.debugRequest) console.log(`${this.label} setActionLeve0()`)
 		},
 		setActionLevel1(action) {
 			//refreshHistory()
@@ -416,7 +364,6 @@ export default {
 			} else {
 				this.selectActionLevel1 = action;
 			}
-			if (this.debugRequest) console.log(`${this.label} setActionLevel1()`)
 		},
 		tryChangeModePLC() {
 			let newData = [];
@@ -443,7 +390,7 @@ export default {
 				}
 				if (newData.length > 0) {
 					new ApiCMP()
-						.set(newData, this.xIdViewAndIdCmp, action, this.timeOut)
+						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
 							this.show = false;
 						})
@@ -452,7 +399,6 @@ export default {
 						});
 				}
 			}
-			if (this.debugRequest) console.log(`${this.label} tryChangeModePLC()`)
 		},
 		checkIfThereAreSharesToConfirm() {
 			let result = false;
@@ -469,205 +415,38 @@ export default {
 					}
 				}
 			}
-			if (this.debugRequest) console.log(`${this.label} checkIfThereAreSharesToConfirm()`)
 			return result;
 		},
 		close() {
 			this.show = false;
-			if (this.debugRequest) console.log(`${this.label} close()`)
 		},
 		callback (msg) {
-			if (this.debugRequest) console.log(`${this.label} callback()`)
         	this.$notify(`Modal dismissed with msg '${msg}'.`)
       	},
-		analizeInOrder() {
-			console.log("work analizeInOrder from function")
-			this.newErros = [];
-			this.counterForAnaliseInOrder = 0;
-			this.processOfCheckingTheStatus = false;
-
-			if (this.counterForAnaliseInOrder >= 0) {
-				this.processOfCheckingTheStatus = true;
-
-				let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder]
-					.toChecked;
-				let name = this.config.state.analiseInOrder[this.counterForAnaliseInOrder].name;
-				if (points != undefined && points.length > 0) {
-					let xIDs = [];
-					for (let j = 0; j < points.length; j++) {
-						if (points[j].last == 'true') {
-							if (this.insideState != name) {
-								this.insideState = name;
-							}
-							this.endChecking();
-							break;
-						} else {
-							xIDs.push(points[j].xid);
-						}
-					}
-					console.log("dupa")
-					if (xIDs.length > 0) {
-						new ApiCMP()
-							.get(xIDs, this.timeOut)
-							.then((response) => {
-								if (response.data.length > 0) {
-									let toCheck = [];
-									for (let k = 0; k < points.length; k++) {
-										let entry = points[k];
-										try {
-											for (let z = 0; z < response.data.length; z++) {
-												if (
-													response.data[z].xid.toUpperCase().trim() ==
-													entry.xid.toUpperCase().trim()
-												) {
-													entry.value = response.data[z].value;
-													toCheck.push(entry);
-													break;
-												}
-											}
-											if (entry.value == undefined) {
-												this.setErrorAndStopAnaliseInOrder(
-													'The device did not retain data',
-												);
-												return;
-											}
-										} catch (e) {
-											console.log("dupa5")
-											console.error(e)
-											this.setErrorAndStopAnaliseInOrder(e.message);
-											return;
-										}
-									}
-
-									let condition = '';
-									for (let e = 0; e < toCheck.length; e++) {
-										if (!!toCheck[e].toNoteError == true) {
-											if (this.showFaultV) {
-												this.newErrors.push(toCheck[e].describe);
-											} else {
-												let check = eval(
-													'(' + toCheck[e].value + toCheck[e].equals + ')',
-												);
-												if (!!check == true) {
-													this.newErrors.push(toCheck[e].describe);
-												}
-											}
-										}
-										console.log("dupa1")
-										let bitOperator =
-											toCheck[e].bitOperatorToThePreviousCondition != undefined
-												? toCheck[e].bitOperatorToThePreviousCondition
-												: '';
-										condition +=
-											bitOperator + '(' + toCheck[e].value + toCheck[e].equals + ')';
-									}
-
-									let resultCondition = eval(condition);
-									console.log("dupa2")
-									if (!!resultCondition == true) {
-										this.endChecking();
-									} else {
-											
-										if (this.debugRequest) console.log(`${this.label} analizeInOrder() if for counter\n
-											this.config.state.analiseInOrder.length: ${this.this.config.state.analiseInOrder.length} \n
-											this.counterForAnaliseInOrder: ${this.this.config.state.analiseInOrder.length} \n
-											this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1: ${this.config.state.analiseInOrder.length > this.counterForAnaliseInOrder - 1}`)
-											
-										if (
-											this.config.state.analiseInOrder.length >
-											this.counterForAnaliseInOrder - 1
-										) {
-											this.counterForAnaliseInOrder++;
-										}
-									}
-								}
-								
-							})
-							.catch((er) => {
-								console.log("dupa3")
-								console.error(er)
-								this.setErrorAndNotification(er.message);
-							});
-					}
-				}
-			}
-			if (this.debugRequest) console.log(`${this.label} analizeInOrder() - run directly, counterForAnaliseInOrder: ${this.counterForAnaliseInOrder}`)
-		}
-		
 	},
 	created() {
 		try {
-			this.config = JSON.parse(this.strConfig)
-			this.controlsLevel0 = this.config.control.toChange
+			this.config = JSON.parse(this.strConfig);
+			this.controlsLevel0 = this.config.control.toChange;
 		} catch (e) {
-			this.setErrorAndNotification(e.message)
+			this.setErrorAndNotification(e.message);
 		}
-
 		if (this.timeRefresh) {
-			// setTimeout(
-			// 	function() {setInterval(
-			// 		function () {
-			// 			try {
-			// 				if (this.runDirectly) {
-			// 					this.analizeInOrder()
-			// 				} else {
-			// 					this.checkStatus()
-			// 				}
-			// 			} catch (e) {
-			// 				console.log(e);
-			// 			}
-			// 		}.bind(this),
-			// 	this.timeRefresh,
-			// );}.bind(this),
-			//  this.startLate)
-			
-			setInterval( ()=> {
-				try {
-			 				// if (this.runDirectly) {
-
-			 				 	this.analizeInOrder()
-			 				// } else {
-			 				//this.checkStatus()
-			 				//}
-							 //this.analizeInOrder()
-			 			} catch (e) {
-			 				console.log(e);
-			 			}
-			}
-			 		// function () {
-			 		// 	try {
-			 		// 		// if (this.runDirectly) {
-			 		// 		// 	this.analizeInOrder()
-			 		// 		// } else {
-			 		// 		this.checkStatus()
-			 		// 		//}
-					// 		 //this.analizeInOrder()
-			 		// 	} catch (e) {
-			 		// 		console.log(e);
-			 		// 	}
-			 		//}.bind(this),
-			,
-			 	this.timeRefresh
-			)
-			 
+			setInterval(
+				function () {
+					try {
+						this.checkStatus();
+					} catch (e) {
+						console.log(e);
+					}
+				}.bind(this),
+				this.timeRefresh,
+			);
 		}
 	},
 	mounted() {
-		console.log(`CMP pxIdViewAndIdCmp:${this.xIdViewAndIdCmp}`)
-		if (this.debugRequest) {
-			console.log(
-				`label: ${this.label}\n
-				timeRefresh: ${this.timeRefresh}\n
-				xIdViewAndIdCmp: ${this.xIdViewAndIdCmp}\n
-				startLate: ${this.startLate}\n
-				timeOut: ${this.timeOut}\n
-				runDirectly: ${this.runDirectly}\n
-				debugRequest: ${this.debugRequest}\n`)
-
-			//strConfig: this.pConfig,
-		}
-		this.checkStatus()
-		
+		console.log(`CMP pxIdViewAndIdCmp:${this.xIdViewAndIdCmp}`);
+		this.checkStatus();
 	},
 	filters: {
 		moment: function (date) {
@@ -708,8 +487,7 @@ export default {
 			}
 		},
 		counterForAnaliseInOrder: function (val, oldVal) {
-
-			if ( this.runDirectly == false && this.counterForAnaliseInOrder >= 0) {
+			if (this.counterForAnaliseInOrder >= 0) {
 				this.processOfCheckingTheStatus = true;
 
 				let points = this.config.state.analiseInOrder[this.counterForAnaliseInOrder]
@@ -731,7 +509,7 @@ export default {
 
 					if (xIDs.length > 0) {
 						new ApiCMP()
-							.get(xIDs, this.timeOut)
+							.get(xIDs)
 							.then((response) => {
 								if (response.data.length > 0) {
 									let toCheck = [];
