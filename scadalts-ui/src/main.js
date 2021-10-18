@@ -134,18 +134,6 @@ for (let i = 0; i < 20; i++) {
 						pxIdViewAndIdCmp: window.document
 							.getElementById(cmpId)
 							.getAttribute('pxIdViewAndIdCmp'),
-						pStartLate: window.document
-							.getElementById(cmpId)
-							.getAttribute('pstartLate'),
-						pTimeOut: window.document
-							.getElementById(cmpId)
-							.getAttribute('ptimeOut'),
-						pRunDirectly: window.document
-							.getElementById(cmpId)
-							.getAttribute('prunDirectly'),
-						pDebugRequest: window.document
-						.getElementById(cmpId)
-						.getAttribute('pdebugRequest'),
 					},
 				}),
 		}).$mount('#' + cmpId);
