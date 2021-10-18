@@ -1,5 +1,15 @@
 <template>
 <div class="auto-manual--history">
+    <div class="flex">
+        <h4>
+            {{$t('component.automanual.history.title')}}
+        </h4>
+        <v-btn x-small fab elevation="1" @click="fetchHisoryData">
+            <v-icon>
+                mdi-refresh
+            </v-icon>
+        </v-btn>
+    </div>
     <v-simple-table>
         <template v-slot:default>
             <thead class="table--header">
@@ -75,5 +85,11 @@ export default {
 .auto-manual--history {
     max-height: 300px;
     min-width: 400px;
+}
+.flex {
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 </style>

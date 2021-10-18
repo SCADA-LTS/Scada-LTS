@@ -12,8 +12,10 @@
 				</div>
 				<div class="col-xs-12">
 					<AutoManual 
+						pLabel="Auto"
 						:pConfig="configuration"
 						:pTimeRefresh="4000"
+						:pWidth="260"
 						
 					></AutoManual>
 				</div>
@@ -48,6 +50,7 @@ export default {
 									toNote: true,
 								},
 							],
+							disabled: true,
 						},
 						{
 							name: 'Pumpe Ein',
@@ -58,6 +61,7 @@ export default {
 									describe: 'Eh Beckenentleerung MM Pumpe Ein',
 								},
 							],
+							
 						},
 						{
 							name: 'PLS Hand',
@@ -199,6 +203,20 @@ export default {
 								},
 								{
 									name: 'Start',
+									save: [
+										{
+											refDefPoint: 'AUS',
+											value: '0',
+										},
+										{
+											refDefPoint: 'EIN',
+											value: '1',
+										},
+									],
+									confirmation: 'true',
+								},
+								{
+									name: 'Error',
 									save: [
 										{
 											refDefPoint: 'AUS',

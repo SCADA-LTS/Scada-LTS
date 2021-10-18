@@ -1,11 +1,14 @@
 <template>
-<div>
-    <v-btn-toggle v-if="!!controlsLevel0">
+<div class="automanual-controls">
+    <h4>
+        {{$t('component.automanual.controls.title')}}
+    </h4>
+    <v-btn-toggle v-if="!!controlsLevel0" class="state-buttons">
         <v-btn v-for="(item, index) in controlsLevel0" :key="index" @click="saveValues(item)">
             {{item.name}}
         </v-btn>
     </v-btn-toggle>
-    <v-btn-toggle v-if="!!controlsLevel1">
+    <v-btn-toggle  dense v-if="!!controlsLevel1" class="state-buttons">
         <v-btn v-for="(item, index) in controlsLevel1" :key="index" @click="saveValues(item)">
             {{item.name}}
         </v-btn>
@@ -97,5 +100,21 @@ export default {
 }
 </script>
 <style scoped>
+.automanual-controls {
+    background-color: white;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+}
+.automanual-controls > div:first-of-type {
+    margin-bottom: 5px;
+}
+.automanual-controls > div:nth-of-type(2) {
+    margin-bottom: 5px;
+}
+.state-buttons > button {
+    flex-grow: 1;
 
+}
 </style>

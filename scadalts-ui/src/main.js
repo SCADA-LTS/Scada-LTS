@@ -167,7 +167,8 @@ for (let i = 0; i < 10; i++) {
 						pLabel: el.getAttribute('plabel'),
 						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null  ? el.getAttribute('ptimeRefresh') : 10000,
 						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
-						pWidth: el.getAttribute('pwidth') !== null  ? el.getAttribute('pwidth') : 700,
+						pWidth: el.getAttribute('pwidth') !== null  ? el.getAttribute('pwidth') : 260,
+						pHideControls: el.getAttribute('phideControls') !== null,
 						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
 					},
 				})			

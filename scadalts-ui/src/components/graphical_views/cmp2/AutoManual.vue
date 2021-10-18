@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-container :style="{width: (this.pWidth > 340 ? this.pWidth : 340) + 'px'}">
+        <v-container :style="{width: (this.pWidth > 240 ? this.pWidth : 240) + 'px'}">
             <v-card>
                 <v-card-text class="auto-manual--content" :class="{ 'auto-manual--content-small': this.pWidth < 450 }">
                     <div class="header-container">
@@ -36,14 +36,14 @@
                         </div>
                     </div>
 
-                    <div class="header-actions">
+                    <div class="header-actions" :class="{'actions-hidden': !!disableChange || !!pHideControls}">
                         <v-menu ref="menu-errors"
                             :close-on-content-click="false"
                             offset-y
                             attach
                         >
                             <template v-slot:activator="{on, attrs}">
-                                <v-btn fab small elevation="1" 
+                                <v-btn fab x-small elevation="1"                                     
                                     v-bind="attrs" v-on="on"
                                     :color="!!errorActive ? 'error' : ''" 
                                     @click="errorActive = '';" 
@@ -58,37 +58,25 @@
                             ></AutoManualErrors>
                         </v-menu>
 
-                        <v-menu ref="menu-hisotry"
+                        <v-menu ref="menu-config" v-if="(!disableChange && !pHideControls)"
                             :close-on-content-click="false"
                             offset-y
                             attach
                         >
                             <template v-slot:activator="{on, attrs}">
-                                <v-btn fab small elevation="1" v-bind="attrs" v-on="on" @click="loadHistoryData">
-                                    <v-icon>mdi-clock-time-two</v-icon>
-                                </v-btn>
-                            </template>
-
-                            <AutoManualHistory
-                                :cmpId="pxIdViewAndIdCmp"
-                                ref="autoManualHisotry"
-                            ></AutoManualHistory>
-                        </v-menu>
-
-                        <v-menu ref="menu-config"
-                            :close-on-content-click="false"
-                            offset-y
-                            attach
-                        >
-                            <template v-slot:activator="{on, attrs}">
-                                <v-btn fab small elevation="1" v-bind="attrs" v-on="on">
+                                <v-btn fab x-small elevation="1" v-bind="attrs" v-on="on">
                                     <v-icon>mdi-cog</v-icon>
                                 </v-btn>
                             </template>
 
-                            <AutoManualControls
-                                :controls="pConfig.control">
-                            </AutoManualControls>
+                            <div>
+                                <AutoManualControls
+                                    :controls="pConfig.control">
+                                </AutoManualControls>
+                                <AutoManualHistory
+                                    :cmpId="pxIdViewAndIdCmp"
+                                ></AutoManualHistory>
+                            </div>
                         </v-menu>
                         
                     </div>
@@ -140,6 +128,10 @@ export default {
             type: Number,
             default: 700,
         },
+        pHideControls: {
+            type: Boolean,
+            default: false,
+        },
 		pDebugRequest: {
 			type: Boolean,
 			default: false,
@@ -149,6 +141,8 @@ export default {
     data() {
         return {
             loading: false,
+            disableChange: false,
+            disableComponent: false,
             refreshInterval: null,
             dataPointValues: [],
             errorActive: '',
@@ -205,10 +199,11 @@ export default {
                     if(!!e && e.status === 401) {
                        this.addNetworkError(conditions[i].name, e.message);
                     } else {
-                        this.addNetworkError(conditions[i].name, "Failed to establish connection");
+                        this.addNetworkError(conditions[i].name, this.$t('component.automanual.errors.conn'));
                     }
                 }
             }
+            this.disableChange = this.disableComponent;
             this.loading = false;
         },
 
@@ -297,16 +292,8 @@ export default {
             if(conditionResult) {
                 this.componentState = condition.name;
             }
+            this.disableComponent = !!condition.disabled;
             return conditionResult;
-        },
-
-        /**
-         * Load History Data when user clicks on history button.
-         */
-        loadHistoryData() {
-            if(!!this.$refs.autoManualHisotry) {
-                this.$refs.autoManualHisotry.fetchHisoryData();
-            }
         },
 
         debugConditionResult(dp, c, result) {
@@ -326,6 +313,7 @@ export default {
 </script>
 <style scoped>
 .auto-manual--content {
+    padding: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -336,8 +324,8 @@ export default {
 }
 .auto-manual--content-small > *:last-of-type {
     position: absolute;
-    top: 15px;
-    right: 25px;
+    top: 10%;
+    right: 3px;
 }
 
 .auto-manual--content .header-container {
@@ -348,9 +336,13 @@ export default {
     width: 20px;
 }
 .auto-manual--content .header-actions {
-    min-width: 140px;
+    min-width: 72px;
     display: flex;
     justify-content: space-between;
+    transition: justify-content 0.2s ease-in-out;
+}
+.auto-manual--content .actions-hidden {
+    justify-content: flex-end;
 }
 
 .auto-manual--content .state-container {
