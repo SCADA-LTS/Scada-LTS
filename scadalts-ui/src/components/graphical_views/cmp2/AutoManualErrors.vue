@@ -1,6 +1,6 @@
 <template>
 	<div class="auto-manual--errors">
-		<v-tabs v-model="tab" show-arrows background-color="primary" vertical dark>
+		<v-tabs v-model="tab" show-arrows background-color="primary" vertical dark class="my-tabs">
 			<v-tab v-for="(list, key) in errorHandler" :index="key" :key="key" left>
 				<v-badge
 					color="error"

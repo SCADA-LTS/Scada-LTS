@@ -192,6 +192,7 @@ export default {
          */
         async checkConditions() {
             this.loading = true;
+            this.componentState = '(N/A)';
             const conditions = this.pConfig.state.analiseInOrder;
             for(let i = 0; i < conditions.length; i++) {
                 try {
@@ -284,7 +285,8 @@ export default {
                     if(!conditionResult && !!c.toNote) {
                         this.addErrorHandlerEntry(condition.name, c.describe);
                     }
-                    if(!conditionResult && !!c.toNext) {           
+                    if(!conditionResult && !!c.toNext) {
+                        conditionResult = true;
                         return false;
                     }
                     return !conditionResult;
@@ -314,7 +316,7 @@ export default {
             if(!result && !!c.toNote) {
                 console.debug(`  Noted:\t\t${result}`);
             }
-            if(!result && !!c.toNote) {
+            if(!result && !!c.toNext) {
                 console.debug(`  Moving to next check...`);
             }
         }
