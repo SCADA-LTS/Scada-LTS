@@ -4,11 +4,11 @@
         <template v-slot:default>
             <thead class="table--header">
                 <tr>
-                    <th>Username
+                    <th>{{$t('component.automanual.history.table.username')}}
                     </th>
-                    <th>Time
+                    <th>{{$t('component.automanual.history.table.time')}}
                     </th>
-                    <th>State
+                    <th>{{$t('component.automanual.history.table.state')}}
                     </th>
                 </tr>
             </thead>

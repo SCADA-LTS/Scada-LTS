@@ -13,8 +13,8 @@
     <ConfirmationDialog
         :btnvisible="false"
         :dialog="confirmationDialogVisible"
-        title="Are you sure?"
-        message="Are you sure to set that values??"
+        :title="$t('component.automanual.dialog.title')"
+        :message="$t('component.automanual.dialog.message')"
         @result="onConfirmationDialogResult"
     ></ConfirmationDialog>
 </div>
@@ -64,7 +64,6 @@ export default {
             if(!!item.toChange && item.toChange.length > 0) {
                 this.controlsLevel1 = item.toChange;
             } 
-            console.log(item);
             if(!!item.confirmation) {
                 this.confirmationDialogVisible = true;
                 this.queuedRequest = item;

@@ -25,7 +25,7 @@
 					</div>
 					<div v-else>
 						<v-list class="auto-manual--error-list">
-							<v-list-item> No related events for that condition check </v-list-item>
+							<v-list-item> {{ $t('component.automanual.errors.empty') }} </v-list-item>
 						</v-list>
 					</div>
 				</v-tab-item>

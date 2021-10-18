@@ -312,7 +312,7 @@ export default {
             console.debug(`  Chcek:\t\t${c.equals}`);
             console.debug(`  Result:\t\t${result}`);
             if(!result && !!c.toNote) {
-                console.debug(`  Noted:\t\t${conditionResult}`);
+                console.debug(`  Noted:\t\t${result}`);
             }
             if(!result && !!c.toNote) {
                 console.debug(`  Moving to next check...`);

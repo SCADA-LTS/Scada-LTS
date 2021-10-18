@@ -1,4 +1,10 @@
 {
+	"component.automanual.dialog.title": "Change the state",
+	"component.automanual.dialog.message": "This operation will change the point values related to that component. Are you sure?",
+	"component.automanual.errors.empty": "No related events for that condition check",
+	"component.automanual.history.table.username": "Username",
+	"component.automanual.history.table.time": "Time",
+	"component.automanual.history.table.state": "State",
 	"common.tp.millisecond": "millisecond",
 	"common.tp.milliseconds": "milliseconds",
 	"common.tp.second": "second",
