@@ -124,6 +124,9 @@ export default {
 		pxIdViewAndIdCmp: {
 			default: null,
 		},
+        pZeroState: {
+            default: "(N/A)",
+        },
         pWidth: {
             type: Number,
             default: 700,
@@ -193,7 +196,7 @@ export default {
          */
         async checkConditions() {
             this.loading = true;
-            this.componentState = '(N/A)';
+            this.componentState = this.pZeroState;
             const conditions = this.pConfig.state.analiseInOrder;
             for(let i = 0; i < conditions.length; i++) {
                 try {
