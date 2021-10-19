@@ -156,6 +156,7 @@ for (let i = 0; i < 10; i++) {
 						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null  ? el.getAttribute('ptimeRefresh') : 10000,
 						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
 						pWidth: el.getAttribute('pwidth') !== null  ? el.getAttribute('pwidth') : 260,
+						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
 						pHideControls: el.getAttribute('phideControls') !== null,
 						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
 					},

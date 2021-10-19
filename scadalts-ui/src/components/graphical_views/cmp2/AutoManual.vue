@@ -128,6 +128,10 @@ export default {
             type: Number,
             default: 700,
         },
+        pRequestTimeout: {
+            type: Number,
+            default: 5000
+        },
         pHideControls: {
             type: Boolean,
             default: false,
@@ -154,6 +158,9 @@ export default {
     mounted() {
         if(!this.pDebugRequest) {
             console.debug = () => {};
+        }
+        if(this.pRequestTimeout !== 5000) {
+            this.changeTimeout();
         }
         console.debug(`AutoManual component mounted (XID View and CMPID: ${this.pxIdViewAndIdCmp})`);
         console.debug(`Refresh time: ${this.pTimeRefresh}`);
@@ -306,6 +313,10 @@ export default {
             if(!result && !!c.toNext) {
                 console.debug(`  Moving to next check...`);
             }
+        },
+
+        changeTimeout() {
+            this.$store.commit('updateRequestTimeout', this.pRequestTimeout);
         }
     },
     

@@ -85,6 +85,10 @@ export default new Vuex.Store({
     		let host = window.location.host.split(":");
 
 			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}/ws/alarmLevel`;
+		},
+
+		updateRequestTimeout(state, timeout) {
+			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		}
 	},
 	actions: {

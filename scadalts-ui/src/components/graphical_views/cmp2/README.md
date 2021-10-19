@@ -25,6 +25,7 @@ Additionaly it has additional property like `pwidth` that can be used to set the
 | pxIdViewAndIdCmp | String | Unique ID for the CMP | pxIdViewAndIdCmp="10" |
 | ptimeRefresh | Number | Time between requests | pTimeRefresh="5000" |
 | pwidth | Number | Width of the component in pixels | pwidth="1000" |
+| prequestTimeout | Number | Change the request timeout after each request is cancelled | prequestTimeout="10000" |
 | phideControls | Boolean | Hide State History and state change buttons | pHideControls="true" |
 | pdebugRequest | Boolean | Debugging messages in the console | pdebugRequest="true" |
 
