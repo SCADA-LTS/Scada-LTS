@@ -243,7 +243,7 @@ export default {
 			counterForAnaliseInOrder: -1,
 			showFaultV: false,
 			checkIfThereAreSharesToConfirmValue: true,
-			xIdViewAndIdCmp: this.pxIdViewAndIdCmp
+			xIdViewAndIdCmp: this.pxIdViewAndIdCmp,
 		};
 	},
 	methods: {
