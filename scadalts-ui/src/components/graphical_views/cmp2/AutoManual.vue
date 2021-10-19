@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-container :style="{width: (this.pWidth > 240 ? this.pWidth : 240) + 'px'}">
+        <v-container :style="{width: (this.pWidth > 140 ? this.pWidth : 140) + 'px'}">
             <v-card>
                 <v-card-text class="auto-manual--content" :class="{ 'auto-manual--content-small': this.pWidth < 450 }">
                     <div class="header-container">
@@ -12,7 +12,7 @@
                                 v-if="loading"
                             ></v-progress-circular>
                         </div>
-                        <div class="state-container" :class="{ 'state-container-small': this.pWidth < 700 }">
+                        <div class="state-container" :class="{ 'state-container-small': this.pWidth < 700, 'state-container--x-small': this.pWidth < 200 }">
                             <div>
                                 <div v-if="!!pLabel" class="cmp-label">
                                     {{ pLabel }}
@@ -36,7 +36,7 @@
                         </div>
                     </div>
 
-                    <div class="header-actions" :class="{'actions-hidden': !!disableChange || !!pHideControls}">
+                    <div class="header-actions" :class="{'actions-hidden': !!disableChange || !!pHideControls, 'header-actions--x-small': this.pWidth < 200 }">
                         <v-menu ref="menu-errors"
                             :close-on-content-click="false"
                             offset-y
@@ -330,6 +330,7 @@ export default {
     align-items: center;
 }
 .auto-manual--content-small {
+    padding: 5px;
     flex-direction: column-reverse;
     align-items: flex-start;
 }
@@ -352,6 +353,17 @@ export default {
     justify-content: space-between;
     transition: justify-content 0.2s ease-in-out;
 }
+.auto-manual--content .header-actions--x-small {
+    min-width: 36px;
+    top: 5px;
+}
+.header-actions--x-small > button {
+    width: 16px;
+    height: 16px;
+}
+.header-actions--x-small > button i.v-icon {
+    font-size: 10px;
+}
 .auto-manual--content .actions-hidden {
     justify-content: flex-end;
 }
@@ -370,6 +382,7 @@ export default {
     margin: 0;
     margin-top: 10px;
 }
+
 
 .state-container .cmp-label {
     font-style: italic;
@@ -414,4 +427,20 @@ export default {
     100% { transform: scale(1); }
 }
 
+</style>
+<style>
+#viewContainer .theme--light.v-application {
+    background: none;
+}
+#viewContainer .theme--light.v-application .container {
+    padding: 5px;
+}
+.state-container--x-small .v-alert__wrapper > i {
+    display: none;
+}
+.v-menu--attached > div[role="menu"] {
+    z-index: 1000 !important;
+    background: #fff;
+
+}
 </style>
