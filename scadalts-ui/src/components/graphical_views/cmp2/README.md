@@ -23,6 +23,7 @@ Additionaly it has additional property like `pwidth` that can be used to set the
 | pconfig | Object | Configuration of the component | *(to long to show it here)* |
 | plabel | String | Label of the component | plabel="Example label" |
 | pxIdViewAndIdCmp | String | Unique ID for the CMP | pxIdViewAndIdCmp="10" |
+| pzeroState | String | Label for state zero | pzeroState="Disabled" |
 | ptimeRefresh | Number | Time between requests | pTimeRefresh="5000" |
 | pwidth | Number | Width of the component in pixels | pwidth="1000" |
 | prequestTimeout | Number | Change the request timeout after each request is cancelled | prequestTimeout="10000" |
