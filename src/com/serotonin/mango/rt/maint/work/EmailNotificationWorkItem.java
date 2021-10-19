@@ -62,6 +62,6 @@ public class EmailNotificationWorkItem extends AbstractBeforeAfterWorkItem {
 
     @Override
     public int getPriority() {
-        return WorkItem.PRIORITY_HIGH;
+        return WorkItem.PRIORITY_LOW;
     }
 }
