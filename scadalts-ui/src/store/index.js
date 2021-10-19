@@ -85,6 +85,10 @@ export default new Vuex.Store({
     		let host = window.location.host.split(":");
 
 			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}/ws/alarmLevel`;
+		},
+
+		updateRequestTimeout(state, timeout) {
+			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		}
 	},
 	actions: {
@@ -273,15 +277,20 @@ export default new Vuex.Store({
 		 * @returns true|false
 		 */
 		validateResponse({state}, response) {
-			if (response.status >= 200 && response.status < 300) {
-				return true;
-			} else if (response.status === 401) {
-				console.error('⛔️ - User is not Authorized!');
-			} else if (response.status === 400) {
-				console.error('❌️ - Bad Request! Check request data');
-			} else if (response.status === 500) {
-				console.error('🚫️ - Internal server error!\n Something went wrong!');
+			if(!!response) {
+				if (response.status >= 200 && response.status < 300) {
+					return true;
+				} else if (response.status === 401) {
+					console.error('⛔️ - User is not Authorized!');
+				} else if (response.status === 400) {
+					console.error('❌️ - Bad Request! Check request data');
+				} else if (response.status === 500) {
+					console.error('🚫️ - Internal server error!\n Something went wrong!');
+				}
+			} else {
+				console.error('🚫️ - No internet connection!\n Something went wrong!');
 			}
+			
 			return false;
 		},
 	},
