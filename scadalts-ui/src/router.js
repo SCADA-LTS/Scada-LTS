@@ -7,6 +7,7 @@ import HistoricalAlarms from './views/HistoricalAlarms';
 import UserList from './views/UserList';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
+import EventList from './views/EventList';
 import RecipientList from './views/RecipientList';
 import UserProfiles from './views/UserProfiles';
 import DataPointList from './views/DataPointDetails/DataPointList';
@@ -47,6 +48,14 @@ const routing = new Router({
 			path: '/alarms',
 			name: 'alarms',
 			component: Alarms,
+			meta: {
+				requiresAuth: true
+			},
+		},
+		{
+			path: '/event-list',
+			name: 'events',
+			component: EventList,
 			meta: {
 				requiresAuth: true
 			},

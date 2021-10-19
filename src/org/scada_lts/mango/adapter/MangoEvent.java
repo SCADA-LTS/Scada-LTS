@@ -41,7 +41,21 @@ public interface MangoEvent {
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange);
 	
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource);
-	
+
+    void silenceEvent(int eventId, long time, int userId, int alternateAckSource);
+
+	void disilenceEvent(int eventId, long time, int userId, int alternateAckSource);
+
+    void silenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource);
+
+	void disilenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource);
+
+	void ackAllPending(long time, int userId, int alternateAckSource);
+
+	void silenceAll(long time, int userId, int alternateAckSource);
+
+	void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids);
+
 	//TODO userIds should be the List<Long>
 	void insertUserEvents(final int eventId, final List<Integer> userIds, final boolean alarm);
 	

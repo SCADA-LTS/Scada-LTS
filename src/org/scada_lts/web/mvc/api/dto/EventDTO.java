@@ -20,6 +20,8 @@ public class EventDTO {
     private String username;
     private int ackAlternateSource;
     private List<UserComment> userComments;
+    private String xid;
+    private boolean silenced;
 
     public EventDTO() {
     }
@@ -38,6 +40,24 @@ public class EventDTO {
         this.ackTs = ackTs;
         this.username = username;
         this.ackAlternateSource = ackAlternateSource;
+    }
+
+    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, String username, int ackAlternateSource, String xid, boolean silenced) {
+        this.id = id;
+        this.typeId = typeId;
+        this.typeRef1 = typeRef1;
+        this.typeRef2 = typeRef2;
+        this.activeTs = activeTs;
+        this.rtnApplicable = rtnApplicable;
+        this.rtnTs = rtnTs;
+        this.rtnCause = rtnCause;
+        this.alarmLevel = alarmLevel;
+        this.message = message;
+        this.ackTs = ackTs;
+        this.username = username;
+        this.ackAlternateSource = ackAlternateSource;
+        this.xid = xid;
+        this.silenced = silenced;
     }
 
     public int getId() {
@@ -151,4 +171,12 @@ public class EventDTO {
     public void setUserComments(List<UserComment> userComments) {
         this.userComments = userComments;
     }
+
+    public String getXid() { return xid; }
+
+    public void setXid(String xid) { this.xid = xid; }
+
+    public boolean isSilenced() { return silenced; }
+
+    public void setSilenced(boolean silenced) { this.silenced = silenced; }
 }

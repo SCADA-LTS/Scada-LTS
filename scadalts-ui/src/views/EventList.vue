@@ -393,7 +393,7 @@ export default {
     },
 	data() {
 		return {
-			tab: 1,
+			tab: 0,
 			items: [
 				{ tab: 'alarms', content: 'Pending' },
 				{ tab: 'event-list', content: 'System' },

@@ -1,7 +1,22 @@
 <template>
 	<div class="alarms">
 		<!--        <p>{{$route.name}}</p>-->
-
+		
+		<v-card>
+			<v-tabs
+			v-model="tab"
+			background-color="secondary"
+			dark
+			@change="changeTab"
+			>
+				<v-tab
+					v-for="item in tabs"
+					:key="item.tab"
+				>
+					{{ item.content }}
+				</v-tab>
+			</v-tabs>
+		</v-card>
 		<AlarmsComponent></AlarmsComponent>
 	</div>
 </template>
@@ -17,7 +32,20 @@ export default {
 		AlarmsComponent,
 		...Components,
 	},
-	methods: {},
+	methods: {
+		changeTab(index) {
+			this.$router.push({ path: `/${this.tabs[index].tab}` });
+		},
+	},
+	data() {
+		return {
+			tab: 1,
+			tabs: [
+				{ tab: 'alarms', content: 'Pending' },
+				{ tab: 'event-list', content: 'System' },
+			],
+		}
+	}
 };
 </script>
 
