@@ -85,7 +85,8 @@
                 pointsArray[i] = {
                         "id":point.id,
                         "name":point.name,
-                        "type":1
+                        "type":1,
+                        "xid": point.xid
                         };
             }
             document.getElementById("loader").style.display = "none";
@@ -205,7 +206,8 @@
                 pointId : pointId,
                 pointName : data.name,
                 pointType : data.type,
-                scriptVarName : scriptVarName
+                scriptVarName : scriptVarName,
+                pointXid : data.xid
             };
         }
     }
@@ -235,6 +237,7 @@
                             return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
                                     "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                     },
+                    function(data) { return data.pointXid; },
                     function(data) {
                             return "<img src='images/bullet_delete.png' class='ptr' "+
                                     "onclick='removeFromContextArray("+ data.pointId +")'/>";
@@ -429,6 +432,7 @@
 			            <td><fmt:message key="dsEdit.meta.pointName"/></td>
 			            <td><fmt:message key="dsEdit.pointDataType"/></td>
 			            <td><fmt:message key="dsEdit.meta.var"/></td>
+			            <td><fmt:message key="dsEdit.xid"/></td>
 			            <td></td>
 			          </tr>
 			        </tbody>

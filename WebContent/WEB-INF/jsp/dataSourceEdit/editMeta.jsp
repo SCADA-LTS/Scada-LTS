@@ -29,7 +29,8 @@
         pointsArray[pointsArray.length] = {
             id : ${dp.id}, 
             name : '${sst:quotEncode(dp.extendedName)}',
-            type : '<sst:i18n message="${dp.dataTypeMessage}"/>'
+            type : '<sst:i18n message="${dp.dataTypeMessage}"/>',
+            xid : "${dp.xid}"
         };
       </c:forEach>
       
@@ -109,7 +110,8 @@
               pointId : pointId,
               pointName : data.name,
               pointType : data.type,
-              scriptVarName : scriptVarName
+              scriptVarName : scriptVarName,
+              pointXid : data.xid
           };
       }
   }
@@ -139,6 +141,7 @@
                           return "<input type='text' value='"+ data.scriptVarName +"' class='formShort' "+
                                   "onblur='updateScriptVarName("+ data.pointId +", this.value)'/>";
                   },
+                  function(data) { return data.pointXid; },
                   function(data) { 
                           return "<img src='images/bullet_delete.png' class='ptr' "+
                                   "onclick='removeFromContextArray("+ data.pointId +")'/>";
@@ -247,6 +250,7 @@
             <td><fmt:message key="dsEdit.meta.pointName"/></td>
             <td><fmt:message key="dsEdit.pointDataType"/></td>
             <td><fmt:message key="dsEdit.meta.var"/></td>
+            <td><fmt:message key="dsEdit.xid"/></td>
             <td></td>
           </tr>
         </tbody>
