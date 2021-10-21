@@ -17,7 +17,6 @@ public class EventDTO {
     private int alarmLevel;
     private String message;
     private long ackTs;
-    private String username;
     private int ackAlternateSource;
     private List<UserComment> userComments;
     private String xid;
@@ -26,7 +25,7 @@ public class EventDTO {
     public EventDTO() {
     }
 
-    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, String username, int ackAlternateSource) {
+    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, int ackAlternateSource) {
         this.id = id;
         this.typeId = typeId;
         this.typeRef1 = typeRef1;
@@ -38,11 +37,10 @@ public class EventDTO {
         this.alarmLevel = alarmLevel;
         this.message = message;
         this.ackTs = ackTs;
-        this.username = username;
         this.ackAlternateSource = ackAlternateSource;
     }
 
-    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, String username, int ackAlternateSource, String xid, boolean silenced) {
+    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, int ackAlternateSource, String xid, boolean silenced) {
         this.id = id;
         this.typeId = typeId;
         this.typeRef1 = typeRef1;
@@ -54,7 +52,6 @@ public class EventDTO {
         this.alarmLevel = alarmLevel;
         this.message = message;
         this.ackTs = ackTs;
-        this.username = username;
         this.ackAlternateSource = ackAlternateSource;
         this.xid = xid;
         this.silenced = silenced;
@@ -146,14 +143,6 @@ public class EventDTO {
 
     public void setAckTs(long ackTs) {
         this.ackTs = ackTs;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public int getAckAlternateSource() {

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import com.serotonin.mango.vo.User;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
 import org.apache.commons.logging.Log;
@@ -527,7 +528,7 @@ public class EventService implements MangoEvent {
 														String status,
 														String keywords,
 														int typeRef,
-														int userId,
+														User user,
 														String[] sortBy,
 														boolean[] sortDesc,
 														int limit,
@@ -542,7 +543,7 @@ public class EventService implements MangoEvent {
 		status,
 		keywords,
 		typeRef,
-		userId,
+		user,
 		sortBy,
 		sortDesc,
 		limit,

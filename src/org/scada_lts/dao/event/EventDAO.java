@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-
+import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -137,7 +137,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
 			"e." + COLUMN_NAME_MESSAGE + ", " +
 			"e." + COLUMN_NAME_ACT_TS + ", " +
-			"u." + COLUMN_NAME_USER_NAME + ", " +
 			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + ", " +
 			"dp."+ COLUMN_NAME_DATAPOINT_XID + ", " +
 			"ue."+ COLUMN_NAME_SILENCED + " ";
@@ -669,7 +668,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
 					rs.getString(COLUMN_NAME_MESSAGE),
 					rs.getLong(COLUMN_NAME_ACT_TS),
-					rs.getString(COLUMN_NAME_USER_NAME),
 					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
 					rs.getString(COLUMN_NAME_DATAPOINT_XID),
 					rs.getString(COLUMN_NAME_SILENCED).equals("Y")
@@ -768,7 +766,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			String status,
 			String keywords,
 			int typeRef,
-			int userId,
+			User user,
 			String[] sortBy,
 			boolean[] sortDesc,
 			int limit,
@@ -780,13 +778,16 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		String groupBy = " GROUP BY " + EVENT_FIELDS;
 
 		StringBuilder from = new StringBuilder();
-		from.append(" FROM events e LEFT JOIN users u ON u.id=e.ackUserId ");
+		from.append(" FROM events e ");
 		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
-		from.append(" JOIN userEvents ue ON ue.eventId = e.id " );
+		from.append(" LEFT JOIN userEvents ue ON ue.eventId = e.id " );
 
 		StringBuilder where = new StringBuilder();
-		where.append(" WHERE (u.id=? OR u.admin = 'Y') ");
-		params.add(userId);
+		where.append(" WHERE 1=1 ");
+		if (!user.isAdmin()) {
+			from.append(" AND u.id=? " );
+			params.add(user.getId());
+		}
 
 		if (!"".equals(startDate)) {
 			where.append(" AND e."+COLUMN_NAME_ACTIVE_TS+" >= (UNIX_TIMESTAMP(?)*1000) ");
@@ -866,13 +867,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			sql.append("OFFSET " + offset + " " );
 		}
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), new EventDTORowMapper());
-
-		List<Integer> datapointIds = new ArrayList<Integer>();
-		for (EventDTO eventDto: page) {
-			if (eventDto.getTypeId()== 1) {
-				datapointIds.add(eventDto.getTypeRef2());
-			}
-		}
 
 		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
 		return new SQLPageWithTotal<EventDTO>(page, total);
