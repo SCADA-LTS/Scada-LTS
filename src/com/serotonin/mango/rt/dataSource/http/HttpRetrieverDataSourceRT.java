@@ -169,6 +169,10 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     }
 
     public String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r, List<KeyValuePair> staticHeaders) throws LocalizableException {
+        return getData(url, timeoutSeconds, retries, stop, r, staticHeaders, vo);
+    }
+
+    private static String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r, List<KeyValuePair> staticHeaders, HttpRetrieverDataSourceVO vo) throws LocalizableException {
         String data = "";
         for (int i = 0; i <= retries; i++) {
             HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
@@ -182,9 +186,11 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
                     break;
                 }
                 message = new LocalizableMessage("event.http.response", url, responseCode);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 message = DataSourceRT.getExceptionMessage(e);
-            } finally {
+            }
+            finally {
                 if (method != null)
                     method.releaseConnection();
             }
@@ -205,45 +211,9 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         return data;
     }
 
-    @Deprecated
-    public static String getData(String url, int timeoutSeconds, int retries, List<KeyValuePair> staticHeaders) throws LocalizableException {
-        // Try to get the data.
-        String data;
-        while (true) {
-            HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
-            GetMethod method = null;
-            LocalizableMessage message;
-
-            try {
-                method = createMethodForClient(url, staticHeaders);
-                int responseCode = client.executeMethod(method);
-                if (responseCode == HttpStatus.SC_OK) {
-                    data = HttpUtils.readResponseBody(method, READ_LIMIT);
-                    break;
-                }
-                message = new LocalizableMessage("event.http.response", url, responseCode);
-            }
-            catch (Exception e) {
-                message = DataSourceRT.getExceptionMessage(e);
-            }
-            finally {
-                if (method != null)
-                    method.releaseConnection();
-            }
-
-            if (retries <= 0)
-                throw new LocalizableException(message);
-            retries--;
-
-            // Take a little break instead of trying again immediately.
-            try {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e) {
-                // no op
-            }
-        }
-
-        return data;
+    public static String getDataTest(String url, int timeoutSeconds, int retries, List<KeyValuePair> staticHeaders) throws LocalizableException {
+        ReactivationDs reactivationDs = new ReactivationDs();
+        reactivationDs.setSleep(false);
+        return getData(url, timeoutSeconds, retries, false, reactivationDs, staticHeaders, null);
     }
 }

@@ -1432,7 +1432,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                int retries, String valueRegex, int dataTypeId, String valueFormat,
                                                List<KeyValuePair> staticHeaders) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
+            String data = HttpRetrieverDataSourceRT.getDataTest(url,
                     timeoutSeconds, retries, staticHeaders);
 
             Pattern valuePattern = Pattern.compile(valueRegex);
@@ -1455,7 +1455,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                               int retries, String timeRegex, String timeFormat,
                                               List<KeyValuePair> staticHeaders) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
+            String data = HttpRetrieverDataSourceRT.getDataTest(url,
                     timeoutSeconds, retries, staticHeaders);
 
             Pattern timePattern = Pattern.compile(timeRegex);
