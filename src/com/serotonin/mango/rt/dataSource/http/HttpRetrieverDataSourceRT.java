@@ -43,6 +43,7 @@ import org.scada_lts.ds.reactivation.ReactivationConnectHttpRetriever;
 import org.scada_lts.ds.state.SleepStateDs;
 import org.scada_lts.ds.state.StopChangeEnableStateDs;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -160,6 +161,11 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
             }
         }
         return false;
+    }
+
+    @Deprecated
+    public String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r) throws LocalizableException {
+        return getData(url,timeoutSeconds, retries, stop, r, Collections.emptyList());
     }
 
     public String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r, List<KeyValuePair> staticHeaders) throws LocalizableException {
