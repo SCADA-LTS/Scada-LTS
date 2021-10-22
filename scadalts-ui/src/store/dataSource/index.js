@@ -1,10 +1,7 @@
 import i18n from '@/i18n';
 import Axios from 'axios';
-import ModBusDataPoint from '../../components/datasources/ModBusIpDataSource/ModBusDataPoint';
 import GenericDataSource from '../../components/datasources/models/GenericDataSource';
-import SnmpDataPoint from '../../components/datasources/SnmpDataSource/SnmpDataPoint';
-import ScadaVirtualDataPoint from '../../components/datasources/VirtualDataSource/VirtualDataPoint';
-import { datasourceDetailsMocks } from './mocks/datasourceapi';
+
 
 /**
  * Data Source received form REST API
@@ -64,7 +61,10 @@ const ds = {
 			state.dataSourceList = state.dataSourceList.filter(ds => ds.id !== dataSourceId);
 		},
 		ADD_DATA_SOURCE: (state, dataSource) => {
-			state.dataSourceList.push(dataSource);
+			let ds = new GenericDataSource("DS");
+			ds.loadDataFromJson(dataSource);
+			state.dataSourceList.push(ds);
+			console.log(state.dataSourceList);
 		},
 		FETCH_DATA_SOURCE_DETAILS: (state, dataSource) => {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSource.id);
@@ -85,6 +85,10 @@ const ds = {
 		},
 		ADD_DATA_POINT_IN_DS: (state, {dataSourceId, dataPoint}) => {
 			let datasource = state.dataSourceList.find(ds => ds.id === dataSourceId);
+			console.log(datasource);
+			if(datasource.datapoints === undefined) {
+				datasource.datapoints = [];
+			}
 			datasource.datapoints.push(dataPoint);
 		},
 		REMOVE_DATA_POINT_IN_DS: (state, {dataSourceId, dataPointXid}) => {

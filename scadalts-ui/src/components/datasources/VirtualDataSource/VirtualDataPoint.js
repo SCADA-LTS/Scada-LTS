@@ -2,9 +2,9 @@ export class ScadaVirtualDataPoint {
 
     constructor(datasourceId) {
         this.id = -1;
-        this.xid = "RANDOM",
-        this.name = "",
-        this.description = "",
+        this.xid = "RANDOM";
+        this.name = "";
+        this.description = "";
         this.datasourceId = datasourceId;
         this.enabled = false;
         this.pointLocator = {
@@ -64,7 +64,7 @@ export class ScadaVirtualDataPoint {
         this.description = description;
     }
 
-    
+
 
 }
 

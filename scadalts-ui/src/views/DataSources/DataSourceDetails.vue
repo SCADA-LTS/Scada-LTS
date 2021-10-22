@@ -8,13 +8,18 @@
 			@saved="onSaved"
 		/>
 
-		<v-spacer>			
-		</v-spacer>
+		<v-spacer> </v-spacer>
 		<!-- <DataSourceEvents>
 		</DataSourceEvents> -->
 		<v-tooltip bottom>
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn icon elevation="0" @click="enableAllPoints(datasource.id)" v-bind="attrs" v-on="on">
+				<v-btn
+					icon
+					elevation="0"
+					@click="enableAllPoints(datasource.id)"
+					v-bind="attrs"
+					v-on="on"
+				>
 					<v-icon> mdi-alert-decagram </v-icon>
 				</v-btn>
 			</template>
@@ -42,13 +47,13 @@
 </template>
 <script>
 import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
-import DataSourceEvents from './DataSourceEvents'
+import DataSourceEvents from './DataSourceEvents';
 
 export default {
 	props: ['datasource', 'datasourceType'],
 
 	components: {
-		DataSourceEvents
+		DataSourceEvents,
 	},
 
 	mixins: [dataSourceMixin],
@@ -59,18 +64,18 @@ export default {
 		},
 
 		onSaved(event) {
-			console.debug("DataSourceDetails.vue::onSaved()")
+			console.debug('DataSourceDetails.vue::onSaved()');
 			this.$emit('saved', event);
 		},
 
 		deleteDataSource() {
-			console.debug("DataSourceDetails.vue::deleteDataSource()")
+			console.debug('DataSourceDetails.vue::deleteDataSource()');
 			this.$emit('deleted', this.datasource.id);
 		},
 
 		enableAllPoints(datasourceId) {
-			this.$store.dispatch("enableAllDataPoints", datasourceId);
-		}
+			this.$store.dispatch('enableAllDataPoints', datasourceId);
+		},
 	},
 };
 </script>

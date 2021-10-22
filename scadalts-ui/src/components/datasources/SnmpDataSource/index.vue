@@ -14,9 +14,11 @@
 			<v-col>
 				<div>
 					<h3>SNMP Host testing</h3>
-					<v-text-field v-model="testingOid" 
+					<v-text-field
+						v-model="testingOid"
 						append-outer-icon="mdi-send"
-						@click:append-outer="checkOid">
+						@click:append-outer="checkOid"
+					>
 					</v-text-field>
 				</div>
 			</v-col>
@@ -35,7 +37,7 @@ export default {
 	data() {
 		return {
 			ds: undefined,
-			testingOid: '1.2.3'
+			testingOid: '1.2.3',
 		};
 	},
 
@@ -49,9 +51,9 @@ export default {
 			console.log(res);
 			this.ds = res;
 		},
-		checkOid(){
+		checkOid() {
 			console.log(this.testingOid);
-		}
+		},
 	},
 };
 </script>

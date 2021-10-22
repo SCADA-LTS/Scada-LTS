@@ -60,7 +60,6 @@
 
 				<!-- Other component definition slot -->
 				<slot></slot>
-
 			</v-form>
 		</v-card-text>
 
@@ -82,13 +81,13 @@
 import UpdatePeriodType from '@/layout/forms/UpdatePeriodType';
 /**
  * DataSource Configuration Component
- * 
+ *
  * Base component for configuring a DataSource that handle the common logic for
  * each type of DataSource. It provide the edit such values as Name, Xid and UpdatePeriod.
  * In <slot> tag there are provided the DataSource specific component definition.
- * This component handle the logic for creation and update of DataSource so in 
+ * This component handle the logic for creation and update of DataSource so in
  * the child component that methods are not needed.
- * 
+ *
  * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.0.0
  */
@@ -122,8 +121,8 @@ export default {
 	},
 
 	mounted() {
-		if(this.creator) {
-			this.$store.dispatch('getUniqueDataSourceXid').then(resp => {
+		if (this.creator) {
+			this.$store.dispatch('getUniqueDataSourceXid').then((resp) => {
 				this.datasource.xid = resp;
 			});
 		}
@@ -136,17 +135,17 @@ export default {
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleOnlyNumber: (v) => !isNaN(v) || this.$t('validation.rule.onlyNumber'),
 			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
-		}
+		};
 	},
 
 	methods: {
 		cancel() {
-			console.debug("datasources.DataSourceConfig.vue::cancel()")
+			console.debug('datasources.DataSourceConfig.vue::cancel()');
 			this.$emit('cancel');
 		},
 
 		accept() {
-			console.debug("datasources.DataSourceConfig.vue::accept()")
+			console.debug('datasources.DataSourceConfig.vue::accept()');
 			this.$emit('accept');
 		},
 
@@ -158,14 +157,15 @@ export default {
 			try {
 				this.datasource.id = this.datasource.id || -1;
 				let resp = await this.$store.dispatch(
-					'requestGet', `/datasource/validate?xid=${this.datasource.xid}&id=${this.datasource.id}`);
+					'requestGet',
+					`/datasource/validate?xid=${this.datasource.xid}&id=${this.datasource.id}`,
+				);
 				this.xidUnique = resp.unique;
 				this.$refs.datasourceForm.validate();
-			} catch(e) {
-				console.error("Failed to fetch data");
+			} catch (e) {
+				console.error('Failed to fetch data');
 			}
 		},
-
 	},
 };
 </script>

@@ -16,11 +16,18 @@
 						></v-text-field>
 						<v-progress-circular
 							v-show="savingData"
-      						:size="50"
-      						color="primary"
-      						indeterminate
-    					></v-progress-circular>
-						<v-btn color="primary" v-show="!savingData" dark fab small @click="createDataSource()">
+							:size="50"
+							color="primary"
+							indeterminate
+						></v-progress-circular>
+						<v-btn
+							color="primary"
+							v-show="!savingData"
+							dark
+							fab
+							small
+							@click="createDataSource()"
+						>
 							<v-icon> mdi-plus </v-icon>
 						</v-btn>
 					</v-col>
@@ -42,21 +49,35 @@
 				@item-expanded="fetchDataPointList"
 			>
 				<template v-slot:item.enabled="{ item }">
-					<v-badge overlap :color="setAlarmColor(item.maxAlarmLevel)" dot :value="item.maxAlarmLevel > 0">
-						<v-btn x-small icon fab elevation="0" @click="toggleDataSource(item)" :color="item.enabled ? 'primary' : 'error'">
+					<v-badge
+						overlap
+						:color="setAlarmColor(item.maxAlarmLevel)"
+						dot
+						:value="item.maxAlarmLevel > 0"
+					>
+						<v-btn
+							x-small
+							icon
+							fab
+							elevation="0"
+							@click="toggleDataSource(item)"
+							:color="item.enabled ? 'primary' : 'error'"
+						>
 							<v-icon v-show="item.enabled">mdi-decagram</v-icon>
 							<v-icon v-show="!item.enabled">mdi-decagram-outline</v-icon>
 						</v-btn>
 					</v-badge>
 				</template>
 				<template v-slot:item.type="{ item }">
-					{{$t(`datasource.type.${$store.getters.dataSourceTypeName(item.type)}`)}}
+					{{ $t(`datasource.type.${$store.getters.dataSourceTypeName(item.type)}`) }}
 				</template>
 				<template v-slot:expanded-item="{ headers, item }">
 					<!-- Single Data Source Item Details Row -->
-					<td :colspan="headers.length" class="small-margin-top"
-					  v-if="!!dataSources.get(item.type)">
-						
+					<td
+						:colspan="headers.length"
+						class="small-margin-top"
+						v-if="!!dataSources.get(item.type)"
+					>
 						<v-row class="data-source-item--details">
 							<v-col cols="12" class="flex">
 								<DataSourceDetails
@@ -67,7 +88,7 @@
 								></DataSourceDetails>
 							</v-col>
 						</v-row>
-						
+
 						<v-divider></v-divider>
 
 						<v-row class="data-source-item--datapoint-list" v-if="!item.loading">
@@ -80,12 +101,11 @@
 							></DataSourcePointList>
 						</v-row>
 						<v-skeleton-loader v-else type="article"> </v-skeleton-loader>
-
 					</td>
 					<td :colspan="headers.length" class="small-margin-top" v-else>
 						<div>
-							This Data Source Type is not supportet yet. Please use
-							the classic Data Source page to edit that item.
+							This Data Source Type is not supportet yet. Please use the classic Data
+							Source page to edit this item.
 						</div>
 					</td>
 				</template>
@@ -172,10 +192,10 @@ export default {
 	computed: {
 		dataSources() {
 			return this.$store.state.dataSource.dataSources;
-		}, 
+		},
 		dataSourceList() {
 			return this.$store.state.dataSource.dataSourceList;
-		}
+		},
 	},
 
 	mounted() {
@@ -183,20 +203,23 @@ export default {
 	},
 
 	methods: {
-
 		setAlarmColor(alarmLevel) {
 			let color;
-			switch(alarmLevel) {
+			switch (alarmLevel) {
 				case 1:
-					color = "blue"; break;
+					color = 'blue';
+					break;
 				case 2:
-					color = "yellow"; break;
+					color = 'yellow';
+					break;
 				case 3:
-					color = "orange"; break;
+					color = 'orange';
+					break;
 				case 4:
-					color = "red"; break;
+					color = 'red';
+					break;
 				default:
-					color = "green";
+					color = 'green';
 			}
 			return color;
 		},
@@ -215,7 +238,6 @@ export default {
 			}
 		},
 
-
 		async fetchDataPointList({ item, value }) {
 			if (value) {
 				// Load data from REST API if threre is no datapoints.
@@ -227,26 +249,30 @@ export default {
 		},
 
 		onDataPointEdit({ item, datapoint }) {
-			console.debug("DataSources.index.vue::onDataPoinEdit()")
-			this.$refs.pointCreator.showDialog(item, datapoint, this.dataSources.get(item.type));
+			console.debug('DataSources.index.vue::onDataPoinEdit()');
+			this.$refs.pointCreator.showDialog(
+				item,
+				datapoint,
+				this.dataSources.get(item.type),
+			);
 		},
 
 		onDataPointCreation(item) {
-			console.debug("DataSources.index.vue::onDataPointCreation()")
+			console.debug('DataSources.index.vue::onDataPointCreation()');
 			this.$refs.pointCreator.showDialog(item, null, this.dataSources.get(item.type));
 		},
 
 		onDataPointDeletion({ item, datapoint }) {
-			console.debug("DataSources.index.vue::onDataPointDeletion()")
+			console.debug('DataSources.index.vue::onDataPointDeletion()');
 			this.$refs.deleteDataPoint.showDialog();
-			this.operationQueue = {item, datapoint};
+			this.operationQueue = { item, datapoint };
 		},
 
 		onDataPointDeleteConfirm(event) {
-			if(event) {				
+			if (event) {
 				this.$store.dispatch('deleteDataPointDS', {
 					dataSourceId: this.operationQueue.item.id,
-					dataPointXid: this.operationQueue.datapoint.xid
+					dataPointXid: this.operationQueue.datapoint.xid,
 				});
 			}
 		},
@@ -256,28 +282,27 @@ export default {
 		},
 
 		onDataPointUpdate(event) {
-			console.debug("DataSources.index.vue::onDataPointUpdate()")
+			console.debug('DataSources.index.vue::onDataPointUpdate()');
 			this.$store.dispatch('updateDataPointDS', {
 				dataSourceType: event.dp.type,
-				dataPoint: event.e
+				dataPoint: event.e,
 			});
-			
 		},
 
 		onDataPointSaved(event) {
-			console.debug("DataSources.index.vue::onDataPointSaved()")
+			console.debug('DataSources.index.vue::onDataPointSaved()');
 			this.$store.dispatch('createDataPointDS', {
 				dataSource: event.dp,
-				dataPoint: event.e
+				dataPoint: event.e,
 			});
 		},
 
 		async onDataSourceUpdate(event) {
-			console.debug("DataSources.index.vue::onDataSourceUpdate()")
+			console.debug('DataSources.index.vue::onDataSourceUpdate()');
 			this.savingData = true;
 			// event.type = this.$store.getters.dataSourceTypeId(event.type)
 			try {
-				let resp = await this.$store.dispatch("updateDataSource", event)
+				let resp = await this.$store.dispatch('updateDataSource', event);
 				console.log(resp);
 			} catch (error) {
 				console.error(error);
@@ -287,27 +312,27 @@ export default {
 		},
 
 		onDataSourceDelete(event) {
-			console.debug("DataSources.index.vue::onDataSourceDelete()")
+			console.debug('DataSources.index.vue::onDataSourceDelete()');
 			this.$refs.deleteDataSource.showDialog();
 			this.operationQueue = event;
 		},
 
 		onDataSourceDeleteConfirm(evnet) {
-			if(evnet) {
-				this.$store.dispatch("deleteDataSource", this.operationQueue);
+			if (evnet) {
+				this.$store.dispatch('deleteDataSource', this.operationQueue);
 			}
 		},
 
-		toggleDataSource(ds){
+		toggleDataSource(ds) {
 			this.$store.dispatch('toggleDataSource', ds.id);
 		},
 
 		async onDataSourceSaved(event) {
-			console.debug("DataSources.index.vue::onDataSourceSaved()")
-			event.type = this.$store.getters.dataSourceTypeId(event.type)
+			console.debug('DataSources.index.vue::onDataSourceSaved()');
+			event.type = this.$store.getters.dataSourceTypeId(event.type);
 			this.savingData = true;
 			try {
-				let resp = await this.$store.dispatch("createDataSource", event)
+				let resp = await this.$store.dispatch('createDataSource', event);
 				console.log(resp);
 			} catch (error) {
 				console.error(error);

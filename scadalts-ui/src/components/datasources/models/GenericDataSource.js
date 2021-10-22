@@ -46,11 +46,11 @@ export class GenericDataSource {
         this.enabled = json.enabled;
         this.name = json.name;
         this.type = json.type;
-        this.connection = json.connection;
-        this.description = json.description;
-        this.maxAlarmLevel = json.maxAlarmLevel;
-        this.updatePeriod = json.updatePeriod;
-        this.updatePeriodType = json.updatePeriodType;
+        this.connection = !!json.connection ? json.connection : '';
+        this.description = !!json.description ? json.description : '';
+        this.maxAlarmLevel = !!json.maxAlarmLevel ? json.maxAlarmLevel : 0;
+        this.updatePeriod = !!json.updatePeriod ? json.updatePeriod : 5;
+        this.updatePeriodType = !!json.updatePeriodType ? json.updatePeriodType : 1;
     }
 
 }

@@ -39,10 +39,16 @@
 						></v-text-field>
 					</v-col>
 					<v-col cols="6" :sm="2">
-						<v-checkbox v-model="datapoint.pointLocator.settable" label="Settable"></v-checkbox>
+						<v-checkbox
+							v-model="datapoint.pointLocator.settable"
+							label="Settable"
+						></v-checkbox>
 					</v-col>
 					<v-col cols="12">
-						<v-text-field v-model="datapoint.description" label="Description"></v-text-field>
+						<v-text-field
+							v-model="datapoint.description"
+							label="Description"
+						></v-text-field>
 					</v-col>
 				</v-row>
 				<slot></slot>
@@ -90,19 +96,18 @@ export default {
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 			ruleXidUnique: () => this.xidUnique || this.$t('validation.rule.xid.notUnique'),
-
-		}
+		};
 	},
 
 	methods: {
 		cancel() {
-			console.debug("datasources.DataPointCreation.vue::cancel()")
+			console.debug('datasources.DataPointCreation.vue::cancel()');
 			this.$emit('cancel');
 		},
 
 		accept() {
-			console.debug("datasources.DataPointCreation.vue::accept()")
-			if(this.formValid) {
+			console.debug('datasources.DataPointCreation.vue::accept()');
+			if (this.formValid) {
 				this.$emit('accept');
 			}
 		},
@@ -110,11 +115,13 @@ export default {
 		async checkXidUnique() {
 			try {
 				let resp = await this.$store.dispatch(
-					'requestGet', `/datapoint/validate?xid=${this.datapoint.xid}&id=${this.datapoint.id}`);
+					'requestGet',
+					`/datapoint/validate?xid=${this.datapoint.xid}&id=${this.datapoint.id}`,
+				);
 				this.xidUnique = resp.unique;
 				this.$refs.datapointForm.validate();
-			} catch(e) {
-				console.error("Failed to fetch data");
+			} catch (e) {
+				console.error('Failed to fetch data');
 			}
 		},
 	},

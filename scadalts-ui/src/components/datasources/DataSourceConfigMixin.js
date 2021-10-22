@@ -58,20 +58,20 @@ export const dataSourceConfigMixin = {
          * if the DataSource is in create mode.
          */
         generateUniqueXid() {
-            if(this.createMode) {
-				this.$store.dispatch('getUniqueDataSourceXid').then(resp => {
-					this.datasource.xid = resp;
-				});
-			}
+            if (this.createMode) {
+                this.$store.dispatch('getUniqueDataSourceXid').then(resp => {
+                    this.datasource.xid = resp;
+                });
+            }
         },
 
         cancel() {
-			this.$emit('canceled');
-		},
+            this.$emit('canceled');
+        },
 
-		save() {
-			this.$emit('saved', this.datasource);
-		},
+        save() {
+            this.$emit('saved', this.datasource);
+        },
     },
 }
 

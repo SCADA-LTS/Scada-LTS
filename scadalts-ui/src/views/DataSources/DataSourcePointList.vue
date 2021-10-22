@@ -4,9 +4,15 @@
 			<v-list-item-content>
 				<v-list-item-title>
 					<v-row>
-						
 						<v-col cols="1" class="datapoint-status">
-							<v-btn x-small icon fab elevation="0" :color="dp.enabled ? 'primary' : 'error'" @click="toggleDataPoint(dp)">
+							<v-btn
+								x-small
+								icon
+								fab
+								elevation="0"
+								:color="dp.enabled ? 'primary' : 'error'"
+								@click="toggleDataPoint(dp)"
+							>
 								<v-icon v-show="dp.enabled">mdi-decagram</v-icon>
 								<v-icon v-show="!dp.enabled">mdi-decagram-outline</v-icon>
 							</v-btn>
@@ -87,7 +93,12 @@
 				</v-menu>
 			</v-list-item-action>
 		</v-list-item>
-		<v-list-item v-if="!datasource.datapoints">
+		<v-list-item
+			v-if="
+				!datasource.datapoints ||
+				(!!datasource.datapoints && datasource.datapoints.length === 0)
+			"
+		>
 			<v-list-item-content>
 				<v-list-item-title>
 					This Data Source does not contain any DataPoints. Create the first one!
@@ -101,7 +112,9 @@
 						<v-col cols="1">
 							<v-tooltip bottom>
 								<template v-slot:activator="{ on, attrs }">
-									<v-btn v-bind="attrs" v-on="on"
+									<v-btn
+										v-bind="attrs"
+										v-on="on"
 										color="primary"
 										dark
 										fab
@@ -114,7 +127,6 @@
 								</template>
 								<span>Create new data point</span>
 							</v-tooltip>
-							
 						</v-col>
 					</v-row>
 				</v-list-item-title>
@@ -142,14 +154,14 @@ export default {
 			this.$emit('delete', { item, datapoint });
 		},
 		toggleDataPoint(dp) {
-			this.$store.dispatch("toggleDataPoint", dp.id).then(() => {
+			this.$store.dispatch('toggleDataPoint', dp.id).then(() => {
 				dp.enabled = !dp.enabled;
 			});
 		},
 		showDataPoint(datapoint) {
-			this.$router.push({name: 'datapoint-details', params: {id: datapoint.id}})
+			this.$router.push({ name: 'datapoint-details', params: { id: datapoint.id } });
 			this.$router.go();
-		}
+		},
 	},
 };
 </script>

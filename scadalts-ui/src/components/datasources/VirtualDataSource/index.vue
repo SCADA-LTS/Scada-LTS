@@ -6,14 +6,13 @@
 				@canceled="closeEditor()"
 				@saved="onSaved($event)"
 				:datasource="ds"
-                :createMode="false"
+				:createMode="false"
 			/>
 		</template>
 
 		<v-row>
 			<v-col><!-- ROW FOR ADDITIONAL WIDGETS AND CONTENT --></v-col>
 		</v-row>
-
 	</DataSourceLoader>
 </template>
 <script>
@@ -21,12 +20,12 @@ import DataSourceBase from '../DataSourceBase.vue';
 import config from './config.vue';
 
 export default {
-    extends: DataSourceBase,
-	
-    components: {
+	extends: DataSourceBase,
+
+	components: {
 		config,
 	},
-    
+
 	data() {
 		return {
 			ds: undefined,

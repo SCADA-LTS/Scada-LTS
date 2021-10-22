@@ -6,20 +6,17 @@
 				@canceled="closeEditor()"
 				@saved="onSaved($event)"
 				:datasource="ds"
-                :createMode="false"
+				:createMode="false"
 			/>
 		</template>
 
 		<v-row>
 			<v-col>
-				<PointLocatorTest
-					:datasource="ds">
-				</PointLocatorTest>
+				<PointLocatorTest :datasource="ds"> </PointLocatorTest>
 			</v-col>
-			
+
 			<!-- TODO: Implement ReadData Component and NodeScan -->
 		</v-row>
-
 	</DataSourceLoader>
 </template>
 <script>
@@ -30,15 +27,15 @@ import PointLocatorTest from './components/PointLocatorTest.vue';
 import config from './config.vue';
 
 export default {
-    extends: DataSourceBase,
-	
-    components: {
+	extends: DataSourceBase,
+
+	components: {
 		config,
 		NodeScan,
 		ReadData,
 		PointLocatorTest,
 	},
-    
+
 	data() {
 		return {
 			ds: undefined,

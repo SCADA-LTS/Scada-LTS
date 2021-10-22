@@ -10,11 +10,11 @@ import SnmpDataSourcePointEditor from './SnmpDataSource/point';
 import SnmpDataSourcePointList from './SnmpDataSource/list';
 import SnmpDataPoint from './SnmpDataSource/SnmpDataPoint';
 
-import ModBusDataSource from            './ModBusIpDataSource';
-import ModBusDataSourceEditor from      './ModBusIpDataSource/config';
+import ModBusDataSource from './ModBusIpDataSource';
+import ModBusDataSourceEditor from './ModBusIpDataSource/config';
 import ModBusDataSourcePointEditor from './ModBusIpDataSource/point';
-import ModBusDataSourcePointList from   './ModBusIpDataSource/list';
-import ModBusDataPoint from             './ModBusIpDataSource/ModBusDataPoint';
+import ModBusDataSourcePointList from './ModBusIpDataSource/list';
+import ModBusDataPoint from './ModBusIpDataSource/ModBusDataPoint';
 
 /**
  * Data Sources Mixin
@@ -68,7 +68,7 @@ export const dataSourcesMixin = {
         }
     },
 
-    
+
 }
 
 export default dataSourcesMixin;

@@ -82,7 +82,7 @@
 								>
 							</v-text-field>
 						</v-col>
-						
+
 						<v-col cols="2">
 							<v-checkbox
 								label="Roll"
@@ -96,14 +96,21 @@
 								:items="datapoint.pointLocator.incrementMultistateChange.values"
 							></v-select>
 						</v-col>
-						<v-col cols="2"
+						<v-col
+							cols="2"
 							v-for="(v, index) in datapoint.pointLocator.incrementMultistateChange
 								.values"
 							:key="index"
 						>
-							<v-chip close close-icon="mdi-delete" color="primary" label class="multistate-value--label"
-								@click:close="removeMsValue(DataChangeTypes.INCREMENT_MULTISTATE, v)">
-								{{v}}
+							<v-chip
+								close
+								close-icon="mdi-delete"
+								color="primary"
+								label
+								class="multistate-value--label"
+								@click:close="removeMsValue(DataChangeTypes.INCREMENT_MULTISTATE, v)"
+							>
+								{{ v }}
 							</v-chip>
 						</v-col>
 					</v-row>
@@ -136,14 +143,20 @@
 								:items="datapoint.pointLocator.randomMultistateChange.values"
 							></v-select>
 						</v-col>
-						<v-col cols="2"
-							v-for="(v, index) in datapoint.pointLocator.randomMultistateChange
-								.values"
+						<v-col
+							cols="2"
+							v-for="(v, index) in datapoint.pointLocator.randomMultistateChange.values"
 							:key="index"
 						>
-							<v-chip close close-icon="mdi-delete" color="primary" label class="multistate-value--label"
-								@click:close="removeMsValue(DataChangeTypes.RANDOM_MULTISTATE, v)">
-								{{v}}
+							<v-chip
+								close
+								close-icon="mdi-delete"
+								color="primary"
+								label
+								class="multistate-value--label"
+								@click:close="removeMsValue(DataChangeTypes.RANDOM_MULTISTATE, v)"
+							>
+								{{ v }}
 							</v-chip>
 						</v-col>
 					</v-row>
@@ -156,7 +169,6 @@
 							></v-text-field>
 						</v-col>
 					</v-row>
-					
 				</v-col>
 			</v-row>
 
@@ -348,17 +360,20 @@ export default {
 
 	data() {
 		return {
-			msValues: ['1', '2'],			
+			msValues: ['1', '2'],
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
 			multistateValue: 0,
-			booleanSelectBox: [{
-				text: 'False',
-				value: false
-			},{
-				text: 'True',
-				value: true
-			}],
+			booleanSelectBox: [
+				{
+					text: 'False',
+					value: false,
+				},
+				{
+					text: 'True',
+					value: true,
+				},
+			],
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 		};
 	},
@@ -367,7 +382,7 @@ export default {
 		changeTypes() {
 			if (!!this.datapoint) {
 				return this.$store.getters.getVirtualDatapointChangeType(
-					this.datapoint.pointLocator.dataTypeId
+					this.datapoint.pointLocator.dataTypeId,
 				);
 			} else {
 				return [
@@ -386,12 +401,12 @@ export default {
 
 	methods: {
 		cancel() {
-			console.debug("VirtualDataSource.point.vue::cancel()")
+			console.debug('VirtualDataSource.point.vue::cancel()');
 			this.$emit('canceled');
 		},
 
 		save() {
-			console.debug("VirtualDataSource.point.vue::save()")
+			console.debug('VirtualDataSource.point.vue::save()');
 			this.$emit('saved', this.datapoint);
 		},
 
@@ -403,11 +418,11 @@ export default {
 		removeMsValue(type, index) {
 			if (type === DataChangeTypes.RANDOM_MULTISTATE) {
 				this.datapoint.pointLocator.randomMultistateChange.values = this.datapoint.pointLocator.randomMultistateChange.values.filter(
-					(t) => t !== index
+					(t) => t !== index,
 				);
 			} else if (type === DataChangeTypes.INCREMENT_MULTISTATE) {
 				this.datapoint.pointLocator.incrementMultistateChange.values = this.datapoint.pointLocator.incrementMultistateChange.values.filter(
-					(t) => t !== index
+					(t) => t !== index,
 				);
 			} else {
 				console.log('Remove Multistate Value Failed!');

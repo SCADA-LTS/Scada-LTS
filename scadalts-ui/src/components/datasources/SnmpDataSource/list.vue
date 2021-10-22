@@ -1,10 +1,8 @@
 <template>
 	<div>
-        <v-row>
-            <v-col>
-                OID: {{datapoint.pointLocator.oid}}
-            </v-col>
-        </v-row>		
+		<v-row>
+			<v-col> OID: {{ datapoint.pointLocator.oid }} </v-col>
+		</v-row>
 	</div>
 </template>
 <script>
@@ -15,10 +13,9 @@ export default {
 	data() {
 		return {
 			DataTypes,
-			DataChangeTypes
-		}
-
-	}
+			DataChangeTypes,
+		};
+	},
 };
 </script>
 <style scoped></style>

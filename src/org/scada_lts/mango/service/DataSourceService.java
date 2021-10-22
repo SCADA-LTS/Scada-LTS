@@ -145,6 +145,8 @@ public class DataSourceService implements MangoDataSource {
 
 		if (dataSource != null) {
 			deleteInTransaction(dataSourceId);
+			Common.ctx.getRuntimeManager().stopDataSource(dataSourceId);
+			Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 		}
 	}
 
@@ -152,7 +154,6 @@ public class DataSourceService implements MangoDataSource {
 	private void deleteInTransaction(final int dataSourceId) {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
-		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
 		//TODO: IMPORTANT: DataSources are not deleted from memory! They do not exist in database but
 		//objects are still inside RuntimeManager
 	}

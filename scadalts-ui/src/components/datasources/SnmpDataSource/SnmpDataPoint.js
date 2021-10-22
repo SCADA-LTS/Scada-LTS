@@ -2,9 +2,9 @@ export class SnmpDataPoint {
 
     constructor(datasourceId) {
         this.id = -1;
-        this.xid = "RANDOM SNMP",
-        this.name = "",
-        this.description = "",
+        this.xid = "RANDOM SNMP";
+        this.name = "";
+        this.description = "";
         this.datasourceId = datasourceId;
         this.enabled = false;
         this.pointLocator = {
@@ -26,7 +26,7 @@ export class SnmpDataPoint {
         this.description = description;
     }
 
-    
+
 
 }
 

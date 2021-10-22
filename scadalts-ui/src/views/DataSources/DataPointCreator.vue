@@ -33,7 +33,7 @@ export default {
 
 	methods: {
 		async showDialog(item, datapoint, datasourceType) {
-			console.log(datapoint)
+			console.log(datapoint);
 			if (!!datapoint) {
 				this.datapoint = datapoint;
 				this.editMode = true;
@@ -43,13 +43,12 @@ export default {
 				try {
 					this.datapoint.xid = await this.$store.dispatch('getUniqueDataPointXid');
 				} catch (e) {
-					console.error("Failed to auto-generate unique Export ID Number");
+					console.error('Failed to auto-generate unique Export ID Number');
 				}
-				
 			}
 			this.datasource = item;
 			this.datasourceType = `${datasourceType}pointeditor`;
-			console.log(this.datapoint)
+			console.log(this.datapoint);
 			this.dialogVisible = true;
 		},
 
