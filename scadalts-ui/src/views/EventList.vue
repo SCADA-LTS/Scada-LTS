@@ -336,7 +336,7 @@
 						</v-icon>
 
 						<v-icon title="Compound even detector" @click.stop="gotoCompoundEvent(item.typeRef1)" v-if="item.typeId===5">
-						mdi-checkboxes
+						mdi-ceiling-light-multiple-outline
 						</v-icon>
 					
 						<v-icon  title="Scheduled event" @click.stop="gotoScheduled(item.typeRef1)" v-if="item.typeId===6">
