@@ -110,6 +110,10 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
 		},
 
+		getDataPointValueByXid({ dispatch }, datapointXid) {
+			return dispatch('requestGet', `/point_value/getValue/${datapointXid}`);
+		},
+
 		setDataPointValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/point_value/setValue/${payload.xid}/${payload.type}`,
@@ -127,7 +131,7 @@ const storeDataPoint = {
 		getDataPointValueFromTimeperiod({ dispatch }, payload) {
 			return dispatch(
 				'requestGet',
-				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`
+				`/point_value/getValuesFromTimePeriod/${payload.datapointId}/${payload.startTs}/${payload.endTs}`,
 			);
 		},
 
@@ -180,7 +184,7 @@ const storeDataPoint = {
 		delUserComment({ dispatch }, payload) {
 			return dispatch(
 				'requestDelete',
-				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`
+				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
 			);
 		},
 	},

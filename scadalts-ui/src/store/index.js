@@ -11,7 +11,9 @@ import storeUsers from './users';
 import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
+import SynopticPanelModule from './synopticPanel';
 import watchListModule from './modernWatchList';
+
 import axios from 'axios';
 
 import i18n from '@/i18n';
@@ -35,6 +37,7 @@ export default new Vuex.Store({
 		systemSettings,
 		storeMailingList,
 		storeAlarmsNotifications,
+		SynopticPanelModule,
 		watchListModule,
 	},
 	state: {
@@ -144,10 +147,12 @@ export default new Vuex.Store({
 				axios
 					.get(state.applicationUrl + requestUrl, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -163,10 +168,12 @@ export default new Vuex.Store({
 				axios
 					.post(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -182,10 +189,12 @@ export default new Vuex.Store({
 				axios
 					.delete(state.applicationUrl + requestUrl, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -201,10 +210,12 @@ export default new Vuex.Store({
 				axios
 					.put(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -220,10 +231,12 @@ export default new Vuex.Store({
 				axios
 					.patch(state.applicationUrl + payload.url, payload.data, state.requestConfig)
 					.then(async (r) => {
-						await dispatch('validateResponse', r) ? resolve(r.data) : reject(r.data);
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})
 					.catch(async (error) => {
-						await dispatch('validateResponse', error.response) ? console.warn('Request Exception...') : reject(error.response);
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
 					});
 			});
 		},
@@ -262,22 +275,22 @@ export default new Vuex.Store({
 		},
 
 		/**
-		 * 
+		 *
 		 * Validate server response
-		 * 
-		 * Check if the response status code from server 
+		 *
+		 * Check if the response status code from server
 		 * is one of the Successful responses. If not report
 		 * proper message in the browser console and block
 		 * the response handling and change to error handling.
-		 * It is possible to create catch chain to take 
+		 * It is possible to create catch chain to take
 		 * specific action if request is failed.
-		 * 
+		 *
 		 * @private
 		 * @param {HTTP Response} response - JSON Response from server
 		 * @returns true|false
 		 */
-		validateResponse({state}, response) {
-			if(!!response) {
+		validateResponse({ state }, response) {
+			if (!!response) {
 				if (response.status >= 200 && response.status < 300) {
 					return true;
 				} else if (response.status === 401) {
@@ -288,9 +301,9 @@ export default new Vuex.Store({
 					console.error('🚫️ - Internal server error!\n Something went wrong!');
 				}
 			} else {
-				console.error('🚫️ - No internet connection!\n Something went wrong!');
+				console.error('⚫️ - Not received response message!');
 			}
-			
+
 			return false;
 		},
 	},
