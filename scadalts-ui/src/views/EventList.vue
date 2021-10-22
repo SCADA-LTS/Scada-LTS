@@ -260,13 +260,36 @@
 			</v-row>
 			<v-row class="pb-2">
 				<v-col cols="6" v-show="selectedEvents.length">
-					<v-btn small @click="acknowledgeSelectedEvents" class="mr-2" color="blue">{{$t("eventList.acknowledgeSelectedEvents")}}</v-btn>
-					<v-btn small @click="silenceSelectedEvents"  color="blue" class="mr-2" >{{$t("eventList.silenceSelected")}}</v-btn>
-					<v-btn small @click="disilenceSelectedEvents"  color="blue">{{$t("eventList.disilenceSelected")}}</v-btn>
+					<v-btn small @click="acknowledgeSelectedEvents" class="mr-2" color="blue">
+						
+						
+						<v-icon class="mr-2" >
+							mdi-checkbox-marked-circle-outline
+						</v-icon>
+						{{$t("eventList.acknowledgeSelectedEvents")}}</v-btn>
+					<v-btn small @click="silenceSelectedEvents" title="silence"  color="blue" class="mr-2" >
+						<v-icon class="mr-2" >
+							mdi-volume-mute
+						</v-icon>
+						{{$t("eventList.silenceSelected")}}
+						</v-btn>
+					<v-btn small @click="disilenceSelectedEvents"  color="blue">
+						<v-icon class="mr-2" >
+							mdi-volume-high
+						</v-icon>
+						{{$t("eventList.disilenceSelected")}}</v-btn>
 				</v-col>
 				<v-col :cols="selectedEvents.length ? 6 : 12" class="text-right">
-					<v-btn small @click="askForAckAll" class="mr-2" color="red">{{$t("eventList.acknownledgeAll")}}</v-btn>
-					<v-btn small @click="askForSilenceAll" color="red">{{$t("eventList.silenceAll")}}</v-btn>
+					<v-btn small @click="askForAckAll" class="mr-2" color="red">
+						<v-icon class="mr-2" >
+							mdi-checkbox-marked-circle-outline
+						</v-icon>
+						{{$t("eventList.acknownledgeAll")}}</v-btn>
+					<v-btn small @click="askForSilenceAll" color="red">
+						<v-icon class="mr-2" >
+							mdi-volume-mute
+						</v-icon>
+						{{$t("eventList.silenceAll")}}</v-btn>
 				</v-col>
 
 
@@ -289,6 +312,7 @@
 					<template v-slot:item.activeTs="{ item }">
 						{{ $date(item.activeTs).format('YYYY-MM-DD hh:mm:ss') }}
 					</template>
+					
 					<template v-slot:item.ackTs="{ item }">
 						<span v-if="item.ackTs">{{$date(item.ackTs).format('YYYY-MM-DD hh:mm:ss') }}</span>
 						<v-icon v-else
@@ -306,7 +330,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{ item.message.split('|').filter(x => x).join(', ') }}
+						{{ item.message.split('|').filter(x => x).join(', ') | truncate }}
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -374,6 +398,7 @@ tbody tr:nth-of-type(odd) {
 <script>
 import RangeChartComponent from '../components/amcharts/RangeChartComponent.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+
 export default {
 	name: 'EventList',
 	components: {
@@ -401,7 +426,7 @@ export default {
     },
 	data() {
 		return {
-			tab: 0,
+			tab: 1,
 			items: [
 				{ tab: 'alarms', content: 'Pending' },
 				{ tab: 'event-list', content: 'System' },
@@ -540,6 +565,20 @@ export default {
 			confirmMessage: '',
 			selectedEvents: [],
 		};
+	},
+
+	filters: {
+		capitalize: function (value) {
+			if (!value) return ''
+			value = value.toString()
+			return value.charAt(0).toUpperCase() + value.slice(1)
+		},
+		truncate(input) {
+			if (input.length > 32) {
+				return input.substring(0, 32) + '...';
+			}
+			return input;
+		}
 	},
 	
 	methods: {
