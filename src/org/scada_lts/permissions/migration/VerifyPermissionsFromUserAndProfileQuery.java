@@ -42,19 +42,19 @@ class VerifyPermissionsFromUserAndProfileQuery extends AbstractMeasurmentCommand
             }
 
             MigrationPermissionsUtils.verifyUserDataSourcePermissions(user, usersProfile,
-                    migrationDataService.getDataSourceService(),
+                    migrationDataService,
                     dataSourceAccesses.get(user.getId()));
 
             MigrationPermissionsUtils.verifyUserDataPointPermissions(user, usersProfile,
-                    migrationDataService.getDataPointService(),
+                    migrationDataService,
                     dataPointAccesses.get(user.getId()));
 
             MigrationPermissionsUtils.verifyUserWatchListPermissions(user, usersProfile,
-                    migrationDataService.getWatchListService(),
+                    migrationDataService,
                     watchListAccesses.get(user.getId()));
 
             MigrationPermissionsUtils.verifyUserViewPermissions(user, usersProfile,
-                    migrationDataService.getViewService(),
+                    migrationDataService,
                     viewAccesses.get(user.getId()));
 
         });
