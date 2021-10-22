@@ -44,7 +44,7 @@
 					</v-row>
 				</v-card-title>
 				<v-row style="margin: 0 2rem" >
-					<v-col cols="3"><b>{{$t('eventList.datetime')}}</b>: {{ $date(selectedEvent.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</v-col>
+					<v-col cols="3"><b>{{$t('eventList.createAt')}}</b>: {{ $date(selectedEvent.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</v-col>
 					<v-col cols="3"><b>{{$t('eventList.alarmLevel')}}</b>: 
 						{{ $t(`eventList.alarmLevel${selectedEvent.alarmLevel}`) }}
 					</v-col>
@@ -289,6 +289,16 @@
 					<template v-slot:item.activeTs="{ item }">
 						{{ $date(item.activeTs).format('YYYY-MM-DD hh:mm:ss') }}
 					</template>
+					<template v-slot:item.ackTs="{ item }">
+						<span v-if="item.ackTs">{{$date(item.ackTs).format('YYYY-MM-DD hh:mm:ss') }}</span>
+						<v-icon v-else
+							class="mr-2"
+							title="acknowledge"
+							@click.stop="acknowledgeEvent(item);return false"
+						>
+							mdi-checkbox-marked-circle
+						</v-icon>
+					</template>
 					<template v-slot:item.alarmLevel="{ item }">
 						<img :src="(!!item.rtnTs ? alarmFlags : alarmFlagsOff)[item.alarmLevel].image">
 					</template>
@@ -305,19 +315,11 @@
 						<span v-if="!item.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>	
 					</template>
 					<template v-slot:item.actions="{ item }">
-						<v-icon 
-							class="mr-2"
-							title="acknowledge"
-							:disabled="item.rtnApplicable || (item.ackTs && item.ackTs >0)"
-		
-							@click.stop="acknowledgeEvent(item);return false"
-						>
-							mdi-checkbox-marked-circle
-						</v-icon>
+						
 						<v-icon class="mr-2" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
 							mdi-volume-mute
 						</v-icon>
-						<v-icon class="mr-2" @click.stop="disilenceEvent(item);return false" v-if="item.silenced" title="disilence">
+						<v-icon class="mr-2" @click.stop="disilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
 							mdi-volume-high
 						</v-icon>
 
@@ -325,22 +327,40 @@
 							mdi-magnify
 						</v-icon>
 
-						<v-icon @click.stop="location = `data_source_edit.shtm?dsid=${event.typeRef1}`" v-if="item.typeId===2" title="point details">
-							mdi-magnify
-						</v-icon>
-						<v-icon @click.stop="location = `data_source_edit.shtm?dsid=${event.typeRef1}`" v-if="item.typeId===3" title="data source">
+						<v-icon  title="data source" @click.stop="gotoDatasource(item.typeId)" v-if="item.typeId===3">
+						mdi-database
+						</v-icon>	
+						
+						<v-icon @click.stop="gotoSystem(event.typeRef1)" v-if="item.typeId===4" title="system">
 							mdi-desktop-classic
 						</v-icon>
-						<v-icon @click.stop="location = `data_source_edit.shtm?dsid=${event.typeRef1}`" v-if="item.typeId===4" title="system">
-							mdi-desktop-classic
+
+						<v-icon title="Compound even detector" @click.stop="gotoCompoundEvent(item.typeRef1)" v-if="item.typeId===5">
+						mdi-checkboxes
 						</v-icon>
+					
+						<v-icon  title="Scheduled event" @click.stop="gotoScheduled(item.typeRef1)" v-if="item.typeId===6">
+						mdi-calendar
+						</v-icon>
+
+						<v-icon  title="Publisher events" @click.stop="gotoPublisher(item.typeRef1)" v-if="item.typeId===7">
+						mdi-publish
+						</v-icon>
+
+						<v-icon  title="Audit events" @click.stop="gotoAudit(item.typeRef1)" v-if="item.typeId===8">
+						mdi-glasses
+						</v-icon>
+
+						<v-icon  title="Maintenance events" @click.stop="gotoMaintenance(item.typeRef1)" v-if="item.typeId===9">
+						mdi-hammer
+						</v-icon>
+						
+
     				</template>
 			</v-data-table>
 		</v-container>
-
-		
 		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
-		<pre>{{eventList}}</pre>
+		<!-- <pre>{{eventList}}</pre> -->
 	</div>
 </template>
 <style scoped>
@@ -381,7 +401,7 @@ export default {
     },
 	data() {
 		return {
-			tab: 1,
+			tab: 0,
 			items: [
 				{ tab: 'alarms', content: 'Pending' },
 				{ tab: 'event-list', content: 'System' },
@@ -419,7 +439,7 @@ export default {
 					value: 'alarmLevel',
 				},
 				{
-					text: this.$t('eventList.datetime'),
+					text: this.$t('eventList.createAt'),
 					align: 'center',
 					sortable: true,
 					value: 'activeTs',
@@ -447,6 +467,12 @@ export default {
 					sortable: true,
 					align: 'center',
 					value: 'xid',
+				},
+				{
+					text: this.$t('eventList.ackTime'),
+					align: 'center',
+					sortable: true,
+					value: 'ackTs',
 				},
 				{ text: 'Actions', value: 'actions', sortable: false },
 			],
@@ -536,6 +562,57 @@ export default {
 		changeTab(index) {
 			this.$router.push({ path: `/${this.items[index].tab}` });
 		},
+		
+		gotoDatasource(id) {
+			window.location = `data_source_edit.shtm?dsid=${id}`
+		},
+
+		//system
+		gotoSystem(type,referenceId2) {
+			// window.location = `http://mango.serotoninsoftware.com/download.jsp` //png="bullet_down"
+			// if (type = 1)  TYPE_SYSTEM_STARTUP
+			if (type = 6) window.location = `compound_events.shtm?cedid=${referenceId2}"` // png="multi_bell" 
+			if (type = 7) window.location = `event_handlers.shtm?ehid=${referenceId2}` //png="cog"
+			if (type = 9) window.location = `point_links.shtm?plid=${referenceId2}` //png="link"
+		},
+
+
+//COMPOUND
+		gotoCompoundEvent(compoundEventDetectorId) {
+			window.location = `compound_events.shtm?cedid=${compoundEventDetectorId}` //png="multi_bell"
+		},
+		gotoScheduled(scheduleId) {
+			window.location = `scheduled_events.shtm?seid=${scheduleId}` // png="clock"
+		},
+		gotoPublisher(publisherId) {
+			window.location = `publisher_edit.shtm?pid=${publisherId}` // png="transmit_edit"
+		},
+		gotoAuditDatasource(referenceId2) {
+			window.location = `data_source_edit.shtm?dsid=${referenceId2}`
+		},
+		gotoAuditDatapoint(referenceId2) {
+			window.location = `data_source_edit.shtm?pid=${referenceId2}`
+		},
+		gotoAuditEventDetector(referenceId2) {
+			window.location = `data_point_edit.shtm?pedid=${referenceId2}` //png="icon_comp_edit"
+		},
+		gotoAuditCompound(referenceId2) {
+			window.location = `compound_events.shtm?cedid=${referenceId2}` //png="multi_bell" 
+		},
+		gotoAuditScheduled(referenceId2) {
+			window.location = `scheduled_events.shtm?seid=${referenceId2}` //png="clock"
+		},
+		gotoAuditEventHandler(referenceId2) {
+			window.location = `event_handlers.shtm?ehid=${referenceId2}` //cog
+		},
+		gotoAuditPointLink(referenceId2) {
+			window.location = `point_links.shtm?plid=${referenceId2}` // png="link"
+		},
+
+		gotoMaintenance(maintenanceId) {
+			window.location = `maintenance_events.shtm?meid=${maintenanceId}` //png="hammer"
+		},
+
 		async publishComment() {
 			this.comments = await this.$store.dispatch('publishEventComment', { typeId: 1, eventId: this.selectedEventId, commentText: this.commentText });
 			this.commentText = ''
