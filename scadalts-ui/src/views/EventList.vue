@@ -309,7 +309,6 @@
 							class="mr-2"
 							title="acknowledge"
 							:disabled="item.rtnApplicable || (item.ackTs && item.ackTs >0)"
-		
 							@click.stop="acknowledgeEvent(item);return false"
 						>
 							mdi-checkbox-marked-circle
@@ -325,26 +324,34 @@
 							mdi-magnify
 						</v-icon>
 
-						<v-icon @click.stop="location = `data_source_edit.shtm?dsid=${event.typeRef1}`" v-if="item.typeId===2" title="point details">
-							mdi-magnify
-						</v-icon>
-
-						<v-icon  title="data source" @click.stop="gotoDatasource($event)" v-if="item.typeId===3">
+						<v-icon  title="data source" @click.stop="gotoDatasource(item.typeId)" v-if="item.typeId===3">
 						mdi-database
 						</v-icon>	
 						
-						<v-icon @click.stop="location = `data_source_edit.shtm?dsid=${event.typeRef1}`" v-if="item.typeId===4" title="system">
+						<v-icon @click.stop="gotoSystem(event.typeRef1)" v-if="item.typeId===4" title="system">
 							mdi-desktop-classic
 						</v-icon>
 
-						<v-icon title="data source" @click.stop="gotoDatasource($event)" v-if="item.typeId===5">
+						<v-icon title="Compound even detector" @click.stop="gotoCompoundEvent(item.typeRef1)" v-if="item.typeId===5">
 						mdi-checkboxes
 						</v-icon>
-
 					
-						<v-icon  title="scheduled event" @click.stop="gotoDatasource($event)" v-if="item.typeId===6">
+						<v-icon  title="Scheduled event" @click.stop="gotoScheduled(item.typeRef1)" v-if="item.typeId===6">
 						mdi-calendar
 						</v-icon>
+
+						<v-icon  title="Publisher events" @click.stop="gotoPublisher(item.typeRef1)" v-if="item.typeId===7">
+						mdi-publish
+						</v-icon>
+
+						<v-icon  title="Audit events" @click.stop="gotoAudit(item.typeRef1)" v-if="item.typeId===8">
+						mdi-glasses
+						</v-icon>
+
+						<v-icon  title="Maintenance events" @click.stop="gotoMaintenance(item.typeRef1)" v-if="item.typeId===9">
+						mdi-hammer
+						</v-icon>
+						
 
     				</template>
 			</v-data-table>
@@ -548,9 +555,68 @@ export default {
 		changeTab(index) {
 			this.$router.push({ path: `/${this.items[index].tab}` });
 		},
-		gotoDatasource() {
-			window.location = 'http://localhost:8080/ScadaBR/data_source_edit.shtm?dsid=1'
+		
+		gotoDatasource(id) {
+			window.location = `data_source_edit.shtm?dsid=${id}`
 		},
+
+		//system
+		gotoSystem(type,referenceId2) {
+			// window.location = `http://mango.serotoninsoftware.com/download.jsp` //png="bullet_down"
+			// if (type = 1)  TYPE_SYSTEM_STARTUP
+			if (type = 6) window.location = `compound_events.shtm?cedid=${referenceId2}"` // png="multi_bell" 
+			if (type = 7) window.location = `event_handlers.shtm?ehid=${referenceId2}` //png="cog"
+			if (type = 9) window.location = `point_links.shtm?plid=${referenceId2}` //png="link"
+
+	// 		public static final int TYPE_SYSTEM_STARTUP = 1;
+	// public static final int TYPE_SYSTEM_SHUTDOWN = 2;
+	// public static final int TYPE_MAX_ALARM_LEVEL_CHANGED = 3;
+	// public static final int TYPE_USER_LOGIN = 4;
+	// // public static final int TYPE_VERSION_CHECK = 5;
+	// public static final int TYPE_COMPOUND_DETECTOR_FAILURE = 6;
+	// public static final int TYPE_SET_POINT_HANDLER_FAILURE = 7;
+	// public static final int TYPE_EMAIL_SEND_FAILURE = 8;
+	// public static final int TYPE_POINT_LINK_FAILURE = 9;
+	// public static final int TYPE_PROCESS_FAILURE = 10;
+		},
+
+
+//COMPOUND
+		gotoCompoundEvent(compoundEventDetectorId) {
+			window.location = `compound_events.shtm?cedid=${compoundEventDetectorId}` //png="multi_bell"
+		},
+		gotoScheduled(scheduleId) {
+			window.location = `scheduled_events.shtm?seid=${scheduleId}` // png="clock"
+		},
+		gotoPublisher(publisherId) {
+			window.location = `publisher_edit.shtm?pid=${publisherId}` // png="transmit_edit"
+		},
+		gotoAuditDatasource(referenceId2) {
+			window.location = `data_source_edit.shtm?dsid=${referenceId2}`
+		},
+		gotoAuditDatapoint(referenceId2) {
+			window.location = `data_source_edit.shtm?pid=${referenceId2}`
+		},
+		gotoAuditEventDetector(referenceId2) {
+			window.location = `data_point_edit.shtm?pedid=${referenceId2}` //png="icon_comp_edit"
+		},
+		gotoAuditCompound(referenceId2) {
+			window.location = `compound_events.shtm?cedid=${referenceId2}` //png="multi_bell" 
+		},
+		gotoAuditScheduled(referenceId2) {
+			window.location = `scheduled_events.shtm?seid=${referenceId2}` //png="clock"
+		},
+		gotoAuditEventHandler(referenceId2) {
+			window.location = `event_handlers.shtm?ehid=${referenceId2}` //cog
+		},
+		gotoAuditPointLink(referenceId2) {
+			window.location = `point_links.shtm?plid=${referenceId2}` // png="link"
+		},
+
+		gotoMaintenance(maintenanceId) {
+			window.location = `maintenance_events.shtm?meid=${maintenanceId}` //png="hammer"
+		},
+
 		async publishComment() {
 			this.comments = await this.$store.dispatch('publishEventComment', { typeId: 1, eventId: this.selectedEventId, commentText: this.commentText });
 			this.commentText = ''
