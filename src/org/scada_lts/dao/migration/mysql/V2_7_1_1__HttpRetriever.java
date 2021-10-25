@@ -40,6 +40,8 @@ public class V2_7_1_1__HttpRetriever extends BaseJavaMigration {
                  ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                 HttpRetrieverDataSourceVO dataSourceVO = (HttpRetrieverDataSourceVO) objectInputStream.readObject();
                 dataSourceVO.setId(resultSet.getInt("id"));
+                dataSourceVO.setXid(resultSet.getString("xid"));
+                dataSourceVO.setName(resultSet.getString("name"));
                 if (dataSourceVO.getStaticHeaders() == null)
                     dataSourceVO.setStaticHeaders(new ArrayList<KeyValuePair>());
                 return dataSourceVO;
