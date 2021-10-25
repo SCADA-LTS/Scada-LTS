@@ -5,6 +5,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.WatchListGetShareUsers;
+import org.scada_lts.utils.ApplicationBeans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class JsonWatchList extends ScadaObjectIdentifier {
         this.userId = wl.getUserId();
         pointList = new ArrayList<>();
         wl.getPointList().forEach(p -> pointList.add(new ScadaObjectIdentifier(p.getId(), p.getXid(), p.getName())));
-        watchListUsers = new WatchListGetShareUsers().getShareUsersWithProfile(wl);
+        watchListUsers = ApplicationBeans.getWatchListGetShareUsersBean().getShareUsersWithProfile(wl);
     }
 
     public int getUserId() {
