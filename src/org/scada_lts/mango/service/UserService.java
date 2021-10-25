@@ -18,36 +18,37 @@
 package org.scada_lts.mango.service;
 
 
-import com.serotonin.mango.Common;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.IUserDAO;
-import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.error.EntityNotUniqueException;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
-import org.scada_lts.permissions.service.*;
+import org.scada_lts.permissions.service.PermissionsService;
 import org.scada_lts.utils.ApplicationBeans;
-import org.springframework.stereotype.Service;
 import org.scada_lts.web.mvc.api.json.JsonUser;
 import org.scada_lts.web.mvc.api.json.JsonUserInfo;
 import org.scada_lts.web.mvc.api.json.JsonUserPassword;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataPointPermissions;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataSourcePermissions;
 
 /**
  * UserService
@@ -60,17 +61,17 @@ public class UserService implements MangoUser {
 
 	private static final Log LOG = LogFactory.getLog(UserService.class);
 
-	private IUserDAO userDAO;
+	private final IUserDAO userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
-	private UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
+	private final UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
-	private UsersProfileService usersProfileService;
+	private final UsersProfileService usersProfileService;
 
-	private PermissionsService<DataPointAccess, User> dataPointPermissionsService;
-	private PermissionsService<Integer, User> dataSourcePermissionsService;
+	private final PermissionsService<DataPointAccess, User> dataPointPermissionsService;
+	private final PermissionsService<Integer, User> dataSourcePermissionsService;
 
 	public UserService() {
 		userDAO = ApplicationBeans.getUserDaoBean();
@@ -246,30 +247,47 @@ public class UserService implements MangoUser {
 	}
 
 	public List<JsonUserInfo> getUserList() {
-		return userDAO.getUserList();
+		ArrayList<JsonUserInfo> result = new ArrayList<>();
+		userDAO.getUsers().forEach(user -> result.add(new JsonUserInfo(user)));
+		return result;
 	}
 
 	public JsonUser getUserDetails(int userId) {
-		return userDAO.getUserDetails(userId);
+		JsonUser user = new JsonUser(userDAO.getUser(userId));
+
+		usersProfileService.getProfileByUserId(userId).ifPresent(up -> user.setUserProfile(up.getId()));
+		return user;
 	}
 
 	public boolean isUsernameUnique(String username) {
-		return userDAO.usernameUnique(username);
+		return (userDAO.getUser(username) == null);
 	}
 
 	public JsonUser createUser(JsonUserPassword user) {
-		if(!userDAO.usernameUnique(user.getUsername())) {
+		if(!isUsernameUnique(user.getUsername())) {
 			throw new EntityNotUniqueException("That username already exists!");
 		}
-		JsonUser createdUser = userDAO.createUser(user);
-		if(user.getUserProfile() > 0) {
-			usersProfileDAO.insertUserProfile(createdUser.getId(), user.getUserProfile());
-		}
-		return createdUser;
+		User u = user.mapToUser();
+		u.setPassword(user.getPassword());
+		saveUser(u);
+		updateHideMenu(u);
+		updateScadaTheme(u);
+		user.setId(u.getId());
+		updateUserProfile(user);
+		return user;
 	}
 
 	public void updateUserDetails(JsonUser user) {
-		userDAO.updateUserDetails(user);
+		User u = userDAO.getUser(user.getId());
+		User u2 = user.mapToUser();
+		u2.setPassword(u.getPassword());
+		saveUser(u2);
+		updateHideMenu(u2);
+		updateScadaTheme(u2);
+		updateUserProfile(user);
+	}
+
+	public void updateUserProfile(JsonUser user) {
 		Optional<UsersProfileVO> profile = usersProfileService.getProfileByUserId(user.getId());
 		profile.ifPresent(a -> usersProfileDAO.deleteUserProfileByUserId(user.getId()));
 		if(user.getUserProfile() > 0) {
@@ -279,7 +297,9 @@ public class UserService implements MangoUser {
 
 	public void updateUserPassword(int userId, String newPassword) {
 		newPassword = Common.encrypt(newPassword);
-		userDAO.updateUserPassword(userId, newPassword);
+		User u = userDAO.getUser(userId);
+		u.setPassword(newPassword);
+		userDAO.update(u);
 	}
 
 	public void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException {

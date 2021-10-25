@@ -74,7 +74,9 @@ public class UsersProfileService {
     }
 
     public List<ScadaObjectIdentifier> getAllUserProfiles() {
-        return usersProfileDAO.getUserProfiles();
+        List<ScadaObjectIdentifier> userProfiles = new ArrayList<>();
+        getUsersProfiles().forEach(up -> userProfiles.add(new ScadaObjectIdentifier(up.getId(), up.getXid(), up.getName())));
+        return userProfiles;
     }
 
     public String generateUniqueXid() {

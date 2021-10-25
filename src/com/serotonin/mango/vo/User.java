@@ -119,6 +119,17 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public User() { }
 
+	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+		this.id = id;
+		this.username = username;
+		this.email = email;
+		this.phone = phone;
+		this.admin = admin;
+		this.disabled = disabled;
+		this.homeUrl = homeUrl;
+		this.lastLogin = lastLogin;
+	}
+
 	public User(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
 		this.username = username;
