@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
@@ -86,6 +87,10 @@ public class UsersProfileService {
         return stream()
                 .sorted(comparator)
                 .collect(Collectors.toList());
+    }
+
+    public List<ScadaObjectIdentifier> getAllUserProfiles() {
+        return usersProfileDAO.getUserProfiles();
     }
 
     public String generateUniqueXid() {

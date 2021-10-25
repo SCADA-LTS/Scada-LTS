@@ -221,7 +221,7 @@ export default {
 	overflow-y: auto;
 }
 #recipientListSection {
-	max-height: 67vh;
+	max-height: 61vh;
 	overflow-y: auto;
 }
 </style>

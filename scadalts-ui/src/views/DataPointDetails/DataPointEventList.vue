@@ -174,7 +174,8 @@
 	</v-card>
 </template>
 <script>
-import { initWebSocket } from '@/web-socket.js'
+import webSocketMixin from '@/utils/web-socket-utils'
+
 /**
  * Event List for Data Point
  * 
@@ -185,12 +186,14 @@ import { initWebSocket } from '@/web-socket.js'
  * @param {number} datapointId - Point Detail Id
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.1
+ * @version 1.2
  */
 export default {
 	name: 'DataPointEventList',
 
 	props: ['datapointId'],
+
+	mixins: [webSocketMixin],
 
 	data() {
 		return {
@@ -201,8 +204,10 @@ export default {
 			activeUserId: -1,
 			newComment: '',
 			hideSkeleton: false,
-			stompClient: undefined,
-			socket: undefined,
+
+			wsCallback: () => {				
+				this.wsSubscribeTopic(`alarm`, this.wsOnEventRaised);		
+			},
 		};
 	},
 
@@ -210,33 +215,14 @@ export default {
 		this.refresh();
 		this.fetchDataPointEvents();
 		this.hideSkeleton = true;
-		this.connect();
-	},
-
-	beforeDestroy() {
-		this.disconnect();
 	},
 
 	methods: {
-		connect() {
-			let callback = () => {
-				this.stompClient.subscribe("/topic/alarm", tick => {
-					if(tick.body === "Event Raised") {
-						this.fetchDataPointEvents();
-					}
-				});
-			}
 
-			this.stompClient = initWebSocket(
-				this.$store.state.webSocketUrl,
-				callback,
-			);
-		},
-
-		disconnect() {
-			if(!!this.stompClient) {
-				this.stompClient.disconnect();
-			}
+		wsOnEventRaised(event) {
+			if(event.body === "Event Raised") {
+				this.fetchDataPointEvents();
+			};
 		},
 
 		refresh() {

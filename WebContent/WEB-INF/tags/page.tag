@@ -192,7 +192,7 @@
                 </c:when>
              <c:otherwise>
                 <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-                <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
+                <tag:menuItem href="app.shtm#/watch-list" png="watch_list" key="header.watchlistModern"/>
                 <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
                 <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
                 <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
@@ -250,7 +250,14 @@
     <div id="navbarUserInfo">
       <c:if test="${!empty sessionUser}">
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-        <span class="userName">${sessionUser.username}</span>
+        <c:choose>
+            <c:when test="${!empty sessionUser.firstName}">
+              <span class="userName">${sessionUser.firstName} ${sessionUser.lastName}</span>
+            </c:when>
+            <c:otherwise>
+              <span class="userName">${sessionUser.username}</span>
+            </c:otherwise>
+        </c:choose>
       </c:if>
     </div>
 
