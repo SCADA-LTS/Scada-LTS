@@ -24,8 +24,6 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -33,6 +31,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +47,7 @@ import java.util.stream.Collectors;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Repository
 public class DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
@@ -190,15 +190,6 @@ public class DataSourceDAO {
 			+ " values (?,?) ON DUPLICATE KEY UPDATE " +
 			COLUMN_NAME_DS_USER_ID + "=?";
 
-	private static final String DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
-			+ "select "
-			+ COLUMN_NAME_DS_USER_ID+ ", "
-			+ COLUMN_NAME_USER_PROFILE_ID + " "
-			+ "from "
-			+ "dataSourceUsersProfiles "
-			+ "where "
-			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
-
 	private static final String DATA_SOURCE_USERS_SELECT_BASE_ON_USER_ID = ""
 			+"select "
 			+ COLUMN_NAME_DS_USER_ID+", "
@@ -211,6 +202,19 @@ public class DataSourceDAO {
 	private static final String DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
 			+ "ds." + COLUMN_NAME_ID + " in (select dsu." + COLUMN_NAME_DS_USER_ID +  " from dataSourceUsers dsu where dsu."+COLUMN_NAME_USER_ID+"=?) "
 			+ "order by ds." + COLUMN_NAME_NAME;
+
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + " " +
+			"from " +
+			"dataSourceUsersProfiles dsup " +
+			"left join " +
+			"usersUsersProfiles uup " +
+			"on " +
+			"dsup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"dsup." + COLUMN_NAME_DS_USER_ID + "=?;";
 
 	// @formatter:on
 
@@ -431,16 +435,6 @@ public class DataSourceDAO {
 				new Object[]{userId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DS_USER_ID));
 	}
 
-	public List<Integer> selectDataSourcePermissionsByProfileId(int profileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectDataSourcePermissionsByProfileId(int profileId) profileId:" + profileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp()
-				.query(DATA_SOURCE_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID,
-						new Object[]{profileId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DS_USER_ID));
-	}
-
 	public int[] insertPermissions(int userId, List<Integer> toInsert) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPermissions(int userId, List<WatchListAccess> toInsert) user:" + userId + "");
@@ -470,5 +464,20 @@ public class DataSourceDAO {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(DATA_SOURCE_USERS_DELETE_DATA_SOURCE_ID_AND_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID,
+					new Object[]{dataSourceId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
 	}
 }

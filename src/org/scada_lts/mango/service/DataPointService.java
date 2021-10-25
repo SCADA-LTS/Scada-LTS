@@ -232,7 +232,6 @@ public class DataPointService implements MangoDataPoint {
 
 			dpRT.updatePointValue(pvt);
 		}
-		
 	}
 
 	public void saveAPI(User user, String value, String xid) {
@@ -386,7 +385,9 @@ public class DataPointService implements MangoDataPoint {
 		}
 		watchListDAO.deleteWatchListPoints(dataPointIds);
 		dataPointDAO.deleteWithIn(dataPointIds);
-
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataPointPermissions();
+		usersProfileService.updateWatchlistPermissions();
 		PointHierarchyDAO.cachedPointHierarchy = null;
 		MangoPointHierarchy.getInst().deleteDataPoint(dataPointIds);
 	}
@@ -573,11 +574,15 @@ public class DataPointService implements MangoDataPoint {
     @Deprecated
 	public void deleteDataPointUser(int userId) {
 		dataPointUserDAO.delete(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataPointPermissions();
 	}
 
     @Deprecated
 	public void insertPermissions(User user) {
 		dataPointUserDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataPointPermissions();
 	}
 
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
@@ -645,9 +650,14 @@ public class DataPointService implements MangoDataPoint {
 		if (pvcList.size() > limit) {
 			pvcList.clear();
 			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
-			return aggregateSortValues(startTs, endTs, pointIds, limit, intervalMs);
+			int revisedLimit = calculateLimit(aggregateSettings);
+			return aggregateSortValues(startTs, endTs, pointIds, revisedLimit, intervalMs);
 		}
 		return pvcList;
+	}
+
+	private int calculateLimit(AggregateSettings aggregateSettings) {
+		return aggregateSettings.getLimitFactor() > 1.0 ? (int)Math.ceil(aggregateSettings.getValuesLimit() * aggregateSettings.getLimitFactor()) + 1 : aggregateSettings.getValuesLimit() + 1;
 	}
 
 	private int[] getPointIds(List<DataPointVO> pointIds) {

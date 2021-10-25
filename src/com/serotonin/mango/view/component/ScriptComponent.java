@@ -124,11 +124,11 @@ public class ScriptComponent extends PointComponent {
 						result = o.toString();
 
 					if(o instanceof Undefined) {
-						LOG.error(infoErrorExecutionScript(model, this));
+						LOG.warn(infoErrorExecutionScript(model, this));
 					}
 				} catch (Exception e) {
 					result = ScriptExecutor.prettyScriptMessage(new ScriptException(e)).getMessage();
-					LOG.error(infoErrorExecutionScript(e, model, this));
+					LOG.warn(infoErrorExecutionScript(e, model, this));
 				}
 			} finally {
 				Context.exit();

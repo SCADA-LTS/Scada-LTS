@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,9 @@ import java.util.List;
  *         person supporting and coreecting translation Jerzy Piejko
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserDAO {
+
+@Repository
+public class UserDAO implements IUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserDAO.class);
 
@@ -55,7 +58,6 @@ public class UserDAO {
 
 	private static final int DAO_EMPTY_RESULT = 0;
 	private static final int DAO_EXCEPTION = -1;
-
 
 	// @formatter:off
 	private static final String USER_SELECT_ID = ""
@@ -173,6 +175,7 @@ public class UserDAO {
 	private static final String USER_DELETE = ""
 			+ "delete from users where "
 				+ COLUMN_NAME_ID + "=? ";
+
 	// @formatter:on
 
 	private static final String USER_INSERT_V2 = ""
@@ -243,6 +246,7 @@ public class UserDAO {
 		return getUser(insert(entity));
 	}
 
+	@Override
 	public List<Integer> getAll() {
 
 		if (LOG.isTraceEnabled()) {
@@ -252,10 +256,12 @@ public class UserDAO {
 		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
 	}
 
+
 	public User getById(int id) throws EmptyResultDataAccessException {
 		return getUser(id);
 	}
 
+	@Override
 	public User getUser(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -271,6 +277,7 @@ public class UserDAO {
 		return user;
 	}
 
+	@Override
 	public User getUser(String username) {
 
 		if (LOG.isTraceEnabled()) {
@@ -286,6 +293,7 @@ public class UserDAO {
 		return user;
 	}
 
+	@Override
 	public List<User> getUsers() {
 
 		if (LOG.isTraceEnabled()) {
@@ -295,6 +303,7 @@ public class UserDAO {
 		return DAO.getInstance().getJdbcTemp().query(USER_SELECT_ORDER, new UserRowMapper());
 	}
 
+	@Override
 	public List<User> getActiveUsers() {
 
 		if (LOG.isTraceEnabled()) {
@@ -304,6 +313,7 @@ public class UserDAO {
 		return DAO.getInstance().getJdbcTemp().query(USER_SELECT_ACTIVE, new Object[]{DAO.boolToChar(false)}, new UserRowMapper());
 	}
 
+	@Override
 	public void updateHomeUrl(int userId, String homeUrl) {
 
 		if (LOG.isTraceEnabled()) {
@@ -313,6 +323,7 @@ public class UserDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HOME_URL, new Object[]{homeUrl, userId});
 	}
 
+	@Override
 	public void updateLogin(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -322,6 +333,7 @@ public class UserDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_LOGIN, new Object[]{System.currentTimeMillis(), userId});
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int insert(final User user) {
 
@@ -354,6 +366,7 @@ public class UserDAO {
 		return keyHolder.getKey().intValue();
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void update(final User user) {
 
@@ -375,6 +388,7 @@ public class UserDAO {
 				user.getId());
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void updateHideMenu(final User user) {
 
@@ -388,6 +402,7 @@ public class UserDAO {
 		});
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void updateScadaTheme(final User user) {
 
@@ -401,6 +416,7 @@ public class UserDAO {
 		});
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void delete(int userId) {
 

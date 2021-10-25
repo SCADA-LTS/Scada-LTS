@@ -225,6 +225,8 @@ public class ScriptExecutor {
 								"event.script.convertError", result,
 								DataTypes.getDataTypeMessage(dataTypeId)));
 				} catch (Exception ex) {
+					if(ex instanceof ResultTypeException)
+						throw ex;
 					throw new ScriptException(ex);
 				}
 				return new PointValueTime(value, timestamp);
@@ -281,6 +283,8 @@ public class ScriptExecutor {
 								"event.script.convertError", result,
 								DataTypes.getDataTypeMessage(dataTypeId)));
 				} catch (Exception ex) {
+					if(ex instanceof ResultTypeException)
+						throw ex;
 					throw new ScriptException(ex);
 				}
 				return new PointValueTime(value, timestamp);

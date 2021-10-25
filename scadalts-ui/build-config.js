@@ -22,15 +22,19 @@ var milestone = '2.6.0';
 var build = '0';
 var branch = 'local';
 var commit = 'N/A';
-var pullRequestNumber = 'false';
+var actor = 'developer';
 var pullRequestBranch = '';
 // ----- ---------------------- ----- //
 if (process.argv.length === 7 || process.argv.length === 8) {
 	milestone = process.argv[2];
 	build = process.argv[3];
-	branch = process.argv[4];
+	if(process.argv[4].startsWith("refs")) {
+		branch = process.argv[4].split('/').splice(2).join('/');
+	} else {
+		branch = process.argv[4];
+	}
 	commit = process.argv[5];
-	pullRequestNumber = process.argv[6];
+	actor = process.argv[6];
 	if (process.argv.length === 8) {
 		pullRequestBranch = process.argv[7];
 	}
@@ -69,7 +73,7 @@ var request = https.request(options, function (res) {
 		json.build = build;
 		json.branch = branch;
 		json.commit = commit;
-		json.pullRequestNumber = pullRequestNumber;
+		json.actor = actor;
 		json.pullRequestBranch = pullRequestBranch;
 		printBuildInformation(json);
 
@@ -92,7 +96,7 @@ function printBuildInformation(buildInfo) {
 	);
 	console.log('Build form GitHub branch:\t\t', buildInfo.branch);
 	console.log('Build form GitHub commit:\t\t', buildInfo.commit);
-	console.log('GitHub PullRequest ID:\t\t\t', buildInfo.pullRequestNumber);
+	console.log('Initiated by:\t\t\t\t', buildInfo.actor);
 	console.log('GitHub PullRequest branch:\t\t', buildInfo.pullRequestBranch);
 	console.log('******************************************************');
 }
