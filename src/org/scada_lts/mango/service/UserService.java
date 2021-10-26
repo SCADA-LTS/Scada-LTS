@@ -28,24 +28,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.permissions.service.PermissionsService;
 import org.scada_lts.utils.ApplicationBeans;
-import org.scada_lts.web.mvc.api.json.JsonUser;
-import org.scada_lts.web.mvc.api.json.JsonUserInfo;
-import org.scada_lts.web.mvc.api.json.JsonUserPassword;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataPointPermissions;
 import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataSourcePermissions;
@@ -63,7 +57,6 @@ public class UserService implements MangoUser {
 
 	private final IUserDAO userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
-	private final UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
@@ -178,16 +171,19 @@ public class UserService implements MangoUser {
 
 	@Override
 	public void updateHideMenu(User user) {
-		userDAO.updateHideMenu(user);
+		updateUser(user);
 	}
 
 	@Override
 	public void updateScadaTheme(User user) {
-		userDAO.updateScadaTheme(user);
+		updateUser(user);
 	}
 
 	@Override
 	public void insertUser(User user) {
+		if(!isUsernameUnique(user.getUsername())) {
+			throw new EntityNotUniqueException("That username already exists!");
+		}
 		try {
 			int id = userDAO.insert(user);
 			user.setId(id);
@@ -239,69 +235,28 @@ public class UserService implements MangoUser {
 		userCommentDAO.insert(comment, typeId, referenceId);
 	}
 
-	private void updatePermissions(User user) {
-		updateDataSourcePermissions(user, dataSourcePermissionsService);
-		updateDataPointPermissions(user, dataPointPermissionsService);
-		usersProfileService.updateDataPointPermissions();
-		usersProfileService.updateDataSourcePermissions();
-	}
-
-	public List<JsonUserInfo> getUserList() {
-		ArrayList<JsonUserInfo> result = new ArrayList<>();
-		userDAO.getUsers().forEach(user -> result.add(new JsonUserInfo(user)));
-		return result;
-	}
-
-	public JsonUser getUserDetails(int userId) {
-		JsonUser user = new JsonUser(userDAO.getUser(userId));
-
-		usersProfileService.getProfileByUserId(userId).ifPresent(up -> user.setUserProfile(up.getId()));
-		return user;
-	}
-
+	@Override
 	public boolean isUsernameUnique(String username) {
 		return (userDAO.getUser(username) == null);
 	}
 
-	public JsonUser createUser(JsonUserPassword user) {
-		if(!isUsernameUnique(user.getUsername())) {
-			throw new EntityNotUniqueException("That username already exists!");
-		}
-		User u = user.mapToUser();
-		u.setPassword(user.getPassword());
-		saveUser(u);
-		updateHideMenu(u);
-		updateScadaTheme(u);
-		user.setId(u.getId());
-		updateUserProfile(user);
-		return user;
-	}
-
-	public void updateUserDetails(JsonUser user) {
-		User u = userDAO.getUser(user.getId());
-		User u2 = user.mapToUser();
-		u2.setPassword(u.getPassword());
-		saveUser(u2);
-		updateHideMenu(u2);
-		updateScadaTheme(u2);
-		updateUserProfile(user);
-	}
-
-	public void updateUserProfile(JsonUser user) {
-		Optional<UsersProfileVO> profile = usersProfileService.getProfileByUserId(user.getId());
-		profile.ifPresent(a -> usersProfileDAO.deleteUserProfileByUserId(user.getId()));
-		if(user.getUserProfile() > 0) {
-			usersProfileDAO.insertUserProfile(user.getId(), user.getUserProfile());
+	@Override
+	public void updateUserProfile(User user) {
+		if (user.getUserProfile() == Common.NEW_ID) {
+			usersProfileService.resetUserProfile(user);
+		} else {
+			UsersProfileVO profile = usersProfileService.getUserProfileById(user.getUserProfile());
+			usersProfileService.updateUsersProfile(user, profile);
 		}
 	}
 
+	@Override
 	public void updateUserPassword(int userId, String newPassword) {
-		newPassword = Common.encrypt(newPassword);
-		User u = userDAO.getUser(userId);
-		u.setPassword(newPassword);
-		userDAO.update(u);
+		userDAO.updateUserPassword(userId, Common.encrypt(newPassword));
 	}
 
+
+	@Override
 	public void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException {
 		oldPassword = Common.encrypt(oldPassword);
 		if(oldPassword.equals(userDAO.getUser(userId).getPassword())) {
@@ -309,5 +264,13 @@ public class UserService implements MangoUser {
 		} else {
 			throw new PasswordMismatchException();
 		}
+	}
+
+	private void updatePermissions(User user) {
+		updateDataSourcePermissions(user, dataSourcePermissionsService);
+		updateDataPointPermissions(user, dataPointPermissionsService);
+		usersProfileService.updateDataPointPermissions();
+		usersProfileService.updateDataSourcePermissions();
+		updateUserProfile(user);
 	}
 }

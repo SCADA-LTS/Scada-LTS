@@ -50,6 +50,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersDwr extends BaseDwr {
@@ -126,7 +127,7 @@ public class UsersDwr extends BaseDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 		User currentUser = Common.getUser(request);
-		UserDao userDao = new UserDao();
+		UserService userDao = new UserService();
 
 		User user;
 		if (id == Common.NEW_ID)
@@ -180,17 +181,6 @@ public class UsersDwr extends BaseDwr {
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
-			userDao.updateUserHideMenu(user);
-			userDao.updateUserScadaTheme(user);
-
-			UsersProfileService usersProfileService = new UsersProfileService();
-			if (usersProfileId == Common.NEW_ID) {
-				usersProfileService.resetUserProfile(user);
-			} else {
-				UsersProfileVO profile = usersProfileService.getUserProfileById(usersProfileId);
-				profile.apply(user);
-				usersProfileService.updateUsersProfile(user, profile);
-			}
 
 			// If admin grant permissions to all WL and GViews
 			if (admin) {

@@ -3,13 +3,6 @@ package org.scada_lts.dao;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.mappers.UserDetailsRowMapper;
-import org.scada_lts.dao.mappers.UserInfoRowMapper;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
-import org.scada_lts.web.mvc.api.json.JsonUser;
-import org.scada_lts.web.mvc.api.json.JsonUserInfo;
-import org.scada_lts.web.mvc.api.json.JsonUserPassword;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -65,19 +58,6 @@ public class UserDAO implements IUserDAO {
 				+ COLUMN_NAME_ID + " "
 			+ "from users ";
 
-	private static final String INIT_USER_INSERT = "" +
-			"insert into users (" +
-			COLUMN_NAME_USERNAME + ", " +
-			COLUMN_NAME_PASSWORD + ", " +
-			COLUMN_NAME_EMAIL + ", " +
-			COLUMN_NAME_PHONE + ", " +
-			COLUMN_NAME_ADMIN + ", " +
-			COLUMN_NAME_DISABLED + ", " +
-			COLUMN_NAME_HOME_URL + ", " +
-			COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", " +
-			COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") " +
-			"values (?,?,?,?,?,?,?,?,?) ";
-
 	private static final String USER_SELECT = ""
 			+ "select "
 				+ COLUMN_NAME_ID + ", "
@@ -119,46 +99,38 @@ public class UserDAO implements IUserDAO {
 
 	private static final String USER_INSERT = ""
 			+ "insert into users ("
-				+ COLUMN_NAME_USERNAME + ", "
-				+ COLUMN_NAME_FIRST_NAME + ", "
-				+ COLUMN_NAME_LAST_NAME + ", "
-				+ COLUMN_NAME_PASSWORD + ", "
-				+ COLUMN_NAME_EMAIL + ", "
-				+ COLUMN_NAME_PHONE + ", "
-				+ COLUMN_NAME_ADMIN + ", "
-				+ COLUMN_NAME_DISABLED + ", "
-				+ COLUMN_NAME_HOME_URL + ", "
-				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
-			+ "values (?,?,?,?,?,?,?,?,?,?,?) ";
-
-	private static final String USER_UPDATE_HIDE_MENU = ""
-			+ "update users set "
-				+ COLUMN_NAME_HIDE_MENU + "=? "
-			+ "where "
-				+ COLUMN_NAME_ID + "=? ";
-
-	private static final String USER_UPDATE_SCADA_THEME = ""
-			+ "update users set "
-			+ COLUMN_NAME_THEME + "=? "
-			+ "where "
-			+ COLUMN_NAME_ID + "=? ";
+			+ COLUMN_NAME_USERNAME + ", "
+			+ COLUMN_NAME_FIRST_NAME + ", "
+			+ COLUMN_NAME_LAST_NAME + ", "
+			+ COLUMN_NAME_PASSWORD + ", "
+			+ COLUMN_NAME_EMAIL + ", "
+			+ COLUMN_NAME_PHONE + ", "
+			+ COLUMN_NAME_ADMIN + ", "
+			+ COLUMN_NAME_DISABLED + ", "
+			+ COLUMN_NAME_HOME_URL + ", "
+			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
+			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+			+ COLUMN_NAME_HIDE_MENU + ", "
+			+ COLUMN_NAME_THEME + ") "
+			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 	private static final String USER_UPDATE = ""
 			+ "update users set "
-				+ COLUMN_NAME_USERNAME + "=?, "
-				+ COLUMN_NAME_FIRST_NAME + "=?, "
-				+ COLUMN_NAME_LAST_NAME + "=?, "
-				+ COLUMN_NAME_PASSWORD + "=?, "
-				+ COLUMN_NAME_EMAIL + "=?, "
-				+ COLUMN_NAME_PHONE + "=?, "
-				+ COLUMN_NAME_ADMIN + "=?, "
-				+ COLUMN_NAME_DISABLED + "=?, "
-				+ COLUMN_NAME_HOME_URL + "=?, "
-				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=? "
+			+ COLUMN_NAME_USERNAME + "=?, "
+			+ COLUMN_NAME_FIRST_NAME + "=?, "
+			+ COLUMN_NAME_LAST_NAME + "=?, "
+			+ COLUMN_NAME_PASSWORD + "=?, "
+			+ COLUMN_NAME_EMAIL + "=?, "
+			+ COLUMN_NAME_PHONE + "=?, "
+			+ COLUMN_NAME_ADMIN + "=?, "
+			+ COLUMN_NAME_DISABLED + "=?, "
+			+ COLUMN_NAME_HOME_URL + "=?, "
+			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
+			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
+			+ COLUMN_NAME_HIDE_MENU + "=?, "
+			+ COLUMN_NAME_THEME + "=? "
 			+ "where "
-				+ COLUMN_NAME_ID + "=? ";
+			+ COLUMN_NAME_ID + "=? ";
 
 	private static final String USER_UPDATE_LOGIN = ""
 			+ "update users set "
@@ -176,46 +148,12 @@ public class UserDAO implements IUserDAO {
 			+ "delete from users where "
 				+ COLUMN_NAME_ID + "=? ";
 
-	// @formatter:on
-
-	private static final String USER_INSERT_V2 = ""
-			+ "insert into users ("
-			+ COLUMN_NAME_USERNAME + ", "
-			+ COLUMN_NAME_FIRST_NAME + ", "
-			+ COLUMN_NAME_LAST_NAME + ", "
-			+ COLUMN_NAME_PASSWORD + ", "
-			+ COLUMN_NAME_EMAIL + ", "
-			+ COLUMN_NAME_PHONE + ", "
-			+ COLUMN_NAME_ADMIN + ", "
-			+ COLUMN_NAME_DISABLED + ", "
-			+ COLUMN_NAME_HOME_URL + ", "
-			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
-			+ COLUMN_NAME_HIDE_MENU + ", "
-			+ COLUMN_NAME_THEME + ") "
-			+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
-
-	private static final String USER_UPDATE_V2 = ""
-			+ "update users set "
-			+ COLUMN_NAME_USERNAME + "=?, "
-			+ COLUMN_NAME_FIRST_NAME + "=?, "
-			+ COLUMN_NAME_LAST_NAME + "=?, "
-			+ COLUMN_NAME_EMAIL + "=?, "
-			+ COLUMN_NAME_PHONE + "=?, "
-			+ COLUMN_NAME_ADMIN + "=?, "
-			+ COLUMN_NAME_DISABLED + "=?, "
-			+ COLUMN_NAME_HOME_URL + "=?, "
-			+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + "=?, "
-			+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + "=?, "
-			+ COLUMN_NAME_HIDE_MENU + "=?, "
-			+ COLUMN_NAME_THEME + "=? "
-			+ "where "
-			+ COLUMN_NAME_ID + "=? ";
-
 	private static final String USER_UPDATE_PASSWORD = "" +
 			"UPDATE " + TABLE_NAME + " SET " +
 			COLUMN_NAME_PASSWORD + "=? " +
 			" WHERE " + COLUMN_NAME_ID + "=?";
+
+	// @formatter:on
 
 	private class UserRowMapper implements RowMapper<User> {
 
@@ -358,7 +296,9 @@ public class UserDAO implements IUserDAO {
 						DAO.boolToChar(user.isDisabled()),
 						user.getHomeUrl(),
 						user.getReceiveAlarmEmails(),
-						DAO.boolToChar(user.isReceiveOwnAuditEvents())
+						DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+						user.isHideMenu(),
+						user.getTheme()
 				}).setValues(preparedStatement);
 				return preparedStatement;
 			}
@@ -385,35 +325,21 @@ public class UserDAO implements IUserDAO {
 				user.getHomeUrl(),
 				user.getReceiveAlarmEmails(),
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
+				user.isHideMenu(),
+				user.getTheme(),
 				user.getId());
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void updateHideMenu(final User user) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("updateHideMenu(User user) user:" + user);
-		}
-
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HIDE_MENU, new Object[]{
-				user.isHideMenu(),
-				user.getId()
-		});
+		update(user);
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void updateScadaTheme(final User user) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("updateScadaTheme(User user) user:" + user);
-		}
-
-		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_SCADA_THEME, new Object[]{
-				user.getTheme(),
-				user.getId()
-		});
+		update(user);
 	}
 
 	@Override
@@ -424,5 +350,15 @@ public class UserDAO implements IUserDAO {
 			LOG.trace("delete(int userId) userId:" + userId);
 		}
 		DAO.getInstance().getJdbcTemp().update(USER_DELETE, userId);
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateUserPassword(int userId, String newPassword) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateUserPassword(int userId, String newPassword) userId:" + userId);
+		}
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_PASSWORD, newPassword, userId);
 	}
 }

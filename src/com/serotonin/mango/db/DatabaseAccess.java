@@ -161,7 +161,7 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-					new OnlyMigrationUserDAO().insert(user);
+					new UserDao().saveUser(user);
 
 					// Record the current version.
 					new SystemSettingsDAO().setValue(

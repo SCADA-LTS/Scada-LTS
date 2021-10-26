@@ -200,6 +200,7 @@ public class JsonUser {
         u.setHideMenu(this.isHideMenu());
         u.setReceiveOwnAuditEvents(this.isReceiveOwnAuditEvents());
         u.setReceiveAlarmEmails(this.getReceiveAlarmEmails());
+        u.setUserProfileId(this.getUserProfile());
         return u;
     }
 }

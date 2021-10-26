@@ -46,12 +46,12 @@ public class UserDaoWithCache implements IUserDAO {
 
     @Override
     public void updateHideMenu(User user) {
-        userCache.updateHideMenu(user);
+        userCache.update(user);
     }
 
     @Override
     public void updateScadaTheme(User user) {
-        userCache.updateScadaTheme(user);
+        userCache.update(user);
     }
 
     @Override
@@ -72,5 +72,10 @@ public class UserDaoWithCache implements IUserDAO {
     @Override
     public int insert(User user) {
         return userCache.insert(user);
+    }
+
+    @Override
+    public void updateUserPassword(int userId, String newPassword) {
+        userCache.updateUserPassword(userId, newPassword);
     }
 }

@@ -155,9 +155,10 @@ public class UsersProfileService {
     }
 
     public void updateUsersProfile(User user, UsersProfileVO profile) {
-        if (user != null) {
+        if (user != null && profile != null) {
             getProfileByUser(user).ifPresent(a -> removeUserProfile(user));
             createUserProfile(user, profile);
+            profile.apply(user);
         }
     }
 
