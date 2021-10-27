@@ -792,5 +792,6 @@
   
   
 </tag:page>
+<tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
 <%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
