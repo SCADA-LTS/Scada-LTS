@@ -178,6 +178,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = user.eventExportDefinition;
 		this.attributes = user.attributes;
 		this.uploadedProject = user.uploadedProject;
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
 	}
 
 	/**

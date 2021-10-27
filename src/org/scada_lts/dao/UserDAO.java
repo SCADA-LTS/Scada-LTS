@@ -180,6 +180,7 @@ public class UserDAO implements IUserDAO {
 		}
 	}
 
+	@Deprecated
 	public User create(User entity) {
 		return getUser(insert(entity));
 	}
@@ -194,7 +195,7 @@ public class UserDAO implements IUserDAO {
 		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
 	}
 
-
+	@Deprecated
 	public User getById(int id) throws EmptyResultDataAccessException {
 		return getUser(id);
 	}

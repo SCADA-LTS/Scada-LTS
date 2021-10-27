@@ -27,8 +27,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.permissions.migration.dao.OnlyMigrationUserDAO;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
