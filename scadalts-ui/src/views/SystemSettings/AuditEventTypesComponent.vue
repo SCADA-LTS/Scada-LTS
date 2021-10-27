@@ -1,5 +1,5 @@
 <template>
-	<v-col cols="12" md="6" class="align-stretch">
+	<v-col cols="12" md="6" class="align-stretch" id="audit-events-settings">
 		<v-card>
 			<v-card-title>
 				{{ $t('systemsettings.audit.title') }}

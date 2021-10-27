@@ -1,5 +1,5 @@
 <template>
-	<v-col cols="12" md="6">
+	<v-col cols="12" md="6" id="scada-configuration">
 		<v-card>
 			<v-card-title>
 				<v-tooltip bottom>
