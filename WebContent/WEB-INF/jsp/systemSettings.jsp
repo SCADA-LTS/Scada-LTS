@@ -441,7 +441,7 @@
       --%>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.instanceDescription"/></td>
-        <td><button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button></td>
+        <td align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#system-info-settings'"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.databaseSize"/></td>
@@ -779,53 +779,35 @@
        </table>
   </div>
 
-  <div class="borderDiv marB marR" style="float:left">
-    <div id="sms-domain"></div>
-  </div>
-
-   <div class="borderDiv marB marR" style="float:left">
-        <table width="100%">
+    <div class="borderDiv marB marR" style="clear:left;float:left">
+         <table align="center" "100%">
            <tr>
-              <td>
-                <span class="smallTitle">AmCharts Settings</span>
-              </td>
+             <td>
+               <span class="smallTitle"><fmt:message key="systemSettings.newUI"/></span>
+             </td>
+           </tr>
+         </table>
+         <table>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
            </tr>
            <tr>
-              <td align="center">
-                <button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button>
-              </td>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
            </tr>
-        </table>
-    </div>
-
-    <div class="borderDiv marB marR" style="float:left">
-      <table width="100%">
-         <tr>
-            <td>
-              <span class="smallTitle">Default Data Point logging type</span>
-            </td>
-         </tr>
-         <tr>
-            <td align="center">
-              <button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button>
-            </td>
-         </tr>
-      </table>
-    </div>
-
-    <div class="borderDiv marB marR" style="float:left">
-      <table width="100%">
-         <tr>
-            <td>
-              <span class="smallTitle">Scada-LTS environment settings</span>
-            </td>
-         </tr>
-         <tr>
-            <td align="center">
-              <button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button>
-            </td>
-         </tr>
-      </table>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
+           </tr>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
+           </tr>
+           <tr>
+             <td colspan="2" id="httpMessage" class="formError"></td>
+           </tr>
+         </table>
     </div>
 
   <div class="" style="float:left; color:white">
@@ -834,5 +816,3 @@
   
   
 </tag:page>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
