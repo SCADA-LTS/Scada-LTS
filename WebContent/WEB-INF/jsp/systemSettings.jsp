@@ -419,9 +419,6 @@
           <span class="smallTitle"><fmt:message key="systemSettings.systemInformation"/></span>
           <tag:help id="systemInformation"/>
         </td>
-        <td align="right">
-          <tag:img id="saveInfoSettingsImg" png="save" onclick="saveInfoSettings();" title="common.save"/>
-        </td>
       </tr>
     </table>
     <table>
@@ -444,7 +441,7 @@
       --%>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.instanceDescription"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text"/></td>
+        <td><button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.databaseSize"/></td>
@@ -785,6 +782,51 @@
   <div class="borderDiv marB marR" style="float:left">
     <div id="sms-domain"></div>
   </div>
+
+   <div class="borderDiv marB marR" style="float:left">
+        <table width="100%">
+           <tr>
+              <td>
+                <span class="smallTitle">AmCharts Settings</span>
+              </td>
+           </tr>
+           <tr>
+              <td align="center">
+                <button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button>
+              </td>
+           </tr>
+        </table>
+    </div>
+
+    <div class="borderDiv marB marR" style="float:left">
+      <table width="100%">
+         <tr>
+            <td>
+              <span class="smallTitle">Default Data Point logging type</span>
+            </td>
+         </tr>
+         <tr>
+            <td align="center">
+              <button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button>
+            </td>
+         </tr>
+      </table>
+    </div>
+
+    <div class="borderDiv marB marR" style="float:left">
+      <table width="100%">
+         <tr>
+            <td>
+              <span class="smallTitle">Scada-LTS environment settings</span>
+            </td>
+         </tr>
+         <tr>
+            <td align="center">
+              <button onClick="location.href='app.shtm#/system-settings'">Set in the new UI</button>
+            </td>
+         </tr>
+      </table>
+    </div>
 
   <div class="" style="float:left; color:white">
   #branchName
