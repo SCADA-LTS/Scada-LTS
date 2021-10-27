@@ -131,14 +131,14 @@ public class EventsAPI {
      * @param request Request containing user data
      * @return Response
      */
-    @PutMapping(value = "/disilence/{id}")
-    public ResponseEntity<String> disilenceEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
-        LOG.info("PUT::/api/events/disilence/" + eventId);
+    @PutMapping(value = "/unsilence/{id}")
+    public ResponseEntity<String> unsilenceEvent(@PathVariable("id") int eventId, HttpServletRequest request) {
+        LOG.info("PUT::/api/events/unsilence/" + eventId);
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 Date time = new Date();
-                eventService.disilenceEvent(eventId, time.getTime(), user.getId(), 0);
+                eventService.unsilenceEvent(eventId, time.getTime(), user.getId(), 0);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -324,9 +324,9 @@ public class EventsAPI {
      * @param request Request containing user data
      * @return Response
      */
-    @PostMapping(value = "/disilenceSelected")
-    public ResponseEntity<String> disilenceSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
-        LOG.info("GET::/api/events/disilenceSelectedEvents");
+    @PostMapping(value = "/unsilenceSelected")
+    public ResponseEntity<String> unsilenceSelectedEvents(@RequestBody JsonIdSelection query, HttpServletRequest request) {
+        LOG.info("GET::/api/events/unsilenceSelectedEvents");
         try {
             User user = Common.getUser(request);
             if (user != null) {
@@ -335,7 +335,7 @@ public class EventsAPI {
                 for (String id: query.getIds().split(",")) {
                     ids.add(Integer.parseInt(id.trim()));
                 }
-                eventService.disilenceEvents(ids, time.getTime(), user.getId(), 0);
+                eventService.unsilenceEvents(ids, time.getTime(), user.getId(), 0);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

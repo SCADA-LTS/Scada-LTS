@@ -5,8 +5,6 @@
 		<v-card>
 			<v-tabs
 			v-model="tab"
-			background-color="secondary"
-			dark
 			@change="changeTab"
 			>
 				<v-tab
@@ -32,7 +30,7 @@
 import Components from '@min-gb/vuejs-components';
 import AlarmsComponent from '../components/graphical_views/AlarmsComponent';
 import EventList from '../views/EventList.vue';
-// 
+
 export default {
 	el: '#alarms',
 	name: 'alarms',
@@ -40,12 +38,15 @@ export default {
 		AlarmsComponent,
 		...Components,
 	},
+	mounted() {
+		this.tab = 1
+	},
 	data () {
       return {
-        tab: null,
-        items: [
-			{ tab: 'alarms', content: 'Pending' },
-			{ tab: 'event-list', content: 'System' },
+		tab: 0,
+		items: [
+			{ tab: 'event-list', content: 'Scada' },
+			{ tab: 'alarms', content: 'PLC' },
 		],
       }
     },

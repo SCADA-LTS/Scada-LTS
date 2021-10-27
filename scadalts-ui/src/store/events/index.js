@@ -6,7 +6,7 @@ const storeEvents = {
 	actions: {
 		searchEvents({ dispatch }, payload) {
 			return dispatch('requestPost', {
-				url:`/events/search`,
+				url: `/events/search`,
 				data: {
 					alarmLevel: payload.alarmLevel,
 					eventSourceType: payload.eventSourceType,
@@ -14,18 +14,18 @@ const storeEvents = {
 					keywords: payload.keywords,
 					datapoint: null,
 					limit: payload.itemsPerPage,
-					offset: payload.itemsPerPage * (payload.page-1),
+					offset: payload.itemsPerPage * (payload.page - 1),
 					sortBy: payload.sortBy,
 					sortDesc: payload.sortDesc,
 					startDate: payload.startDate ? payload.startDate : '',
 					endDate: payload.endDate ? payload.endDate : '',
 					startTime: payload.startTime ? payload.startTime : '',
 					endTime: payload.endTime ? payload.endTime : '',
-				}
+				},
 			});
 		},
-		
-		getEventById({ dispatch }, id	) {
+
+		getEventById({ dispatch }, id) {
 			return dispatch('requestGet', `/events/${id}/comments`);
 		},
 
@@ -49,61 +49,57 @@ const storeEvents = {
 
 			return dispatch('requestGet', url);
 		},
-		acknowledgeEvent({dispatch}, payload) {
+		acknowledgeEvent({ dispatch }, payload) {
 			return dispatch('requestPut', {
 				url: `/events/ack/${payload.eventId}`,
 				data: payload,
 			});
 		},
-		silenceEvent({dispatch}, payload) {
+		silenceEvent({ dispatch }, payload) {
 			return dispatch('requestPut', {
 				url: `/events/silence/${payload.eventId}`,
 				data: payload,
 			});
 		},
-		disilenceEvent({dispatch}, payload) {
+		unsilenceEvent({ dispatch }, payload) {
 			return dispatch('requestPut', {
-				url: `/events/disilence/${payload.eventId}`,
+				url: `/events/unsilence/${payload.eventId}`,
 				data: payload,
 			});
 		},
 
-
-		acknowledgeSelectedEvents({dispatch}, payload) {
+		acknowledgeSelectedEvents({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/events/ackSelected`,
 				data: payload,
 			});
 		},
-		silenceSelectedEvents({dispatch}, payload) {
+		silenceSelectedEvents({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/events/silenceSelected`,
 				data: payload,
 			});
 		},
-		disilenceSelectedEvents({dispatch}, payload) {
+		unsilenceSelectedEvents({ dispatch }, payload) {
 			return dispatch('requestPost', {
-				url: `/events/disilenceSelected`,
+				url: `/events/unsilenceSelected`,
 				data: payload,
 			});
 		},
-		
-		
 
-
-		acknowledgeAll({dispatch}, payload) {
+		acknowledgeAll({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/events/ackAll`,
 				data: {},
-			})
+			});
 		},
-		silenceAll({dispatch}, payload) {
+		silenceAll({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/events/silenceAll`,
 				data: {},
-			})
+			});
 		},
-		publishEventComment({dispatch}, payload) {
+		publishEventComment({ dispatch }, payload) {
 			return dispatch('requestPut', {
 				url: `/events/${payload.eventId}/comments`,
 				data: payload,

@@ -91,7 +91,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 			+ COLUMN_NAME_USER_ID+"=? AND "
 			+ COLUMN_NAME_EVENT_ID+"=?";
 
-	private static final String USER_EVENT_DISILENCE ="" +
+	private static final String USER_EVENT_UNSILENCE ="" +
 			"UPDATE "
 			+"userEvents SET "
 			+ COLUMN_NAME_SILENCED+"='N' "
@@ -108,7 +108,7 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 			" VALUES (?,?,'Y') ON DUPLICATE KEY UPDATE " +
 			COLUMN_NAME_SILENCED + " = VALUES(" + COLUMN_NAME_SILENCED + "); ";
 
-	private static final String USER_EVENTS_DISILENCE ="" +
+	private static final String USER_EVENTS_UNSILENCE ="" +
 			"INSERT INTO userEvents (" +
 			COLUMN_NAME_EVENT_ID + ", " +
 			COLUMN_NAME_USER_ID + ", " +
@@ -217,12 +217,12 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		DAO.getInstance().getJdbcTemp().update( USER_EVENT_SILENCE, new Object[]  { userId, eventId } );
 	}
 
-	public void disilenceEvent(long eventId, int userId) {
+	public void unsilenceEvent(long eventId, int userId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("eventId:"+eventId);
 		}
 
-		DAO.getInstance().getJdbcTemp().update( USER_EVENT_DISILENCE, new Object[]  { userId, eventId } );
+		DAO.getInstance().getJdbcTemp().update( USER_EVENT_UNSILENCE, new Object[]  { userId, eventId } );
 	}
 
 	public void silenceEvents(List<Integer> eventIds, int userId) {
@@ -235,13 +235,13 @@ public class UserEventDAO implements GenericDaoCR<UserEvent> {
 		}
 	}
 
-	public void disilenceEvents(List<Integer> eventIds, int userId) {
+	public void unsilenceEvents(List<Integer> eventIds, int userId) {
 		String ids = eventIds.stream().map(String::valueOf).collect(Collectors.joining(",")) ;
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("eventId: "+ids);
 		}
 		for (int eventId :eventIds) {
-			DAO.getInstance().getJdbcTemp().update( USER_EVENTS_DISILENCE, new Object[]  { eventId, userId});
+			DAO.getInstance().getJdbcTemp().update( USER_EVENTS_UNSILENCE, new Object[]  { eventId, userId});
 		}
 	}
 

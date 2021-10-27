@@ -10,13 +10,12 @@
 		<v-card>
 			<v-tabs
 			v-model="tab"
-			background-color="secondary"
-			dark
 			@change="changeTab"
 			>
 				<v-tab
 					v-for="item in items"
 					:key="item.tab"
+					:class="{'blink':(item.tab === 'alarms' && newAlarms)}"
 				>
 					{{ item.content }}
 				</v-tab>
@@ -38,8 +37,18 @@
 							:src="(!!selectedEvent.rtnTs ? alarmFlags : alarmFlagsOff)[selectedEvent.alarmLevel].image">
 						</v-col>
 						<v-col cols="12">
-							<v-btn @click="acknowledgeEventSelected" color="blue">Acknowledge</v-btn>&nbsp;
-							<v-btn color="blue">Silence</v-btn>
+							<v-btn class="mr-2" @click="acknowledgeEventSelected" color="blue">
+								<v-icon>mdi-checkbox-marked-circle-outline</v-icon>
+									{{$t('eventList.acknowledge')}}
+							</v-btn>
+							<v-btn v-if="!selectedEvent.silenced" @click="silenceEvent({id:selectedEvent.id})"  class="mr-2" color="blue">
+								<v-icon>mdi-volume-mute</v-icon>
+								{{$t('eventList.silence')}}
+							</v-btn>
+							<v-btn v-else @click="unsilenceEvent({id:selectedEvent.id})"  class="mr-2" color="blue">
+								<v-icon>mdi-volume-mute</v-icon>
+								{{$t('eventList.unsilence')}}
+							</v-btn>
 						</v-col>	
 					</v-row>
 				</v-card-title>
@@ -261,8 +270,6 @@
 			<v-row class="pb-2">
 				<v-col cols="6" v-show="selectedEvents.length">
 					<v-btn small @click="acknowledgeSelectedEvents" class="mr-2" color="blue">
-						
-						
 						<v-icon class="mr-2" >
 							mdi-checkbox-marked-circle-outline
 						</v-icon>
@@ -273,11 +280,11 @@
 						</v-icon>
 						{{$t("eventList.silenceSelected")}}
 						</v-btn>
-					<v-btn small @click="disilenceSelectedEvents"  color="blue">
+					<v-btn small @click="unsilenceSelectedEvents"  color="blue">
 						<v-icon class="mr-2" >
 							mdi-volume-high
 						</v-icon>
-						{{$t("eventList.disilenceSelected")}}</v-btn>
+						{{$t("eventList.unsilenceSelected")}}</v-btn>
 				</v-col>
 				<v-col :cols="selectedEvents.length ? 6 : 12" class="text-right">
 					<v-btn small @click="askForAckAll" class="mr-2" color="red">
@@ -343,7 +350,7 @@
 						<v-icon class="mr-2" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
 							mdi-volume-mute
 						</v-icon>
-						<v-icon class="mr-2" @click.stop="disilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
+						<v-icon class="mr-2" @click.stop="unsilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
 							mdi-volume-high
 						</v-icon>
 
@@ -371,7 +378,7 @@
 						mdi-publish
 						</v-icon>
 
-						<v-icon  title="Audit events" @click.stop="gotoAudit(item.typeRef1)" v-if="item.typeId===8">
+						<v-icon  title="Audit events" @click.stop="gotoAudit(item.typeRef1, item.typeRef2)" v-if="false">
 						mdi-glasses
 						</v-icon>
 
@@ -388,6 +395,25 @@
 	</div>
 </template>
 <style scoped>
+
+.blink {
+	color: red;
+  animation: blinker .8s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+	 color: yellow;
+  }
+   0% {
+	 color: red;
+	 /* text-shadow: yellow 0px 0px 5px; */
+  }
+   100% {
+	 color: red;
+	 /* text-shadow: transparent 2px 2px 0px; */
+  }
+}
 tbody tr:nth-of-type(odd) {
 	background-color: rgba(0, 0, 0, .05);
 }
@@ -396,6 +422,7 @@ tbody tr:nth-of-type(odd) {
 }
 </style>
 <script>
+import store from '../store';
 import RangeChartComponent from '../components/amcharts/RangeChartComponent.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
@@ -406,7 +433,17 @@ export default {
 		ConfirmationDialog,
 	},
 	mounted() {
+		this.mountedTs = this.$dayjs()
 		this.fetchEventList();
+		this.tab = 0
+		
+		const interval = setInterval(() => {
+			if(String(window.location).split('#').pop() === '/event-list') {
+				this.getAlarms();
+			} else {
+				clearInterval(interval)
+			}
+		}, 1000);
 	},
 	watch: {
     	options (data) {
@@ -426,10 +463,12 @@ export default {
     },
 	data() {
 		return {
-			tab: 1,
+			mountedTs: null,
+			newAlarms: false,
+			tab: 0,
 			items: [
-				{ tab: 'alarms', content: 'Pending' },
-				{ tab: 'event-list', content: 'System' },
+				{ tab: 'event-list', content: 'Scada' },
+                { tab: 'alarms', content: 'PLC' },
 			],
 			get selectedEvent() {
 				return this.eventList.find(event => event.id === this.selectedEventId)
@@ -582,6 +621,11 @@ export default {
 	},
 	
 	methods: {
+		getAlarms() {
+			store.dispatch('getLiveAlarms', { offset: 0, limit: 1 }).then((ret) => {
+				if (ret.length) this.newAlarms = true
+			});
+		},
 		confirmAction(answer) {
 			if (answer) this.actionToConfirm();
 			this.confirmAckAllToggleDialog = false
@@ -614,9 +658,6 @@ export default {
 			if (type = 7) window.location = `event_handlers.shtm?ehid=${referenceId2}` //png="cog"
 			if (type = 9) window.location = `point_links.shtm?plid=${referenceId2}` //png="link"
 		},
-
-
-//COMPOUND
 		gotoCompoundEvent(compoundEventDetectorId) {
 			window.location = `compound_events.shtm?cedid=${compoundEventDetectorId}` //png="multi_bell"
 		},
@@ -626,21 +667,19 @@ export default {
 		gotoPublisher(publisherId) {
 			window.location = `publisher_edit.shtm?pid=${publisherId}` // png="transmit_edit"
 		},
-		gotoAuditDatasource(referenceId2) {
-			window.location = `data_source_edit.shtm?dsid=${referenceId2}`
-		},
-		gotoAuditDatapoint(referenceId2) {
-			window.location = `data_source_edit.shtm?pid=${referenceId2}`
+		gotoAudit(referenceId1, referenceId2) {
+			if (referenceId1 === 1) {$router.push({ name: 'datapoint-details', params: { id: item.typeRef1 } });$router.go();}
+			else if (referenceId1 === 3) window.location = `data_source_edit.shtm?pid=${referenceId2}`
+			// else if (referenceId1 === 4)
+			else if (referenceId1 === 5) window.location = `compound_events.shtm?cedid=${referenceId2}`
+			else if (referenceId1 === 6) window.location = `scheduled_events.shtm?seid=${referenceId2}`
+			// else if (referenceId1 === 7)
+			// else if (referenceId1 === 8)
+			// else if (referenceId1 === 9)
 		},
 		gotoAuditEventDetector(referenceId2) {
 			window.location = `data_point_edit.shtm?pedid=${referenceId2}` //png="icon_comp_edit"
-		},
-		gotoAuditCompound(referenceId2) {
-			window.location = `compound_events.shtm?cedid=${referenceId2}` //png="multi_bell" 
-		},
-		gotoAuditScheduled(referenceId2) {
-			window.location = `scheduled_events.shtm?seid=${referenceId2}` //png="clock"
-		},
+		},	
 		gotoAuditEventHandler(referenceId2) {
 			window.location = `event_handlers.shtm?ehid=${referenceId2}` //cog
 		},
@@ -683,9 +722,9 @@ export default {
 			await this.$store.dispatch('silenceAll', {eventId: this.selectedEventId});
 			await this.fetchEventList();
 		},
-		async disilenceAllEvents() {
+		async unsilenceAllEvents() {
 			this.loading = true;
-			await this.$store.dispatch('disilenceAll', {eventId: this.selectedEventId});
+			await this.$store.dispatch('unsilenceAll', {eventId: this.selectedEventId});
 			await this.fetchEventList();
 		},
 		async acknowledgeEvent(event) {
@@ -696,8 +735,8 @@ export default {
 			await this.$store.dispatch('silenceEvent', {eventId: event.id});
 			await this.fetchEventList();
 		},
-		async disilenceEvent(event) {
-			await this.$store.dispatch('disilenceEvent', {eventId: event.id});
+		async unsilenceEvent(event) {
+			await this.$store.dispatch('unsilenceEvent', {eventId: event.id});
 			await this.fetchEventList();
 		},
 		async acknowledgeSelectedEvents() {
@@ -708,8 +747,8 @@ export default {
 			await this.$store.dispatch('silenceSelectedEvents', {ids: this.selectedEvents.map(x => x.id).join(',')});
 			await this.fetchEventList();
 		},
-		async disilenceSelectedEvents(event) {
-			await this.$store.dispatch('disilenceSelectedEvents', {ids: this.selectedEvents.map(x => x.id).join(',')});
+		async unsilenceSelectedEvents(event) {
+			await this.$store.dispatch('unsilenceSelectedEvents', {ids: this.selectedEvents.map(x => x.id).join(',')});
 			await this.fetchEventList();
 		},
 		updateDateRange() {
