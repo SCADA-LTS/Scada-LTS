@@ -779,7 +779,7 @@
        </table>
   </div>
 
-    <div class="borderDiv marB marR" style="clear:left;float:left">
+    <div class="borderDivPadded marB marR" style="clear:left;float:left">
          <table align="center" "100%">
            <tr>
              <td>

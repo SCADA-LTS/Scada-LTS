@@ -335,12 +335,10 @@ export default {
 	},
 	methods: {
 		scrollToComponent() {
-			console.log(window.location.href);
 			let element = window.location.href.split('#')[2];
 			if (!!element) {
 				setTimeout(() => {
 					let el = document.getElementById(element);
-					console.log(el);
 					if(!!el) {
 						el.scrollIntoView();	
 					}
