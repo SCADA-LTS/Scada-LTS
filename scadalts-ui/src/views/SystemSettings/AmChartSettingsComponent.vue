@@ -1,5 +1,5 @@
 <template>
-	<v-col cols="12" md="6" id="aggregation-settings">
+	<v-col cols="12" md="6">
 		<v-card>
 			<v-card-title>
 				{{ $t('systemsettings.amcharts.title') }}

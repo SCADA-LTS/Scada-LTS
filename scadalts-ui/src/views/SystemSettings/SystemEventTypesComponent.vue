@@ -1,5 +1,5 @@
 <template>
-	<v-col cols="12" md="6" class="align-stretch" id="system-events-settings">
+	<v-col cols="12" md="6" class="align-stretch">
 		<v-card>
 			<v-card-title>
 				{{ $t('systemsettings.event.title') }}

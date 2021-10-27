@@ -1,5 +1,5 @@
 <template>
-	<v-col cols="12" md="6" id="sms-domain-settings">
+	<v-col cols="12" md="6">
 		<v-card>
 			<v-card-title>
 				{{ $t('systemsettings.smsdomain.title') }}
