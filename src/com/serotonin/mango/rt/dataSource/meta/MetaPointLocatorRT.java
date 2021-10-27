@@ -259,7 +259,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             handleError(runtime, new LocalizableMessage("event.meta.recursionFailure"));
             String msg = MessageFormat.format("Recursion failure: exceeded MAX_RECURSION: expected <= {0} but was {1}, Context: {2}",
                     String.valueOf(MAX_RECURSION), count, generateContext(dataPoint, dataSource));
-            LOG.error(msg);
+            LOG.warn(msg);
             return;
         }
 
@@ -277,14 +277,14 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             }
             catch (ScriptException e) {
                 handleError(runtime, new LocalizableMessage("common.default", e.getMessage()));
-                LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
+                LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
             catch (ResultTypeException e) {
                 handleError(runtime, e.getLocalizableMessage());
-                LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
+                LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
             }
             catch (Exception e) {
-                LOG.error(infoErrorExecutionScript(e, dataPoint, dataSource));
+                LOG.warn(infoErrorExecutionScript(e, dataPoint, dataSource));
                 throw e;
             }
         }
@@ -299,7 +299,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             ScriptExecutor scriptExecutor = new ScriptExecutor();
             context = scriptExecutor.convertContext(vo.getContext());
         } catch (Exception e) {
-            LOG.error(infoErrorInitializationScript(e, dataPoint, dataSource));
+            LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
         }
     }
 

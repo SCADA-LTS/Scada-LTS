@@ -37,7 +37,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OnlyMigrationDataPointUserDAO extends DataPointUserDAO {
+public final class OnlyMigrationDataPointUserDAO extends DataPointUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationDataPointUserDAO.class);
 

@@ -46,7 +46,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 
-public class OnlyMigrationDataPointDAO extends DataPointDAO {
+public final class OnlyMigrationDataPointDAO extends DataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationDataPointDAO.class);
 

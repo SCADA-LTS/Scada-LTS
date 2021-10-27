@@ -22,7 +22,6 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import org.directwebremoting.WebContextFactory;
 import org.joda.time.DateTime;
 
@@ -50,6 +49,7 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
@@ -168,8 +168,6 @@ public class WatchListDwr extends BaseDwr {
 		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
 				|| user.isAdmin()) {
 			watchListDao.deleteWatchList(watchListId);
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			usersProfileDao.updateWatchlistPermissions();
 		} else
 			watchListDao.removeUserFromWatchList(watchListId, user.getId());
 	}
