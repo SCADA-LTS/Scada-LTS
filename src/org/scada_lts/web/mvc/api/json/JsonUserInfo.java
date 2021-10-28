@@ -1,5 +1,5 @@
 package org.scada_lts.web.mvc.api.json;
-
+import com.serotonin.mango.vo.User;
 public class JsonUserInfo {
 
     private int id;
@@ -23,6 +23,17 @@ public class JsonUserInfo {
         this.email = email;
         this.admin = admin;
         this.disabled = disabled;
+    }
+
+    public JsonUserInfo(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.phone = user.getPhone();
+        this.admin = user.isAdmin();
+        this.disabled = user.isDisabled();
     }
 
     public int getId() {

@@ -42,7 +42,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OnlyMigrationWatchListDAO extends WatchListDAO implements GenericDaoCR<WatchList> {
+public final class OnlyMigrationWatchListDAO extends WatchListDAO implements GenericDaoCR<WatchList> {
 	
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationWatchListDAO.class);
 

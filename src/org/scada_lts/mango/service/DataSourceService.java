@@ -132,7 +132,7 @@ public class DataSourceService implements MangoDataSource {
 			List<DataPointVO> dataPointList = dataPointService.getDataPoints(dataSource.getId(), null);
 			for (DataPointVO dataPoint : dataPointList) {
 				dataPoint.setDataSourceName(dataPoint.getName());
-				dataPoint.setDeviceName(dataPoint.getName());
+				dataPoint.setDeviceName(dataSource.getName());
 				dataPointService.updateDataPoint(dataPoint);
 			}
 		}
@@ -154,6 +154,8 @@ public class DataSourceService implements MangoDataSource {
 	private void deleteInTransaction(final int dataSourceId) {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updatePermissions();
 		//TODO: IMPORTANT: DataSources are not deleted from memory! They do not exist in database but
 		//objects are still inside RuntimeManager
 	}
@@ -216,11 +218,15 @@ public class DataSourceService implements MangoDataSource {
 	@Deprecated
 	public void deleteDataSourceUser(int userId) {
 		dataSourceDAO.deleteDataSourceUser(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePermissions();
 	}
 
 	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updatePermissions();
 	}
 
 	public DataSourceVO<?> createDataSource(DataSourceVO<?> dataSource) {

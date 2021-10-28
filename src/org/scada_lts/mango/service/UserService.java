@@ -17,75 +17,67 @@
  */
 package org.scada_lts.mango.service;
 
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
+
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.error.EntityNotUniqueException;
-import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
-import org.scada_lts.permissions.service.*;
-import org.scada_lts.web.mvc.api.json.JsonUser;
-import org.scada_lts.web.mvc.api.json.JsonUserInfo;
-import org.scada_lts.web.mvc.api.json.JsonUserPassword;
+import org.scada_lts.permissions.service.PermissionsService;
+import org.scada_lts.utils.ApplicationBeans;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
-import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataPointPermissions;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataSourcePermissions;
 
 /**
  * UserService
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+
+@Service
 public class UserService implements MangoUser {
 
 	private static final Log LOG = LogFactory.getLog(UserService.class);
 
-	private UserDAO userDAO = new UserDAO();
+	private final IUserDAO userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
-	private UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
-	private UsersProfileService usersProfileService = new UsersProfileService();
+	private final UsersProfileService usersProfileService;
 
-	private PermissionsService<DataPointAccess, User> dataPointPermissionsService = new DataPointUserPermissionsService();
-	private PermissionsService<Integer, User> dataSourcePermissionsService = new DataSourceUserPermissionsService();
-
-	private PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService = new DataPointProfilePermissionsService();
-	private PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService = new DataSourceProfilePermissionsService();
-	private PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService = new ViewProfilePermissionsService();
-	private PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService = new WatchListProfilePermissionsService();
+	private final PermissionsService<DataPointAccess, User> dataPointPermissionsService;
+	private final PermissionsService<Integer, User> dataSourcePermissionsService;
 
 	public UserService() {
+		userDAO = ApplicationBeans.getUserDaoBean();
+		dataPointPermissionsService = ApplicationBeans.getDataPointUserPermissionsServiceBean();
+		dataSourcePermissionsService = ApplicationBeans.getDataSourceUserPermissionsServiceBean();
+		usersProfileService = ApplicationBeans.getUsersProfileService();
 	}
 
-	public UserService(UserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
+	public UserService(IUserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
 					   EventService eventService, PointValueService pointValueService,
 					   UsersProfileService usersProfileService,
 					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,
-					   PermissionsService<Integer, User> dataSourcePermissionsService,
-					   PermissionsService<DataPointAccess, UsersProfileVO> dataPointProfilePermissionsService,
-					   PermissionsService<Integer, UsersProfileVO> dataSourceProfilePermissionsService,
-					   PermissionsService<ViewAccess, UsersProfileVO> viewProfilePermissionsService,
-					   PermissionsService<WatchListAccess, UsersProfileVO> watchListProfilePermissionsService) {
+					   PermissionsService<Integer, User> dataSourcePermissionsService) {
 		this.userDAO = userDAO;
 		this.userCommentDAO = userCommentDAO;
 		this.mailingListService = mailingListService;
@@ -94,10 +86,6 @@ public class UserService implements MangoUser {
 		this.usersProfileService = usersProfileService;
 		this.dataPointPermissionsService = dataPointPermissionsService;
 		this.dataSourcePermissionsService = dataSourcePermissionsService;
-		this.dataPointProfilePermissionsService = dataPointProfilePermissionsService;
-		this.dataSourceProfilePermissionsService = dataSourceProfilePermissionsService;
-		this.viewProfilePermissionsService = viewProfilePermissionsService;
-		this.watchListProfilePermissionsService = watchListProfilePermissionsService;
 	}
 
 	@Override
@@ -151,12 +139,12 @@ public class UserService implements MangoUser {
 			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
 			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
 
-			usersProfileService.getProfileByUser(user).ifPresent(a -> {
-				user.setUserProfileId(a.getId());
-				user.setDataPointProfilePermissions(dataPointProfilePermissionsService.getPermissions(a));
-				user.setDataSourcePermissions(dataSourceProfilePermissionsService.getPermissions(a));
-				user.setViewProfilePermissions(viewProfilePermissionsService.getPermissions(a));
-				user.setWatchListProfilePermissions(watchListProfilePermissionsService.getPermissions(a));
+			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
+				user.setUserProfileId(profile.getId());
+				user.setDataPointProfilePermissions(profile.getDataPointPermissions());
+				user.setDataSourcePermissions(profile.getDataSourcePermissions());
+				user.setViewProfilePermissions(profile.getViewPermissions());
+				user.setWatchListProfilePermissions(profile.getWatchlistPermissions());
 			});
 		}
 	}
@@ -166,8 +154,8 @@ public class UserService implements MangoUser {
 			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
 			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
 
-			usersProfileService.getProfileByUser(user).ifPresent(a -> {
-				user.setUserProfileId(a.getId());
+			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
+				user.setUserProfileId(profile.getId());
 			});
 		}
 	}
@@ -183,16 +171,19 @@ public class UserService implements MangoUser {
 
 	@Override
 	public void updateHideMenu(User user) {
-		userDAO.updateHideMenu(user);
+		updateUser(user);
 	}
 
 	@Override
 	public void updateScadaTheme(User user) {
-		userDAO.updateScadaTheme(user);
+		updateUser(user);
 	}
 
 	@Override
 	public void insertUser(User user) {
+		if(!isUsernameUnique(user.getUsername())) {
+			throw new EntityNotUniqueException("That username already exists!");
+		}
 		try {
 			int id = userDAO.insert(user);
 			user.setId(id);
@@ -224,6 +215,7 @@ public class UserService implements MangoUser {
 		eventService.deleteUserEvent(userId);
 		eventService.updateEventAckUserId(userId);
 		userDAO.delete(userId);
+		usersProfileService.updatePermissions();
 	}
 
 	@Override
@@ -243,48 +235,28 @@ public class UserService implements MangoUser {
 		userCommentDAO.insert(comment, typeId, referenceId);
 	}
 
-	private void updatePermissions(User user) {
-		updateDataSourcePermissions(user, dataSourcePermissionsService);
-		updateDataPointPermissions(user, dataPointPermissionsService);
-	}
-
-	public List<JsonUserInfo> getUserList() {
-		return userDAO.getUserList();
-	}
-
-	public JsonUser getUserDetails(int userId) {
-		return userDAO.getUserDetails(userId);
-	}
-
+	@Override
 	public boolean isUsernameUnique(String username) {
-		return userDAO.usernameUnique(username);
+		return (userDAO.getUser(username) == null);
 	}
 
-	public JsonUser createUser(JsonUserPassword user) {
-		if(!userDAO.usernameUnique(user.getUsername())) {
-			throw new EntityNotUniqueException("That username already exists!");
-		}
-		JsonUser createdUser = userDAO.createUser(user);
-		if(user.getUserProfile() > 0) {
-			usersProfileDAO.insertUserProfile(createdUser.getId(), user.getUserProfile());
-		}
-		return createdUser;
-	}
-
-	public void updateUserDetails(JsonUser user) {
-		userDAO.updateUserDetails(user);
-		Optional<UsersProfileVO> profile = usersProfileService.getProfileByUserId(user.getId());
-		profile.ifPresent(a -> usersProfileDAO.deleteUserProfileByUserId(user.getId()));
-		if(user.getUserProfile() > 0) {
-			usersProfileDAO.insertUserProfile(user.getId(), user.getUserProfile());
+	@Override
+	public void updateUserProfile(User user) {
+		if (user.getUserProfile() == Common.NEW_ID) {
+			usersProfileService.resetUserProfile(user);
+		} else {
+			UsersProfileVO profile = usersProfileService.getUserProfileById(user.getUserProfile());
+			usersProfileService.updateUsersProfile(user, profile);
 		}
 	}
 
+	@Override
 	public void updateUserPassword(int userId, String newPassword) {
-		newPassword = Common.encrypt(newPassword);
-		userDAO.updateUserPassword(userId, newPassword);
+		userDAO.updateUserPassword(userId, Common.encrypt(newPassword));
 	}
 
+
+	@Override
 	public void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException {
 		oldPassword = Common.encrypt(oldPassword);
 		if(oldPassword.equals(userDAO.getUser(userId).getPassword())) {
@@ -292,5 +264,13 @@ public class UserService implements MangoUser {
 		} else {
 			throw new PasswordMismatchException();
 		}
+	}
+
+	private void updatePermissions(User user) {
+		updateDataSourcePermissions(user, dataSourcePermissionsService);
+		updateDataPointPermissions(user, dataPointPermissionsService);
+		usersProfileService.updateDataPointPermissions();
+		usersProfileService.updateDataSourcePermissions();
+		updateUserProfile(user);
 	}
 }

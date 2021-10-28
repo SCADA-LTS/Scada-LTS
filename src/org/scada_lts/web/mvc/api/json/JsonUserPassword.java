@@ -1,4 +1,5 @@
 package org.scada_lts.web.mvc.api.json;
+import com.serotonin.mango.vo.User;
 
 import com.serotonin.mango.Common;
 
@@ -32,5 +33,12 @@ public class JsonUserPassword extends JsonUser {
         } else {
             setPassword(password);
         }
+    }
+
+    @Override
+    public User mapToUser() {
+        User u = super.mapToUser();
+        u.setPassword(this.getPassword());
+        return u;
     }
 }

@@ -46,7 +46,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.permissions.service.ViewGetShareUsers;
+import org.scada_lts.utils.ApplicationBeans;
 
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
@@ -133,7 +133,7 @@ public class View implements Serializable, JsonSerializable {
 			return ShareUser.ACCESS_OWNER;
 
 		if (viewUsers == null) {
-			viewUsers = new ViewGetShareUsers().getShareUsersWithProfile(this);
+			viewUsers = ApplicationBeans.getViewGetShareUsersBean().getShareUsersWithProfile(this);
 		}
 		
 		for (ShareUser vu : viewUsers) {

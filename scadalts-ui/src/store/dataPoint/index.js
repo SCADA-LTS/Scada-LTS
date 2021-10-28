@@ -125,6 +125,13 @@ const storeDataPoint = {
 			});
 		},
 
+		setCmpValue({dispatch}, payload) {
+			return dispatch('requestPost', {
+				url: `/cmp/set/${payload.id}/${payload.name}`,
+				data: payload.requestData
+			});
+		},
+
 		getDataPointValueFromTimeperiod({ dispatch }, payload) {
 			return dispatch(
 				'requestGet',

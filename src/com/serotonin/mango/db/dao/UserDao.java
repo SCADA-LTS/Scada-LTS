@@ -54,12 +54,14 @@ public class UserDao {
 		userService.populateUserPermissions(user);
 	}
 
+	@Deprecated
 	public void updateUserHideMenu(final User user) {
-		userService.updateHideMenu(user);
+		userService.updateUser(user);
 	}
 
+	@Deprecated
 	public void updateUserScadaTheme(final User user) {
-		userService.updateScadaTheme(user);
+		userService.updateUser(user);
 	}
 
 

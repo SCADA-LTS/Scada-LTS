@@ -19,6 +19,7 @@ package org.scada_lts.mango.adapter;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
+import org.scada_lts.exception.PasswordMismatchException;
 
 import java.util.List;
 
@@ -45,8 +46,10 @@ public interface MangoUser {
 
 	void insertUser(User user);
 
+	@Deprecated
 	void updateHideMenu(User user);
 
+	@Deprecated
 	void updateScadaTheme(User user);
 
 	void updateUser(User user);
@@ -59,4 +62,11 @@ public interface MangoUser {
 
 	void insertUserComment(int typeId, int referenceId, UserComment comment);
 
+	boolean isUsernameUnique(String username);
+
+	void updateUserProfile(User user);
+
+	void updateUserPassword(int userId, String newPassword);
+
+	void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException;
 }
