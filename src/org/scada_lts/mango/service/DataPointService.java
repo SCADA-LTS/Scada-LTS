@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
@@ -67,22 +66,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
-import org.springframework.dao.DuplicateKeyException;
-import com.serotonin.db.IntValuePair;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.bean.PointHistoryCount;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.mango.vo.hierarchy.PointFolder;
-import com.serotonin.mango.vo.hierarchy.PointHierarchy;
-import com.serotonin.mango.vo.link.PointLinkVO;
-import com.serotonin.mango.vo.permission.DataPointAccess;
-import com.serotonin.util.Tuple;
 
 import static org.scada_lts.utils.AggregateUtils.*;
 
@@ -353,8 +336,8 @@ public class DataPointService implements MangoDataPoint {
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
-			UsersProfileDao upd = new UsersProfileDao();
-			upd.updateDataPointPermissions();
+			UsersProfileService ups = new UsersProfileService();
+			ups.updateDataPointPermissions();
 		} catch (EmptyResultDataAccessException e) {
 			Log.error(e);
 			return;

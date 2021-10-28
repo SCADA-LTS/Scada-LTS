@@ -12,15 +12,7 @@
 
 		<v-row>
 			<v-col>
-				<div>
-					<h3>SNMP Host testing</h3>
-					<v-text-field
-						v-model="testingOid"
-						append-outer-icon="mdi-send"
-						@click:append-outer="checkOid"
-					>
-					</v-text-field>
-				</div>
+				<OidTester :datasource="ds" />
 			</v-col>
 		</v-row>
 	</DataSourceLoader>
@@ -28,11 +20,12 @@
 <script>
 import DataSourceBase from '../DataSourceBase.vue';
 import config from './config.vue';
+import OidTester from './components/OidTester.vue';
 
 export default {
 	extends: DataSourceBase,
 
-	components: { config },
+	components: { config, OidTester },
 
 	data() {
 		return {

@@ -401,7 +401,19 @@ const ds = {
 				url: `/datasources/modbusip/testpointlocator`,
 				data: configuration
 			});
-        }
+        },
+
+		//SNMP DataSource methods
+		snmpTest({dispatch}, {datasource, oid}) {
+			console.log(datasource);
+			console.log(oid);
+			return dispatch('requestPost', {
+				url: `/datasources/snmp/testSnmp`,
+				data: Object.assign({}, datasource, {oid})
+			});
+
+
+		}
 	},
 
 	getters: {
