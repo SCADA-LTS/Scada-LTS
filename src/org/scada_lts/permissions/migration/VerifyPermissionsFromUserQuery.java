@@ -22,19 +22,19 @@ class VerifyPermissionsFromUserQuery extends AbstractMeasurmentCommand {
         users.forEach(user -> {
 
             verifyUserDataSourcePermissions(user, migrationDataService.getUsersProfileService(),
-                    migrationDataService.getDataSourceService(),
+                    migrationDataService,
                     migrationPermissionsService.getDataSourceUserPermissionsService());
 
             verifyUserDataPointPermissions(user, migrationDataService.getUsersProfileService(),
-                    migrationDataService.getDataPointService(),
+                    migrationDataService,
                     migrationPermissionsService.getDataPointUserPermissionsService());
 
             verifyUserWatchListPermissions(user, migrationDataService.getUsersProfileService(),
-                    migrationDataService.getWatchListService(),
+                    migrationDataService,
                     migrationPermissionsService.getWatchListUserPermissionsService());
 
             verifyUserViewPermissions(user, migrationDataService.getUsersProfileService(),
-                    migrationDataService.getViewService(),
+                    migrationDataService,
                     migrationPermissionsService.getViewUserPermissionsService());
 
         });

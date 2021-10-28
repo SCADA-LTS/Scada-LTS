@@ -83,7 +83,7 @@ public class ScriptsDwr extends BaseDwr {
 				return true;
 			}
 		} catch (Exception e) {
-			LOG.error(infoErrorExecutionScript(e,script), e);
+			LOG.warn(infoErrorExecutionScript(e,script), e);
 		}
 
 		return false;

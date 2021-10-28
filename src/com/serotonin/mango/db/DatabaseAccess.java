@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
-import org.scada_lts.dao.UserDAO;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -160,7 +159,7 @@ abstract public class DatabaseAccess {
 					user.setDisabled(false);
 					user.setDataSourcePermissions(new LinkedList<Integer>());
 					user.setDataPointPermissions(new LinkedList<DataPointAccess>());
-					new UserDAO().initAdminUser(user);
+					new UserDao().saveUser(user);
 
 					// Record the current version.
 					new SystemSettingsDAO().setValue(
