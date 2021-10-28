@@ -43,7 +43,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OnlyMigrationDataSourceDAO extends DataSourceDAO {
+public final class OnlyMigrationDataSourceDAO extends DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationDataSourceDAO.class);
 

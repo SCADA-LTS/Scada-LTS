@@ -45,7 +45,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<View> {
+public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<View> {
 	
 	private Log LOG = LogFactory.getLog(OnlyMigrationViewDAO.class);
 	

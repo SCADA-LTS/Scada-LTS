@@ -74,9 +74,9 @@ public class ScriptController {
 			} catch (ScriptException e) {
 				response.setStatus(ErrorCode.SCRIPT_NOT_EXECUTED);
 				result = "" + e.getMessage();
-				LOG.error(infoErrorExecutionScript(e, script));
+				LOG.warn(infoErrorExecutionScript(e, script));
 			} catch (Exception e) {
-                LOG.error(infoErrorExecutionScript(e, script));
+                LOG.warn(infoErrorExecutionScript(e, script));
 				throw e;
 			}
 		}

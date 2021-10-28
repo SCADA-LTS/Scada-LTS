@@ -1,0 +1,41 @@
+{
+    "id": "backstop_default",
+    "viewports": [
+      {
+        "label": "FullHD PC",
+        "width": 1920,
+        "height": 1080
+      }
+    ],
+    "onBeforeScript": "puppet/onBefore.js",
+    "onReadyScript": "puppet/onReady.js",
+    "scenarios" : [ {
+        "label" : "label",
+        "cookiePath" : "backstop_data/engine_scripts/cookies.json",
+        "url" : "url",
+        "delay" : 5000,
+        "expect" : 0,
+        "misMatchThreshold" : 0.1,
+        "requireSameDimensions" : true,
+        "selectors": [
+          "#viewContainer"
+        ]
+      }],
+    "paths": {
+      "bitmaps_reference": "backstop_data/bitmaps_reference",
+      "bitmaps_test": "backstop_data/bitmaps_test",
+      "engine_scripts": "backstop_data/engine_scripts",
+      "html_report": "backstop_data/html_report",
+      "ci_report": "backstop_data/ci_report"
+    },
+    "report": ["browser", "json"],
+    "engine": "puppeteer",
+    "engineOptions": {
+      "args": ["--no-sandbox"]
+    },
+    "asyncCaptureLimit": 1,
+    "asyncCompareLimit": 15,
+    "debug": false,
+    "debugWindow": false
+  }
+  

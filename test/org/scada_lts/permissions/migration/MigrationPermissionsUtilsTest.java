@@ -1,26 +1,19 @@
 package org.scada_lts.permissions.migration;
 
 import br.org.scadabr.db.utils.TestUtils;
-import br.org.scadabr.vo.permission.ViewAccess;
-import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.LoggingType;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.dao.DataPointUserDAO;
-import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.permissions.service.DataPointUserPermissionsService;
-import org.scada_lts.permissions.service.DataSourceUserPermissionsService;
-import org.scada_lts.permissions.service.WatchListUserPermissionsService;
 
 import java.util.*;
 
@@ -159,5 +152,37 @@ public class MigrationPermissionsUtilsTest {
         Assert.assertEquals(dataPointAccessesExpected, dataPointAccesses);
     }
 
+    @Test
+    public void when_selectDataPointAccesses_with_permission_read_and_set_for_same_datapoint_then_expected_set_permission() {
 
+        //given:
+        Set<DataPointAccess> expected = new HashSet<>();
+        expected.add(new DataPointAccess(5, 2));
+
+        Set<DataPointAccess> dataPointAccesses = new HashSet<>();
+        dataPointAccesses.add(new DataPointAccess(5, 1));
+
+        VirtualPointLocatorVO pointLocatorSettable = new VirtualPointLocatorVO();
+        pointLocatorSettable.setSettable(true);
+
+        DataPointVO dataPointSettable = new DataPointVO(LoggingType.ON_CHANGE.getCode());
+        dataPointSettable.setId(5);
+        dataPointSettable.setPointLocator(pointLocatorSettable);
+
+        SimplePointComponent pointComponent1 = (SimplePointComponent) ViewComponent.newInstance(SimplePointComponent.DEFINITION.getName());
+        pointComponent1.tsetDataPoint(dataPointSettable);
+
+        View view = new View();
+        view.setId(123);
+        view.addViewComponent(pointComponent1);
+
+        Map<Integer, List<DataPointVO>> dataPointsFromViews = MigrationPermissionsUtils.findDataPointsFromViews(Arrays.asList(view));
+        ShareUser shareUser = new ShareUser(3, 2);
+
+        //when:
+        Set<DataPointAccess> result = MigrationPermissionsUtils.selectDataPointAccesses(dataPointsFromViews, dataPointAccesses, view, shareUser);
+
+        //then:
+        Assert.assertEquals(expected, result);
+    }
 }
