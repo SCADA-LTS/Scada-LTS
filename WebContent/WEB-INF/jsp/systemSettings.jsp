@@ -97,7 +97,8 @@
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
-    
+
+<%--
     	SystemSettingsDwr.checkTypeDB(function(msg){
         	
         	if (msg == "derby") {
@@ -108,7 +109,7 @@
         		document.getElementById('radioMysql').checked = true;
 			}
         });
-    
+--%>
     
     }
     
@@ -382,7 +383,7 @@
     
     function dbBackup() {
     	alert("Not implemented !");
-    }+
+    }
 
     function refreshImages() {
 
@@ -412,7 +413,7 @@
     
   </script>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -717,7 +718,8 @@
       </tr>
     </table>
   </div>
-  
+
+<%--
    <div class="borderDiv marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
@@ -745,7 +747,7 @@
           <input id="radioMysql" name="db" type="radio"/>
         </td>
       </tr>
-<%--
+
        <tr>
         <td class="formLabel"><fmt:message key="systemSettings.dbConfiguration.Mssql"/></td>
         <td class="formField">
@@ -758,13 +760,15 @@
           <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-   --%>   
+
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  <div class="borderDiv marB marR" style="float:left">
+--%>
+
+  <div class="borderDivPadded marB marR" style="float:left">
        <table width="100%">
           <tr>
              <td>
@@ -772,8 +776,8 @@
              </td>
           </tr>
           <tr>
-             <td>
-               <button onClick="refreshImages()">Refresh</button>
+             <td align="center">
+               <input type="button" value="Refresh" onClick="refreshImages()"/>
              </td>
           </tr>
        </table>
@@ -784,6 +788,7 @@
            <tr>
              <td>
                <span class="smallTitle"><fmt:message key="systemSettings.newUI"/></span>
+               <tag:help id="newUISettings"/>
              </td>
            </tr>
          </table>
