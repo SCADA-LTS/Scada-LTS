@@ -250,6 +250,19 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "where "
 				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_DATA_TYPE+"<>?";
 
+	public static final String DELETE_POINT_VALUE_BASED_ON_DATAPOINT_WITH_VALUE_LIMIT = ""
+			+"delete "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_ID+"<= " +
+			"(select " + COLUMN_NAME_ID + " from " +
+			"(select " + COLUMN_NAME_ID +
+			" from pointValues " +
+			"where " + COLUMN_NAME_DATA_POINT_ID + " =? " +
+			"order by " + COLUMN_NAME_ID + " desc " +
+			"limit 1 offset ?) lastId)";
+
 	private static final String SELECT_MAX_TIME_WHERE_DATA_POINT_ID = ""
 			+ "select max("
 				+ COLUMN_NAME_TIME_STAMP + ") "
@@ -640,6 +653,10 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
     public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
     	return DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUE_WITH_MISMATCHED_TYPE, new Object[] {dataPointId, dataType});
     }
+
+	public long deletePointValuesWithValueLimit(int dataPointId, int limit){
+		return DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUE_BASED_ON_DATAPOINT_WITH_VALUE_LIMIT, new Object[] {dataPointId, dataPointId, limit});
+	}
     
     public PointValueTime getPointValue(long id) {
 		return ((PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT + " where " + POINT_VALUE_FILTER_BASE_ON_ID, new Object[] {id}, new PointValueRowMapper())).getPointValue();

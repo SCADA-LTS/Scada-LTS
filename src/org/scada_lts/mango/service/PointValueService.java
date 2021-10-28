@@ -622,6 +622,11 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return PointValueDAO.getInstance().deletePointValuesWithMismatchedType(dataPointId, dataType);
     }
 
+    @Override
+    public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
+        return PointValueDAO.getInstance().deletePointValuesWithValueLimit(dataPointId, limit);
+    }
+
     public void updateMetaDataPointByScript(String xid) {
         try {
             DataPointVO dataPoint = dataPointService.getDataPoint(xid);

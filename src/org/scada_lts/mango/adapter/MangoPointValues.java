@@ -41,6 +41,8 @@ public interface MangoPointValues {
 	long savePointValueImpl(final int pointId, final PointValueTime pointValue, final SetPointSource source, boolean async);
 
 	long deletePointValuesWithMismatchedType(int dataPointId, int dataType);
+
+	long deletePointValuesWithValueLimit(int dataPointId, int limit);
 	
 	PointValueTime getPointValue(long id);
 	
