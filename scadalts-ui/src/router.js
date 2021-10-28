@@ -222,17 +222,17 @@ const routing = new Router({
 					/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue'
 				),
 		},
-		
+
 	],
 });
 
 routing.beforeEach((to, from, next) => {
-	if(to.meta.requiresAuth) {
-		if(!store.state.loggedUser) {
+	if (to.meta.requiresAuth) {
+		if (!store.state.loggedUser) {
 			store.dispatch('getUserInfo')
-			.catch(() => {
-				next({ name: 'login'});
-			})
+				.catch(() => {
+					next({ name: 'login' });
+				})
 		}
 	}
 	next();
