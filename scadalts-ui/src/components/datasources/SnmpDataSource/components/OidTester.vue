@@ -65,7 +65,6 @@ export default {
 					};
 				})
 				.catch((e) => {
-					console.log(e);
 					this.status = {
 						type: 'error',
 						message: this.$t(e.data.response),

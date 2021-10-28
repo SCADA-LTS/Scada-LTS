@@ -30,7 +30,6 @@ export default {
 	data() {
 		return {
 			ds: undefined,
-			testingOid: '1.2.3',
 		};
 	},
 
@@ -41,11 +40,7 @@ export default {
 	methods: {
 		async fetchData() {
 			let res = await this.fetchDataSourceDetails();
-			console.log(res);
 			this.ds = res;
-		},
-		checkOid() {
-			console.log(this.testingOid);
 		},
 	},
 };
