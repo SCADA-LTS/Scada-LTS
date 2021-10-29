@@ -8,7 +8,7 @@
 
 <script>
 import Components from '@min-gb/vuejs-components';
-import AlarmsComponent from '../components/graphical_views/AlarmsComponent';
+import AlarmsComponent from '../../components/graphical_views/AlarmsComponent';
 
 export default {
 	el: '#alarms',
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
+@import '../../../node_modules/@min-gb/vuejs-components/dist/min-gb.css';
 
 .alarms {
 	//position: absolute;
