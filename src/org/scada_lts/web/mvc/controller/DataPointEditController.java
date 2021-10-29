@@ -122,6 +122,7 @@ public class DataPointEditController {
         User user = Common.getUser(request);
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox
+        dataPoint.setPurgeWithLimit(false);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         

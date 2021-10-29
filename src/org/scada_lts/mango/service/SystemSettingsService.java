@@ -128,6 +128,7 @@ public class SystemSettingsService {
         json.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
         json.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
+        json.setValuesLimitForPurge(SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
         return json;
     }
 
@@ -140,6 +141,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, json.getFutureDateLimitPeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, json.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, json.getValuesLimitForPurge());
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {

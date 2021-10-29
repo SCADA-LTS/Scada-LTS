@@ -478,7 +478,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -499,7 +499,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -520,7 +520,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -545,7 +545,7 @@
       </tr>
     </table>
   </div>
-  <div class="borderDiv marB marR" style="clear:left;float:left">
+  <div class="borderDivPadded marB marR" style="clear:left;float:left">
     <table width="100%">
       <tr>
         <td>
@@ -610,7 +610,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -652,7 +652,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -714,13 +714,17 @@
         </td>
       </tr>
       <tr>
+        <td class="formLabelRequired"><fmt:message key="systemSettings.valuesLimitForPurge"/></td>
+        <td><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#misc-settings'"/></td>
+      </tr>
+      <tr>
         <td colspan="2" id="miscMessage" class="formError"></td>
       </tr>
     </table>
   </div>
 
 <%--
-   <div class="borderDiv marB marR" style="float:left">
+   <div class="borderDivPadded marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
         <td>

@@ -28,3 +28,8 @@
   Cliquez sur le bouton <b>Purger toutes les données</b> pour supprimer définitivement tous les échantillons ponctuels actuellement dans la base de données. Cela peut être utile pour donner un "nouveau départ" à une instance de Mango, en particulier si des données erronées existent dans la configuration et les activités de configuration.</p>
 
 <p>Utilisez les paramètres "Valeurs des points de rejet à une date ultérieure" pour définir le temps maximum dans le futur pendant lequel les points de données accepteront de nouvelles valeurs. Toute valeur dont l'horodatage dépasse cette valeur sera rejetée, et un message d'erreur sera écrit dans le journal.</p>
+
+<p>
+  Option <b>Values limit for purge</b> is related to property that can be set inside Point properties in Logging properties.
+  It indicates how many values will be left in database after purging data when <b>Purge with limit</b> is enabled for given datapoint.
+</p>

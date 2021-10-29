@@ -12,10 +12,11 @@ public class JsonSettingsMisc implements Serializable {
     private int uiPerformance;
     private int futureDateLimitPeriodType;
     private int futureDateLimitPeriods;
+    private int valuesLimitForPurge;
 
     public JsonSettingsMisc() {}
 
-    public JsonSettingsMisc(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int uiPerformance, int futureDateLimitPeriodType, int futureDateLimitPeriods) {
+    public JsonSettingsMisc(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int uiPerformance, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge) {
         this.groveLogging = groveLogging;
         this.eventPurgePeriodType = eventPurgePeriodType;
         this.eventPurgePeriods = eventPurgePeriods;
@@ -24,6 +25,7 @@ public class JsonSettingsMisc implements Serializable {
         this.uiPerformance = uiPerformance;
         this.futureDateLimitPeriodType = futureDateLimitPeriodType;
         this.futureDateLimitPeriods = futureDateLimitPeriods;
+        this.valuesLimitForPurge = valuesLimitForPurge;
     }
 
     public boolean isGroveLogging() {
@@ -88,5 +90,13 @@ public class JsonSettingsMisc implements Serializable {
 
     public void setFutureDateLimitPeriods(int futureDateLimitPeriods) {
         this.futureDateLimitPeriods = futureDateLimitPeriods;
+    }
+
+    public int getValuesLimitForPurge() {
+        return valuesLimitForPurge;
+    }
+
+    public void setValuesLimitForPurge(int valuesLimitForPurge) {
+        this.valuesLimitForPurge = valuesLimitForPurge;
     }
 }

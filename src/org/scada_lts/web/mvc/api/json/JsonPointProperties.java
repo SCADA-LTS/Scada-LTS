@@ -28,11 +28,12 @@ public class JsonPointProperties implements Serializable {
     private Double discardHighLimit;
     private Integer engineeringUnits;
     private String chartColour;
+    private Boolean purgeWithLimit;
 
     public JsonPointProperties() {
     }
 
-    public JsonPointProperties(String name, String description, Boolean enabled, Integer loggingType, Integer intervalLoggingPeriodType, Integer intervalLoggingPeriod, Integer intervalLoggingType, Double tolerance, Integer purgeType, Integer purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, Integer defaultCacheSize, Boolean discardExtremeValues, Double discardLowLimit, Double discardHighLimit, Integer engineeringUnits, String chartColour) {
+    public JsonPointProperties(String name, String description, Boolean enabled, Integer loggingType, Integer intervalLoggingPeriodType, Integer intervalLoggingPeriod, Integer intervalLoggingType, Double tolerance, Integer purgeType, Integer purgePeriod, EventTextRenderer eventTextRenderer, TextRenderer textRenderer, ChartRenderer chartRenderer, Integer defaultCacheSize, Boolean discardExtremeValues, Double discardLowLimit, Double discardHighLimit, Integer engineeringUnits, String chartColour, Boolean purgeWithLimit) {
         this.name = name;
         this.description = description;
         this.enabled = enabled;
@@ -52,6 +53,7 @@ public class JsonPointProperties implements Serializable {
         this.discardHighLimit = discardHighLimit;
         this.engineeringUnits = engineeringUnits;
         this.chartColour = chartColour;
+        this.purgeWithLimit = purgeWithLimit;
     }
 
     public static void defaultValues(JsonPointProperties body) {
@@ -84,6 +86,8 @@ public class JsonPointProperties implements Serializable {
             body.setEventTextRenderer(defaultValues.getEventTextRenderer());
         if (body.getEnabled() == null)
             body.setEnabled(defaultValues.isEnabled());
+        if (body.getPurgeWithLimit() == null)
+            body.setPurgeWithLimit(defaultValues.isPurgeWithLimit());
     }
 
     public String getName() {
@@ -236,5 +240,13 @@ public class JsonPointProperties implements Serializable {
 
     public void setChartColour(String chartColour) {
         this.chartColour = chartColour;
+    }
+
+    public Boolean getPurgeWithLimit() {
+        return purgeWithLimit;
+    }
+
+    public void setPurgeWithLimit(Boolean purgeWithLimit) {
+        this.purgeWithLimit = purgeWithLimit;
     }
 }

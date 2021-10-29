@@ -88,6 +88,15 @@
 							dense
 						></v-select>
 					</v-col>
+
+					<v-col cols="12">
+                        <v-text-field
+                            v-model="miscSettings.valuesLimitForPurge"
+                            :label="$t('systemsettings.misc.valuesLimitForPurge')"
+                            @input="watchDataChange()"
+                            dense
+                        ></v-text-field>
+                    </v-col>
 				</v-row>
 			</v-card-text>
 		</v-card>

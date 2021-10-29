@@ -94,6 +94,7 @@ public class PointPropertiesAPI {
                     private double discardLowLimit;
                     private double discardHighLimit;
                     private int dataTypeId;
+                    private boolean purgeWithLimit;
 
 
                     public PropertiesPointToJSON(
@@ -115,8 +116,8 @@ public class PointPropertiesAPI {
                             boolean isDiscardExtremeValues,
                             double discardLowLimit,
                             double discardHighLimit,
-                            int dataTypeId
-
+                            int dataTypeId,
+                            boolean purgeWithLimit
                     ) {
                         this.description = description;
                         this.loggingType = loggingType;
@@ -137,6 +138,7 @@ public class PointPropertiesAPI {
                         this.discardLowLimit = discardLowLimit;
                         this.discardHighLimit = discardHighLimit;
                         this.dataTypeId = dataTypeId;
+                        this.purgeWithLimit = purgeWithLimit;
                     }
 
                     public String getDescription() {
@@ -290,6 +292,14 @@ public class PointPropertiesAPI {
                     public void setDataTypeId(int dataTypeId) {
                         this.dataTypeId = dataTypeId;
                     }
+
+                    public boolean isPurgeWithLimit() {
+                        return purgeWithLimit;
+                    }
+
+                    public void setPurgeWithLimit(boolean purgeWithLimit) {
+                        this.purgeWithLimit = purgeWithLimit;
+                    }
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
@@ -311,7 +321,8 @@ public class PointPropertiesAPI {
                         dpvo.isDiscardExtremeValues(),
                         dpvo.getDiscardLowLimit(),
                         dpvo.getDiscardHighLimit(),
-                        dpvo.getPointLocator().getDataTypeId()
+                        dpvo.getPointLocator().getDataTypeId(),
+                        dpvo.isPurgeWithLimit()
                 );
 
                 json = mapper.writeValueAsString(p);
@@ -368,10 +379,12 @@ public class PointPropertiesAPI {
                     private TextRenderer textRenderer;
                     private double tolerance;
                     private String typeKey;
+                    private boolean purgeWithLimit;
 
                     public PropertiesPointToJSON(String chartColour, ChartRenderer chartRenderer, String descConfiguration, String dataSourceName, String dataSourceXId,
                                                  String dataTypeMessage, String deviceName, String description, Double discardHighLimit, Double discardLowLimit, int engineeringUnits, String extendedName, EventTextRenderer eventTextRenderer,
-                                                 int intervalLoggingPeriod, int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey) {
+                                                 int intervalLoggingPeriod, int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey,
+                                                 boolean purgeWithLimit) {
 
                         this.chartColour = chartColour;
                         this.chartRenderer = chartRenderer;
@@ -395,6 +408,7 @@ public class PointPropertiesAPI {
                         this.textRenderer = textRenderer;
                         this.tolerance = tolerance;
                         this.typeKey = typeKey;
+                        this.purgeWithLimit = purgeWithLimit;
                     }
 
                     public String getChartColour() {
@@ -573,6 +587,13 @@ public class PointPropertiesAPI {
                         this.typeKey = typeKey;
                     }
 
+                    public boolean isPurgeWithLimit() {
+                        return purgeWithLimit;
+                    }
+
+                    public void setPurgeWithLimit(boolean purgeWithLimit) {
+                        this.purgeWithLimit = purgeWithLimit;
+                    }
                 }
 
                 //dpvo.isDiscardExtremeValues()
@@ -601,7 +622,8 @@ public class PointPropertiesAPI {
                         dpvo.getPurgeType(),
                         dpvo.getTextRenderer(),
                         dpvo.getTolerance(),
-                        dpvo.getTypeKey());
+                        dpvo.getTypeKey(),
+                        dpvo.isPurgeWithLimit());
 
                 json = mapper.writeValueAsString(p);
 

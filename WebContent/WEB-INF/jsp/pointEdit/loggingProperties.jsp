@@ -26,6 +26,7 @@
       var tolerance = $("tolerance");
       var purgePeriod = $("purgePeriod");
       var purgeType = $("purgeType");
+      var purgeWithLimit = $("purgeWithLimit");
       
       if ($("toleranceSection") && loggingType == <%= DataPointVO.LoggingTypes.ON_CHANGE %>)
           // On change logging for a numeric requires a tolerance setting.
@@ -36,10 +37,12 @@
       if (loggingType == <%= DataPointVO.LoggingTypes.NONE %>) {
           purgePeriod.disabled = true;
           purgeType.disabled = true;
+          purgeWithLimit.disabled = true;
       }
       else {
           purgePeriod.disabled = false;
           purgeType.disabled = false;
+          purgeWithLimit.disabled = false;
       }
       
       if (loggingType == <%= DataPointVO.LoggingTypes.INTERVAL %>)
@@ -58,6 +61,18 @@
           $("discardLowLimit").disabled = true;
           $("discardHighLimit").disabled = true;
       }
+  }
+
+  function changePurgeWithLimit() {
+    var purgeWithLimit = $get("purgeWithLimit");
+    if (purgeWithLimit) {
+        $("purgePeriod").disabled = true;
+        $("purgeType").disabled = true;
+    }
+    else {
+        $("purgePeriod").disabled = false;
+        $("purgeType").disabled = false;
+    }
   }
   
   function clearPointCache() {
@@ -78,6 +93,7 @@
       }
       changeLoggingType();
       changeDiscard();
+      changePurgeWithLimit();
   });
 </script>
 
@@ -193,6 +209,15 @@
         <spring:bind path="form.purgePeriod"><c:if test="${error.purgePeriod != null}"><td class="formError"><fmt:message key="${error.purgePeriod}"/></td></c:if></spring:bind>
       </td>
     </tr>
+
+    <spring:bind path="form.purgeWithLimit">
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="pointEdit.logging.purgeWithLimit"/></td>
+          <td class="formField">
+            <sst:checkbox id="purgeWithLimit" name="purgeWithLimit" selectedValue="${status.value}" onclick="changePurgeWithLimit()"/>
+          </td>
+        </tr>
+    </spring:bind>
       
     <spring:bind path="form.defaultCacheSize">
       <tr>

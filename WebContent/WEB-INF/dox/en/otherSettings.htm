@@ -47,7 +47,12 @@
 </p>
 
 <p>
-  User the "Discard point values future dated" settings to set the maximum amount of time into the future for which 
+  Use the "Discard point values future dated" settings to set the maximum amount of time into the future for which
   data points will accept new values. Any values with timestamps that exceed this value will be discarded, and an error
   message will be written to the log.
+</p>
+
+<p>
+  Option <b>Values limit for purge</b> is related to property that can be set inside Point properties in Logging properties.
+  It indicates how many values will be left in database after purging data when <b>Purge with limit</b> is enabled for given datapoint.
 </p>

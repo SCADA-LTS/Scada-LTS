@@ -91,6 +91,10 @@ public class DataPurge {
             // case, it's ok to delete everything.
             return rm.purgeDataPointValues(dataPoint.getId());
 
+        if (dataPoint.isPurgeWithLimit()) {
+            return rm.purgeDataPointValuesWithLimit(dataPoint.getId());
+        }
+
         // No matter when this purge actually runs, we want it to act like it's midnight.
         DateTime cutoff = new DateTime(runtime);
         cutoff = DateUtils.truncateDateTime(cutoff, Common.TimePeriods.DAYS);

@@ -170,6 +170,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int engineeringUnits;
     @JsonRemoteProperty
     private String chartColour;
+    @JsonRemoteProperty
+    private boolean purgeWithLimit;
 
     public DataPointVO(){
         id = Common.NEW_ID;
@@ -187,6 +189,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
+        purgeWithLimit = false;
     }
 
     public DataPointVO(int loggingType) {
@@ -204,6 +207,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
+        purgeWithLimit = false;
     }
 
 
@@ -581,6 +585,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.chartColour = chartColour;
     }
 
+    public boolean isPurgeWithLimit() {
+        return purgeWithLimit;
+    }
+
+    public void setPurgeWithLimit(boolean purgeWithLimit) {
+        this.purgeWithLimit = purgeWithLimit;
+    }
+
     public DataPointVO copy() {
         try {
             return (DataPointVO) super.clone();
@@ -605,7 +617,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 + ", engineeringUnits=" + engineeringUnits + ", chartColour=" + chartColour
                 + ", pointLocator=" + pointLocator + ", dataSourceTypeId=" + dataSourceTypeId
                 + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
-                + ", lastValue=" + lastValue + ", settable=" + settable + "]";
+                + ", lastValue=" + lastValue + ", settable=" + settable + ", purgeWithLimit=" + purgeWithLimit + "]";
     }
 
     public void validate(DwrResponseI18n response) {
@@ -675,7 +687,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     //
     // Serialization
     //
-    private static final int version = 9;
+    private static final int version = 10;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -701,6 +713,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         SerializationHelper.writeSafeUTF(out, chartColour);
         SerializationHelper.writeSafeUTF(out, description);
         out.writeObject(eventTextRenderer);
+        out.writeBoolean(purgeWithLimit);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -918,6 +931,31 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             chartColour = SerializationHelper.readSafeUTF(in);
             description = SerializationHelper.readSafeUTF(in);
             eventTextRenderer = (EventTextRenderer) in.readObject();
+        }
+        else if (ver == 10) {
+            name = SerializationHelper.readSafeUTF(in);
+            deviceName = SerializationHelper.readSafeUTF(in);
+            enabled = in.readBoolean();
+            pointFolderId = in.readInt();
+            loggingType = in.readInt();
+            intervalLoggingPeriodType = in.readInt();
+            intervalLoggingPeriod = in.readInt();
+            intervalLoggingType = in.readInt();
+            tolerance = in.readDouble();
+            purgeType = in.readInt();
+            purgePeriod = in.readInt();
+            textRenderer = (TextRenderer) in.readObject();
+            chartRenderer = (ChartRenderer) in.readObject();
+            pointLocator = (PointLocatorVO) in.readObject();
+            defaultCacheSize = in.readInt();
+            discardExtremeValues = in.readBoolean();
+            discardLowLimit = in.readDouble();
+            discardHighLimit = in.readDouble();
+            engineeringUnits = in.readInt();
+            chartColour = SerializationHelper.readSafeUTF(in);
+            description = SerializationHelper.readSafeUTF(in);
+            eventTextRenderer = (EventTextRenderer) in.readObject();
+            purgeWithLimit = in.readBoolean();
         }
 
         // Check the purge type. Weird how this could have been set to 0.

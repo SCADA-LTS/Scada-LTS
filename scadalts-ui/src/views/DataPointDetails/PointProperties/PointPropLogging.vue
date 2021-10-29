@@ -85,6 +85,12 @@
 				dense
 			></v-select>
 		</v-col>
+		<v-col cols="12">
+            <v-switch
+                v-model="data.purgeWithLimit"
+                :label="$t('datapointDetails.pointProperties.logging.purgeWithLimit')"
+            ></v-switch>
+        </v-col>
 		<v-col cols="6"> {{ $t('datapointDetails.pointProperties.logging.cache') }} </v-col>
 		<v-col cols="6">
 			<v-text-field v-model="data.defaultCacheSize" dense>
