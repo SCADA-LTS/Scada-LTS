@@ -1,19 +1,33 @@
 <template>
 	<div>
-		<h1>Maintenance Events</h1>
 		<iframe
-			width="720"
-			height="1080"
-			src="http://localhost:8080/ScadaBR/maintenance_events.shtm"
+			class="scada-classic-frame"
+			width="100%"
+			height="100%"
+			frameborder="0"
+			:src="location"
 		>
 		</iframe>
 	</div>
 </template>
 <script>
+import browserMixin from '../../../utils/browser-utils';
+
 export default {
-    
+
+	mixins: [browserMixin],
+
+	data() {
+		return {
+			title: 'Maintenance Events',
+			url: 'maintenance_events.shtm',			
+		}
+	},
+
+	computed: {
+		location() {
+			return this.convertBrowserPath(this.url);
+		}
+	}    
 }
 </script>
-<style scoped>
-
-</style>

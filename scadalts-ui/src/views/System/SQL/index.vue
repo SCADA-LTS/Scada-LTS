@@ -1,19 +1,33 @@
 <template>
 	<div>
-		<h1>SQL</h1>
 		<iframe
-			width="1080"
-			height="720"
-			src="http://localhost:8080/ScadaBR/sql.shtm"
+			class="scada-classic-frame"
+			width="100%"
+			height="100%"
+			frameborder="0"
+			:src="location"
 		>
 		</iframe>
 	</div>
 </template>
 <script>
+import browserMixin from '../../../utils/browser-utils';
+
 export default {
-    
+
+	mixins: [browserMixin],
+
+	data() {
+		return {
+			title: 'SQL',
+			url: 'sql.shtm',			
+		}
+	},
+
+	computed: {
+		location() {
+			return this.convertBrowserPath(this.url);
+		}
+	}    
 }
 </script>
-<style scoped>
-
-</style>

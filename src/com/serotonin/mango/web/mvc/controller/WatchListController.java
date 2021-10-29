@@ -51,6 +51,7 @@ public class WatchListController extends ParameterizableViewController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) {
+		Common.getUser(request).setHideHeader(false);
 		return new ModelAndView(getViewName(), createModel(request));
 	}
 

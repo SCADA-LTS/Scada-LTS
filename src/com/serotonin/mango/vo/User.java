@@ -96,6 +96,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private boolean hideMenu;
 
+
+
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -116,6 +118,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+	private transient boolean hideHeader = false;
 
 	public User() { }
 
@@ -497,6 +500,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setHideMenu(boolean hideMenu) {
 		this.hideMenu = hideMenu;
+	}
+
+	public boolean isHideHeader() {
+		return hideHeader;
+	}
+
+	public void setHideHeader(boolean hideHeader) {
+		this.hideHeader = hideHeader;
 	}
 
 	public void setAttribute(String key, Object value) {

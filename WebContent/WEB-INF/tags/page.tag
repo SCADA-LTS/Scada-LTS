@@ -138,6 +138,7 @@
 <body>
 
 <!-- mainHeader -->
+<c:if test="${!sessionUser.hideHeader}">
 <div id="mainHeader">
   <div>
     <img id="logo" src="assets/logo.png" alt="Logo">
@@ -279,6 +280,7 @@
     </div>
   </div>
 </div>
+</c:if>
 </c:if>
 
 <div id="sltsContent" class="content">
