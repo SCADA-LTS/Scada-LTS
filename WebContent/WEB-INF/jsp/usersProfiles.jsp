@@ -378,5 +378,6 @@
         </div>
       </td>
     </tr>
+    <tag:newPageNotification href="./app.shtm#/user-profiles" ref="userProfilesNotification"/>
   </table>
 </tag:page>

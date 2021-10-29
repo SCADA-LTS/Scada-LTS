@@ -20,43 +20,53 @@
 						<v-col cols="12">
 							<v-row dense>
 								<AuditEventTypesComponent
+									id="audit-events-settings"
 									ref="auditEventTypesComponent"
 									@changed="componentChanged"
 								></AuditEventTypesComponent>
 								<SystemEventTypesComponent
+									id="system-events-settings"
 									ref="systemEventTypesComponent"
 									@changed="componentChanged"
 								></SystemEventTypesComponent>
 								<EmailSettingsComponent
+									id="email-settings"
 									ref="emailSettingsComponent"
 									@changed="componentChanged"
 								></EmailSettingsComponent>
 								<MiscSettingsComponent
+									id="misc-settings"
 									ref="miscSettingsComponent"
 									@changed="componentChanged"
 								></MiscSettingsComponent>
 								<HttpSettingsComponent
+									id="http-settings"
 									ref="httpSettingsComponent"
 									@changed="componentChanged"
 								></HttpSettingsComponent>
 								<DefaultLoggingTypeSettingsComponent
+									id="default-logging-type-settings"
 									ref="defaultLoggingTypeSettingsComponent"
 									@changed="componentChanged"
 								></DefaultLoggingTypeSettingsComponent>
 								<SmsDomainSettingsComponent
+									id="sms-domain-settings"
 									ref="smsDomainSettingsComponent"
 									@changed="componentChanged"
 								></SmsDomainSettingsComponent>
 								<AmChartSettingsComponent
+									id="aggregation-settings"
 									ref="amChartSettingsComponent"
 									@changed="componentChanged"
 								></AmChartSettingsComponent>
-								<ScadaConfigurationComponent></ScadaConfigurationComponent>
+								<ScadaConfigurationComponent
+								 id="scada-configuration"
+								></ScadaConfigurationComponent>
 							</v-row>
 						</v-col>
 					</v-row>
 				</v-col>
-				<v-col cols="12" md="3">
+				<v-col cols="12" md="3" id="system-info-settings">
 					<v-row>
 						<v-col cols="12">
 							<IsAlive
@@ -321,8 +331,20 @@ export default {
 		}
 		store.dispatch('getSystemInfoSettings');
 		this.loadClock();
+		this.scrollToComponent();
 	},
 	methods: {
+		scrollToComponent() {
+			let element = window.location.href.split('#')[2];
+			if (!!element) {
+				setTimeout(() => {
+					let el = document.getElementById(element);
+					if(!!el) {
+						el.scrollIntoView();	
+					}
+				}, 1000);
+			}
+		},
 		async getUserRole() {
 			this.isUserRoleAdmin = await store.dispatch('getUserRole');
 		},
