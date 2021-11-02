@@ -120,6 +120,16 @@ public class SystemSettingsService {
 
     public JsonSettingsMisc getMiscSettings() {
         JsonSettingsMisc json = new JsonSettingsMisc();
+        json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
+        return json;
+    }
+
+    public void saveMiscSettings(JsonSettingsMisc json) {
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
+    }
+
+    public JsonSettingsDataRetention getDataRetentionSettings() {
+        JsonSettingsDataRetention json = new JsonSettingsDataRetention();
         json.setGroveLogging(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.GROVE_LOGGING));
         json.setEventPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE));
         json.setEventPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
@@ -127,12 +137,11 @@ public class SystemSettingsService {
         json.setReportPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
         json.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
         json.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
-        json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
         json.setValuesLimitForPurge(SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
         return json;
     }
 
-    public void saveMiscSettings(JsonSettingsMisc json) {
+    public void saveDataRetentionSettings(JsonSettingsDataRetention json) {
         systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING, json.isGroveLogging());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, json.getEventPurgePeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS, json.getEventPurgePeriods());
@@ -140,7 +149,6 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS, json.getReportPurgePeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, json.getFutureDateLimitPeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, json.getFutureDateLimitPeriods());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, json.getValuesLimitForPurge());
     }
 
@@ -264,7 +272,11 @@ public class SystemSettingsService {
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
     }
 
-    public void purgeData() {
+    public void purgeAllData() {
+        Common.ctx.getRuntimeManager().purgeDataPointValues();
+    }
+
+    public void purgeNow() {
         DataPurge dataPurge = new DataPurge();
         dataPurge.execute(System.currentTimeMillis());
     }
