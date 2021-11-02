@@ -253,14 +253,7 @@
     
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
-                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
-                1,
-                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
                 function() {
                     stopImageFader("saveMiscSettingsImg");
                     setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
@@ -268,6 +261,23 @@
         setUserMessage("miscMessage");
         startImageFader("saveMiscSettingsImg");
     }
+
+    function saveDataRetentionSettings() {
+            SystemSettingsDwr.saveDataRetentionSettings(
+                    $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
+                    1,
+                    $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                    function() {
+                        stopImageFader("saveDataRetentionSettingsImg");
+                        setUserMessage("dataRetentionMessage", "<fmt:message key="systemSettings.dataRetentionSaved"/>");
+                    });
+            setUserMessage("dataRetentionMessage");
+            startImageFader("saveDataRetentionSettingsImg");
+        }
     
     function setUserMessage(type, msg) {
         if (msg)
@@ -299,11 +309,13 @@
     }
     
     function purgeNow() {
-        SystemSettingsDwr.purgeNow(function() {
-            stopImageFader("purgeNowImg");
-            dbSizeUpdate();
-        });
-        startImageFader("purgeNowImg");
+        if (confirm("<fmt:message key="systemSettings.purgeDataPointStrategyConfirm"/>")) {
+            SystemSettingsDwr.purgeNow(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
     }
     
     function saveLangSettings() {
@@ -656,25 +668,15 @@
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.otherSettings"/></span>
-          <tag:help id="otherSettings"/>
+          <span class="smallTitle"><fmt:message key="systemSettings.dataRetentionSettings"/></span>
+          <tag:help id="dataRetentionSettings"/>
         </td>
         <td align="right">
-          <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+          <tag:img id="saveDataRetentionSettingsImg" png="save" onclick="saveDataRetentionSettings();" title="common.save"/>
         </td>
       </tr>
     </table>
     <table>
-      <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
-        <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
-            <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
-            <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
-            <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
-          </select>
-        </td>
-      </tr>
       <%--
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.groveLogging"/></td>
@@ -700,11 +702,6 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()"/>
-        </td>
-      </tr>
-      <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.futureDateLimit"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
@@ -715,13 +712,47 @@
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.valuesLimitForPurge"/></td>
-        <td><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#misc-settings'"/></td>
+        <td><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#data-retention-settings'"/></td>
       </tr>
       <tr>
-        <td colspan="2" id="miscMessage" class="formError"></td>
+        <td colspan="2" align="center">
+          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="dataRetentionMessage" class="formError"></td>
       </tr>
     </table>
   </div>
+
+    <div class="borderDivPadded marB marR" style="float:left">
+      <table width="100%">
+        <tr>
+          <td>
+            <span class="smallTitle"><fmt:message key="systemSettings.otherSettings"/></span>
+            <tag:help id="otherSettings"/>
+          </td>
+          <td align="right">
+            <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
+          <td class="formField">
+            <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
+              <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
+              <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
+              <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" id="miscMessage" class="formError"></td>
+        </tr>
+      </table>
+    </div>
 
 <%--
    <div class="borderDivPadded marB marR" style="float:left">

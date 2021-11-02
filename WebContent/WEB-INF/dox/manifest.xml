@@ -35,7 +35,7 @@
   </item>
 
   <item id="reportInstances">
-    <relation id="otherSettings"/>
+    <relation id="dataRetentionSettings"/>
     <relation id="reportTemplates"/>
   </item>
   
@@ -222,7 +222,6 @@
   </item>
 
   <item id="otherSettings">
-    <relation id="reportInstances"/>
   </item>
   
   <item id="snmpDS"/>
@@ -403,5 +402,9 @@
   </item>
 
   <item id="newUISettings">
+  </item>
+
+  <item id="dataRetentionSettings">
+    <relation id="reportInstances"/>
   </item>
 </doxManifest>

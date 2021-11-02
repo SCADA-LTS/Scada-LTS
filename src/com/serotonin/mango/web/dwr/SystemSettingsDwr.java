@@ -284,10 +284,18 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void saveMiscSettings(int eventPurgePeriodType,
-			int eventPurgePeriods, int reportPurgePeriodType,
-			int reportPurgePeriods, int uiPerformance, boolean groveLogging,
-			int futureDateLimitPeriodType, int futureDateLimitPeriods) {
+	public void saveMiscSettings(int uiPerformance) {
+		Permissions.ensureAdmin();
+		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
+		SystemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
+				uiPerformance);
+	}
+
+	@MethodFilter
+	public void saveDataRetentionSettings(int eventPurgePeriodType,
+								 int eventPurgePeriods, int reportPurgePeriodType,
+								 int reportPurgePeriods, boolean groveLogging,
+								 int futureDateLimitPeriodType, int futureDateLimitPeriods) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
 		SystemSettingsDAO
@@ -300,8 +308,6 @@ public class SystemSettingsDwr extends BaseDwr {
 				reportPurgePeriodType);
 		SystemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
 				reportPurgePeriods);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
-				uiPerformance);
 		SystemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
 				groveLogging);
 		SystemSettingsDAO.setIntValue(
