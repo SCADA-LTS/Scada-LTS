@@ -627,8 +627,7 @@ public class RuntimeManager {
 		//return 0;
 	}
 
-	public long purgeDataPointValuesWithLimit(int dataPointId) {
-		int limit = SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
+	public long purgeDataPointValuesWithLimit(int dataPointId, int limit) {
 		long count = new PointValueService().deletePointValuesWithValueLimit(dataPointId, limit);
 		if (count > 0)
 			updateDataPointValuesRT(dataPointId);

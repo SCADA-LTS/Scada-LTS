@@ -329,9 +329,9 @@
     
     function checkPurgeAllData() {
         if (confirm("<fmt:message key="systemSettings.purgeDataConfirm"/>")) {
-            setUserMessage("miscMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
+            setUserMessage("dataRetentionMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
             SystemSettingsDwr.purgeAllData(function(msg) {
-                setUserMessage("miscMessage", msg);
+                setUserMessage("dataRetentionMessage", msg);
                 dbSizeUpdate();
             });
         }
@@ -716,7 +716,12 @@
       </tr>
       <tr>
         <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()"/>
+          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()" style="margin: 5px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" value="<fmt:message key="systemSettings.purgeNow"/>" onclick="purgeNow()" style="margin: 5px;"/>
         </td>
       </tr>
       <tr>

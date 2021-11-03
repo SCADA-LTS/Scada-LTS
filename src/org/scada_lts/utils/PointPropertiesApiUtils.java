@@ -40,7 +40,8 @@ public final class PointPropertiesApiUtils {
         setIf(source.getDiscardHighLimit(), toUpdate::setDiscardHighLimit, Objects::nonNull);
         setIf(source.getEngineeringUnits(), toUpdate::setEngineeringUnits, Objects::nonNull);
         setIf(source.getChartColour(), toUpdate::setChartColour, Objects::nonNull);
-        setIf(source.getPurgeWithLimit(), toUpdate::setPurgeWithLimit, Objects::nonNull);
+        setIf(source.getPurgeStrategy(), toUpdate::setPurgeStrategy, Objects::nonNull);
+        setIf(source.getPurgeValuesLimit(), toUpdate::setPurgeValuesLimit, Objects::nonNull);
     }
 
     public static Optional<DataPointVO> getDataPointByIdOrXid(Integer id, String xid, DataPointService dataPointService) {

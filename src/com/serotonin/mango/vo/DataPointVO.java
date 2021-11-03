@@ -104,6 +104,17 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 "pointEdit.logging.valueType.average");
     }
 
+    public interface PurgeStrategy {
+        int PERIOD = 1;
+        int LIMIT = 2;
+    }
+
+    private static final ExportCodes PURGE_STRATEGY_CODES = new ExportCodes();
+    static {
+        PURGE_STRATEGY_CODES.addElement(PurgeStrategy.PERIOD, "PERIOD", "pointEdit.purge.type.period");
+        PURGE_STRATEGY_CODES.addElement(PurgeStrategy.LIMIT, "LIMIT", "pointEdit.purge.type.limit");
+    }
+
     public static final int ENGINEERING_UNITS_DEFAULT = 95; // No units
     private static ExportCodes ENGINEERING_UNITS_CODES = new ExportCodes();
     static {
@@ -170,8 +181,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int engineeringUnits;
     @JsonRemoteProperty
     private String chartColour;
+    private int purgeStrategy;
     @JsonRemoteProperty
-    private boolean purgeWithLimit;
+    private int purgeValuesLimit;
 
     public DataPointVO(){
         id = Common.NEW_ID;
@@ -189,7 +201,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
-        purgeWithLimit = false;
+        purgeStrategy = 1;
+        purgeValuesLimit = SystemSettingsDAO
+                .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
     }
 
     public DataPointVO(int loggingType) {
@@ -207,7 +221,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
-        purgeWithLimit = false;
+        purgeStrategy = 1;
+        purgeValuesLimit = SystemSettingsDAO
+                .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
     }
 
 
@@ -308,6 +324,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         AuditEventType.addPropertyMessage(list, "pointEdit.logging.discardLow", discardLowLimit);
         AuditEventType.addPropertyMessage(list, "pointEdit.logging.engineeringUnits", engineeringUnits);
         AuditEventType.addPropertyMessage(list, "pointEdit.props.chartColour", chartColour);
+        AuditEventType.addExportCodeMessage(list, "pointEdit.logging.purgeStrategy", PURGE_STRATEGY_CODES, purgeType);
+        AuditEventType.addPropertyMessage(list, "pointEdit.logging.purgeValuesLimit", purgeValuesLimit);
 
         pointLocator.addProperties(list);
     }
@@ -338,6 +356,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 engineeringUnits);
         AuditEventType
                 .maybeAddPropertyChangeMessage(list, "pointEdit.props.chartColour", from.chartColour, chartColour);
+        AuditEventType.maybeAddExportCodeChangeMessage(list, "pointEdit.logging.purgeStrategy", PURGE_STRATEGY_CODES,
+                from.purgeStrategy, purgeStrategy);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.logging.purgeValuesLimit", from.purgeValuesLimit,
+                purgeValuesLimit);
 
         pointLocator.addPropertyChanges(list, from.pointLocator);
     }
@@ -585,12 +607,20 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.chartColour = chartColour;
     }
 
-    public boolean isPurgeWithLimit() {
-        return purgeWithLimit;
+    public int getPurgeStrategy() {
+        return purgeStrategy;
     }
 
-    public void setPurgeWithLimit(boolean purgeWithLimit) {
-        this.purgeWithLimit = purgeWithLimit;
+    public void setPurgeStrategy(int purgeStrategy) {
+        this.purgeStrategy = purgeStrategy;
+    }
+
+    public int getPurgeValuesLimit() {
+        return purgeValuesLimit;
+    }
+
+    public void setPurgeValuesLimit(int purgeValuesLimit) {
+        this.purgeValuesLimit = purgeValuesLimit;
     }
 
     public DataPointVO copy() {
@@ -617,7 +647,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
                 + ", engineeringUnits=" + engineeringUnits + ", chartColour=" + chartColour
                 + ", pointLocator=" + pointLocator + ", dataSourceTypeId=" + dataSourceTypeId
                 + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
-                + ", lastValue=" + lastValue + ", settable=" + settable + ", purgeWithLimit=" + purgeWithLimit + "]";
+                + ", lastValue=" + lastValue + ", settable=" + settable
+                + ", purgeStrategy=" + purgeStrategy +  ", purgeValuesLimit=" + purgeValuesLimit + "]";
     }
 
     public void validate(DwrResponseI18n response) {
@@ -668,6 +699,12 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             }
         }
 
+        if (!PURGE_STRATEGY_CODES.isValidId(purgeStrategy))
+            response.addContextualMessage("purgeStrategy", "validate.invalidValue");
+
+        if (purgeValuesLimit <= 0)
+            response.addContextualMessage("purgeValuesLimit", "validate.greaterThanZero");
+
         pointLocator.validate(response);
 
         // Check text renderer type
@@ -713,7 +750,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         SerializationHelper.writeSafeUTF(out, chartColour);
         SerializationHelper.writeSafeUTF(out, description);
         out.writeObject(eventTextRenderer);
-        out.writeBoolean(purgeWithLimit);
+        out.writeInt(purgeStrategy);
+        out.writeInt(purgeValuesLimit);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -955,7 +993,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             chartColour = SerializationHelper.readSafeUTF(in);
             description = SerializationHelper.readSafeUTF(in);
             eventTextRenderer = (EventTextRenderer) in.readObject();
-            purgeWithLimit = in.readBoolean();
+            purgeStrategy = in.readInt();
+            purgeValuesLimit = in.readInt();
         }
 
         // Check the purge type. Weird how this could have been set to 0.
@@ -976,6 +1015,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         map.put("pointLocator", pointLocator);
         map.put("eventDetectors", eventDetectors);
         map.put("engineeringUnits", ENGINEERING_UNITS_CODES.getCode(engineeringUnits));
+        map.put("purgeStrategy", PURGE_STRATEGY_CODES.getCode(purgeStrategy));
     }
 
     @Override
@@ -1052,6 +1092,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             engineeringUnits = ENGINEERING_UNITS_CODES.getId(text);
             if (engineeringUnits == -1)
                 engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        }
+
+        text = json.getString("purgeStrategy");
+        if (text != null) {
+            purgeStrategy = PURGE_STRATEGY_CODES.getId(text);
+            if (purgeStrategy == -1)
+                throw new LocalizableJsonException("emport.error.invalid", "purgeStrategy", text,
+                        PURGE_STRATEGY_CODES.getCodeList());
         }
     }
 

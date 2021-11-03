@@ -72,25 +72,48 @@
 			</v-row>
 		</v-col>
 
-		<v-col cols="6"> {{ $t('datapointDetails.pointProperties.logging.purge') }} </v-col>
-		<v-col cols="3">
-			<v-text-field v-model="data.purgePeriod" dense></v-text-field>
-		</v-col>
-		<v-col cols="3">
+		<v-col cols="12">
 			<v-select
-				v-model="data.purgeType"
-				:items="purgePeriodTypeList"
+				v-model="data.purgeStrategy"
+				:label="$t('datapointDetails.pointProperties.logging.purge.title')"
+				:items="purgeStrategyList"
 				item-value="id"
 				item-text="label"
 				dense
 			></v-select>
 		</v-col>
+
 		<v-col cols="12">
-            <v-switch
-                v-model="data.purgeWithLimit"
-                :label="$t('datapointDetails.pointProperties.logging.purgeWithLimit')"
-            ></v-switch>
-        </v-col>
+			<v-row v-show="data.purgeStrategy === 1" dense>
+				<v-col cols="6">
+					{{ $t('datapointDetails.pointProperties.logging.purge') }}
+				</v-col>
+				<v-col cols="3">
+					<v-text-field v-model="data.purgePeriod" dense></v-text-field>
+				</v-col>
+				<v-col cols="3">
+					<v-select
+						v-model="data.purgeType"
+						:items="purgePeriodTypeList"
+						item-value="id"
+						item-text="label"
+						dense
+					></v-select>
+				</v-col>
+			</v-row>
+		</v-col>
+
+		<v-col cols="12">
+			<v-row v-show="data.purgeStrategy === 2" dense>
+				<v-col cols="6">
+					{{ $t('datapointDetails.pointProperties.logging.purgeLimitValues') }}
+				</v-col>
+				<v-col cols="6">
+					<v-text-field v-model="data.purgeValuesLimit" dense></v-text-field>
+				</v-col>
+			</v-row>
+		</v-col>
+
 		<v-col cols="6"> {{ $t('datapointDetails.pointProperties.logging.cache') }} </v-col>
 		<v-col cols="6">
 			<v-text-field v-model="data.defaultCacheSize" dense>
@@ -157,6 +180,9 @@ export default {
 		},
 		valueTypeList() {
 			return this.$store.state.dataPoint.valueTypeList;
+		},
+		purgeStrategyList() {
+			return this.$store.state.dataPoint.purgeStrategyList;
 		},
 	},
 

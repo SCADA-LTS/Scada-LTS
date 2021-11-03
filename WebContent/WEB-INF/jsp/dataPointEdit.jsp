@@ -164,21 +164,8 @@
                        jQuery("#purgeType").val(prop.purgeType);
                        jQuery("#defaultCacheSize").val(prop.defaultCacheSize);
 
-                       if (prop.purgeWithLimit) {
-                            jQuery("#purgeWithLimit").attr('checked','checked');
-                       } else {
-                            jQuery("#purgeWithLimit").removeAttr('checked');
-                       }
-
-                       jQuery("#purgeWithLimit").val(prop.purgeWithLimit);
-
-                       if (prop.purgeWithLimit) {
-                            jQuery("#purgePeriod").attr('disabled','disabled');
-                            jQuery("#purgeType").attr('disabled','disabled');
-                       } else {
-                            jQuery("#purgePeriod").removeAttr('disabled');
-                            jQuery("#purgeType").removeAttr('disabled');
-                       }
+                       jQuery("#purgeStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeValuesLimit").val(prop.purgeValuesLimit);
 
                    }
 
@@ -791,7 +778,6 @@
                         + "<li>Engineering units: " + arrDictEnginneringUnits[properties.engineeringUnits] + "</li>"
                         + htmlLogginProperties
                         + "<li>Purge After: " + properties.purgePeriod + " " + arrDictPurge[properties.purgeType] + "</li>"
-                        + "<li>Purge with limit: " + properties.purgeWithLimit + "</li>"
                         + "<li>Default cache size: " + properties.defaultCacheSize + "</li>"
                         + eventTextRenderer
                         + textRenderer

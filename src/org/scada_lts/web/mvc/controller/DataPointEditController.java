@@ -122,7 +122,6 @@ public class DataPointEditController {
         User user = Common.getUser(request);
         DataPointVO dataPoint = user.getEditPoint();
         dataPoint.setDiscardExtremeValues(false); // Checkbox
-        dataPoint.setPurgeWithLimit(false);
         
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         
@@ -217,6 +216,9 @@ public class DataPointEditController {
 
         if (point.getDefaultCacheSize() < 0)
         	errors.put("defaultCacheSize", "validate.cannotBeNegative");
+
+        if (point.getPurgeValuesLimit() <= 0)
+            errors.put("purgeValuesLimit", "validate.greaterThanZero");
 
         // Make sure that xids are unique
         List<String> xids = new ArrayList<String>();

@@ -77,6 +77,19 @@ const storeDataPoint = {
 			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum') },
 			{ id: 4, label: i18n.t('pointEdit.logging.value.average') },
 		],
+
+		purgeStrategyList: [
+			{
+				id: 1,
+				type: 'PERIOD',
+				label: i18n.t('pointEdit.logging.purge.type.period'),
+			},
+			{
+				id: 2,
+				type: 'LIMIT',
+				label: i18n.t('pointEdit.logging.purge.type.limit'),
+			},
+		],
 	},
 
 	mutations: {},

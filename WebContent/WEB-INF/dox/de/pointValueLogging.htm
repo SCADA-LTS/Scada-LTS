@@ -54,10 +54,20 @@
 </p>
 
 <p>
-  Le param&egrave;tre <b>Purge</b> determine la dur&eacute;e d'historisation de la valeur du point dans la base de donn&eacute;e.
+  The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>
+</p>
+
+<p>
+  Le param&egrave;tre <b>Period</b> determine la dur&eacute;e d'historisation de la valeur du point dans la base de donn&eacute;e.
   Les valeurs peuvent en pratique &ecirc;tre conserv&eacute;es aussi longtemps que n&eacute;cessaire, mais notez que ceci peut engendrer des d&eacute;gradation de performance du syst&egrave;me
   si l'historique d'un point devient trop important. (En fait, la performance du syst&egrave;me d&eacute;pent en grande partie du mat&eacute;riel h&ocirc;te.) 
   Le processus de purge se lance chaque jour &agrave; 3h 05 heure locale.
+</p>
+
+<p>
+  When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in
+  <b>Values Limit</b> will be left in database for this datapoint. The default value can be set in
+  system settings (<b>Values limit for purge</b>).
 </p>
 
 <p>
@@ -67,10 +77,4 @@
   Une valeur &eacute;lev&eacute;e pour la taille du cache peut am&eacute;liorer les performances du syst&egrave;me (car cela peut emp&ecirc;cher les requ&ecirc;tes sur la base), 
   mais la m&eacute;moire est alors consomm&eacute;e par le cache, et des probl&egrave;mes li&eacute;s au manque de m&eacute;moire peuvent survenir. "Vider le cache" n'est pas n&eacute;cessaire en th&eacute;orie, mais peut &ecirc;tre utile en cas de suppression manuelle de point 
   (en utilisant les fonctions SQL par exemple). 
-</p>
-
-<p>
-  The <b>Purge with limit</b> option allows user to change behaviour of purging data. When this option is checked, every
-  time purging is performed for datapoint, number of values set in system settings (<b>Values limit for purge</b>) will be
-  left in database for this datapoint.
 </p>

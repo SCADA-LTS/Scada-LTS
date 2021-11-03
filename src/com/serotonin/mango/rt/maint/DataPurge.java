@@ -91,8 +91,8 @@ public class DataPurge {
             // case, it's ok to delete everything.
             return rm.purgeDataPointValues(dataPoint.getId());
 
-        if (dataPoint.isPurgeWithLimit()) {
-            return rm.purgeDataPointValuesWithLimit(dataPoint.getId());
+        if (dataPoint.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT) {
+            return rm.purgeDataPointValuesWithLimit(dataPoint.getId(), dataPoint.getPurgeValuesLimit());
         }
 
         // No matter when this purge actually runs, we want it to act like it's midnight.
