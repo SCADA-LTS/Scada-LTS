@@ -56,7 +56,7 @@ public class AnalogImageSetRenderer extends ImageSetRenderer {
 
     @Override
     public String getImage(PointValueTime pointValue) {
-        if (imageSet == null)
+        if (imageSet == null || imageSet.isEmpty())
             // Image set not loaded?
             return "imageSetNotLoaded";
 

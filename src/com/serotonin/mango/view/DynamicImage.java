@@ -26,6 +26,14 @@ public class DynamicImage extends ViewGraphic {
         this.imageFilename = imageFilename;
     }
 
+    public static DynamicImage empty(String id) {
+        return new DynamicImage(id, id, "", -1, -1, -1, -1);
+    }
+
+    public boolean isEmpty() {
+        return imageFilename.isEmpty();
+    }
+
     @Override
     public boolean isDynamicImage() {
         return true;

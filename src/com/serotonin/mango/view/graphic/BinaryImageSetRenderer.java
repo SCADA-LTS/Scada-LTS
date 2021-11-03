@@ -63,6 +63,8 @@ public class BinaryImageSetRenderer extends ImageSetRenderer {
 
     @Override
     public String getImage(PointValueTime pointValue) {
+        if (imageSet == null || imageSet.isEmpty())
+            return "imageSetNotLoaded";
         boolean bvalue = false;
         if (pointValue != null && pointValue.getValue() != null)
             bvalue = pointValue.getBooleanValue();

@@ -58,7 +58,7 @@ public class ResourcesService {
         ctx.setAttribute(Common.ContextKeys.IMAGE_SETS, imageSets);
         ctx.setAttribute(Common.ContextKeys.DYNAMIC_IMAGES, dynamicImages);
 
-        Common.ctx = new ContextWrapper(ctx);
+        //Common.ctx = new ContextWrapper(ctx);
 
     }
 

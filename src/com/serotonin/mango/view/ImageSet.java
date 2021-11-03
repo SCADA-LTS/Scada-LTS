@@ -30,6 +30,14 @@ public class ImageSet extends ViewGraphic {
             this.imageFilenames.add(filename);
     }
 
+    public static ImageSet empty(String id) {
+        return new ImageSet(id, id, new String[]{}, -1, -1, -1, -1);
+    }
+
+    public boolean isEmpty() {
+        return imageFilenames.isEmpty();
+    }
+
     @Override
     public boolean isImageSet() {
         return true;

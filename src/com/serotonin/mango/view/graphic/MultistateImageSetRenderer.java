@@ -74,6 +74,10 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
 
     @Override
     public String getImage(PointValueTime pointValue) {
+
+        if (imageSet == null || imageSet.isEmpty())
+            return "imageSetNotLoaded";
+
         Integer state = null;
         if (pointValue != null && pointValue.getValue() != null)
             state = pointValue.getIntegerValue();
@@ -86,13 +90,14 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
             imageId = defaultImage;
 
         if (imageId != null) {
+
             int id = imageId;
 
             if (id >= 0 && id < imageSet.getImageCount())
                 return imageSet.getImageFilename(id);
         }
 
-        return null;
+        return "";
     }
 
     public List<IntValuePair> getImageStateList() {
