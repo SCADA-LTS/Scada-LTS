@@ -18,7 +18,13 @@
  */
 package com.serotonin.mango.view;
 
+import java.io.File;
+
 abstract public class ViewGraphic {
+    public static final String NOT_AVAILABLE_IMG = "images" + File.separator + "cancel.png";
+    public static final int TEXT_X_DEFAULT = 5;
+    public static final int TEXT_Y_DEFAULT = 5;
+
     private final String id;
     private final String name;
     private final int width;
@@ -66,4 +72,6 @@ abstract public class ViewGraphic {
     public boolean isDynamicImage() {
         return false;
     }
+
+    public abstract boolean isAvailable();
 }

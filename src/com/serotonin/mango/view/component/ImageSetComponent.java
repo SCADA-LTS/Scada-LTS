@@ -33,6 +33,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImageSet;
+import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.util.SerializationHelper;
 
 /**
@@ -70,7 +71,7 @@ abstract public class ImageSetComponent extends PointComponent {
     public String defaultImage() {
         if (imageSet != null)
             return getImage(null);
-        return null;
+        return ViewGraphic.NOT_AVAILABLE_IMG;
     }
 
     public int getHeight() {

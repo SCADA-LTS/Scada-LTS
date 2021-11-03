@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageSet extends ViewGraphic {
-    private final List<String> imageFilenames = new ArrayList<String>();
+    private final List<String> imageFilenames = new ArrayList<>();
 
     ImageSet(String id, String name, String[] imageFilenames, int width, int height, int textX, int textY) {
         super(id, name, width, height, textX, textY);
@@ -31,11 +31,12 @@ public class ImageSet extends ViewGraphic {
     }
 
     public static ImageSet empty(String id) {
-        return new ImageSet(id, id, new String[]{}, -1, -1, -1, -1);
+        return new ImageSet(id, id, new String[]{ViewGraphic.NOT_AVAILABLE_IMG}, 32, 32, ViewGraphic.TEXT_X_DEFAULT, ViewGraphic.TEXT_Y_DEFAULT);
     }
 
-    public boolean isEmpty() {
-        return imageFilenames.isEmpty();
+    @Override
+    public boolean isAvailable() {
+        return !imageFilenames.isEmpty() && !(imageFilenames.size() == 1 && ViewGraphic.NOT_AVAILABLE_IMG.equals(imageFilenames.get(0)));
     }
 
     @Override

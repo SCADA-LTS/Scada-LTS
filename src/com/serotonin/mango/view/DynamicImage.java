@@ -27,11 +27,12 @@ public class DynamicImage extends ViewGraphic {
     }
 
     public static DynamicImage empty(String id) {
-        return new DynamicImage(id, id, "", -1, -1, -1, -1);
+        return new DynamicImage(id, id, ViewGraphic.NOT_AVAILABLE_IMG, 32, 32, ViewGraphic.TEXT_X_DEFAULT, ViewGraphic.TEXT_Y_DEFAULT);
     }
 
-    public boolean isEmpty() {
-        return imageFilename.isEmpty();
+    @Override
+    public boolean isAvailable() {
+        return imageFilename != null && !ViewGraphic.NOT_AVAILABLE_IMG.equals(imageFilename);
     }
 
     @Override

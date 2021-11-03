@@ -69,6 +69,13 @@ public class MultistateGraphicComponent extends ImageSetComponent {
 
     @Override
     public String getImage(PointValueTime pointValue) {
+
+        if(imageSet == null)
+            return "imageSetNotLoaded";
+
+        if(!imageSet.isAvailable())
+            return imageSet.getImageFilename(0);
+
         Integer state = null;
         if (pointValue != null && pointValue.getValue() instanceof MultistateValue)
             state = pointValue.getIntegerValue();
@@ -140,7 +147,7 @@ public class MultistateGraphicComponent extends ImageSetComponent {
         if (defaultImage < 0)
             response.addMessage("defaultImageIndex", new LocalizableMessage("validate.cannotBeNegative"));
 
-        if (imageSet != null) {
+        if (imageSet != null && imageSet.isAvailable()) {
             for (Integer index : stateImageMap.values()) {
                 if (index >= imageSet.getImageCount())
                     response
