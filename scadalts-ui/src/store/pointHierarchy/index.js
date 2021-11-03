@@ -25,6 +25,7 @@ const gv = {
 		ADD_POINT_HIERARCHY_ROOT_NODE(state, node) {
 			state.pointHierarchy.push(node);
 		},
+		
 		ADD_POINT_HIERARCHY_NODE(state, {parentNode, apiData}) {
 			let result = searchFolderInHierarchy(state.pointHierarchy, parentNode);
 			if(!!result) {

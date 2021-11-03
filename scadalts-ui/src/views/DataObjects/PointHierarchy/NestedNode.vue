@@ -7,40 +7,72 @@
 		:group="{ name: 'g1' }"
 		@end="stopDragging"
 	>
-		<li v-for="el in list" :key="el.name" :id="el.id">
-			<div>
-				<div class="header">
-					<v-icon v-if="!!el.folder" @click="open(el)">
-						{{ el.open ? 'mdi-folder-open' : 'mdi-folder' }}
-					</v-icon>
-					<v-icon v-else>mdi-cube-outline</v-icon>
-					<span>{{ el.name }}</span>
-					<span v-if="!!el.folder">
-						<v-icon @click="create(el)">mdi-plus-box</v-icon>
-						<v-icon @click="edit(el)">mdi-pencil</v-icon>
-						<v-icon @click="del(el)">mdi-delete</v-icon>
-					</span>
+		<li v-for="el in list" :key="el.name" :id="el.id" class="slts-list-item">
+			<div class="slts-list-item--header">
+				<div class="slts-list-item--main-header">
+					<v-btn icon class="slts-list-item--icon" @click="open(el)">
+						<v-icon v-if="!!el.folder">
+							{{ el.open ? 'mdi-folder-open' : 'mdi-folder' }}
+						</v-icon>
+						<v-icon v-else>mdi-cube-outline</v-icon>
+					</v-btn>
+					<div class="slts-list-item--title">
+						<span v-if="!!el.dataSource && !!showDataSource" class="slts-list-item--ds">
+							{{ el.dataSource }} -
+						</span>
+						{{ el.name }}
+					</div>
 				</div>
-				<div class="content" v-if="el.open">
-					<NestedNode v-if="!!el.children" :list="el.children" :pid="el.id" />
+				<div v-if="!!el.folder" class="slts-list-item--action-buttons">
+					<v-btn icon @click="edit(el)">
+						<v-icon>mdi-pencil</v-icon>
+					</v-btn>
+					<v-btn icon @click="info(el)">
+						<v-icon>mdi-information</v-icon>
+					</v-btn>
+					<v-btn icon @click="del(el)">
+						<v-icon>mdi-delete</v-icon>
+					</v-btn>
 				</div>
 			</div>
+			<div class="slts-list-item--content" v-if="el.open">
+				<NestedNode
+					v-if="!!el.children"
+					:list="el.children"
+					:pid="el.id"
+					:showDataSource="showDataSource"
+					@error="onHierarchyError"
+				/>
+			</div>
 		</li>
-		<CreatePhNode
-			ref="createNode"
-			title="Create new"
-			@result="onNodeCreated"
-		></CreatePhNode>
-		<CreatePhNode
-			ref="editNode"
-			title="Edit existing"
+
+		<EditNodeDialog
+			ref="editNodeDialog"
+			:title="$t('pointHierarchy.dialog.editNode.title')"
 			@result="onNodeEdited"
-		></CreatePhNode>
+		></EditNodeDialog>
+
+		<InfoNodeDialog
+			ref="infoNodeDialog"
+			:title="$t('pointHierarchy.dialog.infoNode.title')"
+		></InfoNodeDialog>
+
+		<ConfirmationDialog
+			:btnvisible="false"
+			:dialog="deleteDialogVisible"
+			:title="$t('pointHierarchy.dialog.deleteNode.title')"
+			:message="$t('pointHierarchy.dialog.deleteNode.message')"
+			@result="onNodeDeleted"
+		></ConfirmationDialog>
+
 	</draggable>
 </template>
 <script>
 import draggable from 'vuedraggable';
-import CreatePhNode from './CreatePhNode.vue';
+import EditNodeDialog from './dialogs/EditNodeDialog.vue';
+import InfoNodeDialog from './dialogs/InfoNodeDialog.vue';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog.vue';
+
 export default {
 	props: {
 		list: {
@@ -51,24 +83,29 @@ export default {
 			required: true,
 			type: String,
 		},
+		showDataSource: {
+			type: Boolean,
+			default: false,
+		},
 	},
+
 	components: {
 		draggable,
-		CreatePhNode,
+		EditNodeDialog,
+		InfoNodeDialog,
+		ConfirmationDialog,
 	},
 	name: 'NestedNode',
 
 	data() {
 		return {
 			opQueue: null,
+			deleteDialogVisible: false,
 		};
 	},
 
 	methods: {
 		stopDragging(e) {
-			console.log(e.from.id);
-			console.log(e.to.id);
-			console.log(e.item.id);
 			if (e.from.id !== e.to.id) {
 				this.$store
 					.dispatch('movePointHierarchyNode', {
@@ -81,107 +118,78 @@ export default {
 						console.log(r);
 					})
 					.catch((e) => {
-						console.log(e);
+						this.$emit('error', e);
 					});
 			}
 		},
 
 		open(el) {
-			//Move to Vuex to handle state//
-			el.open = !el.open;
-			if (el.open) {
-				this.$store.dispatch('fetchPointHierarchyNode', el.id.substring(1)).then((r) => {
-					this.$store.commit('ADD_POINT_HIERARCHY_NODE', {
-						parentNode: el.id,
-						apiData: r,
-					});
-				});
+			if (!!el.folder) {
+				el.open = !el.open;
+				if (el.open) {
+					this.$store
+						.dispatch('fetchPointHierarchyNode', el.id.substring(1))
+						.then((r) => {
+							this.$store.commit('ADD_POINT_HIERARCHY_NODE', {
+								parentNode: el.id,
+								apiData: r,
+							});
+						});
+				}
+			} else {
+				this.info(el);
 			}
+		},
+
+		info(el) {
+			this.$refs.infoNodeDialog.showDialog(el);
 		},
 
 		edit(el) {
-			console.log(el);
+			this.$refs.editNodeDialog.showDialog(el);
+		},
+
+		del(el) {
+			this.deleteDialogVisible = true;
 			this.opQueue = el;
-			this.$refs.editNode.showDialog();
 		},
 
-		del(el) {},
-
-		create(el) {
-			console.log(el);
-			this.opQueue = el;
-			console.log(this.opQueue);
-			this.$refs.createNode.showDialog();
-		},
-
-		onNodeCreated(title) {
-			//TODO: This methods does not work in Backend...
-			console.log(title);
-			console.log(this.opQueue);
-			let el = this.opQueue;
-			if (!!title) {
-				this.$store
-					.dispatch('createPointHierarchyNode', {
-						parentNodeId: el.id.substring(1),
-						nodeName: title,
-					})
-					.then((r) => {
-						el.children.push(
-							new PointHierarchyNode({
-								folder: true,
-								key: r,
-								parentId: el.id.substring(1),
-								title: title,
-							}),
-						);
-					})
-					.catch((e) => {
-						console.error(e);
-					});
-			}
-		},
-
-		onNodeEdited(title) {
-			let el = this.opQueue;
-			if (!!title) {
+		onNodeEdited(node) {
+			if (!!node) {
 				this.$store
 					.dispatch('editPointHierarchyNode', {
-						nodeId: el.id.substring(1),
-						parentNodeId: el.parentId,
-						nodeName: title,
-					})
-					.then((r) => {
-						if (!!r) {
-							el.title = title;
-						}
+						nodeId: node.id.substring(1),
+						parentNodeId: node.parentId,
+						nodeName: node.name,
 					})
 					.catch((e) => {
-						console.error(e);
+						this.$emit('error', e);
 					});
 			}
 		},
 
-		onRootNodeCreated(title) {
-			if (!!title) {
+		onNodeDeleted(result) {
+			this.deleteDialogVisible = false;
+			if (!!result) {
 				this.$store
-					.dispatch('createPointHierarchyNode', {
-						parentNodeId: 0,
-						nodeName: title,
+					.dispatch('deletePointHierarchyNode', {
+						nodeId: this.opQueue.id.substring(1),
+						parentNodeId: this.opQueue.parentId,
+						isFolder: this.opQueue.id.startsWith('f'),
 					})
-					.then((r) => {
-						this.datapointHierarchy.push(
-							new PointHierarchyNode({
-								folder: true,
-								key: r,
-								parentId: 0,
-								title: title,
-							}),
-						);
+					.then(() => {
+						this.$store.dispatch('fetchPointHierarchyNode', 0).then((r) => {
+							this.$store.commit('SET_POINT_HIERARCHY_BY_API', r);
+						});
 					})
 					.catch((e) => {
-						console.error(e);
+						this.$emit('error', e);
 					});
 			}
+		},
+
+		onHierarchyError(e) {
+			this.$emit('error', e);
 		},
 	},
 };
@@ -189,6 +197,25 @@ export default {
 <style scoped>
 .dragArea {
 	min-height: 50px;
-	outline: 1px dashed;
+}
+.slts-list-item {
+	display: flex;
+	flex: 1 1 100%;
+	flex-direction: column;
+	justify-content: center;
+	padding: 5px 0;
+	min-height: 32px;
+}
+.slts-list-item--header {
+	display: flex;
+	justify-content: space-between;
+	min-height: 32px;
+}
+.slts-list-item--main-header {
+	display: flex;
+	align-items: center;
+}
+.slts-list-item--ds {
+	color: #0000008f;
 }
 </style>

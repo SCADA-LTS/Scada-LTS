@@ -5,10 +5,8 @@
 				{{ title }}
 			</v-card-title>
 			<v-card-text>
-                <v-text-field
-                    v-model="nodeName"
-                    label="Name"
-                ></v-text-field>
+				<p v-if="!!message">{{ message }}</p>
+				<v-text-field v-model="nodeName" label="Name"></v-text-field>
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer></v-spacer>
@@ -24,31 +22,36 @@
 </template>
 <script>
 export default {
-	name: 'CreateNodeDialog',
+	name: 'EditNodeDialog',
 
 	data() {
 		return {
-            dialog: false,
-            nodeName: '',
-        };
+			dialog: false,
+			nodeName: '',
+            node: null,
+		};
 	},
 
 	props: {
-		btnvisible: {
-			type: Boolean,
-			default: true,
-		},
 		title: {
 			type: String,
 			default: 'Example title',
 		},
+		message: {
+			type: String,
+			default: null,
+		},
 	},
 
 	methods: {
-        showDialog() {
-            this.dialog = true;
-        },
-        
+		showDialog(node) {
+			this.dialog = true;
+            if(!!node) {
+                this.nodeName = node.name;
+                this.node = node;
+            }
+		},
+
 		cancel() {
 			this.dialog = false;
 			this.$emit('result');
@@ -56,7 +59,12 @@ export default {
 
 		accept() {
 			this.dialog = false;
-			this.$emit('result', this.nodeName);
+            if(!!this.node) {
+                this.node.name = this.nodeName;
+                this.$emit('result', this.node);
+            } else {
+                this.$emit('result', this.nodeName);
+            }
 		},
 	},
 };

@@ -1,7 +1,7 @@
 /* eslint-disable */
 <template>
 	<div>
-		<div class="col-md-4" style="background-color: white; padding: 2em">
+		<div style="background-color: white; padding: 2em">
 			<v-jsoneditor v-model="json" :options="options" :plus="true" style="height: 200px">
 			</v-jsoneditor>
 			<br />
