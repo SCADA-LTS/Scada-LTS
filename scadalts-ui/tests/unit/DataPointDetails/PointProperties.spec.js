@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
-import PointProperties from '@/views/DataPointDetails/PointProperties';
+import PointProperties from '@/views/DataObjects/DataPointDetails/PointProperties';
 import dataPointMock from '../../mocks/objects/DataPointMock';
 import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 

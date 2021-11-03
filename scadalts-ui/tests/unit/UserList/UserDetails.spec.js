@@ -4,7 +4,7 @@ import storeMailingList from '../../mocks/store/recipientListMock';
 import storeUsersMock from '../../mocks/store/usersMock';
 import { exampleUser, blankUser } from '../../mocks/objects/UserMocks';
 
-import UserDetails from '@/views/UserList/UserDetails';
+import UserDetails from '@/views/Users/UserList/UserDetails';
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import storeMailingList from '../../mocks/store/recipientListMock';
 import storeUsersMock from '../../mocks/store/usersMock';
 
-import RecipientList from '@/views/RecipientList';
+import RecipientList from '@/views/Users/RecipientList';
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
