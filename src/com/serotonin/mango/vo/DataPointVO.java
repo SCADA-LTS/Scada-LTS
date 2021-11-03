@@ -222,8 +222,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
         purgeStrategy = 1;
-        purgeValuesLimit = SystemSettingsDAO
-                .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
+        purgeValuesLimit = 100;
     }
 
 
