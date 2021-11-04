@@ -126,6 +126,7 @@
 	"datapointDetails.pointProperties.logging.interval.label": "Interval logging period every",
 	"datapointDetails.pointProperties.logging.purge": "Purge after",
 	"datapointDetails.pointProperties.logging.title": "Logging properties",
+	"datapointDetails.pointProperties.logging.type.title": "Logging Type",
 	"datapointDetails.pointProperties.logging.tolerance": "Tolerance",
 	"datapointDetails.pointProperties.logging.purge.title": "Purge strategy",
 	"datapointDetails.pointProperties.logging.purgeLimitValues": "Values limit",
