@@ -74,6 +74,7 @@ const modules = {
 const store = new Vuex.Store({ modules });
 
 describe('PLC Alarms Notification Tests', () => {
+	console.error = () => {};
 	const wrapper = mount(AlarmNotifications, {
 		store,
 		localVue,

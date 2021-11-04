@@ -3,7 +3,7 @@
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.logging.title') }}</h3>
 		</v-col>
-		<v-col cols="12">
+		<v-col cols="12" id="point-prop-logging--type">
 			<v-select
 				v-model="data.loggingType"
 				:items="loggingTypeList"
@@ -13,7 +13,7 @@
 				dense
 			></v-select>
 		</v-col>
-		<v-col cols="12" v-show="data.loggingType === consts.loggingTypes.INTERVAL">
+		<v-col cols="12" v-show="data.loggingType === consts.loggingTypes.INTERVAL" id="log-type--interval">
 			<v-row dense>
 				<v-col cols="6">
 					<v-text-field
@@ -43,7 +43,7 @@
 				</v-col>
 			</v-row>
 		</v-col>
-		<v-col cols="12" v-if="data.pointLocator.dataTypeId === 3">
+		<v-col cols="12" v-if="data.pointLocator.dataTypeId === 3" id="log-type--numeric">
 			<v-row dense>
 				<v-col cols="12">
 					<v-text-field
@@ -79,7 +79,7 @@
 			</v-row>
 		</v-col>
 
-		<v-col cols="12">
+		<v-col cols="12" id="purge--select">
 			<v-select
 				v-model="data.purgeStrategy"
 				:label="$t('datapointDetails.pointProperties.logging.purge.title')"
@@ -91,7 +91,7 @@
 			></v-select>
 		</v-col>
 
-		<v-col cols="12" v-show="data.purgeStrategy === 1">
+		<v-col cols="12" v-show="data.purgeStrategy === 1" id="purge--period">
 			<v-row dense>
 				<v-col cols="6">
 					<v-text-field
@@ -114,7 +114,7 @@
 			</v-row>
 		</v-col>
 
-		<v-col cols="12" v-show="data.purgeStrategy === 2">
+		<v-col cols="12" v-show="data.purgeStrategy === 2" id="purge--values">
 			<v-row dense>
 				<v-col cols="12">
 					<v-text-field
@@ -127,7 +127,7 @@
 			</v-row>
 		</v-col>
 
-		<v-col cols="12">
+		<v-col cols="12" id="cache">
 			<v-text-field
 				v-model="data.defaultCacheSize"
 				:label="$t('datapointDetails.pointProperties.logging.cache')"
