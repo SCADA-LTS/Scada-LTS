@@ -392,8 +392,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
+    @Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
         return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLast(dataPointId, time);
+    }
+
+    @Override
+    public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override

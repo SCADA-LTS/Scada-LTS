@@ -230,6 +230,22 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			+ "where "
 				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<? "
 			    + "and id not in (?) ";
+
+	public static final String POINT_VALUE_DELETE_BEFORE_WITHOUT_LAST_TWO = ""
+			+"delete "
+			+ "from "
+			+ "pointValues "
+			+ "where "
+			+ COLUMN_NAME_DATA_POINT_ID+"=? "
+			+ "and " + COLUMN_NAME_ID + " < "
+			+ "(select min(id) "
+			+ "from ( "
+			+ "select id "
+			+ "from pointValues "
+			+ "where dataPointId =? "
+			+ "order by id DESC "
+			+ "limit 2 "
+			+ ") lastId ) and " + COLUMN_NAME_TIME_STAMP + "<? ";
 	
 	public static final String POINT_VALUE_DELETE_BASE_ON_POINT_ID = ""
 			+"delete "
@@ -636,11 +652,16 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 
         return value;
     }
-    
+
+	@Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
 		Long lastId = DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_ID_OF_LAST_VALUE, new Object[] { dataPointId }, Long.class );
     	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time, lastId});
     }
+
+	public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+		return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BEFORE_WITHOUT_LAST_TWO, new Object[] {dataPointId, dataPointId, time});
+	}
     
     public long deletePointValue(int dataPointId) {
     	return DAO.getInstance().getJdbcTemp().update(POINT_VALUE_DELETE_BASE_ON_POINT_ID, new Object[] {dataPointId});
