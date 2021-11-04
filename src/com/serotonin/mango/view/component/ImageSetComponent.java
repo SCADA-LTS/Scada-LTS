@@ -71,7 +71,7 @@ abstract public class ImageSetComponent extends PointComponent {
     public String defaultImage() {
         if (imageSet != null)
             return getImage(null);
-        return ViewGraphic.NOT_AVAILABLE_IMG;
+        return null;
     }
 
     public int getHeight() {

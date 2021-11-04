@@ -30,13 +30,13 @@ public class ImageSet extends ViewGraphic {
             this.imageFilenames.add(filename);
     }
 
-    public static ImageSet empty(String id) {
-        return new ImageSet(id, id, new String[]{ViewGraphic.NOT_AVAILABLE_IMG}, 32, 32, ViewGraphic.TEXT_X_DEFAULT, ViewGraphic.TEXT_Y_DEFAULT);
+    public static ImageSet notAvailable(String id) {
+        return new ImageSet(id, id, new String[]{}, WIDTH_HEIGHT_DEFAULT, WIDTH_HEIGHT_DEFAULT, TEXT_X_Y_DEFAULT, TEXT_X_Y_DEFAULT);
     }
 
     @Override
     public boolean isAvailable() {
-        return !imageFilenames.isEmpty() && !(imageFilenames.size() == 1 && ViewGraphic.NOT_AVAILABLE_IMG.equals(imageFilenames.get(0)));
+        return !imageFilenames.isEmpty();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ImageSet extends ViewGraphic {
     }
 
     public String getImageFilename(int index) {
-        return imageFilenames.get(index);
+        return isAvailable() ? imageFilenames.get(index) : ViewGraphic.NOT_AVAILABLE_IMG;
     }
 
     public List<String> getImageFilenames() {

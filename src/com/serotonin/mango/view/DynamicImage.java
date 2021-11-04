@@ -26,13 +26,13 @@ public class DynamicImage extends ViewGraphic {
         this.imageFilename = imageFilename;
     }
 
-    public static DynamicImage empty(String id) {
-        return new DynamicImage(id, id, ViewGraphic.NOT_AVAILABLE_IMG, 32, 32, ViewGraphic.TEXT_X_DEFAULT, ViewGraphic.TEXT_Y_DEFAULT);
+    public static DynamicImage notAvailable(String id) {
+        return new DynamicImage(id, id, "", WIDTH_HEIGHT_DEFAULT, WIDTH_HEIGHT_DEFAULT, TEXT_X_Y_DEFAULT, TEXT_X_Y_DEFAULT);
     }
 
     @Override
     public boolean isAvailable() {
-        return imageFilename != null && !ViewGraphic.NOT_AVAILABLE_IMG.equals(imageFilename);
+        return imageFilename != null && !imageFilename.trim().isEmpty();
     }
 
     @Override
@@ -41,6 +41,6 @@ public class DynamicImage extends ViewGraphic {
     }
 
     public String getImageFilename() {
-        return imageFilename;
+        return isAvailable() ? imageFilename : ViewGraphic.NOT_AVAILABLE_IMG;
     }
 }

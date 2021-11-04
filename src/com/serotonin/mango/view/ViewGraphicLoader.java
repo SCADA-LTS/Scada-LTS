@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -139,13 +140,19 @@ public class ViewGraphicLoader {
 
             viewGraphics.add(g);
         }
-        viewGraphics.sort(Comparator.comparing(ViewGraphic::getName));
+        Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
+            @Override
+            public int compare(final ViewGraphic prev, final ViewGraphic next) {
+                return prev.getName().compareTo(next.getName());
+            }
+        });
     }
 
     private boolean isGraphic(File file) {
         try {
             return ImageIO.read(file) != null;
         } catch (Exception ex) {
+            LOG.warn(ex.getMessage());
             return false;
         }
     }
