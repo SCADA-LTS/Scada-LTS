@@ -41,7 +41,8 @@ export const routes = [
         name: 'alarm-notifications',
         component: AlarmNotifications,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
 ];

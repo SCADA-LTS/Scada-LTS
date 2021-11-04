@@ -17,6 +17,7 @@ import SynopticPanelMenu from '../views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from '../views/SynopticPanel/SynopticPanelItem';
 import WatchList from '../views/WatchList';
 import WatchListItem from '../views/WatchList/WatchListItem';
+import UnauthorizedPage from '../views/401.vue';
 
 import store from '../store/index';
 
@@ -31,6 +32,11 @@ const routing = new Router({
 			path: '/login',
 			name: 'login',
 			component: LoginPage,
+		},
+		{
+			path: '/401',
+			name: '401',
+			component: UnauthorizedPage,
 		},
 		{
 			path: '/about',
@@ -97,6 +103,11 @@ routing.beforeEach((to, from, next) => {
 				.catch(() => {
 					next({ name: 'login' });
 				})
+		}
+	}
+	if(to.meta.requiresAdmin) {
+		if(!!store.state.loggedUser && !store.state.loggedUser.admin) {
+			next({ name: '401' });
 		}
 	}
 	next();

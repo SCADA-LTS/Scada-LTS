@@ -10,7 +10,8 @@ export const routes = [
         name: 'datapoint-list',
         component: DataPointList,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -18,7 +19,8 @@ export const routes = [
         name: 'datapoint-details',
         component: DataPointDetails,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -26,7 +28,8 @@ export const routes = [
         name: 'point-hierarchy',
         component: PointHierarchy,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -34,7 +37,8 @@ export const routes = [
         name: 'point-links',
         component: PointLinks,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -42,7 +46,8 @@ export const routes = [
         name: 'scripts',
         component: Scripting,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
 ];
