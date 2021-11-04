@@ -66,6 +66,7 @@ public class AnalogGraphicComponent extends ImageSetComponent {
     @Override
     public String getImage(PointValueTime pointValue) {
         if (imageSet == null)
+            // Image set not loaded?
             return "imageSetNotLoaded";
 
         if(!imageSet.isAvailable())

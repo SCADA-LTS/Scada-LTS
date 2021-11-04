@@ -33,7 +33,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImageSet;
-import com.serotonin.mango.view.ViewGraphic;
 import com.serotonin.util.SerializationHelper;
 
 /**

@@ -545,7 +545,7 @@ public class ViewDwr extends BaseDwr {
 			response.addContextualMessage("graphicRendererAnalogMin", "viewEdit.graphic.invalidMinMax");
 
 		ImageSet imageSet = getImageSet(imageSetId);
-		if (imageSet == null || !imageSet.isAvailable())
+		if (imageSet == null)
 			response.addContextualMessage("graphicRendererAnalogImageSet", "viewEdit.graphic.missingImageSet");
 
 		if (!response.getHasMessages()) {
@@ -566,7 +566,7 @@ public class ViewDwr extends BaseDwr {
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
-		if (imageSet == null || !imageSet.isAvailable())
+		if (imageSet == null)
 			response.addContextualMessage("graphicRendererBinaryImageSet", "viewEdit.graphic.missingImageSet");
 		else {
 			if (zeroImage == -1)
@@ -617,7 +617,7 @@ public class ViewDwr extends BaseDwr {
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
-		if (imageSet == null || !imageSet.isAvailable())
+		if (imageSet == null)
 			response.addContextualMessage("graphicRendererMultistateImageSet", "viewEdit.graphic.missingImageSet");
 
 		if (!response.getHasMessages()) {

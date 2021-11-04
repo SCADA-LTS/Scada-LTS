@@ -100,7 +100,7 @@ public class MultistateImageSetRenderer extends ImageSetRenderer {
                 return imageSet.getImageFilename(id);
         }
 
-        return "";
+        return null;
     }
 
     public List<IntValuePair> getImageStateList() {
