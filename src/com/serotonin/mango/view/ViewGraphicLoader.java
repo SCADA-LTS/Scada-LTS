@@ -143,9 +143,9 @@ public class ViewGraphicLoader {
         Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
             @Override
             public int compare(final ViewGraphic prev, final ViewGraphic next) {
-                return prev.getName().compareTo(next.getName());
-            }
-        });
+                    return prev.getName().compareTo(next.getName());
+                }
+            });
     }
 
     private boolean isGraphic(File file) {
