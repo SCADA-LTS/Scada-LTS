@@ -1,6 +1,5 @@
 {
 	"common.tp.millisecond": "millisecond",
-	"common.tp.milliseconds": "milliseconds",
 	"common.tp.second": "second",
 	"common.tp.seconds": "seconds",
 	"common.tp.minute": "minute",
@@ -16,6 +15,10 @@
 	"common.tp.year": "year",
 	"common.tp.years": "years",
 	"common.none": "None",
+	"common.update": "Update",
+	"common.reset": "Reset",
+	"common.close": "Close",
+	"common.acknowledge": "Acknowledge",
 	"about": "This is an about page (i18n test) locales",
 	"alarmlevels.critical": "Critical",
 	"alarmlevels.information": "Information",

@@ -1,5 +1,6 @@
 <template>
 	<v-app>
+		<!-- {{wsLive}} -->
 		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
 			<v-list nav dense>
 				<v-list-item link href="#/alarms">
@@ -74,16 +75,24 @@
 		</v-navigation-drawer>
 
 		<v-app-bar app dark color="primary">
+			
 			<v-list-item>
 				<v-list-item-content>
-					<v-list-item-title class="title"> Scada-LTS </v-list-item-title>
+					<v-list-item-title class="title"> Scada-LTS 
+						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }}
+						version {{ $store.getters.appMilestone }}	
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
+			<v-list-item max-width="50">
+				<v-list-item-content>
+					
+				</v-list-item-content>		
+			</v-list-item>
 
 			<v-spacer></v-spacer>
+			
 			<v-menu bottom rounded max-width="250" offset-y v-if="user">
 				<template v-slot:activator="{ on }">
 					<v-btn icon v-on="on">
@@ -119,6 +128,20 @@
 		</v-app-bar>
 
 		<v-main>
+			<div class="text-center ma-2">
+				<v-snackbar v-if="notification != null" v-model="notification">
+					<a @click="refresh">{{ notification.text }}</a>
+					<template v-slot:action="{ attrs }">
+						<v-btn
+						color="pink"
+						text
+						v-bind="attrs"
+						@click="popNotification">
+						{{$t("common.close")}}
+						</v-btn>
+					</template>
+				</v-snackbar>
+			</div>
 			<v-container fluid>
 				<router-view></router-view>
 			</v-container>
@@ -127,11 +150,35 @@
 </template>
 
 <script>
+import webSocketMixin from '@/utils/web-socket-utils';
+import internetMixin from '@/utils/connection-status-utils';
+function reload () {
+	location.reload();
+}
 export default {
 	name: 'app',
+	mixins: [webSocketMixin, internetMixin],
 
 	data() {
-		return {};
+		return {
+			notifications: [],
+			onAppOnline: () => {
+				this.wsLive = true;
+			},
+			onAppOffline() {
+				this.wsLive = false;
+			},
+			wsCallback: () => {		
+				this.wsLive = true;	
+				this.wsSubscribeTopic(`alarm`, x => {
+					this.notifications.push({ts: Date.now(), href:'/ScadaBR/app.shtm#/event-list', text: x.body})
+				});
+				// this.wsSubscribeTopic(`datapoint/${this.data.id}/value`, x => {
+				// 	// alert(JSON.stringify(x))
+				// });		
+			},
+			wsLive: false
+		};
 	},
 
 	computed: {
@@ -145,6 +192,10 @@ export default {
 				return false;
 			}
 		},
+		notification() {
+			if (this.notifications.length) return this.notifications[this.notifications.length-1]
+			else return null
+		}
 	},
 
 	mounted() {
@@ -152,9 +203,16 @@ export default {
 	},
 
 	methods: {
+		refresh() {
+			if (this.$route.name==='event-list') reload();
+			else this.$router.push({ name: 'event-list' });
+		},
 		logout() {
 			this.$store.dispatch('logoutUser');
 			this.$router.push({ name: 'login' });
+		},
+		popNotification() {
+			this.notifications.pop()
 		},
 	},
 };

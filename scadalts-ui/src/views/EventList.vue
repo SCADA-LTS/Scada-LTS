@@ -302,6 +302,7 @@
 
     		</v-row>
 			<v-data-table
+				id='eventList'
 				v-model="selectedEvents"
 				show-select
 				:headers="headers"
@@ -346,15 +347,16 @@
 						<span v-if="!item.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>	
 					</template>
 					<template v-slot:item.actions="{ item }">
-						
-						<v-icon class="mr-2" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
-							mdi-volume-mute
-						</v-icon>
-						<v-icon class="mr-2" @click.stop="unsilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
-							mdi-volume-high
-						</v-icon>
+						<span v-if="!item.ackTs">
+							<v-icon class="mr-2" border="0" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
+								mdi-volume-mute
+							</v-icon>
+							<v-icon class="mr-2" border="0" @click.stop="unsilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
+								mdi-volume-high
+							</v-icon>
+						</span>
 
-						<v-icon @click.stop="$router.push({ name: 'datapoint-details', params: { id: item.typeRef1 } });$router.go();" v-if="item.typeId===1" title="point details">
+						<v-icon border="0" @click.stop="$router.push({ name: 'datapoint-details', params: { id: item.typeRef1 } });$router.go();" v-if="item.typeId===1" title="point details">
 							mdi-magnify
 						</v-icon>
 
@@ -378,7 +380,7 @@
 						mdi-publish
 						</v-icon>
 
-						<v-icon  title="Audit events" @click.stop="gotoAudit(item.typeRef1, item.typeRef2)" v-if="false">
+						<v-icon  title="Audit events" @click.stop="gotoAudit(item.typeRef1, item.typeRef2)" v-if="item.typeId===8">
 						mdi-glasses
 						</v-icon>
 
@@ -395,6 +397,10 @@
 	</div>
 </template>
 <style scoped>
+
+#eventList button.v-icon {
+	border: 0!important;
+}
 
 .blink {
 	color: red;
@@ -481,8 +487,8 @@ export default {
 				datapoint: null,
 				page: 1,
 				itemsPerPage: 10,
-				sortBy: ['alarmLevel'],
-				sortDesc: [true],
+				sortBy: ['alarmLevel', 'activeTs'],
+				sortDesc: [true, true],
 				startDate: null,
 				endDate: null,
 				startTime: "00:00",
@@ -496,6 +502,12 @@ export default {
         	loading: false,
         	options: {},
 			headers: [
+				{
+					text: this.$t('#'),
+					sortable: true,
+					align: 'center',
+					value: 'id',
+				},
 				{
 					text: this.$t('eventList.alarmLevel'),
 					sortable: true,
@@ -518,7 +530,7 @@ export default {
 					text: this.$t('eventList.message'),
 					align: 'center',
 					value: 'message',
-					sortable: true,
+					sortable: false,
 				},
 				{
 					text: this.$t('eventList.status'),
