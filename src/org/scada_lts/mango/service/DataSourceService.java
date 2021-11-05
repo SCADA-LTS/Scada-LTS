@@ -138,6 +138,10 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	public void updateAndInitializeDataSource(DataSourceVO<?> dataSource) {
+		Common.ctx.getRuntimeManager().saveDataSource(dataSource);
+	}
+
 	@Override
 	public void deleteDataSource(final int dataSourceId) {
 		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);

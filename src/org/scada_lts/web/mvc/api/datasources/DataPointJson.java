@@ -2,6 +2,9 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
+
+import java.util.ArrayList;
 
 public class DataPointJson {
 
@@ -40,6 +43,7 @@ public class DataPointJson {
         dpVO.setDataSourceId(this.dataSourceId);
         dpVO.setDeviceName(this.deviceName);
         dpVO.setPointLocator((PointLocatorVO) this.pointLocator.parsePointLocatorData());
+        dpVO.setEventDetectors(new ArrayList<>());
         return dpVO;
     }
 

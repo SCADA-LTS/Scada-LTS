@@ -42,6 +42,7 @@
 						<v-checkbox
 							v-model="datapoint.pointLocator.settable"
 							label="Settable"
+							:disabled="settableDisabled"
 						></v-checkbox>
 					</v-col>
 					<v-col cols="12">
@@ -87,6 +88,10 @@ export default {
 					description: '',
 				};
 			},
+		},
+		settableDisabled: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

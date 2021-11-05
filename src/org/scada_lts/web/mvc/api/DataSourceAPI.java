@@ -218,7 +218,7 @@ public class DataSourceAPI {
                 if(dataSource != null) {
                     DataSourceVO<?> vo = dataSource.createDataSourceVO();
                     if(vo != null) {
-                        dataSourceService.saveDataSource(vo);
+                        dataSourceService.updateAndInitializeDataSource(vo);
                         return new ResponseEntity<>(HttpStatus.CREATED);
                     } else {
                         LOG.error("DataSource JSON Type Not recoginized!");

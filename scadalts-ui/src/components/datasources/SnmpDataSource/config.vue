@@ -56,12 +56,6 @@
 							label="Community"
 						></v-text-field>
 					</v-col>
-					<v-col v-if="datasource.snmpVersion == 1">
-						<v-checkbox
-							label="Traps Enabled"
-							v-model="datasource.trapEnabled"
-						></v-checkbox>
-					</v-col>
 				</v-row>
 				<v-row v-else>
 					<v-col cols="6">
@@ -88,7 +82,7 @@
 						<v-row v-if="datasource.securityLevel !== 1">
 							<v-col cols="6">
 								<v-select
-									label="Security Level"
+									label="Authentication protocol"
 									v-model="datasource.authProtocol"
 									:items="authProtocols"
 								></v-select>
@@ -96,7 +90,7 @@
 							<v-col cols="6">
 								<v-text-field
 									v-model="datasource.authPassphrase"
-									label="Context Name"
+									label="Authentication passphrase"
 								></v-text-field>
 							</v-col>
 						</v-row>
@@ -115,6 +109,30 @@
 								></v-text-field>
 							</v-col>
 						</v-row>
+					</v-col>
+				</v-row>
+			</v-col>
+			<v-col cols="12" v-if="datasource.snmpVersion !== 0">
+				<v-row>
+					<v-col cols="4">
+						<v-checkbox
+							label="Traps Enabled"
+							v-model="datasource.trapEnabled"
+						></v-checkbox>
+					</v-col>
+					<v-col cols="4">
+						<v-text-field
+							v-model="datasource.privPassphrase"
+							label="Trap port"
+							:disabled="!datasource.trapEnabled"
+						></v-text-field>
+					</v-col>
+					<v-col cols="4">
+						<v-text-field
+							v-model="datasource.privPassphrase"
+							label="Local address"
+							:disabled="!datasource.trapEnabled"
+						></v-text-field>
 					</v-col>
 				</v-row>
 			</v-col>

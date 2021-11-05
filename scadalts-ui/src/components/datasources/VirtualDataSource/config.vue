@@ -3,6 +3,7 @@
 		title="Virtual Data Source"
 		:datasource="datasource"
 		:creator="createMode"
+		availablePeriodTypes="1,2,3,8"
 		@cancel="cancel()"
 		@accept="save()"
 	>

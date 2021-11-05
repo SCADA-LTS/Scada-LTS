@@ -3,6 +3,7 @@
 		title="ModBus IP Data Source"
 		:datasource="datasource"
 		:creator="createMode"
+		availablePeriodTypes="1,2,3,8"
 		@cancel="cancel()"
 		@accept="save()"
 	>
@@ -75,7 +76,7 @@
 					v-model="datasource.host"
 					placeholder="127.0.0.1"
 					label="Host"
-					:disabled="datasource.transportType === 3"
+					:disabled="datasource.transportType === 'TCP_LISTENER'"
 				></v-text-field>
 			</v-col>
 			<v-col cols="3">

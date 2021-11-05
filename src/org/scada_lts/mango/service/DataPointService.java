@@ -278,8 +278,12 @@ public class DataPointService implements MangoDataPoint {
 			existingDataPoint.setDescription(dp.getDescription());
 			existingDataPoint.setEnabled(dp.isEnabled());
 			existingDataPoint.setPointLocator(dp.getPointLocator());
-			updateDataPoint(existingDataPoint);
+			updateAndInitializeDataPoint(existingDataPoint);
 		}
+	}
+
+	public void updateAndInitializeDataPoint(DataPointVO dp) {
+		Common.ctx.getRuntimeManager().saveDataPoint(dp);
 	}
 
 	public void createDataPointConfiguration(DataPointVO dp) {

@@ -340,10 +340,11 @@ export default {
 				this.datapoint.pointLocator.range === 1 ||
 				this.datapoint.pointLocator.range === 3
 			) {
-				this.datapoint.settable = false;
-				this.settingsInputDisabled = true;
-			} else {
 				this.settingsInputDisabled = false;
+			} else {
+				this.datapoint.settable = false;
+				this.datapoint.pointLocator.settable = false;
+				this.settingsInputDisabled = true;
 			}
 		},
 

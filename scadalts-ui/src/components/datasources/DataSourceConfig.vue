@@ -52,7 +52,7 @@
 						<UpdatePeriodType
 							:value="datasource.updatePeriodType"
 							@update="onUpdatePeriodTypeUpdate"
-							types="1,2,3"
+							:types="availablePeriodTypes"
 						>
 						</UpdatePeriodType>
 					</v-col>
@@ -108,6 +108,10 @@ export default {
 		polling: {
 			type: Boolean,
 			default: true,
+		},
+		availablePeriodTypes: {
+			type: String,
+			default: '1,2,3'
 		},
 		datasource: {
 			type: Object,
