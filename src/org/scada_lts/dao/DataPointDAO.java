@@ -21,9 +21,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -250,6 +250,19 @@ public class DataPointDAO {
 
 		List<DataPointVO> dataPointList = DAO.getInstance().getJdbcTemp().query(templateSelectWhereId, new Object[] {dataSourceId}, new DataPointRowMapper());
 		return dataPointList;
+	}
+
+	public List<DataPointVO> getDataPointByKeyword(String[] keywords) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointByKeyword(String search) search:" + keywords.toString());
+		}
+		String templateSelectWhereSearch = DATA_POINT_SELECT + " WHERE true ";
+		List<String> args = new ArrayList<String>();
+		for (String keyword : keywords) {
+			templateSelectWhereSearch += " AND dp." + COLUMN_NAME_DATAPOINT_NAME + " LIKE ? ";
+			args.add("%"+keyword+"%");
+		}
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereSearch, new DataPointRowMapper(), args.toArray());
 	}
 
 	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {

@@ -580,5 +580,6 @@
         </div>
       </td>
     </tr>
+    <tag:newPageNotification href="./app.shtm#/recipient-list" ref="recipientListNotification"/>
   </table>
 </tag:page>

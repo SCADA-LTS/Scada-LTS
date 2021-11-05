@@ -23,6 +23,7 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
@@ -30,10 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -53,64 +51,19 @@ public class ViewAPI {
     @Resource
     ViewService viewService;
 
-    @RequestMapping(value = "/api/view/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
+    @GetMapping(value = "/api/view/getAll")
+    public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
         LOG.info("/api/view/getAll");
-
         try {
             User user = Common.getUser(request);
-
-            if (user != null) {
-                class ViewJSON implements Serializable {
-                    private long id;
-                    private String xid;
-
-                    ViewJSON(long id, String xid) {
-                        this.setId(id);
-                        this.setXid(xid);
-                    }
-
-                    public long getId() {
-                        return id;
-                    }
-
-                    public void setId(long id) {
-                        this.id = id;
-                    }
-
-                    public String getXid() {
-                        return xid;
-                    }
-
-                    public void setXid(String xid) {
-                        this.xid = xid;
-                    }
-                }
-
-                List<View> lstV;
-                if (user.isAdmin()) {
-                    lstV = viewService.getViews();
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
-
-                List<ViewJSON> lst = new ArrayList<>();
-                for (View view : lstV) {
-                    ViewJSON vJ = new ViewJSON(view.getId(), view.getXid());
-                    lst.add(vJ);
-                }
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
-
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(viewService.getAllViews(),HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

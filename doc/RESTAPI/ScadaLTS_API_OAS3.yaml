@@ -152,6 +152,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/JsonDataPoint'
+  /datapoints/datasource:
+    get:
+      tags:
+        - DataPointAPI
+      parameters:
+        - name: 'id'
+          description: 'DataSource ID'
+          in: 'query'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'Get more detailed Data Point object'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JsonDataPoint'
   /datapoint/getAll:
     get:
       tags:
@@ -203,6 +223,33 @@ paths:
                       type: string
                     description:
                       type: string
+  /datasource:
+    get:
+      tags:
+        - DataSourceAPI
+      parameters:
+      - name: 'xid'
+        description: 'DataSource XID'
+        in: 'path'
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled:
+                    type: boolean
+                  xid:
+                    type: string
+                  id:
+                    type: number
+                  name:
+                    type: string
   /datasource/getAll:
     get:
       tags:
@@ -215,12 +262,100 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                    xid:
-                      type: string
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
+  /userProfiles/:
+    get:
+      tags:
+        - UserProfilesAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
+    post:
+      tags:
+        - UserProfilesAPI
+      requestBody:
+        description: User Profile creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileVO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileVO'
+    put:
+      tags:
+        - UserProfilesAPI
+      requestBody:
+        description: User Profile update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileVO'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileVO'
+  /userProfiles/{id}:
+    get:
+      tags:
+        - UserProfilesAPI
+      parameters:
+        - name: 'id'
+          description: 'User Profile ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileVO'
+    delete:
+      tags:
+        - UserProfilesAPI
+      parameters:
+        - name: 'id'
+          description: 'User Profile ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: number
+  /userProfiles/generateXid:
+    get:
+      tags:
+        - UserProfilesAPI
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
   /events/datapoint/{id}:
     get:
       tags:
@@ -277,12 +412,8 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                    xid:
-                      type: string
+                  $ref: '#/components/schemas/ScadaObjectIdentifier'
+
   /view/getByXid/{xid}:
     get:
       tags:
@@ -783,30 +914,115 @@ paths:
       responses:
         '200':
           description: ''
-  /user/getAll:
+  /users/:
     get:
       tags:
-        - UserAPI
+        - UsersAPI
+      responses:
+        '200':
+          description: 'Simple list of basic users info'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JsonUserInfo'
+    post:
+      tags:
+        - UsersAPI
+      requestBody:
+        description: 'User Object with Password'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonUserPassword'
+      responses:
+        '200':
+          description: 'Create User'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JsonUser'
+    put:
+      tags:
+        - UsersAPI
+      requestBody:
+        description: 'User Object'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonUser'
+      responses:
+        '200':
+          description: 'Create User'
+          content:
+            application/json:
+              schema:
+                type: number
+  /users/{id}:
+    get:
+      tags:
+        - UsersAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'User Details'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonUser'
+    delete:
+      tags:
+        - UsersAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'User Details'
+          content:
+            application/json:
+              schema:
+                type: number
+
+  /users/password:
+    put:
+      tags:
+        - UsersAPI
+      requestBody:
+        description: 'User Object'
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: number
+                password:
+                  type: string
+                oldPassword:
+                  description: 'Old Password is required only for non admin users'
+                  type: number
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: number
-                    name:
-                      type: string
-                    password:
-                      type: string
-                    email:
-                      type: string
-                    admin:
-                      type: boolean
+                type: number
   /watch-lists:
     get:
       tags:
@@ -866,45 +1082,45 @@ paths:
                           type: number
                         accessType:
                           type: number
-/watch-lists/xid/{xid}:
-  get:
-    tags:
-      - WatchListAPI
-    parameters:
-      - name: 'xid'
-        in: 'path'
-        required: true
-        schema:
-          type: string
-    responses:
-      '200':
-        description: ''
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: number
-                xid:
-                  type: string
-                name:
-                  type: string
-                userId:
-                  type: number
-                pointList:
-                  type: array
-                  items:
-                    type: object
-                watchListUsers:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      userId:
-                        type: number
-                      accessType:
-                        type: number
+  /watch-lists/xid/{xid}:
+    get:
+      tags:
+        - WatchListAPI
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  xid:
+                    type: string
+                  name:
+                    type: string
+                  userId:
+                    type: number
+                  pointList:
+                    type: array
+                    items:
+                      type: object
+                  watchListUsers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: number
+                        accessType:
+                          type: number
   /watch-lists/getNames:
     get:
       tags:
@@ -2131,6 +2347,8 @@ components:
           type: string
         typeId:
           type: number
+        settable:
+          type: boolean
     EventDTO:
       type: object
       properties:
@@ -2618,6 +2836,10 @@ components:
           type: number
         username:
           type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
         email:
           type: string
         phone:
@@ -2629,6 +2851,51 @@ components:
         homeUrl:
           type: string
         lastLogin:
+          type: number
+        receiveAlarmEmails:
+          type: number
+        receiveOwnAuditEvents:
+          type: boolean
+        theme:
+          type: string
+        hideMenu:
+          type: boolean
+        userProfile:
+          type: number
+    JsonUserPassword:
+      type: object
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        admin:
+          type: boolean
+        disabled:
+          type: boolean
+        homeUrl:
+          type: string
+        lastLogin:
+          type: number
+        receiveAlarmEmails:
+          type: number
+        receiveOwnAuditEvents:
+          type: boolean
+        theme:
+          type: string
+        hideMenu:
+          type: boolean
+        userProfile:
           type: number
     JsonDescription:
       type: object
@@ -2660,6 +2927,25 @@ components:
           type: string
         name:
           type: string
+    JsonUserInfo:
+      type: object
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        admin:
+          type: boolean
+        disabled:
+          type: boolean
     SynopticPanelJSON:
       type: object
       properties:
@@ -2673,6 +2959,46 @@ components:
           type: string
         vectorImage:
           type: string
+    UserProfileVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        name:
+          type: string
+        dataSourcePermissions:
+          type: array
+          items:
+            type: number
+        dataPointPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              dataPointId:
+                type: number
+              permission:
+                type: number
+        watchlistPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+              permission:
+                type: number
+        viewPermissions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+              permission:
+                type: number
   parameters:
     Authorization:
       name: Authorization

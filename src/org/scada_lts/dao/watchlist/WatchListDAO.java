@@ -18,7 +18,10 @@
 package org.scada_lts.dao.watchlist;
 
 import java.sql.*;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -26,8 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.ShareUserRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -68,8 +73,8 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 	private static final int COLUMN_INDEX_WLU_WATCH_LIST_ID = 1;
 	private static final int COLUMN_INDEX_WLU_DATA_POINT_ID = 2;
 	private static final int COLUMN_INDEX_WLU_SORT_ORDER = 3;
-	
-	
+
+
 	//watchlistPoints 
 	private static final String COLUMN_NAME_WLP_DATA_POINT_ID = "dataPointId";
 	private static final String COLUMN_NAME_WLP_WATCHLIST_ID = "watchListId";
@@ -134,7 +139,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ COLUMN_NAME_USER_ID+", "
 				+ COLUMN_NAME_NAME+") "
 			+ "values (?,?,?)";
-	
+
 	public static final String WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ORDERY_BY_NAME = " "
 				+ COLUMN_NAME_USER_ID+"=? or "
 				+ "id in (select watchListId from watchListUsersProfiles where "+COLUMN_NAME_USER_PROFILE_ID+"=?) or "
@@ -146,7 +151,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "id in (select watchListId from watchListUsersProfiles where "+COLUMN_NAME_USER_PROFILE_ID+"=? and "+COLUMN_NAME_WLUP_PERMISSION+">? ) or "
 			+ "id in (select watchListId from watchListUsers where "+COLUMN_NAME_USER_ID+"=? and "+COLUMN_NAME_USER_ACCESS_TYPE+">?) "
 			+ "order by name";
-	
+
 	private static final String WATCH_LIST_USERS_SELECT_BASE_ON_WATCH_LIST_ID = ""
 			+"select "
 				+ COLUMN_NAME_WLU_USER_ID+", "
@@ -228,15 +233,6 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 				+ COLUMN_NAME_WLP_DATA_POINT_ID + " "
 			+ "in ";
 
-	private static final String WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
-			+ "select "
-			+ COLUMN_NAME_WLP_WATCHLIST_ID+ ", "
-			+ COLUMN_NAME_WLUP_PERMISSION + " "
-			+ "from "
-			+ "watchListUsersProfiles "
-			+ "where "
-			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
-
 	private static final String WATCHLIST_USER_BASE_ON_USER_ID = ""
 			+"select "
 			+ COLUMN_NAME_WLU_WATCHLIST_ID+", "
@@ -262,6 +258,37 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			+ "where "
 			+ COLUMN_NAME_WLU_WATCHLIST_ID+"=? and "
 			+ COLUMN_NAME_WLU_USER_ID+"=?";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"wlup." + COLUMN_NAME_WLUP_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"watchListUsersProfiles wlup " +
+			"on " +
+			"wlup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"wlup." + COLUMN_NAME_WLP_WATCHLIST_ID + "=?;";
+
+	private static final String SELECT_DATAPOINT_ORDER_FOR_WATCHLIST =""
+			+"SELECT "
+			+ COLUMN_NAME_WLP_DATA_POINT_ID + ", "
+			+ COLUMN_NAME_WLP_SORT_ORDER + " "
+			+ "FROM watchListPoints "
+			+ "WHERE " + COLUMN_NAME_WLP_WATCHLIST_ID + "=?";
+
+	private static final String DELETE_DATAPOINT_ORDER_FOR_WATCHLIST = "" +
+			"DELETE FROM watchListPoints " +
+			"WHERE " + COLUMN_NAME_WLP_WATCHLIST_ID + "=?";
+
+	private static final String PUT_DATAPOINT_ORDER_FOR_WATCHLIST = "" +
+			"INSERT (" +
+			COLUMN_NAME_WLP_WATCHLIST_ID + "," +
+			COLUMN_NAME_WLP_DATA_POINT_ID + "," +
+			COLUMN_NAME_WLP_SORT_ORDER + ") " +
+			"VALUES (?,?,?)";
 
 	// @formatter:on
 	
@@ -436,20 +463,6 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
-	public List<WatchListAccess> selectWatchListPermissionsByProfileId(int usersProfileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectWatchListPermissionsByProfileId(int usersProfileId) usersProfileId:" + usersProfileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
-			WatchListAccess dataPointAccess = new WatchListAccess();
-			dataPointAccess.setId(rs.getInt(COLUMN_NAME_WLP_WATCHLIST_ID));
-			dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_WLUP_PERMISSION));
-			return dataPointAccess;
-		});
-
-	}
-
 	public List<WatchList> selectWatchListsWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT + " where " + WATCH_LIST_FILTER_BASE_ON_USER_ID_USER_PROFILE_ID_PERMISSION_ORDER_BY_NAME,
 				new Object[] { userId, profileId, ShareUser.ACCESS_NONE, userId, ShareUser.ACCESS_NONE },
@@ -509,5 +522,48 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(WATCHLIST_USER_DELETE_BASE_ON_WATCHLIST_ID_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<ShareUser> selectWatchListShareUsers(int watchListId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int watchListId) watchListId:" + watchListId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_WATCHLIST_ID,
+					new Object[]{watchListId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
+
+	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
+		if(LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointOrder()");
+		}
+
+		JsonDataPointOrder order = new JsonDataPointOrder();
+		List<Map<String, Object>> rows = DAO.getInstance().getJdbcTemp().queryForList(SELECT_DATAPOINT_ORDER_FOR_WATCHLIST, watchListId);
+		for (Map row : rows) {
+			order.addPointOrder((Integer) row.get(COLUMN_NAME_WLP_DATA_POINT_ID), (Integer) row.get(COLUMN_NAME_WLP_SORT_ORDER));
+		}
+		return order;
+
+	}
+
+	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
+
+		//Delete all order
+		DAO.getInstance().getJdbcTemp().update(DELETE_DATAPOINT_ORDER_FOR_WATCHLIST, pointOrder.getWatchListId());
+
+		List<Object[]> batchArgs = pointOrder.getPointIds().entrySet().stream()
+				.map(a -> new Object[]{pointOrder.getWatchListId(), a.getKey(), a.getValue()})
+				.collect(Collectors.toList());
+
+		DAO.getInstance().getJdbcTemp()
+				.batchUpdate(WATCH_LIST_POINTS_INSERT, batchArgs);
+
 	}
 }

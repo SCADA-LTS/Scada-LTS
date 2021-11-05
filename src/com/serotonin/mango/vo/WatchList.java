@@ -98,6 +98,10 @@ public class WatchList implements JsonSerializable {
         return pointList;
     }
 
+    public void setPointList(List<DataPointVO> pointList) {
+        this.pointList.addAll(pointList);
+    }
+
     public int getUserId() {
         return userId;
     }

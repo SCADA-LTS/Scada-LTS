@@ -17,11 +17,13 @@
  */
 package org.scada_lts.dao;
 
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -33,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,14 +49,12 @@ public class DataPointUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataPointUserDAO.class);
 
-	private static final String COLUMN_NAME_ID = "userId";
 	private static final String COLUMN_NAME_DP_ID = "dataPointId";
 	private static final int COLUMN_INDEX_DP_ID = 1;
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final int COLUMN_INDEX_USER_ID = 2;
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final int COLUMN_INDEX_PERMISSION = 3;
-
 	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
 
 	// @formatter:off
@@ -86,16 +87,6 @@ public class DataPointUserDAO {
 			+ "delete from dataPointUsers where "
 				+ COLUMN_NAME_DP_ID + "=? ";
 
-	private static final String DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
-			+ "select "
-			+ COLUMN_NAME_DP_ID+ ", "
-			+ COLUMN_NAME_USER_PROFILE_ID+ ", "
-			+ COLUMN_NAME_PERMISSION + " "
-			+ "from "
-			+ "dataPointUsersProfiles "
-			+ "where "
-			+ COLUMN_NAME_USER_PROFILE_ID+ "=?";
-
 	private static final String DATA_POINT_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
 			+"insert dataPointUsers ("
 			+COLUMN_NAME_DP_ID+","
@@ -112,6 +103,19 @@ public class DataPointUserDAO {
 			+ COLUMN_NAME_DP_ID+"=? "
 			+ "and "
 			+ COLUMN_NAME_USER_ID+"=?";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"dpup." + COLUMN_NAME_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"dataPointUsersProfiles dpup " +
+			"on " +
+			"dpup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"dpup." + COLUMN_NAME_DP_ID + "=?;";
 
 	// @formatter:on
 
@@ -214,20 +218,6 @@ public class DataPointUserDAO {
 		return getDataPointAccessList(userId);
 	}
 
-	public List<DataPointAccess> selectDataPointPermissionsByProfileId(int profileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectWatchListPermissionsByProfileId(int profileId) profileId:" + profileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{profileId}, (rs, rowNum) -> {
-			DataPointAccess dataPointAccess = new DataPointAccess();
-			dataPointAccess.setDataPointId(rs.getInt(COLUMN_NAME_DP_ID));
-			dataPointAccess.setPermission(rs.getInt(COLUMN_NAME_PERMISSION));
-			return dataPointAccess;
-		});
-
-	}
-
 	public int[] insertPermissions(int userId, List<DataPointAccess> toInsert) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPermissions(int userId, List<DataPointAccess> toInsert) user:" + userId + "");
@@ -257,5 +247,20 @@ public class DataPointUserDAO {
 
 		return DAO.getInstance().getJdbcTemp()
 				.batchUpdate(DATA_POINT_USERS_DELETE_DATA_POINT_ID_AND_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<ShareUser> selectDataPointShareUsers(int dataPointId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectDataPointShareUsers(int dataPointId) dataPointId:" + dataPointId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_POINT_ID,
+					new Object[]{dataPointId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
 	}
 }

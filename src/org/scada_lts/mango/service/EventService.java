@@ -41,6 +41,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.stereotype.Service;
@@ -157,6 +158,19 @@ public class EventService implements MangoEvent {
 		return lst;
 		
 	}
+
+	@Override
+	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
+
+		List<EventInstance> lst;
+		if (typeRef1 == -1) {
+			lst = eventDAO.getPendingEvents(typeId, userId);
+		} else {
+			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
+		}
+		return lst;
+
+	}
 	
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
@@ -190,8 +204,14 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {	
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
-	}	
-	
+	}
+
+	@Override
+	public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
+		return getPendingSimpleEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
+	}
+
+
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
 		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,
@@ -473,6 +493,26 @@ public class EventService implements MangoEvent {
 
 	public List<EventDTO> getDataPointEventsWithLimit(int datapointId, int limit, int offset) {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
+	}
+
+	public SQLPageWithTotal<EventDTO> getEventsWithLimit(int alarmLevel,
+														 int eventSourceType,
+														 String status,
+														 String keywords,
+														 int typeRef,
+														 String[] sortBy,
+														 boolean[] sortDesc,
+														 int limit,
+														 int offset) {
+		return eventDAO.findEvents(alarmLevel,
+		eventSourceType,
+		status,
+		keywords,
+		typeRef,
+		sortBy,
+		sortDesc,
+		limit,
+		offset);
 	}
 
 }

@@ -33,6 +33,7 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
 
@@ -106,9 +107,9 @@ public class UserEntry extends EmailRecipient {
         if (user == null)
             return;
         if (!user.isDisabled()) {
-            if(type == CommunicationChannelType.EMAIL)
+            if(type == CommunicationChannelType.EMAIL && !StringUtils.isEmpty(user.getEmail()))
                 addresses.add(user.getEmail());
-            if(type == CommunicationChannelType.SMS)
+            if(type == CommunicationChannelType.SMS && !StringUtils.isEmpty(user.getPhone()))
                 addresses.add(user.getPhone());
         }
     }

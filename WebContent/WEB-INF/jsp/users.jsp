@@ -121,6 +121,8 @@
 
         show($("userDetails"));
         $set("username", user.username);
+        $set("firstName", user.firstName);
+        $set("lastName", user.lastName);
         $set("password", user.password);
         $set("email", user.email);
         $set("phone", user.phone);
@@ -231,13 +233,13 @@
                 }
             }
             
-            UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
+            UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
                     dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), parseHomeUrl($get("homeUrl")),
                     saveUserCB);
         }
         else
-            UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
+            UsersDwr.saveUser(editingUserId, $get("firstName"), $get("lastName"), $get("password"), $get("email"), $get("phone"),
                     $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
                     $get("theme"), saveUserCB);
      
@@ -403,6 +405,14 @@
               <td class="formLabelRequired"><fmt:message key="users.username"/></td>
               <td class="formField"><input id="username" type="text"/></td>
             </tr>
+            <tr id="firstNameRow">
+              <td class="formLabelRequired"><fmt:message key="users.firstName"/></td>
+              <td class="formField"><input id="firstName" type="text"/></td>
+            </tr>
+            <tr id="lastNameRow">
+              <td class="formLabelRequired"><fmt:message key="users.lastName"/></td>
+              <td class="formField"><input id="lastName" type="text"/></td>
+            </tr>
             <tr>
               <td class="formLabelRequired"><fmt:message key="users.newPassword"/></td>
               <td class="formField"><input id="password" type="text"/></td>
@@ -462,5 +472,7 @@
         </div>
       </td>
     </tr>
+
+    <tag:newPageNotification href="./app.shtm#/users" ref="usersNotification"/>
   </table>
 </tag:page>

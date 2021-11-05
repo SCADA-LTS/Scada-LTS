@@ -27,6 +27,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -67,6 +68,10 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		return dataSourceDAO.getAllDataSources();
+	}
+
 	@Override
 	public DataSourceVO<?> getDataSource(String xid) {
 		return dataSourceDAO.getDataSource(xid);
@@ -101,7 +106,7 @@ public class DataSourceService implements MangoDataSource {
 			List<DataPointVO> dataPointList = dataPointService.getDataPoints(dataSource.getId(), null);
 			for (DataPointVO dataPoint : dataPointList) {
 				dataPoint.setDataSourceName(dataPoint.getName());
-				dataPoint.setDeviceName(dataPoint.getName());
+				dataPoint.setDeviceName(dataSource.getName());
 				dataPointService.updateDataPoint(dataPoint);
 			}
 		}
@@ -121,6 +126,8 @@ public class DataSourceService implements MangoDataSource {
 	private void deleteInTransaction(final int dataSourceId) {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updatePermissions();
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -181,10 +188,14 @@ public class DataSourceService implements MangoDataSource {
 	@Deprecated
 	public void deleteDataSourceUser(int userId) {
 		dataSourceDAO.deleteDataSourceUser(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePermissions();
 	}
 
 	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updatePermissions();
 	}
 }

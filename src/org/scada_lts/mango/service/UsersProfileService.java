@@ -9,55 +9,52 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IUserDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.utils.ApplicationBeans;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+@Service
 public class UsersProfileService {
 
     private static final Log LOG = LogFactory.getLog(UsersProfileService.class);
     private static final String LIST_SIZE_IS_GREATER_THAN_1 = "The user has more than one profile assigned. \nuserId: {0},\nprofiles: {1}\n";
 
-    private static final Set<UsersProfileVO> currentProfileList = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private static final AtomicInteger lock = new AtomicInteger();
-
-    private final UsersProfileDAO usersProfileDAO;
-    private final DAO dao;
-    private final UserDAO userDAO;
+    private final IUsersProfileDAO usersProfileDAO;
+    private final IUserDAO userDAO;
     private final PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService;
     private final PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService;
     private final PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService;
     private final PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService;
 
+
     public UsersProfileService() {
-        this.usersProfileDAO = new UsersProfileDAO();
-        this.dao = DAO.getInstance();
-        this.userDAO = new UserDAO();
-        this.watchListPermissionsService = new WatchListProfilePermissionsService();
-        this.dataPointPermissionsService = new DataPointProfilePermissionsService();
-        this.dataSourcePermissionsService = new DataSourceProfilePermissionsService();
-        this.viewPermissionsService = new ViewProfilePermissionsService();
+        usersProfileDAO = ApplicationBeans.getUsersProfileDaoBean();
+        userDAO = ApplicationBeans.getUserDaoBean();
+        dataPointPermissionsService = ApplicationBeans.getDataPointProfilePermissionsService();
+        dataSourcePermissionsService = ApplicationBeans.getDataSourceProfilePermissionsService();
+        viewPermissionsService = ApplicationBeans.getViewProfilePermissionsService();
+        watchListPermissionsService = ApplicationBeans.getWatchListProfilePermissionsService();
     }
 
-    public UsersProfileService(UsersProfileDAO usersProfileDAO, DAO dao, UserDAO userDAO,
+    public UsersProfileService(IUsersProfileDAO usersProfileDAO, IUserDAO userDAO,
                                PermissionsService<WatchListAccess, UsersProfileVO> watchListPermissionsService,
                                PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService,
                                PermissionsService<Integer, UsersProfileVO> dataSourcePermissionsService,
                                PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService) {
         this.usersProfileDAO = usersProfileDAO;
-        this.dao = dao;
         this.userDAO = userDAO;
         this.watchListPermissionsService = watchListPermissionsService;
         this.dataPointPermissionsService = dataPointPermissionsService;
@@ -70,26 +67,20 @@ public class UsersProfileService {
     }
 
     public List<UsersProfileVO> getUsersProfiles(Comparator<UsersProfileVO> comparator) {
-        if(isEmpty()) {
-            if(lock.getAndDecrement() == 0) {
-                try {
-                    getProfiles(Integer.MAX_VALUE)
-                            .forEach(a -> {
-                                populateUserProfilePermissions(a);
-                                add(a);
-                            });
-                } finally {
-                    lock.set(0);
-                }
-            }
-        }
-        return stream()
+        return getProfiles(Integer.MAX_VALUE).stream()
                 .sorted(comparator)
+                .map(this::populateUserProfilePermissions)
                 .collect(Collectors.toList());
     }
 
+    public List<ScadaObjectIdentifier> getAllUserProfiles() {
+        List<ScadaObjectIdentifier> userProfiles = new ArrayList<>();
+        getUsersProfiles().forEach(up -> userProfiles.add(new ScadaObjectIdentifier(up.getId(), up.getXid(), up.getName())));
+        return userProfiles;
+    }
+
     public String generateUniqueXid() {
-        return dao.generateUniqueXid(UsersProfileVO.XID_PREFIX, "usersProfiles");
+        return usersProfileDAO.generateUniqueXid(UsersProfileVO.XID_PREFIX);
     }
 
     public UsersProfileVO getUserProfileByName(String name) {
@@ -103,8 +94,7 @@ public class UsersProfileService {
     public UsersProfileVO getUserProfileByXid(String xid) {
         UsersProfileVO profile = getUsersProfile(profileByXidFilter(xid));
         if(profile == null) {
-            usersProfileDAO.selectProfileByXid(xid).ifPresent(UsersProfileService::add);
-            return getUsersProfile(profileByXidFilter(xid));
+            return usersProfileDAO.selectProfileByXid(xid).orElse(null);
         }
         return profile;
     }
@@ -116,10 +106,6 @@ public class UsersProfileService {
         }
 
         saveUsersProfileWithoutNameConstraint(profile);
-    }
-
-    private boolean profileExistsWithThatName(UsersProfileVO profile) {
-        return getUsersProfile(a -> !StringUtils.isEmpty(profile.getName()) && profile.getName().equals(a.getName())) != null;
     }
 
     public void saveUsersProfileWithoutNameConstraint(UsersProfileVO profile)
@@ -148,31 +134,31 @@ public class UsersProfileService {
     }
 
     public void updateWatchlistPermissions() {
-        forEach(this::populateWatchlists);
+        usersProfileDAO.resetWatchListPermissions();
     }
 
     public void updateViewPermissions() {
-        forEach(this::populateViews);
+        usersProfileDAO.resetViewPermissions();
     }
 
     public void updateDataPointPermissions() {
-        forEach(this::populateDatapoints);
+        usersProfileDAO.resetDataPointPermissions();
     }
 
     public void updateDataSourcePermissions() {
-        forEach(this::populateDataSources);
+        usersProfileDAO.resetDataSourcePermissions();
     }
 
     public void updateProfile(UsersProfileVO profile) {
         setProfileName(profile.getName(), profile);
         saveRelationalData(profile);
-        add(profile);
     }
 
     public void updateUsersProfile(User user, UsersProfileVO profile) {
-        if (user != null) {
+        if (user != null && profile != null) {
             getProfileByUser(user).ifPresent(a -> removeUserProfile(user));
             createUserProfile(user, profile);
+            profile.apply(user);
         }
     }
 
@@ -204,7 +190,6 @@ public class UsersProfileService {
             this.resetUserProfile(userDAO.getUser(userId));
         }
         removeProfile(usersProfileId);
-        removeIf(a -> a.getId() == usersProfileId);
     }
 
     public Optional<UsersProfileVO> getProfileByUser(User user) {
@@ -220,15 +205,21 @@ public class UsersProfileService {
         }
         return profiles.stream()
                 .filter(Objects::nonNull)
-                .max(Comparator.comparingInt(UsersProfileVO::getId));
+                .max(Comparator.comparingInt(UsersProfileVO::getId))
+                .map(this::populateUserProfilePermissions);
+    }
+
+    private boolean profileExistsWithThatName(UsersProfileVO profile) {
+        return usersProfileDAO.selectProfiles(0, Integer.MAX_VALUE).stream().anyMatch(a -> !StringUtils.isEmpty(profile.getName()) && profile.getName().equals(a.getName()));
     }
 
     private Predicate<UsersProfileVO> profileByXidFilter(String xid) {
         return a -> !StringUtils.isEmpty(xid) && xid.equals(a.getXid());
     }
 
-    private static UsersProfileVO getUsersProfile(Predicate<UsersProfileVO> filter) {
-        return stream()
+    private UsersProfileVO getUsersProfile(Predicate<UsersProfileVO> filter) {
+        return getUsersProfiles()
+                .stream()
                 .peek(a -> LOG.debug(a.getName() + ' ' + a.getXid() + ' ' + a.getId()))
                 .filter(filter)
                 .findFirst()
@@ -238,34 +229,13 @@ public class UsersProfileService {
                 });
     }
 
-    private static boolean add(UsersProfileVO profileVO) {
-        currentProfileList.remove(profileVO);
-        return currentProfileList.add(profileVO);
-    }
-
-    private static boolean removeIf(Predicate<? super UsersProfileVO> filter) {
-        return currentProfileList.removeIf(filter);
-    }
-
-    private static Stream<UsersProfileVO> stream() {
-        return currentProfileList.stream();
-    }
-
-    private static void forEach(Consumer<? super UsersProfileVO> action) {
-        currentProfileList.forEach(action);
-    }
-
-    private static boolean isEmpty() {
-        return currentProfileList.isEmpty();
-    }
-
     private List<UsersProfileVO> getProfiles(int limit) {
         return usersProfileDAO.selectProfiles(0, limit);
     }
 
-    private void populateUserProfilePermissions(UsersProfileVO profile) {
+    private UsersProfileVO populateUserProfilePermissions(UsersProfileVO profile) {
         if (profile == null) {
-            return;
+            return null;
         }
 
         LOG.debug("populateDataSources");
@@ -279,6 +249,7 @@ public class UsersProfileService {
         LOG.debug("populateUsers");
         populateUsers(profile);
         LOG.debug("end");
+        return profile;
     }
 
     private void populateUsers(UsersProfileVO profile) {
@@ -304,7 +275,6 @@ public class UsersProfileService {
     private void insertProfile(UsersProfileVO profile) {
         profile.setId(createProfile(profile.getXid(), profile.getName()));
         saveRelationalData(profile);
-        add(profile);
     }
 
     private void removeProfile(int profileId) {

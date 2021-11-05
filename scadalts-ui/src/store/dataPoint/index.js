@@ -121,6 +121,13 @@ const storeDataPoint = {
 			});
 		},
 
+		setCmpValue({dispatch}, payload) {
+			return dispatch('requestPost', {
+				url: `/cmp/set/${payload.id}/${payload.name}`,
+				data: payload.requestData
+			});
+		},
+
 		getDataPointValueFromTimeperiod({ dispatch }, payload) {
 			return dispatch(
 				'requestGet',
@@ -180,6 +187,14 @@ const storeDataPoint = {
 				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
 			);
 		},
+
+		fetchDataPointsFromDataSource({ dispatch }, dataSourceId) {
+			return dispatch('requestGet', `/datapoints/datasource?id=${dataSourceId}`);
+		},
+		
+		getDatasourceByXid({ dispatch }, xid) {
+			return dispatch('requestGet', `/datasource?xid=${xid}`);
+		}
 	},
 
 	getters: {},
