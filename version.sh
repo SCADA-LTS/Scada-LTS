@@ -21,9 +21,6 @@ echo "Build from GitHub commit: $commit"
 echo "Initiated by: $actor"
 echo "GitHub PullRequest branch: $pullRequestBranch"
 
-pwd
-echo $versionfile
-
 sed -i "/slts.version.number=/c\slts.version.number=$milestone" $versionfile
 sed -i "/slts.version.build=/c\slts.version.build=$build" $versionfile
 sed -i "/slts.version.commit=/c\slts.version.commit=$commit" $versionfile
