@@ -36,6 +36,7 @@ jobs:
           owner: SCADA-LTS
           repo: Scada-LTS
       - name: Prepare Application Enviroment Version Vairables
+        working-directory: ./
         run: ./version.sh ${{ steps.relverjava.outputs.release }} $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
       - name: Test JUnit Scada Application
         run: gradle test
