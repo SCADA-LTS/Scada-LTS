@@ -18,6 +18,7 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.PointLinkDAO;
@@ -68,8 +69,11 @@ public class PointLinkService implements MangoPointLink {
 	public void savePointLink(PointLinkVO pl) {
 		if (pl.getId() == Common.NEW_ID) {
 			pl.setId(pointLinkDAO.insert(pl));
+			AuditEventType.raiseAddedEvent(AuditEventType.TYPE_POINT_LINK, pl);
 		} else {
+			PointLinkVO oldPl = pointLinkDAO.getPointLink(pl.getId());
 			pointLinkDAO.update(pl);
+			AuditEventType.raiseChangedEvent(AuditEventType.TYPE_POINT_LINK, oldPl, pl);
 		}
 	}
 
