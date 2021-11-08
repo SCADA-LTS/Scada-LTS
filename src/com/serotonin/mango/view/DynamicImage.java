@@ -35,10 +35,6 @@ public class DynamicImage extends ViewGraphic {
         return new DynamicImage(id, name, imageFilename, width, height, textX, textY);
     }
 
-    public static DynamicImage empty() {
-        return new DynamicImage("", "", "", -1, -1, -1, -1);
-    }
-
     @Override
     public boolean isAvailable() {
         return imageFilename != null && !imageFilename.trim().isEmpty();
