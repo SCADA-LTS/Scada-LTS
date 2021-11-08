@@ -22,7 +22,7 @@ import java.io.File;
 
 abstract public class ViewGraphic {
 
-    protected static final String NOT_AVAILABLE_IMG = "images" + File.separator + "cancel.png";
+    private static final String UNAVAILABLE_IMG = "images" + File.separator + "cancel.png";
     protected static final int TEXT_X_Y_DEFAULT = 10;
     protected static final int WIDTH_HEIGHT_DEFAULT = 32;
 
@@ -74,5 +74,11 @@ abstract public class ViewGraphic {
         return false;
     }
 
-    public abstract boolean isAvailable();
+    public boolean isAvailable() {
+        return false;
+    }
+
+    public final String getUnavailableImg() {
+        return UNAVAILABLE_IMG;
+    }
 }

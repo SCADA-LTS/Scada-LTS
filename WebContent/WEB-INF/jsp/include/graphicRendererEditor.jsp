@@ -255,14 +255,22 @@
                 $set("graphicRendererBinaryDisplayText", comp.displayText);
                 $set("graphicRendererBinaryImageSet", comp.imageSetId);
                 graphicRendererEditor.displayBinaryImages(comp.imageSetId);
-                graphicRendererEditor.setZeroImage(comp.zeroImage);
-                graphicRendererEditor.setOneImage(comp.oneImage);
+                var imageSet = graphicRendererEditor.findImageSet(comp.imageSetId);
+                if(imageSet) {
+                    graphicRendererEditor.setZeroImage(comp.zeroImage);
+                    graphicRendererEditor.setOneImage(comp.oneImage);
+                }
             }
             else if (comp.typeName == "dynamicGraphic") {
                 $set("graphicRendererDynamicMin", comp.min);
                 $set("graphicRendererDynamicMax", comp.max);
                 $set("graphicRendererDynamicDisplayText", comp.displayText);
-                $set("graphicRendererDynamicImage", comp.dynamicImageId);
+                var dynamicImage = graphicRendererEditor.findDynamicImage(comp.dynamicImageId);
+                if(dynamicImage) {
+                    $set("graphicRendererDynamicImage", comp.dynamicImageId);
+                } else {
+                    $set("graphicRendererDynamicImage");
+                }
             }
             else if (comp.typeName == "multistateGraphic") {
                 $set("graphicRendererMultistateDisplayText", comp.displayText);
@@ -427,18 +435,20 @@
         
         this.setZeroImage = function(imageId) {
             var image;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId)
+            var exists = imageId != -1;
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists)
                 $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "0";
             graphicRendererEditor.zeroImage = imageId;
-            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId)
+            if (graphicRendererEditor.zeroImage != -1 && graphicRendererEditor.currentImageSetId && exists)
                 $("graphicRendererBinaryImageSetZero"+ graphicRendererEditor.zeroImage).border = "2";
         };
         this.setOneImage = function(imageId) {
             var image;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId)
+            var exists = imageId != -1;
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists)
                 $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "0";
             graphicRendererEditor.oneImage = imageId;
-            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId)
+            if (graphicRendererEditor.oneImage != -1 && graphicRendererEditor.currentImageSetId && exists)
                 $("graphicRendererBinaryImageSetOne"+ graphicRendererEditor.oneImage).border = "2";
         };
         

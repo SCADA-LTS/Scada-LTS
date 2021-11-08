@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +61,7 @@ public class ViewGraphicLoader {
                 LOG.warn("Failed to load image set at " + dir, e);
             }
         }
-
+        viewGraphics.sort(Comparator.comparing(ViewGraphic::getName));
         return viewGraphics;
     }
 
@@ -140,12 +139,6 @@ public class ViewGraphicLoader {
 
             viewGraphics.add(g);
         }
-        Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
-              @Override
-              public int compare(final ViewGraphic prev, final ViewGraphic next) {
-                  return prev.getName().compareTo(next.getName());
-              }
-          });
     }
 
     private boolean isGraphic(File file) {
