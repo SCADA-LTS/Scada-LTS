@@ -19,8 +19,8 @@ public class BinaryGraphicComponentTest {
     public void config() {
         valueTime = new PointValueTime(MangoValue.objectToValue(true), 0L);
         subject = new BinaryGraphicComponent();
-        subject.setZeroImage(1);
-        subject.setOneImage(0);
+        subject.setZeroImage(0);
+        subject.setOneImage(1);
     }
 
     @Test
@@ -39,21 +39,6 @@ public class BinaryGraphicComponentTest {
     }
 
     @Test
-    public void when_getImage_for_ImageSet_available_then_image() {
-
-        //given:
-        String imgExpected = "expected/image";
-        ImageSet imageSet = ViewGraphicUtils.newImageSet(imgExpected);
-        subject.tsetImageSet(imageSet);
-
-        //when:
-        String imgResult = subject.getImage(valueTime);
-
-        //then:
-        assertEquals(imgExpected, imgResult);
-    }
-
-    @Test
     public void when_getImage_for_ImageSet_available_then_inactive_image() {
 
         //given:
@@ -61,11 +46,12 @@ public class BinaryGraphicComponentTest {
         String inactiveImg = "expected/image/inactive";
         ImageSet imageSet = ViewGraphicUtils.newImageSet(activeImg, inactiveImg);
         subject.tsetImageSet(imageSet);
-
-        PointValueTime valueTime = new PointValueTime(MangoValue.objectToValue(false), 0L);
+        subject.setZeroImage(1);
+        subject.setOneImage(0);
+        PointValueTime inactiveValue = new PointValueTime(MangoValue.objectToValue(false), 0L);
 
         //when:
-        String imgResult = subject.getImage(valueTime);
+        String imgResult = subject.getImage(inactiveValue);
 
         //then:
         assertEquals(inactiveImg, imgResult);
@@ -79,9 +65,12 @@ public class BinaryGraphicComponentTest {
         String inactiveImg = "expected/image/inactive";
         ImageSet imageSet = ViewGraphicUtils.newImageSet(activeImg, inactiveImg);
         subject.tsetImageSet(imageSet);
+        subject.setZeroImage(1);
+        subject.setOneImage(0);
+        PointValueTime activeValue = new PointValueTime(MangoValue.objectToValue(true), 0L);
 
         //when:
-        String imgResult = subject.getImage(valueTime);
+        String imgResult = subject.getImage(activeValue);
 
         //then:
         assertEquals(activeImg, imgResult);

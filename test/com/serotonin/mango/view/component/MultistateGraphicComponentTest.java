@@ -22,8 +22,8 @@ public class MultistateGraphicComponentTest {
     public void config() {
         valueTime = new PointValueTime(MangoValue.objectToValue(1), 0L);
         subject = new MultistateGraphicComponent();
-        //subject.setDefaultImage(0);
-        subject.setImageStateList(Arrays.asList(new IntValuePair(0,"0"), new IntValuePair(1, "1"), new IntValuePair(2, "2")));
+        subject.setDefaultImage(0);
+        subject.setImageStateList(Arrays.asList(new IntValuePair(0,"1"), new IntValuePair(1, "2"), new IntValuePair(2, "0")));
     }
 
     @Test
@@ -50,6 +50,7 @@ public class MultistateGraphicComponentTest {
         String thirdImg = "expected/image/third";
         ImageSet imageSet = ViewGraphicUtils.newImageSet(firstImg, secondImg, thirdImg);
         subject.tsetImageSet(imageSet);
+        subject.setImageStateList(Arrays.asList(new IntValuePair(0,"0"), new IntValuePair(1, "1"), new IntValuePair(2, "2")));
 
         PointValueTime valueTime = new PointValueTime(MangoValue.objectToValue(0), 0L);
 
@@ -69,6 +70,7 @@ public class MultistateGraphicComponentTest {
         String thirdImg = "expected/image/third";
         ImageSet imageSet = ViewGraphicUtils.newImageSet(firstImg, secondImg, thirdImg);
         subject.tsetImageSet(imageSet);
+        subject.setImageStateList(Arrays.asList(new IntValuePair(0,"0"), new IntValuePair(1, "1"), new IntValuePair(2, "2")));
 
         PointValueTime valueTime = new PointValueTime(MangoValue.objectToValue(1), 0L);
 
@@ -88,6 +90,7 @@ public class MultistateGraphicComponentTest {
         String thirdImg = "expected/image/third";
         ImageSet imageSet = ViewGraphicUtils.newImageSet(firstImg, secondImg, thirdImg);
         subject.tsetImageSet(imageSet);
+        subject.setImageStateList(Arrays.asList(new IntValuePair(0,"0"), new IntValuePair(1, "1"), new IntValuePair(2, "2")));
 
         PointValueTime valueTime = new PointValueTime(MangoValue.objectToValue(2), 0L);
 
@@ -109,6 +112,7 @@ public class MultistateGraphicComponentTest {
         ImageSet imageSet = ViewGraphicUtils.newImageSet(firstImg, secondImg, defaultImg);
         subject.tsetImageSet(imageSet);
         subject.setDefaultImage(defaultImage);
+        subject.setImageStateList(Arrays.asList(new IntValuePair(0,"0"), new IntValuePair(1, "1"), new IntValuePair(2, "2")));
 
         PointValueTime valueTime = new PointValueTime(MangoValue.objectToValue(3), 0L);
 
