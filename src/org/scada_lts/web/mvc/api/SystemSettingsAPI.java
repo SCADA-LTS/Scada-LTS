@@ -276,7 +276,7 @@ public class SystemSettingsAPI {
     }
 
     @GetMapping(value = "/getDataRetention", produces = "application/json")
-    public ResponseEntity<JsonSettingsDataRetention> getDataRetention(HttpServletRequest request) {
+    public ResponseEntity<SettingsDataRetention> getDataRetention(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getDataRetention");
         try {
             User user = Common.getUser(request);
@@ -292,12 +292,12 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveDataRetention", consumes = "application/json")
-    public ResponseEntity<String> saveDataRetention(HttpServletRequest request, @RequestBody JsonSettingsDataRetention jsonSettingsMisc) {
+    public ResponseEntity<String> saveDataRetention(HttpServletRequest request, @RequestBody SettingsDataRetention jsonSettingsDataRetention) {
         LOG.info("/api/systemSettings/saveDataRetention");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                systemSettingsService.saveDataRetentionSettings(jsonSettingsMisc);
+                systemSettingsService.saveDataRetentionSettings(jsonSettingsDataRetention);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -1,6 +1,5 @@
 package org.scada_lts.dao.migration.mysql;
 
-import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,9 +16,9 @@ import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Objects;
 
-public class V2_7_1_2__NewDatapointProperty extends BaseJavaMigration {
+public class V2_7_1_2__PurgeLimitStrategyDatapointProperty extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_7_1_2__NewDatapointProperty.class);
+    private static final Log LOG = LogFactory.getLog(V2_7_1_2__PurgeLimitStrategyDatapointProperty.class);
 
     @Override
     public void migrate(Context context) throws Exception {

@@ -31,10 +31,11 @@
 <p><b>Rejeter les valeurs extêmes</b> est utilisé pour les appareils pouvant occasionnellemnt diffusée des valeurs erronées. Lorsque <b>Rejeter les valeurs extêmes</b> est sélectionné, les boites de dialogues  <b>rejeter limite basse</b> et <b>rejeter limite haute</b> sont activées. Toutes les valeurs dèjà enregistrées seront conservées.</p>
 
 <p>
-    The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>
+    The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>.
+    Le processus de purge se lance chaque jour à 3h 05 heure locale.
 </p>
 
-<p>Le paramètre <b>Period</b> determine la durée d'historisation de la valeur du point dans la base de donnée. Les valeurs peuvent en pratique être conservées aussi longtemps que nécessaire, mais notez que ceci peut engendrer des dégradation de performance du système si l'historique d'un point devient trop important. (En fait, la performance du système dépent en grande partie du matériel hôte.). Le processus de purge se lance chaque jour à 3h 05 heure locale.</p>
+<p>Le paramètre <b>Period</b> determine la durée d'historisation de la valeur du point dans la base de donnée. Les valeurs peuvent en pratique être conservées aussi longtemps que nécessaire, mais notez que ceci peut engendrer des dégradation de performance du système si l'historique d'un point devient trop important. (En fait, la performance du système dépent en grande partie du matériel hôte). </p>
 
 <p>
     When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in

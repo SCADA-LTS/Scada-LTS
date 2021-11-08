@@ -1,6 +1,6 @@
 package org.scada_lts.web.mvc.api.json;
 
-public class JsonSettingsDataRetention {
+public class SettingsDataRetention {
 
     private boolean groveLogging;
     private int eventPurgePeriodType;
@@ -11,10 +11,10 @@ public class JsonSettingsDataRetention {
     private int futureDateLimitPeriods;
     private int valuesLimitForPurge;
 
-    public JsonSettingsDataRetention() {
+    public SettingsDataRetention() {
     }
 
-    public JsonSettingsDataRetention(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge) {
+    public SettingsDataRetention(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods, int reportPurgePeriodType, int reportPurgePeriods, int futureDateLimitPeriodType, int futureDateLimitPeriods, int valuesLimitForPurge) {
         this.groveLogging = groveLogging;
         this.eventPurgePeriodType = eventPurgePeriodType;
         this.eventPurgePeriods = eventPurgePeriods;
