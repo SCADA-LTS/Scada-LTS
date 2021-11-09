@@ -78,6 +78,7 @@ public final class PointPropertiesApiUtils {
                 a -> !DataPointVO.validLoggingType(a)));
         msg.append(msgIfNonNullAndInvalid("PurgeType does not exist for value {0};", body.getPurgeType(),
                 a -> !DataPointVO.validPurgeType(a)));
+        msg.append(msgIfNonNullAndInvalid("Correct purgeValuesLimit, it must be > 1, value {0};", body.getPurgeValuesLimit(), a -> a <= 1));
         return msg.toString();
     }
 }

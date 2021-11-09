@@ -701,8 +701,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         if (!PURGE_STRATEGY_CODES.isValidId(purgeStrategy))
             response.addContextualMessage("purgeStrategy", "validate.invalidValue");
 
-        if (purgeValuesLimit <= 0)
-            response.addContextualMessage("purgeValuesLimit", "validate.greaterThanZero");
+        if (purgeValuesLimit <= 1)
+            response.addContextualMessage("purgeValuesLimit", "validate.greaterThanOne");
 
         pointLocator.validate(response);
 

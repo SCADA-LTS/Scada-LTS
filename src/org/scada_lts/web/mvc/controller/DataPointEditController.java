@@ -217,8 +217,8 @@ public class DataPointEditController {
         if (point.getDefaultCacheSize() < 0)
         	errors.put("defaultCacheSize", "validate.cannotBeNegative");
 
-        if (point.getPurgeValuesLimit() <= 0)
-            errors.put("purgeValuesLimit", "validate.greaterThanZero");
+        if (point.getPurgeValuesLimit() <= 1)
+            errors.put("purgeValuesLimit", "validate.greaterThanOne");
 
         // Make sure that xids are unique
         List<String> xids = new ArrayList<String>();
