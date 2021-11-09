@@ -1,5 +1,5 @@
 <template>
-	<v-card>
+	<v-card id="datasource-config">
 		<v-card-title>
 			<v-row justify="space-between" align="center">
 				<v-col cols="8">
@@ -20,7 +20,7 @@
 		<v-card-text>
 			<v-form ref="datasourceForm" v-model="formValid">
 				<v-row>
-					<v-col cols="12" :md="8" :sm="12">
+					<v-col cols="12" :md="8" :sm="12" id="datasource-config--name">
 						<v-text-field
 							autofocus
 							v-model="datasource.name"
@@ -29,7 +29,7 @@
 							required
 						></v-text-field>
 					</v-col>
-					<v-col cols="12" :md="4" :sm="12">
+					<v-col cols="12" :md="4" :sm="12" id="datasource-config--xid">
 						<v-text-field
 							v-model="datasource.xid"
 							label="DataSource Export Id"
@@ -40,7 +40,7 @@
 					</v-col>
 				</v-row>
 				<v-row v-if="polling">
-					<v-col cols="6">
+					<v-col cols="6" id="datasource-config--update-periods">
 						<v-text-field
 							v-model="datasource.updatePeriods"
 							label="Update Period"
@@ -48,7 +48,7 @@
 							required
 						></v-text-field>
 					</v-col>
-					<v-col cols="6">
+					<v-col cols="6" id="datasource-config--period-type">
 						<UpdatePeriodType
 							:value="datasource.updatePeriodType"
 							@update="onUpdatePeriodTypeUpdate"
@@ -66,7 +66,7 @@
 		<v-card-actions>
 			<v-spacer></v-spacer>
 			<v-btn text @click="cancel()">{{ $t('common.cancel') }}</v-btn>
-			<v-btn color="primary" text @click="accept()" :disabled="!formValid">
+			<v-btn color="primary" text @click="accept()" :disabled="!formValid" id="datasource-config--accept">
 				<span v-if="creator">
 					{{ $t('common.create') }}
 				</span>
