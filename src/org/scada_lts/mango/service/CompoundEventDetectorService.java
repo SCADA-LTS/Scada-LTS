@@ -69,8 +69,8 @@ public class CompoundEventDetectorService implements MangoCompoundEventDetector 
              cedDao.create(ced);
              AuditEventType.raiseAddedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, ced);
     	 } else {
-             cedDao.update(ced);
              CompoundEventDetectorVO oldCed = cedDao.findById(new Object[]{ced.getId()});
+             cedDao.update(ced);
              AuditEventType.raiseChangedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, oldCed, ced);
     	 }
     }
