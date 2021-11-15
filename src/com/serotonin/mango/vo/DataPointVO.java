@@ -107,12 +107,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     public interface PurgeStrategy {
         int PERIOD = 1;
         int LIMIT = 2;
+        int ALL = 3;
     }
 
     private static final ExportCodes PURGE_STRATEGY_CODES = new ExportCodes();
     static {
         PURGE_STRATEGY_CODES.addElement(PurgeStrategy.PERIOD, "PERIOD", "pointEdit.purge.type.period");
         PURGE_STRATEGY_CODES.addElement(PurgeStrategy.LIMIT, "LIMIT", "pointEdit.purge.type.limit");
+        PURGE_STRATEGY_CODES.addElement(PurgeStrategy.ALL, "ALL", "pointEdit.purge.type.all");
     }
 
     public static final int ENGINEERING_UNITS_DEFAULT = 95; // No units

@@ -244,6 +244,11 @@
 			<test name="br.org.scadabr.vo.EqualsHashcodePermissionTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="com.serotonin.mango.web.dwr.DataPointEditDwrTest"
+				  haltonfailure="yes">
+			</test>
+
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">
