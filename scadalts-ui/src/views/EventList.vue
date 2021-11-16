@@ -387,15 +387,20 @@
 
 						<v-icon  title="Maintenance events" @click.stop="gotoMaintenance(item.typeRef1)" v-if="item.typeId===9">
 						mdi-hammer
-						</v-icon>
-						
-						<v-icon
-							class="ml-2"
-							:title="$t('eventList.comments') +': ' + item.comments"
-							border=0
+						</v-icon>		
+						<v-badge v-if="item.comments"
+							color="blue"
+							:content=item.comments
+							style="cursor: pointer"
 						>
-						mdi-comment
-						</v-icon>
+							<v-icon
+								class="ml-2"
+								:title="$t('eventList.comments') +': ' + item.comments"
+								border=0
+							>
+							mdi-comment
+							</v-icon>
+						</v-badge>
 
     				</template>
 			</v-data-table>
