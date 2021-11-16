@@ -5,6 +5,7 @@ import dataPoint from './dataPoint';
 import storeEvents from './events';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
+import graphicalViewModule from './graphicalViews';
 import pointHierarchy from './pointHierarchy';
 import alarms from './alarms';
 import storeUsers from './users';
@@ -33,6 +34,7 @@ export default new Vuex.Store({
 		eventDetectorModule,
 		storeEvents,
 		graphicView,
+		graphicalViewModule,
 		pointHierarchy,
 		alarms,
 		storeUsers,

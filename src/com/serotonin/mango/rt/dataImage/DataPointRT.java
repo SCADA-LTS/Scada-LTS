@@ -475,6 +475,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		DataPointServiceWebSocket ws = DataPointServiceWebSocket.getInstance();
 		if(ws != null) {
 			ws.notifyValueSubscribers(message, this.vo.getId());
+			ws.notifyValueSubscribers(message, this.vo.getXid());
 		}
 	}
 
@@ -482,6 +483,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		DataPointServiceWebSocket ws = DataPointServiceWebSocket.getInstance();
 		if(ws != null) {
 			ws.notifyStateSubscribers(enabled, this.vo.getId());
+			ws.notifyStateSubscribers(enabled, this.vo.getXid());
 		}
 	}
 
