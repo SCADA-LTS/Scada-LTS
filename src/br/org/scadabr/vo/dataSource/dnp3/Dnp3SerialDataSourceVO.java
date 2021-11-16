@@ -15,6 +15,7 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -178,8 +179,9 @@ public class Dnp3SerialDataSourceVO extends
 
 	@Override
 	protected void addPropertyChangesImpl(List<LocalizableMessage> list,
-			Dnp3SerialDataSourceVO from) {
-		super.addPropertyChangesImpl(list, from);
+                                          DataSourceVO<?> fromDS) {
+		super.addPropertyChangesImpl(list, fromDS);
+		Dnp3SerialDataSourceVO from = (Dnp3SerialDataSourceVO) fromDS;
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.dnp3Serial.port", from.commPortId, commPortId);
 		AuditEventType.maybeAddPropertyChangeMessage(list,

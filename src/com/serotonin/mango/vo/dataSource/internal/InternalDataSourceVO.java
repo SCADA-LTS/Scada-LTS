@@ -111,7 +111,8 @@ public class InternalDataSourceVO extends DataSourceVO<InternalDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, InternalDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        InternalDataSourceVO from = (InternalDataSourceVO) fromDS;
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
     }

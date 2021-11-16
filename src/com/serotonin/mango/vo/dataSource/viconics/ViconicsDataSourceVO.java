@@ -238,7 +238,8 @@ public class ViconicsDataSourceVO extends DataSourceVO<ViconicsDataSourceVO> {
     }
 
     @Override
-    public void addPropertyChangesImpl(List<LocalizableMessage> list, ViconicsDataSourceVO from) {
+    public void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        ViconicsDataSourceVO from = (ViconicsDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.viconics.port", from.commPortId, commPortId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.viconics.panId", from.panId, panId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.viconics.channel", from.channel, channel);

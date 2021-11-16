@@ -35,6 +35,7 @@ import com.serotonin.mango.rt.dataSource.modbus.ModbusSerialDataSource;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.modbus4j.serial.SerialMaster;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
@@ -237,8 +238,9 @@ public class ModbusSerialDataSourceVO extends ModbusDataSourceVO<ModbusSerialDat
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, ModbusSerialDataSourceVO from) {
-        super.addPropertyChangesImpl(list, from);
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        super.addPropertyChangesImpl(list, fromDS);
+        ModbusSerialDataSourceVO from = (ModbusSerialDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.modbusSerial.port", from.commPortId, commPortId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.modbusSerial.baud", from.baudRate, baudRate);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.modbusSerial.flowControlIn", from.flowControlIn,

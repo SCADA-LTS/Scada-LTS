@@ -122,7 +122,8 @@ public class HttpImageDataSourceVO extends DataSourceVO<HttpImageDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, HttpImageDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        HttpImageDataSourceVO from = (HttpImageDataSourceVO) fromDS;
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
     }

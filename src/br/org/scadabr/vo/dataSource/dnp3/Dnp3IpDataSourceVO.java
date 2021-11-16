@@ -14,6 +14,7 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -70,7 +71,7 @@ public class Dnp3IpDataSourceVO extends Dnp3DataSourceVO<Dnp3IpDataSourceVO> {
 
 	@Override
 	protected void addPropertyChangesImpl(List<LocalizableMessage> list,
-			Dnp3IpDataSourceVO from) {
+                                          DataSourceVO<?> from) {
 		// TODO Auto-generated method stub
 
 	}

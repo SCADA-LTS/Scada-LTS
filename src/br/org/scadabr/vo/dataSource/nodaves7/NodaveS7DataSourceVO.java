@@ -56,7 +56,7 @@ public class NodaveS7DataSourceVO<T extends NodaveS7DataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> from) {
 		// TODO Auto-generated method stub
 
 	}

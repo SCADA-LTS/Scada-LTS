@@ -162,7 +162,8 @@ public class PachubeDataSourceVO extends DataSourceVO<PachubeDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, PachubeDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        PachubeDataSourceVO from = (PachubeDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.pachube.apiKey", from.apiKey, apiKey);
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);

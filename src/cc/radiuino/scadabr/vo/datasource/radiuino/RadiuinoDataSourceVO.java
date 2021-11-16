@@ -217,7 +217,8 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+		RadiuinoDataSourceVO from = (RadiuinoDataSourceVO) fromDS;
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.radiuino.pollingMode", from.isPollingMode(),
 				pollingMode);

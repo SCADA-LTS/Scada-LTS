@@ -178,7 +178,8 @@ public class GalilDataSourceVO extends DataSourceVO<GalilDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, GalilDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        GalilDataSourceVO from = (GalilDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.galil.host", from.host, host);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.galil.port", from.port, port);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.galil.timeout", from.timeout, timeout);

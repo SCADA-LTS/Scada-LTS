@@ -192,7 +192,8 @@ abstract public class Dnp3DataSourceVO<T extends Dnp3DataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+		Dnp3DataSourceVO from = (Dnp3DataSourceVO) fromDS;
 		AuditEventType.maybeAddPeriodChangeMessage(list,
 				"dsEdit.dnp3.rbePeriod", from.getRbePeriodType(),
 				from.getRbePollPeriods(), rbePeriodType, rbePollPeriods);

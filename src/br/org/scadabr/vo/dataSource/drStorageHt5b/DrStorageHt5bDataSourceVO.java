@@ -56,7 +56,7 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> from) {
 		// TODO Auto-generated method stub
 
 	}

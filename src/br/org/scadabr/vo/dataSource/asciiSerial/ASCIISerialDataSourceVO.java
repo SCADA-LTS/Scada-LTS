@@ -312,7 +312,8 @@ public class ASCIISerialDataSourceVO<T extends ASCIISerialDataSourceVO<?>>
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+		ASCIISerialDataSourceVO from = (ASCIISerialDataSourceVO) fromDS;
 		AuditEventType.maybeAddPeriodChangeMessage(list,
 				"dsEdit.dnp3.rbePeriod", from.getUpdatePeriodType(),
 				from.getUpdatePeriods(), updatePeriodType, updatePeriods);

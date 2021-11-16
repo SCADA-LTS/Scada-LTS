@@ -10,6 +10,7 @@ import br.org.scadabr.rt.dataSource.iec101.IEC101SerialDataSource;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -79,7 +80,7 @@ public class IEC101SerialDataSourceVO extends
 
 	@Override
 	protected void addPropertyChangesImpl(List<LocalizableMessage> list,
-			IEC101SerialDataSourceVO from) {
+                                          DataSourceVO<?> from) {
 		super.addPropertyChangesImpl(list, from);
 	}
 

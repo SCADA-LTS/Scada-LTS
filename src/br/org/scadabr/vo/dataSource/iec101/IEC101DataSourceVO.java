@@ -125,7 +125,7 @@ abstract public class IEC101DataSourceVO<T extends IEC101DataSourceVO<?>>
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> from) {
 		// TODO Auto-generated method stub
 
 	}

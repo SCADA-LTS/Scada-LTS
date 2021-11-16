@@ -186,7 +186,8 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, HttpRetrieverDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        HttpRetrieverDataSourceVO from = (HttpRetrieverDataSourceVO) fromDS;
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.httpRetriever.url", from.url, url);

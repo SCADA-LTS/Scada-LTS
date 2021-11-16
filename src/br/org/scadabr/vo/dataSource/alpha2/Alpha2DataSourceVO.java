@@ -94,7 +94,8 @@ public class Alpha2DataSourceVO<T extends Alpha2DataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+		Alpha2DataSourceVO from = (Alpha2DataSourceVO) fromDS;
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.dnp3Serial.port", from.getCommPortId(), commPortId);
 		AuditEventType.maybeAddPropertyChangeMessage(list,

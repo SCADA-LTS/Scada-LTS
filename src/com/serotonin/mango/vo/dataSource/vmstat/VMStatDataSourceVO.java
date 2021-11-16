@@ -139,7 +139,8 @@ public class VMStatDataSourceVO extends DataSourceVO<VMStatDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, VMStatDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        VMStatDataSourceVO from = (VMStatDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.vmstat.pollSeconds", from.pollSeconds, pollSeconds);
         AuditEventType.maybeAddExportCodeChangeMessage(list, "dsEdit.vmstat.outputScale", OUTPUT_SCALE_CODES,
                 from.outputScale, outputScale);

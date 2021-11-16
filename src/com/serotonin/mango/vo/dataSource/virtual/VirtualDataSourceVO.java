@@ -108,7 +108,8 @@ public class VirtualDataSourceVO extends DataSourceVO<VirtualDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, VirtualDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        VirtualDataSourceVO from = (VirtualDataSourceVO) fromDS;
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
     }

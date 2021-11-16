@@ -165,7 +165,8 @@ public class JmxDataSourceVO extends DataSourceVO<JmxDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, JmxDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        JmxDataSourceVO from = (JmxDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.jmx.useLocalServer", from.useLocalServer,
                 useLocalServer);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.jmx.remoteServerAddr", from.remoteServerAddr,

@@ -103,7 +103,8 @@ public class PersistentDataSourceVO extends DataSourceVO<PersistentDataSourceVO>
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, PersistentDataSourceVO from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+        PersistentDataSourceVO from = (PersistentDataSourceVO) fromDS;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.persistent.port", from.port, port);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.persistent.acceptPointUpdates",
                 from.acceptPointUpdates, acceptPointUpdates);

@@ -207,7 +207,8 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
+		OPCDataSourceVO from = (OPCDataSourceVO) fromDS;
 		AuditEventType.maybeAddPeriodChangeMessage(list,
 				"dsEdit.dnp3.rbePeriod", from.getUpdatePeriodType(),
 				from.getUpdatePeriods(), updatePeriodType, updatePeriods);

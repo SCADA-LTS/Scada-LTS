@@ -205,7 +205,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 
 	@Override
 	protected void addPropertyChangesImpl(List<LocalizableMessage> list,
-			SqlDataSourceVO from) {
+                                          DataSourceVO<?> fromDS) {
+		SqlDataSourceVO from = (SqlDataSourceVO) fromDS;
 		AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod",
 				from.updatePeriodType, from.updatePeriods, updatePeriodType,
 				updatePeriods);
