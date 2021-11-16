@@ -1,6 +1,5 @@
 <template>
 	<v-app>
-		<!-- {{wsLive}} -->
 		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
 			<v-list nav dense>
 				<v-list-item link href="#/alarms">
@@ -172,10 +171,7 @@ export default {
 				this.wsLive = true;	
 				this.wsSubscribeTopic(`alarm`, x => {
 					this.notifications.push({ts: Date.now(), href:'/ScadaBR/app.shtm#/event-list', text: x.body})
-				});
-				// this.wsSubscribeTopic(`datapoint/${this.data.id}/value`, x => {
-				// 	// alert(JSON.stringify(x))
-				// });		
+				});		
 			},
 			wsLive: false
 		};

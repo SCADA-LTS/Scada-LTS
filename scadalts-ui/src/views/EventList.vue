@@ -326,6 +326,7 @@
 						<v-icon v-else
 							class="mr-2"
 							title="acknowledge"
+							border=0
 							@click.stop="acknowledgeEvent(item);return false"
 						>
 							mdi-checkbox-marked-circle
@@ -338,7 +339,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{ item.message.split('|').filter(x => x).join(', ') | truncate }}
+						{{ item.message.split('|').filter(x => x).join(', ') | truncate }}						
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -388,6 +389,13 @@
 						mdi-hammer
 						</v-icon>
 						
+						<v-icon
+							class="ml-2"
+							:title="$t('eventList.comments') +': ' + item.comments"
+							border=0
+						>
+						mdi-comment
+						</v-icon>
 
     				</template>
 			</v-data-table>
@@ -527,17 +535,17 @@ export default {
 					value: 'typeId',
 				},
 				{
-					text: this.$t('eventList.message'),
-					align: 'center',
-					value: 'message',
-					sortable: false,
-				},
-				{
 					text: this.$t('eventList.status'),
 					align: 'center',
 					sortable: true,
 					value: 'status',
 				},
+				{
+					text: this.$t('eventList.message'),
+					align: 'center',
+					value: 'message',
+					sortable: false,
+				},				
 				{
 					text: this.$t('eventList.datapoint'),
 					sortable: true,
@@ -550,10 +558,10 @@ export default {
 					sortable: true,
 					value: 'ackTs',
 				},
-				{ text: 'Actions', value: 'actions', sortable: false },
+				{ text: 'Actions', value: 'actions', sortable: false, align: 'center' },
 			],
 			comments: [
-				{userId: 1, commentType: 1, typeKey:1, ts:"1633495773928", commentText:"hola"}
+				
 			],
 			sortModeOptions: [
 				{label:"Ascending", value:'ASC'},
@@ -706,6 +714,7 @@ export default {
 		async publishComment() {
 			this.comments = await this.$store.dispatch('publishEventComment', { typeId: 1, eventId: this.selectedEventId, commentText: this.commentText });
 			this.commentText = ''
+			this.fetchEventList()
 		},
 		async fetchEventList() {
 			this.loading = true;

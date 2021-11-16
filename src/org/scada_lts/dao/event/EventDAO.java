@@ -93,6 +93,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private static final String COLUMN_NAME_DATAPOINT_XID = "xid";
 	private static final String COLUMN_NAME_SILENCED = "silenced";
+	private static final String COLUMN_NAME_USER_COMMENT_TS = "ts";
+	private static final String COLUMN_NAME_USER_COMMENT_COUNT = "comments";
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	
@@ -670,10 +672,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					rs.getLong(COLUMN_NAME_ACT_TS),
 					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
 					rs.getString(COLUMN_NAME_DATAPOINT_XID),
-					rs.getString(COLUMN_NAME_SILENCED).equals("Y")
+					"Y".equals(rs.getString(COLUMN_NAME_SILENCED)),
+					rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
 			);
 
-			//result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
 			return result;
 		}
 	}
@@ -713,7 +715,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					rs.getString("commentText")
 			);
 
-			//result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
 			return result;
 		}
 	}
@@ -773,78 +774,84 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			int offset) {
 		List<Object> params = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
-		String select = "SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS;
-
-		String groupBy = " GROUP BY " + EVENT_FIELDS;
 
 		StringBuilder from = new StringBuilder();
 		from.append(" FROM events e ");
 		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
 		from.append(" LEFT JOIN userEvents ue ON ue.eventId = e.id " );
 
-		StringBuilder where = new StringBuilder();
-		where.append(" WHERE 1=1 ");
+		List<String> filterCondtions = new ArrayList<String>();
 		if (!user.isAdmin()) {
-			from.append(" AND u.id=? " );
+			filterCondtions.add("u.id=?");
 			params.add(user.getId());
 		}
 
 		if (!"".equals(startDate)) {
-			where.append(" AND e."+COLUMN_NAME_ACTIVE_TS+" >= (UNIX_TIMESTAMP(?)*1000) ");
+			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
 			String start = startDate+' '+startTime;
 			params.add(start);
 		}
 		if (!"".equals(endDate)) {
-			where.append(" AND e."+COLUMN_NAME_ACTIVE_TS+" <= ((UNIX_TIMESTAMP(?)+60)*1000) ");
+			filterCondtions.add("e.activeTs <= ((UNIX_TIMESTAMP(?)+60)*1000)");
 			String end = endDate+' '+endTime;
 			params.add(end);
 		}
 		if (alarmLevel != 0) {
-			where.append(" AND e."+COLUMN_NAME_ALARM_LEVEL+">=? ");
+			filterCondtions.add("e.alarmLevel>=?");
 			params.add(alarmLevel);
 		}
 
 		if (eventSourceType != 0) {
-			where.append(" AND e."+COLUMN_NAME_TYPE_ID+"=? ");
+			filterCondtions.add("e.typeId=?");
 			params.add(eventSourceType);
 		}
 
 		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
-			where.append(" AND e.rtnApplicable='Y' and e.rtnTs is null ");
+			filterCondtions.add("e.rtnApplicable='Y'");
+			filterCondtions.add("e.rtnTs is null");
 		} else if (EventsDwr.STATUS_RTN.equals(status)) {
-			where.append(" AND e.rtnApplicable='Y' and e.rtnTs is not null ");
+			filterCondtions.add("e.rtnApplicable='Y'");
+			filterCondtions.add("e.rtnTs is not null");
 		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
-			where.append(" AND e.rtnApplicable='N' ");
+			filterCondtions.add("e.rtnApplicable='N'");
 		}
 
+		StringBuffer keywordsInCommentCondition = new StringBuffer();
+		List<String> userCommentKeywordConditions = new ArrayList<String>();
 		if (!"".equals(keywords)) {
-			String sqlSearchKeywordsFields;
-			from.append(" LEFT JOIN userComments uc ON uc.typeKey=e.id " );
+			List<String> keywordConditions = new ArrayList<String>();
 			boolean joinWithDataSource = eventSourceType == 0 || eventSourceType == 3;
 			if (joinWithDataSource) {
-				from.append(" LEFT JOIN dataSources ds ON ds.id = dp.dataSourceId" );
-				sqlSearchKeywordsFields = " AND ( e."+COLUMN_NAME_MESSAGE+" LIKE ? OR ( uc.commentText LIKE ?) OR (dp.xid LIKE ? OR dp.pointName LIKE ? OR ds.xid LIKE ? OR ds.name LIKE ? ))  " ;
-			} else {
-				sqlSearchKeywordsFields = " AND ( e."+COLUMN_NAME_MESSAGE+" LIKE ? OR ( uc.commentText LIKE ?)  )  ";
+				from.append(" LEFT JOIN dataSources ds ON ds.id = dp.dataSourceId");
 			}
 
-			for (String keyword : keywords.split("\\s*,\\s*")) {
-				where.append(sqlSearchKeywordsFields);
-				params.add("%"+keyword+"%");
-				params.add("%"+keyword+"%");
+			for (String keyword : keywords.split(" ")) {
 				if (joinWithDataSource) {
-					params.add("%"+keyword+"%");
-					params.add("%"+keyword+"%");
-					params.add("%"+keyword+"%");
-					params.add("%"+keyword+"%");
+					keywordConditions.add("dp.xid LIKE ?");
+					params.add("%" + keyword + "%");
+					keywordConditions.add("dp.pointName LIKE ?");
+					params.add("%" + keyword + "%");
+					keywordConditions.add("ds.xid LIKE ?");
+					params.add("%" + keyword + "%");
+					keywordConditions.add("ds.name LIKE ?");
+					params.add("%" + keyword + "%");
 				}
+
+				userCommentKeywordConditions.add("uc.commentText like ?");
+				params.add("%" + keyword + "%");
+
+				keywordConditions.add("e.message LIKE ?");
+				params.add("%" + keyword + "%");
 			}
+			keywordConditions.add("c.keywordMatched > 1");
+			filterCondtions.add(joinOr(keywordConditions));
 		}
 
-		sql.append(select);
+		sql.append("SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
 		sql.append(from.toString());
-		sql.append(where.toString());
-		sql.append(groupBy);
+		sql.append(" LEFT JOIN (SELECT typeKey, count(case when("+joinOr(userCommentKeywordConditions)+") then 1 else null end) AS keywordMatched, count(1) comments FROM userComments uc GROUP BY typeKey) c ON e.id = c.typeKey");
+		sql.append(" WHERE "+joinAnd(filterCondtions));
+		sql.append(" GROUP BY " + EVENT_FIELDS);
 
 		if (sortBy.length != 0) {
 			List<String> sorting = new ArrayList<String>();
@@ -866,8 +873,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		if (offset != 0) {
 			sql.append("OFFSET " + offset + " " );
 		}
-		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), new EventDTORowMapper());
-
+		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
+						sql.toString()
+				, params.toArray(), new EventDTORowMapper());
 		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
 		return new SQLPageWithTotal<EventDTO>(page, total);
 	}
@@ -1439,4 +1447,25 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		return (List<EventCommentDTO>) result ;
 	}
 
+	public String joinAnd(List<String> conditions) {
+		StringBuilder result = new StringBuilder();
+		result.append(" 1 ");
+		for (String c:conditions) {
+			result.append(" AND (");
+			result.append(c);
+			result.append(") ");
+		}
+		return result.toString();
+	}
+
+	public String joinOr(List<String> conditions) {
+		StringBuilder result = new StringBuilder();
+		result.append(" 0 ");
+		for (String c:conditions) {
+			result.append(" OR (");
+			result.append(c);
+			result.append(") ");
+		}
+		return result.toString();
+	}
 }
