@@ -6,16 +6,16 @@
 					<h1>Graphical Views</h1>
 				</v-col>
 				<v-col class="row justify-end">
-					<v-btn icon @click="toggleFullScreen">
+					<v-btn icon @click="toggleFullScreen" v-if="!!activeGraphicalView">
 						<v-icon> mdi-arrow-expand-all </v-icon>
 					</v-btn>
-					<v-btn icon>
+					<v-btn icon @click="changeToCreateMode">
 						<v-icon> mdi-plus </v-icon>
 					</v-btn>
-					<v-btn icon @click="changeToEditMode">
+					<v-btn icon @click="changeToEditMode" v-if="!!activeGraphicalView">
 						<v-icon> mdi-pencil </v-icon>
 					</v-btn>
-					<v-btn icon @click="removeGraphicalView">
+					<v-btn icon @click="removeGraphicalView" v-if="!!activeGraphicalView">
 						<v-icon> mdi-delete </v-icon>
 					</v-btn>
 				</v-col>
@@ -53,15 +53,15 @@
 						:items="canvasResolutions"
 					></v-select>
 				</v-col>
-				<v-col>
+				<v-col class="flex-jc-space-around">
 					<v-btn>
 						<v-icon> mdi-image </v-icon>
 					</v-btn>
 					<v-btn @click="toggleIconify">
 						<v-icon> mdi-cube </v-icon>
 					</v-btn>
-					<v-btn>
-						<v-icon> mdi-add </v-icon>
+					<v-btn color="primary" @click="showComponentsDialog">
+						<v-icon> mdi-plus </v-icon>
 					</v-btn>
 				</v-col>
 			</v-row>
@@ -71,12 +71,16 @@
 		</v-container>
 		<v-container fluid v-if="editMode" class="slts-page-actions--floating">
 			<v-btn @click="editCancel"> Cancel </v-btn>
-			<v-btn color="primary" @click="editAccept"> Save </v-btn>
+			<v-btn color="primary" @click="editAccept"> {{createMode ? 'Create' : 'Update' }} </v-btn>
 		</v-container>
+		<ComponentCreationDialog
+			ref="creationDialog"	
+		></ComponentCreationDialog>
 	</div>
 </template>
 <script>
 import GraphicalViewPage from './GraphicalViewPage.vue';
+import GraphicalViewItem from '../../models/GraphicalViewItem';
 export default {
 	components: {
 		GraphicalViewPage,
@@ -86,41 +90,20 @@ export default {
 		return {
 			activeGraphicalView: null,
 			graphicalViewList: [],
+			createMode: false,
 			fullscreenEnabled: false,
-			annonymousAccess: [
-				{
-					value: 'NONE',
-					text: 'None',
-				},
-				{
-					value: 'READ',
-					text: 'Read',
-				},
-				{
-					value: 'SET',
-					text: 'Set',
-				},
-			],
-			canvasResolutions: [
-				{
-					value: 'R640x480',
-					text: '640 x 480',
-				},
-				{
-					value: 'R800x600',
-					text: '800 x 600',
-				},
-				{
-					value: 'R1024x768',
-					text: '1024 x 768',
-				},
-			],
 		};
 	},
 
 	computed: {
 		editMode() {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;
+		},
+		canvasResolutions() {
+			return this.$store.state.graphicalViewModule.canvasResolutions;
+		},
+		annonymousAccess() {
+			return this.$store.state.graphicalViewModule.annonymousAccess;
 		},
 		activePage: {
 			get() {
@@ -150,6 +133,12 @@ export default {
 		changeToEditMode() {
 			this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', true);
 		},
+		changeToCreateMode() {
+			this.changeToEditMode();
+			this.createMode = true;
+			const view = new GraphicalViewItem(this.$store.state.loggedUser.username)
+			this.$store.commit("SET_GRAPHICAL_PAGE", view);
+		},
 		async removeGraphicalView() {
 			try {
 				await this.$store.dispatch('deleteGraphicalView');
@@ -177,14 +166,25 @@ export default {
 		},
 		async editAccept() {
 			try {
-				let res = await this.$store.dispatch('saveGraphicalView');
-				console.log(res);
+				let res;
+				if(this.createMode) {
+					res = await this.$store.dispatch('createGraphicalView')
+					if(res) {
+						this.createMode = false;						
+					}
+				} else {
+					res = await this.$store.dispatch('saveGraphicalView');
+				}	
 				if (res) {
 					this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
-				}
+				}			
 			} catch (e) {
 				console.error(e);
 			}
+		},
+
+		showComponentsDialog() {
+			this.$refs.creationDialog.openDialog();
 		},
 		moveToGraphicalView() {
 			console.log(this.activeGraphicalView);
@@ -221,5 +221,9 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+.flex-jc-space-around {
+	display: flex;
+	justify-content: space-around;
 }
 </style>

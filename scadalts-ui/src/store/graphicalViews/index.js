@@ -1,3 +1,4 @@
+import { annonymousAccess, canvasResolutions } from "./constants";
 import { graphicalViewPage, imageSetFan, imageSets } from "./mocks";
 
 export const graphicalViewModule = {
@@ -9,6 +10,8 @@ export const graphicalViewModule = {
         componentEdit: null,
         componentEditBackup: null,
         imageSets: [],
+        annonymousAccess: annonymousAccess,
+        canvasResolutions: canvasResolutions,
     },
 
     mutations: {
@@ -69,6 +72,13 @@ export const graphicalViewModule = {
                 commit('SET_GRAPHICAL_PAGE', graphicalViewPage);
                 commit('SET_GRAPHICAL_PAGE_BACKUP', graphicalViewPage);
                 resolve(graphicalViewPage)
+            });
+        },
+
+        createGraphicalView({ state, dispatch }) {
+            console.log(state.graphicalPage);
+            return new Promise((resolve) => {
+                resolve(true);
             });
         },
 
