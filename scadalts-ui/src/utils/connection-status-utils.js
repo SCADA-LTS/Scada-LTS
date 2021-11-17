@@ -13,10 +13,10 @@ export const connStatusUtilsMixin = {
 		return {
 			appOnline: navigator.onLine,
 			onAppOnline: () => {
-				alert('Internet connection established!');
+				console.log('Internet connection established!');
 			},
 			onAppOffline: () => {
-				alert('Internet connection lost!');
+				console.log('Internet connection lost!');
 			},
 		};
 	},
