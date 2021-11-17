@@ -37,7 +37,7 @@ public class DataPointEditDwrTest {
     }
 
     @Test
-    public void purgeNowValuesLimit_LimitLowerThan2_Return0() {
+    public void when_purgeNowValuesLimit_for_limit_lower_than_2_then_return_0() {
         long result = dataPointEditDwr.purgeNowValuesLimit(1);
 
         assertEquals(0, result);
@@ -45,7 +45,7 @@ public class DataPointEditDwrTest {
     }
 
     @Test
-    public void purgeNowValuesLimit_LimitLowerGraterThan2_Return10() {
+    public void when_purgeNowValuesLimit_for_limit_grater_than_2_then_return_10() {
         when(runtimeManager.purgeDataPointValuesWithLimit(anyInt(), anyInt())).thenReturn(10L);
 
         long result = dataPointEditDwr.purgeNowValuesLimit(100);
@@ -54,7 +54,7 @@ public class DataPointEditDwrTest {
     }
 
     @Test
-    public void purgeNowAll_MethodCalled() {
+    public void when_purgeNowAll_then_purgeDataPointValues_method_called() {
         when(runtimeManager.purgeDataPointValues(anyInt())).thenReturn(10L);
 
         dataPointEditDwr.purgeNowAll();
@@ -63,7 +63,7 @@ public class DataPointEditDwrTest {
     }
 
     @Test
-    public void purgeNowPeriod_ValidPeriod_ThenReturn100() {
+    public void when_purgeNowPeriod_for_valid_period_then_return_100() {
         when(runtimeManager.purgeDataPointValues(anyInt(), anyInt(), anyInt())).thenReturn(100L);
 
         long result = dataPointEditDwr.purgeNowPeriod(1, 1);
@@ -72,7 +72,7 @@ public class DataPointEditDwrTest {
     }
 
     @Test
-    public void purgeNowPeriod_InvalidPurgePeriod_ThenReturn0() {
+    public void when_purgeNowPeriod_for_invalid_purge_period_then_return_0() {
         when(runtimeManager.purgeDataPointValues(anyInt(), anyInt(), anyInt())).thenReturn(100L);
 
         long result = dataPointEditDwr.purgeNowPeriod(1, -1);
