@@ -28,7 +28,7 @@
 								typeof dp.current === 'number' ? dp.current.toFixed(round) : dp.current
 							}}
 						</td>
-						<td>{{ dp.lastTimestamp }}</td>
+						<td>{{ new Date(dp.lastTimestamp).toLocaleString() }}</td>
 						<td v-if="showTotal">{{ !!dp.sum ? dp.sum.toFixed(round) : dp.sum }}</td>
 						<td v-if="showAverage">{{ !!dp.avg ? dp.avg.toFixed(round) : dp.avg }}</td>
 						<td v-if="showMax">{{ dp.max }}</td>

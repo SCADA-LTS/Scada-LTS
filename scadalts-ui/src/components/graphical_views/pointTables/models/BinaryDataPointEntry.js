@@ -11,7 +11,7 @@ export default class BinaryDataPointEntry extends BaseDataPointEntry {
 
     updateValue({value}) {
         this.current = value == "true" ? 1 : 0;
-        this.lastTimestamp = new Date().toLocaleString();
+        this.lastTimestamp = new Date().getTime();
         this.sum = this.sum++;
     }
 }

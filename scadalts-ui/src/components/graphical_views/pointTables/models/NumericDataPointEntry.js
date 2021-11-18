@@ -29,7 +29,7 @@ export default class NumericDataPointEntry extends BaseDataPointEntry {
     updateValue(data) {
         const value = Number(data.value);
         this.current = value;
-        this.lastTimestamp = new Date().toLocaleString();
+        this.lastTimestamp = new Date().getTime();
         this.sum += value;
         this.count++;
         this.min = value < this.min ? value : this.min;
