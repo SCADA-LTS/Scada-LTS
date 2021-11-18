@@ -1,5 +1,6 @@
 package org.scada_lts.utils;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +60,18 @@ public final class PointPropertiesApiUtils {
         }
     }
 
+    public static Optional<DataPointVO> getDataPointById(Integer id, DataPointService dataPointService) {
+        try {
+            DataPointVO dataPointVO = null;
+            if (id != null)
+                dataPointVO = dataPointService.getDataPoint(id);
+            return Optional.ofNullable(dataPointVO);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
     public static String validPointProperties(Integer id, String xid, JsonPointProperties body) {
 
         StringBuilder msg = new StringBuilder();
@@ -80,5 +93,29 @@ public final class PointPropertiesApiUtils {
                 a -> !DataPointVO.validPurgeType(a)));
         msg.append(msgIfNonNullAndInvalid("Correct purgeValuesLimit, it must be > 1, value {0};", body.getPurgeValuesLimit(), a -> a <= 1));
         return msg.toString();
+    }
+
+    public static String validPurgeTypeAndPeriod(Integer type, Integer period) {
+        String msg = msgIfNonNullAndInvalid("PurgeNowType does not exist for value {0};", type, a -> !validPurgeNowType(a));
+        msg += msgIfNonNullAndInvalid("Correct purgeNowPeriod, it must be >= 1, value {0};", period, a -> a < 1);
+        return msg;
+    }
+
+    public static String validPurgeLimit(Integer limit) {
+        return msgIfNonNullAndInvalid("Correct purgeNowLimit, it must be >= 2, value {0};", limit, a -> a < 2);
+    }
+
+    public static boolean validPurgeNowType(int purgeType) {
+        switch (purgeType) {
+            case Common.TimePeriods.MINUTES:
+            case Common.TimePeriods.HOURS:
+            case Common.TimePeriods.DAYS:
+            case Common.TimePeriods.WEEKS:
+            case Common.TimePeriods.MONTHS:
+            case Common.TimePeriods.YEARS:
+                return true;
+            default:
+                return false;
+        }
     }
 }

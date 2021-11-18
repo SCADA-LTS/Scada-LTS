@@ -27,9 +27,7 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
-import static org.scada_lts.utils.PointPropertiesApiUtils.getDataPointByIdOrXid;
-import static org.scada_lts.utils.PointPropertiesApiUtils.validPointProperties;
-import static org.scada_lts.utils.PointPropertiesApiUtils.updateValuePointProperties;
+import static org.scada_lts.utils.PointPropertiesApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 import static org.scada_lts.utils.ValidationUtils.validId;
 
@@ -50,7 +48,6 @@ import static org.scada_lts.utils.ValidationUtils.validId;
 public class PointPropertiesAPI {
 
     private static final Log LOG = LogFactory.getLog(PointPropertiesAPI.class);
-    private static final String ERRORS_DATA_POINT_NOT_FOUND = "{\"errors\": \"dataPoint not found\"}";
 
     private DataPointService dataPointService = new DataPointService();
 
@@ -741,35 +738,59 @@ public class PointPropertiesAPI {
         }
     }
 
-    @PatchMapping(value = "/{id}/purge")
-    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id,
-                                                       @RequestParam(required = false) Boolean all,
-                                                       @RequestParam(required = false) Integer type,
-                                                       @RequestParam(required = false) Integer period,
+    @PatchMapping(value = "/{id}/purgeNowPeriod")
+    public ResponseEntity<String> purgeNowPeriodDataPointValues(@PathVariable("id") Integer id,
+                                                       @RequestParam Integer type,
+                                                       @RequestParam Integer period,
                                                        HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                DataPointVO point = dataPointService.getDataPoint(id);
-                RuntimeManager rm = Common.ctx.getRuntimeManager();
-                Long count;
-                if(all != null) {
-                    if(all) {
-                        count = rm.purgeDataPointValues(point.getId());
-                        return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
-                    }
+                String error = validPurgeTypeAndPeriod(type,period);
+                if(!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                if(type != null && period != null) {
-                    count = rm.purgeDataPointValues(point.getId(), type, period);
-                    return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
-                }
+                return purgeNowPeriodDataPointValues(id, type, period);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PatchMapping(value = "/{id}/purgeNowAll")
+    public ResponseEntity<String> purgeNowAllDataPointValues(@PathVariable("id") Integer id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return purgeNowAllDataPointValues(id);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(value = "/{id}/purgeNowLimit")
+    public ResponseEntity<String> purgeNowWithLimitDataPointValues(@PathVariable("id") Integer id,
+                                                                @RequestParam Integer limit,
+                                                                HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                String error = validPurgeLimit(limit);
+                if(!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                return purgeNowWithLimitDataPointValues(id, limit);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping(value = "/{id}/clearcache")
@@ -820,6 +841,44 @@ public class PointPropertiesAPI {
         Map<String, String> response = new HashMap<>();
         getDataPointByIdOrXid(id, xid, dataPointService)
                 .ifPresent(a -> response.put("description", a.getDescription()));
+        if(response.isEmpty()) {
+            return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(response);
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            LOG.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<String> purgeNowPeriodDataPointValues(Integer id, Integer type, Integer period) {
+        RuntimeManager rm = Common.ctx.getRuntimeManager();
+        Map<String, Long> response = new HashMap<>();
+        getDataPointById(id, dataPointService)
+                .ifPresent(a -> response.put("deleted", rm.purgeDataPointValues(a.getId(), type, period)));
+        return prepareResponseForDataPurge(response);
+    }
+
+    private ResponseEntity<String> purgeNowAllDataPointValues(Integer id) {
+        RuntimeManager rm = Common.ctx.getRuntimeManager();
+        Map<String, Long> response = new HashMap<>();
+        getDataPointById(id, dataPointService)
+                .ifPresent(a -> response.put("deleted", rm.purgeDataPointValues(a.getId())));
+        return prepareResponseForDataPurge(response);
+    }
+
+    private ResponseEntity<String> purgeNowWithLimitDataPointValues(Integer id, Integer limit) {
+        RuntimeManager rm = Common.ctx.getRuntimeManager();
+        Map<String, Long> response = new HashMap<>();
+        getDataPointById(id, dataPointService)
+                .ifPresent(a -> response.put("deleted", rm.purgeDataPointValuesWithLimit(a.getId(), limit)));
+        return prepareResponseForDataPurge(response);
+    }
+
+    private ResponseEntity<String> prepareResponseForDataPurge(Map<String, Long> response) {
         if(response.isEmpty()) {
             return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
         }
