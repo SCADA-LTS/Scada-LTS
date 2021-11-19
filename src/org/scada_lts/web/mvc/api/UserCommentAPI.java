@@ -2,7 +2,6 @@ package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserCommentService;
@@ -31,22 +30,22 @@ public class UserCommentAPI {
      * Create User Comment
      *
      * @param request HTTP request
-     * @param body UserComment object
+     * @param body String comment
      * @param typeId UserComment type (1 - Event or 2 - Point)
      * @param refId Reference ID of the object
      *
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody UserComment body, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
+    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody String comment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                String error = validUserComment(typeId, refId, body);
+                String error = validUserComment(typeId, refId, comment);
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                int result = userCommentService.setUserComment(body, typeId, refId);
+                int result = userCommentService.setUserComment(comment, typeId, refId, user);
                 if(result != 0) {
                     return new ResponseEntity<>(String.valueOf(result), HttpStatus.CREATED);
                 } else {

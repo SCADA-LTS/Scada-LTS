@@ -1,5 +1,6 @@
 package org.scada_lts.mango.service;
 
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import org.scada_lts.dao.UserCommentDAO;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,19 @@ public class UserCommentService {
     /**
      * Save user comment to database.
      *
-     * @param userComment User comment object data
+     * @param comment String
      * @param typeComment Type of the comment (Event or Point)
      * @param referenceId Reference ID of the object (EventID or PointID)
      *
      * @return Result status.
      */
-    public int setUserComment(UserComment userComment, int typeComment, int referenceId) {
-        return userCommentDAO.insert(userComment, typeComment, referenceId);
+    public int setUserComment(String comment, int typeComment, int referenceId, User user) {
+        UserComment c = new UserComment();
+        c.setComment(comment);
+        c.setTs(System.currentTimeMillis());
+        c.setUserId(user.getId());
+        c.setUsername(user.getUsername());
+        return userCommentDAO.insert(c, typeComment, referenceId);
     }
 
     /**
