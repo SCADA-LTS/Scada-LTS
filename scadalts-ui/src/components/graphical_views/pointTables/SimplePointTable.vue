@@ -23,10 +23,10 @@
 				<tbody>
 					<tr v-for="dp in pointState" :key="dp.name">
 						<td>{{ dp.name }}</td>
-						<td>{{ dp.current | fixed(roundValue) }}</td>
+						<td>{{ dp.current | fixed(roundValue, dp.type) }}</td>
 						<td>{{ dp.lastTimestamp | localeDate }}</td>
-						<td v-if="showTotal">{{ dp.sum | fixed(roundValue) }}</td>
-						<td v-if="showAverage">{{ dp.avg | fixed(roundValue) }}</td>
+						<td v-if="showTotal">{{ dp.sum | fixed(roundValue, 'numeric') }}</td>
+						<td v-if="showAverage">{{ dp.avg | fixed(roundValue, 'numeric') }}</td>
 						<td v-if="showMax">{{ dp.max }}</td>
 						<td v-if="showMin">{{ dp.min }}</td>
 					</tr>
@@ -83,11 +83,14 @@ export default {
 		localeDate(value) {
 			return new Date(value).toLocaleString();
 		},
-		fixed: (value, precision) => {
-			if(!!precision && typeof value === 'number') {
-				return value.toFixed(precision);
-			} else {
+		fixed: (value, precision, type) => {
+			if(value !== null && value !== undefined) {
+				if(type === 'numeric' && !!precision) {
+					return value.toFixed(precision);
+				} 
 				return value;
+			} else {
+				return '-';
 			}
 		}
 	},
@@ -156,7 +159,7 @@ export default {
 							break;
 						case 'Numeric':
 						case 'Multistate':
-							this.pointState.push(new NumericDataPointEntry(pointId, name, values, ws));
+							this.pointState.push(new NumericDataPointEntry(pointId, name, values, ws, type));
 							break;
 						default:
 							console.error(`Unsupported datapoint type: ${type}`);

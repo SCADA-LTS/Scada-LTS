@@ -2,8 +2,8 @@ import BaseDataPointEntry from "./BaseDataPointEntry";
 
 export default class NumericDataPointEntry extends BaseDataPointEntry {
 
-    constructor(pointId, datapointName, pointValues, websocket) {
-        super(pointId, datapointName, "numeric", websocket);
+    constructor(pointId, datapointName, pointValues, websocket, type) {
+        super(pointId, datapointName, type.toLowerCase(), websocket);
         this.max = 0;
         this.min = Infinity;
         this.avg = 0;

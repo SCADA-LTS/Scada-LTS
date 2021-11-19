@@ -52,7 +52,7 @@ context('💠️ Simple Table Component Tests', () => {
         });
 
         it('Prop "round" should be equal 2', () => {
-            expect(wrapper.vm.round).to.equal(2);
+            expect(wrapper.vm.roundValue).to.equal(2);
         });
 
         it('Prop "maxWidth" should be equal 600', () => {
