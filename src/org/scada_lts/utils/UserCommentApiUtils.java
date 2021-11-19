@@ -18,11 +18,9 @@ public final class UserCommentApiUtils {
 
     private UserCommentApiUtils() {}
 
-    public static String validUserComment(Integer typeId, Integer refId, UserComment body) {
-        String msg = validUserCommentWithTs(typeId, refId, body.getUserId(), body.getTs());
-        msg += msgIfNullOrInvalid("Correct username;", body.getUsername(),
-                a -> !validUserUsername(a));
-        msg += msgIfNull("Correct comment", body.getComment());
+    public static String validUserComment(Integer typeId, Integer refId, String comment) {
+        String msg = validTypeIdAndRefId(typeId, refId);
+        msg += msgIfNull("Correct comment", comment);
         return msg;
     }
 
@@ -74,17 +72,6 @@ public final class UserCommentApiUtils {
                 return false;
             UserService userService = new UserService();
             User user = userService.getUser(id);
-            return user != null;
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return false;
-        }
-    }
-
-    private static boolean validUserUsername(String username){
-        try {
-            UserService userService = new UserService();
-            User user = userService.getUser(username);
             return user != null;
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
