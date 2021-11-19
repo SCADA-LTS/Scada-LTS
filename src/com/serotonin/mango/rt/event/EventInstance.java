@@ -18,12 +18,14 @@
  */
 package com.serotonin.mango.rt.event;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
@@ -136,6 +138,10 @@ public class EventInstance {
         else
             this.shortMessage = shortMessage;
         this.context = context;
+    }
+
+    public static EventInstance emptySystemNoneEvent() {
+        return new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
     }
 
     public LocalizableMessage getRtnMessage() {

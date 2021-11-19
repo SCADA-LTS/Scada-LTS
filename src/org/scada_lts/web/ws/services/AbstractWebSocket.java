@@ -20,19 +20,16 @@ public abstract class AbstractWebSocket {
 
     private SimpMessagingTemplate template;
 
-    @Autowired
-    AbstractWebSocket() { }
-
     /**
      * Initialization of WebSocket broker
      *
      * Initialized by Spring during the application initialization.
      * @param template - Messaging template
      */
-    @Autowired
-    public void setTemplate(SimpMessagingTemplate template) {
+    public AbstractWebSocket(SimpMessagingTemplate template) {
         this.template = template;
     }
+
 
     /**
      * Send Message by WebSocket

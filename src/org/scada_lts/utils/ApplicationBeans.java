@@ -8,55 +8,79 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.dao.cache.UserCachable;
 import org.scada_lts.dao.cache.UsersProfileCachable;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
+import org.scada_lts.service.HighestAlarmLevelService;
+import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
+import org.scada_lts.web.ws.services.EventsServiceWebSocket;
+import org.scada_lts.web.ws.services.UserEventServiceWebsocket;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 public class ApplicationBeans implements ApplicationContextAware {
-    private static ApplicationContext context;
+    private static final Log log = LogFactory.getLog(ApplicationBeans.class);
+
+    private static ApplicationContext applicationContext;
+    private static ApplicationContext servletContext;
 
     @Override
-    public void setApplicationContext(ApplicationContext ctx) {
-        context = ctx;
+    public void setApplicationContext(ApplicationContext context) {
+        if(ApplicationBeans.applicationContext == null)
+            applicationContext = context;
+        else
+            servletContext = context;
     }
 
     public static <T> T getBean(String beanName, Class<T> type) {
-        return context.getBean(beanName, type);
+        return getBeanContext(beanName, type);
     }
 
     public static IUserDAO getUserDaoBean() {
         boolean userCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCachable.CACHE_ENABLED_KEY, true);
-        return (IUserDAO) (userCacheEnabled ? context.getBean("userDaoWithCache") : context.getBean("userDAO"));
+        return userCacheEnabled ?
+                getBeanContext("userDaoWithCache", IUserDAO.class) :
+                getBeanContext("userDAO", IUserDAO.class);
     }
 
     public static IUsersProfileDAO getUsersProfileDaoBean() {
         boolean usersprofileCacheEnabled = Common.getEnvironmentProfile().getBoolean(UsersProfileCachable.CACHE_ENABLED_KEY, true);
-        return (IUsersProfileDAO) (usersprofileCacheEnabled ? context.getBean("usersProfileDaoWithCache") : context.getBean("usersProfileDAO"));
+        return usersprofileCacheEnabled ?
+                getBeanContext("usersProfileDaoWithCache", IUsersProfileDAO.class) :
+                getBeanContext("usersProfileDAO", IUsersProfileDAO.class);
     }
 
     public static PermissionsService<Integer, User> getDataSourceUserPermissionsServiceBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(PermissionsService.CACHE_ENABLED_KEY, true);
-        return (PermissionsService<Integer, User>) (permissionsCacheEnabled ? context.getBean("dataSourceUserPermissionsServiceWithCache") : context.getBean("dataSourceUserPermissionsService"));
+        return (PermissionsService<Integer, User>) (permissionsCacheEnabled ?
+                getBeanContext("dataSourceUserPermissionsServiceWithCache", PermissionsService.class) :
+                getBeanContext("dataSourceUserPermissionsService", PermissionsService.class) );
     }
 
     public static PermissionsService<DataPointAccess, User> getDataPointUserPermissionsServiceBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(PermissionsService.CACHE_ENABLED_KEY, true);
-        return (PermissionsService<DataPointAccess, User>) (permissionsCacheEnabled ? context.getBean("dataPointUserPermissionsServiceWithCache") : context.getBean("dataPointUserPermissionsService"));
+        return (PermissionsService<DataPointAccess, User>) (permissionsCacheEnabled ?
+                getBeanContext("dataPointUserPermissionsServiceWithCache", PermissionsService.class) :
+                getBeanContext("dataPointUserPermissionsService", PermissionsService.class));
     }
 
     public static GetShareUsers<View> getViewGetShareUsersBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(GetShareUsers.CACHE_ENABLED_KEY, true);
-        return (GetShareUsers<View>) (permissionsCacheEnabled ? context.getBean("viewGetShareUsersWithCache") : context.getBean("viewGetShareUsers"));
+        return (GetShareUsers<View>) (permissionsCacheEnabled ?
+                getBeanContext("viewGetShareUsersWithCache", GetShareUsers.class) :
+                getBeanContext("viewGetShareUsers", GetShareUsers.class));
     }
 
     public static GetShareUsers<WatchList> getWatchListGetShareUsersBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(GetShareUsers.CACHE_ENABLED_KEY, true);
-        return (GetShareUsers<WatchList>) (permissionsCacheEnabled ? context.getBean("watchListGetShareUsersWithCache") : context.getBean("watchListGetShareUsers"));
+        return (GetShareUsers<WatchList>) (permissionsCacheEnabled ?
+                getBeanContext("watchListGetShareUsersWithCache", GetShareUsers.class) :
+                getBeanContext("watchListGetShareUsers", GetShareUsers.class));
     }
 
     public static UsersProfileService getUsersProfileService() {
@@ -79,5 +103,32 @@ public class ApplicationBeans implements ApplicationContextAware {
 
     public static PermissionsService<WatchListAccess, UsersProfileVO> getWatchListProfilePermissionsService() {
         return new WatchListProfilePermissionsService(getUsersProfileDaoBean());
+    }
+
+    public static HighestAlarmLevelService getHighestAlarmLevelServiceBean() {
+        return getBeanContext("highestAlarmLevelServiceWithCache", HighestAlarmLevelService.class);
+    }
+
+    public static UserEventServiceWebsocket getUserEventServiceWebsocketBean() {
+        return getBeanContext("userEventServiceWebsocket", UserEventServiceWebsocket.class);
+    }
+
+    public static DataPointServiceWebSocket getDataPointServiceWebSocketBean() {
+        return getBeanContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
+    }
+
+    public static EventsServiceWebSocket getEventsServiceWebSocketBean() {
+        return getBeanContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
+    }
+
+    private static <T> T getBeanContext(String beanName, Class<T> clazz) {
+        try {
+            if (servletContext != null)
+                return servletContext.getBean(beanName, clazz);
+            return applicationContext.getBean(beanName, clazz);
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
     }
 }

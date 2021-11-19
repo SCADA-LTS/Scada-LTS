@@ -55,9 +55,11 @@ public class DataPointEventType extends EventType {
 
 	@Override
 	public int getDataSourceId() {
-		if (dataSourceId == -1)
-			dataSourceId = new DataPointDao().getDataPoint(dataPointId)
-					.getDataSourceId();
+		if (dataSourceId == -1) {
+			DataPointVO dataPointVO = new DataPointDao().getDataPoint(dataPointId);
+			if(dataPointVO != null)
+				dataSourceId = dataPointVO.getDataSourceId();
+		}
 		LOG.debug(toString() + " - getDataSourceId() - "
 				+ Integer.toString(dataSourceId));
 		return dataSourceId;

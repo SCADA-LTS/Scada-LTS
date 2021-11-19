@@ -339,7 +339,7 @@ public class ScadaConfig {
 	
 	public static void copyConfig() {
 		try {
-			Files.copy(Paths.get(getPathConfigFile() + System.getProperty("file.separator") + "env.properties"), Paths.get(getPathCustomConfig()+FILE_NAME_PROPERTIES));
+			Files.copy(Paths.get(getPathConfigFile("env.properties")), Paths.get(getPathCustomConfig()+FILE_NAME_PROPERTIES));
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -349,9 +349,9 @@ public class ScadaConfig {
 		try {
 		  conf = new Properties();
 		  FileInputStream fis = null;
-		  fis = new FileInputStream(getPathConfigFile() + System.getProperty("file.separator") + "env.properties");
+		  fis = new FileInputStream(getPathConfigFile("env.properties"));
 		  conf.load(fis);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOG.error(e);
 		}
 	}
@@ -371,6 +371,15 @@ public class ScadaConfig {
 			path = path + "/" + "WEB-INF" + "/" + "classes" + "/";
 		}
 		return path;
+	}
+
+	private static String getPathConfigFile(String fileName) {
+		try {
+			return ScadaConfig.class.getClassLoader().getResources(fileName).nextElement().getFile();
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return "";
+		}
 	}
 	
 	private static String getPathExistingLogo() {

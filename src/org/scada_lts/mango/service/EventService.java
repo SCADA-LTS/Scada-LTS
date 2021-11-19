@@ -33,11 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
-import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
@@ -111,9 +109,11 @@ public class EventService implements MangoEvent {
 		eventDAO.updateAck(time, userId, alternateAckSource, eventId);
 		// true silenced
 		userEventDAO.updateAck(eventId, true);
-		
+
 		clearCache();
-		
+		if(userId > 0)
+			Common.ctx.getEventManager().notifyEventToggle(eventId, userId);
+
 		//TODO check
 		/*if( signalAlarmLevelChange ) {
 			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
@@ -253,9 +253,11 @@ public class EventService implements MangoEvent {
 	
 	@Override
 	public int purgeEventsBefore(long time) {
-		return eventDAO.purgeEventsBefore(time);
+		int result = eventDAO.purgeEventsBefore(time);
+		Common.ctx.getEventManager().resetHighestAlarmLevel();
+		return result;
 	}
-	
+
 	@Override
 	public int getEventCount() {
 		return eventDAO.getEventCount();
@@ -355,39 +357,31 @@ public class EventService implements MangoEvent {
 		eventDAO.delete(handlerId);
 		
 		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
+		Common.ctx.getEventManager().resetHighestAlarmLevel();
 	}
 
 	public void deleteEventHandler(final String handlerXid) {
 		EventHandlerVO handler = getEventHandler(handlerXid);
 		eventDAO.delete(handler.getId());
 		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
+		Common.ctx.getEventManager().resetHighestAlarmLevel();
 	}
 	
 	@Override
-	public boolean toggleSilence(int eventId, int userId) {		
-		boolean silenced;
-		Boolean updated=false;
-		silenced = eventDAO.toggleSilence(eventId, userId, updated);
+	public boolean toggleSilence(int eventId, int userId) {
+		boolean updated = eventDAO.toggleSilence(eventId, userId, false);
 		if (updated) {
 			Common.ctx.getEventManager().setLastAlarmTimestamp(System.currentTimeMillis());
-			Common.ctx.getEventManager().notifyEventToggle(eventId,  userId, silenced);
+			Common.ctx.getEventManager().notifyEventToggle(eventId, userId);
+		} else {
+			Common.ctx.getEventManager().notifyEventRaise(eventId, userId);
 		}
-		return silenced;
+		return updated;
 	}
-	
-	public int getHighestUnsilencedAlarmLevel(int userId) {		
-		int result = -1;
-		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = UnsilencedAlarmCache.getInstance().getHighestUnsilencedAlarmLevel(userId);
-			} else {
-				result = new EventDAO().getHighestUnsilencedAlarmLevel(userId);
-			}
-		} catch (SchedulerException | IOException e) {
-			LOG.error(e);	
-		}		
-		return result;
+
+	@Override
+	public int getHighestUnsilencedAlarmLevel(int userId) {
+		return Common.ctx.getEventManager().getHighestAlarmLevel(userId);
 	}
 	
 	@Override
@@ -514,5 +508,4 @@ public class EventService implements MangoEvent {
 		limit,
 		offset);
 	}
-
 }

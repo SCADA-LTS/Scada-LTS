@@ -88,7 +88,7 @@ public class PointHierarchyController {
 			LOG.trace("/pointHierarchy/{key} key:" + key);
 		}
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
+		if (user != null && user.isAdmin()) {
 			String json = "";
 			List<PointHierarchyNode> lst = null;
 			try {
