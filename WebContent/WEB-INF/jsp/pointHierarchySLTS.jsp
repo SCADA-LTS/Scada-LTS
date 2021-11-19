@@ -476,14 +476,14 @@ var stompClient = null;
 var connectCallback = function(frame) {
     	console.log('Connected: ' + frame);
     	stompClient.subscribe('/topic/alarmLevel', function(message) {
-        	console.log("message[/topic/alarmLevel]:" + message.body);
+        	//console.log("message[/topic/alarmLevel]:" + message.body);
     	});
     	stompClient.subscribe("/app/alarmLevel/register", function(message) {
-    		console.log("message[/app/alarmLevel/register]:" + message.body);
+    		//console.log("message[/app/alarmLevel/register]:" + message.body);
     		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
     			var response = JSON.parse(message.body);
     			var alarmLevel = parseInt(response.alarmlevel);
-    			console.log("response.alarmLevel: "+response.alarmlevel);
+    			//console.log("response.alarmLevel: "+response.alarmlevel);
    		        if (alarmLevel > 0) {
    		            document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
    		            setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
@@ -502,11 +502,11 @@ var connectCallback = function(frame) {
     	stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
 
     	stompClient.subscribe("/app/listusers", function(message) {
-    		console.log("message[/app/listusers]:" + message.body);
+    		//console.log("message[/app/listusers]:" + message.body);
     	} );
 
     	stompClient.subscribe("/app/session", function(message) {
-    		console.log("message[/app/session]:" + message.body);
+    		//console.log("message[/app/session]:" + message.body);
     	} );
 
 };
@@ -675,24 +675,13 @@ var messages = {
  	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
     }
 
-var stompClient2 = null;
     function onloadHandler() {
     	// connecting to server websocket endpoint...
        stompClient = connect(myLocation + 'ws-scada/alarmLevel', headers, errorCallback, connectCallback);
-       stompClient2 = connect(myLocation + 'ws-scada/event', headers, errorCallback, function(frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe("/app/event/update/register", function(message) {
-                console.log("message[/app/event/update/]:" + message.body);
-                stompClient.subscribe("/topic/event/update/"+message.body, function(message) {
-                    console.log('afterChange(); //load alarm list: ' + message);
-                })
-            });
-       });
     }
 
     function onunloadHandler() {
    	   disconnect(stompClient);
-   	   disconnect(stompClient2);
    	}
 
 
