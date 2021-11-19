@@ -14,7 +14,7 @@ export default class NumericDataPointEntry extends BaseDataPointEntry {
                 this.addValue(Number(value.value))
             });
         }
-        this.current = pointValues[pointValues.length - 1].value;
+        this.current = Number(pointValues[pointValues.length - 1].value);
         this.lastTimestamp = pointValues[pointValues.length - 1].ts;
     }
 

@@ -294,7 +294,7 @@ for (let x = 0; x < 10; x++) {
 						showAverage: el.getAttribute('average') !== null,
 						showMax: el.getAttribute('max') !== null,
 						showMin: el.getAttribute('min') !== null,
-						round: el.getAttribute('round' !== null ? Number(el.getAttribute('round')) : 2 ),
+						roundValue: Number(el.getAttribute('round')),
 						maxWidth: el.getAttribute('width' !== null ? Number(el.getAttribute('width')) : 600 ),
 						maxHeight: el.getAttribute('height' !== null ? Number(el.getAttribute('height')) : 400 ),
 					},

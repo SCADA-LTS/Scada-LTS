@@ -23,14 +23,10 @@
 				<tbody>
 					<tr v-for="dp in pointState" :key="dp.name">
 						<td>{{ dp.name }}</td>
-						<td>
-							{{
-								typeof dp.current === 'number' ? dp.current.toFixed(round) : dp.current
-							}}
-						</td>
-						<td>{{ new Date(dp.lastTimestamp).toLocaleString() }}</td>
-						<td v-if="showTotal">{{ !!dp.sum ? dp.sum.toFixed(round) : dp.sum }}</td>
-						<td v-if="showAverage">{{ !!dp.avg ? dp.avg.toFixed(round) : dp.avg }}</td>
+						<td>{{ dp.current | fixed(roundValue) }}</td>
+						<td>{{ dp.lastTimestamp | localeDate }}</td>
+						<td v-if="showTotal">{{ dp.sum | fixed(roundValue) }}</td>
+						<td v-if="showAverage">{{ dp.avg | fixed(roundValue) }}</td>
 						<td v-if="showMax">{{ dp.max }}</td>
 						<td v-if="showMin">{{ dp.min }}</td>
 					</tr>
@@ -69,7 +65,7 @@ export default {
 		showAverage: { type: Boolean, default: false },
 		showMax: { type: Boolean, default: false },
 		showMin: { type: Boolean, default: false },
-		round: { type: Number, default: 2 },
+		roundValue: { type: Number, default: 2 },
 		maxWidth: { type: Number, default: 600 },
 		maxHeight: { type: Number, default: 400 },
 	},
@@ -83,6 +79,19 @@ export default {
 		};
 	},
 
+	filters: {
+		localeDate(value) {
+			return new Date(value).toLocaleString();
+		},
+		fixed: (value, precision) => {
+			if(!!precision && typeof value === 'number') {
+				return value.toFixed(precision);
+			} else {
+				return value;
+			}
+		}
+	},
+
 	computed: {
 		wsConnection() {
 			return this.$store.state.webSocketModule.webSocketConnection;
@@ -91,6 +100,7 @@ export default {
 
 	mounted() {
 		this.initTableData();
+		this.fix = this.roundValue;
 	},
 
 	destroyed() {
