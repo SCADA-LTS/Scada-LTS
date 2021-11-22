@@ -281,6 +281,8 @@
 	"purge.dialog.all": "Purge all data",
 	"purge.dialog.older": "Purge data older than",
 	"purge.dialog.title": "Purge Data Point data now",
+	"purge.dialog.values": "Values limit",
+	"purge.dialog.strategy": "Purge strategy",
 	"purge.dialog.confirm.title": "Purge data from Data Point",
 	"purge.dialog.confirm.text": "This operation cannot be undone",
 	"systemsettings.alert.purgedata": "This operation will permanently delete datapoint history content. Continue?",

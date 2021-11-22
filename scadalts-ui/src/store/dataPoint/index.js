@@ -162,6 +162,27 @@ const storeDataPoint = {
 			});
 		},
 
+		purgeNowPeriod({dispatch}, {datapointId, type, period}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowPeriod?type=${type}&period=${period}`,
+				data: null,
+			});
+		},
+
+		purgeNowLimit({dispatch}, {datapointId, limit}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowLimit?limit=${limit}`,
+				data: null,
+			});
+		},
+
+		purgeNowAll({dispatch}, datapointId) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowAll`,
+				data: null,
+			});
+		},
+
 		purgeDataPointValues({ dispatch }, payload) {
 			let request = '?';
 			if (payload.allData) {
