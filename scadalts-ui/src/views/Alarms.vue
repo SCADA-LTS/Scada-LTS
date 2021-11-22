@@ -1,28 +1,6 @@
 <template>
 	<div class="alarms">
-		<!--        <p>{{$route.name}}</p>-->
-
-		<v-card>
-			<v-tabs
-			v-model="tab"
-			@change="changeTab"
-			>
-				<v-tab
-					v-for="item in items"
-					:key="item.tab"
-				>
-					{{ item.content }}
-				</v-tab>
-			</v-tabs>
-
-		</v-card>
-
-
-
 		<AlarmsComponent></AlarmsComponent>
-		
-		
-		 
 	</div>
 </template>
 
@@ -43,17 +21,9 @@ export default {
 	},
 	data () {
       return {
-		tab: 0,
-		items: [
-			{ tab: 'event-list', content: 'Scada' },
-			{ tab: 'alarms', content: 'PLC' },
-		],
       }
     },
 	methods: {
-		changeTab(index) {
-			this.$router.push({ path: `/${this.items[index].tab}` });
-		}
 	},
 };
 </script>

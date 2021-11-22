@@ -8,12 +8,6 @@
 					</v-list-item-icon>
 					<v-list-item-title>Alarms</v-list-item-title>
 				</v-list-item>
-				<v-list-item link href="#/historical-alarms">
-					<v-list-item-icon>
-						<v-icon>mdi-bell-outline</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>Historical Alarms</v-list-item-title>
-				</v-list-item>
 				<v-list-item link href="#/alarm-notifications">
 					<v-list-item-icon>
 						<v-icon>mdi-bell-circle</v-icon>

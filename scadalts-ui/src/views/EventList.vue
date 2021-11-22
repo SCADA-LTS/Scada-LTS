@@ -7,21 +7,6 @@
 			:title="confirmTitle"
 			:message="confirmMessage"
 		></ConfirmationDialog>
-		<v-card>
-			<v-tabs
-			v-model="tab"
-			@change="changeTab"
-			>
-				<v-tab
-					v-for="item in items"
-					:key="item.tab"
-					:class="{'blink':(item.tab === 'alarms' && newAlarms)}"
-				>
-					{{ item.content }}
-				</v-tab>
-			</v-tabs>
-		</v-card>
-		<hr>
 		<v-row justify="center" class="mt-6">
 			<v-dialog
 			v-model="eventDetailsDialog"
@@ -666,9 +651,6 @@ export default {
 			this.confirmTitle = this.$t("eventList.silenceAll")
 			this.confirmMessage = this.$t('eventList.silenceAllConfirmMessage')
 			this.actionToConfirm = this.silenceAllEvents;
-		},
-		changeTab(index) {
-			this.$router.push({ path: `/${this.items[index].tab}` });
 		},
 		
 		gotoDatasource(id) {
