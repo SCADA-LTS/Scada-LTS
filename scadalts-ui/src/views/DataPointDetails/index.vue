@@ -74,7 +74,7 @@
 		</v-container>
 		<v-container fluid>
 			<LineChartComponent :pointIds="this.$route.params.id" :refreshRate="chartRefreshRate"
-				:showLegend="true" :showScrollbar="true" :width="chartWidth"
+				:showLegend="true" :showScrollbar="true" :width="`${chartWidth}`"
 			></LineChartComponent>
 		</v-container>
 		<v-snackbar v-model="response.status">
@@ -187,20 +187,23 @@ export default {
 		saveDataPointDetails() {
 			this.$store
 				.dispatch('saveDataPointDetails', this.dataPointDetails)
+				.catch((e) => {
+					console.log(e);
+					this.response.status = true;
+					this.response.message = this.$t('common.snackbar.update.fail');
+				})
 				.then((resp) => {
+					console.log(resp);
 					if (resp === 'saved') {
+						console.log('saved response');
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.success');
-						this.$refs.valueHistory.reconnect();
+						this.$refs.valueHistory.fetchData();
 
 					} else {
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.fail');
 					}
-				})
-				.catch(() => {
-					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.fail');
 				});
 		},
 

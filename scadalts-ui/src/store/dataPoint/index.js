@@ -149,6 +149,7 @@ const storeDataPoint = {
 		},
 
 		saveDataPointDetails({ dispatch }, payload) {
+			payload.purgeValuesLimit = 2;
 			return dispatch('requestPut', {
 				url: `/point_properties/updateProperties?id=${payload.id}`,
 				data: payload,
