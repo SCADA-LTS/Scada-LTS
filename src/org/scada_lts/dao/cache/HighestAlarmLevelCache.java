@@ -18,18 +18,27 @@ public class HighestAlarmLevelCache implements HighestAlarmLevelCachable {
 
     @Override
     public int getAlarmLevel(User user) {
-        LOG.debug("getAlarmLevel: " + user.getUsername());
-        return highestAlarmLevelDAO.selectAlarmLevel(user);
+        LOG.info("getAlarmLevel user: " + getUserIdentifier(user));
+        return highestAlarmLevelDAO.selectAlarmLevel(user).getAlarmLevel();
     }
 
     @Override
     public int putAlarmLevel(User user, int alarmLevel) {
-        LOG.debug("putAlarmLevel: " + user.getUsername() + ", alarmLevel: " + alarmLevel);
+        LOG.info("putAlarmLevel user: " + getUserIdentifier(user) + ", alarmLevel: " + alarmLevel);
         return alarmLevel;
     }
 
     @Override
     public void removeAlarmLevel(User user) {
-        LOG.debug("removeAlarmLevel: " + user.getUsername());
+        LOG.info("removeAlarmLevel user: " + getUserIdentifier(user));
+    }
+
+    @Override
+    public void resetAlarmLevel() {
+        LOG.info("removeAlarmLevel all");
+    }
+
+    private Object getUserIdentifier(User user) {
+        return user.getUsername() == null ? user.getId() : user.getUsername();
     }
 }

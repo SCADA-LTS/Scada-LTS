@@ -1,7 +1,6 @@
 package org.scada_lts.web.ws.services;
 
 
-import com.serotonin.mango.rt.event.EventInstance;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.ws.model.AlarmLevelMessage;

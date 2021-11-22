@@ -23,13 +23,17 @@ package org.scada_lts.dao.model;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class UnsilencedAlarmLevelCache {
+public class UserAlarmLevel {
 
 	private int userId;
 	private int alarmLevel;
-	
-	public UnsilencedAlarmLevelCache() {
-		//
+
+	public UserAlarmLevel() {
+	}
+
+	public UserAlarmLevel(int userId, int alarmLevel) {
+		this.userId = userId;
+		this.alarmLevel = alarmLevel;
 	}
 
 	public int getUserId() {

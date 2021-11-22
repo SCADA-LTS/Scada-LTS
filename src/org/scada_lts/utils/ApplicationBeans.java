@@ -12,16 +12,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
+import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
 import org.scada_lts.dao.cache.UserCachable;
 import org.scada_lts.dao.cache.UsersProfileCachable;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
-import org.scada_lts.service.HighestAlarmLevelService;
+import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.scada_lts.web.ws.services.EventsServiceWebSocket;
 import org.scada_lts.web.ws.services.UserEventServiceWebsocket;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.Optional;
 
 public class ApplicationBeans implements ApplicationContextAware {
     private static final Log log = LogFactory.getLog(ApplicationBeans.class);
@@ -105,20 +108,22 @@ public class ApplicationBeans implements ApplicationContextAware {
         return new WatchListProfilePermissionsService(getUsersProfileDaoBean());
     }
 
-    public static HighestAlarmLevelService getHighestAlarmLevelServiceBean() {
-        return getBeanContext("highestAlarmLevelServiceWithCache", HighestAlarmLevelService.class);
+    public static IHighestAlarmLevelService getHighestAlarmLevelServiceBean() {
+        boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCachable.CACHE_ENABLED_KEY, true);
+        return highestAlarmLevelCacheEnabled ? getBeanContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
+                getBeanContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
     }
 
-    public static UserEventServiceWebsocket getUserEventServiceWebsocketBean() {
-        return getBeanContext("userEventServiceWebsocket", UserEventServiceWebsocket.class);
+    public static Optional<UserEventServiceWebsocket> getUserEventServiceWebsocketBean() {
+        return Optional.ofNullable(getBeanContext("userEventServiceWebsocket", UserEventServiceWebsocket.class));
     }
 
-    public static DataPointServiceWebSocket getDataPointServiceWebSocketBean() {
-        return getBeanContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
+    public static Optional<DataPointServiceWebSocket> getDataPointServiceWebSocketBean() {
+        return Optional.ofNullable(getBeanContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class));
     }
 
-    public static EventsServiceWebSocket getEventsServiceWebSocketBean() {
-        return getBeanContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
+    public static Optional<EventsServiceWebSocket> getEventsServiceWebSocketBean() {
+        return Optional.ofNullable(getBeanContext("eventsServiceWebSocket", EventsServiceWebSocket.class));
     }
 
     private static <T> T getBeanContext(String beanName, Class<T> clazz) {
@@ -127,7 +132,7 @@ public class ApplicationBeans implements ApplicationContextAware {
                 return servletContext.getBean(beanName, clazz);
             return applicationContext.getBean(beanName, clazz);
         } catch (Exception e) {
-            log.error(e);
+            log.warn(e);
             return null;
         }
     }

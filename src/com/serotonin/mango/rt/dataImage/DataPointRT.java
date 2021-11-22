@@ -473,17 +473,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 	@Override
 	public void notifyWebSocketSubscribers(MangoValue message) {
-		DataPointServiceWebSocket ws = ApplicationBeans.getDataPointServiceWebSocketBean();
-		if(ws != null) {
-			ws.notifyValueSubscribers(message, this.vo.getId());
-		}
+		ApplicationBeans.getDataPointServiceWebSocketBean()
+				.ifPresent(ws -> ws.notifyValueSubscribers(message, this.vo.getId()));
 	}
 
 	public void notifyWebSocketStateSubscribers(boolean enabled) {
-		DataPointServiceWebSocket ws = ApplicationBeans.getDataPointServiceWebSocketBean();
-		if(ws != null) {
-			ws.notifyStateSubscribers(enabled, this.vo.getId());
-		}
+		ApplicationBeans.getDataPointServiceWebSocketBean()
+				.ifPresent(ws -> ws.notifyStateSubscribers(enabled, this.vo.getId()));
 	}
 
 	class EventNotifyWorkItem implements WorkItem {

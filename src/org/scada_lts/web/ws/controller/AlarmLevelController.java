@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.service.HighestAlarmLevelService;
+import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.config.WebSocketMessageBrokerStatsMonitor;
 import org.scada_lts.web.ws.services.UserEventServiceWebsocket;
@@ -27,12 +27,12 @@ public class AlarmLevelController {
     private static final Log LOG = LogFactory.getLog(AlarmLevelController.class);     
 
     private SimpUserRegistry  userRegistry;
-    private HighestAlarmLevelService highestAlarmLevelService;
+    private IHighestAlarmLevelService highestAlarmLevelService;
     private UserEventServiceWebsocket userEventService;
     private SubProtocolWebSocketHandler handler;
     private WebSocketMessageBrokerStatsMonitor statsMonitor;
 
-    public AlarmLevelController(SimpUserRegistry userRegistry, HighestAlarmLevelService highestAlarmLevelService,
+    public AlarmLevelController(SimpUserRegistry userRegistry, IHighestAlarmLevelService highestAlarmLevelService,
                                 UserEventServiceWebsocket userEventService, SubProtocolWebSocketHandler handler,
                                 WebSocketMessageBrokerStatsMonitor statsMonitor) {
         this.userRegistry = userRegistry;

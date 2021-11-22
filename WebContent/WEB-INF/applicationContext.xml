@@ -146,8 +146,13 @@
     <constructor-arg ref="highestAlarmLevelDAO"/>
   </bean>
 
-  <bean id="highestAlarmLevelServiceWithCache" class="org.scada_lts.service.HighestAlarmLevelServiceWithCache">
+  <bean id="highestAlarmLevelServiceWithCache" class="org.scada_lts.service.HighestAlarmLevelServiceWithCache" lazy-init="true" init-method="init">
     <constructor-arg ref="highestAlarmLevelCache"/>
+    <constructor-arg ref="highestAlarmLevelDAO"/>
+  </bean>
+
+  <bean id="highestAlarmLevelService" class="org.scada_lts.service.HighestAlarmLevelService">
+    <constructor-arg ref="highestAlarmLevelDAO"/>
   </bean>
   <!-- -->
 </beans>

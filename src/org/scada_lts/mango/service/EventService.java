@@ -254,7 +254,7 @@ public class EventService implements MangoEvent {
 	@Override
 	public int purgeEventsBefore(long time) {
 		int result = eventDAO.purgeEventsBefore(time);
-		Common.ctx.getEventManager().resetHighestAlarmLevel();
+		Common.ctx.getEventManager().resetHighestAlarmLevels();
 		return result;
 	}
 
@@ -357,14 +357,12 @@ public class EventService implements MangoEvent {
 		eventDAO.delete(handlerId);
 		
 		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
-		Common.ctx.getEventManager().resetHighestAlarmLevel();
 	}
 
 	public void deleteEventHandler(final String handlerXid) {
 		EventHandlerVO handler = getEventHandler(handlerXid);
 		eventDAO.delete(handler.getId());
 		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
-		Common.ctx.getEventManager().resetHighestAlarmLevel();
 	}
 	
 	@Override

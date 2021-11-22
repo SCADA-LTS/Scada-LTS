@@ -1,7 +1,6 @@
 package org.scada_lts.web.ws.services;
 
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 

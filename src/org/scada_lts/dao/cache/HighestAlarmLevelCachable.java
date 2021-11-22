@@ -10,12 +10,15 @@ public interface HighestAlarmLevelCachable {
 
     String CACHE_ENABLED_KEY = "alarmlevel.highest.cache.enabled";
 
-    @Cacheable(cacheNames = "user_alarmlevel_highest", key="#user.id", condition = "#result != -1")
+    @Cacheable(cacheNames = "alarmlevel_highest_by_user", key="#user.id", condition = "#result != -1")
     int getAlarmLevel(User user);
 
-    @Caching(put = {@CachePut(cacheNames = "user_alarmlevel_highest", key="#user.id")})
+    @Caching(put = {@CachePut(cacheNames = "alarmlevel_highest_by_user", key="#user.id")})
     int putAlarmLevel(User user, int alarmLevel);
 
-    @Caching(evict = {@CacheEvict(cacheNames = "user_alarmlevel_highest", key = "#user.id")})
+    @Caching(evict = {@CacheEvict(cacheNames = "alarmlevel_highest_by_user", key = "#user.id")})
     void removeAlarmLevel(User user);
+
+    @Caching(evict = {@CacheEvict(cacheNames = "alarmlevel_highest_by_user", allEntries = true)})
+    void resetAlarmLevel();
 }
