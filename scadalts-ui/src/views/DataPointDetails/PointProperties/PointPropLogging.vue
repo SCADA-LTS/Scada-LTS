@@ -91,7 +91,7 @@
 			></v-select>
 		</v-col>
 
-		<v-col cols="12" v-show="data.purgeStrategy === 1" id="purge--period">
+		<v-col cols="12" v-show="data.purgeStrategy === 0" id="purge--period">
 			<v-row dense>
 				<v-col cols="6">
 					<v-text-field
@@ -114,13 +114,14 @@
 			</v-row>
 		</v-col>
 
-		<v-col cols="12" v-show="data.purgeStrategy === 2" id="purge--values">
+		<v-col cols="12" v-show="data.purgeStrategy === 1" id="purge--values">
 			<v-row dense>
 				<v-col cols="12">
 					<v-text-field
 						v-model="data.purgeValuesLimit"
 						:label="$t('datapointDetails.pointProperties.logging.purgeLimitValues')"
 						:disabled="data.loggingType === consts.loggingTypes.NONE"
+						:rules="ruleMinPurgeValues"
 						dense
 					></v-text-field>
 				</v-col>
@@ -186,6 +187,10 @@ export default {
 					ON_TS_CHANGE: 5,
 				},
 			},
+			ruleMinPurgeValues: [
+				v => !!v || 'Value is required.',
+				v => v > 1 || 'Value must be greater than 1.',
+			],
 		};
 	},
 

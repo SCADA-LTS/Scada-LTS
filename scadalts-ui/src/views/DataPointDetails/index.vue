@@ -188,21 +188,15 @@ export default {
 			this.$store
 				.dispatch('saveDataPointDetails', this.dataPointDetails)
 				.catch((e) => {
-					console.log(e);
 					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.fail');
+					this.response.message = `${this.$t('common.snackbar.update.fail')} | ${e.data.errors}`;
 				})
 				.then((resp) => {
-					console.log(resp);
 					if (resp === 'saved') {
-						console.log('saved response');
 						this.response.status = true;
 						this.response.message = this.$t('common.snackbar.update.success');
 						this.$refs.valueHistory.fetchData();
 
-					} else {
-						this.response.status = true;
-						this.response.message = this.$t('common.snackbar.update.fail');
 					}
 				});
 		},

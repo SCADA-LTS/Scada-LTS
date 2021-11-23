@@ -80,12 +80,12 @@ const storeDataPoint = {
 
 		purgeStrategyList: [
 			{
-				id: 1,
+				id: 0,
 				type: 'PERIOD',
 				label: i18n.t('pointEdit.logging.purge.type.period'),
 			},
 			{
-				id: 2,
+				id: 1,
 				type: 'LIMIT',
 				label: i18n.t('pointEdit.logging.purge.type.limit'),
 			},
@@ -149,7 +149,6 @@ const storeDataPoint = {
 		},
 
 		saveDataPointDetails({ dispatch }, payload) {
-			payload.purgeValuesLimit = 2;
 			return dispatch('requestPut', {
 				url: `/point_properties/updateProperties?id=${payload.id}`,
 				data: payload,
