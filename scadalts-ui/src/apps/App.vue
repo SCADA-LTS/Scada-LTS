@@ -72,6 +72,7 @@
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title class="title"> Scada-LTS 
+						<v-icon  v-if="notifications.length" class="blink" @click="refresh" title="New Events">mdi-flag</v-icon></v-list-item-title>
 						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
 						version {{ $store.getters.appMilestone }}	
@@ -121,20 +122,6 @@
 		</v-app-bar>
 
 		<v-main>
-			<div class="text-center ma-2">
-				<v-snackbar v-if="notification != null" v-model="notification">
-					<a @click="refresh">{{ notification.text }}</a>
-					<template v-slot:action="{ attrs }">
-						<v-btn
-						color="pink"
-						text
-						v-bind="attrs"
-						@click="popNotification">
-						{{$t("common.close")}}
-						</v-btn>
-					</template>
-				</v-snackbar>
-			</div>
 			<v-container fluid>
 				<router-view></router-view>
 			</v-container>
@@ -194,6 +181,7 @@ export default {
 
 	methods: {
 		refresh() {
+			this.notifications = []
 			if (this.$route.name==='event-list') reload();
 			else this.$router.push({ name: 'event-list' });
 		},
@@ -228,4 +216,24 @@ div[id*='Content'] textarea,
 	border: 1px solid #39b54a;
 	appearance: auto;
 }
+
+.blink {
+	color: white;
+  animation: blinker .8s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+	 color: yellow;
+  }
+   0% {
+	 color: red;
+	 /* text-shadow: yellow 0px 0px 5px; */
+  }
+   100% {
+	 color: red;
+	 /* text-shadow: transparent 2px 2px 0px; */
+  }
+}
+
 </style>
