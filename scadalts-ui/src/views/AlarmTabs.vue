@@ -45,9 +45,6 @@ export default {
 		changeTab(index) {
 			this.$router.push({ path: `/alarms/${this.items[index].tab}` });
 		},
-		onRouteChanged(id) {
-				alert(id)
-		}
 	},
 };
 </script>

@@ -25,6 +25,10 @@ const storeEvents = {
 			});
 		},
 
+		getHighestUnsilencedAlarmLevel({ dispatch }) {
+			return dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`);
+		},
+
 		getEventById({ dispatch }, id) {
 			return dispatch('requestGet', `/events/${id}/comments`);
 		},

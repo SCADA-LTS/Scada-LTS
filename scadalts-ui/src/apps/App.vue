@@ -72,7 +72,9 @@
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title class="title"> Scada-LTS 
-						<v-icon  v-if="notifications.length" class="blink" @click="refresh" title="New Events">mdi-flag</v-icon></v-list-item-title>
+						<a @click="goToEvents">
+						<img v-if="unsilencedHighestAlarmLevel != -1"  :src="alarmFlags[unsilencedHighestAlarmLevel].image"/>
+						</a>
 						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
 						version {{ $store.getters.appMilestone }}	
@@ -141,7 +143,6 @@ export default {
 
 	data() {
 		return {
-			notifications: [],
 			onAppOnline: () => {
 				this.wsLive = true;
 			},
@@ -150,11 +151,26 @@ export default {
 			},
 			wsCallback: () => {		
 				this.wsLive = true;	
-				this.wsSubscribeTopic(`alarm`, x => {
-					this.notifications.push({ts: Date.now(), href:'/ScadaBR/app.shtm#/event-list', text: x.body})
+				this.wsSubscribeTopic(`alarm`, async(x) => {
+					this.unsilencedHighestAlarmLevel = await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 				});		
 			},
-			wsLive: false
+			wsLive: false,
+			unsilencedHighestAlarmLevel: -1,
+			alarmFlags: {
+				1: {
+					image: "images/flag_blue.png"
+				},
+				2: {
+					image: "images/flag_yellow.png"
+				},
+				3: {
+					image: "images/flag_orange.png"
+				},
+				4: {
+					image: "images/flag_red.png"
+				}
+			},
 		};
 	},
 
@@ -169,10 +185,6 @@ export default {
 				return false;
 			}
 		},
-		notification() {
-			if (this.notifications.length) return this.notifications[this.notifications.length-1]
-			else return null
-		}
 	},
 
 	mounted() {
@@ -180,17 +192,14 @@ export default {
 	},
 
 	methods: {
-		refresh() {
-			this.notifications = []
+		goToEvents() {
 			if (this.$route.name==='event-list') reload();
 			else this.$router.push({ name: 'event-list' });
+			this.unsilencedHighestAlarmLevel = -1
 		},
 		logout() {
 			this.$store.dispatch('logoutUser');
 			this.$router.push({ name: 'login' });
-		},
-		popNotification() {
-			this.notifications.pop()
 		},
 	},
 };

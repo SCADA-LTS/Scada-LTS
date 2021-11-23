@@ -172,20 +172,19 @@ public class EventsAPI {
     }
 
     /**
-     * Get Event by id
+     * Get unsilenced highest level alarm
      *
-     * @param eventId Event ID number
      * @param request     HTTP request with user data
-     * @return EventDTO List
+     * @return Integer
      */
-    @GetMapping(value = "/{eventId}/comments")
-    public ResponseEntity<List<EventCommentDTO>> getEventById(@PathVariable("eventId") int eventId, HttpServletRequest request) {
-        LOG.info("GET::/api/comments/"+eventId);
+    @GetMapping(value = "/highestUnsilencedLevelAlarm")
+    public ResponseEntity<Integer> getEventById(HttpServletRequest request) {
+        LOG.info("GET::/api/events/highestUnsilencedLevelAlarm/");
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                List<EventCommentDTO> result = eventService.findCommentsByEventId(eventId);
-                return new ResponseEntity<List<EventCommentDTO>>(result, HttpStatus.OK);
+                int result = eventService.getHighestUnsilencedAlarmLevel(user.getId());
+                return new ResponseEntity<Integer>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
