@@ -108,7 +108,7 @@ public class EventsAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 Date time = new Date();
-                eventService.silenceEvent(eventId, time.getTime(), user.getId(), 0);
+                eventService.silenceEvent(eventId, user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -132,7 +132,7 @@ public class EventsAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 Date time = new Date();
-                eventService.unsilenceEvent(eventId, time.getTime(), user.getId(), 0);
+                eventService.unsilenceEvent(eventId, user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -278,7 +278,7 @@ public class EventsAPI {
                 for (String id: query.getIds().split(",")) {
                     ids.add(Integer.parseInt(id.trim()));
                 }
-                eventService.silenceEvents(ids, time.getTime(), user.getId(), 0);
+//                eventService.silenceEvents(ids, user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -93,7 +93,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_ALTERNATE_ACK_SOURCE = "alternateAckSource";
 	private static final String COLUMN_NAME_DATAPOINT_XID = "xid";
 	private static final String COLUMN_NAME_SILENCED = "silenced";
-	private static final String COLUMN_NAME_USER_COMMENT_TS = "ts";
 	private static final String COLUMN_NAME_USER_COMMENT_COUNT = "comments";
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
 	private static final String COLUMN_NAME_USER_ID = "userId";
@@ -121,7 +120,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_ALARM_EVENT_ID="eventId";
 	private static final String COLUMN_NAME_ALARM_ID="id";
 	private static final String COLUMN_NAME_ALARM_USER_ID="userId";
-	//private static final String COLUMN_NAME_ALARM_ACT_TS="actTs";
 	
 	
 	//------------- User events
@@ -656,7 +654,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
-	private class EventDTORowMapper implements RowMapper<EventDTO> {
+	private class EventDTOSearchRowMapper implements RowMapper<EventDTO> {
 		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			EventDTO result = new EventDTO(
 					rs.getInt(COLUMN_NAME_ID),
@@ -676,6 +674,29 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 					rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
 			);
 
+			return result;
+		}
+	}
+
+	private class EventDTORowMapper implements RowMapper<EventDTO> {
+		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EventDTO result = new EventDTO(
+					rs.getInt(COLUMN_NAME_ID),
+					rs.getInt(COLUMN_NAME_TYPE_ID),
+					rs.getInt(COLUMN_NAME_TYPE_REF_1),
+					rs.getInt(COLUMN_NAME_TYPE_REF_2),
+					rs.getLong(COLUMN_NAME_ACTIVE_TS),
+					rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
+					rs.getLong(COLUMN_NAME_RTN_TS),
+					rs.getInt(COLUMN_NAME_RTN_CAUSE),
+					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
+					rs.getString(COLUMN_NAME_MESSAGE),
+					rs.getLong(COLUMN_NAME_ACT_TS),
+					rs.getString(COLUMN_NAME_USER_NAME),
+					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE)
+			);
+
+			result.setUserComments((List<UserComment>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_EVENT_USER_COMMENTS, new Object[]{result.getId()}, new UserCommentRowMapper()));
 			return result;
 		}
 	}
@@ -856,7 +877,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()
-				, params.toArray(), new EventDTORowMapper());
+				, params.toArray(), new EventDTOSearchRowMapper());
 		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
 		return new SQLPageWithTotal<EventDTO>(page, total);
 	}

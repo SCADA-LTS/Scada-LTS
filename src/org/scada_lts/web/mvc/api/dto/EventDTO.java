@@ -22,23 +22,9 @@ public class EventDTO {
     private String xid;
     private boolean silenced;
     private int comments;
+    private String username;
 
     public EventDTO() {
-    }
-
-    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, int ackAlternateSource) {
-        this.id = id;
-        this.typeId = typeId;
-        this.typeRef1 = typeRef1;
-        this.typeRef2 = typeRef2;
-        this.activeTs = activeTs;
-        this.rtnApplicable = rtnApplicable;
-        this.rtnTs = rtnTs;
-        this.rtnCause = rtnCause;
-        this.alarmLevel = alarmLevel;
-        this.message = message;
-        this.ackTs = ackTs;
-        this.ackAlternateSource = ackAlternateSource;
     }
 
     public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, int ackAlternateSource, String xid, boolean silenced, int comments) {
@@ -57,6 +43,22 @@ public class EventDTO {
         this.xid = xid;
         this.silenced = silenced;
         this.comments = comments;
+    }
+
+    public EventDTO(int id, int typeId, int typeRef1, int typeRef2, long activeTs, boolean rtnApplicable, long rtnTs, int rtnCause, int alarmLevel, String message, long ackTs, String username, int ackAlternateSource) {
+        this.id = id;
+        this.typeId = typeId;
+        this.typeRef1 = typeRef1;
+        this.typeRef2 = typeRef2;
+        this.activeTs = activeTs;
+        this.rtnApplicable = rtnApplicable;
+        this.rtnTs = rtnTs;
+        this.rtnCause = rtnCause;
+        this.alarmLevel = alarmLevel;
+        this.message = message;
+        this.ackTs = ackTs;
+        this.username = username;
+        this.ackAlternateSource = ackAlternateSource;
     }
 
     public int getId() {

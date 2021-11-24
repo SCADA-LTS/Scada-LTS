@@ -42,11 +42,11 @@ public interface MangoEvent {
 	
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource);
 
-    void silenceEvent(int eventId, long time, int userId, int alternateAckSource);
+    void silenceEvent(int eventId, int userId);
 
-	void unsilenceEvent(int eventId, long time, int userId, int alternateAckSource);
+	void unsilenceEvent(int eventId, int userId);
 
-    void silenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource);
+    void silenceEvents(List<Integer> eventIds, int userId);
 
 	void unsilenceEvents(List<Integer> eventIds, int userId);
 
