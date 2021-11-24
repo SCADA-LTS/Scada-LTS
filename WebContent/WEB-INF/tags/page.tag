@@ -215,13 +215,13 @@
         if (alarmLevel == 0)
             textNode.innerHTML = "";
         else if (alarmLevel == 1)
-            textNode.innerHTML = "info";
+            textNode.innerHTML = "Info";
         else if (alarmLevel == 2)
-            textNode.innerHTML = "urgent";
+            textNode.innerHTML = "Urgent";
         else if (alarmLevel == 3)
-            textNode.innerHTML = "critical";
+            textNode.innerHTML = "Critical";
         else if (alarmLevel == 4)
-            textNode.innerHTML = "lifeSafety";
+            textNode.innerHTML = "Life Safety";
         else
             textNode.innerHTML = "Unknown: "+ alarmLevel;
     }
