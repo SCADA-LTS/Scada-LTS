@@ -36,12 +36,13 @@ import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
-import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
 import org.springframework.stereotype.Service;
@@ -68,18 +69,18 @@ public class EventService implements MangoEvent {
 	
 	private EventDAO eventDAO;
 	private UserEventDAO userEventDAO;
-	private MangoUser userService;
+	private IUserDAO userDAO;
 	
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
-		userService = new UserService();
+		userDAO = ApplicationBeans.getUserDaoBean();
 	}
 
-	public EventService(EventDAO eventDAO, UserEventDAO userEventDAO, MangoUser userService) {
+	public EventService(EventDAO eventDAO, UserEventDAO userEventDAO, IUserDAO userService) {
 		this.eventDAO = eventDAO;
 		this.userEventDAO = userEventDAO;
-		this.userService = userService;
+		this.userDAO = userService;
 	}
 
 	class UserPendingEventRetriever implements Runnable {
@@ -517,7 +518,7 @@ public class EventService implements MangoEvent {
 	}
 
 	private void notifyEventAck(int eventId) {
-		for(User user: userService.getActiveUsers())
+		for(User user: userDAO.getActiveUsers())
 			Common.ctx.getEventManager().notifyEventAck(eventId, user);
 	}
 }
