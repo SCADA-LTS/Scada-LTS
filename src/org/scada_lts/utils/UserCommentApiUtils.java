@@ -19,9 +19,7 @@ public final class UserCommentApiUtils {
     private UserCommentApiUtils() {}
 
     public static String validUserComment(Integer typeId, Integer refId, String comment) {
-        String msg = validTypeIdAndRefId(typeId, refId);
-        msg += msgIfNull("Correct comment", comment);
-        return msg;
+        return validTypeIdAndRefId(typeId, refId);
     }
 
     public static String validUserCommentWithTs(Integer typeId, Integer refId, Integer userId, Long ts) {

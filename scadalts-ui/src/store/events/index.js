@@ -29,7 +29,7 @@ const storeEvents = {
 			return dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`);
 		},
 
-		getEventById({ dispatch }, id) {
+		getCommentsByEventId({ dispatch }, id) {
 			return dispatch('requestGet', `/events/${id}/comments`);
 		},
 

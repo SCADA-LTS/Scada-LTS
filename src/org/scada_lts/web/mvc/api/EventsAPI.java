@@ -1,21 +1,16 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.event.EventDAO;
-import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
-import org.scada_lts.web.mvc.api.json.*;
+import org.scada_lts.web.mvc.api.json.JsonEventSearch;
+import org.scada_lts.web.mvc.api.json.JsonIdSelection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple controller for Events in Scada-LTS
@@ -178,7 +176,7 @@ public class EventsAPI {
      * @return Integer
      */
     @GetMapping(value = "/highestUnsilencedLevelAlarm")
-    public ResponseEntity<Integer> getEventById(HttpServletRequest request) {
+    public ResponseEntity<Integer> getHighestUnsilencedLevelAlarm(HttpServletRequest request) {
         LOG.info("GET::/api/events/highestUnsilencedLevelAlarm/");
         try {
             User user = Common.getUser(request);
@@ -193,29 +191,6 @@ public class EventsAPI {
         }
     }
 
-    /**
-     * Publish comment
-     *
-     * @param eventId Event ID number
-     * @param request     HTTP request with user data
-     * @return EventDTO List
-     */
-    @PutMapping(value = "/{eventId}/comments")
-    public ResponseEntity<List<EventCommentDTO>> addCommentToEvent(@PathVariable("eventId") int eventId, @RequestBody JsonEventComment query, HttpServletRequest request) {
-        LOG.info("GET::/api/comments/"+eventId);
-        try {
-            User user = Common.getUser(request);
-            if (user != null) {
-                int OK = eventService.insertEventComment(user.getId(), eventId, query.getCommentText());
-                List<EventCommentDTO> result = eventService.findCommentsByEventId(eventId);
-                return new ResponseEntity<List<EventCommentDTO>>(result, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     /**
      * Acknowledge all Events Alarm from REST API
      *
@@ -336,6 +311,30 @@ public class EventsAPI {
                 }
                 eventService.unsilenceEvents(ids, time.getTime(), user.getId(), 0);
                 return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * get comments by eventId
+     *
+     * @param eventId Event ID number
+     * @param request     HTTP request with user data
+     * @return EventDTO List
+     */
+    @GetMapping(value = "/{eventId}/comments")
+    public ResponseEntity<List<EventCommentDTO>> getCommentsByEventId(@PathVariable("eventId") int eventId, HttpServletRequest request) {
+        LOG.info("GET::/api/comments/"+eventId);
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                List<EventCommentDTO> result = eventService.findCommentsByEventId(eventId);
+                return new ResponseEntity<List<EventCommentDTO>>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

@@ -391,7 +391,6 @@
 			</v-data-table>
 		</v-container>
 		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
-		<!-- <pre>{{eventList}}</pre> -->
 	</div>
 </template>
 <style scoped>
@@ -459,7 +458,9 @@ export default {
       	},
 		selectedEventId (data) {
 			this.eventDetailsDialog = true;
-			if (data != null) this.fetchEventSelected();
+			if (data != null) {
+				this.fetchEventSelected();
+			}
       	},
 		eventDetailsDialog (data) {
 			if (data === false) this.selectedEventId=null;
@@ -469,11 +470,6 @@ export default {
 		return {
 			mountedTs: null,
 			newAlarms: false,
-			tab: 0,
-			items: [
-				{ tab: 'event-list', content: 'Scada' },
-                { tab: 'alarms', content: 'PLC' },
-			],
 			get selectedEvent() {
 				return this.eventList.find(event => event.id === this.selectedEventId)
 			},
@@ -693,14 +689,17 @@ export default {
 		gotoAuditPointLink(referenceId2) {
 			window.location = `point_links.shtm?plid=${referenceId2}` // png="link"
 		},
-
 		gotoMaintenance(maintenanceId) {
 			window.location = `maintenance_events.shtm?meid=${maintenanceId}` //png="hammer"
 		},
 
 		async publishComment() {
-			this.comments = await this.$store.dispatch('publishEventComment', { typeId: 1, eventId: this.selectedEventId, commentText: this.commentText });
-			this.commentText = ''
+			await this.$store.dispatch('addUserComment', {
+				comment: {comment:this.commentText},
+				typeId: 1,
+				refId: this.selectedEventId,
+			});
+			this.fetchEventSelected()
 			this.fetchEventList()
 		},
 		async fetchEventList() {
@@ -712,7 +711,7 @@ export default {
 		},
 		async fetchEventSelected() {
 			this.loading = true;
-			this.comments = await this.$store.dispatch('getEventById', this.selectedEventId);
+			this.comments = await this.$store.dispatch('getCommentsByEventId', this.selectedEventId);
 			this.loading = false;
 		},
 		async acknowledgeEventSelected() {
