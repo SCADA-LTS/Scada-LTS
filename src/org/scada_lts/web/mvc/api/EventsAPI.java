@@ -155,7 +155,7 @@ public class EventsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                SQLPageWithTotal<EventDTO> result = eventService.getEventsWithLimit(query.getStartDate(), query.getEndDate(), query.getStartTime(), query.getStartTime(), query.getAlarmLevel(), query.getEventSourceType(), query.getStatus(), query.getKeywords(), 0, user, query.getSortBy(), query.getSortDesc(), query.getLimit(), query.getOffset());
+                SQLPageWithTotal<EventDTO> result = eventService.getEventsWithLimit(query, user);
                 return new ResponseEntity<SQLPageWithTotal<EventDTO>>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

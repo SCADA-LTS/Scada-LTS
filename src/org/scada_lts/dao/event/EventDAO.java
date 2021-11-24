@@ -35,6 +35,7 @@ import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
+import org.scada_lts.web.mvc.api.json.JsonEventSearch;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -744,33 +745,14 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 * To increase performance there is provided a pagination function.
 	 * This events containing also UserComments objects.
 	 *
-	 * @param alarmLevel
-	 * @param eventSourceType
-	 * @param status
-	 * @param keywords
-	 * @param typeRef
-	 * @param sortBy
-	 * @param sortDesc
-	 * @param limit
-	 * @param offset
+	 * @param query
+	 * @param user
 	 *
 	 * @return List of Events
 	 */
 	public SQLPageWithTotal<EventDTO> findEvents(
-			String startDate,
-			String endDate,
-			String startTime,
-			String endTime,
-			int alarmLevel,
-			int eventSourceType,
-			String status,
-			String keywords,
-			int typeRef,
-			User user,
-			String[] sortBy,
-			boolean[] sortDesc,
-			int limit,
-			int offset) {
+			JsonEventSearch query,
+			User user) {
 		List<Object> params = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
 
@@ -785,46 +767,46 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			params.add(user.getId());
 		}
 
-		if (!"".equals(startDate)) {
+		if (!"".equals(query.getStartDate())) {
 			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
-			String start = startDate+' '+startTime;
+			String start = query.getStartDate()+' '+query.getStartDate();
 			params.add(start);
 		}
-		if (!"".equals(endDate)) {
+		if (!"".equals(query.getEndDate())) {
 			filterCondtions.add("e.activeTs <= ((UNIX_TIMESTAMP(?)+60)*1000)");
-			String end = endDate+' '+endTime;
+			String end = query.getEndDate()+' '+query.getEndTime();
 			params.add(end);
 		}
-		if (alarmLevel != 0) {
+		if (query.getAlarmLevel() != 0) {
 			filterCondtions.add("e.alarmLevel>=?");
-			params.add(alarmLevel);
+			params.add(query.getAlarmLevel());
 		}
 
-		if (eventSourceType != 0) {
+		if (query.getEventSourceType() != 0) {
 			filterCondtions.add("e.typeId=?");
-			params.add(eventSourceType);
+			params.add(query.getEventSourceType());
 		}
 
-		if (EventsDwr.STATUS_ACTIVE.equals(status)) {
+		if (EventsDwr.STATUS_ACTIVE.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
 			filterCondtions.add("e.rtnTs is null");
-		} else if (EventsDwr.STATUS_RTN.equals(status)) {
+		} else if (EventsDwr.STATUS_RTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
 			filterCondtions.add("e.rtnTs is not null");
-		} else if (EventsDwr.STATUS_NORTN.equals(status)) {
+		} else if (EventsDwr.STATUS_NORTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='N'");
 		}
 
 		StringBuffer keywordsInCommentCondition = new StringBuffer();
 		List<String> userCommentKeywordConditions = new ArrayList<String>();
-		if (!"".equals(keywords)) {
+		if (!"".equals(query.getKeywords())) {
 			List<String> keywordConditions = new ArrayList<String>();
-			boolean joinWithDataSource = eventSourceType == 0 || eventSourceType == 3;
+			boolean joinWithDataSource = query.getEventSourceType() == 0 || query.getEventSourceType() == 3;
 			if (joinWithDataSource) {
 				from.append(" LEFT JOIN dataSources ds ON ds.id = dp.dataSourceId");
 			}
 
-			for (String keyword : keywords.split(" ")) {
+			for (String keyword : query.getKeywords().split(" ")) {
 				if (joinWithDataSource) {
 					keywordConditions.add("dp.xid LIKE ?");
 					params.add("%" + keyword + "%");
@@ -852,25 +834,25 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		sql.append(" WHERE "+joinAnd(filterCondtions));
 		sql.append(" GROUP BY " + EVENT_FIELDS);
 
-		if (sortBy.length != 0) {
+		if (query.getSortBy().length != 0) {
 			List<String> sorting = new ArrayList<String>();
-			for (int i = 0; i < sortBy.length; i++) {
-				if ("status".equals(sortBy[i])) {
-					sorting.add(" rtnApplicable " + (sortDesc[i] ? "DESC " : "ASC "));
-					sorting.add(" rtnTs " + (sortDesc[i] ? "DESC " : "ASC "));
+			for (int i = 0; i < query.getSortBy().length; i++) {
+				if ("status".equals(query.getSortBy()[i])) {
+					sorting.add(" rtnApplicable " + (query.getSortDesc()[i] ? "DESC " : "ASC "));
+					sorting.add(" rtnTs " + (query.getSortDesc()[i] ? "DESC " : "ASC "));
 				} else {
-					sorting.add(sortBy[i] + " " + (sortDesc[i] ? "DESC " : "ASC "));
+					sorting.add(query.getSortBy()[i] + " " + (query.getSortDesc()[i] ? "DESC " : "ASC "));
 				}
 			}
 			sql.append("ORDER BY "+String.join(", ", sorting));
 		}
 
-		if (limit != 0) {
-			sql.append("LIMIT " + limit + " " );
+		if (query.getLimit() != 0) {
+			sql.append("LIMIT " + query.getLimit() + " " );
 		}
 
-		if (offset != 0) {
-			sql.append("OFFSET " + offset + " " );
+		if (query.getOffset() != 0) {
+			sql.append("OFFSET " + query.getOffset() + " " );
 		}
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()

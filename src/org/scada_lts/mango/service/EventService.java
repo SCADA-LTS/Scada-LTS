@@ -42,6 +42,7 @@ import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
+import org.scada_lts.web.mvc.api.json.JsonEventSearch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -510,36 +511,8 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
-	public SQLPageWithTotal<EventDTO> getEventsWithLimit(
-														String startDate,
-														String endDate,
-														String startTime,
-														String endTime,
-														int alarmLevel,
-														int eventSourceType,
-														String status,
-														String keywords,
-														int typeRef,
-														User user,
-														String[] sortBy,
-														boolean[] sortDesc,
-														int limit,
-														int offset) {
-		return eventDAO.findEvents(
-				startDate,
-				endDate,
-				startTime,
-				endTime,
-				alarmLevel,
-		eventSourceType,
-		status,
-		keywords,
-		typeRef,
-		user,
-		sortBy,
-		sortDesc,
-		limit,
-		offset);
+	public SQLPageWithTotal<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
+		return eventDAO.findEvents(query, user);
 	}
 
 	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
