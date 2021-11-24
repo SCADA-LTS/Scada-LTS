@@ -98,10 +98,11 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
                 || highestAlarmLevelCache.getAlarmLevel(user).getEventId() == Common.NEW_ID) {
             this.lock.writeLock().lock();
             try {
-                if(alarmLevel.getEventId() == highestAlarmLevelCache.getAlarmLevel(user).getEventId()
-                        || highestAlarmLevelCache.getAlarmLevel(user).getEventId() == Common.NEW_ID) {
+                UserAlarmLevelEvent userAlarmLevelEvent = highestAlarmLevelCache.getAlarmLevel(user);
+                if(alarmLevel.getEventId() == userAlarmLevelEvent.getEventId()
+                        || userAlarmLevelEvent.getEventId() == Common.NEW_ID) {
                     highestAlarmLevelCache.removeAlarmLevel(user);
-                    doSend(new ScadaPrincipal(user), send);
+                    send.accept(new ScadaPrincipal(user), new AlarmLevelMessage(highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()));
                     return true;
                 }
             } finally {
@@ -129,7 +130,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         this.lock.readLock().lock();
         try {
             UserAlarmLevelEvent alarmLevel = highestAlarmLevelCache.getAlarmLevel(User.onlyIdUsername(principal));
-            if(alarmLevel.getAlarmLevel() > 0) {
+            if(alarmLevel.getAlarmLevel() > AlarmLevels.NONE) {
                 send.accept(principal, new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
                 return true;
             }

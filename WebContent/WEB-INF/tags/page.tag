@@ -58,6 +58,13 @@
   </c:forTokens>
   <jsp:invoke fragment="styles"/>
 
+  <style type="text/css">
+    #__header__alarmLevelImg {
+        height: 32px !important;
+        width: 32px !important;
+    }
+  </style>
+
   <!-- Scripts -->
   <script type="text/javascript">
   	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
@@ -201,24 +208,6 @@
        var appName = location.pathname.split("/")[1];
        var myLocation = location.origin + "/" + appName+ "/";
        stompClient = connect(myLocation + 'ws-scada/alarmLevel', headers, errorCallback, connectCallback);
-    }
-
-    function OnListUserSessions() {
-    	stompClient.subscribe("/app/listusers", function(message) {
-    		console.log("message[/app/listusers]:\n" + message.body);
-    	} );
-    }
-
-    function OnListSessionsAttributes() {
-    	stompClient.subscribe("/app/session", function(message) {
-    		console.log("message[/app/session]:\n" + message.body);
-    	} );
-    }
-
-    function OnListWebsocketStats() {
-    	stompClient.subscribe("/app/websocketStats", function(message) {
-    		console.log("message[/app/websocketStats]:\n" + message.body);
-    	} );
     }
 
     function setAlarmLevelText(alarmLevel, textNode) {

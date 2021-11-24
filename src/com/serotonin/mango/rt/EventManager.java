@@ -456,6 +456,15 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		notifyEventToggle(evt, user);
 	}
 
+	public void notifyEventAck(int eventId, User user) {
+		notifyEventToggle(eventId, user);
+	}
+
+	public void notifyEventToggle(int eventId, User user) {
+		EventInstance evt = eventService.getEvent(eventId);
+		notifyEventToggle(evt, user);
+	}
+
 	public void notifyEventToggle(int eventId, int userId) {
 		EventInstance evt = eventService.getEvent(eventId);
 		User user = userService.getUser(userId);

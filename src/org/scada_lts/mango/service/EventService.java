@@ -40,6 +40,7 @@ import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -67,12 +68,20 @@ public class EventService implements MangoEvent {
 	
 	private EventDAO eventDAO;
 	private UserEventDAO userEventDAO;
+	private MangoUser userService;
 	
 	public EventService() {
 		eventDAO = new EventDAO();
 		userEventDAO = new UserEventDAO();
+		userService = new UserService();
 	}
-	
+
+	public EventService(EventDAO eventDAO, UserEventDAO userEventDAO, MangoUser userService) {
+		this.eventDAO = eventDAO;
+		this.userEventDAO = userEventDAO;
+		this.userService = userService;
+	}
+
 	class UserPendingEventRetriever implements Runnable {
 		private final int userId;
 
@@ -112,8 +121,7 @@ public class EventService implements MangoEvent {
 		userEventDAO.updateAck(eventId, true);
 
 		clearCache();
-		for(User user: new UserService().getActiveUsers())
-			Common.ctx.getEventManager().notifyEventToggle(eventId, user.getId());
+		notifyEventAck(eventId);
 
 		//TODO check
 		/*if( signalAlarmLevelChange ) {
@@ -122,7 +130,7 @@ public class EventService implements MangoEvent {
 		}*/
 		
 	}
-	
+
 	@Override
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
 		ackEvent(eventId, time, userId, alternateAckSource, true);
@@ -506,5 +514,10 @@ public class EventService implements MangoEvent {
 		sortDesc,
 		limit,
 		offset);
+	}
+
+	private void notifyEventAck(int eventId) {
+		for(User user: userService.getActiveUsers())
+			Common.ctx.getEventManager().notifyEventAck(eventId, user);
 	}
 }
