@@ -5,7 +5,6 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.EventService;
-import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
@@ -36,9 +35,6 @@ public class EventsAPI {
 
     @Resource
     private EventService eventService;
-
-    @Resource
-    private UserCommentService userCommentService;
 
     /**
      * Get Events related to specific Data Point
