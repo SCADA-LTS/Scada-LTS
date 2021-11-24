@@ -4,7 +4,10 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserCommentService;
+import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
+import org.scada_lts.web.mvc.api.json.JsonEventComment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static org.scada_lts.utils.UserCommentApiUtils.validUserComment;
 import static org.scada_lts.utils.UserCommentApiUtils.validUserCommentWithTs;
@@ -37,15 +42,15 @@ public class UserCommentAPI {
      * @return Status
      */
     @PostMapping(value = "/{typeId}/{refId}")
-    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody String comment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
+    public ResponseEntity<String> createUserComment(HttpServletRequest request, @RequestBody JsonEventComment comment, @PathVariable("typeId") Integer typeId, @PathVariable("refId") Integer refId) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                String error = validUserComment(typeId, refId, comment);
+                String error = validUserComment(typeId, refId, comment.getCommentText());
                 if (!error.isEmpty()) {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                int result = userCommentService.setUserComment(comment, typeId, refId, user);
+                int result = userCommentService.setUserComment(comment.getCommentText(), typeId, refId, user);
                 if(result != 0) {
                     return new ResponseEntity<>(String.valueOf(result), HttpStatus.CREATED);
                 } else {
