@@ -4,9 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserCommentService;
-import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.json.JsonEventComment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
-import java.util.List;
 
 import static org.scada_lts.utils.UserCommentApiUtils.validUserComment;
 import static org.scada_lts.utils.UserCommentApiUtils.validUserCommentWithTs;
