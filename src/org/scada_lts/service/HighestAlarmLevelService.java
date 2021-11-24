@@ -21,7 +21,7 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
 
     @Override
     public int getAlarmLevel(User user) {
-        int alarmLevel = highestAlarmLevelDAO.selectAlarmLevel(user).orElse(new UserAlarmLevel()).getAlarmLevel();
+        int alarmLevel = highestAlarmLevelDAO.selectAlarmLevel(user).orElse(UserAlarmLevel.onlyUser(user)).getAlarmLevel();
         return Math.max(alarmLevel, 0);
     }
 
