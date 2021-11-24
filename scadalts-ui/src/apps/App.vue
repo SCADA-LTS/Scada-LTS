@@ -72,9 +72,6 @@
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title class="title"> Scada-LTS 
-						<a @click="goToEvents">
-						<img v-if="unsilencedHighestAlarmLevel != -1"  :src="alarmFlags[unsilencedHighestAlarmLevel].image"/>
-						</a>
 						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
 						version {{ $store.getters.appMilestone }}	
@@ -83,7 +80,9 @@
 			</v-list-item>
 			<v-list-item max-width="50">
 				<v-list-item-content>
-					
+					<a @click="goToEvents">
+						<img v-if="unsilencedHighestAlarmLevel != -1" :src="alarmFlags[unsilencedHighestAlarmLevel].image"/>
+						</a>	
 				</v-list-item-content>		
 			</v-list-item>
 
