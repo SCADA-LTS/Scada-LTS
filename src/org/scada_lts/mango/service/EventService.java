@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
@@ -111,8 +112,8 @@ public class EventService implements MangoEvent {
 		userEventDAO.updateAck(eventId, true);
 
 		clearCache();
-		if(userId > 0)
-			Common.ctx.getEventManager().notifyEventToggle(eventId, userId);
+		for(User user: new UserService().getActiveUsers())
+			Common.ctx.getEventManager().notifyEventToggle(eventId, user.getId());
 
 		//TODO check
 		/*if( signalAlarmLevelChange ) {

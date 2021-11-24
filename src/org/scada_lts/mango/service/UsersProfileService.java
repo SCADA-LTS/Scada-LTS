@@ -11,14 +11,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.UserDAO;
-import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;

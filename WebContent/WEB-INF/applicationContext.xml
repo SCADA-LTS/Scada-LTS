@@ -78,7 +78,7 @@
     <property name="cacheManagerUri" value="classpath:/ehcache.xml"/>
   </bean>
 
-  <bean id="applicationBeans" class="org.scada_lts.utils.ApplicationBeans"/>
+  <bean id="applicationBeans" class="org.scada_lts.web.beans.GetApplicationContext"/>
 
   <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
@@ -146,13 +146,26 @@
     <constructor-arg ref="highestAlarmLevelDAO"/>
   </bean>
 
-  <bean id="highestAlarmLevelServiceWithCache" class="org.scada_lts.service.HighestAlarmLevelServiceWithCache" lazy-init="true" init-method="init">
+  <bean id="highestAlarmLevelServiceWithCache" class="org.scada_lts.service.HighestAlarmLevelServiceWithCache" lazy-init="true">
     <constructor-arg ref="highestAlarmLevelCache"/>
     <constructor-arg ref="highestAlarmLevelDAO"/>
   </bean>
 
   <bean id="highestAlarmLevelService" class="org.scada_lts.service.HighestAlarmLevelService">
     <constructor-arg ref="highestAlarmLevelDAO"/>
+  </bean>
+
+  <bean id="schedulerFactory" class="org.quartz.impl.StdSchedulerFactory"/>
+
+  <bean id="resetTrigger" class="org.quartz.CronTrigger">
+    <constructor-arg value="Quartz - trigger-ResetCacheHighestAlarmLevel"/>
+    <constructor-arg value="DEFAULT"/>
+  </bean>
+
+  <bean id="resetJob" class="org.quartz.JobDetail">
+    <constructor-arg value="Quartz - job-ResetCacheHighestAlarmLevel"/>
+    <constructor-arg value="DEFAULT"/>
+    <constructor-arg value="org.scada_lts.quartz.ResetCacheHighestAlarmLevel" type="java.lang.Class"/>
   </bean>
   <!-- -->
 </beans>

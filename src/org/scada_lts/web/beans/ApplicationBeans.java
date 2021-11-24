@@ -1,4 +1,4 @@
-package org.scada_lts.utils;
+package org.scada_lts.web.beans;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
@@ -20,70 +20,61 @@ import org.scada_lts.permissions.service.*;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.scada_lts.web.ws.services.EventsServiceWebSocket;
-import org.scada_lts.web.ws.services.UserEventServiceWebsocket;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import java.util.Optional;
 
-public class ApplicationBeans implements ApplicationContextAware {
+public class ApplicationBeans {
+
+    private ApplicationBeans() {}
+
     private static final Log log = LogFactory.getLog(ApplicationBeans.class);
 
-    private static ApplicationContext applicationContext;
-    private static ApplicationContext servletContext;
-
-    @Override
-    public void setApplicationContext(ApplicationContext context) {
-        if(ApplicationBeans.applicationContext == null)
-            applicationContext = context;
-        else
-            servletContext = context;
-    }
-
     public static <T> T getBean(String beanName, Class<T> type) {
-        return getBeanContext(beanName, type);
+        return getBeanFromContext(beanName, type);
     }
 
     public static IUserDAO getUserDaoBean() {
         boolean userCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCachable.CACHE_ENABLED_KEY, true);
         return userCacheEnabled ?
-                getBeanContext("userDaoWithCache", IUserDAO.class) :
-                getBeanContext("userDAO", IUserDAO.class);
+                getBeanFromContext("userDaoWithCache", IUserDAO.class) :
+                getBeanFromContext("userDAO", IUserDAO.class);
     }
 
     public static IUsersProfileDAO getUsersProfileDaoBean() {
         boolean usersprofileCacheEnabled = Common.getEnvironmentProfile().getBoolean(UsersProfileCachable.CACHE_ENABLED_KEY, true);
         return usersprofileCacheEnabled ?
-                getBeanContext("usersProfileDaoWithCache", IUsersProfileDAO.class) :
-                getBeanContext("usersProfileDAO", IUsersProfileDAO.class);
+                getBeanFromContext("usersProfileDaoWithCache", IUsersProfileDAO.class) :
+                getBeanFromContext("usersProfileDAO", IUsersProfileDAO.class);
     }
 
     public static PermissionsService<Integer, User> getDataSourceUserPermissionsServiceBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(PermissionsService.CACHE_ENABLED_KEY, true);
         return (PermissionsService<Integer, User>) (permissionsCacheEnabled ?
-                getBeanContext("dataSourceUserPermissionsServiceWithCache", PermissionsService.class) :
-                getBeanContext("dataSourceUserPermissionsService", PermissionsService.class) );
+                getBeanFromContext("dataSourceUserPermissionsServiceWithCache", PermissionsService.class) :
+                getBeanFromContext("dataSourceUserPermissionsService", PermissionsService.class) );
     }
 
     public static PermissionsService<DataPointAccess, User> getDataPointUserPermissionsServiceBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(PermissionsService.CACHE_ENABLED_KEY, true);
         return (PermissionsService<DataPointAccess, User>) (permissionsCacheEnabled ?
-                getBeanContext("dataPointUserPermissionsServiceWithCache", PermissionsService.class) :
-                getBeanContext("dataPointUserPermissionsService", PermissionsService.class));
+                getBeanFromContext("dataPointUserPermissionsServiceWithCache", PermissionsService.class) :
+                getBeanFromContext("dataPointUserPermissionsService", PermissionsService.class));
     }
 
     public static GetShareUsers<View> getViewGetShareUsersBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(GetShareUsers.CACHE_ENABLED_KEY, true);
         return (GetShareUsers<View>) (permissionsCacheEnabled ?
-                getBeanContext("viewGetShareUsersWithCache", GetShareUsers.class) :
-                getBeanContext("viewGetShareUsers", GetShareUsers.class));
+                getBeanFromContext("viewGetShareUsersWithCache", GetShareUsers.class) :
+                getBeanFromContext("viewGetShareUsers", GetShareUsers.class));
     }
 
     public static GetShareUsers<WatchList> getWatchListGetShareUsersBean() {
         boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(GetShareUsers.CACHE_ENABLED_KEY, true);
         return (GetShareUsers<WatchList>) (permissionsCacheEnabled ?
-                getBeanContext("watchListGetShareUsersWithCache", GetShareUsers.class) :
-                getBeanContext("watchListGetShareUsers", GetShareUsers.class));
+                getBeanFromContext("watchListGetShareUsersWithCache", GetShareUsers.class) :
+                getBeanFromContext("watchListGetShareUsers", GetShareUsers.class));
     }
 
     public static UsersProfileService getUsersProfileService() {
@@ -110,30 +101,51 @@ public class ApplicationBeans implements ApplicationContextAware {
 
     public static IHighestAlarmLevelService getHighestAlarmLevelServiceBean() {
         boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCachable.CACHE_ENABLED_KEY, true);
-        return highestAlarmLevelCacheEnabled ? getBeanContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
-                getBeanContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
+        return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
+                getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
     }
 
-    public static Optional<UserEventServiceWebsocket> getUserEventServiceWebsocketBean() {
-        return Optional.ofNullable(getBeanContext("userEventServiceWebsocket", UserEventServiceWebsocket.class));
+    public static class Lazy {
+
+        private Lazy() {}
+
+        public static Optional<UserEventServiceWebSocket> getUserEventServiceWebsocketBean() {
+            return getBeanFromContext("userEventServiceWebSocket", UserEventServiceWebSocket.class);
+        }
+
+        public static Optional<DataPointServiceWebSocket> getDataPointServiceWebSocketBean() {
+            return getBeanFromContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
+        }
+
+        public static Optional<EventsServiceWebSocket> getEventsServiceWebSocketBean() {
+            return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
+        }
+
+        private static <T> Optional<T> getBeanFromContext(String beanName, Class<T> clazz) {
+            try {
+                return Optional.ofNullable(get(beanName, clazz));
+            } catch (NoSuchBeanDefinitionException ex) {
+                log.debug(ex);
+                return Optional.empty();
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+                return Optional.empty();
+            }
+        }
     }
 
-    public static Optional<DataPointServiceWebSocket> getDataPointServiceWebSocketBean() {
-        return Optional.ofNullable(getBeanContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class));
-    }
-
-    public static Optional<EventsServiceWebSocket> getEventsServiceWebSocketBean() {
-        return Optional.ofNullable(getBeanContext("eventsServiceWebSocket", EventsServiceWebSocket.class));
-    }
-
-    private static <T> T getBeanContext(String beanName, Class<T> clazz) {
+    private static <T> T getBeanFromContext(String beanName, Class<T> clazz) {
         try {
-            if (servletContext != null)
-                return servletContext.getBean(beanName, clazz);
-            return applicationContext.getBean(beanName, clazz);
-        } catch (Exception e) {
-            log.warn(e);
+            return get(beanName, clazz);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
             return null;
         }
+    }
+
+    private static <T> T get(String beanName, Class<T> clazz) {
+        if (GetServletContext.context() != null)
+            return GetServletContext.context().getBean(beanName, clazz);
+        return GetApplicationContext.context().getBean(beanName, clazz);
     }
 }

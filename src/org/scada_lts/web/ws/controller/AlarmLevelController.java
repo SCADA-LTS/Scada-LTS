@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.config.WebSocketMessageBrokerStatsMonitor;
-import org.scada_lts.web.ws.services.UserEventServiceWebsocket;
+import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -26,14 +26,14 @@ import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 public class AlarmLevelController {
     private static final Log LOG = LogFactory.getLog(AlarmLevelController.class);     
 
-    private SimpUserRegistry  userRegistry;
-    private IHighestAlarmLevelService highestAlarmLevelService;
-    private UserEventServiceWebsocket userEventService;
-    private SubProtocolWebSocketHandler handler;
-    private WebSocketMessageBrokerStatsMonitor statsMonitor;
+    private final SimpUserRegistry  userRegistry;
+    private final IHighestAlarmLevelService highestAlarmLevelService;
+    private final UserEventServiceWebSocket userEventService;
+    private final SubProtocolWebSocketHandler handler;
+    private final WebSocketMessageBrokerStatsMonitor statsMonitor;
 
     public AlarmLevelController(SimpUserRegistry userRegistry, IHighestAlarmLevelService highestAlarmLevelService,
-                                UserEventServiceWebsocket userEventService, SubProtocolWebSocketHandler handler,
+                                UserEventServiceWebSocket userEventService, SubProtocolWebSocketHandler handler,
                                 WebSocketMessageBrokerStatsMonitor statsMonitor) {
         this.userRegistry = userRegistry;
         this.highestAlarmLevelService = highestAlarmLevelService;
@@ -43,7 +43,7 @@ public class AlarmLevelController {
     }
 
     @MessageMapping("/alarmLevel")
-    public String process(String message, ScadaPrincipal principal, StompHeaderAccessor accessor) throws Exception {
+    public String process(String message, ScadaPrincipal principal, StompHeaderAccessor accessor) {
         String user = getName(principal);
         LOG.debug("process[" + user + "]" + "message: " + message);
         highestAlarmLevelService.doSendAlarmLevel(principal, userEventService::sendAlarmLevel);
@@ -56,7 +56,7 @@ public class AlarmLevelController {
         LOG.debug("register: " + user + "["+principal.getId()+"]");
         return user;
     }
-    
+
     @SubscribeMapping("/listusers")
     public String listUsers(ScadaPrincipal principal) {
         String user = getName(principal);
@@ -83,12 +83,12 @@ public class AlarmLevelController {
         String user = getName(principal);
         LOG.debug("listSessionAttributes: " + user);
         
-        String result = "";
+        StringBuilder result = new StringBuilder();
         Map<String, Object> attributes = accessor.getSessionAttributes();
         for( String key : attributes.keySet()) {
-            result += key + ": " + attributes.get(key).toString() +"\n";
+            result.append(key).append(": ").append(attributes.get(key).toString()).append("\n");
         }
-        return result;
+        return result.toString();
     }
 
     @MessageExceptionHandler
@@ -98,12 +98,11 @@ public class AlarmLevelController {
         return exception.getMessage();
     }
     
-    @MessageMapping("/websocketStats")
+    @SubscribeMapping("/websocketStats")
     public String processWebsocketStats(ScadaPrincipal principal, StompHeaderAccessor accessor) {
         String user = getName(principal);
         LOG.debug("processWebsocketStats: " + user);
-        
-        //SubProtocolWebSocketHandler handler = (SubProtocolWebSocketHandler) config.subProtocolWebSocketHandler();
+
         String result = "Websocket Stats: \n";
         result += handler.getStatsInfo();
         result += "\tCurrent sessions: " + statsMonitor.getCurrentSessions() + "\n";

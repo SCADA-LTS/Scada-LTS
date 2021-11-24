@@ -1,36 +1,26 @@
 package org.scada_lts.web.ws.config;
 
-import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
 
 public class WebSocketMessageBrokerStatsMonitor {
-    private final Map<String, WebSocketSession> webSocketSessions;
+    private final SubProtocolWebSocketHandler webSocketSessions;
     private final ThreadPoolExecutor outboundExecutor;
  
     @SuppressWarnings("unchecked")
     public WebSocketMessageBrokerStatsMonitor(SubProtocolWebSocketHandler webSocketHandler, ThreadPoolTaskExecutor outboundTaskExecutor) {
-        this.webSocketSessions = (Map<String, WebSocketSession>) new DirectFieldAccessor(webSocketHandler).getPropertyValue("sessions");
+        this.webSocketSessions = webSocketHandler;
         this.outboundExecutor  = outboundTaskExecutor.getThreadPoolExecutor();
     }
  
     public int getCurrentSessions() {
-        return webSocketSessions.size();
+        return webSocketSessions.getProtocolHandlers().size();
     }
  
     public String getSendBufferSize() {
-        int sendBufferSize = 0;
-        for (WebSocketSession session : this.webSocketSessions.values()) {
-            ConcurrentWebSocketSessionDecorator concurrentSession = (ConcurrentWebSocketSessionDecorator) session;
-            sendBufferSize += concurrentSession.getBufferSize();
-        }
-        return formatByteCount(sendBufferSize);
+        return formatByteCount(webSocketSessions.getSendBufferSizeLimit());
     }
  
     public int getOutboundPoolSize() {

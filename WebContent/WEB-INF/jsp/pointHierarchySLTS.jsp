@@ -475,9 +475,7 @@ var stompClient = null;
 
 var connectCallback = function(frame) {
     	console.log('Connected: ' + frame);
-    	stompClient.subscribe('/topic/alarmLevel', function(message) {
-        	//console.log("message[/topic/alarmLevel]:" + message.body);
-    	});
+
     	stompClient.subscribe("/app/alarmLevel/register", function(message) {
     		//console.log("message[/app/alarmLevel/register]:" + message.body);
     		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
@@ -497,18 +495,9 @@ var connectCallback = function(frame) {
    		            document.getElementById("__header__alarmLevelDiv").style.visibility =  "hidden";
    		        }
     		})
-    		stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
-    	} );
+    		stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP");
+    	});
     	stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
-
-    	stompClient.subscribe("/app/listusers", function(message) {
-    		//console.log("message[/app/listusers]:" + message.body);
-    	} );
-
-    	stompClient.subscribe("/app/session", function(message) {
-    		//console.log("message[/app/session]:" + message.body);
-    	} );
-
 };
 
 
@@ -567,6 +556,7 @@ function connect(url, headers, errorCallback, connectCallback) {
     var stompClient = Stomp.over(socket);
     stompClient.heartbeat.outgoing = 20000;
     stompClient.heartbeat.incoming = 0;
+    stompClient.debug = null;
     stompClient.connect(headers, connectCallback, errorCallback);
     return stompClient;
 }
@@ -596,7 +586,7 @@ function OnListSessionsAttributes() {
 }
 
 function OnListWebsocketStats() {
-	stompClient.send("/app/websocketStats", function(message) {
+	stompClient.subscribe("/app/websocketStats", function(message) {
 		console.log("message[/app/websocketStats]:\n" + message.body);
 	} );
 }
@@ -677,6 +667,7 @@ var messages = {
 
     function onloadHandler() {
     	// connecting to server websocket endpoint...
+       disconnect(stompClient);
        stompClient = connect(myLocation + 'ws-scada/alarmLevel', headers, errorCallback, connectCallback);
     }
 

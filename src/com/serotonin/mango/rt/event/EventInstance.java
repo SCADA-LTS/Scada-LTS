@@ -140,8 +140,10 @@ public class EventInstance {
         this.context = context;
     }
 
-    public static EventInstance emptySystemNoneEvent() {
-        return new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
+    public static EventInstance emptySystemNoneEvent(int eventId) {
+        EventInstance eventInstance =new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
+        eventInstance.setId(eventId);
+        return eventInstance;
     }
 
     public LocalizableMessage getRtnMessage() {

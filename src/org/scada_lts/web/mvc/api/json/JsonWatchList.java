@@ -4,8 +4,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.permissions.service.WatchListGetShareUsers;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.ArrayList;
 import java.util.List;

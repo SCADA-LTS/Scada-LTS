@@ -299,7 +299,6 @@ public class MiscDwr extends BaseDwr {
 		HttpServletRequest httpRequest = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser(httpRequest);
-		EventManager eventManager = Common.ctx.getEventManager();
 		MangoEvent eventDao = new EventService();
 
 		LongPollData data = getLongPollData(pollSessionId, false);
@@ -322,24 +321,6 @@ public class MiscDwr extends BaseDwr {
 
 		while (!pollRequest.isTerminated()
 				&& System.currentTimeMillis() < expireTime) {
-			if (pollRequest.isMaxAlarm() && user != null) {
-				// Check the max alarm. First check if the events have changed
-				// since the last time this request checked.
-				long lastEMUpdate = eventManager.getLastAlarmTimestamp();
-				if (state.getLastAlarmLevelChange() < lastEMUpdate) {
-					state.setLastAlarmLevelChange(lastEMUpdate);
-
-					// The events have changed. See if the user's particular max
-					// alarm level has changed.
-					int maxAlarmLevel = eventManager.getHighestAlarmLevel(user.getId());
-					LOG.trace(toString() + " maxAlarmLevel: " + maxAlarmLevel);
-					if (maxAlarmLevel != state.getMaxAlarmLevel()) {
-						response.put("highestUnsilencedAlarmLevel",
-								maxAlarmLevel);
-						state.setMaxAlarmLevel(maxAlarmLevel);
-					}
-				}
-			}
 
 			if (pollRequest.isWatchList() && user != null) {
 				synchronized (state) {

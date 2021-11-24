@@ -5,31 +5,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.ws.model.AlarmLevelMessage;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
-import org.scada_lts.web.ws.model.EventMessage;
+import org.scada_lts.web.ws.model.WsEventMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserEventServiceWebsocket extends AbstractWebSocket {
+public class UserEventServiceWebSocket extends AbstractWebSocket {
 
-    private static final Log log = LogFactory.getLog(UserEventServiceWebsocket.class);
+    private static final Log log = LogFactory.getLog(UserEventServiceWebSocket.class);
 
 
-    public UserEventServiceWebsocket(SimpMessagingTemplate simpTemplate) {
+    public UserEventServiceWebSocket(SimpMessagingTemplate simpTemplate) {
         super(simpTemplate);
     }
 
-    public void sendEventUpdate(ScadaPrincipal user, EventMessage message) {
+    public void sendEventUpdate(ScadaPrincipal user, WsEventMessage message) {
         try {
             sendWebSocketMessage("/event/update/" + user.getName(), message);
-        } catch (Exception ex) {
-            log.warn(ex.getMessage(), ex);
-        }
-    }
-
-    public void sendEventUpdate(ScadaPrincipal user) {
-        try {
-            sendWebSocketMessage("/event/update/" + user.getName(), EventMessage.empty());
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
         }

@@ -34,19 +34,19 @@ import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.UserAlarmLevelEvent;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.IHighestAlarmLevelService;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
-import org.scada_lts.web.ws.model.EventMessage;
+import org.scada_lts.web.ws.model.WsEventMessage;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 
 /**
  * @author Matthew Lohbihler
@@ -55,8 +55,8 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
-	private MangoEvent eventDao;
-	private MangoUser userDao;
+	private MangoEvent eventService;
+	private MangoUser userService;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
 	private static final String WS_MESSAGE = "Event Raised";
@@ -114,7 +114,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 			setHandlers(evt);
 
 		// Get id from database by inserting event immediately.
-		eventDao.saveEvent(evt);
+		eventService.saveEvent(evt);
 		notifyWebSocketSubscribers(WS_MESSAGE);
 
 		// Create user alarm records for all applicable users
@@ -122,7 +122,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		Set<String> emailUsers = new HashSet<>();
 		List<User> eventConfirmForUsers = new ArrayList<>();
 
-		for (User user : userDao.getActiveUsers()) {
+		for (User user : userService.getActiveUsers()) {
 			// Do not create an event for this user if the event type says the
 			// user should be skipped.
 			if (type.excludeUser(user))
@@ -137,13 +137,13 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 						&& alarmLevel >= user.getReceiveAlarmEmails())
 					emailUsers.add(user.getEmail());
 
-				if(suppressed)
-					eventConfirmForUsers.add(user);
+				eventConfirmForUsers.add(user);
+				notifyEventUpdate(user, WsEventMessage.create(evt));
 			}
 		}
 
 		if (eventUserIds.size() > 0) {
-			eventDao.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
+			eventService.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
 				setLastAlarmTimestamp(System.currentTimeMillis());
 		}
@@ -152,7 +152,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 			activeEvents.add(evt);
 
 		if (suppressed) {
-			eventDao.ackEvent(
+			eventService.ackEvent(
 					evt.getId(),
 					time,
 					0,
@@ -198,7 +198,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 			resetHighestAlarmLevel(time, false);
 
 			evt.returnToNormal(time, cause);
-			eventDao.saveEvent(evt);
+			eventService.saveEvent(evt);
 
 			// Call inactiveEvent handlers.
 			handleInactiveEvent(evt);
@@ -215,7 +215,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		activeEvents.remove(evt);
 		resetHighestAlarmLevel(time, false);
 		evt.returnToNormal(time, inactiveCause);
-		eventDao.saveEvent(evt);
+		eventService.saveEvent(evt);
 
 		// Call inactiveEvent handlers.
 		handleInactiveEvent(evt);
@@ -302,17 +302,17 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	// Lifecycle interface
 	//
 	public void initialize() {
-		eventDao = new EventService();
-		userDao = new UserService();
+		eventService = new EventService();
+		userService = new UserService();
 
 		// Get all active events from the database.
-		activeEvents.addAll(eventDao.getActiveEvents());
+		activeEvents.addAll(eventService.getActiveEvents());
 		setLastAlarmTimestamp(System.currentTimeMillis());
 		resetHighestAlarmLevel(lastAlarmTimestamp, true);
 	}
 
-	public MangoUser getUserDao() {
-		return userDao;
+	public MangoUser getUserService() {
+		return userService;
 	}
 
 	public void terminate() {
@@ -366,7 +366,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	private void setHandlers(EventInstance evt) {
-		List<EventHandlerVO> vos = eventDao
+		List<EventHandlerVO> vos = eventService
 				.getEventHandlers(evt.getEventType());
 		List<EventHandlerRT> rts = null;
 		for (EventHandlerVO vo : vos) {
@@ -440,16 +440,15 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	public void notifyEventRaise(int eventId, int userId) {
-		EventInstance evt = eventDao.getEvent(eventId);
-		User user = userDao.getUser(userId);
+		EventInstance evt = eventService.getEvent(eventId);
+		User user = userService.getUser(userId);
 		notifyEventRaise(evt, user);
 	}
 
 	public void notifyEventRaise(EventInstance evt, User user) {
-		ApplicationBeans.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
-			notifyEventUpdate(user, new EventMessage(evt), userEventService::sendEventUpdate);
+		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doUpdateAlarmLevel(user, evt.getAlarmLevel(), userEventService::sendAlarmLevel);
+			highestAlarmLevelService.doUpdateAlarmLevel(user, new UserAlarmLevelEvent(user.getId(), evt.getAlarmLevel(), evt.getId()), userEventService::sendAlarmLevel);
 		});
 	}
 
@@ -458,16 +457,17 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	public void notifyEventToggle(int eventId, int userId) {
-		EventInstance evt = eventDao.getEvent(eventId);
-		User user = userDao.getUser(userId);
+		EventInstance evt = eventService.getEvent(eventId);
+		User user = userService.getUser(userId);
 		notifyEventToggle(evt, user);
 	}
 
 	public void resetHighestAlarmLevels() {
-		ApplicationBeans.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
+		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(websocket -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doResetAlarmLevel(new UserService(), userEventService);
+			highestAlarmLevelService.doResetAlarmLevels(userService, websocket::sendAlarmLevel);
 		});
+		notifyEventReset();
 	}
 
 	public int getHighestAlarmLevel(int userId) {
@@ -475,19 +475,28 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	}
 
 	public void notifyEventToggle(EventInstance evt, User user) {
-		ApplicationBeans.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
-			notifyEventUpdate(user, new EventMessage(evt), userEventService::sendEventUpdate);
+		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doRemoveAlarmLevel(user, evt.getAlarmLevel(), userEventService::sendAlarmLevel);
+			highestAlarmLevelService.doRemoveAlarmLevel(user, new UserAlarmLevelEvent(user.getId(), evt.getAlarmLevel(), evt.getId()), userEventService::sendAlarmLevel);
+		});
+		notifyEventUpdate(user, WsEventMessage.update(evt));
+	}
+
+	public void notifyEventUpdate(User user, WsEventMessage message) {
+		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(websocket -> {
+			websocket.sendEventUpdate(new ScadaPrincipal(user), message);
 		});
 	}
 
-	public void notifyEventUpdate(User user, EventMessage message, BiConsumer<ScadaPrincipal, EventMessage> send) {
-		send.accept(new ScadaPrincipal(user), message);
+	public void notifyEventReset() {
+		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(websocket -> {
+			for(User user: userService.getActiveUsers())
+				websocket.sendEventUpdate(new ScadaPrincipal(user), WsEventMessage.reset());
+		});
 	}
 
 	@Override
 	public void notifyWebSocketSubscribers(String message) {
-		ApplicationBeans.getEventsServiceWebSocketBean().ifPresent(ws -> ws.notifyEventsSubscribers(message));
+		ApplicationBeans.Lazy.getEventsServiceWebSocketBean().ifPresent(ws -> ws.notifyEventsSubscribers(message));
 	}
 }

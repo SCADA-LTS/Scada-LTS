@@ -15,41 +15,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.scada_lts.dao.model;
+
+package org.scada_lts.quartz;
+
+import com.serotonin.mango.Common;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.StatefulJob;
+import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 /** 
- * Model for buffering UnsilencedAlarmLevel
+ * Update data job for unsilenced alarm level in cache.
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class UserAlarmLevel {
+public class ResetCacheHighestAlarmLevel implements StatefulJob {
+	
+	private static final Log LOG = LogFactory.getLog(ResetCacheHighestAlarmLevel.class);
 
-	private int userId;
-	private int alarmLevel;
-
-	public UserAlarmLevel() {
+	@Override
+	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+		LOG.debug("ResetCacheHighestAlarmLevel");
+		Common.ctx.getEventManager().resetHighestAlarmLevels();
 	}
-
-	public UserAlarmLevel(int userId, int alarmLevel) {
-		this.userId = userId;
-		this.alarmLevel = alarmLevel;
-	}
-
-	public int getUserId() {
-		return userId;
-	}
-
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
-
-	public int getAlarmLevel() {
-		return alarmLevel;
-	}
-
-	public void setAlarmLevel(int alarmLevel) {
-		this.alarmLevel = alarmLevel;
-	}
-
 }

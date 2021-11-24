@@ -1,6 +1,5 @@
 package org.scada_lts.web.ws.model;
 
-import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -9,16 +8,34 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 import java.util.List;
 
-public class EventMessage {
+public class WsEventMessage {
 
-    private EventInstance instance;
-
-    public EventMessage(EventInstance instance) {
-        this.instance = instance;
+    public enum EventAction {
+        CREATE, UPDATE, DELETE, RESET
     }
 
-    public static EventMessage empty() {
-        return new EventMessage(EventInstance.emptySystemNoneEvent());
+    private EventInstance instance;
+    public String action;
+
+    private WsEventMessage(EventInstance instance, EventAction action) {
+        this.instance = instance;
+        this.action = action.name();
+    }
+
+    public static WsEventMessage reset() {
+        return new WsEventMessage(EventInstance.emptySystemNoneEvent(-1), EventAction.RESET);
+    }
+
+    public static WsEventMessage update(EventInstance eventInstance) {
+        return new WsEventMessage(eventInstance, EventAction.UPDATE);
+    }
+
+    public static WsEventMessage delete(EventInstance eventInstance) {
+        return new WsEventMessage(eventInstance, EventAction.DELETE);
+    }
+
+    public static WsEventMessage create(EventInstance eventInstance) {
+        return new WsEventMessage(eventInstance, EventAction.CREATE);
     }
 
     public LocalizableMessage getRtnMessage() {
@@ -133,7 +150,11 @@ public class EventMessage {
         return instance.getAlternateAckSource();
     }
 
-    public boolean isEmpty() {
+    public boolean isDeleted() {
         return getActiveTimestamp() == 0;
+    }
+
+    public String getAction() {
+        return action;
     }
 }
