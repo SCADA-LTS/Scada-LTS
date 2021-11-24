@@ -62,6 +62,7 @@
     #__header__alarmLevelImg {
         height: 32px !important;
         width: 32px !important;
+        vertical-align: middle !important;
     }
   </style>
 
