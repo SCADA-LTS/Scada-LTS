@@ -52,6 +52,13 @@ export const graphicalViewModule = {
             console.log(state.graphicalPage.viewComponents);
             console.log(state.graphicalPage);
         },
+        ADD_COMPONENT_TO_PAGE(state, payload) {
+            const maxIndex = state.graphicalPage.viewComponents.reduce((prev, current) => {
+                return (prev.index > current.index) ? prev.index : current.index;
+            });
+            payload.index = maxIndex + 1;
+            state.graphicalPage.viewComponents.push(payload);
+        },
         DELETE_COMPONENT_EDIT(state) {
             state.graphicalPage.viewComponents.splice(state.componentEdit, 1);
             console.log(state.graphicalPage.viewComponents);

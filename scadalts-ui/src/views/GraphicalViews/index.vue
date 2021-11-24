@@ -81,9 +81,12 @@
 <script>
 import GraphicalViewPage from './GraphicalViewPage.vue';
 import GraphicalViewItem from '../../models/GraphicalViewItem';
+import ComponentCreationDialog from './ComponentCreationDialog';
+
 export default {
 	components: {
 		GraphicalViewPage,
+		ComponentCreationDialog
 	},
 
 	data() {
