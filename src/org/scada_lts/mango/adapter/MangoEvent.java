@@ -48,7 +48,7 @@ public interface MangoEvent {
 
     void silenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource);
 
-	void unsilenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource);
+	void unsilenceEvents(List<Integer> eventIds, int userId);
 
 	void ackAllPending(long time, int userId, int alternateAckSource);
 
