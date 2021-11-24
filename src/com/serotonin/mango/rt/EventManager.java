@@ -448,7 +448,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	public void notifyEventRaise(EventInstance evt, User user) {
 		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doUpdateAlarmLevel(user, new UserAlarmLevelEvent(user.getId(), evt.getAlarmLevel(), evt.getId()), userEventService::sendAlarmLevel);
+			highestAlarmLevelService.doUpdateAlarmLevel(user, new UserAlarmLevelEvent(user, evt), userEventService::sendAlarmLevel);
 		});
 	}
 
@@ -456,8 +456,9 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		notifyEventToggle(evt, user);
 	}
 
-	public void notifyEventAck(int eventId, User user) {
-		notifyEventToggle(eventId, user);
+	public void notifyEventAck(int eventId) {
+		for(User user: userService.getActiveUsers())
+			notifyEventToggle(eventId, user);
 	}
 
 	public void notifyEventToggle(int eventId, User user) {
@@ -486,7 +487,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	public void notifyEventToggle(EventInstance evt, User user) {
 		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doRemoveAlarmLevel(user, new UserAlarmLevelEvent(user.getId(), evt.getAlarmLevel(), evt.getId()), userEventService::sendAlarmLevel);
+			highestAlarmLevelService.doRemoveAlarmLevel(user, new UserAlarmLevelEvent(user, evt), userEventService::sendAlarmLevel);
 		});
 		notifyEventUpdate(user, WsEventMessage.update(evt));
 	}

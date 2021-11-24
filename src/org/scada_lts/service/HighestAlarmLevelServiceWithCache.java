@@ -1,7 +1,6 @@
 package org.scada_lts.service;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,7 +70,6 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
 
     @Override
     public boolean doUpdateAlarmLevel(User user, UserAlarmLevelEvent alarmLevel, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
-
         if(alarmLevel.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
             this.lock.writeLock().lock();
             try {
@@ -94,13 +92,10 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
 
     @Override
     public boolean doRemoveAlarmLevel(User user, UserAlarmLevelEvent alarmLevel, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
-        if(alarmLevel.getEventId() == highestAlarmLevelCache.getAlarmLevel(user).getEventId()
-                || highestAlarmLevelCache.getAlarmLevel(user).getEventId() == Common.NEW_ID) {
+        if(alarmLevel.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
             this.lock.writeLock().lock();
             try {
-                UserAlarmLevelEvent userAlarmLevelEvent = highestAlarmLevelCache.getAlarmLevel(user);
-                if(alarmLevel.getEventId() == userAlarmLevelEvent.getEventId()
-                        || userAlarmLevelEvent.getEventId() == Common.NEW_ID) {
+                if (alarmLevel.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
                     highestAlarmLevelCache.removeAlarmLevel(user);
                     send.accept(new ScadaPrincipal(user), new AlarmLevelMessage(highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()));
                     return true;
@@ -130,7 +125,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         this.lock.readLock().lock();
         try {
             UserAlarmLevelEvent alarmLevel = highestAlarmLevelCache.getAlarmLevel(User.onlyIdUsername(principal));
-            if(alarmLevel.getAlarmLevel() > AlarmLevels.NONE) {
+            if(alarmLevel.getEventId() > Common.NEW_ID) {
                 send.accept(principal, new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
                 return true;
             }

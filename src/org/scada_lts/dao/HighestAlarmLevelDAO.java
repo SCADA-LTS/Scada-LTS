@@ -59,7 +59,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
                     userAlarmLevel.setEventId(rs.getInt(COLUMN_NAME_EVENT_ID));
                     return Optional.of(userAlarmLevel);
                 }
-                return Optional.of(new UserAlarmLevelEvent(user.getId(), AlarmLevels.NONE, -1));
+                return Optional.of(UserAlarmLevelEvent.onlyUser(user));
             });
         } catch (Exception e) {
             LOG.warn(e);

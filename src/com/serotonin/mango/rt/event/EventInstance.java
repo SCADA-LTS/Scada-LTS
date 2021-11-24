@@ -141,7 +141,7 @@ public class EventInstance {
     }
 
     public static EventInstance emptySystemNoneEvent(int eventId) {
-        EventInstance eventInstance =new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
+        EventInstance eventInstance = new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
         eventInstance.setId(eventId);
         return eventInstance;
     }
