@@ -52,7 +52,7 @@ public interface MangoEvent {
 
 	void ackAllPending(long time, int userId, int alternateAckSource);
 
-    void silenceAll(long time, int userId, int alternateAckSource);
+    void silenceAll(int userId);
 
     void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids);
 

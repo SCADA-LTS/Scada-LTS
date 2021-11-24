@@ -981,9 +981,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_ALL, new Object[]  { actTS, userId, alternateAckSource } );
 	}
 
-	public void silenceAll(long actTS, long userId, int alternateAckSource) {
+	public void silenceAll(long userId) {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
+			LOG.trace(" userId:"+userId);
 		}
 		DAO.getInstance().getJdbcTemp().update( EVENT_SILENCE_ALL, new Object[]  { userId } );
 	}

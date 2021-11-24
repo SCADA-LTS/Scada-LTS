@@ -95,7 +95,7 @@ public class EventsAPI {
     }
 
     /**
-     * Acknowledge specific Event Alarm from REST API
+     * Silence specific Event Alarm from REST API
      *
      * @param eventId Event ID number
      * @param request Request containing user data
@@ -119,7 +119,7 @@ public class EventsAPI {
     }
 
     /**
-     * Acknowledge specific Event Alarm from REST API
+     * Unsilence specific Event Alarm from REST API
      *
      * @param eventId Event ID number
      * @param request Request containing user data
@@ -223,7 +223,7 @@ public class EventsAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 Date time = new Date();
-                eventService.silenceAll(time.getTime(), user.getId(), 0);
+                eventService.silenceAll(user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

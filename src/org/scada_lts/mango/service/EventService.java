@@ -123,7 +123,7 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
-	public void silenceEvent(int eventId, long time, int userId, int alternateAckSource) {
+	public void silenceEvent(int eventId, int userId) {
 		userEventDAO.silenceEvent(eventId, userId);
 	}
 
@@ -133,7 +133,7 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
-	public void silenceEvents(List<Integer> eventIds, long time, int userId, int alternateAckSource) {
+	public void silenceEvents(List<Integer> eventIds, int userId) {
 		userEventDAO.silenceEvents(eventIds, userId);
 	}
 
@@ -148,8 +148,8 @@ public class EventService implements MangoEvent {
 	}
 
 	@Override
-	public void silenceAll(long time, int userId, int alternateAckSource) {
-		eventDAO.silenceAll(time, userId, alternateAckSource);
+	public void silenceAll(int userId) {
+		eventDAO.silenceAll(userId);
 	}
 
 	@Override
