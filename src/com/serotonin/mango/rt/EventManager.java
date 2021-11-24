@@ -34,7 +34,7 @@ import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.model.UserAlarmLevelEvent;
+import org.scada_lts.dao.model.UserAlarmLevel;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.EventService;
@@ -448,7 +448,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	public void notifyEventRaise(EventInstance evt, User user) {
 		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doUpdateAlarmLevel(user, new UserAlarmLevelEvent(user, evt), userEventService::sendAlarmLevel);
+			highestAlarmLevelService.doUpdateAlarmLevel(user, new UserAlarmLevel(user, evt.getAlarmLevel()), userEventService::sendAlarmLevel);
 		});
 	}
 
@@ -487,7 +487,7 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 	public void notifyEventToggle(EventInstance evt, User user) {
 		ApplicationBeans.Lazy.getUserEventServiceWebsocketBean().ifPresent(userEventService -> {
 			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
-			highestAlarmLevelService.doRemoveAlarmLevel(user, new UserAlarmLevelEvent(user, evt), userEventService::sendAlarmLevel);
+			highestAlarmLevelService.doRemoveAlarmLevel(user, new UserAlarmLevel(user, evt.getAlarmLevel()), userEventService::sendAlarmLevel);
 		});
 		notifyEventUpdate(user, WsEventMessage.update(evt));
 	}

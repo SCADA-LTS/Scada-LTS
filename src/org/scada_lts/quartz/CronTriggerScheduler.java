@@ -6,10 +6,7 @@ import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.stereotype.Component;
 
-
-@Component("resetHighestAlarmLevelScheduler")
 public class CronTriggerScheduler {
 
     private static final Log LOG = LogFactory.getLog(CronTriggerScheduler.class);
@@ -32,6 +29,7 @@ public class CronTriggerScheduler {
             Scheduler scheduler = factory.getScheduler();
             scheduler.start();
             scheduler.scheduleJob(job, trigger);
+            LOG.info(job.getName() + " scheduled, cron: " + trigger.getCronExpression());
         } catch (Exception e) {
             LOG.warn(e.getMessage(), e);
         }

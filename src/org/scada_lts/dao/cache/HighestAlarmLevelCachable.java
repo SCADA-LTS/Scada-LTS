@@ -1,7 +1,7 @@
 package org.scada_lts.dao.cache;
 
 import com.serotonin.mango.vo.User;
-import org.scada_lts.dao.model.UserAlarmLevelEvent;
+import org.scada_lts.dao.model.UserAlarmLevel;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,10 +12,10 @@ public interface HighestAlarmLevelCachable {
     String CACHE_ENABLED_KEY = "alarmlevel.highest.cache.enabled";
 
     @Cacheable(cacheNames = "alarmlevel_highest_by_user", key="#user.id")
-    UserAlarmLevelEvent getAlarmLevel(User user);
+    UserAlarmLevel getAlarmLevel(User user);
 
     @Caching(put = {@CachePut(cacheNames = "alarmlevel_highest_by_user", key = "#user.id", condition = "#alarmLevel != null")})
-    UserAlarmLevelEvent putAlarmLevel(User user, UserAlarmLevelEvent alarmLevel);
+    UserAlarmLevel putAlarmLevel(User user, UserAlarmLevel alarmLevel);
 
     @Caching(evict = {@CacheEvict(cacheNames = "alarmlevel_highest_by_user", key = "#user.id")})
     void removeAlarmLevel(User user);

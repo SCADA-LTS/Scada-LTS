@@ -94,6 +94,8 @@
         <Logger name="com.serotonin.db.spring.ExtendedJdbcTemplate" level="error"/>
         <Logger name="com.serotonin.mango" level="info"/>
         <Logger name="org.scada_lts.permissions.migration" level="info"/>
+        <Logger name="org.scada_lts.quartz.CronTriggerScheduler" level="info"/>
+        <Logger name="org.scada_lts.quartz.ResetCacheHighestAlarmLevel" level="info"/>
 
         <!-- Script Logging Error -->
         <Logger name="com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT" level="${scriptLoggingLevel}" >

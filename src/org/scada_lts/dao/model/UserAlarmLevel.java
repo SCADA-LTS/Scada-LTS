@@ -18,7 +18,6 @@
 package org.scada_lts.dao.model;
 
 import com.serotonin.mango.rt.event.AlarmLevels;
-import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 
 /**
@@ -27,47 +26,37 @@ import com.serotonin.mango.vo.User;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  * person supporting and coreecting translation Jerzy Piejko
  */
-public class UserAlarmLevelEvent {
+public class UserAlarmLevel {
 
 	private int userId = -1;
 	private int alarmLevel = AlarmLevels.NONE;
-	private int eventId = -1;
 
-	public UserAlarmLevelEvent() {
+	public UserAlarmLevel() {
 	}
 
-	public UserAlarmLevelEvent(User user, EventInstance eventInstance) {
+	public UserAlarmLevel(User user, int alarmLevel) {
 		this.userId = user.getId();
-		this.alarmLevel = eventInstance.getAlarmLevel();
-		this.eventId = eventInstance.getId();
+		this.alarmLevel = alarmLevel;
 	}
 
-	public static UserAlarmLevelEvent onlyUser(User user) {
-		return new UserAlarmLevelEvent(user, EventInstance.emptySystemNoneEvent(-1));
+	public static UserAlarmLevel onlyUser(User user) {
+		return new UserAlarmLevel(user, AlarmLevels.NONE);
 	}
 
 	public int getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
-
 	public int getAlarmLevel() {
 		return alarmLevel;
 	}
 
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
 	public void setAlarmLevel(int alarmLevel) {
 		this.alarmLevel = alarmLevel;
-	}
-
-	public int getEventId() {
-		return eventId;
-	}
-
-	public void setEventId(int eventId) {
-		this.eventId = eventId;
 	}
 
 	@Override
@@ -75,7 +64,6 @@ public class UserAlarmLevelEvent {
 		return "UserAlarmLevel{" +
 				"userId=" + userId +
 				", alarmLevel=" + alarmLevel +
-				", eventId=" + eventId +
 				'}';
 	}
 }

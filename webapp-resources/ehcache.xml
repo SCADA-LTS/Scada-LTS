@@ -28,7 +28,7 @@
 
     <cache-template name="integer_alarm_level_template">
         <key-type>java.lang.Integer</key-type>
-        <value-type>org.scada_lts.dao.model.UserAlarmLevelEvent</value-type>
+        <value-type>org.scada_lts.dao.model.UserAlarmLevel</value-type>
         <expiry>
             <none/>
         </expiry>

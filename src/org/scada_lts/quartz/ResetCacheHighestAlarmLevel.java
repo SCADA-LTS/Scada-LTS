@@ -24,8 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
-import org.scada_lts.web.beans.ApplicationBeans;
 
 /** 
  * Update data job for unsilenced alarm level in cache.
@@ -39,7 +37,8 @@ public class ResetCacheHighestAlarmLevel implements StatefulJob {
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		LOG.debug("ResetCacheHighestAlarmLevel");
+		long time = System.currentTimeMillis();
 		Common.ctx.getEventManager().resetHighestAlarmLevels();
+		LOG.info(ResetCacheHighestAlarmLevel.class.getSimpleName() + " executed: " + (System.currentTimeMillis() - time)/1000.0 + "[ms]");
 	}
 }

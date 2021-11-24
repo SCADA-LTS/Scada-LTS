@@ -4,7 +4,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IHighestAlarmLevelDAO;
-import org.scada_lts.dao.model.UserAlarmLevelEvent;
+import org.scada_lts.dao.model.UserAlarmLevel;
 
 public class HighestAlarmLevelCache implements HighestAlarmLevelCachable {
 
@@ -17,13 +17,13 @@ public class HighestAlarmLevelCache implements HighestAlarmLevelCachable {
     }
 
     @Override
-    public UserAlarmLevelEvent getAlarmLevel(User user) {
+    public UserAlarmLevel getAlarmLevel(User user) {
         LOG.debug("getAlarmLevel user: " + getUserIdentifier(user));
-        return highestAlarmLevelDAO.selectAlarmLevel(user).orElse(UserAlarmLevelEvent.onlyUser(user));
+        return highestAlarmLevelDAO.selectAlarmLevel(user).orElse(UserAlarmLevel.onlyUser(user));
     }
 
     @Override
-    public UserAlarmLevelEvent putAlarmLevel(User user, UserAlarmLevelEvent alarmLevel) {
+    public UserAlarmLevel putAlarmLevel(User user, UserAlarmLevel alarmLevel) {
         LOG.debug("putAlarmLevel user: " + getUserIdentifier(user) + ", alarmLevel: " + alarmLevel);
         return alarmLevel;
     }
