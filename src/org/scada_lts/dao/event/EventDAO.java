@@ -143,7 +143,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"ue."+ COLUMN_NAME_SILENCED + " ";
 	
 	// @formatter:off
-	private static final java.lang.String BASIC_EVENT_SELECT = ""
+	private static final String BASIC_EVENT_SELECT = ""
 			+"select "
 				+ "e."+COLUMN_NAME_ID+", "
 				+ "e."+COLUMN_NAME_TYPE_ID+", "
