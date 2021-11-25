@@ -764,7 +764,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	/**
 	 * Select from Database Event Rows containing specific Type and Reference
 	 * To increase performance there is provided a pagination function.
-	 * This events containing also UserComments objects.
+	 * This events containing alsreadysaso UserComments objects.
 	 *
 	 * @param query
 	 * @param user
@@ -866,6 +866,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				}
 			}
 			sql.append("ORDER BY "+String.join(", ", sorting));
+		} else {
+			sql.append("ORDER BY e."+ COLUMN_NAME_ID + " DESC ");
 		}
 
 		if (query.getLimit() != 0) {
