@@ -39,12 +39,6 @@ public class JsonEventSearch {
         this.offset = offset;
         this.sortBy = sortBy;
         this.sortDesc = sortDesc;
-        this.lastLogin = lastLogin;
-        this.receiveAlarmEmails = receiveAlarmEmails;
-        this.receiveOwnAuditEvents = receiveOwnAuditEvents;
-        this.theme = theme;
-        this.hideMenu = hideMenu;
-        this.userProfile = userProfile;
     }
 
     public String getStartDate() {

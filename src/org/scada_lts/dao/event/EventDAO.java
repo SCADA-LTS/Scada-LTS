@@ -701,30 +701,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insertUserComment(final int userId, final int eventId, final String commentText) {
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final DataPointVO dataPoint) userId:" + userId + " eventId:"+eventId);
-		}
-
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-
-		return DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement ps = connection.prepareStatement("INSERT INTO userComments (userId, commentType, typeKey, ts, commentText) VALUES (?,1,?,CURRENT_TIMESTAMP,?)", Statement.RETURN_GENERATED_KEYS);
-				new ArgumentPreparedStatementSetter(new Object[] {
-						userId,
-						eventId,
-						commentText
-				}).setValues(ps);
-				return ps;
-			}
-		}, keyHolder);
-
-	}
-
 	private class EventCommentDTORowMapper implements RowMapper<EventCommentDTO> {
 		public EventCommentDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			EventCommentDTO result = new EventCommentDTO(
@@ -764,7 +740,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	/**
 	 * Select from Database Event Rows containing specific Type and Reference
 	 * To increase performance there is provided a pagination function.
-	 * This events containing alsreadysaso UserComments objects.
 	 *
 	 * @param query
 	 * @param user
@@ -790,7 +765,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		if (!"".equals(query.getStartDate())) {
 			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
-			String start = query.getStartDate()+' '+query.getStartDate();
+			String start = query.getStartDate()+' '+query.getStartTime();
 			params.add(start);
 		}
 		if (!"".equals(query.getEndDate())) {
@@ -818,7 +793,6 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			filterCondtions.add("e.rtnApplicable='N'");
 		}
 
-		StringBuffer keywordsInCommentCondition = new StringBuffer();
 		List<String> userCommentKeywordConditions = new ArrayList<String>();
 		if (!"".equals(query.getKeywords())) {
 			List<String> keywordConditions = new ArrayList<String>();

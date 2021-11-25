@@ -257,14 +257,8 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
-
 		new UserCommentDAO().insert(comment, UserComment.TYPE_EVENT, eventId);
-
 		return eventDAO.findById(new Object[]{eventId});
-	}
-
-	public int insertEventComment(int userId, int eventId, String commentText) {
-		return eventDAO.insertUserComment(userId, eventId, commentText);
 	}
 	
 	@Override
