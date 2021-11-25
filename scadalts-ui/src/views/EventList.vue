@@ -401,24 +401,6 @@
 	border: 0!important;
 }
 
-.blink {
-	color: red;
-  animation: blinker .8s linear infinite;
-}
-
-@keyframes blinker {
-  50% {
-	 color: yellow;
-  }
-   0% {
-	 color: red;
-	 /* text-shadow: yellow 0px 0px 5px; */
-  }
-   100% {
-	 color: red;
-	 /* text-shadow: transparent 2px 2px 0px; */
-  }
-}
 tbody tr:nth-of-type(odd) {
 	background-color: rgba(0, 0, 0, .05);
 }
@@ -440,15 +422,6 @@ export default {
 	mounted() {
 		this.mountedTs = this.$dayjs()
 		this.fetchEventList();
-		this.tab = 0
-		
-		const interval = setInterval(() => {
-			if(String(window.location).split('#').pop() === '/event-list') {
-				this.getAlarms();
-			} else {
-				clearInterval(interval)
-			}
-		}, 1000);
 	},
 	watch: {
     	options (data) {

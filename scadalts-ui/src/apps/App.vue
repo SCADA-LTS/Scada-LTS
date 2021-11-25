@@ -2,7 +2,7 @@
 	<v-app>
 		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
 			<v-list nav dense>
-				<v-list-item link href="#/alarms">
+				<v-list-item link href="#/alarms/scada">
 					<v-list-item-icon>
 						<v-icon>mdi-bell-ring</v-icon>
 					</v-list-item-icon>
@@ -192,8 +192,8 @@ export default {
 
 	methods: {
 		goToEvents() {
-			if (this.$route.name==='event-list') reload();
-			else this.$router.push({ name: 'event-list' });
+			if (this.$route.name==='alarms') reload();
+			else this.$router.push({ name: 'alarms' });
 			this.unsilencedHighestAlarmLevel = -1
 		},
 		logout() {

@@ -77,14 +77,6 @@ const routing = new Router({
 			},
 		},
 		{
-			path: '/event-list',
-			name: 'event-list',
-			component: EventList,
-			meta: {
-				requiresAuth: true,
-			},
-		},
-		{
 			path: '/users',
 			name: 'users',
 			component: UserList,
