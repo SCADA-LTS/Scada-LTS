@@ -65,12 +65,14 @@
 				
 				</v-card-text>
 				<v-divider></v-divider>
+				<form @submit.prevent="publishComment"> 
 				<v-card-actions>
-				
-				<v-text-field v-model="commentText" color="blue darken-1"></v-text-field>
-				<v-btn text color="blue darken-1" @click="publishComment">Comment</v-btn>
+				 
+					<v-text-field v-model="commentText" color="blue darken-1"></v-text-field>
+					<v-btn text color="blue darken-1" @click="publishComment">Comment</v-btn>
 				
 				</v-card-actions>
+				</form>
 			</v-card>
 			</v-dialog>
 		</v-row>
@@ -701,6 +703,7 @@ export default {
 			});
 			this.fetchEventSelected()
 			this.fetchEventList()
+			this.commentText = ''
 		},
 		async fetchEventList() {
 			this.loading = true;
