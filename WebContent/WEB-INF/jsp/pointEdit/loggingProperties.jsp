@@ -233,6 +233,7 @@
               <tag:timePeriodOptions sst="true" d="true" w="true" mon="true" y="true"/>
             </sst:select>
           </td>
+          <c:if test="${error.purgePeriod != null}"><td class="formError"><fmt:message key="${error.purgePeriod}"/></td></c:if>
         </tr>
     </tbody>
 

@@ -36,6 +36,7 @@ public class V2_7_1_2__PurgeLimitStrategyDatapointProperty extends BaseJavaMigra
                      ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                     DataPointVO dataPointVO = (DataPointVO) objectInputStream.readObject();
                     dataPointVO.setId(resultSet.getInt("id"));
+                    dataPointVO.setPurgeValuesLimit(2);
                     return dataPointVO;
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
