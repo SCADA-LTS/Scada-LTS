@@ -18,7 +18,7 @@
 		<template v-slot:renderer>
 			<v-row>
 				<v-col cols="12">
-					<DataPointSerachComponent @change="onPointChange"></DataPointSerachComponent>
+					<DataPointSerachComponent v-model="component.dataPointXid" :dataTypes="dataTypes" @change="onPointChange"></DataPointSerachComponent>
 				</v-col>
 				<v-col cols="6">
 					<v-switch v-model="component.displayPointName" label="Display name"></v-switch>
@@ -55,6 +55,10 @@ export default {
 			type: Object,
 			required: true,
 		},
+		dataTypes: {
+			type: Array,
+			required: false,			
+		},
 	},
 
 	data() {
@@ -77,7 +81,7 @@ export default {
 
 	methods: {
 		onPointChange(point) {
-			this.component.dataPointXid = point.xid;
+			// this.component.dataPointXid = point.xid;
 			this.connectToPointWebSocket(point.xid);
 		},
 

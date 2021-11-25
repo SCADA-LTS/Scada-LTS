@@ -15,14 +15,17 @@
 				</div>
 				<v-expand-transition>
 					<div v-if="hover" class="gv-component--buttons">
-						<v-btn fab x-small>
+						<v-btn 
+							v-if="component.displayControls === true && !editMode"
+							fab x-small
+						>
 							<v-icon>mdi-information</v-icon>
 						</v-btn>
 						<v-btn v-if="editMode" fab x-small @click="showMenuEdit">
 							<v-icon>mdi-pencil</v-icon>
 						</v-btn>
 						<v-btn
-							v-if="component.displayControls === true"
+							v-if="component.displayControls === true && !editMode"
 							fab
 							x-small
 							@click="showMenuValue = true"
@@ -144,6 +147,15 @@ export default {
 		iconify() {
 			return this.$store.state.graphicalViewModule.graphicalPageIconify;
 		},
+		canvasWidth() {
+			let width = this.$store.state.graphicalViewModule.graphicalPage.resolution.split('x')[0].replace(/^\D+/g, '');
+			return Number(width);
+
+		},
+		canvasHeight() {
+			let height = this.$store.state.graphicalViewModule.graphicalPage.resolution.split('x')[1].replace(/^\D+/g, '');
+			return Number(height);
+		},
 	},
 
 	methods: {
@@ -197,10 +209,18 @@ export default {
 				cmp.style.top = '0px';
 			}
 
+			if( cmp.offsetTop + cmp.clientHeight >= this.canvasHeight ) {
+				cmp.style.top = this.canvasHeight - cmp.clientHeight + 'px';
+			}
+
 			if (cmp.offsetLeft >= 0) {
 				cmp.style.left = cmp.offsetLeft - props.movementX + 'px';
 			} else {
 				cmp.style.left = '0px';
+			}
+
+			if( cmp.offsetLeft + cmp.clientWidth >= this.canvasWidth ) {
+				cmp.style.left = this.canvasWidth - cmp.clientWidth + 'px';
 			}
 		},
 		dragEnd() {

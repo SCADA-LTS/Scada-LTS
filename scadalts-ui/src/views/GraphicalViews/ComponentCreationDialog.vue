@@ -18,10 +18,16 @@
                         <v-card-text>
                             DataPoint: {{cmp.datapointTypes}}
                         </v-card-text>
-                        <div class="component-overlay" v-if="hover" @click="addComponent(cmp.definition)">
+                        <v-expand-transition>
+                        <div class="component-overlay" v-show="hover" @click="addComponent(cmp.definition)">
+                            <div class="component-overlay--text">
+                                <p>
+                                    {{cmp.description}}
+                                </p>
+                            </div>
                             <v-icon class="component-overlay--icon">mdi-plus</v-icon>
-                            
                         </div>
+                        </v-expand-transition>
 
 
                         </v-card>
@@ -75,21 +81,22 @@ export default {
 </script>
 <style scoped>
 .component-overlay {
-    background-color: #00000026;
+    background-color: #b9b9b9;
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
 }
 .component-overlay--icon {
-    padding: 10px;
+    padding: 5px;
     background-color: white;
     border-radius: 50%;
     box-shadow: 0px 2px 5px 0px #00000033;
-
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
 }
 </style>

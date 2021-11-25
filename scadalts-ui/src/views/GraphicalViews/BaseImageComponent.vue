@@ -1,6 +1,7 @@
 <template>
 	<BasePointComponent
 		:component="component"
+		:dataTypes="dataTypes"
 		@update="$emit('update')"
 		@value-update="onValueUpdate"
 		@status-update="onStatusUpdate"
@@ -37,6 +38,10 @@ export default {
 		component: {
 			type: Object,
 			required: true,
+		},
+		dataTypes: {
+			type: Array,
+			required: false,
 		},
 	},
 

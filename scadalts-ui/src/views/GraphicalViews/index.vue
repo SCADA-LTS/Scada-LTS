@@ -54,7 +54,7 @@
 					></v-select>
 				</v-col>
 				<v-col class="flex-jc-space-around">
-					<v-btn>
+					<v-btn @click="showBackgroundDialog">
 						<v-icon> mdi-image </v-icon>
 					</v-btn>
 					<v-btn @click="toggleIconify">
@@ -73,6 +73,9 @@
 			<v-btn @click="editCancel"> Cancel </v-btn>
 			<v-btn color="primary" @click="editAccept"> {{createMode ? 'Create' : 'Update' }} </v-btn>
 		</v-container>
+		<BackgroundSettingsDialog
+			ref="backgroundDialog"
+		></BackgroundSettingsDialog>
 		<ComponentCreationDialog
 			ref="creationDialog"	
 		></ComponentCreationDialog>
@@ -82,11 +85,13 @@
 import GraphicalViewPage from './GraphicalViewPage.vue';
 import GraphicalViewItem from '../../models/GraphicalViewItem';
 import ComponentCreationDialog from './ComponentCreationDialog';
+import BackgroundSettingsDialog from './BackgroundSettingsDialog';
 
 export default {
 	components: {
 		GraphicalViewPage,
-		ComponentCreationDialog
+		ComponentCreationDialog,
+		BackgroundSettingsDialog
 	},
 
 	data() {
@@ -195,6 +200,10 @@ export default {
 		},
 		onRouteChanged(id) {
 			this.activeGraphicalView = id;
+		},
+
+		showBackgroundDialog() {
+			this.$refs.backgroundDialog.openDialog();
 		},
 	},
 };

@@ -2,7 +2,7 @@ const viewComponentsMock = [
     {
         index: 0,
         type: 'SIMPLE',
-        dataPointXid: 'TQ_VDP_01_03',
+        dataPointXid: 'DP_858030',
         bkgdColorOverride: '',
         displayControls: false,
         displayPointName: false,
