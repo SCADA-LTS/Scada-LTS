@@ -166,9 +166,9 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
                                              PaginationParams paginationParams,
                                              JdbcOperations jdbcOperations) {
         String query = "SELECT * FROM (" +
-                "    SELECT 'dataType', 'pointValue', 'ts', 'timestamp', 'textPointValueShort', 'textPointValueLong', 'sourceType', 'sourceId', 'username' UNION ALL" +
+                "    SELECT 'timestamp', 'ts', 'pointValue', 'metaData' UNION ALL" +
                 "    (" +
-                "       SELECT dataType, pointValue, ts, timestamp, textPointValueShort, textPointValueLong, sourceType, sourceId, username " +
+                "       SELECT timestamp, ts, pointValue, metaData " +
                 " FROM pointValuesDenormalized WHERE dataPointId = " + paginationParams.getDataPointId() + " LIMIT " + paginationParams.getLimit() + " OFFSET " + paginationParams.getOffset() + " " +
                 "    )" +
                 ") result INTO OUTFILE '" + csv + "' FIELDS TERMINATED BY '\t' ENCLOSED BY '' LINES TERMINATED BY '\r\n';";
@@ -186,7 +186,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     public static int importToQuestDb(File csv, MigrationSettings migrationSettings, int dataPointId) {
         try {
-            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues" + dataPointId + "&timestamp=timestamp&partitionBy=DAY&overwrite=" + migrationSettings.isOverwrite());
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues" + dataPointId + "&timestamp=timestamp&partitionBy=YEAR&overwrite=" + migrationSettings.isOverwrite());
             MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", migrationSettings.getSchema()), new FilePart("data", csv)}, postMethod.getParams());
             postMethod.setRequestEntity(entity);
             MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();

@@ -121,7 +121,7 @@ public class PointValueDAO4REST {
 				} else {
 					pva.setTextPointValueLong(value);
 				}
-				IPointValueDenormalizedDAO.newQueryRespository().create(pv, pva);
+				IPointValueDenormalizedDAO.newQueryRespository().create(pv, pva, typePointValueOfREST);
 			}
 
 		} else {

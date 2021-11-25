@@ -1,39 +1,19 @@
 [
   {
-    "name":"dataType",
-    "type": "INT"
+    "name":"timestamp",
+    "type": "TIMESTAMP",
+    "pattern": "yyyy-MM-ddTHH:mm:ss.SSSZ"
   },
   {
     "name":"ts",
     "type": "LONG"
   },
   {
-    "name":"timestamp",
-    "type": "TIMESTAMP",
-    "pattern": "yyyy-MM-ddTHH:mm:ss.SSSZ"
-  },
-  {
-    "name":"textPointValueShort",
-    "type": "STRING"
-  },
-  {
-    "name":"textPointValueLong",
-    "type": "STRING"
-  },
-  {
-    "name":"sourceType",
-    "type": "INT"
-  },
-  {
-    "name":"sourceId",
-    "type": "INT"
-  },
-  {
-    "name":"username",
-    "type": "STRING"
-  },
-  {
     "name":"pointValue",
-    "type": "DOUBLE"
+    "type": "STRING"
+  },
+  {
+    "name":"metaData",
+    "type": "STRING"
   }
 ]

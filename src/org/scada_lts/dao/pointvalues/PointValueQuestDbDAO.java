@@ -18,6 +18,9 @@
 
 package org.scada_lts.dao.pointvalues;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -27,6 +30,8 @@ import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.point.PointValue;
@@ -56,31 +61,24 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
     private final static String  COLUMN_NAME_DATA_TYPE = "dataType";
     private final static String  COLUMN_NAME_POINT_VALUE = "pointValue";
-    private final static String  COLUMN_NAME_TEXT_POINT_VALUE_SHORT = "textPointValueShort";
-    private final static String  COLUMN_NAME_TEXT_POINT_VALUE_LONG = "textPointValueLong";
     private final static String  COLUMN_NAME_SOURCE_TYPE = "sourceType";
     private final static String  COLUMN_NAME_TS = "ts";
     private final static String  COLUMN_NAME_TIMESTAMP = "timestamp";
     private final static String  COLUMN_NAME_SOURCE_ID = "sourceId";
-    private final static String  COLUMN_NAME_DATA_POINT_ID = "dataPointId";
     private final static String  COLUMN_NAME_MIN_TIME_STAMP = "minTs";
     private final static String  COLUMN_NAME_MAX_TIME_STAMP = "maxTs";
     private final static String  COLUMN_NAME_USERNAME_IN_TABLE_USERS = "username";
 
     private final static String TABLE_POINT_VALUES = "pointValues$dpId";
+    private final static String COLUMN_NAME_META_DATA = "metaData";
 
 
     // @formatter:off
     private static final String POINT_VALUE_SELECT = ""
             + "select "
-            + COLUMN_NAME_DATA_TYPE + ", "
             + COLUMN_NAME_POINT_VALUE + ", "
             + COLUMN_NAME_TS + ", "
-            + COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
-            + COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
-            + COLUMN_NAME_SOURCE_TYPE + ", "
-            + COLUMN_NAME_SOURCE_ID + ", "
-            + COLUMN_NAME_USERNAME_IN_TABLE_USERS + " "
+            + COLUMN_NAME_META_DATA + " "
             + "from "
             + TABLE_POINT_VALUES + " ";
 
@@ -114,22 +112,17 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     private static final String POINT_VALUE_SELECT_ON_BASE_ID_TS = ""
             + POINT_VALUE_SELECT
             + " where "
-            + COLUMN_NAME_TS +"=?";
+            + COLUMN_NAME_TIMESTAMP +"=to_timezone(?, 'CET')";
 
     private static final String POINT_VALUE_INSERT = ""
             + "insert into "
             + TABLE_POINT_VALUES + " ("
-            + ""+COLUMN_NAME_DATA_TYPE + ", "
             + ""+COLUMN_NAME_POINT_VALUE + ", "
             + ""+COLUMN_NAME_TS + ", "
             + ""+COLUMN_NAME_TIMESTAMP + ", "
-            + ""+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
-            + ""+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
-            + ""+COLUMN_NAME_SOURCE_TYPE + ", "
-            + ""+COLUMN_NAME_SOURCE_ID + ", "
-            + ""+COLUMN_NAME_USERNAME_IN_TABLE_USERS
+            + ""+COLUMN_NAME_META_DATA
             +") "
-            + "values (?,?,?,to_timezone(?, 'CET'),?,?,?,?,?)";
+            + "values (?,?,to_timezone(?, 'CET'),?)";
 
     private static final String POINT_VALUE_INCEPTION_DATA = " "
             +"select "
@@ -143,17 +136,17 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
             + "from "
             + TABLE_POINT_VALUES + " "
             + "where "
-            + COLUMN_NAME_TS +">=? and "+ COLUMN_NAME_TS +"<=?";
+            + COLUMN_NAME_TS +">=to_timezone(?, 'CET') and "+ COLUMN_NAME_TS +"<=to_timezone(?, 'CET')";
 
     private static final String SELECT_MAX_TIME_WHERE_DATA_POINT_ID = ""
             + "select max("
             + COLUMN_NAME_TS + ") "
-            + TABLE_POINT_VALUES + " ";
+            + "from " + TABLE_POINT_VALUES + " ";
 
     private static final String SELECT_MIN_TIME_WHERE_DATA_POINT_ID = ""
             + "select min("
             + COLUMN_NAME_TS + ") "
-            + TABLE_POINT_VALUES + " ";
+            + "from " + TABLE_POINT_VALUES + " ";
 
     private static final String DROP_PARTITION = ""
             + "alter table "
@@ -165,33 +158,32 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     private static final String TO_TIMEZONE = ""
             + "to_timezone($timestamp, 'CET')";
 
-    public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP = " "
+    public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP = "where "
             + "pv."+COLUMN_NAME_TIMESTAMP+" >= to_timezone($from, 'CET') order by "+COLUMN_NAME_TIMESTAMP;
 
-    public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO = " "
+    public static final String POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO = "where "
             + "pv."+COLUMN_NAME_TIMESTAMP+">=to_timezone($from, 'CET') and pv."+COLUMN_NAME_TIMESTAMP+"<to_timezone($to, 'CET') order by "+COLUMN_NAME_TIMESTAMP;
 
     public static final String POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID = " "
-            + "order by pv."+COLUMN_NAME_TIMESTAMP+" desc";
+            + "order by "+COLUMN_NAME_TIMESTAMP+" desc";
 
-    public static final String POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID = " "
+    public static final String POINT_VALUE_FILTER_LATEST_BASE_ON_DATA_POINT_ID = "where "
             + "pv."+COLUMN_NAME_TIMESTAMP+"<? "
-            + "order by pv."+COLUMN_NAME_TIMESTAMP+" desc";
+            + "order by "+COLUMN_NAME_TIMESTAMP+" desc";
 
-    public static final String POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
+    public static final String POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID = "where "
             + "pv."+COLUMN_NAME_TIMESTAMP+"<to_timezone($to, 'CET') "
-            + "order by pv."+COLUMN_NAME_TIMESTAMP;
+            + "order by "+COLUMN_NAME_TIMESTAMP;
 
-    public static final String POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID = " "
+    public static final String POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID = "where "
             + "pv."+COLUMN_NAME_TIMESTAMP+"=to_timezone($time, 'CET') "
-            + "order by pv."+COLUMN_NAME_TIMESTAMP;
+            + "order by "+COLUMN_NAME_TIMESTAMP;
 
     public static final String CREATE_TABLE_FOR_DATAPOINT = " "
             + "create table if not exists "
             + TABLE_POINT_VALUES + " "
-            + "(dataType INT, pointValue DOUBLE, ts LONG, timestamp TIMESTAMP,\n"
-            + "textPointValueShort SYMBOL, textPointValueLong SYMBOL, sourceType INT, sourceId INT, username SYMBOL) \n"
-            + "timestamp(timestamp) partition by DAY";
+            + "(timestamp TIMESTAMP, ts LONG, pointValue STRING, metaData STRING) \n"
+            + "timestamp(timestamp) partition by YEAR";
 
     private static final String DATAPOINT_ID = "$dpId";
 
@@ -207,15 +199,23 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
         public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
             //TODO rewrite MangoValue
-            MangoValue value = createMangoValue(rs);
+            JSONObject metaData = null;
+            try {
+                metaData = new JSONObject(rs.getString(COLUMN_NAME_META_DATA));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            MangoValue value = createMangoValue(rs, metaData.optInt(COLUMN_NAME_DATA_TYPE));
+
             long time = rs.getLong(COLUMN_NAME_TS);
 
             PointValue pv = new PointValue();
-            //pv.setId(rs.getLong(COLUMN_NAME_ID));
             pv.setDataPointId(this.dataPointId);
-            int sourceId = rs.getInt(COLUMN_NAME_SOURCE_ID);
+            int sourceId = metaData.optInt(COLUMN_NAME_SOURCE_ID);
 
-            int sourceType = rs.getInt(COLUMN_NAME_SOURCE_TYPE);
+            int sourceType = metaData.optInt(COLUMN_NAME_SOURCE_TYPE);
 
             if (rs.wasNull()) {
                 pv.setPointValue(new PointValueTime(value, time));
@@ -236,23 +236,29 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
         public PointValue mapRow(ResultSet rs, int rowNum) throws SQLException {
             //TODO rewrite MangoValue
-            MangoValue value = createMangoValue(rs);
+            JSONObject metaData = null;
+            try {
+                metaData = new JSONObject(rs.getString(COLUMN_NAME_META_DATA));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            MangoValue value = createMangoValue(rs, metaData.optInt(COLUMN_NAME_DATA_TYPE));
             long time = rs.getLong(COLUMN_NAME_TS);
 
             PointValue pv = new PointValue();
-            //pv.setId(rs.getLong(COLUMN_NAME_ID));
             pv.setDataPointId(this.dataPointId);
-            int sourceId = rs.getInt(COLUMN_NAME_SOURCE_ID);
+            int sourceId = metaData.optInt(COLUMN_NAME_SOURCE_ID);
 
-            int sourceType = rs.getInt(COLUMN_NAME_SOURCE_TYPE);
+            int sourceType = metaData.optInt(COLUMN_NAME_SOURCE_TYPE);
             int username = -1;
             String userName = null;
             try{
-                username =  rs.getInt(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
+                username =  metaData.getInt(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
             }
             catch (Exception e){
 
-                userName = rs.getString(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
+                userName = metaData.optString(COLUMN_NAME_USERNAME_IN_TABLE_USERS);
             }
 
             pv.setPointValue( rs.wasNull()
@@ -282,24 +288,34 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
     private class LongPairRowMapper implements RowMapper<LongPair> {
         public LongPair mapRow(ResultSet rs, int index) throws SQLException {
-            long myLongValue = rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
+            JSONObject metaData = null;
+            try {
+                metaData = new JSONObject(rs.getString(COLUMN_NAME_META_DATA));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            long myLongValue = metaData.optLong(COLUMN_NAME_MIN_TIME_STAMP);
             if (rs.wasNull())
                 return null;
-            return new LongPair(myLongValue, rs.getLong(COLUMN_NAME_MAX_TIME_STAMP));
+            return new LongPair(myLongValue, metaData.optLong(COLUMN_NAME_MAX_TIME_STAMP));
         }
     }
 
     private class LongRowMapper implements RowMapper<Long> {
         public Long mapRow(ResultSet rs, int index) throws SQLException {
-            return rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
+            JSONObject metaData = null;
+            try {
+                metaData = new JSONObject(rs.getString(COLUMN_NAME_META_DATA));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return metaData.optLong(COLUMN_NAME_MIN_TIME_STAMP);
         }
     }
 
     //TODO rewrite for new types
-    MangoValue createMangoValue(ResultSet rs)
-            throws SQLException {
-
-        int dataType = rs.getInt(COLUMN_NAME_DATA_TYPE);
+    MangoValue createMangoValue(ResultSet rs, int dataType)
+            throws SQLException{
         MangoValue value = null;
         switch (dataType) {
             case (DataTypes.NUMERIC):
@@ -312,16 +328,12 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                 value = new MultistateValue(rs.getInt(COLUMN_NAME_POINT_VALUE));
                 break;
             case (DataTypes.ALPHANUMERIC):
-                String s = rs.getString(COLUMN_NAME_TEXT_POINT_VALUE_SHORT);
-                if (s == null)
-                    s = rs.getString(COLUMN_NAME_TEXT_POINT_VALUE_LONG);
-                value = new AlphanumericValue(s);
+                value = new AlphanumericValue(rs.getString(COLUMN_NAME_POINT_VALUE));
                 break;
             case (DataTypes.IMAGE): {
                 try {
-                    value = new ImageValue(Integer.parseInt(rs
-                            .getString(COLUMN_NAME_TEXT_POINT_VALUE_SHORT)),
-                            rs.getInt(COLUMN_NAME_TEXT_POINT_VALUE_LONG));
+                    value = new ImageValue(rs.getInt(COLUMN_NAME_POINT_VALUE),
+                            0);
                 } catch (NumberFormatException e) {
                     LOG.info(e.getMessage());
                 }
@@ -371,16 +383,11 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
         List<PointValue> res =
                 (List<PointValue>) jdbcTemplate.query(
                         "select "
-                                + "pv."+COLUMN_NAME_DATA_TYPE + ", "
                                 + "pv."+COLUMN_NAME_POINT_VALUE + ", "
                                 + "pv."+ COLUMN_NAME_TS + ", "
-                                + "pv."+COLUMN_NAME_TEXT_POINT_VALUE_SHORT + ", "
-                                + "pv."+COLUMN_NAME_TEXT_POINT_VALUE_LONG + ", "
-                                + "pv."+COLUMN_NAME_SOURCE_TYPE + ", "
-                                + "pv."+COLUMN_NAME_SOURCE_ID + ", "
-                                + "pv." +COLUMN_NAME_USERNAME_IN_TABLE_USERS
+                                + "pv." + COLUMN_NAME_META_DATA
                                 + " from "
-                                + "pointValues" + dpId + " pv where "+ filter + myLimit, new PointValueRowMapperWithUserName(dpId));
+                                + "pointValues" + dpId + " pv "+ filter + myLimit, new PointValueRowMapperWithUserName(dpId));
         return res;
     }
 
@@ -399,15 +406,10 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                 String query = POINT_VALUE_INSERT.replace(DATAPOINT_ID, String.valueOf(entity.getDataPointId()));
                 PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 new ArgumentPreparedStatementSetter( new Object[] {
-                        entity.getPointValue().getValue().getDataType(),
                         getValueBaseOnType(entity.getPointValue().getValue().getDataType(), entity.getPointValue()),
                         entity.getPointValue().getTime(),
                         entity.getPointValue().getTime()*1000,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
+                        prepareMetaData(entity.getPointValue().getValue().getDataType())
                 }).setValues(ps);
                 return ps;
             }
@@ -415,6 +417,39 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
         return new Object[] {keyHolder.getKey().longValue()};
 
+    }
+
+    private String prepareMetaData(int dataType) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode metaData = mapper.createObjectNode();
+        String nullValue = null;
+        metaData.put(COLUMN_NAME_DATA_TYPE, dataType)
+                .put(COLUMN_NAME_SOURCE_ID, nullValue)
+                .put(COLUMN_NAME_USERNAME_IN_TABLE_USERS, nullValue)
+                .put(COLUMN_NAME_SOURCE_TYPE, nullValue);
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(metaData);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    private String prepareMetaDataAnnotations(PointValueAdnnotation pointValueAdnnotation, int dataType) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode metaData = mapper.createObjectNode();
+        metaData.put(COLUMN_NAME_DATA_TYPE, dataType)
+                .put(COLUMN_NAME_SOURCE_ID, pointValueAdnnotation.getSourceId())
+                .put(COLUMN_NAME_USERNAME_IN_TABLE_USERS, pointValueAdnnotation.getChangeOwner())
+                .put(COLUMN_NAME_SOURCE_TYPE, pointValueAdnnotation.getSourceType());
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(metaData);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 
 
@@ -426,28 +461,22 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     }
 
     @Override
-    public void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation) {
+    public void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation, int dataType) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("pointId:"+pointValue.getDataPointId()+" dataType:"+pointValue.getPointValue()
                     .getValue().getDataType()+" time:"+pointValue.getPointValue().getTime());
         }
 
         PointValueTime pointValueTime = pointValue.getPointValue();
-        MangoValue mangoValue = pointValueTime.getValue();
 
         jdbcTemplate.update(connection -> {
             String query = POINT_VALUE_INSERT.replace(DATAPOINT_ID, String.valueOf(pointValue.getDataPointId()));
             PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             new ArgumentPreparedStatementSetter( new Object[] {
-                    mangoValue.getDataType(),
-                    getValueBaseOnType(mangoValue.getDataType(), pointValueTime),
+                    getValueBaseOnType(dataType, pointValueTime),
                     pointValueTime.getTime(),
                     pointValueTime.getTime()*1000,
-                    pointValueAdnnotation.getTextPointValueShort(),
-                    pointValueAdnnotation.getTextPointValueLong(),
-                    pointValueAdnnotation.getSourceType(),
-                    pointValueAdnnotation.getSourceId(),
-                    pointValueAdnnotation.getChangeOwner()
+                    prepareMetaDataAnnotations(pointValueAdnnotation, dataType)
             }).setValues(ps);
             return ps;
         });
@@ -467,15 +496,10 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                 String query = POINT_VALUE_INSERT.replace(DATAPOINT_ID, String.valueOf(pointId));
                 PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 new ArgumentPreparedStatementSetter( new Object[] {
-                        dataType,
                         dvalue,
                         time,
                         time*1000,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
+                        prepareMetaData(dataType)
                 }).setValues(ps);
                 return ps;
             }
@@ -509,7 +533,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
             if(value.get(0).length == 4) {
                 List<Object[]> paramsExt = new ArrayList<>();
                 for (Object[] args : value) {
-                    paramsExt.add(new Object[]{args[1], args[2], args[3], (long)args[3]*1000, null, null, null, null, null});
+                    paramsExt.add(new Object[]{args[2], args[3], (long)args[3]*1000, prepareMetaData((int)args[1])});
                 }
                 jdbcTemplate.batchUpdate(query, paramsExt);
             } else
@@ -598,14 +622,14 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
      * @param value
      * @return
      */
-    private double getValueBaseOnType(int dataType, PointValueTime value) {
-        Double avalue = null;
-        if ( (dataType==DataTypes.ALPHANUMERIC) || (dataType==DataTypes.IMAGE) || value == null) {
-            avalue = 0.0;
+    private String getValueBaseOnType(int dataType, PointValueTime value) {
+        if (dataType==DataTypes.ALPHANUMERIC || dataType==DataTypes.IMAGE)
+            return value.getStringValue();
+        if ( value == null) {
+            return String.valueOf(0.0);
         } else {
-            avalue = value.getDoubleValue();
+           return String.valueOf(value.getDoubleValue());
         }
-        return avalue;
     }
 
     // Apply database specific bounds on double values.

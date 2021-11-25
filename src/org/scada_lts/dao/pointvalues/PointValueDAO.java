@@ -504,7 +504,7 @@ public class PointValueDAO implements IPointValueDAO {
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation) {
+	public void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation, int dataType) {
 
 		PointValueTime pointValueTime = pointValue.getPointValue();
 		MangoValue mangoValue = pointValueTime.getValue();
@@ -513,7 +513,7 @@ public class PointValueDAO implements IPointValueDAO {
 			LOG.trace("pointId:"+pointValue.getDataPointId()+" dataType:"+mangoValue.getDataType()+" dvalue:"+mangoValue.getObjectValue());
 		}
 
-		create((int)pointValue.getDataPointId(), mangoValue.getDataType(), mangoValue.getDoubleValue(), pointValueTime.getTime());
+		create((int)pointValue.getDataPointId(), dataType, mangoValue.getDoubleValue(), pointValueTime.getTime());
 		IPointValueAdnnotationsDAO.newCommandRepository().create(pointValueAdnnotation);
 	}
 

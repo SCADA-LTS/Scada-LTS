@@ -12,7 +12,7 @@ public interface IPointValueCommand {
     long deleteAllPointData();
     long deletePointValuesWithMismatchedType(int dataPointId, int dataType);
     void executeBatchUpdateInsert(List<Object[]> params);
-    void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation);
+    void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation, int dataType);
     Object[] create(int pointId, int dataType, double dvalue, long time);
     Object[] create(PointValue entity);
     Object[] createNoTransaction(int pointId, int dataType, double dvalue, long time);

@@ -497,7 +497,7 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 	}
 
 	@Override
-	public void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation) {
+	public void create(PointValue pointValue, PointValueAdnnotation pointValueAdnnotation, int dataType) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("pointId:"+pointValue.getDataPointId()+" dataType:"+pointValue.getPointValue()
 					.getValue().getDataType()+" time:"+pointValue.getPointValue().getTime());

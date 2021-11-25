@@ -17,17 +17,16 @@ public class V2_7_1_0__CreateViewPointValuesDenormalized extends BaseJavaMigrati
 
 
     public void createViewForPointValues(JdbcTemplate jdbcTmp) {
-        String createViewSQL = "CREATE OR REPLACE VIEW pointValuesDenormalized AS select \n" +
-                "pv.dataPointId, pv.dataType, \n" +
-                "pv.pointValue, pv.ts, " +
-                "concat(date(from_unixtime(pv.ts * 0.001)), \"T\", time(from_unixtime(pv.ts * 0.001)), \"Z\") as timestamp, " +
-                "ifnull(pva.textPointValueShort, '') as textPointValueShort, \n" +
-                "ifnull(pva.textPointValueLong, '') as textPointValueLong, \n" +
-                "ifnull(pva.sourceType, '') as sourceType, ifnull(pva.sourceId, '') as sourceId,\n" +
-                "ifnull(us.username, '') as username\n" +
-                "from pointValues pv\n" +
-                "left join pointValueAnnotations pva on pv.id = pva.pointValueId\n" +
-                "left join users us on pva.sourceId = us.id";
+
+        String createViewSQL = "CREATE OR REPLACE VIEW pointValuesDenormalized AS select pv.dataPointId, pvm.pointValue, \n" +
+                "concat(date(from_unixtime(pv.ts * 0.001)), \"T\", time(from_unixtime(pv.ts * 0.001)), \"Z\") as timestamp, pv.ts, \n" +
+                "(SELECT JSON_OBJECT('dataType', pv.dataType, 'sourceType', pva.sourceType, \n" +
+                " 'sourceId', pva.sourceId, 'username', us.username)) as metaData from \n" +
+                " (select id, CONCAT_WS('', IF(dataType in (4,5), null, pointValue), pva.textPointValueShort, pva.textPointValueLong) AS pointValue \n" +
+                "from pointValues pv left join pointValueAnnotations pva on pv.id = pva.pointValueId) as pvm, pointValues pv \n" +
+                "left join pointValueAnnotations pva on pv.id = pva.pointValueId \n" +
+                "left join users us on pva.sourceId = us.id \n" +
+                "where pvm.id = pv.id;";
 
         jdbcTmp.execute(createViewSQL);
     }

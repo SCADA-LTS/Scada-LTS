@@ -349,7 +349,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             setUsername(source, pointValueAdnnotation);
         }
 
-        pointValueQueryRepository.create(pointValue, pointValueAdnnotation);
+        pointValueQueryRepository.create(pointValue, pointValueAdnnotation, dataType);
     }
 
     private long createPointValue(int pointId, int dataType, double dvalue, long time, String svalue, SetPointSource source) {
@@ -409,7 +409,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return lst;
     }
 
-    private boolean getFilterFromQueryDb() {
+    private boolean isReadingFromQueryEnabled() {
         boolean readEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.read.enabled", true);
         return dbQueryEnabled && readEnabled;
     }
@@ -417,7 +417,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public List<PointValueTime> getPointValues(int dataPointId, long since) {
         List<PointValue> lst =  getPointValueRepository().filtered(
-                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP
                         .replace("$from", String.valueOf(since*1000)):
                         PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
                 new Object[]{dataPointId, since}, GenericDaoCR.NO_LIMIT);
@@ -427,7 +427,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     public List<PointValueTime> getPointValuesBetween(int dataPointId,
                                                       long from, long to) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                getFilterFromQueryDb() ?
+                isReadingFromQueryEnabled() ?
                         PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO
                                 .replace("$from", String.valueOf(from*1000))
                                 .replace("$to", String.valueOf(to*1000)) :
@@ -438,7 +438,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public List<PointValueTime> getLatestPointValues(int dataPointId, int limit) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
                         PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId}, limit);
         return getLstPointValueTime(lst);
@@ -447,7 +447,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     public List<PointValueTime> getLatestPointValues(int dataPointId,
                                                      int limit, long before) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
                         PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, before}, limit);
         return getLstPointValueTime(lst);
@@ -468,7 +468,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID
                         .replace("$to", String.valueOf(time*1000)):
                         PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, time}, 1);
@@ -481,7 +481,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public PointValueTime getPointValueAt(int dataPointId, long time) {
         List<PointValue> lst = getPointValueRepository().filtered(
-                getFilterFromQueryDb() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID
                         .replace("$time", String.valueOf(time*1000)):
                         PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
                     new Object[]{dataPointId, time}, 1);
