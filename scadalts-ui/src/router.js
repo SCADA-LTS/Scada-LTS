@@ -64,6 +64,7 @@ const routing = new Router({
 				},
 				{
 					path: 'scada',
+					name: 'scada',
 					component: EventList,
 				},
 			],

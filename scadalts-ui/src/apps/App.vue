@@ -80,7 +80,7 @@
 			</v-list-item>
 			<v-list-item max-width="50">
 				<v-list-item-content>
-					<a @click="goToEvents">
+					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
 						<img v-if="unsilencedHighestAlarmLevel != -1" :src="alarmFlags[unsilencedHighestAlarmLevel].image"/>
 						</a>	
 				</v-list-item-content>		
@@ -186,15 +186,17 @@ export default {
 		},
 	},
 
-	mounted() {
+	async mounted() {
 		this.$store.dispatch('getLocaleInfo');
+		this.unsilencedHighestAlarmLevel = await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 	},
 
 	methods: {
 		goToEvents() {
-			if (this.$route.name==='alarms') reload();
-			else this.$router.push({ name: 'alarms' });
-			this.unsilencedHighestAlarmLevel = -1
+			if (this.$route.name !== 'scada') {
+				this.$router.push({ name: 'scada' });
+			}
+			
 		},
 		logout() {
 			this.$store.dispatch('logoutUser');

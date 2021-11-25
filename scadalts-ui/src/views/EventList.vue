@@ -397,7 +397,7 @@
 </template>
 <style scoped>
 
-#eventList button.v-icon {
+.v-icon {
 	border: 0!important;
 }
 
