@@ -470,7 +470,7 @@ public class DataPointMigrationPermissionsCommandTest {
 
         List<DataPointAccess> dataPointAccessesFromProfile = profilePermissionsService.getPermissions(usersProfileVO);
 
-        List<DataPointAccess> result = mergeDataPointAccessesList(dataPointAccesses, dataPointAccessesFromProfile);
+        List<DataPointAccess> result = new ArrayList<>(mergeDataPointAccessesList(dataPointAccesses, dataPointAccessesFromProfile));
         result.sort(Comparator.comparingInt(DataPointAccess::getDataPointId));
 
         assertEquals(expected, result);
