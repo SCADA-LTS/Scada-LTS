@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import com.serotonin.mango.web.dwr.util.AnonymousUserUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -19,7 +20,6 @@ import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataSource.meta.AlphanumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.BinaryPointWrapper;
@@ -29,6 +29,7 @@ import com.serotonin.mango.rt.dataSource.meta.NumericPointWrapper;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.rt.dataSource.meta.WrapperContext;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
 
 public class ContextualizedScriptRT extends ScriptRT {
 	private static final String SCRIPT_PREFIX = "function __scriptExecutor__() {";
@@ -111,7 +112,11 @@ public class ContextualizedScriptRT extends ScriptRT {
 
 			List<IntValuePair> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
-			User user = new UserDao().getUser(vo.getUserId());
+			User user = Common.getUser();
+			if(user == null) {
+				user = AnonymousUserUtils.getUser(new UserService())
+						.orElseThrow(() -> new ScriptException("User is not logged in!"));
+			}
 			for (IntValuePair object : objectsContext) {
 				ScriptContextObject o = ScriptContextObject.Type.valueOf(object.getKey()).createScriptContextObject();
 				o.setUser(user);
