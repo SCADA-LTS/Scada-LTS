@@ -68,19 +68,14 @@ public final class PermissionsUtils {
                 .collect(Collectors.toSet());
     }
 
-    public static Set<DataPointAccess> mergeDataPointAccessesList(List<DataPointAccess> accesses1,
-                                                                  List<DataPointAccess> accesses2) {
-        return mergeToSet(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId, a -> true);
-    }
-
-    public static Set<DataPointAccess> mergeDataPointAccessesList(List<DataPointAccess> accesses1,
-                                                                  List<DataPointAccess> accesses2,
-                                                                  Predicate<DataPointAccess> filter) {
+    public static Set<DataPointAccess> mergeDataPointAccesses(Collection<DataPointAccess> accesses1,
+                                                              Collection<DataPointAccess> accesses2,
+                                                              Predicate<DataPointAccess> filter) {
         return mergeToSet(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId, filter);
     }
 
-    public static Set<DataPointAccess> mergeDataPointAccesses(Set<DataPointAccess> accesses1,
-                                                              Set<DataPointAccess> accesses2) {
+    public static Set<DataPointAccess> mergeDataPointAccesses(Collection<DataPointAccess> accesses1,
+                                                              Collection<DataPointAccess> accesses2) {
         return mergeToSet(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId, a -> true);
     }
 
@@ -141,7 +136,11 @@ public final class PermissionsUtils {
     private static <T> Set<T> mergeToSet(Collection<T> accesses1, Collection<T> accesses2,
                                          ToIntFunction<T> getAccess, ToIntFunction<T> getId,
                                          Predicate<T> filter) {
-        return new HashSet<>(mergeToCollection(accesses1, accesses2, getAccess, getId, filter));
+        Collection<T> collection = mergeToCollection(accesses1, accesses2, getAccess, getId, filter);
+        if(collection instanceof HashSet) {
+            return (Set<T>)collection;
+        }
+        return new HashSet<>(collection);
     }
 
     private static <T> Collection<T> mergeToCollection(Collection<T> accesses1, Collection<T> accesses2,
@@ -150,8 +149,8 @@ public final class PermissionsUtils {
         if(!accesses1.isEmpty() && !accesses2.isEmpty())
             return reduceStream(Stream.concat(accesses1.stream(), accesses2.stream()), getAccess, getId, filter);
         if(!accesses1.isEmpty())
-            return accesses1;
-        return accesses2;
+            return reduceStream(accesses1.stream(), getAccess, getId, filter);
+        return reduceStream(accesses2.stream(), getAccess, getId, filter);
     }
 
     private static <T> Collection<T> reduceStream(Stream<T> accesses,

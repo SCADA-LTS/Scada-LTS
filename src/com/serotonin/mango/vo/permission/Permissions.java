@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.Set;
 
-import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccessesList;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccesses;
 
 /**
  * @author Matthew Lohbihler
@@ -179,7 +179,7 @@ public class Permissions {
     }
 
     private static DataPointAccess getDataPointAccess(User user, int dataPointId) {
-        Set<DataPointAccess> merged = mergeDataPointAccessesList(user.getDataPointPermissions(),
+        Set<DataPointAccess> merged = mergeDataPointAccesses(user.getDataPointPermissions(),
                 user.getDataPointProfilePermissions(), a -> a.getDataPointId() == dataPointId);
         if(merged.isEmpty())
             return null;
