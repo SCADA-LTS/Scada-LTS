@@ -116,6 +116,14 @@ export const graphicalViewModule = {
             return new Promise(resolve => {
                 resolve(imageSetFan);
             });
+        },
+
+        evaluateScriptComponent({dispatch}, payload) {
+            return new Promise((resolve) => {
+                console.log("Processing script...");
+                console.log(payload);
+                resolve("Finished" + new Date().getTime());
+            });
         }
     },
 

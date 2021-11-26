@@ -1,6 +1,7 @@
 <template>
 	<BaseImageComponent
 		:component="component"
+        :dataTypes="[3]"
 		@update="$emit('update')"
 		@value-update="onValueUpdate"
 		@status-update="onStatusUpdate"
@@ -12,26 +13,32 @@
 			</div>
 		</template>
 		<template v-slot:renderer>
-			<v-row :key="rendering">
+            
+			<v-row>
+                <v-col cols="6">
+                    <v-text-field
+                        label="Minimum"
+                        v-model="component.min"
+                    ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                    <v-text-field
+                        label="Maximum"
+                        v-model="component.max"
+                    ></v-text-field>
+                </v-col>
 				<v-col cols="4" v-for="(img,i) in imageArray" :key="i" @click="onImageSelected(i)" class="gv-image-container">
-					<span class="gv-image-description" v-if="component.oneImageIndex === i">One Image</span>
-					<span class="gv-image-description" v-if="component.zeroImageIndex === i">Zero Image</span>
 					<img :src="img" class="gv-image-thumbnail" alt="Image"/>
 				</v-col>
 			</v-row>
-
-			<ImageDialog ref="imageDialog" @result="onImageIndexUpdate">
-			</ImageDialog>
 		</template>
 	</BaseImageComponent>
 </template>
 <script>
-import ImageDialog from './dialog.vue'
 import BaseImageComponent from '../../BaseImageComponent.vue';
 export default {
 	components: {
 		BaseImageComponent,
-		ImageDialog,
 	},
 
 	props: {
@@ -46,20 +53,15 @@ export default {
 			content: '(n/a)',
 			imageSet: null,
 			activeGraphic: null,
-			imageArray: [],
-			rendering: 0,
+            imageArray: [],
 		};
 	},
 
-	methods: {
-		onValueUpdate(value) {
+    methods: {
+		onValueUpdate(val) {
 			console.log('onValueUpdate');
-			this.content = value;
-			if (value == 'true') {
-				this.activeGraphic = this.imageSet.imageFilenames[this.component.oneImageIndex];
-			} else {
-				this.activeGraphic = this.imageSet.imageFilenames[this.component.zeroImageIndex];
-			}
+            let value = Number(val);
+            this.setActiveImage(value);
 			console.log('onValueUpdate::BaseImage', this.activeGraphic);
 		},
 		onStatusUpdate(value) {
@@ -74,21 +76,12 @@ export default {
 			this.imageArray = value.imageFilenames;
 		},
 
-		onImageSelected(image) {
-			this.$refs.imageDialog.openDialog(image);
-		},
-
-		onImageIndexUpdate(result) {
-			if(result.index === 0) {
-				this.component.zeroImageIndex = result.image;
-			}
-			if(result.index === 1) {
-				this.component.oneImageIndex = result.image;
-			}
-			this.rendering++;
-			console.log('onImageIndexUpdate', this.component);
-		}
+        setActiveImage(value) {
+            let index = Math.floor((value - this.component.min) / (this.component.max - this.component.min) * this.imageArray.length);
+            console.log('setActiveImage', index);
+            this.activeGraphic = this.imageSet.imageFilenames[index];
+        }
 	},
 };
 </script>
-
+<style></style>

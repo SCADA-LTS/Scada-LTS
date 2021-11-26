@@ -63,10 +63,18 @@ export const imageSetFan = {
     id: 1,
     name: "Scada-LTS-Fan",
     imageFilenames: [
-        "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_disable.png",
-        "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_off.png",
-        "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_on.png"
+        "http://localhost:8080/ScadaBR/graphics/CarBattery/black.png",
+        "http://localhost:8080/ScadaBR/graphics/CarBattery/blue.png",
+        "http://localhost:8080/ScadaBR/graphics/CarBattery/green.png",
+        "http://localhost:8080/ScadaBR/graphics/CarBattery/purple.png",
+        "http://localhost:8080/ScadaBR/graphics/CarBattery/red.png",
+        "http://localhost:8080/ScadaBR/graphics/CarBattery/yellow.png",
     ],
+    // imageFilenames: [
+    //     "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_disable.png",
+    //     "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_off.png",
+    //     "http://localhost:8080/ScadaBR/graphics/Scada-LTS-Fan/slts_fan_on.png"
+    // ],
     width: 56,
     height: 56,
 }

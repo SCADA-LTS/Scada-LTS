@@ -12,6 +12,12 @@ import ViewComponentImageChart from './VCImageChart';
 import ViewComponentImageChartJs from './VCImageChart/model';
 import ViewComponentMultistateGraphic from './VCMultistateGraphic';
 import ViewComponentMultistateGraphicJs from './VCMultistateGraphic/model';
+import ViewComponentLink from './VCLink';
+import ViewComponentLinkJs from './VCLink/model';
+import ViewComponentScript from './VCScript';
+import ViewComponentScriptJs from './VCScript/model';
+import ViewComponentAnalogGraphic from './VCAnalogGraphic'
+import ViewComponentAnalogGraphicJs from './VCAnalogGraphic/model'
 
 
 export const viewComponentDefinitions = {
@@ -20,8 +26,11 @@ export const viewComponentDefinitions = {
         'HTML': ViewComponentHtml,
         'BINARY_GRAPHIC': ViewComponentBinaryGraphic,
         'MULTISTATE_GRAPHIC': ViewComponentMultistateGraphic,
+        'ANALOG_GRAPHIC': ViewComponentAnalogGraphic,
         'ALARMLIST': ViewComponentAlarmList,
         'BUTTON': ViewComponentButton,
+        'LINK': ViewComponentLink,
+        'SCRIPT': ViewComponentScript,
         'IMAGE_CHART': ViewComponentImageChart,
     },
 
@@ -35,14 +44,20 @@ export const viewComponentDefinitions = {
             }, {
                 title: 'Binary Graphic',
                 datapointTypes: 'Binary',
-                description: '',
+                description: 'Render graphic depengind on the zero and one state of binary data point.',
                 definition: ViewComponentBinaryGraphicJs,
             }, {
                 title: 'Multistate Graphic',
                 datapointTypes: 'Multistate',
-                description: '',
+                description: 'Assign specific graphic to corresponging DataPoint state value',
                 definition: ViewComponentMultistateGraphicJs,
             }, {
+                title: 'Analog Graphic',
+                datapointTypes: 'Numeric',
+                description: 'Render Image Set based on the data point value range',
+                definition: ViewComponentAnalogGraphicJs,
+            },
+            {
                 title: 'Html Component',
                 datapointTypes: '',
                 description: 'Create a custom HTML element',
@@ -58,6 +73,17 @@ export const viewComponentDefinitions = {
                 description: 'Create a button',
                 definition: ViewComponentButtonJs
             }, {
+                title: 'Link',
+                datapointTypes: '',
+                description: 'Create a link',
+                definition: ViewComponentLinkJs
+            }, {
+                title: 'Server side Script',
+                datapointTypes: '',
+                description: 'Create a script',
+                definition: ViewComponentScriptJs
+            },
+            {
                 title: 'Image Chart',
                 datapointTypes: '',
                 description: 'Display a chart',

@@ -13,17 +13,30 @@
 			</div>
 		</template>
 		<template v-slot:renderer>
-			<v-row>
-				<v-col> Hi! slot </v-col>
+			<v-row :key="rendering">
+				<v-col cols="4" v-for="(img,i) in imageArray" :key="i" @click="onImageSelected(i)" class="gv-image-container">
+					<span class="gv-image-description gv-image-description--default" v-if="component.defaultImage === i">Default</span>
+					<span class="gv-image-description">{{getState(i)}}</span>
+					<img :src="img" class="gv-image-thumbnail" alt="Image"/>
+				</v-col>
 			</v-row>
+
+			<ImageDialog 
+				ref="imageDialog" 
+				@result="onImageIndexUpdate"
+				@reset="onImageIndexReset"
+				@default="onImageIndexDefault"
+			></ImageDialog>
 		</template>
 	</BaseImageComponent>
 </template>
 <script>
+import ImageDialog from './dialog.vue'
 import BaseImageComponent from '../../BaseImageComponent.vue';
 export default {
 	components: {
 		BaseImageComponent,
+		ImageDialog
 	},
 
 	props: {
@@ -35,35 +48,93 @@ export default {
 
 	data() {
 		return {
-			content: '(n/a)',
 			imageSet: null,
 			activeGraphic: null,
+			imageArray: [],
+			rendering: 0,
 		};
 	},
 
     methods: {
-		onValueUpdate(value) {
-			console.log('onValueUpdate');
-			this.content = value;
-			if(value == 'true') {
-				this.activeGraphic = this.imageSet.imageFilenames[this.component.oneImageIndex];
+		onValueUpdate(val) {
+			let value = Number(val);
+			const state = this.component.stateImageMappings.find(s => s.state === value);
+			if(!!state) {
+				this.activeGraphic = this.imageSet.imageFilenames[state.imageIndex];
+				console.log('onValueUpdate::BaseImage', this.activeGraphic);
 			} else {
-				this.activeGraphic = this.imageSet.imageFilenames[this.component.zeroImageIndex];
+				this.activeGraphic = this.imageSet.imageFilenames[this.component.defaultImage];
 			}
-			console.log('onValueUpdate::BaseImage', this.activeGraphic);
 		},
 		onStatusUpdate(value) {
 			if (value == 'false') {
-				this.content = 'disabled';
-			} else {
-				this.content = 'enabled';
-			}
+				this.activeGraphic = this.imageSet.imageFilenames[this.component.defaultImage];
+			} 
 		},
 		onImageUpdate(value) {
 			this.imageSet = value;
-			console.log('onImageUpdate', this.imageSet);
+			this.imageArray = value.imageFilenames;
+		},
+
+		onImageSelected(image) {
+			this.$refs.imageDialog.openDialog(image);
+		},
+
+		onImageIndexUpdate(result) {
+			this.setState(result.image, result.state);
+			if(result.default) {
+				this.component.defaultImage = result.image;
+			}
+			this.rendering++;
+		},
+
+		onImageIndexDefault(index) {
+			this.component.defaultImage = index;
+			this.rendering++;
+		},
+
+		onImageIndexReset(index) {
+			if(this.component.defaultImage === index) {
+				this.component.defaultImage = null;
+			}
+			const arr = this.component.stateImageMappings;
+			if(!!arr && arr.length > 0) {
+				this.component.stateImageMappings = arr.filter(s => s.imageIndex !== index );
+			}
+			this.rendering++;
+		},
+
+		getState(index) {
+			const arr = this.component.stateImageMappings;
+			if(!!arr && arr.length > 0) {
+				for(let i = 0; i < arr.length; i++) {
+					if(arr[i].imageIndex === index) {
+						return `State: ${arr[i].state}`;
+					}
+				}
+			}
+			return '';
+			
+		},
+
+		setState(index, state) {
+			const arr = this.component.stateImageMappings || [];
+			const arrIndex = arr.findIndex(s => s.state === state);
+			if(arrIndex > -1) {
+				arr[arrIndex].imageIndex = index;
+			} else {
+				arr.push({
+					state: state,
+					imageIndex: index,
+				});
+			}
 		}
+
 	},
 };
 </script>
-<style></style>
+<style>
+.gv-image-description--default{
+	top: 0;
+	bottom: unset;
+}</style>

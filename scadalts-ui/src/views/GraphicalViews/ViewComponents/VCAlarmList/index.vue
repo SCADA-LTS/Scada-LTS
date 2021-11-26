@@ -1,6 +1,34 @@
 <template>
-	<BaseViewComponent :component="component" @update="$emit('update')">
-		<div>Alarm List</div>
+	<BaseViewComponent :component="component" @update="update">
+    <template v-slot:default>
+        <v-simple-table dense :style="{width: component.width + 'px'}">
+            <template v-slot:default>
+                <thead>
+                    <tr>
+                        <th>Alarm Level</th>
+                        <th>Time</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="al in alarmList" :key="al.id">
+                        <td>{{al.alarmLevel}}</td>
+                        <td>{{al.activeTs}}</td>
+                        <td>{{al.message}}</td>
+                    </tr>
+                </tbody>
+            </template>
+        </v-simple-table>
+    </template>
+    <template v-slot:layout>
+        <v-col cols="12">
+            <v-text-field
+                label="Width"
+                v-model="component.width"
+            ></v-text-field>
+        </v-col>
+    </template>
+		
         <template v-slot:renderer>
             <v-row>
                 <v-col cols="12">
@@ -34,8 +62,14 @@ export default {
 		},
 	},
 
+    mounted() {
+        this.fetchAlarms();
+    },
+
     data() {
         return {
+            alarmList: [],
+            alarmUpdateInterval: null,
             alarmLevels: [
                 {
                     value: 0,
@@ -56,6 +90,35 @@ export default {
             ]
         }
     },
+
+    destroyed() {
+        clearInterval(this.alarmUpdateInterval);
+    },
+
+    methods: {
+        update() {
+            this.fetchAlarms();
+            this.$emit('update');
+
+        },
+        async fetchAlarms() {
+            try {
+                const response = await this.$store.dispatch('getAllEvents', {
+                    minAlarmLevel: this.component.minAlarmLevel,
+                    limit: this.component.maxListSize,
+                });
+                this.alarmList = response;
+                if(!this.alarmUpdateInterval) {
+                    this.alarmUpdateInterval = setInterval(() => {
+                        this.fetchAlarms();
+                    }, 5000);
+                }
+            } catch (e) {
+                clearInterval(this.alarmUpdateInterval);
+                console.error(e)
+            }
+        }
+    }
 };
 </script>
 <style></style>

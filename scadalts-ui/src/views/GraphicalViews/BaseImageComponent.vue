@@ -11,10 +11,10 @@
 		</template>
 		<template v-slot:renderer>
 			<v-row>
-				<v-col cols="12">
+				<v-col cols="6">
 					<v-switch label="Display text"></v-switch>
 				</v-col>
-				<v-col cols="12">
+				<v-col cols="6">
 					<v-select
 						label="Image set"
 						:items="imageSet"
@@ -51,6 +51,12 @@ export default {
 		},
 	},
 
+	data() {
+		return {
+			imageArray:[],
+		}
+	},
+
 	mounted() {
 		this.getImageSetDeatils();
 	},
@@ -81,4 +87,26 @@ export default {
 	},
 };
 </script>
-<style></style>
+<style>
+.gv-image-container {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+	position: relative;
+}
+.gv-image-description {
+	position: absolute;
+    bottom: 15px;
+    left: 9%;
+    width: 80%;
+    text-align: center;
+    background: #000000a6;
+    color: white;
+    border-radius: 6px;
+    box-shadow: 1px 2px 2px #0000002e;
+}
+.gv-image-thumbnail {
+	height: 60px;
+	width: auto;
+	object-fit: scale-down;
+}</style>
