@@ -4,8 +4,9 @@
 			class="canvas"
 			:key="changes"
 			v-bind:style="{
-				width: viewPage.resolution.split('x')[0].substring(1) + 'px',
-				height: viewPage.resolution.split('x')[1] + 'px',
+				width: viewSize.width + 'px',
+				height: viewSize.height + 'px',
+				backgroundImage: 'url('+ viewBackground + ')',
 			}"
 		>
 			<component
@@ -47,6 +48,13 @@ export default {
 				return this.$store.getters.viewComponentsGetter;
 			}
 		},
+		viewSize() {
+			return this.$store.state.graphicalViewModule.resolution;
+		},
+		viewBackground() {
+			console.log(this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename);
+			return this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename;
+		}
 	},
 
 	methods: {
@@ -74,6 +82,17 @@ export default {
 		},
 	},
 };
+
+function getFileResolution(src) {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.onload = () => {
+			resolve(`${this.width}x${this.height}`);
+		}
+		img.onerror = reject;
+		img.src = src;
+	});
+}
 </script>
 <style scoped>
 .canvas {

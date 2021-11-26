@@ -23,19 +23,19 @@ const viewComponentsMock = [
     },
     {
         index: 2,
-        type:"BINARY_GRAPHIC",
-        dataPointXid:"TQ_VDP_01_01",
-        imageSet:"Scada-LTS-Fan",
-        bkgdColorOverride:"",
-        displayControls:true,
-        displayText:true,
-        nameOverride:"",
-        oneImageIndex:2,
-        settableOverride:true,
-        x:63,
-        y:29,
-        z:2,
-        zeroImageIndex:1
+        type: "BINARY_GRAPHIC",
+        dataPointXid: "TQ_VDP_01_01",
+        imageSet: "Scada-LTS-Fan",
+        bkgdColorOverride: "",
+        displayControls: true,
+        displayText: true,
+        nameOverride: "",
+        oneImageIndex: 2,
+        settableOverride: true,
+        x: 63,
+        y: 29,
+        z: 2,
+        zeroImageIndex: 1
     }
 ]
 
@@ -78,3 +78,19 @@ export const imageSetFan = {
     width: 56,
     height: 56,
 }
+
+export const backgroundImages = [
+    {
+        name: "Firefighert",
+        imgUrl: "http://localhost:8080/ScadaBR/uploads/1.jpg",
+        width: 1920,
+        height: 1229
+    },
+    {
+        name: "Loft",
+        imgUrl: "http://localhost:8080/ScadaBR/uploads/Loft.gif",
+        width: 927,
+        height: 399,
+    }
+
+]

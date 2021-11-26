@@ -51,6 +51,7 @@
 						label="Canvas size"
 						v-model="activePage.resolution"
 						:items="canvasResolutions"
+						@change="changeCanvasResolution"
 					></v-select>
 				</v-col>
 				<v-col class="flex-jc-space-around">
@@ -75,6 +76,8 @@
 		</v-container>
 		<BackgroundSettingsDialog
 			ref="backgroundDialog"
+			@image-update="onBackgroundImageChanged"
+			@reset="onBackgroundReset"
 		></BackgroundSettingsDialog>
 		<ComponentCreationDialog
 			ref="creationDialog"	
@@ -205,6 +208,18 @@ export default {
 		showBackgroundDialog() {
 			this.$refs.backgroundDialog.openDialog();
 		},
+
+		onBackgroundImageChanged(image) {
+			this.$store.commit('SET_GRAPHICAL_PAGE_BACKGROUND', image);
+		},
+
+		onBackgroundReset() {
+			this.$store.commit('RESET_GRAPHICAL_PAGE_BACKGROUND');
+		},
+
+		changeCanvasResolution() {
+			this.$store.commit('UPDATE_GRAPHICAL_PAGE_RESOLUTION')
+		}
 	},
 };
 </script>
