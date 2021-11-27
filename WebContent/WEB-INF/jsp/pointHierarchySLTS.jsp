@@ -465,12 +465,6 @@ header.onLoad = function() {
         //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
 };
 
- var headers = {
-		 login: 'admin',
-		 passcode: 'passcode',
-		 client_id: '564389'
- } ;
-
 var stompClient = null;
 
 var connectCallback = function(frame) {
@@ -668,7 +662,7 @@ var messages = {
     function onloadHandler() {
     	// connecting to server websocket endpoint...
        disconnect(stompClient);
-       stompClient = connect(myLocation + 'ws-scada/alarmLevel', headers, errorCallback, connectCallback);
+       stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
     }
 
     function onunloadHandler() {

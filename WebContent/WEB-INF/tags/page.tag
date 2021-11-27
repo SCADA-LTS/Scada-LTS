@@ -147,12 +147,6 @@
         alert("Connect error:" + error);
     }
 
-    var headers = {
-         login: 'admin',
-         passcode: 'passcode',
-         client_id: '564389'
-    } ;
-
     var stompClient = null;
 
     var connectCallback = function(frame) {
@@ -208,7 +202,7 @@
        var location = window.location;
        var appName = location.pathname.split("/")[1];
        var myLocation = location.origin + "/" + appName+ "/";
-       stompClient = connect(myLocation + 'ws-scada/alarmLevel', headers, errorCallback, connectCallback);
+       stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
     }
 
     function setAlarmLevelText(alarmLevel, textNode) {
