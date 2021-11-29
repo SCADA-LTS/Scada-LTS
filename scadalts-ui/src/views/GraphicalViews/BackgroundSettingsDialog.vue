@@ -20,10 +20,12 @@
                             accept="image/*"
                             label="File input" 
                             show-size
+							ref="file"
+							@change="handleFileInput"
                         ></v-file-input>
 					</v-col>
                     <v-col cols="4">
-                        <v-btn block>
+                        <v-btn block @click="uploadImage">
                             Upload
                         </v-btn>
                     </v-col>
@@ -48,6 +50,7 @@ export default {
 	data() {
 		return {
 			dialog: false,
+			file: null,
 			images: [],
 		};
 	},
@@ -73,6 +76,23 @@ export default {
 		selectImage(img) {
 			this.$emit('image-update', img);
 			this.closeDialog();
+		},
+
+		handleFileInput(file){
+    		this.file = file
+			console.log(this.file);
+  		},
+
+		uploadImage() {
+			let formData = new FormData();
+			formData.append('file', this.file);
+			this.$store.dispatch('uploadBackground', formData)
+				.then(() => {
+					this.fetchBackroundImages();
+				})
+				.catch(error => {
+					console.error(error);
+				});
 		},
 
 		reset() {

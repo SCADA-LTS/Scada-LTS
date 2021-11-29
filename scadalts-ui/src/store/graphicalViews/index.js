@@ -47,6 +47,10 @@ export const graphicalViewModule = {
         },
         REVERT_GRAPHICAL_PAGE(state) {
             state.graphicalPage = JSON.parse(JSON.stringify(state.graphicalPageBackup));
+            state.resolution = {
+                width: state.graphicalPage.resolution.split('x')[0].substring(1),
+                height: state.graphicalPage.resolution.split('x')[1]
+            }
         },
         SET_GRAPHICAL_PAGE_BACKGROUND(state, payload) {
             state.graphicalPage.backgroundFilename = payload.imgUrl;
@@ -156,6 +160,13 @@ export const graphicalViewModule = {
         getUploadedBackgrounds({ dispatch }) {
             return new Promise(resolve => {
                 resolve(backgroundImages);
+            });
+        },
+
+        uploadBackground({dispatch}, payload) {
+            return dispatch('requestPostFile', {
+                url: '/view/uploads',
+                data: payload
             });
         },
 

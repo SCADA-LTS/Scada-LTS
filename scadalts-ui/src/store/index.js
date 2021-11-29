@@ -190,6 +190,24 @@ export default new Vuex.Store({
 			});
 		},
 
+		requestPostFile({ state, dispatch }, {url, data, headers}) {
+			const fileHeaders = {
+				'Content-Type': 'multipart/form-data'
+			}
+			return new Promise((resolve, reject) => {
+				axios
+					.post(state.applicationUrl + url, data, {headers: headers || fileHeaders })
+					.then(async (r) => {
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+					})
+					.catch(async (error) => {
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
+					});
+			});
+		},
+
 		/**
 		 * HTTP Request GET method to fetch data from the REST API
 		 *
