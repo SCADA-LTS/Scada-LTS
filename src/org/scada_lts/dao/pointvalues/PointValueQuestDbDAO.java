@@ -28,6 +28,12 @@ import com.serotonin.mango.rt.dataImage.types.*;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.bean.LongPair;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -36,6 +42,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
+import org.scada_lts.mango.service.PointValueService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.*;
@@ -47,6 +54,18 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -151,7 +170,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     private static final String DROP_PARTITION = ""
             + "alter table "
             + TABLE_POINT_VALUES
-            + " drop partition";
+            + " drop partition ";
 
     private static final String WHERE_TIMESTAMP = " WHERE " + COLUMN_NAME_TIMESTAMP + " < ";
 
@@ -183,9 +202,15 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
             + "create table if not exists "
             + TABLE_POINT_VALUES + " "
             + "(timestamp TIMESTAMP, ts LONG, pointValue STRING, metaData STRING) \n"
-            + "timestamp(timestamp) partition by YEAR";
+            + "timestamp(timestamp) partition by MONTH";
 
     private static final String DATAPOINT_ID = "$dpId";
+
+    public static final String POINT_VALUE_ID_OF_LAST_VALUE = ""
+            + "select"
+            + " max(id) "
+            + "from pointValues "
+            + "where ";
 
     // @formatter:on
 
@@ -650,6 +675,19 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
         return jdbcTemplate.update(query + WHERE_TIMESTAMP + ts);
     }
 
+    public long deletePointValuesBeforeWithOutLast2(int dataPointId, long time) {
+        Long lastTimestamp = jdbcTemplate.queryForObject(POINT_VALUE_ID_OF_LAST_VALUE, new Object[] { dataPointId }, Long.class );
+        File exported = exportFromQuestDb(dataPointId, time, lastTimestamp);
+        dropPartition(time, dataPointId);
+        importToQuestDb(exported);
+        try {
+            Files.delete(exported.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public long deletePointValue(int dataPointId) {
         String query = DROP_PARTITION.replace(DATAPOINT_ID, String.valueOf(dataPointId));
         return jdbcTemplate.update(query);
@@ -701,6 +739,57 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     @Override
     public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
         return 0;
+    }
+
+    public long dropPartition(long time, int dataPointId) {
+        String query = DROP_PARTITION.replace(DATAPOINT_ID, String.valueOf(dataPointId));
+        String timestamp = TO_TIMEZONE.replace("$timestamp", String.valueOf(time));
+        return jdbcTemplate.update(query + timestamp);
+    }
+
+    public File exportFromQuestDb(int dataPointId, long timestamp, long lastTimestamp) {
+        String selectRemaining = "select * from pointValuesDenormalized where dataPointId != " + dataPointId + " and timestamp < " +
+                "dateadd('d', 1, to_str(to_timezone(" + timestamp + ",'CET'), 'yyyy-MM-dd'))";
+        String unionLastValue = " union\n" +
+                "select * from pointValuesDenormalized \n" +
+                "where dataPointId = " + dataPointId + " and timestamp = to_timezone(" + lastTimestamp + ", 'CET')";
+        String query = selectRemaining + unionLastValue;
+        String url = "http://localhost:9000/exp?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+
+        HttpResponse<Path> response = null;
+        try {
+            response = client.send(request,
+                    HttpResponse.BodyHandlers.ofFileDownload(Path.of(System.getProperty("java.io.tmpdir")),
+                            StandardOpenOption.CREATE, StandardOpenOption.WRITE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Path path = Objects.requireNonNull(response).body();
+        return path.toFile();
+
+    }
+
+    public static void importToQuestDb(File csv) {
+        try {
+            URL resource = PointValueService.class.getClassLoader().getResource("questdb-schema-data-retention.json");
+            File schema = Paths.get(resource.toURI()).toFile();
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValuesDenormalized&timestamp=timestamp&partitionBy=MONTH&overwrite=false");
+            MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", schema), new FilePart("data", csv)}, postMethod.getParams());
+            postMethod.setRequestEntity(entity);
+            MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+            HttpClient httpClient = new HttpClient(manager);
+            httpClient.executeMethod(postMethod);
+            String response = postMethod.getResponseBodyAsString();
+            LOG.info("QuestDb import finished: \r\n" + response);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
 }

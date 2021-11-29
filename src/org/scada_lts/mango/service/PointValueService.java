@@ -18,6 +18,16 @@
 package org.scada_lts.mango.service;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +46,12 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericDaoCR;
@@ -665,7 +681,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
                             boolean dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
                             if(dbQueryEnabled)
-                                IPointValueDenormalizedDAO.newQueryRespository().executeBatchUpdateInsert(params);
+                                IPointValueQuestDbDAO.newQueryRespository().executeBatchUpdateInsert(params);
                             break;
                         } catch (ConcurrencyFailureException e) {
                             if (retries <= 0) {
@@ -840,6 +856,49 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     public void createTableForDatapoint(int dpId) {
         if (dbQueryEnabled) {
             pointValueQueryRepository.createTableForDatapoint(dpId);
+        }
+    }
+
+    public void deletePointValuesBeforeForDatapoint(int dataPointId, long time) throws IOException, InterruptedException {
+        long questTime = time*1000;
+        File exported = exportFromQuestDb(dataPointId, questTime);
+        pointValueQueryRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
+        importToQuestDb(exported, dataPointId);
+        Files.delete(exported.toPath());
+    }
+
+    public File exportFromQuestDb(int dataPointId, long timestamp) throws IOException, InterruptedException {
+        String query = "select * from pointValues"+dataPointId+" where timestamp < " +
+                "timestamp_ceil('M', to_timezone(" + timestamp + ",'CET')) " +
+                " and timestamp > to_timezone(" + timestamp + ", 'CET')";
+        String url = "http://localhost:9000/exp?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+
+        HttpResponse<Path> response = client.send(request,
+                HttpResponse.BodyHandlers.ofFileDownload(Path.of(System.getProperty("java.io.tmpdir")),
+                        StandardOpenOption.CREATE, StandardOpenOption.WRITE));
+
+        Path path = response.body();
+        return path.toFile();
+
+    }
+
+    public static void importToQuestDb(File csv, int dataPointId) {
+        try {
+            URL resource = PointValueService.class.getClassLoader().getResource("questdb-schema-data-retention.json");
+            File schema = Paths.get(resource.toURI()).toFile();
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues"+dataPointId+"&timestamp=timestamp&partitionBy=MONTH&overwrite=false");
+            MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", schema), new FilePart("data", csv)}, postMethod.getParams());
+            postMethod.setRequestEntity(entity);
+            MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+            HttpClient httpClient = new HttpClient(manager);
+            httpClient.executeMethod(postMethod);
+            String response = postMethod.getResponseBodyAsString();
+            LOG.info("QuestDb import finished: \r\n" + response);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
         }
     }
 }

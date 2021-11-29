@@ -186,7 +186,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     public static int importToQuestDb(File csv, MigrationSettings migrationSettings, int dataPointId) {
         try {
-            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues" + dataPointId + "&timestamp=timestamp&partitionBy=YEAR&overwrite=" + migrationSettings.isOverwrite());
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues" + dataPointId + "&timestamp=timestamp&partitionBy=MONTH&overwrite=" + migrationSettings.isOverwrite());
             MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", migrationSettings.getSchema()), new FilePart("data", csv)}, postMethod.getParams());
             postMethod.setRequestEntity(entity);
             MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
