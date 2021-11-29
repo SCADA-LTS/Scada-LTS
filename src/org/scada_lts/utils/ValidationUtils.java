@@ -14,6 +14,10 @@ public final class ValidationUtils {
         return msgIfNull("Correct id;", id);
     }
 
+    public static String validId(String id) {
+        return msgIfNull("Correct id;", id);
+    }
+
     public static String validXid(String xidExpected, String xid) {
         return msgIfNonNullAndInvalid("Correct xid;", xid, a -> !StringUtils.isEmpty(a) && !a.equals(xidExpected));
     }

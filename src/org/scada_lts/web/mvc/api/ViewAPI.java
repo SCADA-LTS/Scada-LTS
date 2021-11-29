@@ -19,6 +19,7 @@ package org.scada_lts.web.mvc.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
@@ -27,6 +28,7 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,13 +38,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+
+import static org.scada_lts.utils.ValidationUtils.validId;
+import static org.scada_lts.utils.ViewApiUtils.*;
 
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
  */
 @Controller
+@RequestMapping(path = "/api/view")
 public class ViewAPI {
 
     private static final Log LOG = LogFactory.getLog(ViewAPI.class);
@@ -51,7 +56,7 @@ public class ViewAPI {
     @Resource
     ViewService viewService;
 
-    @GetMapping(value = "/api/view/getAll")
+    @GetMapping(value = "/getAll")
     public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
         LOG.info("/api/view/getAll");
         try {
@@ -67,7 +72,7 @@ public class ViewAPI {
         }
     }
 
-    @RequestMapping(value = "/api/view/getModificationTime/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getModificationTime/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> getModificationTime(@PathVariable("id") Integer id, HttpServletRequest request) {
         LOG.info("/api/view/getModificationTime/{id} id:"+id);
 
@@ -125,7 +130,7 @@ public class ViewAPI {
         }
     }
 
-    @RequestMapping(value = "/api/view/getByXid/{xid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/view/getByXid/{xid} xid:"+xid);
 
@@ -193,7 +198,7 @@ public class ViewAPI {
         }
     }
 
-    @RequestMapping(value = "/api/view/createView", method = RequestMethod.POST)
+    @RequestMapping(value = "/createView", method = RequestMethod.POST)
     public ResponseEntity<String> createView(HttpServletRequest request, @RequestBody ViewDTO viewDTO) {
         LOG.info("/api/view/createView");
 
@@ -306,6 +311,133 @@ public class ViewAPI {
         }
         return result;
 
+    }
+
+    @GetMapping(value = "")
+    public ResponseEntity<View> getView(@RequestParam(required = false) Integer id,
+                                          @RequestParam(required = false) String xid,
+                                          HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                String error = validId(id, xid);
+                if(!error.isEmpty()) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+
+                return getViewByIdOrXid(id, xid, viewService)
+                        .map(a -> new ResponseEntity<>(a, HttpStatus.OK))
+                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+//    @PostMapping(value = "")
+//    public ResponseEntity<View> createView(@RequestBody View view, HttpServletRequest request) {
+//        LOG.info("/api/view");
+//        try {
+//            User user = Common.getUser(request);
+//            if (user != null) {
+//                String error = validView(view);
+//                if(!error.isEmpty()) {
+//                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//                }
+//                return new ResponseEntity<>(viewService.saveView(view), HttpStatus.CREATED);
+//            } else {
+//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//            }
+//        } catch (Exception e) {
+//            LOG.error(e);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+    @DeleteMapping(value = "")
+    public ResponseEntity<String> deleteView(@RequestParam(required = false) Integer id,
+                                        @RequestParam(required = false) String xid,
+                                        HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                String error = validId(id, xid);
+                if(!error.isEmpty()) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                deleteViewByIdOrXid(id, xid, viewService);
+                return new ResponseEntity<>("deleted", HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/imageSets")
+    public ResponseEntity<List<ImageSet>> getImageSets(HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(Common.ctx.getImageSets(), HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/imageSets/{id}")
+    public ResponseEntity<ImageSet> getImageSet(@PathVariable String id, HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                String error = validId(id);
+                if(!error.isEmpty()) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                return viewService.getImageSet(id)
+                        .map(a -> new ResponseEntity<>(a, HttpStatus.OK))
+                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/uploads")
+    public ResponseEntity<List<UploadImage>> getUploads(HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(viewService.getUploadImages(), HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

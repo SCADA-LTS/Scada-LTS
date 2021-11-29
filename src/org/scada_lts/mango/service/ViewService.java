@@ -20,12 +20,14 @@ package org.scada_lts.mango.service;
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import br.org.scadabr.vo.exporter.util.FileUtil;
+import com.serotonin.mango.view.ImageSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
@@ -34,6 +36,7 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -45,9 +48,11 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 
+import javax.imageio.ImageIO;
+
 @Service
 public class ViewService {
-	
+
 	private Log LOG = LogFactory.getLog(ViewService.class);
 	private ViewDAO viewDAO;
 	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
@@ -206,5 +211,33 @@ public class ViewService {
 
 	public List<ScadaObjectIdentifier> getSimpleViews() {
 		return viewDAO.selectViewIdentifiers();
+	}
+
+	public List<ImageSet> getImageSets() {return Common.ctx.getImageSets();}
+
+	public Optional<ImageSet> getImageSet(String id) {
+		return Common.ctx.getImageSets().stream().filter(i -> i.getId().equals(id)).findAny();
+	}
+
+	public List<UploadImage> getUploadImages() throws IOException {
+		String fileSeparator = System.getProperty("file.separator");
+		String uploadFolder = Common.ctx.getServletContext().getRealPath(
+				fileSeparator)
+				+ "uploads";
+
+		List<File> files = FileUtil.getFilesOnDirectory(uploadFolder);
+
+		List<UploadImage> images = new ArrayList<>();
+		for (File file : files) {
+			BufferedImage bimg = ImageIO.read(file);
+			int width = bimg.getWidth();
+			int height = bimg.getHeight();
+
+			String filePartialPath = "uploads" + fileSeparator + file.getName();
+			UploadImage uploadImage = new UploadImage(file.getName(), filePartialPath, width, height);
+			images.add(uploadImage);
+		}
+
+		return images;
 	}
 }

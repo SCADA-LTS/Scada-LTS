@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -41,6 +42,7 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
+import com.serotonin.mango.view.component.ViewComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
@@ -69,6 +71,7 @@ public class View implements Serializable, JsonSerializable {
 	transient private long modificationTime;
 
 	private int userId;
+	@JsonDeserialize(using = ViewComponentDeserializer.class)
 	private List<ViewComponent> viewComponents = new CopyOnWriteArrayList<ViewComponent>();
 	private int anonymousAccess = ShareUser.ACCESS_NONE;
 	private List<ShareUser> viewUsers = new CopyOnWriteArrayList<ShareUser>();
