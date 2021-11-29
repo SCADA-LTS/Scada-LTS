@@ -645,6 +645,7 @@
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/cache-api-1.1.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/ehcache-3.9.4.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/commons-validator-1.7.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>
