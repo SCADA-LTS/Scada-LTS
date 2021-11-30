@@ -30,12 +30,28 @@ export default {
 	mounted() {
 		this.tab = 0
 		this.changeTab(this.tab)
-		const interval = setInterval(() => {
+		this.interval = setInterval(() => {
 			this.getAlarms();
 		}, 1000);
 	},
+	beforeDestroy() {
+		clearInterval(this.interval)
+	},
+	watch: { 
+		$route(to) {
+			switch (to.name) {
+				case 'scada': this.tab = 0
+				 break
+				case 'plc': this.tab = 1 
+				break
+				case 'plc-history': this.tab = 2 
+				break 
+			} 
+		} 
+	},
 	data () {
       return {
+		interval: null,
 		newAlarms: 0,
 		tab: 0,
 		items: [
