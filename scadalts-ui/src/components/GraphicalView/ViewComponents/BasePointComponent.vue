@@ -18,7 +18,7 @@
 		<template v-slot:renderer>
 			<v-row>
 				<v-col cols="12">
-					<DataPointSerachComponent v-model="component.dataPointXid" :dataTypes="dataTypes" @change="onPointChange"></DataPointSerachComponent>
+					<DataPointSerachComponent v-model="component.dataPointId" :dataTypes="dataTypes" @change="onPointChange"></DataPointSerachComponent>
 				</v-col>
 				<v-col cols="6">
 					<v-switch v-model="component.displayPointName" label="Display name"></v-switch>
@@ -71,7 +71,7 @@ export default {
 	},
 
 	mounted() {
-		this.connectToPointWebSocket(this.component.dataPointXid);
+		this.connectToPointWebSocket(this.component.dataPointId);
 		this.getPointValue();
 	},
 
@@ -81,18 +81,17 @@ export default {
 
 	methods: {
 		onPointChange(point) {
-			// this.component.dataPointXid = point.xid;
-			this.connectToPointWebSocket(point.xid);
+			this.connectToPointWebSocket(point.id);
 		},
 
-		connectToPointWebSocket(pointXid) {
+		connectToPointWebSocket(pointId) {
 			this.disconnectFromPointWebSocket();
 			this.point.wsConnValue = this.$store.state.webSocketModule.webSocket.subscribe(
-				`/topic/datapoint/${pointXid}/value`,
+				`/topic/datapoint/${pointId}/value`,
 				this.updatePointValue,
 			);
 			this.point.wsConnEnable = this.$store.state.webSocketModule.webSocket.subscribe(
-				`/topic/datapoint/${pointXid}/enabled`,
+				`/topic/datapoint/${pointId}/enabled`,
 				this.updatePointStatus,
 			);
 		},
@@ -123,8 +122,7 @@ export default {
 
 		async getPointValue() {
 			try {
-				const res = await this.$store.dispatch('getDataPointValueByXid', this.component.dataPointXid);
-				console.log('getPointValue', res.value);
+				const res = await this.$store.dispatch('getDataPointValue', this.component.dataPointId);
 				this.$emit('status-update', res.enabled);
 				if(res.enabled === true) {
 					this.$emit('value-update', res.value);

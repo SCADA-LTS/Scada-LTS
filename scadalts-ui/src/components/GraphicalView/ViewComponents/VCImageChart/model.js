@@ -1,9 +1,8 @@
-
-export default class ViewComponentImageChart {
+import BaseViewModel from "../BaseViewModel";
+export default class ViewComponentImageChart extends BaseViewModel {
 
     constructor() {
-        this.index = -1;
-        this.type = 'IMAGE_CHART';
+        super('imageChart');
         this.children = {
             point1: "DP_741583",
             point2: null,
@@ -21,9 +20,7 @@ export default class ViewComponentImageChart {
         this.height = 300;
         this.name = "pol";
         this.width = 500;
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
+        
     }
 
 

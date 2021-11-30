@@ -1,20 +1,10 @@
-export default class ViewComponentBinaryGraphic {
+import BaseImageSetModel from '../BaseImageSetModel';
+export default class ViewComponentBinaryGraphic extends BaseImageSetModel {
     
     constructor() {
-        this.index = -1;
-        this.type = 'BINARY_GRAPHIC';
-        this.dataPointXid = '';
-        this.imageSet = '';
-        this.bkgdColorOverride = '';
-        this.displayControls = false;
-        this.displayText = false;
-        this.nameOverride = '';
-        this.oneImageIndex = 2;
-        this.zeroImageIndex = 1;
-        this.settableOverride = false;
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
+        super('binaryGraphic');
+        this.oneImage = 0;
+        this.zeroImage = 1;
     }
 
 }

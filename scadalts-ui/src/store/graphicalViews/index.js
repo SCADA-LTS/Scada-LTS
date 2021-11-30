@@ -31,17 +31,7 @@ export const graphicalViewModule = {
         SET_GRAPHICAL_PAGE(state, payload) {
             state.graphicalPage = payload;
             console.log(state.graphicalPage, 'graphicalPage');
-            if (!!payload.backgroundFilename) {
-                state.resolution = {
-                    width: payload.width,
-                    height: payload.height
-                }
-            } else {
-                state.resolution = {
-                    width: payload.resolution.split('x')[0].substring(1),
-                    height: payload.resolution.split('x')[1]
-                }
-            }
+            setResolution(state, payload);
         },
         SET_GRAPHICAL_PAGE_BACKUP(state, payload) {
             state.graphicalPageBackup = JSON.parse(JSON.stringify(payload));
@@ -49,31 +39,22 @@ export const graphicalViewModule = {
         REVERT_GRAPHICAL_PAGE(state) {
             state.graphicalPage = JSON.parse(JSON.stringify(state.graphicalPageBackup));
             state.resolution = {
-                width: state.graphicalPage.resolution.split('x')[0].substring(1),
-                height: state.graphicalPage.resolution.split('x')[1]
+                width: state.graphicalPage.width,
+                height: state.graphicalPage.height
             }
         },
         SET_GRAPHICAL_PAGE_BACKGROUND(state, payload) {
             state.graphicalPage.backgroundFilename = payload.imgUrl;
-            state.graphicalPage.width = payload.width;
-            state.graphicalPage.height = payload.height;
-            state.resolution = {
-                width: payload.width,
-                height: payload.height
-            }
+            setResolution(state, payload);
         },
         RESET_GRAPHICAL_PAGE_BACKGROUND(state) {
+            const resolution = state.canvasResolutions.find(res => res.value === state.graphicalPage.resolution);
             state.graphicalPage.backgroundFilename = null;
-            state.resolution = {
-                width: state.graphicalPage.resolution.split('x')[0].substring(1),
-                height: state.graphicalPage.resolution.split('x')[1]
-            }
+            setResolution(state, resolution);
         },
         UPDATE_GRAPHICAL_PAGE_RESOLUTION(state) {
-            state.resolution = {
-                width: state.graphicalPage.resolution.split('x')[0].substring(1),
-                height: state.graphicalPage.resolution.split('x')[1]
-            }
+            const resolution = state.canvasResolutions.find(res => res.value === state.graphicalPage.resolution);
+            setResolution(state, resolution);
         },
 
         SET_COMPONENT_EDIT(state, payload) {
@@ -154,13 +135,23 @@ export const graphicalViewModule = {
         },
 
         getImageSets({ dispatch, commit }) {
-            return new Promise((resolve) => {
-                commit('SET_IMAGE_SETS', imageSets);
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await dispatch('requestGet', '/view/imageSets');
+                    commit('SET_IMAGE_SETS', response);
+                } catch (e) {
+                    reject(e);
+                }
             });
         },
-        getImageSetDetails({ dispatch }, imageSetName) {
-            return new Promise(resolve => {
-                resolve(imageSetFan);
+        getImageSetDetails({ dispatch }, imageSetId) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await dispatch('requestGet', `/view/imageSets/${imageSetId}`);
+                    resolve(response);
+                } catch (e) {
+                    reject(e);
+                }
             });
         },
 
@@ -205,5 +196,22 @@ function getBaseUrl() {
     return `${protocol}//${host[0]}:${host[1]}/${locale}`;
 }
 
+/**
+ * Set Canvas Resolution
+ * 
+ * Update the state variable with the new resolution data.
+ * Update the graphical page object and the canvas size object.
+ * 
+ * @param {Object} state - Vuex state object to modify
+ * @param {Object} payload  - Object containing the new resolution data with width and height properties
+ */
+function setResolution(state, payload) {
+    state.graphicalPage.width = payload.width;
+    state.graphicalPage.height = payload.height;
+    state.resolution = {
+        width: payload.width,
+        height: payload.height
+    }
+}
 
 export default graphicalViewModule;

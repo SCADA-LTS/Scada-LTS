@@ -24,14 +24,14 @@ export const viewComponentDefinitions = {
     components: {
         'SIMPLE': ViewComponentSimple,
         'HTML': ViewComponentHtml,
-        'BINARY_GRAPHIC': ViewComponentBinaryGraphic,
-        'MULTISTATE_GRAPHIC': ViewComponentMultistateGraphic,
-        'ANALOG_GRAPHIC': ViewComponentAnalogGraphic,
+        'BINARYGRAPHIC': ViewComponentBinaryGraphic,
+        'MULTISTATEGRAPHIC': ViewComponentMultistateGraphic,
+        'ANALOGGRAPHIC': ViewComponentAnalogGraphic,
         'ALARMLIST': ViewComponentAlarmList,
         'BUTTON': ViewComponentButton,
         'LINK': ViewComponentLink,
         'SCRIPT': ViewComponentScript,
-        'IMAGE_CHART': ViewComponentImageChart,
+        'IMAGECHART': ViewComponentImageChart,
     },
 
     data() {

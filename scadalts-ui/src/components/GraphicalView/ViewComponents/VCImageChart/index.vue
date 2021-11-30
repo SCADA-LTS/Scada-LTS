@@ -4,7 +4,6 @@
 			<LineChartComponent
 				v-if="chartLoaded"
 				:pointIds="pointList"
-				:useXid="true"
 				:startDate="`${component.durationPeriods}-${component.durationType
 					.slice(0, -1)
 					.toLowerCase()}`"

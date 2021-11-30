@@ -14,8 +14,8 @@
 		<template v-slot:renderer>
 			<v-row :key="rendering">
 				<v-col cols="4" v-for="(img,i) in imageArray" :key="i" @click="onImageSelected(i)" class="gv-image-container">
-					<span class="gv-image-description" v-if="component.oneImageIndex === i">One Image</span>
-					<span class="gv-image-description" v-if="component.zeroImageIndex === i">Zero Image</span>
+					<span class="gv-image-description" v-if="component.oneImage === i">One Image</span>
+					<span class="gv-image-description" v-if="component.zeroImage === i">Zero Image</span>
 					<img :src="img" class="gv-image-thumbnail" alt="Image"/>
 				</v-col>
 			</v-row>
@@ -56,9 +56,9 @@ export default {
 			console.log('onValueUpdate');
 			this.content = value;
 			if (value == 'true') {
-				this.activeGraphic = this.imageSet.imageFilenames[this.component.oneImageIndex];
+				this.activeGraphic = this.imageSet.imageFilenames[this.component.oneImage];
 			} else {
-				this.activeGraphic = this.imageSet.imageFilenames[this.component.zeroImageIndex];
+				this.activeGraphic = this.imageSet.imageFilenames[this.component.zeroImage];
 			}
 			console.log('onValueUpdate::BaseImage', this.activeGraphic);
 		},
@@ -80,10 +80,10 @@ export default {
 
 		onImageIndexUpdate(result) {
 			if(result.index === 0) {
-				this.component.zeroImageIndex = result.image;
+				this.component.zeroImage = result.image;
 			}
 			if(result.index === 1) {
-				this.component.oneImageIndex = result.image;
+				this.component.oneImage = result.image;
 			}
 			this.rendering++;
 			console.log('onImageIndexUpdate', this.component);

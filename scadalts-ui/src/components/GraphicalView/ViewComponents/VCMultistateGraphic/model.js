@@ -1,22 +1,11 @@
-export default class ViewComponentMultistateGraphic {
+import ImageSetViewModel from "../BaseImageSetModel";
+
+export default class ViewComponentMultistateGraphic extends ImageSetViewModel {
     
     constructor() {
-        this.index = -1;
-        this.type = 'MULTISTATE_GRAPHIC';
-        this.dataPointXid = '';
-        this.imageSet = '';
-        this.bkgdColorOverride = '';
-        this.displayControls = false;
-        this.displayText = false;
-        this.nameOverride = '';
-        this.settableOverride = false;
-        this.stateImageMappings = [];
+        super('multistateGraphic');
+        this.imageStateList = [];
         this.defaultImage = 0;
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
-
-        
     }
 
 }

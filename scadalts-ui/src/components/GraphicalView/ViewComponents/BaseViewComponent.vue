@@ -148,12 +148,12 @@ export default {
 			return this.$store.state.graphicalViewModule.graphicalPageIconify;
 		},
 		canvasWidth() {
-			let width = this.$store.state.graphicalViewModule.graphicalPage.resolution.split('x')[0].replace(/^\D+/g, '');
+			let width = this.$store.state.graphicalViewModule.resolution.width;
 			return Number(width);
 
 		},
 		canvasHeight() {
-			let height = this.$store.state.graphicalViewModule.graphicalPage.resolution.split('x')[1].replace(/^\D+/g, '');
+			let height = this.$store.state.graphicalViewModule.resolution.height;
 			return Number(height);
 		},
 	},

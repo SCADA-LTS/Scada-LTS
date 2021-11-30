@@ -18,7 +18,9 @@
 					<v-select
 						label="Image set"
 						:items="imageSet"
-						v-model="component.imageSet"
+						item-text="name"
+						item-value="id"
+						v-model="component.imageSetId"
 						@change="imageSetChanged"
 					></v-select>
 				</v-col>
@@ -77,7 +79,7 @@ export default {
 
 		async getImageSetDeatils() {
 			try {
-				const res = await this.$store.dispatch('getImageSetDetails', this.component.imageSet);
+				const res = await this.$store.dispatch('getImageSetDetails', this.component.imageSetId);
 				console.log('getImageSetDeatils', res);
 				this.$emit('image-update', res);
 			} catch (e) {

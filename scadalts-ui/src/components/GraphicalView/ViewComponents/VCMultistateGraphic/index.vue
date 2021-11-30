@@ -58,9 +58,9 @@ export default {
     methods: {
 		onValueUpdate(val) {
 			let value = Number(val);
-			const state = this.component.stateImageMappings.find(s => s.state === value);
+			const state = this.component.imageStateList.find(s => s.value === value);
 			if(!!state) {
-				this.activeGraphic = this.imageSet.imageFilenames[state.imageIndex];
+				this.activeGraphic = this.imageSet.imageFilenames[state.key];
 				console.log('onValueUpdate::BaseImage', this.activeGraphic);
 			} else {
 				this.activeGraphic = this.imageSet.imageFilenames[this.component.defaultImage];
@@ -97,19 +97,19 @@ export default {
 			if(this.component.defaultImage === index) {
 				this.component.defaultImage = null;
 			}
-			const arr = this.component.stateImageMappings;
+			const arr = this.component.imageStateList;
 			if(!!arr && arr.length > 0) {
-				this.component.stateImageMappings = arr.filter(s => s.imageIndex !== index );
+				this.component.imageStateList = arr.filter(s => s.key !== index );
 			}
 			this.rendering++;
 		},
 
 		getState(index) {
-			const arr = this.component.stateImageMappings;
+			const arr = this.component.imageStateList;
 			if(!!arr && arr.length > 0) {
 				for(let i = 0; i < arr.length; i++) {
-					if(arr[i].imageIndex === index) {
-						return `State: ${arr[i].state}`;
+					if(arr[i].key === index) {
+						return `State: ${arr[i].value}`;
 					}
 				}
 			}
@@ -118,14 +118,14 @@ export default {
 		},
 
 		setState(index, state) {
-			const arr = this.component.stateImageMappings || [];
-			const arrIndex = arr.findIndex(s => s.state === state);
+			const arr = this.component.imageStateList || [];
+			const arrIndex = arr.findIndex(s => s.value === state);
 			if(arrIndex > -1) {
-				arr[arrIndex].imageIndex = index;
+				arr[arrIndex].key = index;
 			} else {
 				arr.push({
-					state: state,
-					imageIndex: index,
+					value: state,
+					key: index,
 				});
 			}
 		}

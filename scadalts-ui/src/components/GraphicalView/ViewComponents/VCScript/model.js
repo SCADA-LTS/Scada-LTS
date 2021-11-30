@@ -1,18 +1,9 @@
-export default class ViewComponentScript {
+import BasePointModel from '../BasePointModel';
+export default class ViewComponentScript extends BasePointModel {
     
     constructor() {
-        this.index = -1;
-        this.type = 'SCRIPT';
-        this.dataPointXid = '';
-        this.bkgdColorOverride = '';
-        this.displayControls = false;
-        this.displayPointName = false;
-        this.nameOverride = '';
-        this.settableOverride = false;
+        super('script');
         this.script = '';
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
     }
 
 

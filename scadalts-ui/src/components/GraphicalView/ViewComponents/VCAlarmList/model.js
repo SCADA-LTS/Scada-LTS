@@ -1,14 +1,17 @@
-export default class ViewComponentAlarmList {
+import BaseViewModel from "../BaseViewModel";
+export default class ViewComponentAlarmList extends BaseViewModel {
     
     constructor() {
-        this.index = -1;
-        this.type = 'ALARMLIST';
+        super('alarmlist');
+        this.customComponent = true;
+        this.hideAckColumn = false;
+        this.hideAlarmLevelColumn = false;
+        this.hideIdColumn = false;
+        this.hideInactivityColumn = false;
+        this.hideTimestampColumn = false;
         this.maxListSize = 5;
         this.minAlarmLevel = 0;
         this.width = 400;
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
     }
 
 

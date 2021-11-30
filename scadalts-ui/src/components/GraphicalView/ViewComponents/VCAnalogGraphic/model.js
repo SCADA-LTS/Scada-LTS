@@ -1,21 +1,10 @@
-export default class ViewComponentAnalogGraphic {
+import BaseImageSetModel from '../BaseImageSetModel';
+export default class ViewComponentAnalogGraphic extends BaseImageSetModel {
     
     constructor() {
-        this.index = -1;
-        this.type = 'ANALOG_GRAPHIC';
-        this.dataPointXid = '';
-        this.imageSet = '';
-        this.bkgdColorOverride = '';
-        this.displayControls = false;
-        this.displayText = false;
+        super('analogGraphic');
         this.min = 0;
-        this.max = 100;
-        this.nameOverride = '';
-        this.settableOverride = false;
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
-        
+        this.max = 100;        
     }
 
 }

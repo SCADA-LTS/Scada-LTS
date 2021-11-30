@@ -1,12 +1,11 @@
-export default class ViewComponentHtml {
+import BaseViewModel from "../BaseViewModel";
+
+export default class ViewComponentHtml extends BaseViewModel {
     
     constructor() {
-        this.index = -1;
-        this.type = 'HTML';
+        super('html');
         this.content = '[HTML Component]';
-        this.x = 10;
-        this.y = 10;
-        this.z = 2;
+        
     }
 
 }

@@ -41,6 +41,7 @@ module.exports = {
 	transpileDependencies: ['vuetify'],
 	devServer: {
 		proxy: {
+			'^/graphics/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^//pointHierarchy/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^/ws-scada/*': {

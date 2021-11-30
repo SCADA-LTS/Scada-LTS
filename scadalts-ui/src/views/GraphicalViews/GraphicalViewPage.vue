@@ -12,7 +12,7 @@
 			<component
 				v-for="(cmp, index) in viewComponents"
 				:key="index"
-				:is="cmp.type"
+				:is="cmp.defName.toUpperCase()"
 				:component="cmp"
 				@update="updateComponents"
 			>
