@@ -30,6 +30,7 @@ export const graphicalViewModule = {
         },
         SET_GRAPHICAL_PAGE(state, payload) {
             state.graphicalPage = payload;
+            console.log(state.graphicalPage, 'graphicalPage');
             if (!!payload.backgroundFilename) {
                 state.resolution = {
                     width: payload.width,
@@ -118,10 +119,16 @@ export const graphicalViewModule = {
 
         getGraphicalViewById({ commit, dispatch }, id) {
             console.log(id);
-            return new Promise((resolve, reject) => {
-                commit('SET_GRAPHICAL_PAGE', graphicalViewPage);
-                commit('SET_GRAPHICAL_PAGE_BACKUP', graphicalViewPage);
-                resolve(graphicalViewPage)
+
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await dispatch('requestGet', `/view?id=${id}`);
+                    commit('SET_GRAPHICAL_PAGE', response);
+                    commit('SET_GRAPHICAL_PAGE_BACKUP', response);
+                    resolve(response)
+                } catch (e) {
+                    reject(e);
+                }                
             });
         },
 

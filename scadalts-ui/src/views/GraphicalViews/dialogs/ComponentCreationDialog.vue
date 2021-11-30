@@ -49,7 +49,7 @@
     
 </template>
 <script>
-import ViewComponentMixin from './ViewComponents/ViewComponentDefinitions';
+import ViewComponentMixin from '@/components/GraphicalView/ViewComponents/ViewComponentDefinitions';
 
 export default {
 

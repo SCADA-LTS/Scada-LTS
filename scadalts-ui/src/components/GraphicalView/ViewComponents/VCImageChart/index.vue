@@ -70,8 +70,8 @@
 	</BaseViewComponent>
 </template>
 <script>
-import BaseViewComponent from '../../BaseViewComponent.vue';
-import LineChartComponent from '../../../../components/amcharts/LineChartComponent.vue';
+import BaseViewComponent from '../BaseViewComponent.vue';
+import LineChartComponent from '@/components/amcharts/LineChartComponent.vue';
 import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent';
 export default {
 	components: {

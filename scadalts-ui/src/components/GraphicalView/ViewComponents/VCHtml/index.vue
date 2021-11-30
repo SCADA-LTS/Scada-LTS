@@ -13,7 +13,7 @@
 	</BaseViewComponent>
 </template>
 <script>
-import BaseViewComponent from '../../BaseViewComponent.vue'
+import BaseViewComponent from '../BaseViewComponent.vue'
 export default {
     components: {
         BaseViewComponent

@@ -12,6 +12,7 @@ import dataSourceRoutes from './routes-datasources';
 import eventRoutes from './routes-events';
 
 import GraphicalView from '../views/GraphicalViews';
+import PublicView from '../views/GraphicalViews/AnonymousViewPage';
 import Reports from '../views/Reports';
 import SynopticPanelMenu from '../views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from '../views/SynopticPanel/SynopticPanelItem';
@@ -54,6 +55,18 @@ const routing = new Router({
 			meta: {
                 requiresAuth: true
             },
+			children: [
+				{
+					path: ':id',
+					component: GraphicalViewPage
+				}
+			]
+
+        },
+		{
+            path: '/public-view',
+			name: 'public-view',
+			component: PublicView,
 			children: [
 				{
 					path: ':id',

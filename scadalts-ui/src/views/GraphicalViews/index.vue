@@ -3,7 +3,7 @@
 		<v-container fluid class="slts-page-header" v-if="!editMode">
 			<v-row align="center">
 				<v-col>
-					<h1>Graphical Views</h1>
+					<h1>Graphical Views {{userAccess}}</h1>
 				</v-col>
 				<v-col class="row justify-end">
 					<v-btn icon @click="toggleFullScreen" v-if="!!activeGraphicalView">
@@ -86,9 +86,9 @@
 </template>
 <script>
 import GraphicalViewPage from './GraphicalViewPage.vue';
-import GraphicalViewItem from '../../models/GraphicalViewItem';
-import ComponentCreationDialog from './ComponentCreationDialog';
-import BackgroundSettingsDialog from './BackgroundSettingsDialog';
+import GraphicalViewItem from '@/models/GraphicalViewItem';
+import ComponentCreationDialog from './dialogs/ComponentCreationDialog';
+import BackgroundSettingsDialog from './dialogs/BackgroundSettingsDialog';
 
 export default {
 	components: {
@@ -115,6 +115,18 @@ export default {
 		},
 		annonymousAccess() {
 			return this.$store.state.graphicalViewModule.annonymousAccess;
+		},
+		userAccess() {
+			const user = this.$store.state.loggedUser;
+			if(!!user) {
+				if(user.admin) {
+					return 2;
+				} else {
+					const gv = this.$store.state.graphicalViewModule.graphicalPage;
+					return gv.viewUsers.find(access => access.userId = user.id) || 0;
+				}
+			}
+			return 0;
 		},
 		activePage: {
 			get() {
@@ -147,6 +159,7 @@ export default {
 		changeToCreateMode() {
 			this.changeToEditMode();
 			this.createMode = true;
+			this.$router.push({ path: `/graphical-view/-1` });
 			const view = new GraphicalViewItem(this.$store.state.loggedUser.username)
 			this.$store.commit("SET_GRAPHICAL_PAGE", view);
 		},

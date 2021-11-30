@@ -35,7 +35,7 @@
 	</BaseImageComponent>
 </template>
 <script>
-import BaseImageComponent from '../../BaseImageComponent.vue';
+import BaseImageComponent from '../BaseImageComponent.vue';
 export default {
 	components: {
 		BaseImageComponent,

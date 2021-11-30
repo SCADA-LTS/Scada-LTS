@@ -6,7 +6,7 @@
 			v-bind:style="{
 				width: viewSize.width + 'px',
 				height: viewSize.height + 'px',
-				backgroundImage: 'url('+ viewBackground + ')',
+				backgroundImage: 'url(' + viewBackground + ')',
 			}"
 		>
 			<component
@@ -21,7 +21,7 @@
 	</div>
 </template>
 <script>
-import ViewComponentDefinitions from './ViewComponents/ViewComponentDefinitions.js';
+import ViewComponentDefinitions from '@/components/GraphicalView/ViewComponents/ViewComponentDefinitions.js';
 
 export default {
 	name: 'GraphicalViewPage',
@@ -54,14 +54,15 @@ export default {
 		viewBackground() {
 			console.log(this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename);
 			return this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename;
-		}
+		},
 	},
 
 	methods: {
 		async fetchGraphicalView(graphicalViewId) {
-			await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
-			this.$emit('routeChanged', Number(graphicalViewId));
-			console.log(this.graphicalViewPage);
+			if (graphicalViewId > 0) {
+				await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
+				this.$emit('routeChanged', Number(graphicalViewId));
+			}
 		},
 
 		getImageSets() {
@@ -77,22 +78,15 @@ export default {
 		 */
 		updateComponents() {
 			this.changes++;
-			// console.log('updateComponents');
-			// this.$forceUpdate();
+		},
+	},
+
+	watch: {
+		$route({params}) {
+			this.fetchGraphicalView(params.id);
 		},
 	},
 };
-
-function getFileResolution(src) {
-	return new Promise((resolve, reject) => {
-		const img = new Image();
-		img.onload = () => {
-			resolve(`${this.width}x${this.height}`);
-		}
-		img.onerror = reject;
-		img.src = src;
-	});
-}
 </script>
 <style scoped>
 .canvas {

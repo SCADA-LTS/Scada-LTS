@@ -28,7 +28,7 @@
 	</div>
 </template>
 <script>
-import BasePointComponent from '../../BasePointComponent.vue';
+import BasePointComponent from '../BasePointComponent.vue';
 export default {
 	components: {
 		BasePointComponent,

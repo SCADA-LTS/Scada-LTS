@@ -32,7 +32,7 @@
 </template>
 <script>
 import ImageDialog from './dialog.vue'
-import BaseImageComponent from '../../BaseImageComponent.vue';
+import BaseImageComponent from '../BaseImageComponent.vue';
 export default {
 	components: {
 		BaseImageComponent,
