@@ -22,8 +22,9 @@ public final class ViewApiUtils {
             } else if (xid != null) {
                 view = viewService.getViewByXid(xid);
             }
-            if (view != null)
-                view.setBackgroundFilename(getBackgroundImageAbsolutePath(view));
+            if (view != null) {
+                view.setBackgroundFilename(getBackgroundImageAbsolutePath(view.getBackgroundFilename()));
+            }
             return Optional.ofNullable(view);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -50,10 +51,10 @@ public final class ViewApiUtils {
         return "";
     }
 
-    private static String getBackgroundImageAbsolutePath(View view) {
-        if (view.getBackgroundFilename().isEmpty())
-            return view.getBackgroundFilename();
+    private static String getBackgroundImageAbsolutePath(String backgroundImage) {
+        if (backgroundImage == null || backgroundImage.isEmpty())
+            return backgroundImage;
         else
-            return Common.ctx.getCtx().getContextPath() + "/" + view.getBackgroundFilename();
+            return Common.ctx.getCtx().getContextPath() + "/" + backgroundImage;
     }
 }

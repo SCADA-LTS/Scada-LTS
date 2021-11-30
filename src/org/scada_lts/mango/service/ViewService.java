@@ -36,6 +36,7 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -213,7 +214,16 @@ public class ViewService {
 		return viewDAO.selectViewIdentifiers();
 	}
 
-	public List<ImageSet> getImageSets() {return Common.ctx.getImageSets();}
+	public List<ImageSetIdentifier> getImageSets() {
+		List<ImageSetIdentifier> images = new ArrayList<>();
+		for (ImageSet imageSet : Common.ctx.getImageSets()) {
+			if (!imageSet.isDynamicImage()) {
+				ImageSetIdentifier imageSetIdentifier = new ImageSetIdentifier(imageSet.getId(), imageSet.getName(), imageSet.getImageCount());
+				images.add(imageSetIdentifier);
+			}
+		}
+		return images;
+	}
 
 	public Optional<ImageSet> getImageSet(String id) {
 		return Common.ctx.getImageSets().stream().filter(i -> i.getId().equals(id)).findAny();

@@ -28,6 +28,7 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 import static org.scada_lts.utils.ValidationUtils.validId;
 import static org.scada_lts.utils.ViewApiUtils.*;
@@ -326,10 +328,16 @@ public class ViewAPI {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
 
-                return getViewByIdOrXid(id, xid, viewService)
-                        .map(a -> new ResponseEntity<>(a, HttpStatus.OK))
-                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                Optional<View> view = getViewByIdOrXid(id, xid, viewService);
 
+                if (view.isPresent()) {
+                    if (user.isAdmin() || view.get().getViewUsers().stream().anyMatch(u -> u.getUserId() == user.getId())){
+                        return new ResponseEntity<>(view.get(), HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                    }
+                } else
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -384,12 +392,12 @@ public class ViewAPI {
     }
 
     @GetMapping(value = "/imageSets")
-    public ResponseEntity<List<ImageSet>> getImageSets(HttpServletRequest request) {
-        LOG.info("/api/view");
+    public ResponseEntity<List<ImageSetIdentifier>> getImageSets(HttpServletRequest request) {
+        LOG.info("/api/view/imageSets");
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return new ResponseEntity<>(Common.ctx.getImageSets(), HttpStatus.OK);
+                return new ResponseEntity<>(viewService.getImageSets(), HttpStatus.OK);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -402,7 +410,7 @@ public class ViewAPI {
 
     @GetMapping(value = "/imageSets/{id}")
     public ResponseEntity<ImageSet> getImageSet(@PathVariable String id, HttpServletRequest request) {
-        LOG.info("/api/view");
+        LOG.info("/api/view/imageSets/{id}");
         try {
             User user = Common.getUser(request);
             if (user != null) {
@@ -425,7 +433,7 @@ public class ViewAPI {
 
     @GetMapping(value = "/uploads")
     public ResponseEntity<List<UploadImage>> getUploads(HttpServletRequest request) {
-        LOG.info("/api/view");
+        LOG.info("/api/view/uploads");
         try {
             User user = Common.getUser(request);
             if (user != null) {
