@@ -81,8 +81,8 @@
 			<v-list-item max-width="50">
 				<v-list-item-content>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
-						<img v-if="unsilencedHighestAlarmLevel != -1" :src="alarmFlags[unsilencedHighestAlarmLevel].image"/>
-						</a>	
+						<img v-if="highestUnsilencedAlarmLevel  != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
+					</a>	
 				</v-list-item-content>		
 			</v-list-item>
 
@@ -133,9 +133,7 @@
 <script>
 import webSocketMixin from '@/utils/web-socket-utils';
 import internetMixin from '@/utils/connection-status-utils';
-function reload () {
-	location.reload();
-}
+
 export default {
 	name: 'app',
 	mixins: [webSocketMixin, internetMixin],
@@ -151,11 +149,10 @@ export default {
 			wsCallback: () => {		
 				this.wsLive = true;	
 				this.wsSubscribeTopic(`alarm`, async(x) => {
-					this.unsilencedHighestAlarmLevel = await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
+					await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 				});		
 			},
 			wsLive: false,
-			unsilencedHighestAlarmLevel: -1,
 			alarmFlags: {
 				1: {
 					image: "images/flag_blue.png"
@@ -184,15 +181,19 @@ export default {
 				return false;
 			}
 		},
+		highestUnsilencedAlarmLevel() {
+            return this.$store.state.storeEvents.highestUnsilencedAlarmLevel;
+		}
 	},
 
 	async mounted() {
 		this.$store.dispatch('getLocaleInfo');
-		this.unsilencedHighestAlarmLevel = await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
+		await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 	},
 
 	methods: {
 		goToEvents() {
+			console.log(this.$store.state.storeEvents.highestUnsilencedAlarmLevel)
 			if (this.$route.name !== 'scada') {
 				this.$router.push({ name: 'scada' });
 			}

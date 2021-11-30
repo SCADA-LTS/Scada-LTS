@@ -684,6 +684,7 @@ export default {
 			this.eventList = result.rows;
 			this.totalEvents = result.total;
 			this.loading = false;
+			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},
 		async fetchEventSelected() {
 			this.loading = true;
