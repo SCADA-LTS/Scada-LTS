@@ -23,6 +23,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -38,7 +42,27 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "typeName"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ImageSetComponent.class, name = "BINARY_GRAPHIC"),
+        @JsonSubTypes.Type(value = ImageSetComponent.class, name = "ANALOG_GRAPHIC"),
+        @JsonSubTypes.Type(value = ImageSetComponent.class, name = "MULTISTATE_GRAPHIC"),
+        @JsonSubTypes.Type(value = ScriptComponent.class, name = "BUTTON"),
+        @JsonSubTypes.Type(value = DynamicGraphicComponent.class, name = "DYNAMIC_GRAPHIC"),
+        @JsonSubTypes.Type(value = SimplePointComponent.class, name = "ENHANCED_POINT"),
+        @JsonSubTypes.Type(value = SimplePointComponent.class, name = "SIMPLE"),
+        @JsonSubTypes.Type(value = ScriptComponent.class, name = "SCRIPT"),
+        @JsonSubTypes.Type(value = SimpleImageComponent.class, name = "SIMPLE_IMAGE"),
+        @JsonSubTypes.Type(value = ThumbnailComponent.class, name = "THUMBNAIL")
+})
 abstract public class PointComponent extends ViewComponent {
+
+    @JsonDeserialize(using = DataPointFieldDeserializer.class)
+    @JsonProperty("dataPointXid")
     private DataPointVO dataPoint;
     @JsonRemoteProperty
     private String nameOverride;

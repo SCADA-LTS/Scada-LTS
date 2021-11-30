@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.serotonin.mango.view.component.ViewComponent.getImplementations;
-import static com.serotonin.mango.view.component.ViewComponent.resolveClass;
+import static com.serotonin.mango.view.component.ViewComponent.*;
 
 public class ViewComponentDeserializer extends JsonDeserializer<List<ViewComponent>> {
 
@@ -32,10 +31,8 @@ public class ViewComponentDeserializer extends JsonDeserializer<List<ViewCompone
             JsonNode componentNode = components.next();
             ImplDefinition def = ImplDefinition.findByName(getImplementations(),
                     componentNode.get("typeName").asText());
-            ViewComponent viewComponent = mapper.readValue(componentNode.toString(), resolveClass(def));
-
+            ViewComponent viewComponent = mapper.readValue(componentNode.toString(), resolveClassForDeserializer(def));
             viewComponents.add(viewComponent);
-
         }
 
         return viewComponents;

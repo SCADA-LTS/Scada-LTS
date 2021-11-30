@@ -347,25 +347,26 @@ public class ViewAPI {
         }
     }
 
-//    @PostMapping(value = "")
-//    public ResponseEntity<View> createView(@RequestBody View view, HttpServletRequest request) {
-//        LOG.info("/api/view");
-//        try {
-//            User user = Common.getUser(request);
-//            if (user != null) {
+    @PostMapping(value = "")
+    public ResponseEntity<String> createView(@RequestBody View view, HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
 //                String error = validView(view);
 //                if(!error.isEmpty()) {
 //                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //                }
-//                return new ResponseEntity<>(viewService.saveView(view), HttpStatus.CREATED);
-//            } else {
-//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//            }
-//        } catch (Exception e) {
-//            LOG.error(e);
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+                viewService.saveView(view);
+                return new ResponseEntity<>("created", HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @DeleteMapping(value = "")
     public ResponseEntity<String> deleteView(@RequestParam(required = false) Integer id,

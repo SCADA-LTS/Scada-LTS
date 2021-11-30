@@ -23,6 +23,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 
+import br.org.scadabr.view.component.ChartComparatorComponent;
+import br.org.scadabr.view.component.FlexBuilderComponent;
+import br.org.scadabr.view.component.LinkComponent;
+import br.org.scadabr.view.component.ScriptButtonComponent;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -39,6 +45,17 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "typeName"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = SimpleCompoundComponent.class, name = "SIMPLE_COMPOUND"),
+        @JsonSubTypes.Type(value = EnhancedImageChartComponent.class, name = "ENHANCED_IMAGE_CHART"),
+        @JsonSubTypes.Type(value = ImageChartComponent.class, name = "IMAGE_CHART"),
+        @JsonSubTypes.Type(value = WirelessTempHumSensor.class, name = "WIRELESS_TEMP_HUM_SENSOR")
+})
 abstract public class CompoundComponent extends ViewComponent {
     @JsonRemoteProperty
     private String name;

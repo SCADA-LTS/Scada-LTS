@@ -23,6 +23,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.DataTypes;
@@ -33,6 +35,14 @@ import com.serotonin.util.SerializationHelper;
 /**
  * @author Matthew Lohbihler
  */
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.EXISTING_PROPERTY,
+		property = "typeName"
+)
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = EnhancedPointComponent.class, name = "ENHANCED_POINT")
+})
 @JsonRemoteEntity
 public class SimplePointComponent extends PointComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition("simple",

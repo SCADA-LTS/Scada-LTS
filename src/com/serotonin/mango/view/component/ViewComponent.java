@@ -109,9 +109,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 	static Class<? extends ViewComponent> resolveClass(ImplDefinition def) {
 		if (def == AnalogGraphicComponent.DEFINITION)
-			return AnalogGraphicComponent.class;
+			return PointComponent.class;
 		if (def == BinaryGraphicComponent.DEFINITION)
-			return BinaryGraphicComponent.class;
+			return PointComponent.class;
 		if (def == DynamicGraphicComponent.DEFINITION)
 			return DynamicGraphicComponent.class;
 		if (def == HtmlComponent.DEFINITION)
@@ -148,6 +148,25 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			return ChartComparatorComponent.class;
 		if (def == FlexBuilderComponent.DEFINITION)
 			return FlexBuilderComponent.class;
+		return null;
+	}
+
+	static Class<? extends ViewComponent> resolveClassForDeserializer(ImplDefinition def) {
+		if (def == AnalogGraphicComponent.DEFINITION || def == BinaryGraphicComponent.DEFINITION ||
+				def == MultistateGraphicComponent.DEFINITION || def == ButtonComponent.DEFINITION ||
+				def == DynamicGraphicComponent.DEFINITION || def == EnhancedPointComponent.DEFINITION ||
+				def == ScriptComponent.DEFINITION || def == SimpleImageComponent.DEFINITION ||
+				def == SimplePointComponent.DEFINITION || def == ThumbnailComponent.DEFINITION)
+			return PointComponent.class;
+		if (def == HtmlComponent.DEFINITION || def == ChartComparatorComponent.DEFINITION ||
+				def == FlexBuilderComponent.DEFINITION || def == LinkComponent.DEFINITION ||
+				def == ScriptButtonComponent.DEFINITION)
+			return HtmlComponent.class;
+		if (def == SimpleCompoundComponent.DEFINITION || def == EnhancedImageChartComponent.DEFINITION ||
+				def == ImageChartComponent.DEFINITION || def == WirelessTempHumSensor.DEFINITION)
+			return CompoundComponent.class;
+		if (def == AlarmListComponent.DEFINITION)
+			return AlarmListComponent.class;
 		return null;
 	}
 
