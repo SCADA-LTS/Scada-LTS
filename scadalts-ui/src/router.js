@@ -5,6 +5,7 @@ import About from './views/About';
 import LoginPage from './views/LoginPage';
 import HistoricalAlarms from './views/HistoricalAlarms';
 import EventList from './views/EventList';
+import ScriptList from './views/ScriptList';
 import UserList from './views/UserList';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
@@ -136,6 +137,11 @@ const routing = new Router({
 					component: SynopticPanelItem,
 				},
 			],
+		},
+		{
+			path: '/scripts',
+			name: 'scripts',
+			component: ScriptList,
 		},
 		{
 			path: '/watch-list',

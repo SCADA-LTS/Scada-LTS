@@ -49,6 +49,12 @@
 						{{ $t('recipientlist.title') }}
 					</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
+					<v-list-item-icon>
+						<v-icon>mdi-cog</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>{{ $t('scripts.title') }}</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/users">
 					<v-list-item-icon>
 						<v-icon>mdi-account</v-icon>
