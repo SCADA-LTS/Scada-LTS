@@ -174,5 +174,7 @@
     <constructor-arg ref="highestAlarmLevelDAO"/>
     <constructor-arg ref="resetHighestAlarmLevelScheduler"/>
   </bean>
+
+  <bean id="sessionRepository" class="org.springframework.session.MapSessionRepository"/>
   <!-- -->
 </beans>

@@ -560,7 +560,6 @@ function disconnect(stompClient) {
     	console.log("Disconnecting...");
         stompClient.disconnect(function(){
         	console.log("Disconnected");
-        	alert("Disconnected");
         	stompClient = null;
         });
     }
@@ -661,7 +660,6 @@ var messages = {
 
     function onloadHandler() {
     	// connecting to server websocket endpoint...
-       disconnect(stompClient);
        stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
     }
 

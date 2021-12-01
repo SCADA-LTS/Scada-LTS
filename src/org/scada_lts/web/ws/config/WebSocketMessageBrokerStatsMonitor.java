@@ -2,11 +2,12 @@ package org.scada_lts.web.ws.config;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
-
+@Component
 public class WebSocketMessageBrokerStatsMonitor {
-    private final SubProtocolWebSocketHandler webSocketSessions;
+    /*private final SubProtocolWebSocketHandler webSocketSessions;
     private final ThreadPoolExecutor outboundExecutor;
  
     @SuppressWarnings("unchecked")
@@ -48,6 +49,6 @@ public class WebSocketMessageBrokerStatsMonitor {
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), "KMGTPE".charAt(exp - 1));
-    }
+    }*/
  
 }

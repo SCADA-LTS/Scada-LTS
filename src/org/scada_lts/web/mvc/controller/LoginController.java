@@ -17,27 +17,14 @@
  */
 package org.scada_lts.web.mvc.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.web.mvc.form.LoginForm;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.web.integration.CrowdUtils;
-import com.serotonin.util.StringUtils;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller for login system
@@ -45,18 +32,20 @@ import com.serotonin.util.StringUtils;
  * 
  * @author Marcin Gołda
  */
+
 @Controller
-@RequestMapping("/login.htm") 
-public class LoginController {    
-    private static final Log LOG= LogFactory.getLog(LoginController.class);
-    
-	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView createForm(HttpServletRequest request) throws Exception {
-		LOG.trace("/login.htm");
-		
-		return new ModelAndView("login");
-	}
-	
+@RequestMapping("/login.htm")
+public class LoginController {
+    private static final Log LOG = LogFactory.getLog(LoginController.class);
+
+    @RequestMapping(method = RequestMethod.GET)
+    protected ModelAndView createForm(HttpServletRequest request) throws Exception {
+        LOG.trace("/login.htm");
+
+        return new ModelAndView("login");
+    }
+}
+	/*
 	@RequestMapping(method = RequestMethod.POST)
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("login")LoginForm login) throws Exception {
 		LOG.trace("/login.htm");
@@ -103,8 +92,8 @@ public class LoginController {
         if (crowdAuthenticated)
             CrowdUtils.setCrowdAuthenticated(Common.getUser(request));
         return mav;
-    }
-
+    }*/
+/*
     private ModelAndView performLogin(HttpServletRequest request, String username) {
         // Check if the user is already logged in.
         User user = Common.getUser(request);
@@ -135,5 +124,5 @@ public class LoginController {
             return new ModelAndView(new RedirectView(user.getHomeUrl()));
         else
         	return new ModelAndView(new RedirectView("watch_list.shtm"));
-    }
-}
+    }*/
+//}

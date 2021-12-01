@@ -189,16 +189,14 @@
     function disconnect(stompClient) {
         if(stompClient != null) {
         	console.log("Disconnecting...");
-            stompClient.disconnect(function(){
+            stompClient.disconnect(function() {
             	console.log("Disconnected");
-            	alert("Disconnected");
             	stompClient = null;
             });
         }
     }
 
     function onloadHandler() {
-       disconnect(stompClient);
        var location = window.location;
        var appName = location.pathname.split("/")[1];
        var myLocation = location.origin + "/" + appName+ "/";
