@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -26,6 +28,7 @@ import com.serotonin.mango.view.ImplDefinition;
  * @author Jacek Rogoznicki
  */
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class EnhancedImageChartComponent extends CompoundComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("enhancedImageChart", "ENHANCED_IMAGE_CHART",
             "graphic.enhancedImageChart", null);

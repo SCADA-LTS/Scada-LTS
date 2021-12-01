@@ -20,6 +20,8 @@ package com.serotonin.mango.view.component;
 
 import java.util.ResourceBundle;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.view.ImplDefinition;
@@ -28,6 +30,7 @@ import com.serotonin.mango.view.ImplDefinition;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class WirelessTempHumSensor extends CompoundComponent {
     private static final long serialVersionUID = -1;
     public static ImplDefinition DEFINITION = new ImplDefinition("wirelessTempHumSensor", "WIRELESS_TEMP_HUM_SENSOR",

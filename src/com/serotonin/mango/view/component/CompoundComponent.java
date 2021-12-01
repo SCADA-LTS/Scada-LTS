@@ -23,12 +23,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 
-import br.org.scadabr.view.component.ChartComparatorComponent;
-import br.org.scadabr.view.component.FlexBuilderComponent;
-import br.org.scadabr.view.component.LinkComponent;
-import br.org.scadabr.view.component.ScriptButtonComponent;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -36,6 +32,7 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.view.component.deserializer.CompoundComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
@@ -45,20 +42,11 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "typeName"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = SimpleCompoundComponent.class, name = "SIMPLE_COMPOUND"),
-        @JsonSubTypes.Type(value = EnhancedImageChartComponent.class, name = "ENHANCED_IMAGE_CHART"),
-        @JsonSubTypes.Type(value = ImageChartComponent.class, name = "IMAGE_CHART"),
-        @JsonSubTypes.Type(value = WirelessTempHumSensor.class, name = "WIRELESS_TEMP_HUM_SENSOR")
-})
+@JsonDeserialize(using = CompoundComponentDeserializer.class)
 abstract public class CompoundComponent extends ViewComponent {
     @JsonRemoteProperty
     private String name;
+    @JsonIgnore
     private List<CompoundChild> children = new ArrayList<CompoundChild>();
 
     // Runtime attributes

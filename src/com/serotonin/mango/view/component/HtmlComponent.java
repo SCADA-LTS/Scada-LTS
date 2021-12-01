@@ -22,12 +22,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import br.org.scadabr.view.component.ChartComparatorComponent;
-import br.org.scadabr.view.component.FlexBuilderComponent;
-import br.org.scadabr.view.component.LinkComponent;
-import br.org.scadabr.view.component.ScriptButtonComponent;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImplDefinition;
@@ -37,18 +33,8 @@ import com.serotonin.util.SerializationHelper;
 /**
  * @author Matthew Lohbihler
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ChartComparatorComponent.class, name = "CHART_COMPARATOR"),
-        @JsonSubTypes.Type(value = FlexBuilderComponent.class, name = "FLEX"),
-        @JsonSubTypes.Type(value = LinkComponent.class, name = "LINK"),
-        @JsonSubTypes.Type(value = ScriptButtonComponent.class, name = "SCRIPT_BUTTON")
-})
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class HtmlComponent extends ViewComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("html", "HTML", "graphic.html", null);
 
