@@ -81,7 +81,7 @@
 			<v-list-item max-width="50">
 				<v-list-item-content>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
-						<img v-if="highestUnsilencedAlarmLevel  != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
+						<img v-if="highestUnsilencedAlarmLevel != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
 					</a>	
 				</v-list-item-content>		
 			</v-list-item>
@@ -193,7 +193,6 @@ export default {
 
 	methods: {
 		goToEvents() {
-			console.log(this.$store.state.storeEvents.highestUnsilencedAlarmLevel)
 			if (this.$route.name !== 'scada') {
 				this.$router.push({ name: 'scada' });
 			}

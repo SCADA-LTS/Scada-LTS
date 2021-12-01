@@ -13,7 +13,7 @@
 			scrollable
 			max-width="90%"
 			>
-			<v-card v-if="selectedEventId">
+			<v-card v-if="selectedEvent">
 				<v-card-title>
 					<v-row>
 						<v-col cols="6">Event #{{selectedEvent.id}}</v-col>
@@ -48,7 +48,7 @@
 						<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
 						<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
 					</v-col>
-					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{selectedEvent.message.split('|').filter(x => x).join(', ')}}</v-col>
+					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{$t(`${selectedEvent.message.split('|')[0]}`, selectedEvent.message.split('|'))}}</v-col>
 					<v-col v-if="selectedEvent.eventSourceType===1" cols="3"><b>{{$t('eventList.datapoint')}}</b>: {{selectedEvent.datapoint}}</v-col>
 				</v-row>
 				<v-divider></v-divider>
@@ -326,7 +326,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{ item.message.split('|').filter(x => x).join(', ') | truncate }}						
+						{{$t(`${item.message.split('|')[0]}`, item.message.split('|')) | truncate}}
 					</template>
 
 					<template v-slot:item.status="{ item }">
