@@ -22,6 +22,7 @@ import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.scada_lts.web.ws.services.EventsServiceWebSocket;
 import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class ApplicationBeans {
 
     private ApplicationBeans() {}
 
-    private static final Log log = LogFactory.getLog(ApplicationBeans.class);
+    private static final Log LOG = LogFactory.getLog(ApplicationBeans.class);
 
     public static <T> T getBean(String beanName, Class<T> type) {
         return getBeanFromContext(beanName, type);
@@ -125,10 +126,10 @@ public class ApplicationBeans {
             try {
                 return Optional.ofNullable(get(beanName, clazz));
             } catch (NoSuchBeanDefinitionException ex) {
-                log.debug(ex);
+                LOG.debug(ex);
                 return Optional.empty();
             } catch (Exception ex) {
-                log.error(ex.getMessage(), ex);
+                LOG.error(ex.getMessage(), ex);
                 return Optional.empty();
             }
         }
@@ -138,14 +139,23 @@ public class ApplicationBeans {
         try {
             return get(beanName, clazz);
         } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
             return null;
         }
     }
 
     private static <T> T get(String beanName, Class<T> clazz) {
-        if (GetServletContext.context() != null)
-            return GetServletContext.context().getBean(beanName, clazz);
-        return GetApplicationContext.context().getBean(beanName, clazz);
+        ApplicationContext context = getBeansContext();
+        if (context != null)
+            return context.getBean(beanName, clazz);
+        return null;
+    }
+
+    private static ApplicationContext getBeansContext() {
+        return GetServletBeans.context() == null ? getBeansApplication() : GetServletBeans.context();
+    }
+
+    private static ApplicationContext getBeansApplication() {
+        return GetApplicationBeans.context() == null ? null : GetApplicationBeans.context();
     }
 }

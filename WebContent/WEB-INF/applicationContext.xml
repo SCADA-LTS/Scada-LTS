@@ -78,7 +78,7 @@
     <property name="cacheManagerUri" value="classpath:/ehcache.xml"/>
   </bean>
 
-  <bean id="applicationBeans" class="org.scada_lts.web.beans.GetApplicationContext"/>
+  <bean id="applicationBeans" class="org.scada_lts.web.beans.GetApplicationBeans"/>
 
   <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
   <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>

@@ -4,16 +4,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-class GetApplicationContext implements ApplicationContextAware {
+class GetServletBeans implements ApplicationContextAware {
 
-    private static ApplicationContext applicationContext;
+    private static ApplicationContext servletContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        GetApplicationContext.applicationContext = applicationContext;
+        GetServletBeans.servletContext = applicationContext;
     }
 
     static ApplicationContext context() {
-        return applicationContext;
+        return servletContext;
     }
 }

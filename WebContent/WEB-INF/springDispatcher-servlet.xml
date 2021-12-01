@@ -206,7 +206,7 @@
   <!-- Interceptors -->
   <bean id="commonData" class="com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor"/>
 
-  <bean id="servletBeans" class="org.scada_lts.web.beans.GetServletContext"/>
+  <bean id="servletBeans" class="org.scada_lts.web.beans.GetServletBeans"/>
 
   <!-- Highest Alarm Level -->
   <websocket:message-broker application-destination-prefix="/app">
