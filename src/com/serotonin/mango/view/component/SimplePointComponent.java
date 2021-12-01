@@ -25,6 +25,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.DataTypes;
@@ -35,15 +37,8 @@ import com.serotonin.util.SerializationHelper;
 /**
  * @author Matthew Lohbihler
  */
-@JsonTypeInfo(
-		use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.EXISTING_PROPERTY,
-		property = "typeName"
-)
-@JsonSubTypes({
-		@JsonSubTypes.Type(value = EnhancedPointComponent.class, name = "ENHANCED_POINT")
-})
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class SimplePointComponent extends PointComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition("simple",
 			"SIMPLE", "graphic.simple", new int[] { DataTypes.BINARY,

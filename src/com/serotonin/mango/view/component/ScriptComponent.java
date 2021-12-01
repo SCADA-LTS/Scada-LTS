@@ -25,9 +25,8 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
-import br.org.scadabr.view.component.ButtonComponent;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -51,15 +50,8 @@ import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScri
 /**
  * @author Matthew Lohbihler
  */
-@JsonTypeInfo(
-		use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.EXISTING_PROPERTY,
-		property = "typeName"
-)
-@JsonSubTypes({
-		@JsonSubTypes.Type(value = ButtonComponent.class, name = "BUTTON")
-})
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class ScriptComponent extends PointComponent {
 	public static ImplDefinition DEFINITION = new ImplDefinition("script", "SCRIPT", "graphic.script", new int[] {
 			DataTypes.BINARY, DataTypes.MULTISTATE, DataTypes.NUMERIC, DataTypes.ALPHANUMERIC });

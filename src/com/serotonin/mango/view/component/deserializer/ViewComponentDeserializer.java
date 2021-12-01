@@ -1,14 +1,12 @@
-package com.serotonin.mango.view.component;
+package com.serotonin.mango.view.component.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.serotonin.mango.view.ImplDefinition;
+import com.serotonin.mango.view.component.ViewComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,13 +21,14 @@ public class ViewComponentDeserializer extends JsonDeserializer<List<ViewCompone
 
     @Override
     public List<ViewComponent> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         List<ViewComponent> viewComponents = new ArrayList<>();
         ObjectCodec oc = jsonParser.getCodec();
         ArrayNode viewComponentNode = oc.readTree(jsonParser);
         Iterator<JsonNode> components = viewComponentNode.elements();
         while (components.hasNext()) {
             JsonNode componentNode = components.next();
-            ImplDefinition def = ImplDefinition.findByName(getImplementations(),
+            ImplDefinition def = ImplDefinition.findByExportName(getImplementations(),
                     componentNode.get("typeName").asText());
             ViewComponent viewComponent = mapper.readValue(componentNode.toString(), resolveClassForDeserializer(def));
             viewComponents.add(viewComponent);

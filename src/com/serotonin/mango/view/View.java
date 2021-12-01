@@ -42,7 +42,7 @@ import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.ViewComponent;
-import com.serotonin.mango.view.component.ViewComponentDeserializer;
+import com.serotonin.mango.view.component.deserializer.ViewComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;

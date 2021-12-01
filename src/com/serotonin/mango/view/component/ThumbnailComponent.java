@@ -23,6 +23,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.DataTypes;
@@ -34,6 +36,7 @@ import com.serotonin.mango.view.ImplDefinition;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class ThumbnailComponent extends PointComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("thumbnailImage", "THUMBNAIL",
             "graphic.thumbnailImage", new int[] { DataTypes.IMAGE });

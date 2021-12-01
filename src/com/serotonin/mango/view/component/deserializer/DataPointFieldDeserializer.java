@@ -1,4 +1,4 @@
-package com.serotonin.mango.view.component;
+package com.serotonin.mango.view.component.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

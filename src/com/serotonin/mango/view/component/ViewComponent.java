@@ -109,9 +109,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 
 	static Class<? extends ViewComponent> resolveClass(ImplDefinition def) {
 		if (def == AnalogGraphicComponent.DEFINITION)
-			return PointComponent.class;
+			return AnalogGraphicComponent.class;
 		if (def == BinaryGraphicComponent.DEFINITION)
-			return PointComponent.class;
+			return BinaryGraphicComponent.class;
 		if (def == DynamicGraphicComponent.DEFINITION)
 			return DynamicGraphicComponent.class;
 		if (def == HtmlComponent.DEFINITION)
@@ -151,7 +151,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		return null;
 	}
 
-	static Class<? extends ViewComponent> resolveClassForDeserializer(ImplDefinition def) {
+	public static Class<? extends ViewComponent> resolveClassForDeserializer(ImplDefinition def) {
 		if (def == AnalogGraphicComponent.DEFINITION || def == BinaryGraphicComponent.DEFINITION ||
 				def == MultistateGraphicComponent.DEFINITION || def == ButtonComponent.DEFINITION ||
 				def == DynamicGraphicComponent.DEFINITION || def == EnhancedPointComponent.DEFINITION ||

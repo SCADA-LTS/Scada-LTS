@@ -24,8 +24,6 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -37,25 +35,17 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImageSet;
+import com.serotonin.mango.view.component.deserializer.ImageSetComponentDeserializer;
+import com.serotonin.mango.view.component.deserializer.ImageSetFieldDeserializer;
 import com.serotonin.util.SerializationHelper;
 
 /**
  * @author Matthew Lohbihler
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "typeName"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = BinaryGraphicComponent.class, name = "BINARY_GRAPHIC"),
-        @JsonSubTypes.Type(value = AnalogGraphicComponent.class, name = "ANALOG_GRAPHIC"),
-        @JsonSubTypes.Type(value = MultistateGraphicComponent.class, name = "MULTISTATE_GRAPHIC")
-})
 @JsonRemoteEntity
+@JsonDeserialize(using = ImageSetComponentDeserializer.class)
 abstract public class ImageSetComponent extends PointComponent {
     @JsonDeserialize(using = ImageSetFieldDeserializer.class)
-    @JsonProperty("imageSetId")
     protected ImageSet imageSet;
     @JsonRemoteProperty
     private boolean displayText;

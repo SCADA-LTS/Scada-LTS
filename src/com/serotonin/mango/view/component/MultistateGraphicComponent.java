@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
@@ -46,6 +48,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class MultistateGraphicComponent extends ImageSetComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("multistateGraphic", "MULTISTATE_GRAPHIC",
             "graphic.multistateGraphic", new int[] { DataTypes.MULTISTATE });
