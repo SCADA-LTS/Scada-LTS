@@ -14,6 +14,13 @@
 					</v-list-item-icon>
 					<v-list-item-title>{{ $t('plcalarms.notification') }}</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/watch-list">
+					<v-list-item-icon>
+						<v-icon>mdi-chart-line</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>{{ $t('watchlist.title')}}
+					</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/synoptic-panel" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-view-dashboard</v-icon>
@@ -68,13 +75,12 @@
 		</v-navigation-drawer>
 
 		<v-app-bar app dark color="primary">
-			
 			<v-list-item>
 				<v-list-item-content>
-					<v-list-item-title class="title"> Scada-LTS 
+					<v-list-item-title class="title"> Scada-LTS
 						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }}	
+						version {{ $store.getters.appMilestone }}
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
@@ -82,12 +88,11 @@
 				<v-list-item-content>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
 						<img v-if="highestUnsilencedAlarmLevel != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
-					</a>	
-				</v-list-item-content>		
+					</a>
+				</v-list-item-content>
 			</v-list-item>
 
 			<v-spacer></v-spacer>
-			
 			<v-menu bottom rounded max-width="250" offset-y v-if="user">
 				<template v-slot:activator="{ on }">
 					<v-btn icon v-on="on">
@@ -146,11 +151,11 @@ export default {
 			onAppOffline() {
 				this.wsLive = false;
 			},
-			wsCallback: () => {		
-				this.wsLive = true;	
+			wsCallback: () => {
+				this.wsLive = true;
 				this.wsSubscribeTopic(`alarm`, async(x) => {
 					await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
-				});		
+				});
 			},
 			wsLive: false,
 			alarmFlags: {
@@ -187,6 +192,9 @@ export default {
 	},
 
 	async mounted() {
+	    if(!this.user) {
+    			this.$store.dispatch('getUserInfo');
+    	}
 		this.$store.dispatch('getLocaleInfo');
 		await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 	},
@@ -196,7 +204,7 @@ export default {
 			if (this.$route.name !== 'scada') {
 				this.$router.push({ name: 'scada' });
 			}
-			
+
 		},
 		logout() {
 			this.$store.dispatch('logoutUser');

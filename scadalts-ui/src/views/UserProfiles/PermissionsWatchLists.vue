@@ -99,7 +99,7 @@ export default {
         async fetchData() {
             this.watchListsLoading = true;
             try {
-                let watchListList = await this.$store.dispatch('fetchWatchLists');
+                let watchListList = await this.$store.dispatch('getAllWatchLists');
                 watchListList.forEach(wl => {
                     this.watchLists.push({
                         id: wl.id,

@@ -12,14 +12,15 @@ import VueDayjs from 'vue-dayjs-plugin';
 import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
 import CMP from './components/graphical_views/cmp/CMP';
+import AutoManual from './components/graphical_views/cmp2/AutoManual'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
 import LineChartComponent from './components/amcharts/LineChartComponent';
 import RangeChartComponent from './components/amcharts/RangeChartComponent';
+import TableComponent from './components/graphical_views/pointTables/SimplePointTable.vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -142,6 +143,34 @@ for (let i = 0; i < 20; i++) {
 	}
 }
 
+for (let i = 0; i < 10; i++) {
+	const cmpId = `app-cmp2-${i}`;
+	const el = window.document.getElementById(cmpId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			i18n,
+			vuetify,
+			render: (h) =>
+				h(AutoManual, {
+					props: {
+						pConfig: JSON.parse(el.getAttribute('pconfig')),
+						pLabel: el.getAttribute('plabel'),
+						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null  ? el.getAttribute('ptimeRefresh') : 10000,
+						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
+						pZeroState: el.getAttribute('pzeroState') !== null ? el.getAttribute('pzeroState') : 'Auto',
+						pWidth: el.getAttribute('pwidth') !== null  ? el.getAttribute('pwidth') : 140,
+						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
+						pHideControls: el.getAttribute('phideControls') !== null,
+						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
+					},
+				})			
+		}).$mount('#' + cmpId);
+	}
+}
+
+
+
 if (window.document.getElementById('simple-component-svg') != undefined) {
 	new Vue({
 		render: (h) =>
@@ -181,15 +210,6 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 	new Vue({
 		render: (h) => h(ExportImportPointHierarchy),
 	}).$mount('#export-import-ph');
-}
-
-if (window.document.getElementById('example-chart-cmp') != undefined) {
-	new Vue({
-		store,
-		vuetify,
-		i18n,
-		render: (h) => h(WatchListJsonChart),
-	}).$mount('#example-chart-cmp');
 }
 
 for (let x = 0; x < 10; x++) {
@@ -255,6 +275,31 @@ for (let x = 0; x < 10; x++) {
 					},
 				}),
 		}).$mount(`#${chartId}`);
+	}
+}
+
+for (let x = 0; x < 10; x++) {
+	const baseId = `simple-table-${x}`;
+	const el = window.document.getElementById(baseId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			vuetify,
+			render: (h) =>
+				h(TableComponent, {
+					props: {
+						pointIds: el.getAttribute('point-ids'),
+						startDate: el.getAttribute('start-date'),
+						showTotal: el.getAttribute('total') !== null,
+						showAverage: el.getAttribute('average') !== null,
+						showMax: el.getAttribute('max') !== null,
+						showMin: el.getAttribute('min') !== null,
+						roundValue: Number(el.getAttribute('round')),
+						maxWidth: el.getAttribute('width' !== null ? Number(el.getAttribute('width')) : 600 ),
+						maxHeight: el.getAttribute('height' !== null ? Number(el.getAttribute('height')) : 400 ),
+					},
+				}),
+		}).$mount(`#${baseId}`);
 	}
 }
 

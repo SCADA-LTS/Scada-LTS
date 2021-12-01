@@ -15,6 +15,8 @@ import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
 import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
+import WatchList from './views/WatchList';
+import WatchListItem from './views/WatchList/WatchListItem';
 import HistoricalAlarmsComponent from './views/components/HistoricalAlarmsComponent';
 
 import store from './store/index';
@@ -43,7 +45,7 @@ const routing = new Router({
 			name: 'about',
 			component: About,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -82,7 +84,7 @@ const routing = new Router({
 			name: 'users',
 			component: UserList,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -90,7 +92,7 @@ const routing = new Router({
 			name: 'system-settings',
 			component: SystemSettings,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -98,7 +100,7 @@ const routing = new Router({
 			name: 'alarm-notifications',
 			component: AlarmNotifications,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -106,7 +108,7 @@ const routing = new Router({
 			name: 'recipient-list',
 			component: RecipientList,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -114,7 +116,7 @@ const routing = new Router({
 			name: 'user-profiles',
 			component: UserProfiles,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -122,7 +124,7 @@ const routing = new Router({
 			name: 'datapoint-list',
 			component: DataPointList,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -130,7 +132,7 @@ const routing = new Router({
 			name: 'datapoint-details',
 			component: DataPointDetails,
 			meta: {
-				requiresAuth: true,
+				requiresAuth: true
 			},
 		},
 		{
@@ -143,6 +145,17 @@ const routing = new Router({
 					component: SynopticPanelItem,
 				},
 			],
+		},
+		{
+			path: '/watch-list',
+			name: 'watch-list',
+			component: WatchList,
+			children: [
+				{
+					path: ':id',
+					component: WatchListItem,
+				}
+			]
 		},
 		{
 			path: '/example-ph',
@@ -209,15 +222,17 @@ const routing = new Router({
 					/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue'
 				),
 		},
+		
 	],
 });
 
 routing.beforeEach((to, from, next) => {
 	if (to.meta.requiresAuth) {
 		if (!store.state.loggedUser) {
-			store.dispatch('getUserInfo').catch(() => {
-				next({ name: 'login' });
-			});
+			store.dispatch('getUserInfo')
+				.catch(() => {
+					next({ name: 'login' });
+				})
 		}
 	}
 	next();

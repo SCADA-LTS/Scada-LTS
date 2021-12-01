@@ -1,0 +1,20 @@
+
+<p>The <b>SMS Domain</b> allows you to set SMS-Gateway server address required when user wants to use event handler of type SMS.</p>
+
+<p>The <b>AmCharts Settings</b> contains settings related to AmCharts. Aggregation settings allows user to
+    increase the performance of the AmCharts. <b>Enable aggregation</b> allows user to use this setting. User can define the data
+    count limit using <b>Values limit</b> parameter. This settings in ideal situation describe the amount of values
+    that are distributed evenly on a timeline. But in real life some values are generated at the same time or the gap
+    between them can vary so the "ideal" situation with evenly distributed vales is almost impossible. So to fix that
+    there is a <b>Limit factor</b> parameter that helps to achieve the more reliable chart. Increasing that factor, we
+    divide the interval into smaller blocks, so the data presentation is more accurate. There are more of this
+    aggregated
+    groups, but in each there are fewer values and averages to calculate. If from specific range there are less values
+    than <b>Values limit</b> that mechanism will be disabled. It tries to get the most accurate graph. AmChart
+    works well with less than 30 000 of data point values on a single chart, so try to set up your graph to not exceed
+    that constraint.</p>
+
+<p>The <b>Default Data Point logging type</b> allows user to set default logging type of newly created data points.</p>
+
+<p>The <b>Scada-LTS environment settings</b> allows user to see Scada-LTS configuration loaded from 'env.properties' file.
+    Modify file and restart application server to apply changes. </p>

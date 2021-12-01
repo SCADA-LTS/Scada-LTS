@@ -545,7 +545,7 @@ public class ViewDwr extends BaseDwr {
 			response.addContextualMessage("graphicRendererAnalogMin", "viewEdit.graphic.invalidMinMax");
 
 		ImageSet imageSet = getImageSet(imageSetId);
-		if (imageSet == null)
+		if (imageSet == null || !imageSet.isAvailable())
 			response.addContextualMessage("graphicRendererAnalogImageSet", "viewEdit.graphic.missingImageSet");
 
 		if (!response.getHasMessages()) {
@@ -566,7 +566,7 @@ public class ViewDwr extends BaseDwr {
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
-		if (imageSet == null)
+		if (imageSet == null || !imageSet.isAvailable())
 			response.addContextualMessage("graphicRendererBinaryImageSet", "viewEdit.graphic.missingImageSet");
 		else {
 			if (zeroImage == -1)
@@ -596,7 +596,7 @@ public class ViewDwr extends BaseDwr {
 			response.addContextualMessage("graphicRendererDynamicMin", "viewEdit.graphic.invalidMinMax");
 
 		DynamicImage dynamicImage = getDynamicImage(dynamicImageId);
-		if (dynamicImage == null)
+		if (dynamicImage == null || !dynamicImage.isAvailable())
 			response.addContextualMessage("graphicRendererDynamicImage", "viewEdit.graphic.missingDynamicImage");
 
 		if (!response.getHasMessages()) {
@@ -617,7 +617,7 @@ public class ViewDwr extends BaseDwr {
 
 		// Validate
 		ImageSet imageSet = getImageSet(imageSetId);
-		if (imageSet == null)
+		if (imageSet == null || !imageSet.isAvailable())
 			response.addContextualMessage("graphicRendererMultistateImageSet", "viewEdit.graphic.missingImageSet");
 
 		if (!response.getHasMessages()) {
@@ -965,7 +965,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-		    LOG.error(infoErrorExecutionScript(e, script), e);
+		    LOG.warn(infoErrorExecutionScript(e, script), e);
 		}
 
 		return false;

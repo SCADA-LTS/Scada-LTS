@@ -189,6 +189,19 @@ public class EventService implements MangoEvent {
 		return lst;
 		
 	}
+
+	@Override
+	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
+
+		List<EventInstance> lst;
+		if (typeRef1 == -1) {
+			lst = eventDAO.getPendingEvents(typeId, userId);
+		} else {
+			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
+		}
+		return lst;
+
+	}
 	
 	@Override
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {
@@ -222,8 +235,14 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {	
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
-	}	
-	
+	}
+
+	@Override
+	public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
+		return getPendingSimpleEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
+	}
+
+
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
 		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,

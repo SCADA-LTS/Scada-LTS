@@ -49,4 +49,12 @@ public class DataPointServiceWebSocket extends AbstractWebSocket {
         sendWebSocketMessage(url, response);
     }
 
+    public void notifyStateSubscribers(boolean enabled, int pointId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("pointId", pointId);
+        response.put("enabled", enabled);
+        String url = "/datapoint/" + pointId + "/enabled";
+        sendWebSocketMessage(url, response);
+    }
+
 }

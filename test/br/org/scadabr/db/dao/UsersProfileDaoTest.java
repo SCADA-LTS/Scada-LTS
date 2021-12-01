@@ -33,6 +33,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 
@@ -42,7 +43,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersProfilesShouldReturnAnEmptyListIfThereIsNoUsers() {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 		assertTrue(dao.getUsersProfiles().isEmpty());
 	}
 
@@ -51,7 +52,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "name";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -71,7 +72,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveUsersProfileShouldSaveName() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "name";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -85,7 +86,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test(expected = DAOException.class)
 	public void saveUsersProfileWithoutNameShouldFail() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		dao.saveUsersProfile(profile);
@@ -95,7 +96,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveUsersProfileWithDuplicatedNameShouldFail()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "name";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -110,7 +111,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getByIdShouldReturnProfileWithThatID() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "name";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -125,7 +126,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveUsersProfileShouldSaveDataSourcePermissions()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		DataSourceVO ds = new MockDataSourceDao().insertDataSource("dsname");
 
@@ -147,7 +148,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveUsersProfileShouldSaveDataPointPermissions()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "name";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -178,7 +179,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getByProfileByUserIdShouldReturnProfile() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "profile1";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -200,7 +201,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void updateUserProfileShoudUpdateUserProfileForLastAppliedUser()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
@@ -228,7 +229,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile5");
@@ -247,7 +248,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void saveProfileShoudUpdateProfileName() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
@@ -265,7 +266,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveProfileShoudNotUpdateProfileNameIfNameAlredyExists()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
@@ -283,7 +284,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveProfileShoudNotThrowExceptionWithTheProfileNameHasNotChanged()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
@@ -300,7 +301,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveProfileShoudUpdateDataSourcePermissions()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		DataSourceVO ds = new MockDataSourceDao().insertDataSource("dsname");
 
@@ -326,7 +327,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveProfileShoudUpdateDataPointPermissions()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		String name = "name";
 		UsersProfileVO profile = new UsersProfileVO();
@@ -361,7 +362,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
@@ -389,7 +390,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveUsersProfileShouldSaveWatchlistsPermissions()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		User user = TestUtils.createUser();
 		MockWatchlistDao mockWatchlistDao = new MockWatchlistDao();
@@ -417,7 +418,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersProfileShouldPopulateWatchlists() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		User user = TestUtils.createUser();
 		MockWatchlistDao watchListDao = new MockWatchlistDao();
@@ -446,7 +447,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		useScenario(new DatalessDatabaseScenario());
 		User user = TestUtils.createUser();
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
 
@@ -477,7 +478,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	public void saveUsersProfileShouldSaveViewsPermissions()
 			throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 
 		User user = TestUtils.createUser();
 		MockViewDao mockViewDao = new MockViewDao();
@@ -503,7 +504,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 	@Test
 	public void getUsersProfileShouldPopulateViews() throws DAOException {
 		useScenario(new DatalessDatabaseScenario());
-		UsersProfileDao dao = new UsersProfileDao();
+        UsersProfileService dao = new UsersProfileService();
 
 		User user = TestUtils.createUser();
 		MockViewDao mockViewDao = new MockViewDao();
@@ -532,7 +533,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		useScenario(new DatalessDatabaseScenario());
 		User user = TestUtils.createUser();
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
 
@@ -566,7 +567,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		User user = TestUtils.createUser();
 		User user2 = TestUtils.createUser();
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
 
@@ -612,7 +613,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		User user = TestUtils.createUser();
 		User user2 = TestUtils.createUser();
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
 
@@ -652,7 +653,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		User user = TestUtils.createUser();
 		User user2 = TestUtils.createUser();
 
-		UsersProfileDao dao = new UsersProfileDao();
+		UsersProfileService dao = new UsersProfileService();
 		UsersProfileVO profile = new UsersProfileVO();
 		profile.setName("profile1");
 

@@ -48,6 +48,21 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 	@Deprecated
 	private List<View> views;
 
+	public UsersProfileVO(UsersProfileVO usersProfile) {
+		this.name = usersProfile.name;
+		this.id = usersProfile.id;
+		this.dataSourcePermissions = new ArrayList<>(usersProfile.dataSourcePermissions);
+		this.dataPointPermissions = new ArrayList<>(usersProfile.dataPointPermissions);
+		this.watchlistPermissions = new ArrayList<>(usersProfile.watchlistPermissions);
+		this.viewPermissions = new ArrayList<>(usersProfile.viewPermissions);
+		this.xid = usersProfile.xid;
+		if(usersProfile.lastAppliedUser != null)
+			this.lastAppliedUser = new User(usersProfile.lastAppliedUser);
+		this.watchlists = new ArrayList<>(usersProfile.watchlists);
+		this.usersIds = new ArrayList<>(usersProfile.usersIds);
+		this.views = new ArrayList<>(usersProfile.views);
+	}
+
 	public UsersProfileVO() {
 		name = "";
 		dataSourcePermissions = new ArrayList<Integer>();

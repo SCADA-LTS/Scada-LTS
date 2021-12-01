@@ -13,7 +13,8 @@ import storeMailingList from './mailingList';
 import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
-import watchListModule from './modernWatchList';
+import watchListModule from './watchList';
+import webSocketModule from './websocketStore';
 
 import axios from 'axios';
 
@@ -41,6 +42,7 @@ export default new Vuex.Store({
 		storeAlarmsNotifications,
 		SynopticPanelModule,
 		watchListModule,
+		webSocketModule,
 	},
 	state: {
 		loggedUser: null,
@@ -93,6 +95,10 @@ export default new Vuex.Store({
     		let host = window.location.host.split(":");
 
 			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
+		},
+
+		updateRequestTimeout(state, timeout) {
+			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		}
 	},
 	actions: {
@@ -135,6 +141,9 @@ export default new Vuex.Store({
 		async getUserInfo({ state, dispatch, commit }) {
 			state.loggedUser = await dispatch('requestGet', '/auth/user');
 			commit('updateWebSocketUrl');
+			commit('INIT_WEBSOCKET_URL');
+			commit('INIT_WEBSOCKET');
+
 		},
 
 		/**
@@ -304,6 +313,7 @@ export default new Vuex.Store({
 			} else {
 				console.error('⚫️ - Not received response message!');
 			}
+
 			return false;
 		},
 	},

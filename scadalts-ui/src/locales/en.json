@@ -1,4 +1,13 @@
 {
+	"component.automanual.dialog.title": "Change the state",
+	"component.automanual.dialog.message": "This operation will change the point values related to that component. Are you sure?",
+	"component.automanual.errors.empty": "No related events for that condition check",
+	"component.automanual.errors.conn": "Failed to establish connection",
+	"component.automanual.controls.title": "Current state",
+	"component.automanual.history.title": "State History",
+	"component.automanual.history.table.username": "Username",
+	"component.automanual.history.table.time": "Time",
+	"component.automanual.history.table.state": "State",
 	"common.tp.millisecond": "millisecond",
 	"common.tp.second": "second",
 	"common.tp.seconds": "seconds",
@@ -207,9 +216,6 @@
 	"event.system.startup": "System startup",
 	"event.system.userLogin": "User login",
 	"common.default": "{0}",
-
-
-
 	"event.1wire.deviceRead": "Error reading device at address {0}: {1}",
 	"event.1wire.networkRead": "Error reading network: {0}",
 	"event.1wire.noDevice": "Device with address {0} not found for point {1}, set failed",
@@ -548,6 +554,7 @@
 	"modernwatchlist.settings.date.start": "Start date",
 	"modernwatchlist.settings.time.end": "End time",
 	"modernwatchlist.settings.time.start": "Start time",
+	"modernwatchlist.settings.live.performance.websocket": "Real-time update",
 	"modernwatchlist.settings.live.performance.1": "Update every 1 second",
 	"modernwatchlist.settings.live.performance.10": "Update every 10 seconds",
 	"modernwatchlist.settings.live.performance.2": "Update every 2 seconds",
@@ -818,5 +825,21 @@
 	"userDetails.field.receiveOwnAuditEvents": "Receive audit events",
 	"userDetails.field.hideMenu": "Hide Menu",
 	"userDetails.field.receiveAlarmEmails": "Receive alarm emails",
-	"userDetails.field.theme": "UI Theme"
+	"userDetails.field.theme": "UI Theme",
+	"watchlist.title": "Watch List",
+	"watchlist.header.select": "Active WatchList",
+	"watchlist.settings.title": "Watch List configuration",
+	"watchlist.settings.name": "Watch List name",
+	"watchlist.settings.layout": "Watch List layout:",
+	"watchlist.settings.layout.vertical": "Vertical",
+	"watchlist.settings.layout.horizontal": "Horizontal",
+	"watchlist.settings.chartBigger": "Bigger chart",
+	"watchlist.list.PointWatcher": "Point value dashboard",
+	"watchlist.datapoint.disabled": "Data Point is not available!",
+	"watchlist.datapoint.ds.disabled": "Data Source is probably not availalbe!",
+	"watchlist.list.PointChart": "DataPoint chart",
+	"watchlist.dialog.delete.title": "Delete Watch List",
+	"watchlist.dialog.delete.text": "Are you sure? That operation can not be undone?",
+	"watchlist.datapoint.pointvalue.set": "Set value:",
+	"watchlist.datapoint.pointvalue.new": "New value:"
 }

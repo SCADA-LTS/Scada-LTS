@@ -2,38 +2,32 @@ package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.UsersProfileDAO;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ViewProfilePermissionsService implements PermissionsService<ViewAccess, UsersProfileVO> {
 
-    private final ViewDAO viewDAO;
-    private final UsersProfileDAO usersProfileDAO;
+    private final IUsersProfileDAO usersProfileDAO;
 
-    public ViewProfilePermissionsService() {
-        this.viewDAO = new ViewDAO();
-        this.usersProfileDAO = new UsersProfileDAO();
-    }
-
-    public ViewProfilePermissionsService(ViewDAO viewDAO, UsersProfileDAO usersProfileDAO) {
-        this.viewDAO = viewDAO;
+    public ViewProfilePermissionsService(IUsersProfileDAO usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
     }
 
     @Override
-    public List<ViewAccess> getPermissions(UsersProfileVO user) {
-        return viewDAO.selectViewPermissionsByProfileId(user.getId());
+    public List<ViewAccess> getPermissions(UsersProfileVO profile) {
+        return usersProfileDAO.selectViewPermissionsByProfileId(profile.getId());
     }
 
     @Override
-    public void addOrUpdatePermissions(UsersProfileVO user, List<ViewAccess> toAddOrUpdate) {
-        usersProfileDAO.insertViewUsersProfile(user.getId(), toAddOrUpdate);
+    public void addOrUpdatePermissions(UsersProfileVO profile, List<ViewAccess> toAddOrUpdate) {
+        usersProfileDAO.insertViewUsersProfile(profile.getId(), toAddOrUpdate);
     }
 
     @Override
-    public void removePermissions(UsersProfileVO user, List<ViewAccess> toRemove) {
-        usersProfileDAO.deleteViewUsersProfile(user.getId(), toRemove);
+    public void removePermissions(UsersProfileVO profile, List<ViewAccess> toRemove) {
+        usersProfileDAO.deleteViewUsersProfile(profile.getId(), toRemove);
     }
 }

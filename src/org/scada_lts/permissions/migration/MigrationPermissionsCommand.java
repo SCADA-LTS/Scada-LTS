@@ -1,7 +1,6 @@
 package org.scada_lts.permissions.migration;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,19 +19,16 @@ class MigrationPermissionsCommand extends AbstractMeasurmentCommand {
 
     private final MigrationPermissionsService migrationPermissionsService;
     private final MigrationDataService migrationDataService;
-    private final List<View> views;
 
     MigrationPermissionsCommand(MigrationPermissionsService migrationPermissionsService,
-                                MigrationDataService migrationDataService,
-                                List<View> views) {
+                                MigrationDataService migrationDataService) {
         this.migrationPermissionsService = migrationPermissionsService;
         this.migrationDataService = migrationDataService;
-        this.views = views;
     }
 
     @Override
     public void work(List<User> users) {
-        String msg = getName() + " - views size: " + views.size();
+        String msg = getName() + " - views size: " + migrationDataService.getViews().size();
         LOG.info(msg);
 
         Map<Accesses, UsersProfileVO> profiles = new HashMap<>();
@@ -52,7 +48,7 @@ class MigrationPermissionsCommand extends AbstractMeasurmentCommand {
         MigrationPermissions verify = new VerifyPermissionsFromUserQuery(migrationDataService,
                 migrationPermissionsService);
         MigrationPermissions complementPermissions = new ComplementPermissionsCommand(profiles,
-                migrationPermissionsService, migrationDataService, views);
+                migrationPermissionsService, migrationDataService);
         MigrationPermissions transferToProfile = new TransferToProfileCommand(profiles,
                 migrationPermissionsService, migrationDataService);
 
