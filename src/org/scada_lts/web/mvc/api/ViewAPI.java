@@ -372,6 +372,23 @@ public class ViewAPI {
         }
     }
 
+    @PutMapping(value = "")
+    public ResponseEntity<String> updateView(@RequestBody View view, HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                viewService.saveViewAPI(view);
+                return new ResponseEntity<>("updated", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping(value = "")
     public ResponseEntity<String> deleteView(@RequestParam(required = false) Integer id,
                                         @RequestParam(required = false) String xid,
@@ -460,7 +477,7 @@ public class ViewAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 UploadImage uploadImage = viewService.uploadBackgroundImage(file);
-                return new ResponseEntity<>(uploadImage, HttpStatus.OK);
+                return new ResponseEntity<>(uploadImage, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
