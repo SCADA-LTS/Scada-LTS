@@ -39,7 +39,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.scada_lts.utils.ValidationUtils.validId;
@@ -348,7 +350,7 @@ public class ViewAPI {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<String> createView(@RequestBody View view, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Integer>> createView(@RequestBody View view, HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
@@ -357,8 +359,9 @@ public class ViewAPI {
 //                if(!error.isEmpty()) {
 //                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //                }
-                viewService.saveView(view);
-                return new ResponseEntity<>("created", HttpStatus.CREATED);
+                Map<String, Integer> response = new HashMap<>();
+                response.put("viewId", viewService.saveViewAPI(view));
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -445,6 +448,39 @@ public class ViewAPI {
             }
         } catch (Exception e) {
             LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/generateXid")
+    public ResponseEntity<String> getUniqueXid(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null && user.isAdmin()) {
+                return new ResponseEntity<>(viewService.generateUniqueXid(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/validate")
+    public ResponseEntity<Map<String, Object>> isXidUnique(
+            @RequestParam String xid,
+            @RequestParam Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("unique", viewService.isXidUnique(xid, id));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -179,6 +179,19 @@ public class ViewService {
 		usersPermissions.clear();
 	}
 
+	public int saveViewAPI(final View view) {
+		LOG.debug("View name: " + view.getName());
+		int id = -1;
+		if (view.getId() == Common.NEW_ID) {
+			id = (int) viewDAO.create(view)[0];
+		} else {
+			viewDAO.update(view);
+		}
+
+		usersPermissions.clear();
+		return id;
+	}
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void removeView(final int viewId) {
 		viewDAO.deleteViewForUser(viewId);
