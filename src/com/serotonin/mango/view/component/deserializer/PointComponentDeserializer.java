@@ -15,6 +15,7 @@ public class PointComponentDeserializer extends JsonDeserializer<PointComponent>
 
     @Override
     public PointComponent deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerSubtypes(ImageSetComponent.class);
         mapper.registerSubtypes(ScriptComponent.class);
         mapper.registerSubtypes(DynamicGraphicComponent.class);
