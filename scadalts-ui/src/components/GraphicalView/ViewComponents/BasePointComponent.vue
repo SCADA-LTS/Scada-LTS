@@ -1,5 +1,10 @@
 <template>
-	<BaseViewComponent :component="component" @update="$emit('update')">
+	<BaseViewComponent
+		:component="component"
+		@update="$emit('update')"
+		@click="$emit('click', $event)"
+		@mousedown="$emit('mousedown', $event)"
+	>
 		<template v-slot:default="data">
 			<slot v-bind:data="data" />
 		</template>
@@ -18,7 +23,11 @@
 		<template v-slot:renderer>
 			<v-row>
 				<v-col cols="12">
-					<DataPointSerachComponent v-model="component.dataPointId" :dataTypes="dataTypes" @change="onPointChange"></DataPointSerachComponent>
+					<DataPointSerachComponent
+						v-model="component.dataPointId"
+						:dataTypes="dataTypes"
+						@change="onPointChange"
+					></DataPointSerachComponent>
 				</v-col>
 				<v-col cols="6">
 					<v-switch v-model="component.displayPointName" label="Display name"></v-switch>
@@ -57,7 +66,7 @@ export default {
 		},
 		dataTypes: {
 			type: Array,
-			required: false,			
+			required: false,
 		},
 	},
 
@@ -113,24 +122,27 @@ export default {
 		},
 
 		updatePointStatus(data) {
-			const status = JSON.parse(data.body).enabled
+			const status = JSON.parse(data.body).enabled;
 			this.$emit('status-update', status);
-			if(status === true) {
+			if (status === true) {
 				this.getPointValue();
 			}
 		},
 
 		async getPointValue() {
 			try {
-				const res = await this.$store.dispatch('getDataPointValue', this.component.dataPointId);
+				const res = await this.$store.dispatch(
+					'getDataPointValue',
+					this.component.dataPointId,
+				);
 				this.$emit('status-update', res.enabled);
-				if(res.enabled === true) {
+				if (res.enabled === true) {
 					this.$emit('value-update', res.value);
 				}
 			} catch (e) {
 				console.error(e);
 			}
-		}
+		},
 	},
 };
 </script>

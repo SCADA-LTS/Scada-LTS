@@ -239,7 +239,8 @@ export default {
 <style scoped>
 .slts-page-content {
 	height: 77vh;
-	background-color: bisque;
+	/* background-color: bisque; */
+	background-color: white;
 	overflow: auto;
 }
 .slts-page-actions--floating {
