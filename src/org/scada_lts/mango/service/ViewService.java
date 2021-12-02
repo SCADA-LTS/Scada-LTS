@@ -48,6 +48,7 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 
@@ -59,6 +60,8 @@ public class ViewService {
 	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
 	private GetShareUsers<View> viewGetShareUsers;
 	private UsersProfileService usersProfileService;
+
+	private String fileSeparator = System.getProperty("file.separator");
 
 	public ViewService() {
 		this.viewDAO = ApplicationBeans.getBean("viewDAO", ViewDAO.class);
@@ -243,24 +246,34 @@ public class ViewService {
 	}
 
 	public List<UploadImage> getUploadImages() throws IOException {
-		String fileSeparator = System.getProperty("file.separator");
-		String uploadFolder = Common.ctx.getServletContext().getRealPath(
-				fileSeparator)
-				+ "uploads";
-
-		List<File> files = FileUtil.getFilesOnDirectory(uploadFolder);
+		List<File> files = FileUtil.getFilesOnDirectory(getUploadsPath());
 
 		List<UploadImage> images = new ArrayList<>();
 		for (File file : files) {
-			BufferedImage bimg = ImageIO.read(file);
-			int width = bimg.getWidth();
-			int height = bimg.getHeight();
-
-			String filePartialPath = "uploads" + fileSeparator + file.getName();
-			UploadImage uploadImage = new UploadImage(file.getName(), filePartialPath, width, height);
-			images.add(uploadImage);
+			images.add(createUploadImage(file));
 		}
 
 		return images;
+	}
+
+	public UploadImage uploadBackgroundImage(MultipartFile multipartFile) throws IOException {
+		File file = new File(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+
+		multipartFile.transferTo(file);
+
+		return createUploadImage(file);
+	}
+
+	private UploadImage createUploadImage(File file) throws IOException {
+		BufferedImage bimg = ImageIO.read(file);
+		int width = bimg.getWidth();
+		int height = bimg.getHeight();
+
+		String filePartialPath = "uploads" + fileSeparator + file.getName();
+		return new UploadImage(file.getName(), filePartialPath, width, height);
+	}
+
+	private String getUploadsPath() {
+		return Common.ctx.getServletContext().getRealPath(fileSeparator) + "uploads";
 	}
 }

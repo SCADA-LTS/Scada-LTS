@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -443,6 +444,23 @@ public class ViewAPI {
             if (user != null) {
                 return new ResponseEntity<>(viewService.getUploadImages(), HttpStatus.OK);
 
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/uploads")
+    public ResponseEntity<UploadImage> uploadBackgroundImage(@RequestPart MultipartFile file, HttpServletRequest request) {
+        LOG.info("/api/view");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                UploadImage uploadImage = viewService.uploadBackgroundImage(file);
+                return new ResponseEntity<>(uploadImage, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
