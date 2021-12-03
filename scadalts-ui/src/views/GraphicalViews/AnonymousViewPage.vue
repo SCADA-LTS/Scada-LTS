@@ -67,11 +67,8 @@ export default {
 }
 .slts-page-actions--floating {
 	position: fixed;
-	bottom: 10px;
-	width: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    bottom: 10px;
+    left: 47%;
 }
 .slts-fullscreen-container {
 	position: fixed;

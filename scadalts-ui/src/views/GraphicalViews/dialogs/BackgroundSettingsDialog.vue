@@ -7,7 +7,7 @@
 				<v-row>
 					<v-col v-for="img in images" cols="6">
 						<v-card @click="selectImage(img)">
-							<v-img :src="img.imgUrl" class="gv-background--thumbnail">
+							<v-img :src="`./${img.imgUrl}`" class="gv-background--thumbnail">
 							</v-img>
 						</v-card>
 					</v-col>

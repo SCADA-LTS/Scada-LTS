@@ -22,9 +22,6 @@ public final class ViewApiUtils {
             } else if (xid != null) {
                 view = viewService.getViewByXid(xid);
             }
-            if (view != null) {
-                view.setBackgroundFilename(getBackgroundImageAbsolutePath(view.getBackgroundFilename()));
-            }
             return Optional.ofNullable(view);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);

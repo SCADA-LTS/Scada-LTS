@@ -44,6 +44,7 @@ export const graphicalViewModule = {
             }
         },
         SET_GRAPHICAL_PAGE_BACKGROUND(state, payload) {
+            console.log(payload, 'payload');
             state.graphicalPage.backgroundFilename = payload.imgUrl;
             setResolution(state, payload);
         },
@@ -129,24 +130,49 @@ export const graphicalViewModule = {
             });
         },
 
-        createGraphicalView({ state, dispatch }) {
-            console.log(state.graphicalPage);
-            return new Promise((resolve) => {
-                resolve(true);
+        createGraphicalView({ state, commit, dispatch }) {
+            console.log("createGraphicalView");
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await dispatch('requestPost', {
+                        url: '/view',
+                        data: state.graphicalPage
+                    });
+                    state.graphicalPage.id = response.viewId;
+                    commit('SET_GRAPHICAL_PAGE', state.graphicalPage);
+                    commit('SET_GRAPHICAL_PAGE_BACKUP', state.graphicalPage);
+                    resolve(state.graphicalPage);
+                } catch (e) {
+                    reject(e);
+                }
             });
         },
 
         saveGraphicalView({ state, dispatch }) {
             console.log(state.graphicalPage);
-            return new Promise((resolve) => {
-                resolve(true);
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await dispatch('requestPut', {
+                        url: '/view',
+                        data: state.graphicalPage
+                    });
+                    console.log(response);
+                    resolve(response);
+                } catch (e) {
+                    reject(e);
+                }
             });
         },
 
         deleteGraphicalView({ state, dispatch }) {
-            console.warn("DELTED GV");
-            return new Promise((resolve) => {
-                resolve(true);
+            return new Promise((resolve, reject) => {
+                try {
+                    const response = dispatch('requestDelete', `/view?id=${state.graphicalPage.id}`);
+                    console.log(response);
+                    resolve(response);
+                } catch (e) {
+                    reject(e);
+                }
             })
         },
 
@@ -172,8 +198,14 @@ export const graphicalViewModule = {
         },
 
         getUploadedBackgrounds({ dispatch }) {
-            return new Promise(resolve => {
-                resolve(backgroundImages);
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await dispatch('requestGet', '/view/uploads');
+                    console.log(response);
+                    resolve(response);
+                } catch (e) {
+                    reject(e);
+                }
             });
         },
 

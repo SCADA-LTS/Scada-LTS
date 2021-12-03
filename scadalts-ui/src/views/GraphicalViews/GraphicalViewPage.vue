@@ -148,8 +148,13 @@ export default {
 			return this.$store.state.graphicalViewModule.resolution;
 		},
 		viewBackground() {
-			console.log(this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename);
-			return this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename;
+			const bg = this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename;
+			if(!!bg) {
+				let url = this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename.split(" ").join("%20");
+				return `${url}`;
+			} else {
+				return null;
+			}
 		},
 		editMode() {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;

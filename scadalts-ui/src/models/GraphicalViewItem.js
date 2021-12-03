@@ -1,15 +1,17 @@
 export class GraphicalViewItem {
 
     constructor(username) {
-        this.user = username;
         this.id = -1;
         this.xid = "GV_000000";
         this.name = "";
         this.backgroundFilename = null;
-        this.anonymousAccess = "NONE";
+        this.width = 1024;
+        this.height = 768;
+        this.resolution = 2;
+        this.userId = username;
         this.viewComponents = [];
-        this.sharingUsers = [];
-        this.resolution = "R1024x768";
+        this.anonymousAccess = 0;
+        this.viewUsers = [];
     }
 
 }

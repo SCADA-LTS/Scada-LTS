@@ -160,12 +160,15 @@ export default {
 			this.changeToEditMode();
 			this.createMode = true;
 			this.$router.push({ path: `/graphical-view/-1` });
-			const view = new GraphicalViewItem(this.$store.state.loggedUser.username)
+			const view = new GraphicalViewItem(this.$store.state.loggedUser.id);
 			this.$store.commit("SET_GRAPHICAL_PAGE", view);
 		},
 		async removeGraphicalView() {
 			try {
 				await this.$store.dispatch('deleteGraphicalView');
+				this.$router.push({ path: '/graphical-view' });
+				this.fetchGraphicalViewList();
+				this.activeGraphicalView = null;
 			} catch (e) {
 				console.log(e);
 			}
@@ -194,10 +197,14 @@ export default {
 				if(this.createMode) {
 					res = await this.$store.dispatch('createGraphicalView')
 					if(res) {
-						this.createMode = false;						
+						console.log(res, 'created');
+						this.createMode = false;
+						this.fetchGraphicalViewList();
+						this.activeGraphicalView = res.id;
 					}
 				} else {
 					res = await this.$store.dispatch('saveGraphicalView');
+
 				}	
 				if (res) {
 					this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
