@@ -67,7 +67,7 @@ public class ViewAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(viewService.getAllViews(user),HttpStatus.OK);
+                return new ResponseEntity<>(viewService.getAllViews(),HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -316,6 +316,22 @@ public class ViewAPI {
         }
         return result;
 
+    }
+
+    @GetMapping(value = "/getAllForUser")
+    public ResponseEntity<List<ScadaObjectIdentifier>> getAllForUser(HttpServletRequest request) {
+        LOG.info("/api/view/getAllForUser");
+        try {
+            User user = Common.getUser(request);
+            if (user != null) {
+                return new ResponseEntity<>(viewService.getAllViewsForUser(user), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(value = "")

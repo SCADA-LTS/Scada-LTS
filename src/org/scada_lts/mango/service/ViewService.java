@@ -91,7 +91,13 @@ public class ViewService {
 		return views;
 	}
 
-	public List<ScadaObjectIdentifier> getAllViews(User user) {
+	public List<ScadaObjectIdentifier> getAllViews() {
+		return viewDAO.getSimpleList();
+	}
+
+	public List<ScadaObjectIdentifier> getAllViewsForUser(User user) {
+		if (user.isAdmin())
+			return viewDAO.getSimpleList();
 		List<View> views = getViews(user.getId(), user.getUserProfile());
 		List<ScadaObjectIdentifier> simpleList = new ArrayList<>();
 		for (View view : views) {
