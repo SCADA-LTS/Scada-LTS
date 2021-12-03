@@ -3,7 +3,7 @@
 		<v-container fluid class="slts-page-header" v-if="!editMode">
 			<v-row align="center">
 				<v-col>
-					<h1>Graphical Views {{userAccess}}</h1>
+					<h1>Graphical Views</h1>
 				</v-col>
 				<v-col class="row justify-end">
 					<v-btn icon @click="toggleFullScreen" v-if="!!activeGraphicalView">
@@ -12,10 +12,18 @@
 					<v-btn icon @click="changeToCreateMode">
 						<v-icon> mdi-plus </v-icon>
 					</v-btn>
-					<v-btn icon @click="changeToEditMode" v-if="!!activeGraphicalView">
+					<v-btn
+						icon
+						@click="changeToEditMode"
+						v-if="!!activeGraphicalView && userAccess === 2"
+					>
 						<v-icon> mdi-pencil </v-icon>
 					</v-btn>
-					<v-btn icon @click="removeGraphicalView" v-if="!!activeGraphicalView">
+					<v-btn
+						icon
+						@click="removeGraphicalView"
+						v-if="!!activeGraphicalView && userAccess === 2"
+					>
 						<v-icon> mdi-delete </v-icon>
 					</v-btn>
 				</v-col>
@@ -32,56 +40,71 @@
 			</v-row>
 		</v-container>
 		<v-container fluid v-else>
-			<v-row>
-				<v-col>
-					<v-text-field label="Name" v-model="activePage.name"></v-text-field>
-				</v-col>
-				<v-col>
-					<v-text-field label="Export ID" v-model="activePage.xid"></v-text-field>
-				</v-col>
-				<v-col>
-					<v-select
-						label="Annonymous Access"
-						v-model="activePage.anonymousAccess"
-						:items="annonymousAccess"
-					></v-select>
-				</v-col>
-				<v-col>
-					<v-select
-						label="Canvas size"
-						v-model="activePage.resolution"
-						:items="canvasResolutions"
-						@change="changeCanvasResolution"
-					></v-select>
-				</v-col>
-				<v-col class="flex-jc-space-around">
-					<v-btn @click="showBackgroundDialog">
-						<v-icon> mdi-image </v-icon>
-					</v-btn>
-					<v-btn @click="toggleIconify">
-						<v-icon> mdi-cube </v-icon>
-					</v-btn>
-					<v-btn color="primary" @click="showComponentsDialog">
-						<v-icon> mdi-plus </v-icon>
-					</v-btn>
-				</v-col>
-			</v-row>
+			<v-form v-model="valid" ref="form">
+				<v-row>
+					<v-col>
+						<v-text-field
+							label="Name"
+							v-model="activePage.name"
+							:rules="[ruleRequired]"
+						></v-text-field>
+					</v-col>
+					<v-col>
+						<v-text-field
+							label="Export ID"
+							v-model="activePage.xid"
+							@input="checkXidUnique"
+							:rules="[ruleRequired, ruleXidUnique]"
+						></v-text-field>
+					</v-col>
+					<v-col>
+						<v-select
+							label="Annonymous Access"
+							v-model="activePage.anonymousAccess"
+							:items="annonymousAccess"
+						></v-select>
+					</v-col>
+					<v-col>
+						<v-select
+							label="Canvas size"
+							v-model="activePage.resolution"
+							:items="canvasResolutions"
+							@change="changeCanvasResolution"
+						></v-select>
+					</v-col>
+					<v-col class="flex-jc-space-around">
+						<v-btn @click="showBackgroundDialog">
+							<v-icon> mdi-image </v-icon>
+						</v-btn>
+						<v-btn @click="toggleIconify">
+							<v-icon> mdi-cube </v-icon>
+						</v-btn>
+						<v-btn color="primary" @click="showComponentsDialog">
+							<v-icon> mdi-plus </v-icon>
+						</v-btn>
+					</v-col>
+				</v-row>
+			</v-form>
 		</v-container>
-		<v-container fluid class="slts-page-content" v-bind:class="{'slts-fullscreen-container' : fullscreenEnabled}">
+		<v-container
+			fluid
+			class="slts-page-content"
+			v-bind:class="{ 'slts-fullscreen-container': fullscreenEnabled }"
+		>
 			<router-view @routeChanged="onRouteChanged"></router-view>
 		</v-container>
 		<v-container fluid v-if="editMode" class="slts-page-actions--floating">
 			<v-btn @click="editCancel"> Cancel </v-btn>
-			<v-btn color="primary" @click="editAccept"> {{createMode ? 'Create' : 'Update' }} </v-btn>
+			<v-btn color="primary" @click="editAccept" :disabled="!valid">
+				{{ createMode ? 'Create' : 'Update' }}
+			</v-btn>
 		</v-container>
 		<BackgroundSettingsDialog
 			ref="backgroundDialog"
 			@image-update="onBackgroundImageChanged"
 			@reset="onBackgroundReset"
 		></BackgroundSettingsDialog>
-		<ComponentCreationDialog
-			ref="creationDialog"	
-		></ComponentCreationDialog>
+		<ComponentCreationDialog ref="creationDialog"></ComponentCreationDialog>
 	</div>
 </template>
 <script>
@@ -94,7 +117,7 @@ export default {
 	components: {
 		GraphicalViewPage,
 		ComponentCreationDialog,
-		BackgroundSettingsDialog
+		BackgroundSettingsDialog,
 	},
 
 	data() {
@@ -103,6 +126,10 @@ export default {
 			graphicalViewList: [],
 			createMode: false,
 			fullscreenEnabled: false,
+			xidUnique: true,
+			valid: false,
+			ruleRequired: (v) => !!v || this.$t('form.validation.required'),
+			ruleXidUnique: () => this.xidUnique || this.$t('common.snackbar.xid.not.unique'),
 		};
 	},
 
@@ -117,16 +144,7 @@ export default {
 			return this.$store.state.graphicalViewModule.annonymousAccess;
 		},
 		userAccess() {
-			const user = this.$store.state.loggedUser;
-			if(!!user) {
-				if(user.admin) {
-					return 2;
-				} else {
-					const gv = this.$store.state.graphicalViewModule.graphicalPage;
-					return gv.viewUsers.find(access => access.userId = user.id) || 0;
-				}
-			}
-			return 0;
+			return this.$store.getters.userGraphicViewAccess;
 		},
 		activePage: {
 			get() {
@@ -141,14 +159,12 @@ export default {
 	mounted() {
 		this.fetchGraphicalViewList();
 		this.addFullScreenKeyListener();
-
 	},
 
 	methods: {
 		async fetchGraphicalViewList() {
 			try {
 				this.graphicalViewList = await this.$store.dispatch('fetchGraphicalViewsList');
-				console.log(this.graphicalViewList);
 			} catch (e) {
 				console.log(e);
 			}
@@ -156,12 +172,17 @@ export default {
 		changeToEditMode() {
 			this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', true);
 		},
-		changeToCreateMode() {
+		async changeToCreateMode() {
 			this.changeToEditMode();
 			this.createMode = true;
 			this.$router.push({ path: `/graphical-view/-1` });
 			const view = new GraphicalViewItem(this.$store.state.loggedUser.id);
-			this.$store.commit("SET_GRAPHICAL_PAGE", view);
+			try {
+				view.xid = await this.$store.dispatch('getUniqeGraphicalViewXid');
+			} catch (e) {
+				console.log(e);
+			}
+			this.$store.commit('SET_GRAPHICAL_PAGE', view);
 		},
 		async removeGraphicalView() {
 			try {
@@ -174,8 +195,8 @@ export default {
 			}
 		},
 		addFullScreenKeyListener() {
-			window.addEventListener("keypress", e=> {
-				if(e.keyCode === 6) {
+			window.addEventListener('keypress', (e) => {
+				if (e.keyCode === 6) {
 					this.toggleFullScreen();
 				}
 			});
@@ -190,25 +211,25 @@ export default {
 		editCancel() {
 			this.$store.commit('REVERT_GRAPHICAL_PAGE');
 			this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
+			this.createMode = false;
 		},
 		async editAccept() {
 			try {
 				let res;
-				if(this.createMode) {
-					res = await this.$store.dispatch('createGraphicalView')
-					if(res) {
-						console.log(res, 'created');
-						this.createMode = false;
+				if (this.createMode) {
+					res = await this.$store.dispatch('createGraphicalView');
+					if (res) {
 						this.fetchGraphicalViewList();
 						this.activeGraphicalView = res.id;
 					}
 				} else {
 					res = await this.$store.dispatch('saveGraphicalView');
-
-				}	
+				}
+				this.createMode = false;
 				if (res) {
 					this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
-				}			
+				}
+				
 			} catch (e) {
 				console.error(e);
 			}
@@ -218,7 +239,6 @@ export default {
 			this.$refs.creationDialog.openDialog();
 		},
 		moveToGraphicalView() {
-			console.log(this.activeGraphicalView);
 			this.$router.push({ path: `/graphical-view/${this.activeGraphicalView}` });
 		},
 		onRouteChanged(id) {
@@ -238,8 +258,27 @@ export default {
 		},
 
 		changeCanvasResolution() {
-			this.$store.commit('UPDATE_GRAPHICAL_PAGE_RESOLUTION')
-		}
+			this.$store.commit('UPDATE_GRAPHICAL_PAGE_RESOLUTION');
+		},
+
+		isFormValid() {
+			return this.$refs.form.validate();
+		},
+
+		async checkXidUnique() {
+			try {
+				if (this.editMode) {
+					const res = await this.$store.dispatch('isGraphicalViewXidUnique', {
+						xid: this.activePage.xid,
+						id: this.activePage.id,
+					});
+					this.xidUnique = res.unique;
+					this.$refs.form.validate();
+				}
+			} catch (e) {
+				console.error('Failed to check unique of xid!');
+			}
+		},
 	},
 };
 </script>

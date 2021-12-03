@@ -5,7 +5,5 @@ export default class ViewComponentSimplePoint extends BasePointModel {
         super('simple');
     }
 
-
-
 }
 

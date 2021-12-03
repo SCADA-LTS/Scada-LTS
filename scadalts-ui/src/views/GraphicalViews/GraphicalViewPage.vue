@@ -159,13 +159,28 @@ export default {
 		editMode() {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;
 		},
+		userAccess() {
+			return this.$store.getters.userGraphicViewAccess;
+		},
 	},
 
 	methods: {
 		async fetchGraphicalView(graphicalViewId) {
 			if (graphicalViewId > 0) {
-				await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
-				this.$emit('routeChanged', Number(graphicalViewId));
+				try {
+					await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
+					this.$emit('routeChanged', Number(graphicalViewId));
+					if(this.editMode && this.userAccess < 2) {
+						this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
+					}
+				} catch (e) {
+					console.error(e);
+					if(e.status === 401) {
+						this.$router.push({name: '401'});
+					} 
+
+				}
+				
 			}
 		},
 

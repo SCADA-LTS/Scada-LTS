@@ -35,7 +35,7 @@ export const graphicalViewModule = {
         },
         SET_GRAPHICAL_PAGE_BACKUP(state, payload) {
             state.graphicalPageBackup = JSON.parse(JSON.stringify(payload));
-        },
+        },        
         REVERT_GRAPHICAL_PAGE(state) {
             state.graphicalPage = JSON.parse(JSON.stringify(state.graphicalPageBackup));
             state.resolution = {
@@ -92,32 +92,14 @@ export const graphicalViewModule = {
         SET_IMAGE_SETS(state, payload) {
             state.imageSets = payload;
         },
-        SET_SHIFT_BUTTON_LISTENER(state, callback) {
-            if(!!state.shiftButton.listenerDown || !!state.shiftButton.listenerUp) {
-                window.removeEventListener('keydown', state.shiftButton.listenerDown);
-                window.removeEventListener('keyup', state.shiftButton.listenerUp);
-            }
-            state.shiftButton.listenerUp = callback.up;
-            state.shiftButton.listenerDown = callback.down;
-            window.addEventListener('keyup', callback.up);
-            window.addEventListener('keydown', callback.down);
-        },
-        RESET_SHIFT_BUTTON_LISTENER(state) {
-            window.removeEventListener('keyup', state.shiftButton.listenerUp);
-            window.removeEventListener('keydown', state.shiftButton.listenerDown);
-            state.shiftButton.listenerUp = null;
-            state.shiftButton.listenerDown = null;
-        },
     },
 
     actions: {
         fetchGraphicalViewsList({ dispatch }) {
-            return dispatch('requestGet', '/view/getAll');
+            return dispatch('requestGet', '/view/getAllForUser');
         },
 
         getGraphicalViewById({ commit, dispatch }, id) {
-            console.log(id);
-
             return new Promise(async (resolve, reject) => {
                 try {
                     const response = await dispatch('requestGet', `/view?id=${id}`);
@@ -130,8 +112,15 @@ export const graphicalViewModule = {
             });
         },
 
+        getUniqeGraphicalViewXid({dispatch }) {
+            return dispatch('requestGet', `/view/generateXid`);
+        },
+
+        isGraphicalViewXidUnique({ dispatch }, {xid, id}) {
+            return dispatch('requestGet', `/view/validate?xid=${xid}&id=${id}`);
+        },
+
         createGraphicalView({ state, commit, dispatch }) {
-            console.log("createGraphicalView");
             return new Promise(async (resolve, reject) => {
                 try {
                     const response = await dispatch('requestPost', {
@@ -149,14 +138,12 @@ export const graphicalViewModule = {
         },
 
         saveGraphicalView({ state, dispatch }) {
-            console.log(state.graphicalPage);
             return new Promise(async (resolve, reject) => {
                 try {
                     const response = await dispatch('requestPut', {
                         url: '/view',
                         data: state.graphicalPage
                     });
-                    console.log(response);
                     resolve(response);
                 } catch (e) {
                     reject(e);
@@ -168,7 +155,6 @@ export const graphicalViewModule = {
             return new Promise((resolve, reject) => {
                 try {
                     const response = dispatch('requestDelete', `/view?id=${state.graphicalPage.id}`);
-                    console.log(response);
                     resolve(response);
                 } catch (e) {
                     reject(e);
@@ -201,7 +187,6 @@ export const graphicalViewModule = {
             return new Promise(async (resolve, reject) => {
                 try {
                     const response = await dispatch('requestGet', '/view/uploads');
-                    console.log(response);
                     resolve(response);
                 } catch (e) {
                     reject(e);
@@ -228,6 +213,23 @@ export const graphicalViewModule = {
     getters: {
         viewComponentsGetter(state) {
             return state.graphicalPage.viewComponents;
+        },
+        userGraphicViewAccess(state, getters, rootState) {
+            const user = rootState.loggedUser;
+            if(!!user) {
+                if(user.admin) {
+                    return 2;
+                } else {
+                    const gv = state.graphicalPage;
+                    if(!!gv) {
+                        if(gv.userId === user.id) {
+                            return 2;
+                        }
+                        return gv.viewUsers.find(a => a.userId === user.id).accessType || 0;
+                    }
+                }
+            }
+            return 0;
         }
 
     }
