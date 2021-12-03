@@ -25,17 +25,17 @@ public class ImageSetComponentDeserializer  extends JsonDeserializer<ImageSetCom
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
-        String type = node.get("typeName").asText();
+        String type = node.get("defName").asText();
 
         ImageSetComponent imageSetComponent = null;
-        if (type.equals(AnalogGraphicComponent.DEFINITION.getExportName())) {
+        if (type.equals(AnalogGraphicComponent.DEFINITION.getName())) {
             imageSetComponent = mapper.readValue(node.toString(), AnalogGraphicComponent.class);
         }
-        else if (type.equals(BinaryGraphicComponent.DEFINITION.getExportName()))
+        else if (type.equals(BinaryGraphicComponent.DEFINITION.getName()))
         {
             imageSetComponent = mapper.readValue(node.toString(), BinaryGraphicComponent.class);
         }
-        else if (type.equals(MultistateGraphicComponent.DEFINITION.getExportName()))
+        else if (type.equals(MultistateGraphicComponent.DEFINITION.getName()))
         {
             imageSetComponent = mapper.readValue(node.toString(), MultistateGraphicComponent.class);
         }

@@ -25,33 +25,33 @@ public class PointComponentDeserializer extends JsonDeserializer<PointComponent>
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
-        String type = node.get("typeName").asText();
+        String type = node.get("defName").asText();
 
         PointComponent pointComponent = null;
-        if (type.equals(AnalogGraphicComponent.DEFINITION.getExportName()) ||
-                type.equals(BinaryGraphicComponent.DEFINITION.getExportName()) ||
-                type.equals(MultistateGraphicComponent.DEFINITION.getExportName())
+        if (type.equals(AnalogGraphicComponent.DEFINITION.getName()) ||
+                type.equals(BinaryGraphicComponent.DEFINITION.getName()) ||
+                type.equals(MultistateGraphicComponent.DEFINITION.getName())
         ) {
             pointComponent = mapper.readValue(node.toString(), ImageSetComponent.class);
         }
-        else if (type.equals(ButtonComponent.DEFINITION.getExportName()) ||
-                type.equals(ScriptComponent.DEFINITION.getExportName()))
+        else if (type.equals(ButtonComponent.DEFINITION.getName()) ||
+                type.equals(ScriptComponent.DEFINITION.getName()))
         {
             pointComponent = mapper.readValue(node.toString(), ScriptComponent.class);
         }
-        else if (type.equals(SimplePointComponent.DEFINITION.getExportName()))
+        else if (type.equals(SimplePointComponent.DEFINITION.getName()))
         {
             pointComponent = mapper.readValue(node.toString(), SimplePointComponent.class);
         }
-        else if (type.equals(DynamicGraphicComponent.DEFINITION.getExportName()))
+        else if (type.equals(DynamicGraphicComponent.DEFINITION.getName()))
         {
             pointComponent = mapper.readValue(node.toString(), DynamicGraphicComponent.class);
         }
-        else if (type.equals(SimpleImageComponent.DEFINITION.getExportName()))
+        else if (type.equals(SimpleImageComponent.DEFINITION.getName()))
         {
             pointComponent = mapper.readValue(node.toString(), SimpleImageComponent.class);
         }
-        else if (type.equals(ThumbnailComponent.DEFINITION.getExportName()))
+        else if (type.equals(ThumbnailComponent.DEFINITION.getName()))
         {
             pointComponent = mapper.readValue(node.toString(), ThumbnailComponent.class);
         }

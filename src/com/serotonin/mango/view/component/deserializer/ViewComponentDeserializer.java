@@ -28,8 +28,7 @@ public class ViewComponentDeserializer extends JsonDeserializer<List<ViewCompone
         Iterator<JsonNode> components = viewComponentNode.elements();
         while (components.hasNext()) {
             JsonNode componentNode = components.next();
-            ImplDefinition def = ImplDefinition.findByExportName(getImplementations(),
-                    componentNode.get("typeName").asText());
+            ImplDefinition def = ImplDefinition.findByName(getImplementations(), componentNode.get("defName").asText());
             ViewComponent viewComponent = mapper.readValue(componentNode.toString(), resolveClassForDeserializer(def));
             viewComponents.add(viewComponent);
         }

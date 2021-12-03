@@ -28,16 +28,16 @@ public class CompoundComponentDeserializer extends JsonDeserializer<CompoundComp
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
-        String type = node.get("typeName").asText();
+        String type = node.get("defName").asText();
 
         CompoundComponent compoundComponent = null;
-        if (type.equals(EnhancedImageChartComponent.DEFINITION.getExportName())) {
+        if (type.equals(EnhancedImageChartComponent.DEFINITION.getName())) {
             compoundComponent = mapper.readValue(node.toString(), EnhancedImageChartComponent.class);
-        } else if (type.equals(ImageChartComponent.DEFINITION.getExportName())) {
+        } else if (type.equals(ImageChartComponent.DEFINITION.getName())) {
             compoundComponent = mapper.readValue(node.toString(), ImageChartComponent.class);
-        } else if (type.equals(SimpleCompoundComponent.DEFINITION.getExportName())) {
+        } else if (type.equals(SimpleCompoundComponent.DEFINITION.getName())) {
             compoundComponent = mapper.readValue(node.toString(), SimpleCompoundComponent.class);
-        } else if (type.equals(WirelessTempHumSensor.DEFINITION.getExportName())) {
+        } else if (type.equals(WirelessTempHumSensor.DEFINITION.getName())) {
             compoundComponent = mapper.readValue(node.toString(), WirelessTempHumSensor.class);
         }
 
