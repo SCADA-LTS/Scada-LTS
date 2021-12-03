@@ -1,24 +1,26 @@
 <template>
 	<div
 		@mousedown="dragStart"
-		@mouseup="dragEnd"
+		@click="setActive"
 		ref="draggableContainer"
 		class="gv-component"
-		v-bind:class="{ 'gv-component--edit': editMode }"
-		v-bind:style="{ left: component.x + 'px', top: component.y + 'px', zIndex: menuEdit ? 1000 : component.z }"
+		v-show="visible"
+		v-bind:class="{ 'gv-component--edit': editMode, 'gv-component--selected': selected }"
+		v-bind:style="{
+			left: component.x + 'px',
+			top: component.y + 'px',
+			zIndex: menuEdit ? 1000 : component.z,
+		}"
 	>
 		<v-hover v-slot="{ hover }">
 			<div>
 				<div class="gv-component--content">
 					<v-icon v-if="iconify"> mdi-cube </v-icon>
-					<slot v-else/>
+					<slot v-else />
 				</div>
 				<v-expand-transition>
 					<div v-if="hover" class="gv-component--buttons">
-						<v-btn 
-							v-if="component.displayControls === true && !editMode"
-							fab x-small
-						>
+						<v-btn v-if="component.displayControls === true && !editMode" fab x-small>
 							<v-icon>mdi-information</v-icon>
 						</v-btn>
 						<v-btn v-if="editMode" fab x-small @click="showMenuEdit">
@@ -54,7 +56,7 @@
 				</v-card-title>
 				<v-card-text>
 					<v-tabs>
-						<v-tab> Layouy </v-tab>
+						<v-tab> Layout </v-tab>
 						<v-tab> Renderer </v-tab>
 						<v-tab-item key="1" class="small-margin--vertical">
 							<v-row dense>
@@ -76,13 +78,14 @@
 									<span> Layer </span>
 								</v-col>
 								<v-col cols="6" class="settings-layers">
-									<v-btn fab x-small @click="moveComponentUp">
-										<v-icon>mdi-arrow-up</v-icon>
-									</v-btn>
-									<span> {{component.z}} </span>
 									<v-btn fab x-small @click="moveComponentDown">
-										<v-icon>mdi-arrow-down</v-icon>
+										<v-icon>mdi-chevron-down</v-icon>
 									</v-btn>
+									<span> {{ component.z }} </span>
+									<v-btn fab x-small @click="moveComponentUp">
+										<v-icon>mdi-chevron-up</v-icon>
+									</v-btn>
+									
 								</v-col>
 
 								<slot name="layout"> </slot>
@@ -125,18 +128,10 @@ export default {
 
 	data() {
 		return {
+			selected: false,
+			visible: true,
 			menuEdit: false,
 			showMenuValue: false,
-
-			draggableProperties: {
-				dragging: false,
-				clientX: null,
-				clientY: null,
-				movementX: 0,
-				movementY: 0,
-				width: 0,
-				height: 0,
-			},
 		};
 	},
 
@@ -147,18 +142,15 @@ export default {
 		iconify() {
 			return this.$store.state.graphicalViewModule.graphicalPageIconify;
 		},
-		canvasWidth() {
-			let width = this.$store.state.graphicalViewModule.resolution.width;
-			return Number(width);
-
-		},
-		canvasHeight() {
-			let height = this.$store.state.graphicalViewModule.resolution.height;
-			return Number(height);
-		},
 	},
 
 	methods: {
+		setActive() {
+			if (!this.selected && this.editMode) {
+				this.selected = true;
+				this.$emit('click', this);
+			}
+		},
 		sendValue() {
 			this.showMenuValue = false;
 			console.log('value');
@@ -183,71 +175,33 @@ export default {
 			this.hideMenuEdit();
 		},
 		dragStart(event) {
-			if (this.editMode) {
-				event.preventDefault();
-				this.draggableProperties.dragging = true;
-				this.draggableProperties.clientX = event.clientX;
-				this.draggableProperties.clientY = event.clientY;
-				this.draggableProperties.width = this.$refs.draggableContainer.clientWidth;
-				this.draggableProperties.height = this.$refs.draggableContainer.clientHeight;
-				document.onmousemove = this.dragMove;
-				document.onmouseup = this.dragEnd;
-			}
-		},
-		dragMove(event) {
-			const cmp = this.$refs.draggableContainer;
-			const props = this.draggableProperties;
-			event.preventDefault();
-			props.movementX = props.clientX - event.clientX;
-			props.movementY = props.clientY - event.clientY;
-			props.clientX = event.clientX;
-			props.clientY = event.clientY;
-
-			if (cmp.offsetTop >= 0) {
-				cmp.style.top = cmp.offsetTop - props.movementY + 'px';
-			} else {
-				cmp.style.top = '0px';
-			}
-
-			if( cmp.offsetTop + cmp.clientHeight >= this.canvasHeight ) {
-				cmp.style.top = this.canvasHeight - cmp.clientHeight + 'px';
-			}
-
-			if (cmp.offsetLeft >= 0) {
-				cmp.style.left = cmp.offsetLeft - props.movementX + 'px';
-			} else {
-				cmp.style.left = '0px';
-			}
-
-			if( cmp.offsetLeft + cmp.clientWidth >= this.canvasWidth ) {
-				cmp.style.left = this.canvasWidth - cmp.clientWidth + 'px';
-			}
-		},
-		dragEnd() {
-			this.draggableProperties.dragging = false;
-			this.component.x =
-				this.$refs.draggableContainer.offsetLeft >= 0
-					? this.$refs.draggableContainer.offsetLeft
-					: 0;
-			this.component.y =
-				this.$refs.draggableContainer.offsetTop >= 0
-					? this.$refs.draggableContainer.offsetTop
-					: 0;
-			document.onmouseup = null;
-			document.onmousemove = null;
+			this.$emit('mousedown', {event, ref: this});
 		},
 
 		moveComponentUp() {
 			this.component.z = Number(this.component.z) + 1;
 		},
 
+		moveComponentToTop() {
+			let max = this.$store.state.graphicalViewModule.graphicalPage.viewComponents.reduce((max, c) => {
+				return Math.max(max, c.z);
+			}, 0);
+			this.component.z = max + 1;	
+		},
+
 		moveComponentDown() {
-			this.component.z = Number(this.component.z) - 1;
+			if(this.component.z > 1) {
+				this.component.z = Number(this.component.z) - 1;
+			}
+		},
+
+		moveComponentToBottom() {
+			this.component.z = 1;
 		},
 
 		deleteComponent() {
 			this.$store.commit('DELETE_COMPONENT_EDIT');
-		}
+		},
 	},
 };
 </script>
@@ -264,6 +218,9 @@ export default {
 	background-color: white;
 	border: dashed 1px black;
 	z-index: 1000;
+}
+.gv-component--selected {
+	border: dashed 1px var(--v-primary-base);
 }
 .gv-component .v-menu--attached > div {
 	left: 100px !important;
@@ -285,6 +242,6 @@ export default {
 .settings-layers {
 	display: flex;
 	justify-content: space-around;
-    align-items: center;
+	align-items: center;
 }
 </style>

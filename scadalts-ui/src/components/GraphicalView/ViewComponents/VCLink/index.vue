@@ -1,5 +1,10 @@
 <template>
-	<BaseViewComponent :component="component" @update="$emit('update')">
+	<BaseViewComponent
+		:component="component"
+		@update="$emit('update')"
+		@click="$emit('click', $event)"
+		@mousedown="$emit('mousedown', $event)"
+	>
 		<template v-slot:default>
 			<a v-if="!editMode" :href="component.link" class="gv-cmp--simple-link">{{
 				component.text

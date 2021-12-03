@@ -91,6 +91,22 @@ export const graphicalViewModule = {
         SET_IMAGE_SETS(state, payload) {
             state.imageSets = payload;
         },
+        SET_SHIFT_BUTTON_LISTENER(state, callback) {
+            if(!!state.shiftButton.listenerDown || !!state.shiftButton.listenerUp) {
+                window.removeEventListener('keydown', state.shiftButton.listenerDown);
+                window.removeEventListener('keyup', state.shiftButton.listenerUp);
+            }
+            state.shiftButton.listenerUp = callback.up;
+            state.shiftButton.listenerDown = callback.down;
+            window.addEventListener('keyup', callback.up);
+            window.addEventListener('keydown', callback.down);
+        },
+        RESET_SHIFT_BUTTON_LISTENER(state) {
+            window.removeEventListener('keyup', state.shiftButton.listenerUp);
+            window.removeEventListener('keydown', state.shiftButton.listenerDown);
+            state.shiftButton.listenerUp = null;
+            state.shiftButton.listenerDown = null;
+        },
     },
 
     actions: {

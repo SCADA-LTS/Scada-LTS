@@ -5,6 +5,8 @@
 			@value-update="onValueUpdate"
 			@status-update="onStatusUpdate"
 			@update="$emit('update')"
+			@click="$emit('click', $event)"
+			@mousedown="$emit('mousedown', $event)"
 		>
 			<template v-slot:default>
 				<div class="gv-cmp-container--button">
@@ -17,14 +19,12 @@
 							height: component.height,
 						}"
 					>
-						
-                        <span v-if="component.displayPointName">
-                            {{ component.nameOverride || component.dataPointXid }}:
-                        </span>
-                        <span>
-                            {{ btnStatus ? component.whenOnLabel : component.whenOffLabel }}
-                        </span>
-                        
+						<span v-if="component.displayPointName">
+							{{ component.nameOverride || component.dataPointXid }}:
+						</span>
+						<span>
+							{{ btnStatus ? component.whenOnLabel : component.whenOffLabel }}
+						</span>
 					</v-btn>
 				</div>
 			</template>
@@ -58,15 +58,15 @@ export default {
 		};
 	},
 
-    computed: {
-        editMode() {
+	computed: {
+		editMode() {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;
 		},
-    },
+	},
 
 	methods: {
 		onValueUpdate(value) {
-			this.btnStatus = value == "true";
+			this.btnStatus = value == 'true';
 		},
 		onStatusUpdate(value) {
 			if (value) {

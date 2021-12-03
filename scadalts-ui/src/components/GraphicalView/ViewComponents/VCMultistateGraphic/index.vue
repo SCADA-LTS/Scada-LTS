@@ -1,11 +1,13 @@
 <template>
 	<BaseImageComponent
 		:component="component"
-        :dataTypes="[2]"
+		:dataTypes="[2]"
 		@update="$emit('update')"
 		@value-update="onValueUpdate"
 		@status-update="onStatusUpdate"
 		@image-update="onImageUpdate"
+		@click="$emit('click', $event)"
+		@mousedown="$emit('mousedown', $event)"
 	>
 		<template v-slot:default>
 			<div>
@@ -14,15 +16,25 @@
 		</template>
 		<template v-slot:renderer>
 			<v-row :key="rendering">
-				<v-col cols="4" v-for="(img,i) in imageArray" :key="i" @click="onImageSelected(i)" class="gv-image-container">
-					<span class="gv-image-description gv-image-description--default" v-if="component.defaultImage === i">Default</span>
-					<span class="gv-image-description">{{getState(i)}}</span>
-					<img :src="img" class="gv-image-thumbnail" alt="Image"/>
+				<v-col
+					cols="4"
+					v-for="(img, i) in imageArray"
+					:key="i"
+					@click="onImageSelected(i)"
+					class="gv-image-container"
+				>
+					<span
+						class="gv-image-description gv-image-description--default"
+						v-if="component.defaultImage === i"
+						>Default</span
+					>
+					<span class="gv-image-description">{{ getState(i) }}</span>
+					<img :src="img" class="gv-image-thumbnail" alt="Image" />
 				</v-col>
 			</v-row>
 
-			<ImageDialog 
-				ref="imageDialog" 
+			<ImageDialog
+				ref="imageDialog"
 				@result="onImageIndexUpdate"
 				@reset="onImageIndexReset"
 				@default="onImageIndexDefault"
@@ -31,12 +43,12 @@
 	</BaseImageComponent>
 </template>
 <script>
-import ImageDialog from './dialog.vue'
+import ImageDialog from './dialog.vue';
 import BaseImageComponent from '../BaseImageComponent.vue';
 export default {
 	components: {
 		BaseImageComponent,
-		ImageDialog
+		ImageDialog,
 	},
 
 	props: {
@@ -55,11 +67,11 @@ export default {
 		};
 	},
 
-    methods: {
+	methods: {
 		onValueUpdate(val) {
 			let value = Number(val);
-			const state = this.component.imageStateList.find(s => s.value === value);
-			if(!!state) {
+			const state = this.component.imageStateList.find((s) => s.value === value);
+			if (!!state) {
 				this.activeGraphic = this.imageSet.imageFilenames[state.key];
 				console.log('onValueUpdate::BaseImage', this.activeGraphic);
 			} else {
@@ -69,7 +81,7 @@ export default {
 		onStatusUpdate(value) {
 			if (value == 'false') {
 				this.activeGraphic = this.imageSet.imageFilenames[this.component.defaultImage];
-			} 
+			}
 		},
 		onImageUpdate(value) {
 			this.imageSet = value;
@@ -82,7 +94,7 @@ export default {
 
 		onImageIndexUpdate(result) {
 			this.setState(result.image, result.state);
-			if(result.default) {
+			if (result.default) {
 				this.component.defaultImage = result.image;
 			}
 			this.rendering++;
@@ -94,33 +106,32 @@ export default {
 		},
 
 		onImageIndexReset(index) {
-			if(this.component.defaultImage === index) {
+			if (this.component.defaultImage === index) {
 				this.component.defaultImage = null;
 			}
 			const arr = this.component.imageStateList;
-			if(!!arr && arr.length > 0) {
-				this.component.imageStateList = arr.filter(s => s.key !== index );
+			if (!!arr && arr.length > 0) {
+				this.component.imageStateList = arr.filter((s) => s.key !== index);
 			}
 			this.rendering++;
 		},
 
 		getState(index) {
 			const arr = this.component.imageStateList;
-			if(!!arr && arr.length > 0) {
-				for(let i = 0; i < arr.length; i++) {
-					if(arr[i].key === index) {
+			if (!!arr && arr.length > 0) {
+				for (let i = 0; i < arr.length; i++) {
+					if (arr[i].key === index) {
 						return `State: ${arr[i].value}`;
 					}
 				}
 			}
 			return '';
-			
 		},
 
 		setState(index, state) {
 			const arr = this.component.imageStateList || [];
-			const arrIndex = arr.findIndex(s => s.value === state);
-			if(arrIndex > -1) {
+			const arrIndex = arr.findIndex((s) => s.value === state);
+			if (arrIndex > -1) {
 				arr[arrIndex].key = index;
 			} else {
 				arr.push({
@@ -128,13 +139,13 @@ export default {
 					key: index,
 				});
 			}
-		}
-
+		},
 	},
 };
 </script>
 <style>
-.gv-image-description--default{
+.gv-image-description--default {
 	top: 0;
 	bottom: unset;
-}</style>
+}
+</style>

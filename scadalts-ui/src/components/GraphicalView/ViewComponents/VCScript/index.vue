@@ -5,6 +5,8 @@
 			@value-update="onValueUpdate"
 			@status-update="onStatusUpdate"
 			@update="$emit('update')"
+			@click="$emit('click', $event)"
+			@mousedown="$emit('mousedown', $event)"
 		>
 			<template v-slot:default>
 				<div
@@ -70,7 +72,7 @@ export default {
 					script: this.component.script,
 					context: this.component.dataPointXid,
 				});
-                this.content = result;
+				this.content = result;
 			} catch (e) {
 				this.content = '(Error)';
 			}

@@ -1,5 +1,10 @@
 <template>
-	<BaseViewComponent :component="component" @update="$emit('update')">
+	<BaseViewComponent
+		:component="component"
+		@update="$emit('update')"
+		@click="$emit('click', $event)"
+		@mousedown="$emit('mousedown', $event)"
+	>
 		<template v-slot:default>
 			<LineChartComponent
 				v-if="chartLoaded"
@@ -41,22 +46,22 @@
 						@change="onPointChange($event, 1)"
 					></DataPointSerachComponent>
 				</v-col>
-                <v-col cols="12">
+				<v-col cols="12">
 					<DataPointSerachComponent
 						@change="onPointChange($event, 2)"
 					></DataPointSerachComponent>
 				</v-col>
-                <v-col cols="12">
+				<v-col cols="12">
 					<DataPointSerachComponent
 						@change="onPointChange($event, 3)"
 					></DataPointSerachComponent>
 				</v-col>
-                <v-col cols="12">
+				<v-col cols="12">
 					<DataPointSerachComponent
 						@change="onPointChange($event, 4)"
 					></DataPointSerachComponent>
 				</v-col>
-                <v-col cols="12">
+				<v-col cols="12">
 					<DataPointSerachComponent
 						@change="onPointChange($event, 5)"
 					></DataPointSerachComponent>

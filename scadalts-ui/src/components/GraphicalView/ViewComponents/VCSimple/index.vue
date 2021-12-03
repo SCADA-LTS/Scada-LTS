@@ -5,17 +5,22 @@
 			@value-update="onValueUpdate"
 			@status-update="onStatusUpdate"
 			@update="$emit('update')"
+			@click="$emit('click', $event)"
+			@mousedown="$emit('mousedown', $event)"
 		>
 			<template v-slot:default>
-				<div class="gv-cmp--simple" :style="{backgroundColor: component.bkgdColorOverride}">
+				<div
+					class="gv-cmp--simple"
+					:style="{ backgroundColor: component.bkgdColorOverride }"
+				>
 					<div>
-                        <span v-if="component.displayPointName">
-                            {{ component.nameOverride || component.dataPointXid }}:
-                        </span>
-                        <span>
-                            {{ content }}
-                        </span>
-                    </div>
+						<span v-if="component.displayPointName">
+							{{ component.nameOverride || component.dataPointXid }}:
+						</span>
+						<span>
+							{{ content }}
+						</span>
+					</div>
 				</div>
 			</template>
 
@@ -51,9 +56,9 @@ export default {
 		onValueUpdate(value) {
 			this.content = value;
 		},
-		onStatusUpdate(value) {        
+		onStatusUpdate(value) {
 			if (value) {
-                this.content = 'enabled';
+				this.content = 'enabled';
 			} else {
 				this.content = '(N/A)';
 			}
@@ -63,9 +68,10 @@ export default {
 </script>
 <style>
 .gv-cmp--simple {
-    min-width: 10px;
-    min-height: 10px;
-    border: 1px solid var(--v-primary-base);
-    border-radius: 3px;
-    padding: 2px 10px;
-}</style>
+	min-width: 10px;
+	min-height: 10px;
+	border: 1px solid var(--v-primary-base);
+	border-radius: 3px;
+	padding: 2px 10px;
+}
+</style>

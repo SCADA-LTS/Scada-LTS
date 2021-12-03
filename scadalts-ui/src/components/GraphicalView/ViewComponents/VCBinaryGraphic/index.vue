@@ -5,6 +5,8 @@
 		@value-update="onValueUpdate"
 		@status-update="onStatusUpdate"
 		@image-update="onImageUpdate"
+		@click="$emit('click', $event)"
+		@mousedown="$emit('mousedown', $event)"
 	>
 		<template v-slot:default>
 			<div>
