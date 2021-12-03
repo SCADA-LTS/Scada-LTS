@@ -91,8 +91,13 @@ public class ViewService {
 		return views;
 	}
 
-	public List<ScadaObjectIdentifier> getAllViews() {
-		return viewDAO.getSimpleList();
+	public List<ScadaObjectIdentifier> getAllViews(User user) {
+		List<View> views = getViews(user.getId(), user.getUserProfile());
+		List<ScadaObjectIdentifier> simpleList = new ArrayList<>();
+		for (View view : views) {
+			simpleList.add(new ScadaObjectIdentifier(view.getId(),view.getXid(), view.getName()));
+		}
+		return simpleList;
 	}
 	
 	public List<IdName> getViewNames(int userId, int userProfileId) {
@@ -182,8 +187,10 @@ public class ViewService {
 		usersPermissions.clear();
 	}
 
-	public int saveViewAPI(final View view) {
+	public int saveViewAPI(final View view) throws IOException {
 		LOG.debug("View name: " + view.getName());
+		String backgroundFilename = view.getBackgroundFilename();
+		setWidthAndHeight(view, backgroundFilename);
 		int id = -1;
 		if (view.getId() == Common.NEW_ID) {
 			id = (int) viewDAO.create(view)[0];
@@ -193,6 +200,14 @@ public class ViewService {
 
 		usersPermissions.clear();
 		return id;
+	}
+
+	private void setWidthAndHeight(View view, String backgroundFilename) throws IOException {
+		if (backgroundFilename != null && !backgroundFilename.isEmpty()) {
+			UploadImage uploadImage = createUploadImage(new File(getBackgroundImagePath(backgroundFilename)));
+			view.setHeight(uploadImage.getHeight());
+			view.setWidth(uploadImage.getWidth());
+		}
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -275,5 +290,13 @@ public class ViewService {
 
 	private String getUploadsPath() {
 		return Common.ctx.getServletContext().getRealPath(fileSeparator) + "uploads";
+	}
+
+	private String getBackgroundImagePath(String backgroundFilename) {
+		return Common.ctx.getServletContext().getRealPath(fileSeparator) + fileSeparator + backgroundFilename;
+	}
+
+	public boolean checkUserViewPermissions(User user, View view) {
+		return user.isAdmin() || view.getUserId() == user.getId() || view.getViewUsers().stream().anyMatch(u -> u.getUserId() == user.getId());
 	}
 }

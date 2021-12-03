@@ -22,6 +22,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -30,10 +31,13 @@ import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
+import org.scada_lts.web.mvc.api.dto.view.GraphicalViewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,7 +71,7 @@ public class ViewAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(viewService.getAllViews(),HttpStatus.OK);
+                return new ResponseEntity<>(viewService.getAllViews(user),HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -334,7 +338,7 @@ public class ViewAPI {
                 Optional<View> view = getViewByIdOrXid(id, xid, viewService);
 
                 if (view.isPresent()) {
-                    if (user.isAdmin() || view.get().getViewUsers().stream().anyMatch(u -> u.getUserId() == user.getId())){
+                    if (viewService.checkUserViewPermissions(user, view.get())){
                         return new ResponseEntity<>(view.get(), HttpStatus.OK);
                     } else {
                         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
