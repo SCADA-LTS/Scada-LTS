@@ -29,6 +29,11 @@
 					<v-col> Hi! slot </v-col>
 				</v-row>
 			</template>
+			<template v-slot:info>
+				<v-row dense>
+					<v-col>Current value: {{content}} </v-col>
+				</v-row>
+			</template>
 		</BasePointComponent>
 	</div>
 </template>

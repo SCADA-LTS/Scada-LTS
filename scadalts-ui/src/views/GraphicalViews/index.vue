@@ -105,6 +105,12 @@
 			@reset="onBackgroundReset"
 		></BackgroundSettingsDialog>
 		<ComponentCreationDialog ref="creationDialog"></ComponentCreationDialog>
+		<ConfirmationDialog
+			ref="confirmationDialog"
+			@result="onRemoveGraphicalView"
+			title="Remove Graphical View"
+			message="Are you sure you want to remove this graphical view?"
+		></ConfirmationDialog>
 	</div>
 </template>
 <script>
@@ -112,12 +118,14 @@ import GraphicalViewPage from './GraphicalViewPage.vue';
 import GraphicalViewItem from '@/models/GraphicalViewItem';
 import ComponentCreationDialog from './dialogs/ComponentCreationDialog';
 import BackgroundSettingsDialog from './dialogs/BackgroundSettingsDialog';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialogV2';
 
 export default {
 	components: {
 		GraphicalViewPage,
 		ComponentCreationDialog,
 		BackgroundSettingsDialog,
+		ConfirmationDialog,
 	},
 
 	data() {
@@ -184,14 +192,21 @@ export default {
 			}
 			this.$store.commit('SET_GRAPHICAL_PAGE', view);
 		},
-		async removeGraphicalView() {
-			try {
-				await this.$store.dispatch('deleteGraphicalView');
-				this.$router.push({ path: '/graphical-view' });
-				this.fetchGraphicalViewList();
-				this.activeGraphicalView = null;
-			} catch (e) {
-				console.log(e);
+
+		removeGraphicalView() {
+			this.$refs.confirmationDialog.openDialog();
+		},
+
+		async onRemoveGraphicalView(event) {
+			if (event.result) {
+				try {
+					await this.$store.dispatch('deleteGraphicalView');
+					this.$router.push({ path: '/graphical-view' });
+					this.fetchGraphicalViewList();
+					this.activeGraphicalView = null;
+				} catch (e) {
+					console.log(e);
+				}
 			}
 		},
 		addFullScreenKeyListener() {
@@ -217,19 +232,21 @@ export default {
 			try {
 				let res;
 				if (this.createMode) {
+					console.log('create');
 					res = await this.$store.dispatch('createGraphicalView');
 					if (res) {
 						this.fetchGraphicalViewList();
 						this.activeGraphicalView = res.id;
+						this.moveToGraphicalView();
 					}
 				} else {
+					console.log('update');
 					res = await this.$store.dispatch('saveGraphicalView');
 				}
 				this.createMode = false;
 				if (res) {
 					this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
 				}
-				
 			} catch (e) {
 				console.error(e);
 			}

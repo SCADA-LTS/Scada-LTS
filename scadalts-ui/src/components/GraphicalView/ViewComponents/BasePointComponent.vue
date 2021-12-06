@@ -2,6 +2,7 @@
 	<BaseViewComponent
 		:component="component"
 		@update="$emit('update')"
+		@send-value="onSendValue"
 		@click="$emit('click', $event)"
 		@mousedown="$emit('mousedown', $event)"
 	>
@@ -24,7 +25,7 @@
 			<v-row>
 				<v-col cols="12">
 					<DataPointSerachComponent
-						v-model="component.dataPointId"
+						v-model="component.dataPointXid"
 						:dataTypes="dataTypes"
 						@change="onPointChange"
 					></DataPointSerachComponent>
@@ -46,6 +47,55 @@
 				</v-col>
 			</v-row>
 			<slot name="renderer"> </slot>
+		</template>
+		<template v-slot:info>
+			<v-row dense>
+				<v-col cols="12">
+					<v-btn fab @click="showDetails" x-small elevation="0">
+						<v-icon>mdi-cube-outline</v-icon>
+					</v-btn>
+					Show data point details
+				</v-col>
+
+				<v-col cols="12">
+					<v-btn fab @click="fetchDataPointEvents" x-small elevation="0">
+						<v-icon>mdi-refresh</v-icon>
+					</v-btn>
+					Show data point events
+				</v-col>
+				<v-col cols="12">
+					<v-row>
+						<v-col>
+							<v-skeleton-loader v-if="eventsLoading" type="article"></v-skeleton-loader>
+							<v-list v-else>
+								<v-list-item v-for="e in events" :key="e.id">
+									<v-list-item-icon>
+										<img :src="alarmFlags[e.alarmLevel].image" />
+									</v-list-item-icon>
+									<v-list-item-content>
+										<v-list-item-title>
+											<span>
+												{{
+													$t(
+														getEventMessageType(e.message),
+														prepareEventMessage(e.message),
+													)
+												}}
+											</span>
+										</v-list-item-title>
+										<v-list-item-subtitle>
+											<span>
+												{{ $date(e.activeTs).format('YYYY-MM-DD hh:mm:ss') }}
+											</span>
+										</v-list-item-subtitle>
+									</v-list-item-content>
+								</v-list-item>
+							</v-list>
+						</v-col>
+					</v-row>
+				</v-col>
+			</v-row>
+			<slot name="info"></slot>
 		</template>
 	</BaseViewComponent>
 </template>
@@ -76,7 +126,15 @@ export default {
 				wsConnValue: null,
 				wsConnEnable: null,
 			},
+			events: [],
+			eventsLoading: false,
 		};
+	},
+
+	computed: {
+		alarmFlags() {
+			return this.$store.state.staticResources.alarmFlags;
+		},
 	},
 
 	mounted() {
@@ -132,8 +190,8 @@ export default {
 		async getPointValue() {
 			try {
 				const res = await this.$store.dispatch(
-					'getDataPointValue',
-					this.component.dataPointId,
+					'getDataPointValueByXid',
+					this.component.dataPointXid,
 				);
 				this.$emit('status-update', res.enabled);
 				if (res.enabled === true) {
@@ -141,6 +199,68 @@ export default {
 				}
 			} catch (e) {
 				console.error(e);
+			}
+		},
+
+		showDetails() {
+			this.$router.push({ path: `/datapoint-details/${this.component.dataPointId}` });
+		},
+
+		async fetchDataPointEvents() {
+			try {
+				this.events = await this.$store.dispatch('fetchDataPointEvents', {
+					datapointId: this.component.dataPointId,
+					limit: 3,
+				});
+			} catch (e) {
+				console.error(e);
+			}
+		},
+
+		getEventMessageType(message) {
+			return message.split('|')[0];
+		},
+
+		prepareEventMessage(message) {
+			let response = message.replace(/[\[\]]/g, '');
+			response = response.split('|');
+			return response.slice(1);
+		},
+
+		async onSendValue(value) {
+			try {
+				const type = await this.getDataPointType();
+				await this.$store.dispatch('setDataPointValue', {
+					xid: this.component.dataPointXid,
+					type: type,
+					value: value,
+				});
+			} catch (e) {
+				console.error(e);
+			}
+		},
+
+		async getDataPointType() {
+			try {
+				const dp = await this.$store.dispatch(
+					'getDataPointValueByXid',
+					this.component.dataPointXid,
+				);
+				switch (dp.type) {
+					case 'BinaryValue':
+						return 1;
+					case 'MultistateValue':
+						return 2;
+					case 'NumericValue':
+						return 3;
+					case 'AlphanumericValue':
+						return 4;
+					default:
+						return 0;
+				}
+			} catch (e) {
+				console.error(e);
+				return -1;
 			}
 		},
 	},

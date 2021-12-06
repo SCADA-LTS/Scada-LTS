@@ -20,7 +20,12 @@
 				</div>
 				<v-expand-transition>
 					<div v-if="hover" class="gv-component--buttons">
-						<v-btn v-if="component.displayControls === true && !editMode" fab x-small>
+						<v-btn
+							v-if="component.displayControls === true && !editMode"
+							fab
+							x-small
+							@click="showMenuInfo = true"
+						>
 							<v-icon>mdi-information</v-icon>
 						</v-btn>
 						<v-btn v-if="editMode" fab x-small @click="showMenuEdit">
@@ -85,7 +90,6 @@
 									<v-btn fab x-small @click="moveComponentUp">
 										<v-icon>mdi-chevron-up</v-icon>
 									</v-btn>
-									
 								</v-col>
 
 								<slot name="layout"> </slot>
@@ -110,8 +114,17 @@
 						dense
 						label="Set value"
 						append-icon="mdi-send"
+						v-model="newValue"
 						@click:append="sendValue"
 					></v-text-field>
+				</v-card-text>
+			</v-card>
+		</v-menu>
+		<v-menu attach right v-model="showMenuInfo" :close-on-content-click="false">
+			<v-card class="settings-menu">
+				<v-card-text>
+					<h3>{{ $t(`view.cmp.${component.defName}`) }} component</h3>
+					<slot name="info"> </slot>
 				</v-card-text>
 			</v-card>
 		</v-menu>
@@ -132,6 +145,8 @@ export default {
 			visible: true,
 			menuEdit: false,
 			showMenuValue: false,
+			showMenuInfo: false,
+			newValue: '',
 		};
 	},
 
@@ -153,7 +168,8 @@ export default {
 		},
 		sendValue() {
 			this.showMenuValue = false;
-			console.log('value');
+			this.$emit('send-value', this.newValue);
+			this.newValue = '';
 		},
 		showMenuEdit() {
 			this.$store.commit('SET_COMPONENT_EDIT', this.component);
@@ -175,7 +191,7 @@ export default {
 			this.hideMenuEdit();
 		},
 		dragStart(event) {
-			this.$emit('mousedown', {event, ref: this});
+			this.$emit('mousedown', { event, ref: this });
 		},
 
 		moveComponentUp() {
@@ -183,14 +199,17 @@ export default {
 		},
 
 		moveComponentToTop() {
-			let max = this.$store.state.graphicalViewModule.graphicalPage.viewComponents.reduce((max, c) => {
-				return Math.max(max, c.z);
-			}, 0);
-			this.component.z = max + 1;	
+			let max = this.$store.state.graphicalViewModule.graphicalPage.viewComponents.reduce(
+				(max, c) => {
+					return Math.max(max, c.z);
+				},
+				0,
+			);
+			this.component.z = max + 1;
 		},
 
 		moveComponentDown() {
-			if(this.component.z > 1) {
+			if (this.component.z > 1) {
 				this.component.z = Number(this.component.z) - 1;
 			}
 		},

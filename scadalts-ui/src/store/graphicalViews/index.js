@@ -121,6 +121,7 @@ export const graphicalViewModule = {
         },
 
         createGraphicalView({ state, commit, dispatch }) {
+            console.log(state.graphicalPage, 'state.graphicalPage');
             return new Promise(async (resolve, reject) => {
                 try {
                     const response = await dispatch('requestPost', {

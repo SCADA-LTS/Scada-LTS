@@ -23,24 +23,16 @@
 	</v-dialog>
 </template>
 <script>
-/**
- * Confirmation dialog
- * @deprecated - Use ConfirmationDialogV2 it can handle the data that is passed to it
- */
-
 export default {
-	name: 'ConfirmationDialog',
-
 	data() {
-		return {};
+		return {
+            dialog: false,
+            data: null,
+        };
 	},
 
 	props: {
 		btnvisible: {
-			type: Boolean,
-			default: true,
-		},
-		dialog: {
 			type: Boolean,
 			default: false,
 		},
@@ -55,14 +47,19 @@ export default {
 	},
 
 	methods: {
+        openDialog(data = null) {
+            this.dialog = true;
+            this.data = data;
+        },
+
 		cancel() {
 			this.dialog = false;
-			this.$emit('result', false);
+			this.$emit('result', {result: false, data: null});
 		},
 
 		accept() {
 			this.dialog = false;
-			this.$emit('result', true);
+			this.$emit('result', {result: true, data: this.data});
 		},
 	},
 };

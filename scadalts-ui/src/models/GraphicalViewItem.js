@@ -12,6 +12,8 @@ export class GraphicalViewItem {
         this.viewComponents = [];
         this.anonymousAccess = 0;
         this.viewUsers = [];
+        this.modificationTime = new Date().getTime();
+        this.new = true;
     }
 
 }

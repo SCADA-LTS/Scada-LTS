@@ -8,7 +8,7 @@
 		hide-no-data
 		hide-details
 		item-text="name"
-		item-value="id"
+		item-value="xid"
 		:label="`${$t('datapoint.search.label')}: ${value}`"
 		:placeholder="`${$t('datapoint.search.placeholder')}`"
 		return-object
@@ -50,7 +50,7 @@ export default {
 		},
 		emit() {
 			if (!!this.select) {
-				this.$emit('input', this.select.id);
+				this.$emit('input', this.select.xid);
 				this.$emit('change', this.select);
 			}
 		},
