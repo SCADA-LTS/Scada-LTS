@@ -70,7 +70,7 @@ export default {
 	methods: {
 		onValueUpdate(val) {
 			let value = Number(val);
-			const state = this.component.imageStateList.find((s) => s.value === value);
+			const state = this.component.imageStateList.find((s) => s.value == value);
 			if (!!state) {
 				this.activeGraphic = this.imageSet.imageFilenames[state.key];
 				console.log('onValueUpdate::BaseImage', this.activeGraphic);

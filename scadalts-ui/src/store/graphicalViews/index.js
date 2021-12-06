@@ -30,7 +30,6 @@ export const graphicalViewModule = {
         },
         SET_GRAPHICAL_PAGE(state, payload) {
             state.graphicalPage = payload;
-            console.log(state.graphicalPage, 'graphicalPage');
             setResolution(state, payload);
         },
         SET_GRAPHICAL_PAGE_BACKUP(state, payload) {
@@ -44,7 +43,6 @@ export const graphicalViewModule = {
             }
         },
         SET_GRAPHICAL_PAGE_BACKGROUND(state, payload) {
-            console.log(payload, 'payload');
             state.graphicalPage.backgroundFilename = payload.imgUrl;
             setResolution(state, payload);
         },
@@ -65,21 +63,23 @@ export const graphicalViewModule = {
                 cmp.y === payload.y &&
                 cmp.z === payload.z
             ));
-            console.log(state.componentEdit);
             state.componentEditBackup = JSON.parse(JSON.stringify(payload));
         },
         REVERT_COMPONENT_EDIT(state) {
-            console.log(state.componentEditBackup);
             state.graphicalPage.viewComponents[state.componentEdit] = JSON.parse(JSON.stringify(state.componentEditBackup));
-            console.log(state.graphicalPage.viewComponents);
-            console.log(state.graphicalPage);
         },
         ADD_COMPONENT_TO_PAGE(state, payload) {
             if (state.graphicalPage.viewComponents.length > 0) {
                 const maxIndex = state.graphicalPage.viewComponents.reduce((prev, current) => {
                     return (prev.index > current.index) ? prev.index : current.index;
                 });
-                payload.index = maxIndex + 1;
+                console.log();
+                if(typeof maxIndex === 'object') {
+                    payload.index = maxIndex.index + 1;
+                } else {
+                    payload.index = maxIndex + 1;
+                }
+                
             } else {
                 payload.index = 0;
             }
@@ -87,7 +87,6 @@ export const graphicalViewModule = {
         },
         DELETE_COMPONENT_EDIT(state) {
             state.graphicalPage.viewComponents.splice(state.componentEdit, 1);
-            console.log(state.graphicalPage.viewComponents);
         },
         SET_IMAGE_SETS(state, payload) {
             state.imageSets = payload;
@@ -121,7 +120,6 @@ export const graphicalViewModule = {
         },
 
         createGraphicalView({ state, commit, dispatch }) {
-            console.log(state.graphicalPage, 'state.graphicalPage');
             return new Promise(async (resolve, reject) => {
                 try {
                     const response = await dispatch('requestPost', {

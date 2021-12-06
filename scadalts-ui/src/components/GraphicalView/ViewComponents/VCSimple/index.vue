@@ -15,7 +15,7 @@
 				>
 					<div>
 						<span v-if="component.displayPointName">
-							{{ component.nameOverride || component.dataPointXid }}:
+							{{ component.nameOverride || component.name }}:
 						</span>
 						<span>
 							{{ content }}

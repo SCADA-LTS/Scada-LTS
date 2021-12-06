@@ -10,6 +10,7 @@ export default class PointViewModel extends BaseViewModel {
         this.displayControls = false;
         this.displayPointName = false;
         this.nameOverride = '';
+        this.name = '';
         this.settableOverride = false;
         this.styleAttribute = null;
     }
