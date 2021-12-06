@@ -409,8 +409,8 @@ tbody tr:nth-of-type(odd) {
 }
 </style>
 <script>
-import store from '../store';
-import RangeChartComponent from '../components/amcharts/RangeChartComponent.vue';
+import store from '../../store';
+import RangeChartComponent from '../../components/amcharts/RangeChartComponent.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 
 export default {
