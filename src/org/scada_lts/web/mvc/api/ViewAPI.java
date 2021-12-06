@@ -415,11 +415,12 @@ public class ViewAPI {
     }
 
     @PutMapping(value = "")
-    public ResponseEntity<String> updateView(@RequestBody View view, HttpServletRequest request) {
+    public ResponseEntity<String> updateView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
             if (user != null) {
+                View view = viewDTO.createViewFromBody(user);
                 viewService.saveViewAPI(view);
                 return new ResponseEntity<>("updated", HttpStatus.OK);
             } else {
