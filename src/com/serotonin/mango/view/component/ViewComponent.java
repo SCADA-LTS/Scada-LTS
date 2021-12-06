@@ -151,25 +151,6 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		return null;
 	}
 
-	public static Class<? extends ViewComponent> resolveClassForDeserializer(ImplDefinition def) {
-		if (def == AnalogGraphicComponent.DEFINITION || def == BinaryGraphicComponent.DEFINITION ||
-				def == MultistateGraphicComponent.DEFINITION || def == ButtonComponent.DEFINITION ||
-				def == DynamicGraphicComponent.DEFINITION || def == EnhancedPointComponent.DEFINITION ||
-				def == ScriptComponent.DEFINITION || def == SimpleImageComponent.DEFINITION ||
-				def == SimplePointComponent.DEFINITION || def == ThumbnailComponent.DEFINITION)
-			return PointComponent.class;
-		if (def == HtmlComponent.DEFINITION || def == ChartComparatorComponent.DEFINITION ||
-				def == FlexBuilderComponent.DEFINITION || def == LinkComponent.DEFINITION ||
-				def == ScriptButtonComponent.DEFINITION)
-			return HtmlComponent.class;
-		if (def == SimpleCompoundComponent.DEFINITION || def == EnhancedImageChartComponent.DEFINITION ||
-				def == ImageChartComponent.DEFINITION || def == WirelessTempHumSensor.DEFINITION)
-			return CompoundComponent.class;
-		if (def == AlarmListComponent.DEFINITION)
-			return AlarmListComponent.class;
-		return null;
-	}
-
 	public static List<String> getExportTypes() {
 		List<ImplDefinition> definitions = getImplementations();
 		List<String> result = new ArrayList<String>(definitions.size());

@@ -23,8 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -38,19 +36,16 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImplDefinition;
-import com.serotonin.mango.view.component.deserializer.DynamicImageFieldDeserializer;
 import com.serotonin.util.SerializationHelper;
 
 /**
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = JsonDeserializer.None.class)
 public class DynamicGraphicComponent extends PointComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("dynamicGraphic", "DYNAMIC_GRAPHIC",
             "graphic.dynamicGraphic", new int[] { DataTypes.NUMERIC });
 
-    @JsonDeserialize(using = DynamicImageFieldDeserializer.class)
     private DynamicImage dynamicImage;
     @JsonRemoteProperty
     private boolean displayText;

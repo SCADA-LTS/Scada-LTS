@@ -24,8 +24,6 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -39,7 +37,6 @@ import com.serotonin.mango.view.ImplDefinition;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = JsonDeserializer.None.class)
 public class ImageChartComponent extends CompoundComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("imageChart", "IMAGE_CHART", "graphic.imageChart",
             null);

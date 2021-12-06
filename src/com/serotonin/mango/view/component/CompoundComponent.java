@@ -23,8 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -32,7 +30,6 @@ import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.view.component.deserializer.CompoundComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.SerializationHelper;
@@ -42,11 +39,9 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
-@JsonDeserialize(using = CompoundComponentDeserializer.class)
 abstract public class CompoundComponent extends ViewComponent {
     @JsonRemoteProperty
     private String name;
-    @JsonIgnore
     private List<CompoundChild> children = new ArrayList<CompoundChild>();
 
     // Runtime attributes
@@ -72,6 +67,10 @@ abstract public class CompoundComponent extends ViewComponent {
 
     public List<CompoundChild> getChildComponents() {
         return children;
+    }
+
+    public void setChildren(List<CompoundChild> children) {
+        this.children = children;
     }
 
     protected void addChild(String id, String descriptionKey, HtmlComponent htmlComponent) {

@@ -30,6 +30,7 @@ import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
+import org.scada_lts.web.mvc.api.dto.view.GraphicalViewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -366,18 +367,43 @@ public class ViewAPI {
         }
     }
 
+//    @PostMapping(value = "")
+//    public ResponseEntity<Map<String, Integer>> createView(@RequestBody View view, HttpServletRequest request) {
+//        LOG.info("/api/view");
+//        try {
+//            User user = Common.getUser(request);
+//            if (user != null) {
+////                String error = validView(view);
+////                if(!error.isEmpty()) {
+////                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+////                }
+//                Map<String, Integer> response = new HashMap<>();
+//                response.put("viewId", viewService.saveViewAPI(view));
+//                return new ResponseEntity<>(response, HttpStatus.CREATED);
+//            } else {
+//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//            }
+//        } catch (Exception e) {
+//            LOG.error(e);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
     @PostMapping(value = "")
-    public ResponseEntity<Map<String, Integer>> createView(@RequestBody View view, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> createView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
             if (user != null) {
-//                String error = validView(view);
-//                if(!error.isEmpty()) {
-//                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//                }
-                Map<String, Integer> response = new HashMap<>();
-                response.put("viewId", viewService.saveViewAPI(view));
+                String error = validateGraphicalViewDTO(viewDTO, user);
+                if (!error.isEmpty()) {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("errors", error);
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+                View view = viewDTO.createViewFromBody(user);
+                Map<String, String> response = new HashMap<>();
+                response.put("viewId", String.valueOf(viewService.saveViewAPI(view)));
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

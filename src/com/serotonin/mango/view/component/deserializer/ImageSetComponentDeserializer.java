@@ -6,38 +6,36 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.AnalogGraphicComponent;
 import com.serotonin.mango.view.component.BinaryGraphicComponent;
-import com.serotonin.mango.view.component.ImageSetComponent;
 import com.serotonin.mango.view.component.MultistateGraphicComponent;
+import org.scada_lts.web.mvc.api.dto.view.components.AnalogGraphicComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.BinaryGraphicComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.ImageSetComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.MultistateGraphicComponentDTO;
 
 import java.io.IOException;
 
-
-public class ImageSetComponentDeserializer  extends JsonDeserializer<ImageSetComponent> {
+public class ImageSetComponentDeserializer extends JsonDeserializer<ImageSetComponentDTO> {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public ImageSetComponent deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public ImageSetComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.registerSubtypes(AnalogGraphicComponent.class);
-        mapper.registerSubtypes(BinaryGraphicComponent.class);
-        mapper.registerSubtypes(MultistateGraphicComponent.class);
+        mapper.registerSubtypes(AnalogGraphicComponentDTO.class);
+        mapper.registerSubtypes(BinaryGraphicComponentDTO.class);
+        mapper.registerSubtypes(MultistateGraphicComponentDTO.class);
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
         String type = node.get("defName").asText();
 
-        ImageSetComponent imageSetComponent = null;
+        ImageSetComponentDTO imageSetComponent = null;
         if (type.equals(AnalogGraphicComponent.DEFINITION.getName())) {
-            imageSetComponent = mapper.readValue(node.toString(), AnalogGraphicComponent.class);
-        }
-        else if (type.equals(BinaryGraphicComponent.DEFINITION.getName()))
-        {
-            imageSetComponent = mapper.readValue(node.toString(), BinaryGraphicComponent.class);
-        }
-        else if (type.equals(MultistateGraphicComponent.DEFINITION.getName()))
-        {
-            imageSetComponent = mapper.readValue(node.toString(), MultistateGraphicComponent.class);
+            imageSetComponent = mapper.readValue(node.toString(), AnalogGraphicComponentDTO.class);
+        } else if (type.equals(BinaryGraphicComponent.DEFINITION.getName())) {
+            imageSetComponent = mapper.readValue(node.toString(), BinaryGraphicComponentDTO.class);
+        } else if (type.equals(MultistateGraphicComponent.DEFINITION.getName())) {
+            imageSetComponent = mapper.readValue(node.toString(), MultistateGraphicComponentDTO.class);
         }
 
         return imageSetComponent;

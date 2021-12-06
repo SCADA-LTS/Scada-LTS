@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.DataTypes;
@@ -30,13 +29,10 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.ImplDefinition;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 /**
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = JsonDeserializer.None.class)
 public class AnalogGraphicComponent extends ImageSetComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("analogGraphic", "ANALOG_GRAPHIC",
             "graphic.analogGraphic", new int[] { DataTypes.NUMERIC });

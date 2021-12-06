@@ -23,8 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ResourceBundle;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImplDefinition;
@@ -34,7 +32,6 @@ import com.serotonin.util.SerializationHelper;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = JsonDeserializer.None.class)
 public class SimpleCompoundComponent extends CompoundComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("simpleCompound", "SIMPLE_COMPOUND",
             "graphic.simpleCompound", null);

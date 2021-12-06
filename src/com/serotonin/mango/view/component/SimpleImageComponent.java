@@ -23,8 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -35,7 +33,6 @@ import com.serotonin.mango.view.ImplDefinition;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = JsonDeserializer.None.class)
 public class SimpleImageComponent extends PointComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("simpleImage", "SIMPLE_IMAGE", "graphic.simpleImage",
             new int[] { DataTypes.IMAGE });

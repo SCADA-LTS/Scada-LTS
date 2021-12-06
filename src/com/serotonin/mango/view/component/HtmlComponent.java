@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImplDefinition;
@@ -34,7 +32,6 @@ import com.serotonin.util.SerializationHelper;
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = JsonDeserializer.None.class)
 public class HtmlComponent extends ViewComponent {
     public static ImplDefinition DEFINITION = new ImplDefinition("html", "HTML", "graphic.html", null);
 

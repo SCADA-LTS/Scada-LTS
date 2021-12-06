@@ -6,54 +6,55 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.*;
+import org.scada_lts.web.mvc.api.dto.view.components.*;
 
 import java.io.IOException;
 
-public class PointComponentDeserializer extends JsonDeserializer<PointComponent> {
+public class PointComponentDeserializer extends JsonDeserializer<PointComponentDTO> {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public PointComponent deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public PointComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.registerSubtypes(ImageSetComponent.class);
-        mapper.registerSubtypes(ScriptComponent.class);
-        mapper.registerSubtypes(DynamicGraphicComponent.class);
-        mapper.registerSubtypes(SimplePointComponent.class);
-        mapper.registerSubtypes(SimpleImageComponent.class);
-        mapper.registerSubtypes(ThumbnailComponent.class);
+        mapper.registerSubtypes(ImageSetComponentDTO.class);
+        mapper.registerSubtypes(ScriptComponentDTO.class);
+        mapper.registerSubtypes(DynamicGraphicComponentDTO.class);
+        mapper.registerSubtypes(SimplePointComponentDTO.class);
+        mapper.registerSubtypes(SimpleImageComponentDTO.class);
+        mapper.registerSubtypes(ThumbnailComponentDTO.class);
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
         String type = node.get("defName").asText();
 
-        PointComponent pointComponent = null;
+        PointComponentDTO pointComponent = null;
         if (type.equals(AnalogGraphicComponent.DEFINITION.getName()) ||
                 type.equals(BinaryGraphicComponent.DEFINITION.getName()) ||
                 type.equals(MultistateGraphicComponent.DEFINITION.getName())
         ) {
-            pointComponent = mapper.readValue(node.toString(), ImageSetComponent.class);
+            pointComponent = mapper.readValue(node.toString(), ImageSetComponentDTO.class);
         }
         else if (type.equals(ButtonComponent.DEFINITION.getName()) ||
                 type.equals(ScriptComponent.DEFINITION.getName()))
         {
-            pointComponent = mapper.readValue(node.toString(), ScriptComponent.class);
+            pointComponent = mapper.readValue(node.toString(), ScriptComponentDTO.class);
         }
-        else if (type.equals(SimplePointComponent.DEFINITION.getName()))
+        if (type.equals(SimplePointComponent.DEFINITION.getName()))
         {
-            pointComponent = mapper.readValue(node.toString(), SimplePointComponent.class);
+            pointComponent = mapper.readValue(node.toString(), SimplePointComponentDTO.class);
         }
         else if (type.equals(DynamicGraphicComponent.DEFINITION.getName()))
         {
-            pointComponent = mapper.readValue(node.toString(), DynamicGraphicComponent.class);
+            pointComponent = mapper.readValue(node.toString(), DynamicGraphicComponentDTO.class);
         }
         else if (type.equals(SimpleImageComponent.DEFINITION.getName()))
         {
-            pointComponent = mapper.readValue(node.toString(), SimpleImageComponent.class);
+            pointComponent = mapper.readValue(node.toString(), SimpleImageComponentDTO.class);
         }
         else if (type.equals(ThumbnailComponent.DEFINITION.getName()))
         {
-            pointComponent = mapper.readValue(node.toString(), ThumbnailComponent.class);
+            pointComponent = mapper.readValue(node.toString(), ThumbnailComponentDTO.class);
         }
 
         return pointComponent;

@@ -8,37 +8,43 @@ import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.dto.view.components.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CompoundComponentDeserializer extends JsonDeserializer<CompoundComponent> {
+public class CompoundComponentDeserializer extends JsonDeserializer<CompoundComponentDTO> {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public CompoundComponent deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public CompoundComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.registerSubtypes(EnhancedImageChartComponent.class);
-        mapper.registerSubtypes(ImageChartComponent.class);
-        mapper.registerSubtypes(SimpleCompoundComponent.class);
-        mapper.registerSubtypes(WirelessTempHumSensor.class);
+        mapper.registerSubtypes(EnhancedImageChartComponentDTO.class);
+        mapper.registerSubtypes(ImageChartComponentDTO.class);
+        mapper.registerSubtypes(SimpleCompoundComponentDTO.class);
+        mapper.registerSubtypes(WirelessTempHumSensorDTO.class);
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
         String type = node.get("defName").asText();
 
+        CompoundComponentDTO compoundComponentDTO = null;
         CompoundComponent compoundComponent = null;
         if (type.equals(EnhancedImageChartComponent.DEFINITION.getName())) {
-            compoundComponent = mapper.readValue(node.toString(), EnhancedImageChartComponent.class);
+            compoundComponentDTO = mapper.readValue(node.toString(), EnhancedImageChartComponentDTO.class);
+            compoundComponent = new EnhancedImageChartComponent();
         } else if (type.equals(ImageChartComponent.DEFINITION.getName())) {
-            compoundComponent = mapper.readValue(node.toString(), ImageChartComponent.class);
+            compoundComponentDTO = mapper.readValue(node.toString(), ImageChartComponentDTO.class);
+            compoundComponent = new ImageChartComponent();
         } else if (type.equals(SimpleCompoundComponent.DEFINITION.getName())) {
-            compoundComponent = mapper.readValue(node.toString(), SimpleCompoundComponent.class);
+            compoundComponentDTO = mapper.readValue(node.toString(), SimpleCompoundComponentDTO.class);
+            compoundComponent = new SimpleCompoundComponent();
         } else if (type.equals(WirelessTempHumSensor.DEFINITION.getName())) {
-            compoundComponent = mapper.readValue(node.toString(), WirelessTempHumSensor.class);
+            compoundComponentDTO = mapper.readValue(node.toString(), WirelessTempHumSensorDTO.class);
+            compoundComponent = new WirelessTempHumSensor();
         }
 
         List<CompoundChild> childComponents = compoundComponent.getChildComponents();
@@ -60,7 +66,8 @@ public class CompoundComponentDeserializer extends JsonDeserializer<CompoundComp
             }
 
         }
+        compoundComponentDTO.setCompoundChildren(childComponents);
 
-        return compoundComponent;
+        return compoundComponentDTO;
     }
 }

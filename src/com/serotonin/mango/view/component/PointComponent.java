@@ -23,15 +23,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.view.component.deserializer.DataPointFieldDeserializer;
-import com.serotonin.mango.view.component.deserializer.PointComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -42,10 +38,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
-@JsonDeserialize(using = PointComponentDeserializer.class)
 abstract public class PointComponent extends ViewComponent {
 
-    @JsonDeserialize(using = DataPointFieldDeserializer.class)
     private DataPointVO dataPoint;
     @JsonRemoteProperty
     private String nameOverride;
@@ -146,6 +140,12 @@ abstract public class PointComponent extends ViewComponent {
         if (dataPoint == null)
             return 0;
         return dataPoint.getId();
+    }
+
+    public String getDataPointXid() {
+        if (dataPoint == null)
+            return "";
+        return dataPoint.getXid();
     }
 
     public String getNameOverride() {

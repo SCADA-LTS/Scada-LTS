@@ -23,8 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -35,17 +33,14 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.ImageSet;
-import com.serotonin.mango.view.component.deserializer.ImageSetComponentDeserializer;
-import com.serotonin.mango.view.component.deserializer.ImageSetFieldDeserializer;
 import com.serotonin.util.SerializationHelper;
 
 /**
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
-@JsonDeserialize(using = ImageSetComponentDeserializer.class)
 abstract public class ImageSetComponent extends PointComponent {
-    @JsonDeserialize(using = ImageSetFieldDeserializer.class)
+
     protected ImageSet imageSet;
     @JsonRemoteProperty
     private boolean displayText;
