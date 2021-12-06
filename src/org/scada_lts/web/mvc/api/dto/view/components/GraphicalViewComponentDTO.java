@@ -29,7 +29,7 @@ public class GraphicalViewComponentDTO implements ViewComponentCreate{
         if (isPointComponent(def))
             return PointComponentDTO.class;
         if (isHtmlComponent(def))
-            return HtmlComponentDTO.class;
+            return HtmlBaseComponentDTO.class;
         if (isCompoundComponent(def))
             return CompoundComponentDTO.class;
         if (def == AlarmListComponent.DEFINITION)
@@ -38,8 +38,7 @@ public class GraphicalViewComponentDTO implements ViewComponentCreate{
     }
 
     public static boolean isPointComponent(ImplDefinition def) {
-        return def == AnalogGraphicComponent.DEFINITION || def == BinaryGraphicComponent.DEFINITION ||
-                def == MultistateGraphicComponent.DEFINITION || def == ButtonComponent.DEFINITION ||
+        return isImageSetComponent(def) || def == ButtonComponent.DEFINITION ||
                 def == DynamicGraphicComponent.DEFINITION || def == EnhancedPointComponent.DEFINITION ||
                 def == ScriptComponent.DEFINITION || def == SimpleImageComponent.DEFINITION ||
                 def == SimplePointComponent.DEFINITION || def == ThumbnailComponent.DEFINITION;
@@ -54,6 +53,11 @@ public class GraphicalViewComponentDTO implements ViewComponentCreate{
     public static boolean isCompoundComponent(ImplDefinition def) {
         return def == SimpleCompoundComponent.DEFINITION || def == EnhancedImageChartComponent.DEFINITION ||
                 def == ImageChartComponent.DEFINITION || def == WirelessTempHumSensor.DEFINITION;
+    }
+
+    public static boolean isImageSetComponent(ImplDefinition def) {
+        return def == AnalogGraphicComponent.DEFINITION || def == BinaryGraphicComponent.DEFINITION ||
+                def == MultistateGraphicComponent.DEFINITION;
     }
 
     public Integer getIndex() {

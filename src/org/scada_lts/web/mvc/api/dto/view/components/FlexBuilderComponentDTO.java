@@ -1,8 +1,11 @@
 package org.scada_lts.web.mvc.api.dto.view.components;
 
 import br.org.scadabr.view.component.FlexBuilderComponent;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.User;
 
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class FlexBuilderComponentDTO extends HtmlComponentDTO{
     private Boolean projectDefined;
     private String projectSource;
@@ -82,7 +85,7 @@ public class FlexBuilderComponentDTO extends HtmlComponentDTO{
         c.setRuntimeMode(runtimeMode);
         c.setProjectSource(projectSource);
 
-        c.setContent(getContent());
+        c.setContent(c.createFlexBuilderContent());
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());

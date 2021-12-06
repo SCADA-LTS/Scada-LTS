@@ -8,30 +8,19 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
-public class ScriptComponentDTO extends PointComponentDTO {
-
-    private String script;
+public class ScriptComponentDTO extends ScriptBaseComponentDTO {
 
     public ScriptComponentDTO() {
     }
 
     public ScriptComponentDTO(Integer index, String idSuffix, Integer x, Integer y, Integer z, String typeName, String dataPointXid, String nameOverride, Boolean settableOverride, String bkgdColorOverride, Boolean displayControls, String script) {
-        super(index, idSuffix, x, y, z, typeName, dataPointXid, nameOverride, settableOverride, bkgdColorOverride, displayControls);
-        this.script = script;
-    }
-
-    public String getScript() {
-        return script;
-    }
-
-    public void setScript(String script) {
-        this.script = script;
+        super(index, idSuffix, x, y, z, typeName, dataPointXid, nameOverride, settableOverride, bkgdColorOverride, displayControls, script);
     }
 
     @Override
     public ScriptComponent createFromBody(User user) {
         ScriptComponent c = new ScriptComponent();
-        c.setScript(script);
+        c.setScript(getScript());
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());

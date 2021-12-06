@@ -1,8 +1,11 @@
 package org.scada_lts.web.mvc.api.dto.view.components;
 
 import br.org.scadabr.view.component.ScriptButtonComponent;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.User;
 
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class ScriptButtonComponentDTO extends HtmlComponentDTO{
     private String scriptXid;
     private String text;
@@ -38,7 +41,7 @@ public class ScriptButtonComponentDTO extends HtmlComponentDTO{
         c.setScriptXid(scriptXid);
         c.setText(text);
 
-        c.setContent(getContent());
+        c.setContent(c.createScriptButtonContent());
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());

@@ -27,12 +27,17 @@ public class ScriptButtonComponent extends HtmlComponent {
 	}
 
 	private void createScriptButton() {
+		String content = createScriptButtonContent();
+		setContent(content);
+	}
+
+	public String createScriptButtonContent() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<button class='viewComponent' onclick='mango.view.executeScript(\"" + scriptXid
 				+ "\");'>");
 		sb.append(text);
 		sb.append("</button>");
-		setContent(sb.toString());
+		return sb.toString();
 	}
 
 	//

@@ -1,11 +1,14 @@
 package org.scada_lts.web.mvc.api.dto.view.components;
 
 import br.org.scadabr.view.component.ButtonComponent;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
-public class ButtonComponentDTO extends ScriptComponentDTO {
+@JsonDeserialize(using = JsonDeserializer.None.class)
+public class ButtonComponentDTO extends ScriptBaseComponentDTO {
 
     private String whenOffLabel;
     private String whenOnLabel;
@@ -63,7 +66,7 @@ public class ButtonComponentDTO extends ScriptComponentDTO {
         c.setWhenOffLabel(whenOffLabel);
         c.setWhenOnLabel(whenOnLabel);
 
-        c.setScript(getScript());
+        c.setScript(c.createButtonScriptContent());
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());

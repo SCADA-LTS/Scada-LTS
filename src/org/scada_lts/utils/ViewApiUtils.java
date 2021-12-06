@@ -1,7 +1,12 @@
 package org.scada_lts.utils;
 
+import br.org.scadabr.view.component.*;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.view.DynamicImage;
+import com.serotonin.mango.view.ImageSet;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -11,8 +16,7 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.dto.view.GraphicalViewDTO;
-import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
-import org.scada_lts.web.mvc.api.dto.view.components.PointComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +24,7 @@ import java.util.Optional;
 import static com.serotonin.mango.view.component.ViewComponent.getImplementations;
 import static org.scada_lts.utils.ValidationUtils.*;
 import static org.scada_lts.utils.ValidationUtils.msgIfNull;
-import static org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO.isPointComponent;
+import static org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO.*;
 
 public final class ViewApiUtils {
 
@@ -78,7 +82,42 @@ public final class ViewApiUtils {
                     if (isPointComponent(def)) {
                         PointComponentDTO pointComponentDTO = (PointComponentDTO) component;
                         msg.append(validateDataPoint(pointComponentDTO.getDataPointXid(), user));
+                        if (isImageSetComponent(def)) {
+                            ImageSetComponentDTO imageSetComponentDTO = (ImageSetComponentDTO) pointComponentDTO;
+                            msg.append(validateImageSet(imageSetComponentDTO.getImageSetId()));
+                            if (def == AnalogGraphicComponent.DEFINITION)
+                                msg.append(validateAnalogGraphicComponent((AnalogGraphicComponentDTO) component));
+                            if (def == BinaryGraphicComponent.DEFINITION)
+                                msg.append(validateBinaryGraphicComponent((BinaryGraphicComponentDTO) component));
+                        }
+                        if (def == DynamicGraphicComponent.DEFINITION)
+                            msg.append(validateDynamicGraphicComponent((DynamicGraphicComponentDTO) component));
+                        if (def == ScriptComponent.DEFINITION)
+                            msg.append(validateScriptComponent((ScriptComponentDTO) component));
+                        if (def == ButtonComponent.DEFINITION)
+                            msg.append(validateButtonComponent((ButtonComponentDTO) component));
+                        if (def == ThumbnailComponent.DEFINITION)
+                            msg.append(validateThumbnailComponent((ThumbnailComponentDTO) component));
                     }
+                    if (isCompoundComponent(def)) {
+                        msg.append(validateCompoundComponent((CompoundComponentDTO) component));
+                        if (def == ImageChartComponent.DEFINITION)
+                            msg.append(validateImageChartComponent((ImageChartComponentDTO) component));
+                        if (def == EnhancedImageChartComponent.DEFINITION)
+                            msg.append(validateEnhancedImageChartComponent((EnhancedImageChartComponentDTO) component));
+                    }
+                    if (isHtmlComponent(def)) {
+                        if (def == ChartComparatorComponent.DEFINITION)
+                            msg.append(validateChartComparatorComponent((ChartComparatorComponentDTO) component));
+                        if (def == LinkComponent.DEFINITION)
+                            msg.append(validateLinkComponent((LinkComponentDTO) component));
+                        if (def == FlexBuilderComponent.DEFINITION)
+                            msg.append(validateFlexBuilderComponent((FlexBuilderComponentDTO) component));
+                        if (def == ScriptButtonComponent.DEFINITION)
+                            msg.append(validateScriptButtonComponent((ScriptButtonComponentDTO) component));
+                    }
+                    if (def == AlarmListComponent.DEFINITION)
+                        msg.append(validateAlarmListComponent((AlarmListComponentDTO) component));
                 }
             }
         }
@@ -100,5 +139,113 @@ public final class ViewApiUtils {
         if (dataPoint.isPresent() && !Permissions.hasDataPointReadPermission(user, dataPoint.get()))
             msg.append("No permission to read datapoint for current user;");
         return msg.toString();
+    }
+
+    private static String validateLinkComponent(LinkComponentDTO body) {
+        String msg = msgIfNullOrInvalid("Correct text;", body.getText(), StringUtils::isEmpty);
+        msg += msgIfNullOrInvalid("Correct link;", body.getLink(), StringUtils::isEmpty);
+        return msg;
+    }
+
+    private static String validateChartComparatorComponent(ChartComparatorComponentDTO body) {
+        String msg = msgIfNonNullAndInvalid("Invalid width;", body.getWidth(), a -> a < 1);
+        msg += msgIfNonNullAndInvalid("Invalid height;", body.getHeight(), a -> a < 1);
+        return msg;
+    }
+
+    private static String validateFlexBuilderComponent(FlexBuilderComponentDTO body) {
+        String msg = msgIfNonNullAndInvalid("Invalid width;", body.getWidth(), a -> a < FlexBuilderComponent.MIN_WIDTH || a > FlexBuilderComponent.MAX_WIDTH);
+        msg += msgIfNonNullAndInvalid("Invalid height;", body.getHeight(), a -> a < FlexBuilderComponent.MIN_HEIGHT || a > FlexBuilderComponent.MAX_HEIGHT);
+        return msg;
+    }
+
+    private static String validateAlarmListComponent(AlarmListComponentDTO body) {
+        String msg = msgIfNonNullAndInvalid("Invalid width;", body.getWidth(), a -> a < 0);
+        msg += msgIfNonNullAndInvalid("Invalid maxListSize;", body.getMaxListSize(), a -> a < 1);
+        return msg;
+    }
+
+    private static String validateScriptButtonComponent(ScriptButtonComponentDTO body) {
+        String msg = msgIfNullOrInvalid("Correct text;", body.getText(), StringUtils::isEmpty);
+        msg += msgIfNullOrInvalid("Correct scriptXid;", body.getScriptXid(), StringUtils::isEmpty);
+        return msg;
+    }
+
+    private static String validateAnalogGraphicComponent(AnalogGraphicComponentDTO body) {
+        return msgIfInvalid("Max cannot be smaller than min;", body.getMin(), body.getMax(), (min, max) -> min >= max);
+    }
+
+    private static String validateBinaryGraphicComponent(BinaryGraphicComponentDTO body) {
+        String msg = msgIfNonNullAndInvalid("Missing zero image;", body.getZeroImage(), a -> a == -1);
+        msg += msgIfNonNullAndInvalid("Missing one image;", body.getOneImage(), a -> a == -1);
+        return msg;
+    }
+
+    private static String validateDynamicGraphicComponent(DynamicGraphicComponentDTO body) {
+        String msg = msgIfInvalid("Max cannot be smaller than min;", body.getMin(), body.getMax(), (min, max) -> min >= max);
+        msg += validateDynamicImage(body.getDynamicImageId());
+        return msg;
+    }
+
+    private static String validateScriptComponent(ScriptComponentDTO body) {
+        return msgIfNullOrInvalid("Correct script;", body.getScript(), StringUtils::isEmpty);
+    }
+
+    private static String validateButtonComponent(ButtonComponentDTO body) {
+        StringBuilder msg = new StringBuilder();
+        msg.append(msgIfNonNullAndInvalid("Invalid width;", body.getWidth(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Invalid height;", body.getHeight(), a -> a < 0));
+        msg.append(msgIfNonNullAndInvalid("Correct whenOffLabel;", body.getWhenOffLabel(), StringUtils::isEmpty));
+        msg.append(msgIfNonNullAndInvalid("Correct whenOnLabel;", body.getWhenOnLabel(), StringUtils::isEmpty));
+        return msg.toString();
+    }
+
+    private static String validateThumbnailComponent(ThumbnailComponentDTO body) {
+        return msgIfNonNullAndInvalid("Invalid scale percent;", body.getScalePercent(), a -> a < 1);
+    }
+
+    private static String validateCompoundComponent(CompoundComponentDTO body) {
+        return msgIfNullOrInvalid("Correct name;", body.getName(), StringUtils::isEmpty);
+    }
+
+    private static String validateImageChartComponent(ImageChartComponentDTO body) {
+        return imageChartComponentValidation(body.getWidth(), body.getHeight(), body.getDurationType(), body.getDurationPeriods());
+    }
+
+    private static String validateEnhancedImageChartComponent(EnhancedImageChartComponentDTO body) {
+        return imageChartComponentValidation(body.getWidth(), body.getHeight(), body.getDurationType(), body.getDurationPeriods());
+    }
+
+    private static String validateImageSet(String imageSetId) {
+        Optional<ImageSet> imageSet = Optional.ofNullable(Common.ctx.getImageSet(imageSetId));
+        StringBuilder msg = new StringBuilder();
+        if (imageSet.isEmpty())
+            msg.append("ImageSet doesn't exist;");
+        if (imageSet.isPresent() && !imageSet.get().isAvailable())
+            msg.append("ImageSet not available;");
+        return msg.toString();
+    }
+
+    private static String validateDynamicImage(String dynamicImageId) {
+        Optional<DynamicImage> dynamicImage = Optional.ofNullable(Common.ctx.getDynamicImage(dynamicImageId));
+        StringBuilder msg = new StringBuilder();
+        if (dynamicImage.isEmpty())
+            msg.append("DynamicImage doesn't exist;");
+        if (dynamicImage.isPresent() && !dynamicImage.get().isAvailable())
+            msg.append("DynamicImage not available;");
+        return msg.toString();
+    }
+
+    private static String imageChartComponentValidation(Integer width, Integer height, Integer durationType, Integer durationPeriods) {
+        StringBuilder msg = new StringBuilder();
+        msg.append(msgIfNonNullAndInvalid("Invalid width;", width, a -> a < 1));
+        msg.append(msgIfNonNullAndInvalid("Invalid height;", height, a -> a < 1));
+        msg.append(msgIfNonNullAndInvalid("Invalid duration type;", durationType, a -> invalidDurationType(durationType)));
+        msg.append(msgIfNonNullAndInvalid("Invalid duration periods;", durationPeriods, a -> a <= 0));
+        return msg.toString();
+    }
+
+    private static boolean invalidDurationType(int durationType) {
+        return !Common.TIME_PERIOD_CODES.isValidId(durationType);
     }
 }

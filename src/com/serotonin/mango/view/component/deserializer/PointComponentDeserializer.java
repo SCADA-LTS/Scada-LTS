@@ -18,7 +18,7 @@ public class PointComponentDeserializer extends JsonDeserializer<PointComponentD
     public PointComponentDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerSubtypes(ImageSetComponentDTO.class);
-        mapper.registerSubtypes(ScriptComponentDTO.class);
+        mapper.registerSubtypes(ScriptBaseComponentDTO.class);
         mapper.registerSubtypes(DynamicGraphicComponentDTO.class);
         mapper.registerSubtypes(SimplePointComponentDTO.class);
         mapper.registerSubtypes(SimpleImageComponentDTO.class);
@@ -38,7 +38,7 @@ public class PointComponentDeserializer extends JsonDeserializer<PointComponentD
         else if (type.equals(ButtonComponent.DEFINITION.getName()) ||
                 type.equals(ScriptComponent.DEFINITION.getName()))
         {
-            pointComponent = mapper.readValue(node.toString(), ScriptComponentDTO.class);
+            pointComponent = mapper.readValue(node.toString(), ScriptBaseComponentDTO.class);
         }
         if (type.equals(SimplePointComponent.DEFINITION.getName()))
         {

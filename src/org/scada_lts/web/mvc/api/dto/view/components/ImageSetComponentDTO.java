@@ -37,6 +37,6 @@ public class ImageSetComponentDTO extends PointComponentDTO {
     }
 
     protected ImageSet getImageSet() {
-        return Common.ctx.getImageSets().stream().filter(i -> i.getId().equals(imageSetId)).findAny().orElse(null);
+        return Common.ctx.getImageSet(imageSetId);
     }
 }

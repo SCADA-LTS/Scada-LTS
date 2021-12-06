@@ -9,7 +9,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
-public class ThumbnailComponentDTO extends PointComponentDTO implements ViewComponentCreate{
+public class ThumbnailComponentDTO extends PointComponentDTO{
     private Integer scalePercent;
 
     public ThumbnailComponentDTO() {

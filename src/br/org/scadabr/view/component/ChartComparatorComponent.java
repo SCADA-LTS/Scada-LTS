@@ -35,6 +35,11 @@ public class ChartComparatorComponent extends HtmlComponent {
 	}
 
 	private void createContent() {
+		String content = createChartComparatorContent();
+		setContent(content);
+	}
+
+	public String createChartComparatorContent() {
 		String idPrefix = "chartComparator" + getId();
 
 		StringBuilder sb = new StringBuilder();
@@ -76,8 +81,7 @@ public class ChartComparatorComponent extends HtmlComponent {
 		sb.append("<div style='clear:both;'> </div>");
 
 		sb.append("</div>");
-
-		setContent(sb.toString());
+		return sb.toString();
 	}
 
 	private String createDataPointsSelectComponent(String idPrefix) {

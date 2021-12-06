@@ -2,9 +2,11 @@ package org.scada_lts.web.mvc.api.dto.view.components;
 
 
 import br.org.scadabr.view.component.LinkComponent;
-import com.serotonin.mango.view.component.HtmlComponent;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.vo.User;
 
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class LinkComponentDTO extends HtmlComponentDTO {
 
     private String link;
@@ -41,7 +43,9 @@ public class LinkComponentDTO extends HtmlComponentDTO {
         c.setLink(link);
         c.setText(text);
 
-        c.setContent(getContent());
+        String content = c.createLinkContent();
+
+        c.setContent(content);
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());

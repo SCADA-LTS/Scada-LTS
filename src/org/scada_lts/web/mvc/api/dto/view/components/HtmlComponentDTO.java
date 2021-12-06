@@ -6,30 +6,19 @@ import com.serotonin.mango.view.component.HtmlComponent;
 import com.serotonin.mango.vo.User;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
-public class HtmlComponentDTO extends GraphicalViewComponentDTO{
-
-    private String content;
+public class HtmlComponentDTO extends HtmlBaseComponentDTO{
 
     public HtmlComponentDTO() {
     }
 
     public HtmlComponentDTO(Integer index, String idSuffix, Integer x, Integer y, Integer z, String typeName, String content) {
-        super(index, idSuffix, x, y, z, typeName);
-        this.content = content;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+        super(index, idSuffix, x, y, z, typeName, content);
     }
 
     @Override
     public HtmlComponent createFromBody(User user) {
         HtmlComponent c = new HtmlComponent();
-        c.setContent(content);
+        c.setContent(getContent());
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());

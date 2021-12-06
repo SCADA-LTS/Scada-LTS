@@ -27,11 +27,16 @@ public class LinkComponent extends HtmlComponent {
 	}
 
 	private void createLink() {
+		String content = createLinkContent();
+		setContent(content);
+	}
+
+	public String createLinkContent() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<a href='" + link + "'>");
 		sb.append(text);
 		sb.append("</a>");
-		setContent(sb.toString());
+		return sb.toString();
 	}
 
 	//
