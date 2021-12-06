@@ -2,17 +2,11 @@
 	<v-app>
 		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
 			<v-list nav dense>
-				<v-list-item link href="#/alarms">
+				<v-list-item link href="#/alarms/scada">
 					<v-list-item-icon>
 						<v-icon>mdi-bell-ring</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title>Alarms</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/historical-alarms">
-					<v-list-item-icon>
-						<v-icon>mdi-bell-outline</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>Historical Alarms</v-list-item-title>
 				</v-list-item>
 				<v-list-item link href="#/alarm-notifications">
 					<v-list-item-icon>
@@ -83,10 +77,18 @@
 		<v-app-bar app dark color="primary">
 			<v-list-item>
 				<v-list-item-content>
-					<v-list-item-title class="title"> Scada-LTS </v-list-item-title>
+					<v-list-item-title class="title"> Scada-LTS
+						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
 						version {{ $store.getters.appMilestone }}
 					</v-list-item-subtitle>
+				</v-list-item-content>
+			</v-list-item>
+			<v-list-item max-width="50">
+				<v-list-item-content>
+					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
+						<img v-if="highestUnsilencedAlarmLevel != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
+					</a>
 				</v-list-item-content>
 			</v-list-item>
 
@@ -134,11 +136,43 @@
 </template>
 
 <script>
+import webSocketMixin from '@/utils/web-socket-utils';
+import internetMixin from '@/utils/connection-status-utils';
+
 export default {
 	name: 'app',
+	mixins: [webSocketMixin, internetMixin],
 
 	data() {
-		return {};
+		return {
+			onAppOnline: () => {
+				this.wsLive = true;
+			},
+			onAppOffline() {
+				this.wsLive = false;
+			},
+			wsCallback: () => {
+				this.wsLive = true;
+				this.wsSubscribeTopic(`alarm`, async(x) => {
+					await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
+				});
+			},
+			wsLive: false,
+			alarmFlags: {
+				1: {
+					image: "images/flag_blue.png"
+				},
+				2: {
+					image: "images/flag_yellow.png"
+				},
+				3: {
+					image: "images/flag_orange.png"
+				},
+				4: {
+					image: "images/flag_red.png"
+				}
+			},
+		};
 	},
 
 	computed: {
@@ -152,17 +186,26 @@ export default {
 				return false;
 			}
 		},
+		highestUnsilencedAlarmLevel() {
+            return this.$store.state.storeEvents.highestUnsilencedAlarmLevel;
+		}
 	},
 
-	mounted() {
-		if(!this.user) {
-			this.$store.dispatch('getUserInfo');
-		}
+	async mounted() {
+	    if(!this.user) {
+    			this.$store.dispatch('getUserInfo');
+    	}
 		this.$store.dispatch('getLocaleInfo');
-		
+		await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 	},
 
 	methods: {
+		goToEvents() {
+			if (this.$route.name !== 'scada') {
+				this.$router.push({ name: 'scada' });
+			}
+
+		},
 		logout() {
 			this.$store.dispatch('logoutUser');
 			this.$router.push({ name: 'login' });
@@ -191,4 +234,24 @@ div[id*='Content'] textarea,
 	border: 1px solid #39b54a;
 	appearance: auto;
 }
+
+.blink {
+	color: white;
+  animation: blinker .8s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+	 color: yellow;
+  }
+   0% {
+	 color: red;
+	 /* text-shadow: yellow 0px 0px 5px; */
+  }
+   100% {
+	 color: red;
+	 /* text-shadow: transparent 2px 2px 0px; */
+  }
+}
+
 </style>
