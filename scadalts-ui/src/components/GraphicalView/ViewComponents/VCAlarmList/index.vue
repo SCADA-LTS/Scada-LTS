@@ -17,9 +17,11 @@
 					</thead>
 					<tbody>
 						<tr v-for="al in alarmList" :key="al.id">
-							<td>{{ al.alarmLevel }}</td>
-							<td>{{ al.activeTs }}</td>
-							<td>{{ al.message }}</td>
+							<td><img :src="alarmFlags[al.alarmLevel].image" /></td>
+							<td>{{ $date(al.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</td>
+							<td>
+								{{ $t(`${al.message.split('|')[0]}`, al.message.split('|')) }}
+							</td>
 						</tr>
 					</tbody>
 				</template>
@@ -68,6 +70,12 @@ export default {
 		this.fetchAlarms();
 	},
 
+	computed: {
+		alarmFlags() {
+			return this.$store.state.staticResources.alarmFlags;
+		},
+	},
+
 	data() {
 		return {
 			alarmList: [],
@@ -108,11 +116,25 @@ export default {
 		},
 		async fetchAlarms() {
 			try {
-				const response = await this.$store.dispatch('getAllEvents', {
-					minAlarmLevel: this.component.minAlarmLevel,
+				console.log('fetching alarms');
+				const response = await this.$store.dispatch('searchEvents', {
+					alarmLevel: this.component.minAlarmLevel,
+					datapoint: null,
+					endDate: '',
+					endTime: '',
+					eventSourceType: 0,
+					keywords: '',
 					limit: this.component.maxListSize,
+					offset: 0,
+					sortBy: ['activeTs'],
+					sortDesc: [true],
+					startDate: '',
+					startTime: '00:00',
+					status: '*',
 				});
-				this.alarmList = response;
+				this.alarmList = response.rows.slice(0, this.component.maxListSize);
+				console.log('fetched alarms', this.alarmList);
+				// this.alarmList = response;
 				if (!this.alarmUpdateInterval) {
 					this.alarmUpdateInterval = setInterval(() => {
 						this.fetchAlarms();

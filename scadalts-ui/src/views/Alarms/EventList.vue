@@ -423,6 +423,11 @@ export default {
 		this.mountedTs = this.$dayjs()
 		this.fetchEventList();
 	},
+	computed: {
+		alarmFlags() {
+			return this.$store.state.staticResources.alarmFlags;
+		}
+	},
 	watch: {
     	options (data) {
 			this.searchFilters.page = data.page;
@@ -564,20 +569,6 @@ export default {
 				},
 				4: {
 					image: "images/flag_red_off.png"
-				}
-			},
-			alarmFlags: {
-				1: {
-					image: "images/flag_blue.png"
-				},
-				2: {
-					image: "images/flag_yellow.png"
-				},
-				3: {
-					image: "images/flag_orange.png"
-				},
-				4: {
-					image: "images/flag_red.png"
 				}
 			},
 			confirmAckAllToggleDialog: false,

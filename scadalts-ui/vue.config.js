@@ -43,6 +43,7 @@ module.exports = {
 		proxy: {
 			'^/graphics/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^/uploads/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
+			'^/images/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^//pointHierarchy/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 			'^/ws-scada/*': {

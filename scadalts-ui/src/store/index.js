@@ -16,6 +16,7 @@ import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
 import watchListModule from './watchList';
 import webSocketModule from './websocketStore';
+import staticResources from './static';
 
 import axios from 'axios';
 
@@ -37,6 +38,7 @@ export default new Vuex.Store({
 		graphicalViewModule,
 		pointHierarchy,
 		alarms,
+		staticResources,
 		storeUsers,
 		userProfileModule,
 		systemSettings,
