@@ -6,26 +6,44 @@
 					<h1>Graphical Views</h1>
 				</v-col>
 				<v-col class="row justify-end">
-					<v-btn icon @click="toggleFullScreen" v-if="!!activeGraphicalView">
-						<v-icon> mdi-arrow-expand-all </v-icon>
-					</v-btn>
-					<v-btn icon @click="changeToCreateMode">
-						<v-icon> mdi-plus </v-icon>
-					</v-btn>
-					<v-btn
-						icon
-						@click="changeToEditMode"
-						v-if="!!activeGraphicalView && userAccess === 2"
-					>
-						<v-icon> mdi-pencil </v-icon>
-					</v-btn>
-					<v-btn
-						icon
-						@click="removeGraphicalView"
-						v-if="!!activeGraphicalView && userAccess === 2"
-					>
-						<v-icon> mdi-delete </v-icon>
-					</v-btn>
+					<v-tooltip bottom v-if="!!activeGraphicalView">
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn icon @click="toggleFullScreen" v-on="on" v-bind="attrs">
+								<v-icon> mdi-arrow-expand-all </v-icon>
+							</v-btn>
+						</template>
+						<span>
+							Toggle Full Screen<br />
+							Press "Ctrl + Shift + F"
+						</span>
+					</v-tooltip>
+
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn icon @click="changeToCreateMode" v-on="on" v-bind="attrs">
+								<v-icon> mdi-plus </v-icon>
+							</v-btn>
+						</template>
+						<span> Create a new view </span>
+					</v-tooltip>
+
+					<v-tooltip bottom v-if="!!activeGraphicalView && userAccess === 2">
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn icon @click="changeToEditMode" v-on="on" v-bind="attrs">
+								<v-icon> mdi-pencil </v-icon>
+							</v-btn>
+						</template>
+						<span> Edit view </span>
+					</v-tooltip>
+
+					<v-tooltip bottom v-if="!!activeGraphicalView && userAccess === 2">
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn icon @click="removeGraphicalView" v-on="on" v-bind="attrs">
+								<v-icon> mdi-delete </v-icon>
+							</v-btn>
+						</template>
+						<span> Delete view </span>
+					</v-tooltip>
 				</v-col>
 				<v-col>
 					<v-select
@@ -73,15 +91,33 @@
 						></v-select>
 					</v-col>
 					<v-col class="flex-jc-space-around">
-						<v-btn @click="showBackgroundDialog">
-							<v-icon> mdi-image </v-icon>
-						</v-btn>
-						<v-btn @click="toggleIconify">
-							<v-icon> mdi-cube </v-icon>
-						</v-btn>
-						<v-btn color="primary" @click="showComponentsDialog">
-							<v-icon> mdi-plus </v-icon>
-						</v-btn>
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn @click="showBackgroundDialog" v-on="on" v-bind="attrs">
+									<v-icon> mdi-image </v-icon>
+								</v-btn>
+							</template>
+							<span> Open background settings </span>
+						</v-tooltip>
+
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn @click="toggleIconify" v-on="on" v-bind="attrs">
+									<v-icon> mdi-cube </v-icon>
+								</v-btn>
+							</template>
+							<span> Iconify components </span>
+						</v-tooltip>
+
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn color="primary" @click="showComponentsDialog" v-on="on" v-bind="attrs">
+									<v-icon> mdi-plus </v-icon>
+								</v-btn>
+							</template>
+							<span> Show component library </span>
+						</v-tooltip>
+
 					</v-col>
 				</v-row>
 			</v-form>
@@ -253,17 +289,17 @@ export default {
 					this.showCrudSnackbar('update');
 				}
 				this.createMode = false;
-				
+
 				if (res) {
 					this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
 				}
 			} catch (e) {
-				if(e.data.errors) {
-					this.showSnackbar(e.data.errors, "error");
+				if (e.data.errors) {
+					this.showSnackbar(e.data.errors, 'error');
 				} else {
-					this.showCrudSnackbar("add", false)
+					this.showCrudSnackbar('add', false);
 				}
-				
+
 				console.error(e);
 			}
 		},

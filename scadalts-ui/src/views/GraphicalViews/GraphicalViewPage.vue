@@ -2,91 +2,232 @@
 	<div v-if="!!viewPage">
 		<div class="canvas-toolbar" v-if="editMode">
 			<div class="canvas-toolbar--actions">
-				<v-btn icon :disabled="activeComponentsSize < 1" @click="layoutMoveLeft">
-					<v-icon>mdi-align-horizontal-left</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 1"
+							@click="layoutMoveLeft"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-horizontal-left</v-icon>
+						</v-btn>
+					</template>
+					<span> Align components left </span>
+				</v-tooltip>
 
-				<v-btn icon :disabled="activeComponentsSize < 1" @click="layoutHorizontalCenter">
-					<v-icon>mdi-align-horizontal-center</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 1"
+							@click="layoutHorizontalCenter"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-horizontal-center</v-icon>
+						</v-btn>
+					</template>
+					<span> Align components center horizontaly</span>
+				</v-tooltip>
 
-				<v-btn icon :disabled="activeComponentsSize < 1" @click="layoutMoveRight">
-					<v-icon>mdi-align-horizontal-right</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 1"
+							@click="layoutMoveRight"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-horizontal-right</v-icon>
+						</v-btn>
+					</template>
+					<span> Align components right </span>
+				</v-tooltip>
 
-				<v-btn icon :disabled="activeComponentsSize < 1" @click="layoutMoveTop">
-					<v-icon>mdi-align-vertical-top</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 1"
+							@click="layoutMoveTop"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-vertical-top</v-icon>
+						</v-btn>
+					</template>
+					<span> Align components top </span>
+				</v-tooltip>
 
-				<v-btn icon :disabled="activeComponentsSize < 1" @click="layoutVerticalCenter">
-					<v-icon>mdi-align-vertical-center</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 1"
+							@click="layoutVerticalCenter"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-vertical-center</v-icon>
+						</v-btn>
+					</template>
+					<span> Align components center verticaly </span>
+				</v-tooltip>
 
-				<v-btn icon :disabled="activeComponentsSize < 1" @click="layoutMoveBottom">
-					<v-icon>mdi-align-vertical-bottom</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 1"
+							@click="layoutMoveBottom"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-vertical-bottom</v-icon>
+						</v-btn>
+					</template>
+					<span> Align components bottom </span>
+				</v-tooltip>
 
-				<v-btn
-					icon
-					:disabled="activeComponentsSize < 3"
-					@click="layoutHorizontalDistribute"
-				>
-					<v-icon>mdi-align-horizontal-distribute</v-icon>
-				</v-btn>
-				<v-btn
-					icon
-					:disabled="activeComponentsSize < 3"
-					@click="layoutVerticalDistribute"
-				>
-					<v-icon>mdi-align-vertical-distribute</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 3"
+							@click="layoutHorizontalDistribute"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-horizontal-distribute</v-icon>
+						</v-btn>
+					</template>
+					<span> Distribute components horizontaly </span>
+				</v-tooltip>
+
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="activeComponentsSize < 3"
+							@click="layoutVerticalDistribute"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-align-vertical-distribute</v-icon>
+						</v-btn>
+					</template>
+					<span> Distribute components verticaly </span>
+				</v-tooltip>
 
 				<v-divider vertical class="small-divider"></v-divider>
 
 				<v-btn-toggle v-model="layoutContext" borderless>
-					<v-btn icon :disabled="activeComponentsSize < 1">
-						<v-icon>mdi-application</v-icon>
-					</v-btn>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn icon :disabled="activeComponentsSize < 1" v-on="on" v-bind="attrs">
+								<v-icon>mdi-application</v-icon>
+							</v-btn>
+						</template>
+						<span> Align components base on the Canvas </span>
+					</v-tooltip>
 
-					<v-btn icon :disabled="activeComponentsSize < 2">
-						<v-icon>mdi-border-none-variant</v-icon>
-					</v-btn>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on, attrs }">
+							<v-btn icon :disabled="activeComponentsSize < 2" v-on="on" v-bind="attrs">
+								<v-icon>mdi-border-none-variant</v-icon>
+							</v-btn>
+						</template>
+						<span> Align components base on the Selection </span>
+					</v-tooltip>
 				</v-btn-toggle>
 
 				<v-divider vertical class="small-divider"></v-divider>
 
-				<v-btn icon :disabled="hiddenComponents.length < 1" @click="showAllComponents">
-					<v-icon>mdi-eye-refresh-outline</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn
+							icon
+							:disabled="hiddenComponents.length < 1"
+							@click="showAllComponents"
+							v-on="on"
+							v-bind="attrs"
+						>
+							<v-icon>mdi-eye-refresh-outline</v-icon>
+						</v-btn>
+					</template>
+					<span> Show all hidden components </span>
+				</v-tooltip>
 			</div>
 
 			<div class="canvas-toolbar--actions" v-if="selectedComponents.length === 1">
-				<v-btn icon @click="moveComponentDown">
-					<v-icon>mdi-chevron-down</v-icon>
-				</v-btn>
-				<v-btn icon @click="moveComponentToBottom">
-					<v-icon>mdi-chevron-triple-down</v-icon>
-				</v-btn>
-				<v-btn icon @click="moveComponentToTop">
-					<v-icon>mdi-chevron-triple-up</v-icon>
-				</v-btn>
-				<v-btn icon @click="moveComponentUp">
-					<v-icon>mdi-chevron-up</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="moveComponentDown" v-on="on" v-bind="attrs">
+							<v-icon>mdi-chevron-down</v-icon>
+						</v-btn>
+					</template>
+					<span> Move component down </span>
+				</v-tooltip>
+
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="moveComponentToBottom" v-on="on" v-bind="attrs">
+							<v-icon>mdi-chevron-triple-down</v-icon>
+						</v-btn>
+					</template>
+					<span> Move component at the bottom </span>
+				</v-tooltip>
+
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="moveComponentToTop" v-on="on" v-bind="attrs">
+							<v-icon>mdi-chevron-triple-up</v-icon>
+						</v-btn>
+					</template>
+					<span> Move component at the top </span>
+				</v-tooltip>
+
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="moveComponentUp" v-on="on" v-bind="attrs">
+							<v-icon>mdi-chevron-up</v-icon>
+						</v-btn>
+					</template>
+					<span> Move component up </span>
+				</v-tooltip>
 
 				<v-divider vertical class="small-divider"></v-divider>
 
-				<v-btn icon @click="toggleComponentVisibility">
-					<v-icon v-if="selectedComponents[0].visible">mdi-eye</v-icon>
-					<v-icon v-else>mdi-eye-off</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="toggleComponentVisibility" v-on="on" v-bind="attrs">
+							<v-icon v-if="selectedComponents[0].visible">mdi-eye</v-icon>
+							<v-icon v-else>mdi-eye-off</v-icon>
+						</v-btn>
+					</template>
+					<span> Hide component</span>
+				</v-tooltip>
 
-				<v-btn icon @click="editComponent">
-					<v-icon>mdi-pencil</v-icon>
-				</v-btn>
-				<v-btn icon @click="deleteComponent">
-					<v-icon>mdi-delete</v-icon>
-				</v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="editComponent" v-on="on" v-bind="attrs">
+							<v-icon>mdi-pencil</v-icon>
+						</v-btn>
+					</template>
+					<span> Edit component</span>
+				</v-tooltip>
+
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn icon @click="deleteComponent" v-on="on" v-bind="attrs">
+							<v-icon>mdi-delete</v-icon>
+						</v-btn>
+					</template>
+					<span> Delete component</span>
+				</v-tooltip>
 			</div>
 		</div>
 
@@ -149,8 +290,10 @@ export default {
 		},
 		viewBackground() {
 			const bg = this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename;
-			if(!!bg) {
-				let url = this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename.split(" ").join("%20");
+			if (!!bg) {
+				let url = this.$store.state.graphicalViewModule.graphicalPage.backgroundFilename
+					.split(' ')
+					.join('%20');
 				return `${url}`;
 			} else {
 				return null;
@@ -170,17 +313,15 @@ export default {
 				try {
 					await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
 					this.$emit('routeChanged', Number(graphicalViewId));
-					if(this.editMode && this.userAccess < 2) {
+					if (this.editMode && this.userAccess < 2) {
 						this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
 					}
 				} catch (e) {
 					console.error(e);
-					if(e.status === 401) {
-						this.$router.push({name: '401'});
-					} 
-
+					if (e.status === 401) {
+						this.$router.push({ name: '401' });
+					}
 				}
-				
 			}
 		},
 
