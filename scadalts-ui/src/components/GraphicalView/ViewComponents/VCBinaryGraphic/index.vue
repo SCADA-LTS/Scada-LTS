@@ -1,6 +1,7 @@
 <template>
 	<BaseImageComponent
 		:component="component"
+		:dataTypes="[1]"
 		@update="$emit('update')"
 		@value-update="onValueUpdate"
 		@status-update="onStatusUpdate"
@@ -55,14 +56,12 @@ export default {
 
 	methods: {
 		onValueUpdate(value) {
-			console.log('onValueUpdate');
 			this.content = value;
 			if (value == 'true') {
 				this.activeGraphic = this.imageSet.imageFilenames[this.component.oneImage];
 			} else {
 				this.activeGraphic = this.imageSet.imageFilenames[this.component.zeroImage];
 			}
-			console.log('onValueUpdate::BaseImage', this.activeGraphic);
 		},
 		onStatusUpdate(value) {
 			if (value == 'false') {
@@ -88,7 +87,6 @@ export default {
 				this.component.oneImage = result.image;
 			}
 			this.rendering++;
-			console.log('onImageIndexUpdate', this.component);
 		}
 	},
 };

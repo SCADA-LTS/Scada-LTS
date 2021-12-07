@@ -3,7 +3,6 @@ export default class ViewComponentAlarmList extends BaseViewModel {
     
     constructor() {
         super('alarmlist');
-        this.customComponent = true;
         this.hideAckColumn = false;
         this.hideAlarmLevelColumn = false;
         this.hideIdColumn = false;

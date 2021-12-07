@@ -116,7 +116,6 @@ export default {
 		},
 		async fetchAlarms() {
 			try {
-				console.log('fetching alarms');
 				const response = await this.$store.dispatch('searchEvents', {
 					alarmLevel: this.component.minAlarmLevel,
 					datapoint: null,
@@ -133,8 +132,6 @@ export default {
 					status: '*',
 				});
 				this.alarmList = response.rows.slice(0, this.component.maxListSize);
-				console.log('fetched alarms', this.alarmList);
-				// this.alarmList = response;
 				if (!this.alarmUpdateInterval) {
 					this.alarmUpdateInterval = setInterval(() => {
 						this.fetchAlarms();

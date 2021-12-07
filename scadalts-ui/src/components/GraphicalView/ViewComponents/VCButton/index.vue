@@ -2,6 +2,7 @@
 	<div>
 		<BasePointComponent
 			:component="component"
+			:dataTypes="[1]"
 			@value-update="onValueUpdate"
 			@status-update="onStatusUpdate"
 			@update="$emit('update')"
@@ -31,7 +32,18 @@
 
 			<template v-slot:renderer>
 				<v-row>
-					<v-col> Hi! slot </v-col>
+					<v-col cols="12">
+						<v-text-field 
+							label="ON Label"
+							v-model="component.whenOnLabel"
+						></v-text-field>
+					</v-col>
+					<v-col cols="12">
+						<v-text-field 
+							label="OFF Label"
+							v-model="component.whenOffLabel"
+						></v-text-field>
+					</v-col>
 				</v-row>
 			</template>
 		</BasePointComponent>

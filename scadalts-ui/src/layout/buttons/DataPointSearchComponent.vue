@@ -32,8 +32,9 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.$store.dispatch('fetchDataPointSimpleList', this.dataTypes);
+	async mounted() {
+		await this.$store.dispatch('fetchDataPointSimpleList', this.dataTypes);
+		this.datapoints = this.$store.state.dataPoint.datapointSimpleList;
 	},
 
 	watch: {
