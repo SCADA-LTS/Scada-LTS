@@ -61,10 +61,8 @@ export default {
 
     methods: {
 		onValueUpdate(val) {
-			console.log('onValueUpdate');
             let value = Number(val);
             this.setActiveImage(value);
-			console.log('onValueUpdate::BaseImage', this.activeGraphic);
 		},
 		onStatusUpdate(value) {
 			if (value == 'false') {
@@ -80,7 +78,6 @@ export default {
 
         setActiveImage(value) {
             let index = Math.floor((value - this.component.min) / (this.component.max - this.component.min) * this.imageArray.length);
-            console.log('setActiveImage', index);
             this.activeGraphic = this.imageSet.imageFilenames[index];
         }
 	},

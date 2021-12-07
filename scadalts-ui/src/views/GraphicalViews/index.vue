@@ -111,6 +111,10 @@
 			title="Remove Graphical View"
 			message="Are you sure you want to remove this graphical view?"
 		></ConfirmationDialog>
+
+		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
+			{{ snackbar.message }}
+		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -119,6 +123,7 @@ import GraphicalViewItem from '@/models/GraphicalViewItem';
 import ComponentCreationDialog from './dialogs/ComponentCreationDialog';
 import BackgroundSettingsDialog from './dialogs/BackgroundSettingsDialog';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialogV2';
+import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 export default {
 	components: {
@@ -127,6 +132,8 @@ export default {
 		BackgroundSettingsDialog,
 		ConfirmationDialog,
 	},
+
+	mixins: [SnackbarMixin],
 
 	data() {
 		return {
@@ -204,7 +211,9 @@ export default {
 					this.$router.push({ path: '/graphical-view' });
 					this.fetchGraphicalViewList();
 					this.activeGraphicalView = null;
+					this.showCrudSnackbar('delete');
 				} catch (e) {
+					this.showCrudSnackbar('delete', false);
 					console.log(e);
 				}
 			}
@@ -232,22 +241,29 @@ export default {
 			try {
 				let res;
 				if (this.createMode) {
-					console.log('create');
 					res = await this.$store.dispatch('createGraphicalView');
 					if (res) {
 						this.fetchGraphicalViewList();
 						this.activeGraphicalView = res.id;
 						this.moveToGraphicalView();
+						this.showCrudSnackbar('add');
 					}
 				} else {
-					console.log('update');
 					res = await this.$store.dispatch('saveGraphicalView');
+					this.showCrudSnackbar('update');
 				}
 				this.createMode = false;
+				
 				if (res) {
 					this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
 				}
 			} catch (e) {
+				if(e.data.errors) {
+					this.showSnackbar(e.data.errors, "error");
+				} else {
+					this.showCrudSnackbar("add", false)
+				}
+				
 				console.error(e);
 			}
 		},

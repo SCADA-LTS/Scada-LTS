@@ -67,7 +67,6 @@ export default {
 
 	methods: {
 		onValueUpdate(value) {
-			console.log('onValueUpdate::BaseImage', value);
 			this.$emit('value-update', value);
 		},
 
@@ -75,7 +74,6 @@ export default {
 			this.$emit('status-update', value);
 		},
 		imageSetChanged(state) {
-			console.log('imageSetChanged', state);
 			this.getImageSetDeatils();
 		},
 
@@ -85,7 +83,6 @@ export default {
 					'getImageSetDetails',
 					this.component.imageSetId,
 				);
-				console.log('getImageSetDeatils', res);
 				this.$emit('image-update', res);
 			} catch (e) {
 				console.error(e);

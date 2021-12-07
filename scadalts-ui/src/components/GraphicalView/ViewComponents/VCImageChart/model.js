@@ -15,7 +15,7 @@ export default class ViewComponentImageChart extends BaseViewModel {
             point9: null,
             point10: null,
         };
-        this.durationType = "DAYS";
+        this.durationType = 4;
         this.durationPeriods = 1;
         this.height = 300;
         this.name = "pol";

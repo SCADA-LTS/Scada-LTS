@@ -174,19 +174,17 @@ export default {
 		showMenuEdit() {
 			this.$store.commit('SET_COMPONENT_EDIT', this.component);
 			this.menuEdit = true;
+			this.$emit('edit-menu', true);
 		},
 		hideMenuEdit() {
 			this.menuEdit = false;
+			this.$emit('edit-menu', false);
 			this.$emit('update');
 		},
 		menuEditSave() {
-			console.log('save');
-			console.log(this.component);
 			this.hideMenuEdit();
 		},
 		menuEditCancel() {
-			console.log('cancl');
-			console.log(this.component);
 			this.$store.commit('REVERT_COMPONENT_EDIT');
 			this.hideMenuEdit();
 		},

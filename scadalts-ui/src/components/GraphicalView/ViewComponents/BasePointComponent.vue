@@ -5,6 +5,7 @@
 		@send-value="onSendValue"
 		@click="$emit('click', $event)"
 		@mousedown="$emit('mousedown', $event)"
+		@edit-menu="onEditMenu"
 	>
 		<template v-slot:default="data">
 			<slot v-bind:data="data" />
@@ -23,7 +24,7 @@
 		</template>
 		<template v-slot:renderer>
 			<v-row>
-				<v-col cols="12">
+				<v-col cols="12" v-if="menuVisible">
 					<DataPointSerachComponent
 						v-model="component.dataPointXid"
 						:dataTypes="dataTypes"
@@ -122,6 +123,7 @@ export default {
 
 	data() {
 		return {
+			menuVisible: false,
 			point: {
 				wsConnValue: null,
 				wsConnEnable: null,
@@ -225,6 +227,10 @@ export default {
 			let response = message.replace(/[\[\]]/g, '');
 			response = response.split('|');
 			return response.slice(1);
+		},
+
+		onEditMenu(visible) {
+			this.menuVisible = visible;
 		},
 
 		async onSendValue(value) {

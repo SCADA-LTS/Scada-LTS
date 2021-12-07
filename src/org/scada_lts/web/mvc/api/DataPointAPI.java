@@ -33,11 +33,9 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -201,13 +199,17 @@ public class DataPointAPI {
     }
 
     @RequestMapping(value = "/api/datapoint/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
+    public ResponseEntity<String> getAll(@RequestParam(required = false) String types, HttpServletRequest request) {
         LOG.info("/api/datapoint/getAll");
 
         try {
             User user = Common.getUser(request);
-
             if (user != null) {
+
+                int[] dataTypes = {1,2,3,4};
+                if(types != null && !types.isBlank()) {
+                    dataTypes = Arrays.stream(types.split(",")).mapToInt(Integer::parseInt).toArray();
+                }
 
 
                 List<DataPointVO> lstDP;
@@ -227,8 +229,10 @@ public class DataPointAPI {
 
                 List<DatapointJSON> lst = new ArrayList<>();
                 for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDescription());
-                    lst.add(dpJ);
+                    if(IntStream.of(dataTypes).anyMatch(x -> x == dp.getPointLocator().getDataTypeId())) {
+                        DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDescription());
+                        lst.add(dpJ);
+                    }
                 }
 
                 String json = null;

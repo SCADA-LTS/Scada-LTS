@@ -9,9 +9,8 @@
 			<LineChartComponent
 				v-if="chartLoaded"
 				:pointIds="pointList"
-				:startDate="`${component.durationPeriods}-${component.durationType
-					.slice(0, -1)
-					.toLowerCase()}`"
+				:useXid="true"
+				:startDate="`${component.durationPeriods}-${convertToStringTimePeriod(component.durationType)}`"
 				:width="`${component.width}`"
 				:height="`${component.height}`"
 			>
@@ -90,31 +89,31 @@ export default {
 			chartLoaded: false,
 			durationTypes: [
 				{
-					value: 'SECONDS',
+					value: 1,
 					text: 'Seconds',
 				},
 				{
-					value: 'MINUTEST',
+					value: 2,
 					text: 'Minutes',
 				},
 				{
-					value: 'HOURS',
+					value: 3,
 					text: 'Hours',
 				},
 				{
-					value: 'DAYS',
+					value: 4,
 					text: 'Days',
 				},
 				{
-					value: 'WEEKS',
+					value: 5,
 					text: 'Weeks',
 				},
 				{
-					value: 'MONTHS',
+					value: 6,
 					text: 'Months',
 				},
 				{
-					value: 'YEARS',
+					value: 7,
 					text: 'Years',
 				},
 			],
@@ -144,7 +143,29 @@ export default {
 				.join(',');
 			this.chartLoaded = true;
 		},
+
+		convertToStringTimePeriod(timePeriod) {
+		switch (timePeriod) {
+			case 1:
+				return 'second';
+			case 2:
+				return 'minute';
+			case 3:
+				return 'hour';
+			case 4:
+				return 'day';
+			case 5:
+				return 'week';
+			case 6:
+				return 'month';
+			case 7:
+				return 'year';
+			default:
+				return 'day';
+		}
+	}
 	},
+	
 };
 </script>
 <style></style>

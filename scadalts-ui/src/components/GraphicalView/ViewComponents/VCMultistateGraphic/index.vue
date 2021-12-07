@@ -73,7 +73,6 @@ export default {
 			const state = this.component.imageStateList.find((s) => s.value == value);
 			if (!!state) {
 				this.activeGraphic = this.imageSet.imageFilenames[state.key];
-				console.log('onValueUpdate::BaseImage', this.activeGraphic);
 			} else {
 				this.activeGraphic = this.imageSet.imageFilenames[this.component.defaultImage];
 			}
