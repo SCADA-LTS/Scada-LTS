@@ -40,12 +40,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.scada_lts.utils.MailingListApiUtils.*;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 import static org.scada_lts.utils.ValidationUtils.validId;
 import static org.scada_lts.utils.ViewApiUtils.*;
 
@@ -367,28 +370,6 @@ public class ViewAPI {
         }
     }
 
-//    @PostMapping(value = "")
-//    public ResponseEntity<Map<String, Integer>> createView(@RequestBody View view, HttpServletRequest request) {
-//        LOG.info("/api/view");
-//        try {
-//            User user = Common.getUser(request);
-//            if (user != null) {
-////                String error = validView(view);
-////                if(!error.isEmpty()) {
-////                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-////                }
-//                Map<String, Integer> response = new HashMap<>();
-//                response.put("viewId", viewService.saveViewAPI(view));
-//                return new ResponseEntity<>(response, HttpStatus.CREATED);
-//            } else {
-//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//            }
-//        } catch (Exception e) {
-//            LOG.error(e);
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
     @PostMapping(value = "")
     public ResponseEntity<Map<String, String>> createView(@RequestBody GraphicalViewDTO viewDTO, HttpServletRequest request) {
         LOG.info("/api/view");
@@ -420,9 +401,11 @@ public class ViewAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                View view = viewDTO.createViewFromBody(user);
-                viewService.saveViewAPI(view);
-                return new ResponseEntity<>("updated", HttpStatus.OK);
+                String error = validateGraphicalViewUpdate(viewDTO, user);
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                return findAndUpdateView(viewDTO, user);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -561,6 +544,27 @@ public class ViewAPI {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<String> findAndUpdateView(GraphicalViewDTO body, User user) {
+        return getGraphicalView(body.getId(), viewService)
+                .map(toUpdate -> updateGraphicalView(toUpdate, body, user)).
+                orElse(new ResponseEntity<>(formatErrorsJson("View not found"), HttpStatus.NOT_FOUND));
+    }
+
+    private ResponseEntity<String> updateGraphicalView(View toUpdate, GraphicalViewDTO body, User user) {
+        if (isXidChanged(toUpdate.getXid(), body.getXid()) &&
+                isViewPresent(body.getXid(), viewService)){
+            return new ResponseEntity<>(formatErrorsJson("This XID is already in use"), HttpStatus.BAD_REQUEST);
+        }
+        updateValueGraphicalView(toUpdate, body, user);
+        try {
+            viewService.saveViewAPI(toUpdate);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Saving failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK);
     }
 
 }

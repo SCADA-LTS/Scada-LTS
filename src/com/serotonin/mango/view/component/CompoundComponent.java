@@ -65,7 +65,7 @@ abstract public class CompoundComponent extends ViewComponent {
         this.name = name;
     }
 
-    public List<CompoundChild> getChildComponents() {
+    public List<CompoundChild> getChildren() {
         return children;
     }
 

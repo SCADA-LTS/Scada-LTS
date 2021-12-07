@@ -193,7 +193,7 @@ public class ViewService {
 		usersPermissions.clear();
 	}
 
-	public int saveViewAPI(final View view) throws IOException {
+	public int saveViewAPI(View view) throws IOException {
 		LOG.debug("View name: " + view.getName());
 		String backgroundFilename = view.getBackgroundFilename();
 		setWidthAndHeight(view, backgroundFilename);

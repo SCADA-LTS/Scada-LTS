@@ -17,11 +17,15 @@ import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.dto.view.GraphicalViewDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.*;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.serotonin.mango.view.component.ViewComponent.getImplementations;
+import static org.scada_lts.serorepl.utils.StringUtils.isEmpty;
+import static org.scada_lts.utils.UpdateValueUtils.setIf;
 import static org.scada_lts.utils.ValidationUtils.*;
 import static org.scada_lts.utils.ValidationUtils.msgIfNull;
 import static org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO.*;
@@ -66,6 +70,16 @@ public final class ViewApiUtils {
         String msg = msgIfNullOrInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
         msg += msgIfInvalid("Xid cannot be longer than 50;", body.getXid(), 50, StringUtils::isLengthGreaterThan);
         msg += msgIfNullOrInvalid("Correct name;", body.getName(), StringUtils::isEmpty);
+        msg += msgIfInvalid("Name cannot be longer than 100;", body.getName(), 100, StringUtils::isLengthGreaterThan);
+        msg += validateViewComponentsList(body.getViewComponents(), user);
+        return msg;
+    }
+
+    public static String validateGraphicalViewUpdate(GraphicalViewDTO body, User user) {
+        String msg = msgIfNull("Correct id;", body.getId());
+        msg += msgIfNonNullAndInvalid("Correct xid;", body.getXid(), StringUtils::isEmpty);
+        msg += msgIfInvalid("Xid cannot be longer than 50;", body.getXid(), 50, StringUtils::isLengthGreaterThan);
+        msg += msgIfNonNullAndInvalid("Correct name;", body.getName(), StringUtils::isEmpty);
         msg += msgIfInvalid("Name cannot be longer than 100;", body.getName(), 100, StringUtils::isLengthGreaterThan);
         msg += validateViewComponentsList(body.getViewComponents(), user);
         return msg;
@@ -247,5 +261,52 @@ public final class ViewApiUtils {
 
     private static boolean invalidDurationType(int durationType) {
         return !Common.TIME_PERIOD_CODES.isValidId(durationType);
+    }
+
+    public static Optional<View> getGraphicalView(int id, ViewService viewService) {
+        try {
+            View view = viewService.getView(id);
+            return Optional.ofNullable(view);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<View> getGraphicalView(String xid, ViewService viewService) {
+        try {
+            View view = viewService.getViewByXid(xid);
+            return Optional.ofNullable(view);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public static boolean isViewPresent(String xid, ViewService viewService){
+        return getGraphicalView(xid, viewService).isPresent();
+    }
+
+    public static void updateValueGraphicalView(View toUpdate, GraphicalViewDTO source, User user) {
+        setIf(source.getXid(), toUpdate::setXid, a -> !isEmpty(a));
+        setIf(source.getId(), toUpdate::setId, Objects::nonNull);
+        setIf(source.getName(), toUpdate::setName, Objects::nonNull);
+        setIf(source.getBackgroundFilename(), toUpdate::setBackgroundFilename, Objects::nonNull);
+        setIf(source.getWidth(), toUpdate::setWidth, Objects::nonNull);
+        setIf(source.getHeight(), toUpdate::setHeight, Objects::nonNull);
+        setIf(source.getResolution(), toUpdate::setResolution, Objects::nonNull);
+        setIf(source.getModificationTime(), toUpdate::setModificationTime, Objects::nonNull);
+        setIf(source.getUserId(), toUpdate::setUserId, Objects::nonNull);
+        setIf(source.getAnonymousAccess(), toUpdate::setAnonymousAccess, Objects::nonNull);
+        setViewComponents(toUpdate, source, user);
+    }
+
+    public static void setViewComponents(View toUpdate, GraphicalViewDTO source, User user) {
+        View view = source.createViewFromBody(user);
+        setIf(view.getViewComponents(), toUpdate::setViewComponents, Objects::nonNull);
     }
 }
