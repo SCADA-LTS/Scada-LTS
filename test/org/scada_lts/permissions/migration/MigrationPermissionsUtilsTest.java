@@ -79,11 +79,11 @@ public class MigrationPermissionsUtilsTest {
         pointComponent4.tsetDataPoint(dataPoint4);
 
         SimpleCompoundComponent simpleCompoundComponent = (SimpleCompoundComponent) ViewComponent.newInstance(SimpleCompoundComponent.DEFINITION.getName());
-        simpleCompoundComponent.getChildren().add(new CompoundChild("1",null, pointComponent3, new int[]{}));
-        simpleCompoundComponent.getChildren().add(new CompoundChild("2",null, pointComponent4, new int[]{}));
+        simpleCompoundComponent.getChildComponents().add(new CompoundChild("1",null, pointComponent3, new int[]{}));
+        simpleCompoundComponent.getChildComponents().add(new CompoundChild("2",null, pointComponent4, new int[]{}));
 
         SimpleCompoundComponent simpleCompoundComponent2 = (SimpleCompoundComponent) ViewComponent.newInstance(SimpleCompoundComponent.DEFINITION.getName());
-        simpleCompoundComponent2.getChildren().add(new CompoundChild("3",null, pointComponent5, new int[]{}));
+        simpleCompoundComponent2.getChildComponents().add(new CompoundChild("3",null, pointComponent5, new int[]{}));
 
         List<ViewComponent> viewComponents = new ArrayList<>();
         viewComponents.add(pointComponent1);
@@ -130,11 +130,11 @@ public class MigrationPermissionsUtilsTest {
         pointComponent4.tsetDataPoint(dataPoint4);
 
         SimpleCompoundComponent simpleCompoundComponent = (SimpleCompoundComponent) ViewComponent.newInstance(SimpleCompoundComponent.DEFINITION.getName());
-        simpleCompoundComponent.getChildren().add(new CompoundChild("1",null, pointComponent3, new int[]{}));
-        simpleCompoundComponent.getChildren().add(new CompoundChild("2",null, pointComponent4, new int[]{}));
+        simpleCompoundComponent.getChildComponents().add(new CompoundChild("1",null, pointComponent3, new int[]{}));
+        simpleCompoundComponent.getChildComponents().add(new CompoundChild("2",null, pointComponent4, new int[]{}));
 
         SimpleCompoundComponent simpleCompoundComponent2 = (SimpleCompoundComponent) ViewComponent.newInstance(SimpleCompoundComponent.DEFINITION.getName());
-        simpleCompoundComponent2.getChildren().add(new CompoundChild("3",null, pointComponent5, new int[]{}));
+        simpleCompoundComponent2.getChildComponents().add(new CompoundChild("3",null, pointComponent5, new int[]{}));
 
         List<ViewComponent> viewComponents = new ArrayList<>();
         viewComponents.add(pointComponent1);

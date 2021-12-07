@@ -185,7 +185,7 @@ public class ViewDwr extends BaseDwr {
 				boolean enhancedImageChart = compoundComponent instanceof EnhancedImageChartComponent;
 
 				// Add states for each of the children
-				for (CompoundChild child : compoundComponent.getChildren())
+				for (CompoundChild child : compoundComponent.getChildComponents())
 					addPointComponentState(child.getViewComponent(), rtm, model, request, view, user, states, edit, !imageChart && !enhancedImageChart);
 
 				// Add a state for the compound component.
@@ -195,7 +195,7 @@ public class ViewDwr extends BaseDwr {
 				model.clear();
 				model.put("compoundComponent", compoundComponent);
 				List<Map<String, Object>> childData = new ArrayList<Map<String, Object>>();
-				for (CompoundChild child : compoundComponent.getChildren()) {
+				for (CompoundChild child : compoundComponent.getChildComponents()) {
 					if (child.getViewComponent().isPointComponent()) {
 						DataPointVO point = ((PointComponent) child.getViewComponent()).tgetDataPoint();
 						if (point != null) {

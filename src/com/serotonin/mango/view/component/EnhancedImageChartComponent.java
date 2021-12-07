@@ -163,7 +163,7 @@ public class EnhancedImageChartComponent extends CompoundComponent {
 
         Map<Long, Number[]> data = new TreeMap<Long, Number[]>();
 
-        List<CompoundChild> children = getChildren();
+        List<CompoundChild> children = getChildComponents();
         int childCount = nonEmptyChildrenCount();
         int j = 0;
         for (CompoundChild child : children) {
@@ -195,7 +195,7 @@ public class EnhancedImageChartComponent extends CompoundComponent {
     }
 
     private int nonEmptyChildrenCount() {
-        List<CompoundChild> children = getChildren();
+        List<CompoundChild> children = getChildComponents();
         int i;
         int count = 0;
         for (CompoundChild child : children) {
@@ -222,7 +222,7 @@ public class EnhancedImageChartComponent extends CompoundComponent {
         out.writeInt(durationPeriods);
         out.writeInt(enhancedImageChartType.ordinal());
 
-        List<CompoundChild> children = getChildren();
+        List<CompoundChild> children = getChildComponents();
         out.writeInt(children.size());
 
         for (CompoundChild child : children) {
@@ -243,7 +243,7 @@ public class EnhancedImageChartComponent extends CompoundComponent {
             enhancedImageChartType = EnhancedImageChartType.values()[in.readInt()];
 
             int len = in.readInt();
-            List<CompoundChild> children = getChildren();
+            List<CompoundChild> children = getChildComponents();
             for (int i = 0; i < len; i++) {
                 ((EnhancedPointComponent) children.get(i).getViewComponent()).readObject(in);
             }

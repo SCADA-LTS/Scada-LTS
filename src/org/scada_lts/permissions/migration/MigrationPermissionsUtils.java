@@ -298,7 +298,7 @@ public final class MigrationPermissionsUtils {
     static void findDataPointAccesses(ViewComponent viewComponent, int accessType, Set<DataPointAccess> dataPointAccesses) {
         if(viewComponent instanceof CompoundComponent) {
             CompoundComponent compoundComponent = (CompoundComponent) viewComponent;
-            compoundComponent.getChildren().stream()
+            compoundComponent.getChildComponents().stream()
                     .filter(a -> a.getViewComponent() != null)
                     .map(CompoundChild::getViewComponent)
                     .forEach(a -> findDataPointAccesses(a, accessType, dataPointAccesses));
@@ -315,7 +315,7 @@ public final class MigrationPermissionsUtils {
     static void findDataPoints(ViewComponent viewComponent, List<DataPointVO> dataPoints) {
         if(viewComponent instanceof CompoundComponent) {
             CompoundComponent compoundComponent = (CompoundComponent) viewComponent;
-            compoundComponent.getChildren().stream()
+            compoundComponent.getChildComponents().stream()
                     .filter(a -> a.getViewComponent() != null)
                     .map(CompoundChild::getViewComponent)
                     .forEach(a -> findDataPoints(a, dataPoints));

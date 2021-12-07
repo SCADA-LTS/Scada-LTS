@@ -47,7 +47,7 @@ public class CompoundComponentDeserializer extends JsonDeserializer<CompoundComp
             compoundComponent = new WirelessTempHumSensor();
         }
 
-        List<CompoundChild> childComponents = compoundComponent.getChildren();
+        List<CompoundChild> childComponents = compoundComponent.getChildComponents();
 
         TypeReference<HashMap<String, String>> typeRef
                 = new TypeReference<HashMap<String, String>>() {};

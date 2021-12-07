@@ -40,7 +40,7 @@ public class ViewTestUtils {
                             return pointComponent;
                         } else {
                             SimpleCompoundComponent simpleCompoundComponent = (SimpleCompoundComponent) ViewComponent.newInstance(SimpleCompoundComponent.DEFINITION.getName());
-                            simpleCompoundComponent.getChildren().add(new CompoundChild(String.valueOf(id),null, pointComponent, new int[]{}));
+                            simpleCompoundComponent.getChildComponents().add(new CompoundChild(String.valueOf(id),null, pointComponent, new int[]{}));
                             return simpleCompoundComponent;
                         }
                     })
