@@ -7,6 +7,7 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -36,7 +37,8 @@ public class V2_7_1_2__PurgeLimitStrategyDatapointProperty extends BaseJavaMigra
                      ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                     DataPointVO dataPointVO = (DataPointVO) objectInputStream.readObject();
                     dataPointVO.setId(resultSet.getInt("id"));
-                    dataPointVO.setPurgeValuesLimit(2);
+                    dataPointVO.setPurgeValuesLimit(SystemSettingsDAO
+                            .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
                     return dataPointVO;
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();

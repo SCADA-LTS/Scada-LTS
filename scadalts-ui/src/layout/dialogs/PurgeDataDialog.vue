@@ -24,7 +24,7 @@
 				</v-row>
 			</v-card-title>
 			<v-card-text>
-				<v-row align="center" v-if="selectedPurge === 0">
+				<v-row align="center" v-if="selectedPurge === 1">
 					<v-col cols="6">
 						<v-text-field
 							v-model="purgePeriod"
@@ -42,7 +42,7 @@
 						></v-select>
 					</v-col>
 				</v-row>
-				<v-row align="center" v-if="selectedPurge === 1">
+				<v-row align="center" v-if="selectedPurge === 2">
 					<v-col cols="12">
 						<v-text-field
 							v-model="valuesLimit"
@@ -84,15 +84,15 @@ export default {
 			purgeStrategies: [
 				{
 					text: 'Period',
-					value: 0,
-				},
-				{
-					text: 'Values limit',
 					value: 1,
 				},
 				{
-					text: 'All',
+					text: 'Values limit',
 					value: 2,
+				},
+				{
+					text: 'All',
+					value: 3,
 				},
 			],
 		};
@@ -129,13 +129,13 @@ export default {
 			if (e) {
 				let response;
 				try {
-					if(this.selectedPurge === 0) {
+					if(this.selectedPurge === 1) {
 						response = await this.$store.dispatch('purgeNowPeriod', {
 							datapointId: this.data.id,
 							type: this.purgeType,
 							period: this.purgePeriod,
 						});
-					} else if (this.selectedPurge === 1) {
+					} else if (this.selectedPurge === 2) {
 						response = await this.$store.dispatch('purgeNowLimit', {
 							datapointId: this.data.id,
 							limit: this.valuesLimit,

@@ -91,7 +91,7 @@
 			></v-select>
 		</v-col>
 
-		<v-col cols="12" v-show="data.purgeStrategy === 0" id="purge--period">
+		<v-col cols="12" v-show="data.purgeStrategy === 1" id="purge--period">
 			<v-row dense>
 				<v-col cols="6">
 					<v-text-field
@@ -114,7 +114,7 @@
 			</v-row>
 		</v-col>
 
-		<v-col cols="12" v-show="data.purgeStrategy === 1" id="purge--values">
+		<v-col cols="12" v-show="data.purgeStrategy === 2" id="purge--values">
 			<v-row dense>
 				<v-col cols="12">
 					<v-text-field

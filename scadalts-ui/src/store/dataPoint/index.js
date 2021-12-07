@@ -80,12 +80,12 @@ const storeDataPoint = {
 
 		purgeStrategyList: [
 			{
-				id: 0,
+				id: 1,
 				type: 'PERIOD',
 				label: i18n.t('pointEdit.logging.purge.type.period'),
 			},
 			{
-				id: 1,
+				id: 2,
 				type: 'LIMIT',
 				label: i18n.t('pointEdit.logging.purge.type.limit'),
 			},

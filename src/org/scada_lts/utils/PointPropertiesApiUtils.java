@@ -4,6 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.json.JsonPointProperties;
@@ -43,6 +44,7 @@ public final class PointPropertiesApiUtils {
         setIf(source.getChartColour(), toUpdate::setChartColour, Objects::nonNull);
         setIf(source.getPurgeStrategy(), toUpdate::setPurgeStrategy, Objects::nonNull);
         setIf(source.getPurgeValuesLimit(), toUpdate::setPurgeValuesLimit, Objects::nonNull);
+        setDefaultPurgeValuesWhenIncorrect(toUpdate);
     }
 
     public static Optional<DataPointVO> getDataPointByIdOrXid(Integer id, String xid, DataPointService dataPointService) {
@@ -80,7 +82,6 @@ public final class PointPropertiesApiUtils {
 
         msg.append(msgIfNonNullAndInvalid("Correct intervalLoggingPeriod, it must be >= 0, value {0};", body.getIntervalLoggingPeriod(), a -> a < 0));
         msg.append(msgIfNonNullAndInvalid("Correct defaultCacheSize, it must be >= 0, value {0};", body.getDefaultCacheSize(), a -> a < 0));
-        msg.append(msgIfNonNullAndInvalid("Correct purgePeriod, it must be >= 0, value {0};", body.getPurgePeriod(), a -> a < 0));
         msg.append(msgIfNonNullAndInvalid("EngineeringUnit does not exist for value {0};", body.getEngineeringUnits(),
                 a -> !DataPointVO.validEngineeringUnit(a)));
         msg.append(msgIfNonNullAndInvalid("IntervalLoggingType does not exist for value {0};", body.getIntervalLoggingType(),
@@ -89,9 +90,12 @@ public final class PointPropertiesApiUtils {
                 a -> !DataPointVO.validIntervalLoggingPeriodType(a)));
         msg.append(msgIfNonNullAndInvalid("LoggingType does not exist for value {0};", body.getLoggingType(),
                 a -> !DataPointVO.validLoggingType(a)));
-        msg.append(msgIfNonNullAndInvalid("PurgeType does not exist for value {0};", body.getPurgeType(),
-                a -> !DataPointVO.validPurgeType(a)));
-        msg.append(msgIfNonNullAndInvalid("Correct purgeValuesLimit, it must be > 1, value {0};", body.getPurgeValuesLimit(), a -> a <= 1));
+        if (body.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
+            msg.append(msgIfNonNullAndInvalid("Correct purgePeriod, it must be >= 0, value {0};", body.getPurgePeriod(), a -> a < 0));
+            msg.append(msgIfNonNullAndInvalid("PurgeType does not exist for value {0};", body.getPurgeType(),
+                    a -> !DataPointVO.validPurgeType(a)));
+        } else if (body.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT)
+            msg.append(msgIfNonNullAndInvalid("Correct purgeValuesLimit, it must be > 1, value {0};", body.getPurgeValuesLimit(), a -> a <= 1));
         return msg.toString();
     }
 
@@ -116,6 +120,17 @@ public final class PointPropertiesApiUtils {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    private static void setDefaultPurgeValuesWhenIncorrect(DataPointVO point) {
+        if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
+            if (point.getPurgeValuesLimit() < 2)
+                point.setPurgeValuesLimit(SystemSettingsDAO
+                        .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+        } else if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT) {
+            if (point.getPurgePeriod() <= 0)
+                point.setPurgePeriod(1);
         }
     }
 }
