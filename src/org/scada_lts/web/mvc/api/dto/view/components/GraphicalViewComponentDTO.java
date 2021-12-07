@@ -4,6 +4,9 @@ import br.org.scadabr.view.component.*;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.web.mvc.api.dto.view.components.compound.CompoundComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.html.HtmlBaseComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.PointComponentDTO;
 
 public class GraphicalViewComponentDTO implements ViewComponentCreate{
     private Integer index;

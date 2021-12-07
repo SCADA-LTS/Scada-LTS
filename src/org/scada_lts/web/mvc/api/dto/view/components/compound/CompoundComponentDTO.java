@@ -1,16 +1,17 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.compound;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.view.component.CompoundChild;
 import com.serotonin.mango.view.component.deserializer.CompoundComponentDeserializer;
+import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @JsonDeserialize(using = CompoundComponentDeserializer.class)
-public class CompoundComponentDTO extends GraphicalViewComponentDTO{
+public class CompoundComponentDTO extends GraphicalViewComponentDTO {
     private String name;
     private Map<String, String> children;
 

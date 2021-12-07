@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.AnalogGraphicComponent;
 import com.serotonin.mango.view.component.BinaryGraphicComponent;
 import com.serotonin.mango.view.component.MultistateGraphicComponent;
-import org.scada_lts.web.mvc.api.dto.view.components.AnalogGraphicComponentDTO;
-import org.scada_lts.web.mvc.api.dto.view.components.BinaryGraphicComponentDTO;
-import org.scada_lts.web.mvc.api.dto.view.components.ImageSetComponentDTO;
-import org.scada_lts.web.mvc.api.dto.view.components.MultistateGraphicComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.AnalogGraphicComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.BinaryGraphicComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.ImageSetComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.MultistateGraphicComponentDTO;
 
 import java.io.IOException;
 

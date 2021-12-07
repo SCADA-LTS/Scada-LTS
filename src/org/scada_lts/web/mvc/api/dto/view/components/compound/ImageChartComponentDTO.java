@@ -1,24 +1,24 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.compound;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.serotonin.mango.view.component.EnhancedImageChartComponent;
+import com.serotonin.mango.view.component.ImageChartComponent;
 import com.serotonin.mango.vo.User;
 
 import java.util.Map;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
-public class EnhancedImageChartComponentDTO extends CompoundComponentDTO{
+public class ImageChartComponentDTO extends CompoundComponentDTO{
 
     private Integer width;
     private Integer height;
     private Integer durationType;
     private Integer durationPeriods;
 
-    public EnhancedImageChartComponentDTO() {
+    public ImageChartComponentDTO() {
     }
 
-    public EnhancedImageChartComponentDTO(Integer index, String idSuffix, Integer x, Integer y, Integer z, String typeName, String name, Map<String, String> compoundChildren, Integer width, Integer height, Integer durationType, Integer durationPeriods) {
+    public ImageChartComponentDTO(Integer index, String idSuffix, Integer x, Integer y, Integer z, String typeName, String name, Map<String, String> compoundChildren, Integer width, Integer height, Integer durationType, Integer durationPeriods) {
         super(index, idSuffix, x, y, z, typeName, name, compoundChildren);
         this.width = width;
         this.height = height;
@@ -59,8 +59,8 @@ public class EnhancedImageChartComponentDTO extends CompoundComponentDTO{
     }
 
     @Override
-    public EnhancedImageChartComponent createFromBody(User user) {
-        EnhancedImageChartComponent c = new EnhancedImageChartComponent();
+    public ImageChartComponent createFromBody(User user) {
+        ImageChartComponent c = new ImageChartComponent();
         c.setDurationPeriods(durationPeriods);
         c.setDurationType(durationType);
         c.setWidth(width);

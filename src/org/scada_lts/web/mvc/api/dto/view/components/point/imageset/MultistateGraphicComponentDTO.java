@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.point.imageset;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,7 +12,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import java.util.List;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
-public class MultistateGraphicComponentDTO extends ImageSetComponentDTO{
+public class MultistateGraphicComponentDTO extends ImageSetComponentDTO {
 
     @JsonDeserialize(using = ImageStateListDeserializer.class)
     private List<IntValuePair> imageStateList;
@@ -57,6 +57,7 @@ public class MultistateGraphicComponentDTO extends ImageSetComponentDTO{
         c.setBkgdColorOverride(getBkgdColorOverride());
         c.setDisplayControls(getDisplayControls());
         c.validateDataPoint(user, false);
+        resetPointComponent(c);
         return c;
     }
 }

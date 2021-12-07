@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.point.script;
 
 import br.org.scadabr.view.component.ButtonComponent;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -81,6 +81,7 @@ public class ButtonComponentDTO extends ScriptBaseComponentDTO {
         c.setBkgdColorOverride(getBkgdColorOverride());
         c.setDisplayControls(getDisplayControls());
         c.validateDataPoint(user, false);
+        resetPointComponent(c);
         return c;
     }
 }

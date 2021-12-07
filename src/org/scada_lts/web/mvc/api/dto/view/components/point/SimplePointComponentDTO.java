@@ -1,8 +1,7 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.point;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.serotonin.mango.Common;
 import com.serotonin.mango.view.component.SimplePointComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -59,6 +58,7 @@ public class SimplePointComponentDTO extends PointComponentDTO {
         c.setBkgdColorOverride(getBkgdColorOverride());
         c.setDisplayControls(getDisplayControls());
         c.validateDataPoint(user, false);
+        resetPointComponent(c);
         return c;
     }
 

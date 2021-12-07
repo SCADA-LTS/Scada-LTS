@@ -1,12 +1,14 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.point;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.serotonin.mango.view.component.PointComponent;
 import com.serotonin.mango.view.component.deserializer.PointComponentDeserializer;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 @JsonDeserialize(using = PointComponentDeserializer.class)
-public class PointComponentDTO extends GraphicalViewComponentDTO{
+public class PointComponentDTO extends GraphicalViewComponentDTO {
 
     private String dataPointXid;
     private String nameOverride;
@@ -70,4 +72,8 @@ public class PointComponentDTO extends GraphicalViewComponentDTO{
         return new DataPointService().getDataPoint(dataPointXid);
     }
 
+    protected void resetPointComponent(PointComponent c) {
+        if (c.tgetDataPoint() != null)
+            c.tgetDataPoint().resetLastValue();
+    }
 }

@@ -1,37 +1,25 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.point;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.serotonin.mango.view.component.SimplePointComponent;
-import com.serotonin.mango.view.component.ThumbnailComponent;
+import com.serotonin.mango.view.component.SimpleImageComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
-public class ThumbnailComponentDTO extends PointComponentDTO{
-    private Integer scalePercent;
+public class SimpleImageComponentDTO extends PointComponentDTO {
 
-    public ThumbnailComponentDTO() {
+    public SimpleImageComponentDTO() {
     }
 
-    public ThumbnailComponentDTO(Integer index, String idSuffix, Integer x, Integer y, Integer z, String typeName, String dataPointXid, String nameOverride, Boolean settableOverride, String bkgdColorOverride, Boolean displayControls, Integer scalePercent) {
+    public SimpleImageComponentDTO(Integer index, String idSuffix, Integer x, Integer y, Integer z, String typeName, String dataPointXid, String nameOverride, Boolean settableOverride, String bkgdColorOverride, Boolean displayControls) {
         super(index, idSuffix, x, y, z, typeName, dataPointXid, nameOverride, settableOverride, bkgdColorOverride, displayControls);
-        this.scalePercent = scalePercent;
-    }
-
-    public Integer getScalePercent() {
-        return scalePercent;
-    }
-
-    public void setScalePercent(Integer scalePercent) {
-        this.scalePercent = scalePercent;
     }
 
     @Override
-    public ThumbnailComponent createFromBody(User user) {
-        ThumbnailComponent c = new ThumbnailComponent();
-        c.setScalePercent(scalePercent);
+    public SimpleImageComponent createFromBody(User user) {
+        SimpleImageComponent c = new SimpleImageComponent();
 
         c.setIndex(getIndex());
         c.setIdSuffix(getIdSuffix());
@@ -46,6 +34,7 @@ public class ThumbnailComponentDTO extends PointComponentDTO{
         c.setBkgdColorOverride(getBkgdColorOverride());
         c.setDisplayControls(getDisplayControls());
         c.validateDataPoint(user, false);
+        resetPointComponent(c);
         return c;
     }
 }

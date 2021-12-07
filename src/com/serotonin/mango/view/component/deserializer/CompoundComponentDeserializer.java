@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.web.mvc.api.dto.view.components.*;
+import org.scada_lts.web.mvc.api.dto.view.components.compound.*;
 
 import java.io.IOException;
 import java.util.HashMap;

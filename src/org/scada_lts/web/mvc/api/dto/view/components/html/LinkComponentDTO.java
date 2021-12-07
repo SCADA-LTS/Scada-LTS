@@ -1,4 +1,4 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.html;
 
 
 import br.org.scadabr.view.component.LinkComponent;

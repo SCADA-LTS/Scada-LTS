@@ -1,10 +1,11 @@
-package org.scada_lts.web.mvc.api.dto.view.components;
+package org.scada_lts.web.mvc.api.dto.view.components.html;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.serotonin.mango.view.component.deserializer.HtmlComponentDeserializer;
+import org.scada_lts.web.mvc.api.dto.view.components.GraphicalViewComponentDTO;
 
 @JsonDeserialize(using = HtmlComponentDeserializer.class)
-public class HtmlBaseComponentDTO extends GraphicalViewComponentDTO{
+public class HtmlBaseComponentDTO extends GraphicalViewComponentDTO {
 
     private String content;
 

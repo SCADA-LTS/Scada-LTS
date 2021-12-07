@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.*;
 import com.serotonin.mango.view.component.*;
-import org.scada_lts.web.mvc.api.dto.view.components.*;
+import org.scada_lts.web.mvc.api.dto.view.components.point.*;
+import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.ImageSetComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.script.ScriptBaseComponentDTO;
 
 import java.io.IOException;
 
