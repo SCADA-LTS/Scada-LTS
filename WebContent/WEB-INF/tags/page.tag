@@ -186,19 +186,17 @@
         return stompClient;
     }
 
-    function disconnect(stompClient) {
+    function disconnect() {
         if(stompClient != null) {
         	console.log("Disconnecting...");
-            stompClient.disconnect(function(){
+            stompClient.disconnect(function() {
             	console.log("Disconnected");
-            	alert("Disconnected");
             	stompClient = null;
             });
         }
     }
 
     function onloadHandler() {
-       disconnect(stompClient);
        var location = window.location;
        var appName = location.pathname.split("/")[1];
        var myLocation = location.origin + "/" + appName+ "/";
@@ -336,7 +334,9 @@
 
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnect()">
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </div>
       </c:if>

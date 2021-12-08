@@ -46,7 +46,7 @@ public class AlarmLevelController {
     public String process(String message, ScadaPrincipal principal, StompHeaderAccessor accessor) {
         String user = getName(principal);
         LOG.debug("process[" + user + "]" + "message: " + message);
-        highestAlarmLevelService.doSendAlarmLevel(principal, userEventService::sendAlarmLevel);
+        highestAlarmLevelService.doSendAlarmLevel(principal.getUser(), userEventService::sendAlarmLevel);
         return "user: " + user + ", message: " + message;
     }
 

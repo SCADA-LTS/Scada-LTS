@@ -14,8 +14,8 @@ public class WsEventMessage {
         CREATE, UPDATE, DELETE, RESET
     }
 
-    private EventInstance instance;
-    public String action;
+    private final EventInstance instance;
+    private final String action;
 
     private WsEventMessage(EventInstance instance, EventAction action) {
         this.instance = instance;

@@ -1,10 +1,11 @@
 package org.scada_lts.service;
 
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.IHighestAlarmLevelDAO;
 import org.scada_lts.dao.model.UserAlarmLevel;
 import org.scada_lts.mango.adapter.MangoUser;
-import org.scada_lts.web.ws.beans.ScadaPrincipal;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.web.ws.model.AlarmLevelMessage;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.function.BiConsumer;
 public class HighestAlarmLevelService implements IHighestAlarmLevelService {
 
     private final IHighestAlarmLevelDAO highestAlarmLevelDAO;
+    private final MangoUser userService;
 
     public HighestAlarmLevelService(IHighestAlarmLevelDAO highestAlarmLevelDAO) {
         this.highestAlarmLevelDAO = highestAlarmLevelDAO;
+        this.userService = new UserService();
     }
 
     @Override
@@ -26,9 +29,9 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public boolean doUpdateAlarmLevel(User user, UserAlarmLevel alarmLevel, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    public boolean doUpdateAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
         try {
-            send.accept(new ScadaPrincipal(user), new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
+            send.accept(user, new AlarmLevelMessage(event.getAlarmLevel()));
             return true;
         } catch (Exception ex) {
             return false;
@@ -36,7 +39,7 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public boolean doSendAlarmLevel(ScadaPrincipal user, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    public boolean doSendAlarmLevel(User user, BiConsumer<User, AlarmLevelMessage> send) {
         try {
             return doSend(user, send);
         } catch (Exception ex) {
@@ -45,9 +48,9 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public boolean doRemoveAlarmLevel(User user, UserAlarmLevel alarmLevel, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    public boolean doRemoveAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
         try {
-            doSend(new ScadaPrincipal(user), send);
+            doSend(user, send);
             return true;
         } catch (Exception ex) {
             return false;
@@ -55,15 +58,14 @@ public class HighestAlarmLevelService implements IHighestAlarmLevelService {
     }
 
     @Override
-    public void doResetAlarmLevels(MangoUser userService, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    public void doResetAlarmLevels(BiConsumer<User, AlarmLevelMessage> send) {
         for(User user: userService.getActiveUsers())
-            doSend(new ScadaPrincipal(user), send);
+            doSend(user, send);
     }
 
-    private boolean doSend(ScadaPrincipal principal, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
-        if(principal != null) {
-            User user = User.onlyIdUsername(principal);
-            send.accept(principal, new AlarmLevelMessage(getAlarmLevel(user)));
+    private boolean doSend(User user, BiConsumer<User, AlarmLevelMessage> send) {
+        if(user != null) {
+            send.accept(user, new AlarmLevelMessage(getAlarmLevel(user)));
             return true;
         }
         return false;
