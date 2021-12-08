@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataPoint from './dataPoint';
 import storeEvents from './events';
+import storeScripts from './scripts';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
@@ -36,6 +37,7 @@ export default new Vuex.Store({
 		pointHierarchy,
 		alarms,
 		storeUsers,
+		storeScripts,
 		userProfileModule,
 		systemSettings,
 		storeMailingList,

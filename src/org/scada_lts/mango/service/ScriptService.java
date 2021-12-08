@@ -4,7 +4,6 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.ScriptDAO;
 import org.scada_lts.mango.adapter.MangoScript;
-import org.scada_lts.web.mvc.api.json.JsonScript;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,8 +51,7 @@ public class ScriptService implements MangoScript {
     public boolean isXidUnique(String xid, int excludeId) {
         return scriptDAO.isXidUnique(xid, excludeId);
     }
-
-//    public List<JsonScript> findScriptsByPage(String query) {
-//        scriptDAO.findScriptsByPage(query);
-//    }
 }
+
+
+

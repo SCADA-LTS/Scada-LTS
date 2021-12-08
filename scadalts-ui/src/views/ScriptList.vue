@@ -2,90 +2,108 @@
 	<div>
 		<h1>{{ $t('scriptList.title') }}</h1>	
 		<v-container fluid v-if="!!scriptList">	
-			<v-row>
-				<v-col cols="12">
-					<v-form ref="form" id="user-details--form">	
-						<v-row>
-							<v-col cols="3">
-								<v-select
-									:label="$t('scriptList.searchFilter.alarmLevel')"
-									v-model="searchFilters.alarmLevel"
-									:items="alarmLevelOptions"
-									item-text="name"
-									item-value="id"
-									@change="fetchScriptList"
-								></v-select>
-							</v-col>
-						
-							<v-col cols="3">
-								<v-select 
-									:label="$t('scriptList.searchFilter.status')"
-									v-model="searchFilters.status"
-									:items="statusOptions"
-									item-text="label"
-									item-value="value"
-									@change="fetchScriptList"
-								></v-select>
-							</v-col>
-							
-							<v-col cols="3">
-								<v-select 
-									:label="$t('scriptList.searchFilter.eventSourceType')"
-									v-model="searchFilters.eventSourceType"
-									:items="eventSourceTypeOptions"
-									item-text="name"
-									item-value="id"
-									@change="fetchScriptList"
-									
-								></v-select>
-							</v-col>
-							
-							<v-col cols="3" v-if="searchFilters.eventSourceType === 0 || searchFilters.eventSourceType === 1">
-								<v-text-field 
-									:label="$t('scriptList.searchFilter.datapoint')" 
-									v-model="searchFilters.datapoint"
-									@change="fetchScriptList"
-								></v-text-field>
-							</v-col>
-						</v-row>
-
-						<v-text-field
-							v-model="searchFilters.keywords"
-							append-icon="mdi-magnify"
-							:label="$t('common.search')"
-							single-line
-							hide-details
-						></v-text-field>
-						
-						<template v-slot:append-outer>
-							<v-btn
-								icon
-								fab
-								x-small
-								@click="fetchScriptList"
-								:loading="loading"
-								:disabled="loading"
-							>
-								<v-icon>mdi-autorenew</v-icon>
-							</v-btn>
-						</template>
-					</v-form>
-				</v-col>
-			</v-row>
-
-			<v-data-table
-				:headers="headers"
-				:items="scriptList"
-				:options.sync="options"
-				:loading="loading"
-				:server-items-length="totalScripts"
-				multi-sort
-				class="elevation-1"
-				@click:row="open"
-				></v-data-table>	
+			<v-card>
+				<v-card-title>
+					<v-text-field
+						v-model="search"
+						append-icon="mdi-magnify"
+						label="Search"
+						single-line
+						hide-details
+					></v-text-field>
+				</v-card-title>
+				<v-data-table
+					:headers="headers"
+					:items="scriptListFiltered"
+					:options.sync="options"
+					:loading="loading"
+					:server-items-length="totalScripts"
+					multi-sort
+					class="elevation-1"
+					@click:row="selectScript($event.id)"
+					>
+					<template v-slot:item.actions="{ item }">	
+						<v-icon class="mr-2" border="0" @click.stop="runScript(item.xid)" title="run">
+							mdi-cog
+						</v-icon>
+						<v-icon border="0" @click.stop="deleteScript(item.id)" title="delete">
+							mdi-delete
+						</v-icon>
+					</template>
+				</v-data-table>	
+			</v-card>
 		</v-container>
-		<v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
+		
+		
+					<v-card v-if="selectedScriptId !== null">
+						<v-card-title>
+							<v-row>
+								<v-col cols="6">Script #{{selectedScriptId}}</v-col>
+								<v-col cols="12">
+									<v-btn class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
+										<v-icon>mdi-cog</v-icon>
+											{{$t('scriptList.run')}}
+									</v-btn>
+									<v-btn class="mr-2" color="blue" @click="saveScript()" >
+										<v-icon>mdi-content-save</v-icon>
+											{{$t('scriptList.save')}}
+									</v-btn>
+									<v-btn  @click="deleteScript(selectedScriptId)" class="mr-2" color="red">
+										<v-icon>mdi-delete</v-icon>
+										{{$t('scriptList.delete')}}
+									</v-btn>
+								</v-col>	
+							</v-row>
+						</v-card-title>
+						<v-card-text>
+							<form>
+							<v-row>
+								<v-col cols="3">
+									<v-text-field label="xid" :value="scriptForm.xid"></v-text-field>
+								</v-col>
+								<v-col cols="3">
+									<v-text-field label="name" :value="scriptForm.name"></v-text-field>
+								</v-col>
+								<v-col cols="3">
+									<v-select 
+									item-value="id"
+									item-text="name"
+									v-model="selectedDatapointId"
+									:items="filteredDatapoints"></v-select>
+								</v-col>
+								
+								<v-col cols="3">
+									<v-btn @click="addDatapoint()" class="mr-2" color="red">
+										<v-icon>mdi-plus</v-icon>
+										{{$t('scriptList.addDatapoint')}}
+									</v-btn>
+								</v-col>
+							</v-row>
+							<v-row>
+								<ul v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
+									<li @click="removeDatapoint(p.key)">{{p.key}} {{p.value}} 
+										<v-icon color="red" style="cursor:pointer">mdi-close</v-icon>
+									</li>
+								</ul>
+							</v-row>
+							<v-row>
+							<v-col cols="12">
+								<v-row>
+									<v-col cols="10"><v-text-field label="Datasources commands"></v-text-field></v-col>
+									<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
+								</v-row>
+								<v-row>
+									<v-col cols="10"><v-text-field label="Datapoints commands"></v-text-field></v-col>
+									<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
+								</v-row>
+							</v-col>
+							</v-row>
+							<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" :value="scriptForm.script"></v-textarea>
+						</form>
+						</v-card-text>
+					</v-card>
 	</div>
+	
 </template>
 <style scoped>
 .historical-alarms {
@@ -97,8 +115,9 @@
 export default {
 	name: 'scriptList',
 	components: {},
-	mounted() {
+	async mounted() {
 		this.fetchScriptList();
+		this.datapoints = await this.$store.dispatch('getAllDatapoints');
 	},
 	watch: {
     	options (data) {
@@ -108,11 +127,35 @@ export default {
 			this.searchFilters.sortDesc = data.sortDesc;
 			this.fetchScriptList()	
       	},
+		search() {
+			this.filterScriptsBySearch()
+		},
+		scriptList() {
+			this.filterScriptsBySearch()
+		}
     },
 	data() {
-		return {	
+		return {
+			search: '',
+			scriptListFiltered: [],
+			datapointToSave: null,
+			selectedDatapointId: null,
+			datapoints: [],
+			options: {},
+			selectedScriptId: null,
+			selectedScript: null,
+			scriptForm: {
+				name: '',
+				xid: '',
+				pointsOnContext: [],
+				objectsOnContext: [],
+				script: '',
+				type: 'CONTEXTUALIZED_SCRIPT',
+				typeKey:"event.audit.scripts",
+				new:false
+			},
 			searchFilters: {
-				keywords: '',
+				keywordfs: '',
 				page: 1,
 				itemsPerPage: 10,
 				sortBy: [],
@@ -153,19 +196,53 @@ export default {
 			],
 		};
 	},
+	computed: {
+		filteredDatapoints() {
+			return this.datapoints.filter(x => this.scriptForm.pointsOnContext.filter(y => y.key === x.id).length === 0)
+		},
+	},
+
 	methods: {
+		filterScriptsBySearch() {
+			if (!this.search) {
+				this.scriptListFiltered = this.scriptList
+			}
+			else {
+			const keywords = this.search.split(' ')
+			this.scriptListFiltered = this.scriptList.filter(x => `${x.id} ${x.xid} ${x.name} ${x.script}`.toLowerCase().includes(keywords[0].toLowerCase()))
+			}
+		},
+		removeDatapoint(key) {
+			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext.filter(p => p.key != key)
+		},
+		selectScript(id) {
+			this.selectedScriptId = id
+			this.selectedScript = this.scriptList.find(x => x.id === this.selectedScriptId)
+			this.scriptForm.xid = this.selectedScript.xid;
+			this.scriptForm.name = this.selectedScript.name;
+			this.scriptForm.pointsOnContext = this.selectedScript.pointsOnContext;
+			this.scriptForm.objectsOnContext = this.selectedScript.objectsOnContext;
+			this.scriptForm.script = this.selectedScript.script;
+		},
+		addDatapoint() {
+			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
+			this.scriptForm.pointsOnContext.push({key: p.id, value: `p${p.id}`})
+			this.selectedDatapointId = null
+		},
 		async fetchScriptList() {
 			this.loading = true;
-			
-			const result = await this.$store.dispatch('searchEvents', this.searchFilters);
-			this.scriptList = result.rows;
-			this.totalScripts = result.total;
-			this.loading = false;
+			this.scriptList = await this.$store.dispatch('searchScripts', this.searchFilters);
+			this.totalScripts = this.scriptList.total;
 		},
-	  	open(item, item2) {
-			this.$router.push({ name: 'event-details', params: { id: item.id } });
-			this.$router.go();
-	  	}
+		runScript(xid) {
+			this.$store.dispatch('runScript', xid);
+		},
+		saveScript() {
+			this.$store.dispatch('saveScript', this.scriptForm);
+		},
+		deleteScript(id) {
+			this.scriptList = this.$store.dispatch('deleteScript', id);
+		}
 	},
 };
 </script>
