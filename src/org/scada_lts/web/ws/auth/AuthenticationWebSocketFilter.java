@@ -24,7 +24,7 @@ public class AuthenticationWebSocketFilter implements Filter {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-            response.getWriter().write("{\"message\": \"bad\"}");
+            response.getWriter().write("{\"message\": \"unauthorized\"}");
         }
     }
 
