@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Alarms from './views/Alarms';
+import AlarmTabs from './views/AlarmTabs';
 import About from './views/About';
 import LoginPage from './views/LoginPage';
 import HistoricalAlarms from './views/HistoricalAlarms';
@@ -16,6 +17,7 @@ import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
 import WatchList from './views/WatchList';
 import WatchListItem from './views/WatchList/WatchListItem';
+import HistoricalAlarmsComponent from './views/components/HistoricalAlarmsComponent';
 
 import store from './store/index';
 
@@ -28,9 +30,9 @@ const routing = new Router({
 		{
 			path: '/',
 			name: 'home',
-			component: Alarms,
+			component: AlarmTabs,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -49,25 +51,32 @@ const routing = new Router({
 		{
 			path: '/alarms',
 			name: 'alarms',
-			component: Alarms,
+			component: AlarmTabs,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
+			children: [
+				{
+					path: 'plc',
+					component: Alarms,
+				},
+				{
+					path: 'plc-history',
+					component: HistoricalAlarmsComponent,
+				},
+				{
+					path: 'scada',
+					name: 'scada',
+					component: EventList,
+				},
+			],
 		},
 		{
 			path: '/historical-alarms',
 			name: 'historical-alarms',
 			component: HistoricalAlarms,
 			meta: {
-				requiresAuth: true
-			},
-		},
-		{
-			path: '/event-list',
-			name: 'event-list',
-			component: EventList,
-			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -213,7 +222,7 @@ const routing = new Router({
 					/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue'
 				),
 		},
-
+		
 	],
 });
 
@@ -227,6 +236,6 @@ routing.beforeEach((to, from, next) => {
 		}
 	}
 	next();
-})
+});
 
 export default routing;

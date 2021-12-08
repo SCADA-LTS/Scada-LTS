@@ -3,6 +3,7 @@ import sinon from "sinon";
 import * as am4core from '@amcharts/amcharts4/core';
 import AmChart, { AmChartBuilder, AmChart as BaseAmChart }  from "../../../../src/components/amcharts/AmChart"
 import axios from "axios";
+import { getValidDate } from '../../../../src/components/utils';
 
 
 context('💠️ AmChart - base class Tests', () => {
@@ -134,107 +135,107 @@ context('💠️ AmChart - base class Tests', () => {
             let date = new Date().getTime() - 60000;
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("1-minute")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("1-minute")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "5-minutes" converted', () => {
             let date = new Date().getTime() - (60000 * 5);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("5-minutes")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("5-minutes")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "1-hour" converted', () => {
             let date = new Date().getTime() - (3600000);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("1-hour")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("1-hour")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "5-hours" converted', () => {
             let date = new Date().getTime() - (3600000 * 5);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("5-hours")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("5-hours")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "1-day" converted', () => {
             let date = new Date().getTime() - (3600000 * 24);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("1-day")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("1-day")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "5-days" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 5);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("5-days")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("5-days")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "1-week" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 7);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("1-week")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("1-week")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "2-weeks" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 7 * 2);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("2-weeks")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("2-weeks")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "1-month" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 7 * 4);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("1-month")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("1-month")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "5-months" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 7 * 4 * 5);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("5-months")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("5-months")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "1-year" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 7 * 4 * 12);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("1-year")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("1-year")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is "5-years" converted', () => {
             let date = new Date().getTime() - (3600000 * 24 * 7 * 4 * 12 * 5);
             let datePrecisionDown = date - 1;
             let datePrecisionUp = date + 1;
-            expect(chartInstance.getValidDate("5-years")).to.be.within(datePrecisionDown, datePrecisionUp);
+            expect(getValidDate("5-years")).to.be.within(datePrecisionDown, datePrecisionUp);
         })
 
         it('Is on "1-day-2" Error generated', ()=> {
-            expect(() => {chartInstance.getValidDate("1-day-2")}).to.throw();
+            expect(() => {getValidDate("1-day-2")}).to.throw();
         })
 
         it('Is on "1 day" Error generated', ()=> {
-            expect(() => chartInstance.getValidDate("1 day")).to.throw();
+            expect(() => getValidDate("1 day")).to.throw();
         })
 
         it('Is "2020-06-24" converted', () => {
             let date = new Date("2020-06-24").getTime();
-            expect(chartInstance.getValidDate("2020-06-24")).to.equal(date);
+            expect(getValidDate("2020-06-24")).to.equal(date);
         })
 
         it('Is Date object converted', () => {
             let date = new Date();
-            expect(chartInstance.getValidDate(date)).to.equal(date.getTime());
+            expect(getValidDate(date)).to.equal(date.getTime());
         })
 
         it('Is Date getTime number passed', () => {
             let date = new Date().getTime();
-            expect(chartInstance.getValidDate(date)).to.equal(date);
+            expect(getValidDate(date)).to.equal(date);
         })
     })
 
