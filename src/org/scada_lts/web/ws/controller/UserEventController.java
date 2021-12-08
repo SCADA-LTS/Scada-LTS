@@ -17,7 +17,7 @@ public class UserEventController {
 
     private static final Log LOG = LogFactory.getLog(UserEventController.class);
 
-    private UserEventServiceWebSocket userEventServiceWebSocket;
+    private final UserEventServiceWebSocket userEventServiceWebSocket;
 
     public UserEventController(UserEventServiceWebSocket userEventServiceWebSocket) {
         this.userEventServiceWebSocket = userEventServiceWebSocket;
@@ -27,7 +27,7 @@ public class UserEventController {
     public String process(String message, ScadaPrincipal principal, StompHeaderAccessor accessor) {
         String user = principal.getName();
         LOG.debug("process[" + user + "]" + "message: " + message);
-        userEventServiceWebSocket.sendEventUpdate(principal, WsEventMessage.reset());
+        userEventServiceWebSocket.sendEventUpdate(principal.getUser(), WsEventMessage.reset());
         return "user: " + user + ", message: " + message;
     }
 

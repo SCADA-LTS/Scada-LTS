@@ -1,10 +1,10 @@
 package org.scada_lts.web.ws.controller;
 
 
-import com.serotonin.mango.vo.User;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.UserService;
 import org.scada_lts.service.IHighestAlarmLevelService;
 import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.scada_lts.web.ws.config.WebSocketMessageBrokerStatsMonitor;
@@ -18,10 +18,8 @@ import org.springframework.messaging.simp.user.SimpSession;
 import org.springframework.messaging.simp.user.SimpSubscription;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
-
-import java.util.Map;
+import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
 
 @Controller
@@ -31,15 +29,16 @@ public class AlarmLevelController {
     private final SimpUserRegistry  userRegistry;
     private final IHighestAlarmLevelService highestAlarmLevelService;
     private final UserEventServiceWebSocket userEventService;
+    private final SubProtocolWebSocketHandler handler;
     private final WebSocketMessageBrokerStatsMonitor statsMonitor;
 
-    public AlarmLevelController(SimpUserRegistry userRegistry,
-                                IHighestAlarmLevelService highestAlarmLevelService,
-                                UserEventServiceWebSocket userEventService,
+    public AlarmLevelController(SimpUserRegistry userRegistry, IHighestAlarmLevelService highestAlarmLevelService,
+                                UserEventServiceWebSocket userEventService, SubProtocolWebSocketHandler handler,
                                 WebSocketMessageBrokerStatsMonitor statsMonitor) {
         this.userRegistry = userRegistry;
         this.highestAlarmLevelService = highestAlarmLevelService;
         this.userEventService = userEventService;
+        this.handler = handler;
         this.statsMonitor = statsMonitor;
     }
 
@@ -51,15 +50,16 @@ public class AlarmLevelController {
     }
 
     @SubscribeMapping("/alarmLevel/register")
-    public String register(UsernamePasswordAuthenticationToken principal) {
-        ScadaPrincipal user = toScadaPrincipal(principal);
-        LOG.debug("register: " + user.getName() + "["+user.getId()+"]");
-        return user.getName();
+    public String register(ScadaPrincipal principal) {
+        String user = principal.getName();
+        LOG.debug("register: " + user + "["+principal.getId()+"]");
+        return user;
     }
 
     @SubscribeMapping("/listusers")
-    public String listUsers(UsernamePasswordAuthenticationToken principal) {
-        LOG.debug("listUsers: " + principal.getName());
+    public String listUsers(ScadaPrincipal principal) {
+        String user = getName(principal);
+        LOG.debug("listUsers: " + user);
         
         StringBuilder result = new StringBuilder();
         for( SimpUser u : userRegistry.getUsers() ) {
@@ -78,8 +78,9 @@ public class AlarmLevelController {
     
     
     @SubscribeMapping("/session")
-    public String listSessionAttributes(UsernamePasswordAuthenticationToken principal, StompHeaderAccessor accessor) {
-        LOG.debug("listSessionAttributes: " + principal.getName());
+    public String listSessionAttributes(ScadaPrincipal principal, StompHeaderAccessor accessor) {
+        String user = getName(principal);
+        LOG.debug("listSessionAttributes: " + user);
         
         StringBuilder result = new StringBuilder();
         Map<String, Object> attributes = accessor.getSessionAttributes();
@@ -89,21 +90,20 @@ public class AlarmLevelController {
         return result.toString();
     }
 
-    //@MessageExceptionHandler
+    @MessageExceptionHandler
     @SendToUser("/queue/errors")
     public String handleException(Throwable exception) {
-        LOG.warn(exception.getMessage(), exception);
+        LOG.warn("Exception caught: " + exception.getMessage());
         return exception.getMessage();
     }
-    /*
+    
     @SubscribeMapping("/websocketStats")
-    public String processWebsocketStats(UsernamePasswordAuthenticationToken principal, StompHeaderAccessor accessor) {
-        ScadaPrincipal scadaPrincipal = toScadaPrincipal(principal);
-        String user = getName(scadaPrincipal);
+    public String processWebsocketStats(ScadaPrincipal principal, StompHeaderAccessor accessor) {
+        String user = getName(principal);
         LOG.debug("processWebsocketStats: " + user);
 
         String result = "Websocket Stats: \n";
-        result += statsMonitor.getWebSocketHandler().getStatsInfo();
+        result += handler.getStatsInfo();
         result += "\tCurrent sessions: " + statsMonitor.getCurrentSessions() + "\n";
         result += "\tSendBufferSize: " + statsMonitor.getSendBufferSize() + "\n";
         result += "\tOutboundPoolSize: " + statsMonitor.getOutboundPoolSize() + "\n";
@@ -114,11 +114,10 @@ public class AlarmLevelController {
         result += "\tOutboundCompletedTaskCount: " + statsMonitor.getOutboundCompletedTaskCount() + "\n";
         LOG.debug(result);
         return result;
-    }*/
+    }
 
-    private static ScadaPrincipal toScadaPrincipal(UsernamePasswordAuthenticationToken principal) {
-        User user = new UserService().getUser(principal.getName());
-        return new ScadaPrincipal(user);
+    private static String getName(ScadaPrincipal principal) {
+        return principal == null || principal.getName() == null ? "<unknwn>" : principal.getName();
     }
    
 }

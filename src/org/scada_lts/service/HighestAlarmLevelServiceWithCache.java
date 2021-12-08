@@ -1,7 +1,7 @@
 package org.scada_lts.service;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,9 +10,9 @@ import org.scada_lts.dao.IHighestAlarmLevelDAO;
 import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
 import org.scada_lts.dao.model.UserAlarmLevel;
 import org.scada_lts.mango.adapter.MangoUser;
+import org.scada_lts.mango.service.UserService;
 import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.ws.model.AlarmLevelMessage;
-import org.scada_lts.web.ws.beans.ScadaPrincipal;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +32,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     private final IHighestAlarmLevelDAO highestAlarmLevelDAO;
     private final ReentrantReadWriteLock lock;
     private final CronTriggerScheduler resetHighestAlarmLevelScheduler;
+    private final MangoUser userService;
 
     public HighestAlarmLevelServiceWithCache(HighestAlarmLevelCachable highestAlarmLevelCache,
                                              IHighestAlarmLevelDAO highestAlarmLevelDAO,
@@ -40,6 +41,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         this.highestAlarmLevelDAO = highestAlarmLevelDAO;
         this.lock = new ReentrantReadWriteLock();
         this.resetHighestAlarmLevelScheduler = resetHighestAlarmLevelScheduler;
+        this.userService = new UserService();
     }
 
     @PostConstruct
@@ -69,13 +71,13 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     }
 
     @Override
-    public boolean doUpdateAlarmLevel(User user, UserAlarmLevel alarmLevel, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
-        if(alarmLevel.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
+    public boolean doUpdateAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
+        if(event.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
             this.lock.writeLock().lock();
             try {
-                if(alarmLevel.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
-                    highestAlarmLevelCache.putAlarmLevel(user, alarmLevel);
-                    send.accept(new ScadaPrincipal(user), new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
+                if(event.getAlarmLevel() > highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
+                    highestAlarmLevelCache.putAlarmLevel(user, new UserAlarmLevel(user, event.getAlarmLevel()));
+                    send.accept(user, new AlarmLevelMessage(event.getAlarmLevel()));
                     return true;
                 }
             } finally {
@@ -86,18 +88,18 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     }
 
     @Override
-    public boolean doSendAlarmLevel(ScadaPrincipal user, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    public boolean doSendAlarmLevel(User user, BiConsumer<User, AlarmLevelMessage> send) {
         return doSend(user, send);
     }
 
     @Override
-    public boolean doRemoveAlarmLevel(User user, UserAlarmLevel alarmLevel, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
-        if(alarmLevel.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
+    public boolean doRemoveAlarmLevel(User user, EventInstance event, BiConsumer<User, AlarmLevelMessage> send) {
+        if(event.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
             this.lock.writeLock().lock();
             try {
-                if (alarmLevel.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
+                if (event.getAlarmLevel() == highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()) {
                     highestAlarmLevelCache.removeAlarmLevel(user);
-                    send.accept(new ScadaPrincipal(user), new AlarmLevelMessage(highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()));
+                    send.accept(user, new AlarmLevelMessage(highestAlarmLevelCache.getAlarmLevel(user).getAlarmLevel()));
                     return true;
                 }
             } finally {
@@ -108,25 +110,25 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     }
 
     @Override
-    public void doResetAlarmLevels(MangoUser userService, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    public void doResetAlarmLevels(BiConsumer<User, AlarmLevelMessage> send) {
         this.lock.writeLock().lock();
         try {
             highestAlarmLevelCache.resetAlarmLevels();
             List<UserAlarmLevel> userAlarmLevels = highestAlarmLevelDAO.selectAlarmLevels();
-            userAlarmLevels.forEach(a -> highestAlarmLevelCache.putAlarmLevel(User.onlyId(a.getUserId()), a));
+            userAlarmLevels.forEach(a -> highestAlarmLevelCache.putAlarmLevel(userService.getUser(a.getUserId()), a));
         } finally {
             this.lock.writeLock().unlock();
         }
         for(User user: userService.getActiveUsers())
-            doSend(new ScadaPrincipal(user), send);
+            doSend(user, send);
     }
 
-    private boolean doSend(ScadaPrincipal principal, BiConsumer<ScadaPrincipal, AlarmLevelMessage> send) {
+    private boolean doSend(User user, BiConsumer<User, AlarmLevelMessage> send) {
         this.lock.readLock().lock();
         try {
-            UserAlarmLevel alarmLevel = highestAlarmLevelCache.getAlarmLevel(User.onlyIdUsername(principal));
+            UserAlarmLevel alarmLevel = highestAlarmLevelCache.getAlarmLevel(user);
             if(alarmLevel.getAlarmLevel() >= AlarmLevels.NONE) {
-                send.accept(principal, new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
+                send.accept(user, new AlarmLevelMessage(alarmLevel.getAlarmLevel()));
                 return true;
             }
             return false;
@@ -136,13 +138,8 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
     }
 
     private void reload() {
-        this.lock.writeLock().lock();
-        try {
-            List<UserAlarmLevel> userAlarmLevels = highestAlarmLevelDAO.selectAlarmLevels();
-            userAlarmLevels.forEach(a -> highestAlarmLevelCache.putAlarmLevel(User.onlyId(a.getUserId()), a));
-        } finally {
-            this.lock.writeLock().unlock();
-        }
+        List<UserAlarmLevel> userAlarmLevels = highestAlarmLevelDAO.selectAlarmLevels();
+        userAlarmLevels.forEach(a -> highestAlarmLevelCache.putAlarmLevel(userService.getUser(a.getUserId()), a));
         LOG.info(HighestAlarmLevelServiceWithCache.class.getSimpleName() + " reloaded");
     }
 }

@@ -186,7 +186,7 @@
         return stompClient;
     }
 
-    function disconnect(stompClient) {
+    function disconnect() {
         if(stompClient != null) {
         	console.log("Disconnecting...");
             stompClient.disconnect(function() {
@@ -334,7 +334,9 @@
 
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnect()">
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </div>
       </c:if>
