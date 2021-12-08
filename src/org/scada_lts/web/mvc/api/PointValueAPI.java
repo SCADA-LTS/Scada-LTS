@@ -758,7 +758,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 pointValueService.deletePointValuesBeforeForDatapoint(id, time);
-                pointValueService.deletePointValuesBeforeWithOutLast(id, time);
+//                pointValueService.deletePointValuesBeforeWithOutLast(id, time);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

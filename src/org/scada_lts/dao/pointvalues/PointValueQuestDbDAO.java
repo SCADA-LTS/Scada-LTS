@@ -458,6 +458,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        json = json.replace("\"", "");
         return json;
     }
 
@@ -474,6 +475,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        json = json.replace("\"", "");
         return json;
     }
 
