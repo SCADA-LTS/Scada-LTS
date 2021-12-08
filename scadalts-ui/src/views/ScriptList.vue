@@ -33,75 +33,106 @@
 				</v-data-table>	
 			</v-card>
 		</v-container>
+
+
+
+
+
+
+		<v-row justify="center">
+			<v-dialog
+			v-model="dialog"
+			v-show="selectedScriptId !== null"
+			@change="selectedScriptId = null"
+			
+			>
+			
+			<v-card>
+				<v-card-title>
+					<v-row>
+						<v-col cols="6">Script #{{selectedScriptId}}</v-col>
+						<v-col cols="12">
+							<v-btn class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
+								<v-icon>mdi-cog</v-icon>
+									{{$t('scriptList.run')}}
+							</v-btn>
+							
+							<v-btn  @click="deleteScript(selectedScriptId)" class="mr-2" color="red">
+								<v-icon>mdi-delete</v-icon>
+								{{$t('scriptList.delete')}}
+							</v-btn>
+						</v-col>	
+					</v-row>
+				</v-card-title>
+				<v-card-text>
+					<form>
+					<v-row>
+						<v-col cols="3">
+							<v-text-field label="xid" :value="scriptForm.xid"></v-text-field>
+						</v-col>
+						<v-col cols="3">
+							<v-text-field label="name" :value="scriptForm.name"></v-text-field>
+						</v-col>
+						<v-col cols="3">
+							<v-select 
+							item-value="id"
+							item-text="name"
+							v-model="selectedDatapointId"
+							:items="filteredDatapoints"></v-select>
+						</v-col>
+						
+						<v-col cols="3">
+							<v-btn @click="addDatapoint()" class="mr-2" color="red">
+								<v-icon>mdi-plus</v-icon>
+								{{$t('scriptList.addDatapoint')}}
+							</v-btn>
+						</v-col>
+					</v-row>
+					<v-row>
+						<ul v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
+							<li @click="removeDatapoint(p.key)">{{p.key}} {{p.value}} 
+								<v-icon color="red" style="cursor:pointer">mdi-close</v-icon>
+							</li>
+						</ul>
+					</v-row>
+					<v-row>
+					<v-col cols="12">
+						<v-row>
+							<v-col cols="10"><v-text-field label="Datasources commands"></v-text-field></v-col>
+							<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
+						</v-row>
+						<v-row>
+							<v-col cols="10"><v-text-field label="Datapoints commands"></v-text-field></v-col>
+							<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
+						</v-row>
+					</v-col>
+					</v-row>
+					<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" :value="scriptForm.script"></v-textarea>
+				</form>
+				</v-card-text>
+		
+
+			
+				<v-card-actions>
+				<v-spacer></v-spacer>
+				<v-btn
+					color="blue darken-1"
+					text
+					@click="dialog = false"
+				>
+					Close
+				</v-btn>
+				<v-btn class="mr-2" color="blue" @click="saveScript()" >
+					<v-icon>mdi-content-save</v-icon>
+						{{$t('scriptList.save')}}
+				</v-btn>
+				</v-card-actions>
+			</v-card>
+			</v-dialog>
+		</v-row> 
 		
 		
-					<v-card v-if="selectedScriptId !== null">
-						<v-card-title>
-							<v-row>
-								<v-col cols="6">Script #{{selectedScriptId}}</v-col>
-								<v-col cols="12">
-									<v-btn class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
-										<v-icon>mdi-cog</v-icon>
-											{{$t('scriptList.run')}}
-									</v-btn>
-									<v-btn class="mr-2" color="blue" @click="saveScript()" >
-										<v-icon>mdi-content-save</v-icon>
-											{{$t('scriptList.save')}}
-									</v-btn>
-									<v-btn  @click="deleteScript(selectedScriptId)" class="mr-2" color="red">
-										<v-icon>mdi-delete</v-icon>
-										{{$t('scriptList.delete')}}
-									</v-btn>
-								</v-col>	
-							</v-row>
-						</v-card-title>
-						<v-card-text>
-							<form>
-							<v-row>
-								<v-col cols="3">
-									<v-text-field label="xid" :value="scriptForm.xid"></v-text-field>
-								</v-col>
-								<v-col cols="3">
-									<v-text-field label="name" :value="scriptForm.name"></v-text-field>
-								</v-col>
-								<v-col cols="3">
-									<v-select 
-									item-value="id"
-									item-text="name"
-									v-model="selectedDatapointId"
-									:items="filteredDatapoints"></v-select>
-								</v-col>
-								
-								<v-col cols="3">
-									<v-btn @click="addDatapoint()" class="mr-2" color="red">
-										<v-icon>mdi-plus</v-icon>
-										{{$t('scriptList.addDatapoint')}}
-									</v-btn>
-								</v-col>
-							</v-row>
-							<v-row>
-								<ul v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
-									<li @click="removeDatapoint(p.key)">{{p.key}} {{p.value}} 
-										<v-icon color="red" style="cursor:pointer">mdi-close</v-icon>
-									</li>
-								</ul>
-							</v-row>
-							<v-row>
-							<v-col cols="12">
-								<v-row>
-									<v-col cols="10"><v-text-field label="Datasources commands"></v-text-field></v-col>
-									<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
-								</v-row>
-								<v-row>
-									<v-col cols="10"><v-text-field label="Datapoints commands"></v-text-field></v-col>
-									<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
-								</v-row>
-							</v-col>
-							</v-row>
-							<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" :value="scriptForm.script"></v-textarea>
-						</form>
-						</v-card-text>
-					</v-card>
+					
 	</div>
 	
 </template>
@@ -136,6 +167,7 @@ export default {
     },
 	data() {
 		return {
+			dialog: false,
 			search: '',
 			scriptListFiltered: [],
 			datapointToSave: null,
@@ -217,6 +249,7 @@ export default {
 		},
 		selectScript(id) {
 			this.selectedScriptId = id
+			this.dialog = true
 			this.selectedScript = this.scriptList.find(x => x.id === this.selectedScriptId)
 			this.scriptForm.xid = this.selectedScript.xid;
 			this.scriptForm.name = this.selectedScript.name;
