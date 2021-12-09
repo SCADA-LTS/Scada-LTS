@@ -7,7 +7,7 @@
 <script>
 import Components from '@min-gb/vuejs-components';
 import AlarmsComponent from '../../components/graphical_views/AlarmsComponent';
-import EventList from '../views/EventList.vue';
+import EventList from './EventList.vue';
 
 export default {
 	el: '#alarms',

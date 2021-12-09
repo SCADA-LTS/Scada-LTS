@@ -46,7 +46,7 @@
 	</div>
 </template>
 <script>
-import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
+import dataSourceMixin from '../../../components/datasources/DataSourcesMixin.js';
 import DataSourceEvents from './DataSourceEvents';
 
 export default {

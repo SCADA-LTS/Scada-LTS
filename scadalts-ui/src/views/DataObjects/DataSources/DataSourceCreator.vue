@@ -15,7 +15,7 @@
 	</v-dialog>
 </template>
 <script>
-import dataSourceMixin from '../../components/datasources/DataSourcesMixin.js';
+import dataSourceMixin from '../../../components/datasources/DataSourcesMixin.js';
 
 export default {
 	mixins: [dataSourceMixin],
