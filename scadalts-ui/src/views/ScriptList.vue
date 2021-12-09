@@ -1,16 +1,24 @@
 <template>
 	<div>
-		<h1>{{ $t('scriptList.title') }}</h1>	
+		<h1>{{ $t('scriptList.title') }}</h1>
+		
 		<v-container fluid v-if="!!scriptList">	
 			<v-card>
 				<v-card-title>
+					
 					<v-text-field
 						v-model="search"
 						append-icon="mdi-magnify"
 						label="Search"
+						class="mr-2"
 						single-line
 						hide-details
 					></v-text-field>
+
+					<v-btn
+						color="primary"
+						@click="createNewScript"
+					>New Script</v-btn>
 				</v-card-title>
 				<v-data-table
 					:headers="headers"
@@ -50,14 +58,15 @@
 			<v-card>
 				<v-card-title>
 					<v-row>
-						<v-col cols="6">Script #{{selectedScriptId}}</v-col>
+						<v-col v-if="selectedScriptId" cols="6">Script #{{selectedScriptId}}</v-col>
+						<v-col v-else cols="6">New script </v-col>
 						<v-col cols="12">
-							<v-btn class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
+							<v-btn v-if="selectedScriptId" class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
 								<v-icon>mdi-cog</v-icon>
-									{{$t('scriptList.run')}}
+								{{$t('scriptList.run')}}
 							</v-btn>
 							
-							<v-btn  @click="deleteScript(selectedScriptId)" class="mr-2" color="red">
+							<v-btn v-if="selectedScriptId"  @click="deleteScript(selectedScriptId)" class="mr-2" color="red">
 								<v-icon>mdi-delete</v-icon>
 								{{$t('scriptList.delete')}}
 							</v-btn>
@@ -65,47 +74,56 @@
 					</v-row>
 				</v-card-title>
 				<v-card-text>
+					{{scriptForm}}
 					<form>
 					<v-row>
-						<v-col cols="3">
-							<v-text-field label="xid" :value="scriptForm.xid"></v-text-field>
+						<v-col cols="6">
+							<v-text-field label="xid" v-model="scriptForm.xid"></v-text-field>
 						</v-col>
-						<v-col cols="3">
-							<v-text-field label="name" :value="scriptForm.name"></v-text-field>
+						<v-col cols="6">
+							<v-text-field label="name" v-model="scriptForm.name"></v-text-field>
 						</v-col>
-						<v-col cols="3">
+						<v-col cols="6">
+							<v-btn :disabled="selectedDatapointId==null" @click="addDatapoint()" class="mr-2" color="red">
+								<v-icon>mdi-plus</v-icon>
+								{{$t('scriptList.addDatapoint')}}
+							</v-btn>
 							<v-select 
 							item-value="id"
+							placeholder="select datapoint"
 							item-text="name"
 							v-model="selectedDatapointId"
 							:items="filteredDatapoints"></v-select>
 						</v-col>
 						
-						<v-col cols="3">
-							<v-btn @click="addDatapoint()" class="mr-2" color="red">
-								<v-icon>mdi-plus</v-icon>
-								{{$t('scriptList.addDatapoint')}}
-							</v-btn>
+						<v-col cols="6">
+							<table class='datapoints'>
+								<thead>
+									<tr>
+										<th>Point name</th>
+										<th>Var</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
+										<td>{{p.key}}</td>
+										<td> <v-text-field v-model="p.value"/> </td>
+										<td> 
+											<v-icon color="red" style="cursor:pointer" @click="removeDatapoint(p.key)">mdi-close</v-icon>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</v-col>
 					</v-row>
 					<v-row>
-						<ul v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
-							<li @click="removeDatapoint(p.key)">{{p.key}} {{p.value}} 
-								<v-icon color="red" style="cursor:pointer">mdi-close</v-icon>
-							</li>
-						</ul>
-					</v-row>
-					<v-row>
-					<v-col cols="12">
-						<v-row>
-							<v-col cols="10"><v-text-field label="Datasources commands"></v-text-field></v-col>
-							<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
-						</v-row>
-						<v-row>
-							<v-col cols="10"><v-text-field label="Datapoints commands"></v-text-field></v-col>
-							<v-col cols="2"><v-checkbox label="Add"></v-checkbox></v-col>
-						</v-row>
-					</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="scriptForm.datapointContext" label="Datapoints commands"></v-text-field>
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="scriptForm.datasourceContext" label="Datasources commands"></v-text-field>
+						</v-col>
 					</v-row>
 					<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" :value="scriptForm.script"></v-textarea>
 				</form>
@@ -137,6 +155,17 @@
 	
 </template>
 <style scoped>
+.datapoints {
+	width: 100%;
+}
+.datapoints th {
+	background: darkslategray;
+	color: white;
+}
+.datapoints th, .datapoints td {
+	padding: 4px;
+}
+
 .historical-alarms {
 	z-index: -1;
 }
@@ -177,10 +206,12 @@ export default {
 			selectedScriptId: null,
 			selectedScript: null,
 			scriptForm: {
+				id: null,
 				name: '',
 				xid: '',
 				pointsOnContext: [],
-				objectsOnContext: [],
+				datasourceContext: '',
+				datapointContext: '',
 				script: '',
 				type: 'CONTEXTUALIZED_SCRIPT',
 				typeKey:"event.audit.scripts",
@@ -235,6 +266,21 @@ export default {
 	},
 
 	methods: {
+		createNewScript() {
+
+			this.selectedScriptId = null
+			
+			this.selectedScript = null
+			this.scriptForm.id = null;
+			this.scriptForm.xid = '';
+			this.scriptForm.name = '';
+			this.scriptForm.pointsOnContext = [];
+			this.scriptForm.script = ''
+			this.scriptForm.datasourceContext = ''
+			this.scriptForm.datapointContext = ''
+
+			this.dialog = true
+		},
 		filterScriptsBySearch() {
 			if (!this.search) {
 				this.scriptListFiltered = this.scriptList
@@ -251,10 +297,33 @@ export default {
 			this.selectedScriptId = id
 			this.dialog = true
 			this.selectedScript = this.scriptList.find(x => x.id === this.selectedScriptId)
+			this.scriptForm.id = this.selectedScript.id;
 			this.scriptForm.xid = this.selectedScript.xid;
 			this.scriptForm.name = this.selectedScript.name;
 			this.scriptForm.pointsOnContext = this.selectedScript.pointsOnContext;
-			this.scriptForm.objectsOnContext = this.selectedScript.objectsOnContext;
+
+			const oc = this.selectedScript.objectsOnContext
+			if (oc && oc.length) {
+				const o1 = oc.find(x => x.key == 1)
+				const o2 = oc.find(x => x.key == 2)
+				if (o1 && o1.value) {
+					this.scriptForm.datasourceContext = o1.value;
+				} else {
+					this.scriptForm.datasourceContext = '';
+				}
+
+				if (o2 && o2.value) {
+					this.scriptForm.datapointContext = o2.value;
+				} else {
+					this.scriptForm.datapointContext = '';
+				}
+				
+				this.scriptForm.datapointContext = o2.value;
+			} else {
+				this.scriptForm.datasourceContext = '';
+				this.scriptForm.datapointContext = '';
+			}
+			
 			this.scriptForm.script = this.selectedScript.script;
 		},
 		addDatapoint() {

@@ -2,13 +2,17 @@ package org.scada_lts.web.mvc.api;
 
 import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.rt.scripting.ScriptRT;
+import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import br.org.scadabr.vo.scripting.ScriptVO;
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.errors.ErrorCode;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.web.mvc.api.json.JsonScript;
 import org.scada_lts.web.mvc.api.json.JsonUser;
@@ -40,10 +44,12 @@ public class ScriptsAPI {
     @Resource
     private ScriptService scriptService;
 
+    @Resource
+    private DataPointService dataPointService;
+
     /**
      * Get Scripts related to specific Data Point
      *
-     * @param query       Additional query like limit or offset
      * @param request     HTTP request with user data
      * @return ScriptDTO List
      */
@@ -52,7 +58,7 @@ public class ScriptsAPI {
         LOG.info("GET::/api/scripts/search");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null || !user.isAdmin()) {
                 return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -67,7 +73,8 @@ public class ScriptsAPI {
         LOG.info("GET::/api/scripts/execute");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+
+            if (user != null || !user.isAdmin()) {
                 ScriptVO<?> script = new ScriptDao().getScript(xid);
                 if (script != null) {
                     ScriptRT rt = script.createScriptRT();
@@ -87,7 +94,7 @@ public class ScriptsAPI {
         LOG.info("DELETE::/api/scripts");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null || !user.isAdmin()) {
                 new ScriptDao().deleteScript(id);
                 return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
             } else {
@@ -98,21 +105,45 @@ public class ScriptsAPI {
         }
     }
 
-
-    /**
-     * Get Scripts related to specific Data Point
-     *
-     * @param query       Additional query like limit or offset
-     * @param request     HTTP request with user data
-     * @return ScriptDTO List
-     */
     @PostMapping(value = "/save")
-    public ResponseEntity<List<ScriptVO<?>>> saveScript(@RequestBody JsonScript script, HttpServletRequest request) {
-        LOG.info("GET::/api/scripts/search");
+    public ResponseEntity<List<ScriptVO<?>>> saveScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+        LOG.info("POST::/api/scripts/save");
         try {
             User user = Common.getUser(request);
-            if (user != null) {
-//                scriptService.saveScript(script);
+            if (user != null || !user.isAdmin()) {
+                int scriptId = jsonBodyRequest.getId();
+                int userId = user.getId();
+                if (scriptId != -1) {
+                    ScriptVO vo = scriptService.getScript(scriptId);
+                    userId = vo.getUserId();
+                }
+
+                List<IntValuePair> pointsOnContext = new ArrayList<IntValuePair>();
+                List<IntValuePair> objectsOnContext = new ArrayList<IntValuePair>();
+
+//                for (IntValuePair dp:jsonBodyRequest.getPointsOnContext()) {
+//                    dataPointService.getDataPoint(id).getXid()
+//                    String[] kv = term.split(":");
+//                    objectsOnContext.add(new IntValuePair(Integer.parseInt(kv[0]), kv[1]));
+//                }
+
+                if (jsonBodyRequest.getDatapointContext() != "") {
+                    objectsOnContext.add(new IntValuePair(2, jsonBodyRequest.getDatapointContext()));
+                }
+
+                if (jsonBodyRequest.getDatasourceContext() != "") {
+                    objectsOnContext.add(new IntValuePair(1, jsonBodyRequest.getDatapointContext()));
+                }
+
+                ContextualizedScriptVO vo = new ContextualizedScriptVO();
+                vo.setId(scriptId);
+                vo.setXid(jsonBodyRequest.getXid());
+                vo.setName(jsonBodyRequest.getName());
+                vo.setScript(jsonBodyRequest.getScript());
+                vo.setPointsOnContext(pointsOnContext);
+                vo.setObjectsOnContext(objectsOnContext);
+                vo.setUserId(userId);
+                scriptService.saveScript(vo);
                 return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -121,5 +152,4 @@ public class ScriptsAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }
