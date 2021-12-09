@@ -11,10 +11,25 @@ const storeScripts = {
 			let url = `/scripts/execute/${xid}`;
 			return dispatch('requestPost', {url});
 		},
-		saveScript({ dispatch }, payload) {
-			alert(JSON.stringify(payload))
+		createScript({ dispatch }, payload) {
 			let url = `/scripts/save`;
 			return dispatch('requestPost', {
+				url,
+				data: {
+					id: payload.id,
+    				userId: payload.userId,
+    				xid: payload.xid,
+    				name: payload.name,
+    				script: payload.script,
+    				pointsOnContext: payload.pointsOnContext,
+    				datapointContext: payload.datapointContext,
+    				datasourceContext: payload.datasourceContext
+				}
+			});
+		},
+		updateScript({ dispatch }, payload) {
+			let url = `/scripts/update`;
+			return dispatch('requestPut', {
 				url,
 				data: {
 					id: payload.id,

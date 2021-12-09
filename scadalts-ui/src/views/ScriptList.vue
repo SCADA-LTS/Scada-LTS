@@ -58,7 +58,7 @@
 			<v-card>
 				<v-card-title>
 					<v-row>
-						<v-col v-if="selectedScriptId" cols="6">Script #{{selectedScriptId}}</v-col>
+						<v-col v-if="selectedScriptId != -1" cols="6">Script #{{selectedScriptId}}</v-col>
 						<v-col v-else cols="6">New script </v-col>
 						<v-col cols="12">
 							<v-btn v-if="selectedScriptId" class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
@@ -107,8 +107,8 @@
 								</thead>
 								<tbody>
 									<tr v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
-										<td>{{p.key}}</td>
-										<td> <v-text-field v-model="p.value"/> </td>
+										<td>{{p.dataPointXid}}</td>
+										<td> <v-text-field v-model="p.varName"/> </td>
 										<td> 
 											<v-icon color="red" style="cursor:pointer" @click="removeDatapoint(p.key)">mdi-close</v-icon>
 										</td>
@@ -203,7 +203,7 @@ export default {
 			selectedDatapointId: null,
 			datapoints: [],
 			options: {},
-			selectedScriptId: null,
+			selectedScriptId: -1,
 			selectedScript: null,
 			scriptForm: {
 				id: null,
@@ -261,23 +261,26 @@ export default {
 	},
 	computed: {
 		filteredDatapoints() {
-			return this.datapoints.filter(x => this.scriptForm.pointsOnContext.filter(y => y.key === x.id).length === 0)
+			return this.datapoints
+			.filter(x => this.scriptForm.pointsOnContext
+				.filter(y => y.key === x.id)
+			.length === 0)
 		},
 	},
 
 	methods: {
 		createNewScript() {
 
-			this.selectedScriptId = null
+			this.selectedScriptId = -1
 			
 			this.selectedScript = null
-			this.scriptForm.id = null;
+			this.scriptForm.id = -1;
 			this.scriptForm.xid = '';
 			this.scriptForm.name = '';
 			this.scriptForm.pointsOnContext = [];
 			this.scriptForm.script = ''
 			this.scriptForm.datasourceContext = ''
-			this.scriptForm.datapointContext = ''
+			this.scriptForm.datapointContext = 'dp'
 
 			this.dialog = true
 		},
@@ -291,7 +294,8 @@ export default {
 			}
 		},
 		removeDatapoint(key) {
-			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext.filter(p => p.key != key)
+			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext
+				.filter(p => p.key != key)
 		},
 		selectScript(id) {
 			this.selectedScriptId = id
@@ -300,7 +304,12 @@ export default {
 			this.scriptForm.id = this.selectedScript.id;
 			this.scriptForm.xid = this.selectedScript.xid;
 			this.scriptForm.name = this.selectedScript.name;
-			this.scriptForm.pointsOnContext = this.selectedScript.pointsOnContext;
+			this.scriptForm.pointsOnContext = this.selectedScript.pointsOnContext.map( x => { return {
+					varName: x.value ,
+					dataPointXid: (this.datapoints.find(dp => dp.id === x.id)).xid
+				}
+			}	
+			);
 
 			const oc = this.selectedScript.objectsOnContext
 			if (oc && oc.length) {
@@ -328,7 +337,8 @@ export default {
 		},
 		addDatapoint() {
 			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
-			this.scriptForm.pointsOnContext.push({key: p.id, value: `p${p.id}`})
+			this.scriptForm.pointsOnContext
+				.push({dataPointXid: p.xid, varName: `p${p.id}`})
 			this.selectedDatapointId = null
 		},
 		async fetchScriptList() {
@@ -340,10 +350,15 @@ export default {
 			this.$store.dispatch('runScript', xid);
 		},
 		saveScript() {
-			this.$store.dispatch('saveScript', this.scriptForm);
+			if (this.selectedScriptId != -1) {
+				this.$store.dispatch('updateScript', this.scriptForm);
+			} else {
+				this.$store.dispatch('createScript', this.scriptForm);
+			}
 		},
-		deleteScript(id) {
-			this.scriptList = this.$store.dispatch('deleteScript', id);
+		async deleteScript(id) {
+			this.scriptList = await this.$store.dispatch('deleteScript', id);
+			this.fetchScriptList()
 		}
 	},
 };

@@ -81,13 +81,13 @@ public class ScriptsAPI {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<List<ScriptVO<?>>> deleteScript(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Integer> deleteScript(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("DELETE::/api/scripts");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 scriptService.deleteScript(id);
-                return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
+                return new ResponseEntity<Integer>(id, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
