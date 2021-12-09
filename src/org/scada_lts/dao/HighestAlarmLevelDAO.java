@@ -27,6 +27,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
             + "userEvents u "
             + "join events e on u.eventId=e.id "
             + "where "
+            + "(e.ackTs is null or e.ackTs = 0) and "
             + "u.silenced='N' and userId=?";
 
     // @formatter:off
@@ -38,6 +39,7 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
             + "userEvents u "
             + "join events e on u.eventId=e.id "
             + "where "
+            + "(e.ackTs is null or e.ackTs = 0) and "
             + "u.silenced='N' "
             + "group by "
             + "userId";
@@ -65,18 +67,12 @@ public class HighestAlarmLevelDAO implements IHighestAlarmLevelDAO {
     @Override
     public List<UserAlarmLevel> selectAlarmLevels() {
         try {
-            @SuppressWarnings("unchecked")
-            List<UserAlarmLevel> userAlarmLevels = DAO.getInstance().getJdbcTemp().query(ALL, new RowMapper() {
-                @Override
-                public UserAlarmLevel mapRow(ResultSet rs, int rownumber) throws SQLException {
-                    UserAlarmLevel userAlarmLevel = new UserAlarmLevel();
-                    userAlarmLevel.setAlarmLevel(rs.getInt(COLUMN_NAME_MAX));
-                    userAlarmLevel.setUserId(rs.getInt(COLUMN_NAME_USERID));
-                    return userAlarmLevel;
-                }
+            return DAO.getInstance().getJdbcTemp().query(ALL, (rs, rownumber) -> {
+                UserAlarmLevel userAlarmLevel = new UserAlarmLevel();
+                userAlarmLevel.setAlarmLevel(rs.getInt(COLUMN_NAME_MAX));
+                userAlarmLevel.setUserId(rs.getInt(COLUMN_NAME_USERID));
+                return userAlarmLevel;
             });
-
-            return userAlarmLevels;
         } catch (Exception e) {
             LOG.error(e);
             return Collections.emptyList();
