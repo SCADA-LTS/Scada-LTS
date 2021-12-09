@@ -1,4 +1,5 @@
 import Alarms from '../views/Alarms/Alarms.vue';
+import AlarmsTabs from '../views/Alarms/AlarmTabs.vue';
 import EventList from '../views/Alarms/EventList';
 import HistoricalAlarms from '../views/Alarms/HistoricalAlarms';
 import AlarmNotifications from '../views/Alarms/AlarmNotifications';
@@ -15,33 +16,33 @@ export const routes = [
     {
         path: '/alarms',
         name: 'alarms',
-        component: Alarms,
+        component: AlarmsTabs,
         meta: {
             requiresAuth: true
         },
-    },
-    {
-        path: '/historical-alarms',
-        name: 'historical-alarms',
-        component: HistoricalAlarms,
-        meta: {
-            requiresAuth: true
-        },
-    },
-    {
-        path: '/event-list',
-        name: 'event-list',
-        component: EventList,
-        meta: {
-            requiresAuth: true
-        },
+        children: [
+            {
+                path: 'plc',
+                component: Alarms,
+            },
+            {
+                path: 'plc-history',
+                component: HistoricalAlarms,
+            },
+            {
+                path: 'scada',
+                name: 'scada',
+                component: EventList,
+            },
+        ]
     },
     {
         path: '/alarm-notifications',
         name: 'alarm-notifications',
         component: AlarmNotifications,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
 ];

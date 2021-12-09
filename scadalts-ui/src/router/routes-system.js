@@ -9,7 +9,8 @@ export const routes = [
         name: 'system-settings',
         component: SystemSettings,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -17,7 +18,8 @@ export const routes = [
         name: 'import-export',
         component: ImportExport,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -25,7 +27,8 @@ export const routes = [
         name: 'sql',
         component: SqlView,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -33,7 +36,8 @@ export const routes = [
         name: 'publishers',
         component: Publishers,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
 ];

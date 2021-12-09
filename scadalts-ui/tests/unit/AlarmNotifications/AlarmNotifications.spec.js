@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
 import { config, createLocalVue, mount } from '@vue/test-utils';
-import AlarmNotifications from '@/views/AlarmNotifications';
+import AlarmNotifications from '@/views/Alarms/AlarmNotifications';
 import i18n from '@/i18n';
 
 const localVue = createLocalVue();

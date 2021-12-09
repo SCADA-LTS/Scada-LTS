@@ -9,7 +9,9 @@ export const routes = [
         name: 'event-handlers',
         component: EventHandlers,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
+            
         },
     },
     {
@@ -17,7 +19,8 @@ export const routes = [
         name: 'scheduled-events',
         component: ScheduledEvents,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -25,7 +28,8 @@ export const routes = [
         name: 'compound-event-detectors',
         component: CompountEventDetectors,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -33,7 +37,8 @@ export const routes = [
         name: 'maitenance-events',
         component: MaintenanceEvents,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     

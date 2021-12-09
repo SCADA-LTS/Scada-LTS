@@ -15,19 +15,13 @@
 						<v-list-item-title>Alarms</v-list-item-title>
 					</template>
 
-					<v-list-item link href="#/alarms">
+					<v-list-item link href="#/alarms/scada">
 						<v-list-item-icon>
 							<v-icon>mdi-bell-ring</v-icon>
 						</v-list-item-icon>
 						<v-list-item-title>Active Alarms</v-list-item-title>
 					</v-list-item>
-					<v-list-item link href="#/historical-alarms">
-						<v-list-item-icon>
-							<v-icon>mdi-bell-outline</v-icon>
-						</v-list-item-icon>
-						<v-list-item-title>Historical Alarms</v-list-item-title>
-					</v-list-item>
-					<v-list-item link href="#/alarm-notifications">
+					<v-list-item link href="#/alarm-notifications" v-if="isUserRoleAdmin">
 						<v-list-item-icon>
 							<v-icon>mdi-bell-circle</v-icon>
 						</v-list-item-icon>
@@ -61,14 +55,21 @@
 					<v-list-item-title> Reports </v-list-item-title>
 				</v-list-item>
 
-				<v-list-group v-model="isOpenedDataSources" prepend-icon="mdi-database-settings">
+				<v-list-group v-model="isOpenedDataSources" prepend-icon="mdi-database-settings" v-if="isUserRoleAdmin">
 					<template v-slot:activator>
 						<v-list-item-title>Data Sources</v-list-item-title>
 					</template>
 
-					<v-list-item link href="#/datapoint-list" v-if="isUserRoleAdmin">
+					<v-list-item link href="#/datasources" v-if="isUserRoleAdmin">
 						<v-list-item-icon>
 							<v-icon>mdi-database</v-icon>
+						</v-list-item-icon>
+						<v-list-item-title>Data Sources</v-list-item-title>
+					</v-list-item>
+
+					<v-list-item link href="#/datapoint-list" v-if="isUserRoleAdmin">
+						<v-list-item-icon>
+							<v-icon>mdi-format-list-checkbox</v-icon>
 						</v-list-item-icon>
 						<v-list-item-title>{{
 							$t('datapointDetails.pointList.title')
@@ -96,7 +97,7 @@
 					</v-list-item>
 				</v-list-group>
 
-				<v-list-group v-model="isOpenedEvents" prepend-icon="mdi-cog">
+				<v-list-group v-model="isOpenedEvents" prepend-icon="mdi-cog" v-if="isUserRoleAdmin">
 					<template v-slot:activator>
 						<v-list-item-title>Events</v-list-item-title>
 					</template>
@@ -128,7 +129,7 @@
 					</v-list-item>
 				</v-list-group>
 
-				<v-list-group v-model="isOpenedUsers" prepend-icon="mdi-account-box-outline">
+				<v-list-group v-model="isOpenedUsers" prepend-icon="mdi-account-box-outline" v-if="isUserRoleAdmin">
 					<template v-slot:activator>
 						<v-list-item-title>Users</v-list-item-title>
 					</template>
@@ -160,7 +161,7 @@
 					</v-list-item>
 				</v-list-group>
 
-				<v-list-group v-model="isOpenedSystem" prepend-icon="mdi-monitor-dashboard">
+				<v-list-group v-model="isOpenedSystem" prepend-icon="mdi-monitor-dashboard" v-if="isUserRoleAdmin">
 					<template v-slot:activator>
 						<v-list-item-title>System</v-list-item-title>
 					</template>

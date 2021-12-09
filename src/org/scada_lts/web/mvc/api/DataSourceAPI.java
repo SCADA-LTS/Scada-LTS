@@ -17,28 +17,27 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.web.mvc.api.datasources.DataPointJson;
+import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
+import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Arkadiusz Parafiniuk arkadiusz.parafiniuk@gmail.com
@@ -50,6 +49,212 @@ public class DataSourceAPI {
 
 
     DataSourceService dataSourceService = new DataSourceService();
+
+    @GetMapping(value = "/api/datasources")
+    public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null && user.isAdmin()) {
+
+                //TODO: Ensure DataSource access privileges.
+                //@see DataSourceEditDwr.java
+                List<DataSourceJson> list;
+                List<DataSourceVO<?>> dataSources = dataSourceService.getDataSources();
+
+                list = dataSources.stream().map(DataSourceJson::new).collect(Collectors.toList());
+
+                return new ResponseEntity<>(list, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> getDataSource(
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String xid,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                DataSourceVO<?> ds;
+                if(id != null) {
+                    ds = dataSourceService.getDataSource(id);
+                } else if (xid != null) {
+                    ds = dataSourceService.getDataSource(xid);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                return new ResponseEntity<>(DataSourcePointJsonFactory.getDataSourceJson(ds), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/api/datasource/toggle")
+    public ResponseEntity<Map<String, Object>> toggleDataSource(
+            @RequestParam(required = false) Integer id,
+            @RequestParam(required = false) String xid,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                Map<String, Object> response = new HashMap<>();
+                if(id != null) {
+                    response.put("id", id);
+                    response.put("state", dataSourceService.toggleDataSource(id));
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/api/datasource/validate")
+    public ResponseEntity<Map<String, Object>> isDataPointXidUnique(
+            @RequestParam String xid,
+            @RequestParam Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("unique", dataSourceService.isXidUnique(xid, id));
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/api/datasource/datapoints/enable")
+    public ResponseEntity<List<DataPointJson>> enableAllPointsInDS(
+            @RequestParam Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if (id != null) {
+                    return new ResponseEntity<>(
+                            dataSourceService.enableAllDataPointsInDS(id)
+                                    .stream().map(DataPointJson::new)
+                                    .collect(Collectors.toList()),
+                            HttpStatus.OK);
+                } else {
+                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/api/datasource/generateUniqueXid")
+    public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return new ResponseEntity<>(dataSourceService.generateUniqueXid(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> createDataSource(
+            @RequestBody DataSourceJson dataSource,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+
+                if(dataSource != null) {
+                    DataSourceVO<?> vo = dataSource.createDataSourceVO();
+                    if(vo != null) {
+                        return new ResponseEntity<>(
+                                new DataSourceJson(dataSourceService.createDataSource(vo)),
+                                HttpStatus.CREATED);
+                    } else {
+                        LOG.error("DataSource JSON Type Not recoginized!");
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceJson> updateDataSource(
+            @RequestBody DataSourceJson dataSource,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+
+                if(dataSource != null) {
+                    DataSourceVO<?> vo = dataSource.createDataSourceVO();
+                    if(vo != null) {
+                        dataSourceService.updateAndInitializeDataSource(vo);
+                        return new ResponseEntity<>(HttpStatus.CREATED);
+                    } else {
+                        LOG.error("DataSource JSON Type Not recoginized!");
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/api/datasource")
+    public ResponseEntity<DataSourceVO<?>> deleteDataSource(
+            @RequestParam Integer id,
+            HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(id != null) {
+                    dataSourceService.deleteDataSource(id);
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping(value = "/api/datasource/getAll")
     public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
@@ -91,26 +296,26 @@ public class DataSourceAPI {
         }
     }
 
-    @GetMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
-            @RequestParam(required = false) String xid,
-            HttpServletRequest request) {
-        try {
-            User user = Common.getUser(request);
-            if(user != null) {
-                if (xid != null){
-                    DataSourceVO ds = dataSourceService.getDataSource(xid);
-                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
-                    return new ResponseEntity<>(json,HttpStatus.OK);
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @GetMapping(value = "/api/datasource")
+//    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
+//            @RequestParam(required = false) String xid,
+//            HttpServletRequest request) {
+//        try {
+//            User user = Common.getUser(request);
+//            if(user != null) {
+//                if (xid != null){
+//                    DataSourceVO ds = dataSourceService.getDataSource(xid);
+//                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
+//                    return new ResponseEntity<>(json,HttpStatus.OK);
+//                }
+//            } else {
+//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//            }
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     private class DataSourceSimpleJSON {
         private long id;

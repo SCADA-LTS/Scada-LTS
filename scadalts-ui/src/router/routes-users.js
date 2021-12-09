@@ -16,7 +16,8 @@ export const routes = [
         name: 'recipient-list',
         component: RecipientList,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -24,7 +25,8 @@ export const routes = [
         name: 'user-profiles',
         component: UserProfiles,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
 ];

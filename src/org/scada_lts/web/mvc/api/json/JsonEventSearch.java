@@ -4,6 +4,10 @@ import com.serotonin.mango.Common;
 
 public class JsonEventSearch {
 
+    private String startDate;
+    private String endDate;
+    private String startTime;
+    private String endTime;
     private int alarmLevel = Common.NEW_ID;
     private String keywords;
     private String status;
@@ -20,10 +24,12 @@ public class JsonEventSearch {
     private boolean hideMenu;
     private int userProfile;
 
-    public JsonEventSearch() {
-    }
-
-    public JsonEventSearch(int alarmLevel, String keywords, String status, int eventSourceType, String datapoint, int limit, int offset, String[] sortBy, boolean[] sortDesc, long lastLogin, int receiveAlarmEmails, boolean receiveOwnAuditEvents, String theme, boolean hideMenu, int userProfile) {
+    public JsonEventSearch() {}
+    public JsonEventSearch(String startDate, String endDate, String startTime, String endTime, int alarmLevel, String keywords, String status, int eventSourceType, String datapoint, int limit, int offset, String[] sortBy, boolean[] sortDesc, long lastLogin, int receiveAlarmEmails, boolean receiveOwnAuditEvents, String theme, boolean hideMenu, int userProfile) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.alarmLevel = alarmLevel;
         this.keywords = keywords;
         this.status = status;
@@ -33,12 +39,38 @@ public class JsonEventSearch {
         this.offset = offset;
         this.sortBy = sortBy;
         this.sortDesc = sortDesc;
-        this.lastLogin = lastLogin;
-        this.receiveAlarmEmails = receiveAlarmEmails;
-        this.receiveOwnAuditEvents = receiveOwnAuditEvents;
-        this.theme = theme;
-        this.hideMenu = hideMenu;
-        this.userProfile = userProfile;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     public int getAlarmLevel() {

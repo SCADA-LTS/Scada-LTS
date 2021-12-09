@@ -67,6 +67,12 @@ public class BinaryGraphicComponent extends ImageSetComponent {
 
     @Override
     public String getImage(PointValueTime pointValue) {
+        if(imageSet == null)
+            return "imageSetNotLoaded";
+
+        if(!imageSet.isAvailable())
+            return imageSet.getImageFilename(0);
+
         boolean bvalue = false;
         if (pointValue != null && pointValue.getValue() instanceof BinaryValue)
             bvalue = pointValue.getBooleanValue();
@@ -82,7 +88,7 @@ public class BinaryGraphicComponent extends ImageSetComponent {
         if (oneImage < 0)
             response.addMessage("oneImageIndex", new LocalizableMessage("validate.cannotBeNegative"));
 
-        if (imageSet != null) {
+        if (imageSet != null && imageSet.isAvailable()) {
             if (zeroImage >= imageSet.getImageCount())
                 response.addMessage("zeroImageIndex", new LocalizableMessage("emport.error.component.imageIndex",
                         zeroImage, imageSet.getId(), imageSet.getImageCount() - 1));

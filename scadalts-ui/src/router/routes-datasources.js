@@ -1,3 +1,4 @@
+import DataSources from '../views/DataObjects/DataSources';
 import DataPointList from '../views/DataObjects/DataPointDetails/DataPointList';
 import DataPointDetails from '../views/DataObjects/DataPointDetails';
 import PointHierarchy from '../views/DataObjects/PointHierarchy'
@@ -6,11 +7,20 @@ import Scripting from '../views/DataObjects/Scripting'
 
 export const routes = [
     {
+        path: '/datasources',
+        name: 'datasources',
+        component: DataSources,
+        meta: {
+            requiresAuth: true
+        },
+    },
+    {
         path: '/datapoint-list',
         name: 'datapoint-list',
         component: DataPointList,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -18,7 +28,8 @@ export const routes = [
         name: 'datapoint-details',
         component: DataPointDetails,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -26,7 +37,8 @@ export const routes = [
         name: 'point-hierarchy',
         component: PointHierarchy,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -34,7 +46,8 @@ export const routes = [
         name: 'point-links',
         component: PointLinks,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
     {
@@ -42,7 +55,8 @@ export const routes = [
         name: 'scripts',
         component: Scripting,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            requiresAdmin: true
         },
     },
 ];
