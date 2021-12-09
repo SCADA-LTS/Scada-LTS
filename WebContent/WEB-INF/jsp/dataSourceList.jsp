@@ -200,5 +200,6 @@
         </table>  
       </td>
     </tr>
+    <tag:newPageNotification href="./app.shtm#/datasources" ref="datasourcesNotification"/>
   </table>
 </tag:page>

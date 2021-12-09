@@ -102,6 +102,10 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
+		getUniqueDataPointXid({dispatch}) {
+			return dispatch("requestGet", "/datapoint/generateUniqueXid");
+		},
+
 		getDataPointDetails({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},
@@ -177,7 +181,7 @@ const storeDataPoint = {
 		addUserComment({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/userComment/${payload.typeId}/${payload.refId}`,
-				data: payload.comment,
+				data: { commentText: payload.comment.comment },
 			});
 		},
 
@@ -191,10 +195,10 @@ const storeDataPoint = {
 		fetchDataPointsFromDataSource({ dispatch }, dataSourceId) {
 			return dispatch('requestGet', `/datapoints/datasource?id=${dataSourceId}`);
 		},
-		
+
 		getDatasourceByXid({ dispatch }, xid) {
 			return dispatch('requestGet', `/datasource?xid=${xid}`);
-		}
+		},
 	},
 
 	getters: {},

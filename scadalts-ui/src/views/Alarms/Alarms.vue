@@ -1,7 +1,5 @@
 <template>
 	<div class="alarms">
-		<!--        <p>{{$route.name}}</p>-->
-
 		<AlarmsComponent></AlarmsComponent>
 	</div>
 </template>
@@ -9,6 +7,7 @@
 <script>
 import Components from '@min-gb/vuejs-components';
 import AlarmsComponent from '../../components/graphical_views/AlarmsComponent';
+import EventList from '../views/EventList.vue';
 
 export default {
 	el: '#alarms',
@@ -17,7 +16,15 @@ export default {
 		AlarmsComponent,
 		...Components,
 	},
-	methods: {},
+	mounted() {
+		this.tab = 1
+	},
+	data () {
+      return {
+      }
+    },
+	methods: {
+	},
 };
 </script>
 

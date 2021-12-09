@@ -19,6 +19,7 @@ import VueLodash from 'vue-lodash';
 
 import LineChartComponent from './components/amcharts/LineChartComponent';
 import RangeChartComponent from './components/amcharts/RangeChartComponent';
+import TableComponent from './components/graphical_views/pointTables/SimplePointTable.vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -262,6 +263,31 @@ for (let x = 0; x < 10; x++) {
 					},
 				}),
 		}).$mount(`#${chartId}`);
+	}
+}
+
+for (let x = 0; x < 10; x++) {
+	const baseId = `simple-table-${x}`;
+	const el = window.document.getElementById(baseId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			vuetify,
+			render: (h) =>
+				h(TableComponent, {
+					props: {
+						pointIds: el.getAttribute('point-ids'),
+						startDate: el.getAttribute('start-date'),
+						showTotal: el.getAttribute('total') !== null,
+						showAverage: el.getAttribute('average') !== null,
+						showMax: el.getAttribute('max') !== null,
+						showMin: el.getAttribute('min') !== null,
+						roundValue: Number(el.getAttribute('round')),
+						maxWidth: el.getAttribute('width' !== null ? Number(el.getAttribute('width')) : 600 ),
+						maxHeight: el.getAttribute('height' !== null ? Number(el.getAttribute('height')) : 400 ),
+					},
+				}),
+		}).$mount(`#${baseId}`);
 	}
 }
 
