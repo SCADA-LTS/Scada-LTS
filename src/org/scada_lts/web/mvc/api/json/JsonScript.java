@@ -1,32 +1,21 @@
 package org.scada_lts.web.mvc.api.json;
 
-import com.serotonin.db.IntValuePair;
-
 import java.util.List;
-import java.util.Map;
 
 public class JsonScript {
 
-    private int id;
-    private int userId;
+    private Integer id;
+    private Integer userId;
     private String xid;
     private String name;
     private String script;
-    private List<Map<String, String>> pointsOnContext;
+    private List<ScriptPoint> pointsOnContext;
     private String datapointContext;
     private String datasourceContext;
 
     public JsonScript() {}
 
-    public JsonScript(int id, int userId, String xid, String name, String script) {
-        this.id = id;
-        this.userId = userId;
-        this.xid = xid;
-        this.name = name;
-        this.script = script;
-    }
-
-    public JsonScript(int id, int userId, String xid, String name, String script, List<Map<String, String>> pointsOnContext, String datapointContext, String datasourceContext) {
+    public JsonScript(Integer id, Integer userId, String xid, String name, String script, List<ScriptPoint> pointsOnContext, String datapointContext, String datasourceContext) {
         this.id = id;
         this.userId = userId;
         this.xid = xid;
@@ -37,19 +26,19 @@ public class JsonScript {
         this.datasourceContext = datasourceContext;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -77,6 +66,14 @@ public class JsonScript {
         this.script = script;
     }
 
+    public List<ScriptPoint> getPointsOnContext() {
+        return pointsOnContext;
+    }
+
+    public void setPointsOnContext(List<ScriptPoint> pointsOnContext) {
+        this.pointsOnContext = pointsOnContext;
+    }
+
     public String getDatapointContext() {
         return datapointContext;
     }
@@ -91,13 +88,5 @@ public class JsonScript {
 
     public void setDatasourceContext(String datasourceContext) {
         this.datasourceContext = datasourceContext;
-    }
-
-    public List<Map<String, String>> getPointsOnContext() {
-        return pointsOnContext;
-    }
-
-    public void setPointsOnContext(List<Map<String, String>> pointsOnContext) {
-        this.pointsOnContext = pointsOnContext;
     }
 }
