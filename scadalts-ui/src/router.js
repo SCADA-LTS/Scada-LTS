@@ -15,6 +15,7 @@ import DataPointList from './views/DataPointDetails/DataPointList';
 import DataPointDetails from './views/DataPointDetails';
 import SynopticPanelMenu from './views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from './views/SynopticPanel/SynopticPanelItem';
+import DataSources from './views/DataSources';
 import WatchList from './views/WatchList';
 import WatchListItem from './views/WatchList/WatchListItem';
 import HistoricalAlarmsComponent from './views/components/HistoricalAlarmsComponent';
@@ -131,6 +132,14 @@ const routing = new Router({
 			path: '/datapoint-details/:id',
 			name: 'datapoint-details',
 			component: DataPointDetails,
+			meta: {
+				requiresAuth: true
+			},
+		},
+		{
+			path: '/datasources',
+			name: 'datasources',
+			component: DataSources,
 			meta: {
 				requiresAuth: true
 			},

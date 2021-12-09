@@ -20,6 +20,7 @@ const storeMailingList = {
 		getUniqueMailingListXid({ dispatch }) {
 			return dispatch('requestGet', '/mailingList/generateUniqueXid');
 		},
+		
 
 		deleteMailingList({ dispatch }, mailingListId) {
 			return dispatch('requestDelete', `/mailingList/${mailingListId}`);
