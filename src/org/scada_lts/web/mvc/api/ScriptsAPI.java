@@ -115,6 +115,23 @@ public class ScriptsAPI {
         }
     }
 
+    @PutMapping(value = "/update")
+    public ResponseEntity<String> updateScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+        LOG.info("PUT::/api/scripts/update");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                ContextualizedScriptVO vo = createScriptFromBody(jsonBodyRequest, user);
+                scriptService.saveScript(vo);
+                return new ResponseEntity<>("Script updated", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private ContextualizedScriptVO createScriptFromBody(JsonScript jsonBodyRequest, User user) {
         ContextualizedScriptVO vo = new ContextualizedScriptVO();
         vo.setId(jsonBodyRequest.getId());
