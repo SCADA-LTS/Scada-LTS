@@ -272,8 +272,12 @@ export default {
 	},
 
 	mounted() {
-		this.fetchGraphicalView(this.$route.params.id);
-		this.getImageSets();
+		try {
+			this.fetchGraphicalView(this.$route.params.id);
+			this.getImageSets();
+		} catch(e) {
+			console.error('Failed to load graphical view');
+		}
 	},
 
 	computed: {
