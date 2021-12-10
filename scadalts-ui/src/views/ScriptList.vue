@@ -8,6 +8,7 @@
 					
 					<v-text-field
 						v-model="search"
+						@input="fetchScriptList"
 						append-icon="mdi-magnify"
 						label="Search"
 						class="mr-2"
@@ -74,7 +75,6 @@
 					</v-row>
 				</v-card-title>
 				<v-card-text>
-					{{scriptForm}}
 					<form>
 					<v-row>
 						<v-col cols="6">
@@ -187,12 +187,12 @@ export default {
 			this.searchFilters.sortDesc = data.sortDesc;
 			this.fetchScriptList()	
       	},
-		search() {
-			this.filterScriptsBySearch()
-		},
-		scriptList() {
-			this.filterScriptsBySearch()
-		}
+		// search() {
+		// 	this.filterScriptsBySearch()
+		// },
+		// scriptList() {
+		// 	this.filterScriptsBySearch()
+		// }
     },
 	data() {
 		return {
@@ -284,15 +284,14 @@ export default {
 
 			this.dialog = true
 		},
-		filterScriptsBySearch() {
-			if (!this.search) {
-				this.scriptListFiltered = this.scriptList
-			}
-			else {
-			const keywords = this.search.split(' ')
-			this.scriptListFiltered = this.scriptList.filter(x => `${x.id} ${x.xid} ${x.name} ${x.script}`.toLowerCase().includes(keywords[0].toLowerCase()))
-			}
-		},
+		// filterScriptsBySearch() {
+		// 	if (!this.search) {
+		// 		this.scriptListFiltered = this.scriptList
+		// 	} else {
+		// 		const keywords = this.search.split(' ')
+		// 		this.scriptListFiltered = this.scriptList.filter(x => `${x.id} ${x.xid} ${x.name} ${x.script}`.toLowerCase().includes(keywords[0].toLowerCase()))
+		// 	}
+		// },
 		removeDatapoint(key) {
 			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext
 				.filter(p => p.key != key)
@@ -344,6 +343,12 @@ export default {
 		async fetchScriptList() {
 			this.loading = true;
 			this.scriptList = await this.$store.dispatch('searchScripts', this.searchFilters);
+			if (!this.search) {
+				this.scriptListFiltered = this.scriptList
+			} else {
+				const keywords = this.search.split(' ')
+				this.scriptListFiltered = this.scriptList.filter(x => `${x.id} ${x.xid} ${x.name} ${x.script}`.toLowerCase().includes(keywords[0].toLowerCase()))
+			}
 			this.totalScripts = this.scriptList.total;
 		},
 		runScript(xid) {
@@ -359,6 +364,7 @@ export default {
 		async deleteScript(id) {
 			this.scriptList = await this.$store.dispatch('deleteScript', id);
 			this.fetchScriptList()
+			this.dialog = false
 		}
 	},
 };
