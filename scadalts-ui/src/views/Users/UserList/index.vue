@@ -108,7 +108,7 @@
 
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="dialogDeletionVisible"
+			ref="deletionDialog"
 			@result="onDeleteDialogClose"
 			:title="$t('userDetails.dialog.delete.title')"
 			:message="$t('userDetails.dialog.delete.text')"
@@ -153,7 +153,6 @@ export default {
 			selectedUser: null,
 			createdUser: null,
 			userPassword: '',
-			dialogDeletionVisible: false,
 			dialogCreationVisible: false,
 			operationQueue: null,
 			retriesCounter: 0,
@@ -216,11 +215,10 @@ export default {
 
 		openDeletionDialog(itemId) {
 			this.operationQueue = itemId;
-			this.dialogDeletionVisible = true;
+			this.$refs.deletionDialog.showDialog();
 		},
 
 		onDeleteDialogClose(result) {
-			this.dialogDeletionVisible = false;
 			if (result) {
 				this.deleteUser(this.operationQueue);
 			}
