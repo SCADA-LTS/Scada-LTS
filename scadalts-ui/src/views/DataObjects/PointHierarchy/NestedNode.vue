@@ -59,7 +59,7 @@
 
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="deleteDialogVisible"
+			ref="deletionDialog"
 			:title="$t('pointHierarchy.dialog.deleteNode.title')"
 			:message="$t('pointHierarchy.dialog.deleteNode.message')"
 			@result="onNodeDeleted"
@@ -150,7 +150,7 @@ export default {
 		},
 
 		del(el) {
-			this.deleteDialogVisible = true;
+			this.$refs.deletionDialog.showDialog();
 			this.opQueue = el;
 		},
 
