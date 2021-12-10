@@ -339,6 +339,8 @@ export default {
 		},
 		runScript(xid) {
 			this.$store.dispatch('runScript', xid);
+			this.snackbar = true
+			this.snackbarMessage = `${this.$t('scriptList.scriptExecuted')} `
 		},
 		saveScript() {
 			if (this.selectedScriptId != -1) {
