@@ -75,36 +75,30 @@
 							<v-text-field label="name" v-model="scriptForm.name"></v-text-field>
 						</v-col>
 						<v-col cols="6">
-							<v-btn :disabled="selectedDatapointId==null" @click="addDatapoint()" class="mr-2" color="red">
-								<v-icon>mdi-plus</v-icon>
-								{{$t('scriptList.addDatapoint')}}
-							</v-btn>
+	
 							<v-select 
 							item-value="id"
 							placeholder="select datapoint"
 							item-text="name"
 							v-model="selectedDatapointId"
+							@change="addDatapoint"
 							:items="filteredDatapoints"></v-select>
 						</v-col>
 						<v-col cols="6">
-							<table class='datapoints'>
-								<thead>
-									<tr>
-										<th>{{$t('scriptList.pointName')}}</th>
-										<th>{{$t('scriptList.var')}}</th>
-										<th>{{$t('scriptList.actions')}}</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="p in scriptForm.pointsOnContext" style="list-style: none;">
-										<td>{{p.dataPointXid}}</td>
-										<td> <v-text-field v-model="p.varName"/> </td>
-										<td> 
-											<v-icon color="red" style="cursor:pointer" @click="removeDatapoint(p.key)">mdi-close</v-icon>
-										</td>
-									</tr>
-								</tbody>
+							<table style="width:100%">
+								<tr v-for="p in scriptForm.pointsOnContext">
+									<td style="width:20%">{{p.dataPointXid}}</td>
+									<td style="width:70%">
+										<v-text-field style="width:100%;" v-model="p.varName"/>
+									</td>
+									<td style="width:10%">
+										<v-icon color="red" style="cursor:pointer; border:0" @click="removeDatapoint(p.dataPointXid)">mdi-close</v-icon>
+									</td>	
+								</tr>
 							</table>
+							
+									
+								
 						</v-col>
 					</v-row>
 					<v-row>
@@ -170,6 +164,7 @@
 </style>
 
 <script>
+import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
 export default {
 	name: 'scriptList',
 	components: {},
@@ -255,9 +250,10 @@ export default {
 	},
 	computed: {
 		filteredDatapoints() {
+			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
 			return this.datapoints
-			.filter(x => this.scriptForm.pointsOnContext
-				.filter(y => y.key === x.id)
+			.filter(dp => this.scriptForm.pointsOnContext
+				.filter(sp => dp.xid === sp.dataPointXid)
 			.length === 0)
 		},
 	},
@@ -278,9 +274,9 @@ export default {
 
 			this.dialog = true
 		},
-		removeDatapoint(key) {
+		removeDatapoint(dataPointXid) {
 			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext
-				.filter(p => p.key != key)
+				.filter(p => p.dataPointXid != dataPointXid)
 		},
 		selectScript(id) {
 			this.selectedScriptId = id
@@ -322,9 +318,11 @@ export default {
 		},
 		addDatapoint() {
 			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
-			this.scriptForm.pointsOnContext
-				.push({dataPointXid: p.xid, varName: `p${p.id}`})
-			this.selectedDatapointId = null
+			if (!this.scriptForm.pointsOnContext.find(x => p.xid === x.dataPointXid)) {
+				this.scriptForm.pointsOnContext
+					.push({dataPointXid: p.xid, varName: `p${p.id}`})
+				this.selectedDatapointId = null
+			}
 		},
 		async fetchScriptList() {
 			this.loading = true;
