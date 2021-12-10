@@ -15,17 +15,15 @@
 						single-line
 						hide-details
 					></v-text-field>
-
 					<v-btn
 						color="primary"
 						@click="createNewScript"
-					>New Script</v-btn>
+					>{{$t('scriptList.newScript')}}</v-btn>
 				</v-card-title>
 				<v-data-table
 					:headers="headers"
 					:items="scriptListFiltered"
 					:options.sync="options"
-					:loading="loading"
 					:server-items-length="totalScripts"
 					multi-sort
 					class="elevation-1"
@@ -43,24 +41,17 @@
 			</v-card>
 		</v-container>
 
-
-
-
-
-
 		<v-row justify="center">
 			<v-dialog
 			v-model="dialog"
 			v-show="selectedScriptId !== null"
-			@change="selectedScriptId = null"
-			
-			>
-			
+			@change="selectedScriptId = null"			
+			>	
 			<v-card>
 				<v-card-title>
 					<v-row>
 						<v-col v-if="selectedScriptId != -1" cols="6">Script #{{selectedScriptId}}</v-col>
-						<v-col v-else cols="6">New script </v-col>
+						<v-col v-else cols="6">{{$t('scriptList.newScript')}}</v-col>
 						<v-col cols="12">
 							<v-btn v-if="selectedScriptId" class="mr-2" color="blue" @click="runScript(selectedScript.xid)" >
 								<v-icon>mdi-cog</v-icon>
@@ -95,14 +86,13 @@
 							v-model="selectedDatapointId"
 							:items="filteredDatapoints"></v-select>
 						</v-col>
-						
 						<v-col cols="6">
 							<table class='datapoints'>
 								<thead>
 									<tr>
-										<th>Point name</th>
-										<th>Var</th>
-										<th>Actions</th>
+										<th>{{$t('scriptList.pointName')}}</th>
+										<th>{{$t('scriptList.var')}}</th>
+										<th>{{$t('scriptList.actions')}}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -128,9 +118,6 @@
 					<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" :value="scriptForm.script"></v-textarea>
 				</form>
 				</v-card-text>
-		
-
-			
 				<v-card-actions>
 				<v-spacer></v-spacer>
 				<v-btn
@@ -148,9 +135,20 @@
 			</v-card>
 			</v-dialog>
 		</v-row> 
-		
-		
-					
+
+		<div class="text-center ma-2">
+			<v-snackbar v-model="snackbar">
+			{{snackbarMessage}}
+			<template v-slot:action="{ attrs }">
+				<v-btn
+				color="pink"
+				text
+				v-bind="attrs"
+				@click="snackbar = false"
+				>{{$t('common.close')}}</v-btn>
+			</template>
+			</v-snackbar>
+		</div>				
 	</div>
 	
 </template>
@@ -187,15 +185,11 @@ export default {
 			this.searchFilters.sortDesc = data.sortDesc;
 			this.fetchScriptList()	
       	},
-		// search() {
-		// 	this.filterScriptsBySearch()
-		// },
-		// scriptList() {
-		// 	this.filterScriptsBySearch()
-		// }
     },
 	data() {
 		return {
+			snackbarMessage: '',
+			snackbar: false,
 			dialog: false,
 			search: '',
 			scriptListFiltered: [],
@@ -284,14 +278,6 @@ export default {
 
 			this.dialog = true
 		},
-		// filterScriptsBySearch() {
-		// 	if (!this.search) {
-		// 		this.scriptListFiltered = this.scriptList
-		// 	} else {
-		// 		const keywords = this.search.split(' ')
-		// 		this.scriptListFiltered = this.scriptList.filter(x => `${x.id} ${x.xid} ${x.name} ${x.script}`.toLowerCase().includes(keywords[0].toLowerCase()))
-		// 	}
-		// },
 		removeDatapoint(key) {
 			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext
 				.filter(p => p.key != key)
@@ -365,6 +351,8 @@ export default {
 			this.scriptList = await this.$store.dispatch('deleteScript', id);
 			this.fetchScriptList()
 			this.dialog = false
+			this.snackbar = true
+			this.snackbarMessage = `${this.$t('scriptList.deletedScript')} #${id}`
 		}
 	},
 };
