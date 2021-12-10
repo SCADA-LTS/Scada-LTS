@@ -7,32 +7,40 @@
 
     <http use-expressions="true">
         <headers>
-            <cache-control />
+            <cache-control/>
             <content-type-options disabled="true"/>
-            <hsts />
-            <frame-options />
-            <xss-protection />
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
         </headers>
-        <intercept-url pattern="/login.htm" access="isAnonymous()" />
-        <intercept-url pattern="/login" access="isAnonymous()" />
+
+        <!-- Login Form -->
         <intercept-url pattern="/login.htm" access="permitAll" />
-        <intercept-url pattern="/login" access="permitAll" />
-        <intercept-url pattern="/api/auth/**" access="isAnonymous()" />
+
+        <!-- REST API -->
         <intercept-url pattern="/api/auth/**" access="permitAll" />
-        <intercept-url pattern="/resources/**" access="isAuthenticated()" />
-        <intercept-url pattern="/resources/**" access="permitAll" />
-        <intercept-url pattern="/dwr/call/**" access="isAuthenticated()" />
-        <intercept-url pattern="/dwr/**" access="isAnonymous()" />
+        <intercept-url pattern="/api/**" access="isAuthenticated()" />
+
+        <!-- DWR -->
+        <intercept-url pattern="/dwr/*.js" access="permitAll" />
+        <intercept-url pattern="/dwr/interface/*.js" access="permitAll" />
         <intercept-url pattern="/dwr/**" access="permitAll" />
+
+        <!-- Static resources -->
+        <intercept-url pattern="/graphics/**" access="permitAll" />
         <intercept-url pattern="/images/**" access="permitAll" />
+        <intercept-url pattern="/img/**" access="permitAll" />
         <intercept-url pattern="/assets/**" access="permitAll" />
         <intercept-url pattern="/js/**" access="permitAll" />
         <intercept-url pattern="/css/**" access="permitAll" />
+        <intercept-url pattern="/resources/**" access="permitAll" />
         <intercept-url pattern="/static/**" access="permitAll" />
+        <intercept-url pattern="/audio/**" access="permitAll" />
 
+        <!-- Anonymous -->
+        <intercept-url pattern="/public_view.htm" access="isAnonymous()" />
 
         <intercept-url pattern="/**" access="isAuthenticated()" />
-
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
@@ -40,6 +48,11 @@
         <csrf disabled="true"/>
     </http>
     <http-firewall ref="defaultHttpFirewall"/>
+
+    <!-- Websocket -->
+    <!--websocket-message-broker>
+        <intercept-message pattern="/**" access="isAuthenticated()"/>
+    </websocket-message-broker-->
 
     <authentication-manager id="authenticationManager">
         <authentication-provider>
