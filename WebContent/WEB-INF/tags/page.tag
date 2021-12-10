@@ -86,8 +86,10 @@
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
-  <script src="resources/node_modules/stompjs/lib/stomp.js"></script>
-  <script src="resources/sockjs-0.3.4.js"></script>
+  <c:if test="${!empty sessionUser}">
+      <script src="resources/node_modules/stompjs/lib/stomp.js"></script>
+      <script src="resources/sockjs-0.3.4.js"></script>
+  </c:if>
   <c:forEach items="${dwr}" var="dwrname">
     <script type="text/javascript" src="dwr/interface/${dwrname}.js"></script></c:forEach>
   <c:forTokens items="${js}" var="jsname" delims=", ">
@@ -143,96 +145,98 @@
         }
       }
 
-    var errorCallback = function(error) {
-        alert("Connect error:" + error);
-    }
-
-    var stompClient = null;
-
-    var connectCallback = function(frame) {
-        console.log('Connected: ' + frame);
-
-        stompClient.subscribe("/app/alarmLevel/register", function(message) {
-            //console.log("message[/app/alarmLevel/register]:" + message.body);
-            stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
-                var response = JSON.parse(message.body);
-                var alarmLevel = parseInt(response.alarmlevel);
-                //console.log("response.alarmLevel: "+response.alarmlevel);
-                if (alarmLevel > 0) {
-                    document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
-                    setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
-                    setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
-                    document.getElementById("__header__alarmLevelDiv").style.visibility='visible';
-                    document.getElementById("__header__alarmLevelImg").style.visibility='visible';
-                }
-                else {
-                    document.getElementById("__header__alarmLevelText").innerHTML = "";
-                    document.getElementById("__header__alarmLevelImg").style.visibility='hidden';
-                    document.getElementById("__header__alarmLevelDiv").style.visibility='hidden';
-                }
-            })
-            stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
-        } );
-        stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
-    };
-
-    function connect(url, headers, errorCallback, connectCallback) {
-        var socket = new SockJS(url);
-        var stompClient = Stomp.over(socket);
-        stompClient.heartbeat.outgoing = 20000;
-        stompClient.heartbeat.incoming = 0;
-        stompClient.debug = null;
-        stompClient.connect(headers, connectCallback, errorCallback);
-        return stompClient;
-    }
-
-    function disconnect() {
-        if(stompClient != null) {
-        	console.log("Disconnecting...");
-            stompClient.disconnect(function() {
-            	console.log("Disconnected");
-            	stompClient = null;
-            });
+    <c:if test="${!empty sessionUser}">
+        var errorCallback = function(error) {
+            alert("Connect error:" + error);
         }
-    }
 
-    function onloadHandler() {
-       var location = window.location;
-       var appName = location.pathname.split("/")[1];
-       var myLocation = location.origin + "/" + appName+ "/";
-       stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
-    }
+        var stompClient = null;
 
-    function setAlarmLevelText(alarmLevel, textNode) {
-        textNode = document.getElementById(textNode);
-        if (alarmLevel == 0)
-            textNode.innerHTML = "";
-        else if (alarmLevel == 1)
-            textNode.innerHTML = "Info";
-        else if (alarmLevel == 2)
-            textNode.innerHTML = "Urgent";
-        else if (alarmLevel == 3)
-            textNode.innerHTML = "Critical";
-        else if (alarmLevel == 4)
-            textNode.innerHTML = "Life Safety";
-        else
-            textNode.innerHTML = "Unknown: "+ alarmLevel;
-    }
+        var connectCallback = function(frame) {
+            //console.log('Connected: ' + frame);
 
-    function setAlarmLevelImg(alarmLevel, imgNode) {
-        if (alarmLevel == 0)
-            updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
-        else if (alarmLevel == 1)
-            updateImg(imgNode, "images/flag_blue.png", "undef", true, "visisble");
-        else if (alarmLevel == 2)
-            updateImg(imgNode, "images/flag_yellow.png", "undef", true, "visisble");
-        else if (alarmLevel == 3)
-            updateImg(imgNode, "images/flag_orange.png", "undef", true, "visisble");
-        else if (alarmLevel == 4)
-            updateImg(imgNode, "images/flag_red.png", "undef", true, "visisble");
-        else
-            updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
-    }
+            stompClient.subscribe("/app/alarmLevel/register", function(message) {
+                //console.log("message[/app/alarmLevel/register]:" + message.body);
+                stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
+                    var response = JSON.parse(message.body);
+                    var alarmLevel = parseInt(response.alarmlevel);
+                    //console.log("response.alarmLevel: "+response.alarmlevel);
+                    if (alarmLevel > 0) {
+                        document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
+                        setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
+                        setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
+                        document.getElementById("__header__alarmLevelDiv").style.visibility='visible';
+                        document.getElementById("__header__alarmLevelImg").style.visibility='visible';
+                    }
+                    else {
+                        document.getElementById("__header__alarmLevelText").innerHTML = "";
+                        document.getElementById("__header__alarmLevelImg").style.visibility='hidden';
+                        document.getElementById("__header__alarmLevelDiv").style.visibility='hidden';
+                    }
+                })
+                stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
+            } );
+            stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
+        };
+
+        function connect(url, headers, errorCallback, connectCallback) {
+            var socket = new SockJS(url);
+            var stompClient = Stomp.over(socket);
+            stompClient.heartbeat.outgoing = 20000;
+            stompClient.heartbeat.incoming = 0;
+            stompClient.debug = null;
+            stompClient.connect(headers, connectCallback, errorCallback);
+            return stompClient;
+        }
+
+        function disconnect() {
+            if(stompClient != null) {
+                console.log("Disconnecting...");
+                stompClient.disconnect(function() {
+                    console.log("Disconnected");
+                    stompClient = null;
+                });
+            }
+        }
+
+        function onloadHandler() {
+           var location = window.location;
+           var appName = location.pathname.split("/")[1];
+           var myLocation = location.origin + "/" + appName+ "/";
+           stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
+        }
+
+        function setAlarmLevelText(alarmLevel, textNode) {
+            textNode = document.getElementById(textNode);
+            if (alarmLevel == 0)
+                textNode.innerHTML = "";
+            else if (alarmLevel == 1)
+                textNode.innerHTML = "Info";
+            else if (alarmLevel == 2)
+                textNode.innerHTML = "Urgent";
+            else if (alarmLevel == 3)
+                textNode.innerHTML = "Critical";
+            else if (alarmLevel == 4)
+                textNode.innerHTML = "Life Safety";
+            else
+                textNode.innerHTML = "Unknown: "+ alarmLevel;
+        }
+
+        function setAlarmLevelImg(alarmLevel, imgNode) {
+            if (alarmLevel == 0)
+                updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
+            else if (alarmLevel == 1)
+                updateImg(imgNode, "images/flag_blue.png", "undef", true, "visisble");
+            else if (alarmLevel == 2)
+                updateImg(imgNode, "images/flag_yellow.png", "undef", true, "visisble");
+            else if (alarmLevel == 3)
+                updateImg(imgNode, "images/flag_orange.png", "undef", true, "visisble");
+            else if (alarmLevel == 4)
+                updateImg(imgNode, "images/flag_red.png", "undef", true, "visisble");
+            else
+                updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
+        }
+    </c:if>
     </script>
   </c:if>
 </head>
