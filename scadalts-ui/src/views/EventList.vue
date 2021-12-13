@@ -19,7 +19,7 @@
 						<v-col cols="6">Event #{{selectedEvent.id}}</v-col>
 						<v-col cols="6" class="text-right">
 							<img 
-							:src="(!!selectedEvent.rtnTs ? alarmFlags : alarmFlagsOff)[selectedEvent.alarmLevel].image">
+							:src="getFlagByEvent(selectedEvent)">
 						</v-col>
 						<v-col cols="12">
 							<v-btn class="mr-2" @click="acknowledgeEventSelected" color="blue">
@@ -320,7 +320,7 @@
 						</v-icon>
 					</template>
 					<template v-slot:item.alarmLevel="{ item }">
-						<img :src="(!!item.rtnTs ? alarmFlags : alarmFlagsOff)[item.alarmLevel].image">
+						<img :src="getFlagByEvent(item)">
 					</template>
 					<template v-slot:item.typeId="{ item }">
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
@@ -602,6 +602,9 @@ export default {
 	},
 	
 	methods: {
+		getFlagByEvent(event) {
+			return ((event.rtnApplicable && !!event.rtnTs) ? this.alarmFlags : this.alarmFlagsOff)[event.alarmLevel].image
+		},
 		eventMessageI18n(eventMessage) {
 			const [key, ...args ]= eventMessage.split('|')
 			return this.$t(key, args)
