@@ -48,7 +48,7 @@
 						<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
 						<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
 					</v-col>
-					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{$t(`${selectedEvent.message.split('|')[0]}`, selectedEvent.message.split('|'))}}</v-col>
+					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{ eventMessageI18n(selectedEvent.message)}}</v-col>
 					<v-col v-if="selectedEvent.eventSourceType===1" cols="3"><b>{{$t('eventList.datapoint')}}</b>: {{selectedEvent.datapoint}}</v-col>
 				</v-row>
 				<v-divider></v-divider>
@@ -326,7 +326,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{$t(`${item.message.split('|')[0]}`, item.message.split('|')) | truncate}}
+						{{eventMessageI18n(item.message)}}
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -602,6 +602,10 @@ export default {
 	},
 	
 	methods: {
+		eventMessageI18n(eventMessage) {
+			const [key, ...args ]= eventMessage.split('|')
+			return this.$t(key, args)
+		},
 		getAlarms() {
 			store.dispatch('getLiveAlarms', { offset: 0, limit: 1 }).then((ret) => {
 				if (ret.length) this.newAlarms = true
