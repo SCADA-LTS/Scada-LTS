@@ -13,6 +13,7 @@
             <frame-options policy="SAMEORIGIN"/>
             <xss-protection/>
         </headers>
+        <csrf disabled="true"/>
 
         <!-- Login Form -->
         <intercept-url pattern="/login.htm" access="permitAll" />
@@ -38,14 +39,15 @@
         <intercept-url pattern="/audio/**" access="permitAll" />
 
         <!-- Anonymous -->
-        <intercept-url pattern="/public_view.htm" access="isAnonymous()" />
+        <intercept-url pattern="/public_view.htm" access="permitAll" />
 
         <intercept-url pattern="/**" access="isAuthenticated()" />
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
                     password-parameter="password" username-parameter="username"/>
-        <csrf disabled="true"/>
+
+        <logout logout-url="/logout.htm" invalidate-session="true" />
     </http>
     <http-firewall ref="defaultHttpFirewall"/>
 

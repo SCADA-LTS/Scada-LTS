@@ -137,11 +137,6 @@
     <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
     <async-supported>true</async-supported>
   </filter>
-  <filter>
-    <filter-name>authenticationWebSocketFilter</filter-name>
-    <filter-class>org.scada_lts.web.ws.auth.AuthenticationWebSocketFilter</filter-class>
-    <async-supported>true</async-supported>
-  </filter>
 
   <!-- Spring Security -->
   <filter>
@@ -225,10 +220,6 @@
     <filter-name>monitoring</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <!--filter-mapping>
-    <filter-name>authenticationWebSocketFilter</filter-name>
-    <url-pattern>/ws-scada/*</url-pattern>
-  </filter-mapping-->
 
   <servlet>
     <servlet-name>springDispatcher</servlet-name>
