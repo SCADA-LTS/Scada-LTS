@@ -85,8 +85,8 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
         User user = Common.getUser(request);
+        Permissions.ensureAdmin(user);
         dataPointDao = new DataPointDao();
         int id;
         String idStr = request.getParameter("dpid");
