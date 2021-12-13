@@ -759,7 +759,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		List<String> filterCondtions = new ArrayList<String>();
 		if (!user.isAdmin()) {
-			filterCondtions.add("u.id=?");
+			filterCondtions.add("ue.userId=?");;
 			params.add(user.getId());
 		}
 
