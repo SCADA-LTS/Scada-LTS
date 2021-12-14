@@ -59,6 +59,14 @@
 						{{ $t('userList.title') }}
 					</v-list-item-title>
 				</v-list-item>
+				<v-list-item link href="#/reports">
+					<v-list-item-icon>
+						<v-icon>mdi-book-multiple</v-icon>
+					</v-list-item-icon>
+					<v-list-item-title>
+						{{ $t('reports.title') }}
+					</v-list-item-title>
+				</v-list-item>
 				<v-list-item link href="#/user-profiles" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
 						<v-icon>mdi-account-group</v-icon>

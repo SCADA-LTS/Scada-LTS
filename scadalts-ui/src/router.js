@@ -6,6 +6,7 @@ import About from './views/About';
 import LoginPage from './views/LoginPage';
 import HistoricalAlarms from './views/HistoricalAlarms';
 import EventList from './views/EventList';
+import ReportsPage from './views/ReportsPage';
 import UserList from './views/UserList';
 import SystemSettings from './views/SystemSettings';
 import AlarmNotifications from './views/AlarmNotifications';
@@ -46,7 +47,7 @@ const routing = new Router({
 			name: 'about',
 			component: About,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -85,7 +86,15 @@ const routing = new Router({
 			name: 'users',
 			component: UserList,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
+			},
+		},
+		{
+			path: '/reports',
+			name: 'reports',
+			component: ReportsPage,
+			meta: {
+				requiresAuth: true,
 			},
 		},
 		{
@@ -93,7 +102,7 @@ const routing = new Router({
 			name: 'system-settings',
 			component: SystemSettings,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -101,7 +110,7 @@ const routing = new Router({
 			name: 'alarm-notifications',
 			component: AlarmNotifications,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -109,7 +118,7 @@ const routing = new Router({
 			name: 'recipient-list',
 			component: RecipientList,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -117,7 +126,7 @@ const routing = new Router({
 			name: 'user-profiles',
 			component: UserProfiles,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -125,7 +134,7 @@ const routing = new Router({
 			name: 'datapoint-list',
 			component: DataPointList,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -133,7 +142,7 @@ const routing = new Router({
 			name: 'datapoint-details',
 			component: DataPointDetails,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -141,7 +150,7 @@ const routing = new Router({
 			name: 'datasources',
 			component: DataSources,
 			meta: {
-				requiresAuth: true
+				requiresAuth: true,
 			},
 		},
 		{
@@ -163,8 +172,8 @@ const routing = new Router({
 				{
 					path: ':id',
 					component: WatchListItem,
-				}
-			]
+				},
+			],
 		},
 		{
 			path: '/example-ph',
@@ -231,17 +240,15 @@ const routing = new Router({
 					/* webpackChunkName: "live-alarms-component" */ './views/components/ExampleLiveAlarms.vue'
 				),
 		},
-		
 	],
 });
 
 routing.beforeEach((to, from, next) => {
 	if (to.meta.requiresAuth) {
 		if (!store.state.loggedUser) {
-			store.dispatch('getUserInfo')
-				.catch(() => {
-					next({ name: 'login' });
-				})
+			store.dispatch('getUserInfo').catch(() => {
+				next({ name: 'login' });
+			});
 		}
 	}
 	next();
