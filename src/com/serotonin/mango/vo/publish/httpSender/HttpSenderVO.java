@@ -21,9 +21,12 @@ package com.serotonin.mango.vo.publish.httpSender;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.json.JsonException;
@@ -43,12 +46,19 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.routines.DomainValidator;
+import org.apache.commons.validator.routines.InetAddressValidator;
 
 /**
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
 public class HttpSenderVO extends PublisherVO<HttpPointVO> {
+
+    private static final Log LOG = LogFactory.getLog(HttpSenderVO.class);
+
     @Override
     protected void getEventTypesImpl(List<EventTypeVO> eventTypes) {
         eventTypes.add(new EventTypeVO(EventType.EventSources.PUBLISHER, getId(), HttpSenderRT.SEND_EXCEPTION_EVENT,
@@ -168,6 +178,9 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
         if (StringUtils.isEmpty(url))
             response.addContextualMessage("url", "validate.required");
 
+        if (!isValidUrl(url))
+            response.addContextualMessage("url", "validate.invalidValue");
+
         for (HttpPointVO point : points) {
             if (StringUtils.isEmpty(point.getParameterName())) {
                 response.addContextualMessage("points", "validate.parameterRequired");
@@ -244,6 +257,23 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
             if (dateFormat == -1)
                 throw new LocalizableJsonException("emport.error.invalid", "dateFormat", text,
                         DATE_FORMAT_CODES.getCodeList());
+        }
+    }
+
+    private boolean isValidUrl(String url) {
+        return toURI(url)
+                .map(URI::getHost)
+                .map(host -> InetAddressValidator.getInstance().isValid(host)
+                        || DomainValidator.getInstance().isValid(host))
+                .orElse(false);
+    }
+
+    private Optional<URI> toURI(String url) {
+        try {
+            return Optional.of(new URI(url));
+        } catch (URISyntaxException e) {
+            LOG.warn(e);
+            return Optional.empty();
         }
     }
 }
