@@ -109,7 +109,7 @@
 							<v-text-field v-model="scriptForm.datasourceContext" label="Datasources commands"></v-text-field>
 						</v-col>
 					</v-row>
-					<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" :value="scriptForm.script"></v-textarea>
+					<v-textarea style="width:100%; font-family: monospace" :label="$t('scriptList.script')" v-model="scriptForm.script"></v-textarea>
 				</form>
 				</v-card-text>
 				<v-card-actions>
