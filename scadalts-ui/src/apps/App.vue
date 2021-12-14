@@ -1,88 +1,8 @@
 <template>
 	<v-app>
-		<v-navigation-drawer v-if="user" app dark permanent expand-on-hover color="primary">
-			<v-list nav dense>
-				<v-list-item link href="#/alarms/scada">
-					<v-list-item-icon>
-						<v-icon>mdi-bell-ring</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>Alarms</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/alarm-notifications">
-					<v-list-item-icon>
-						<v-icon>mdi-bell-circle</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>{{ $t('plcalarms.notification') }}</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/watch-list">
-					<v-list-item-icon>
-						<v-icon>mdi-chart-line</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>{{ $t('watchlist.title')}}
-					</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/synoptic-panel" v-if="isUserRoleAdmin">
-					<v-list-item-icon>
-						<v-icon>mdi-view-dashboard</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>{{$t('synopticpanels.titile')}}</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/datasources" v-if="isUserRoleAdmin">
-					<v-list-item-icon>
-						<v-icon>mdi-database</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>
-						Data Sources
-					</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/datapoint-list" v-if="isUserRoleAdmin">
-					<v-list-item-icon>
-						<v-icon>mdi-format-list-checkbox</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>{{
-						$t('datapointDetails.pointList.title')
-					}}</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/recipient-list" v-if="isUserRoleAdmin">
-					<v-list-item-icon>
-						<v-icon>mdi-book-account</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>
-						{{ $t('recipientlist.title') }}
-					</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/users">
-					<v-list-item-icon>
-						<v-icon>mdi-account</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>
-						{{ $t('userList.title') }}
-					</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/user-profiles" v-if="isUserRoleAdmin">
-					<v-list-item-icon>
-						<v-icon>mdi-account-group</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>
-						{{ $t('userprofiles.title') }}
-					</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="#/system-settings" v-if="isUserRoleAdmin">
-					<v-list-item-icon>
-						<v-icon>mdi-tune</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>{{ $t('systemsettings.title') }}</v-list-item-title>
-				</v-list-item>
-				<v-list-item link href="./watch_list.shtm">
-					<v-list-item-icon>
-						<v-icon>mdi-bank</v-icon>
-					</v-list-item-icon>
-					<v-list-item-title>Old UI</v-list-item-title>
-				</v-list-item>
-			</v-list>
-		</v-navigation-drawer>
+		<NavigationBar/>
 
-		<v-app-bar app dark color="primary">
+		<v-app-bar id="topbar" app dark color="primary">
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title class="title"> Scada-LTS
@@ -146,10 +66,15 @@
 <script>
 import webSocketMixin from '@/utils/web-socket-utils';
 import internetMixin from '@/utils/connection-status-utils';
+import NavigationBar from '../layout/NavigationBar.vue';
 
 export default {
 	name: 'app',
 	mixins: [webSocketMixin, internetMixin],
+
+	components: {
+		NavigationBar
+	},
 
 	data() {
 		return {
@@ -223,8 +148,9 @@ export default {
 </script>
 
 <style scoped>
-a:hover {
-	text-decoration-line: none;
+#topbar {
+	left: 0 !important;
+	z-index: 10;
 }
 </style>
 <style>

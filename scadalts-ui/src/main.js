@@ -2,14 +2,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Vue from 'vue';
 import App from './apps/App.vue';
-import router from './router';
+import router from './router/index';
 import store from './store';
 
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
 import VueDayjs from 'vue-dayjs-plugin';
 
-import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
 import CMP from './components/graphical_views/cmp/CMP';
 import AutoManual from './components/graphical_views/cmp2/AutoManual'
@@ -91,17 +90,6 @@ new Vue({
 }).$mount('#app');
 
 Vue.use(uiv);
-
-if (window.document.getElementById('app-test') != undefined) {
-	new Vue({
-		render: (h) =>
-			h(Test, {
-				props: {
-					plabel: window.document.getElementById('app-test').getAttribute('plabel'),
-				},
-			}),
-	}).$mount('#app-test');
-}
 
 if (window.document.getElementById('app-isalive') != undefined) {
 	const isAliveDom = document.getElementById('app-isalive');

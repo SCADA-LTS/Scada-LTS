@@ -33,7 +33,7 @@
 </template>
 <script>
 import { object } from '@amcharts/amcharts4/core';
-import i18n from '../../i18n';
+import i18n from '../../../i18n';
 
 export default {
 	name: 'ScadaConfigurationComponent',

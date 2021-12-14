@@ -262,9 +262,9 @@
 	</div>
 </template>
 <script>
-import store from '../../store';
-import i18n from '../../i18n';
-import IsAlive from '../../components/graphical_views/IsAlive';
+import store from '../../../store';
+import i18n from '../../../i18n';
+import IsAlive from '../../../components/graphical_views/IsAlive';
 import AuditEventTypesComponent from './AuditEventTypesComponent';
 import SystemEventTypesComponent from './SystemEventTypesComponent';
 import EmailSettingsComponent from './EmailSettingsComponent';

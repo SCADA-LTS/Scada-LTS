@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import HistoricalAlarmsComponent from './components/HistoricalAlarmsComponent';
+import HistoricalAlarmsComponent from './HistoricalAlarmsComponent';
 
 export default {
 	el: '#alarms',
