@@ -30,6 +30,7 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.publish.persistent.PersistentSenderRT;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.publish.httpSender.HttpPointVO;
@@ -43,8 +44,6 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.validator.routines.DomainValidator;
-import org.apache.commons.validator.routines.InetAddressValidator;
 
 /**
  * @author Matthew Lohbihler
@@ -115,11 +114,17 @@ public class PublisherEditDwr extends BaseDwr {
         return trySave(p);
     }
 
-    public void httpSenderTest(String url, boolean usePost, List<KeyValuePair> staticHeaders,
-            List<KeyValuePair> staticParameters) {
-        if(isValidUrl(url))
-            Common.getUser().setTestingUtility(new HttpSenderTester(url, usePost, staticHeaders, staticParameters));
-
+    public void httpSenderTest() {
+        User user = Common.getUser();
+        if(user == null)
+            return;
+        if(user.getEditPublisher() instanceof HttpSenderVO) {
+            HttpSenderVO publisher = (HttpSenderVO)user.getEditPublisher();
+            Common.getUser().setTestingUtility(new HttpSenderTester(publisher.getUrl(), publisher.isUsePost(),
+                    publisher.getStaticHeaders(), publisher.getStaticParameters()));
+        } else {
+            LOG.warn("EditPublisher in user is other type or null.");
+        }
     }
 
     public String httpSenderTestUpdate() {
@@ -229,22 +234,5 @@ public class PublisherEditDwr extends BaseDwr {
             response.addGenericMessage("publisherEdit.persistent.syncNotStarted");
 
         return response;
-    }
-
-    private boolean isValidUrl(String url) {
-        return toURI(url)
-                .map(URI::getHost)
-                .map(host -> InetAddressValidator.getInstance().isValid(host)
-                        || DomainValidator.getInstance().isValid(host))
-                .orElse(false);
-    }
-
-    private Optional<URI> toURI(String url) {
-        try {
-            return Optional.of(new URI(url));
-        } catch (URISyntaxException e) {
-            LOG.warn(e);
-            return Optional.empty();
-        }
     }
 }
