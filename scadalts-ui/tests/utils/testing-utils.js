@@ -43,6 +43,7 @@ export function prepareMountWrapper(component, storeModules, propsData = {}, ...
 		store,
 		i18n,
 		propsData,
+		router,
 		...options,
 	});
 }

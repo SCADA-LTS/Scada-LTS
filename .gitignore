@@ -113,5 +113,6 @@ WebContent/resources/node_modules/
 WebContent/resources/package-lock.json
 build
 databases
+TEST*.xml
 gradlew
 gradlew.bat

@@ -5,7 +5,7 @@
 				<v-col>
 					<h1>Graphical Views</h1>
 				</v-col>
-				<v-col class="row justify-end">
+				<v-col class="row justify-end toolbar--action-butons">
 					<v-tooltip bottom v-if="!!activeGraphicalView">
 						<template v-slot:activator="{ on, attrs }">
 							<v-btn icon @click="toggleFullScreen" v-on="on" v-bind="attrs">
@@ -59,7 +59,7 @@
 		</v-container>
 		<v-container fluid v-else>
 			<v-form v-model="valid" ref="form">
-				<v-row>
+				<v-row class="toolbar--edit-form">
 					<v-col>
 						<v-text-field
 							label="Name"
