@@ -3,7 +3,7 @@
 		<v-container fluid>
 			<ConfirmationDialog
 				:btnvisible="false"
-				:dialog="confirmToggleDialog"
+				ref="toggleDialogConfirm"
 				@result="toggleDataPointDialog"
 				:title="$t('datapointDetails.pointProperties.toggle.dialog.title')"
 				:message="$t('datapointDetails.pointProperties.toggle.dialog.text')"
@@ -164,15 +164,13 @@ export default {
 		},
 		async toggleDataPoint() {
 			if (this.datasource.enabled) {
-				this.confirmToggleDialog = true;
-				console.log()
+				this.$refs.toggleDialogConfirm.showDialog();
 			} else {
 				this.datasourceDisabled = true;
 			}
 		},
 
 		async toggleDataPointDialog(e) {
-			this.confirmToggleDialog = false;
 			if (e) {
 				let resp = await this.$store.dispatch(
 					'toggleDataPoint',

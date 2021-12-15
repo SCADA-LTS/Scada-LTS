@@ -1,3 +1,4 @@
+import DataSources from '../views/DataObjects/DataSources';
 import DataPointList from '../views/DataObjects/DataPointDetails/DataPointList';
 import DataPointDetails from '../views/DataObjects/DataPointDetails';
 import PointHierarchy from '../views/DataObjects/PointHierarchy'
@@ -5,6 +6,14 @@ import PointLinks from '../views/DataObjects/PointLinks'
 import Scripting from '../views/DataObjects/Scripting'
 
 export const routes = [
+    {
+        path: '/datasources',
+        name: 'datasources',
+        component: DataSources,
+        meta: {
+            requiresAuth: true
+        },
+    },
     {
         path: '/datapoint-list',
         name: 'datapoint-list',

@@ -13,6 +13,8 @@
 	"common.alarmlevels.title": "Alarmpriorität",
 	"common.alarmlevels.urgent": "Dringend",
 	"common.cancel": "Stornieren",
+	"common.create": "Erstellen",
+	"common.update": "Aktualisieren",
 	"common.ok": "Ok",
 	"common.save": "Speichern",
 	"common.search": "Suche",
@@ -369,5 +371,6 @@
 	"uiv.disable": "Behindert",
 	"uiv.enable": "Aktiviert",
 	"uiv.modal.cancel": "Stornieren",
-	"uiv.modal.ok": "Ok"
+	"uiv.modal.ok": "Ok",
+	"validation.rule.notNull": "Feld darf nicht leer sein!"
 }

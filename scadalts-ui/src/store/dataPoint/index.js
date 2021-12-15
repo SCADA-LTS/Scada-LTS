@@ -114,6 +114,10 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
+		getUniqueDataPointXid({dispatch}) {
+			return dispatch("requestGet", "/datapoint/generateUniqueXid");
+		},
+
 		getDataPointDetails({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},

@@ -249,9 +249,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     public String getExtendedName() {
         if (description != null) {
             if (!description.isEmpty())
-                return deviceName + " - " + name + " - " + description;
+                return dataSourceName + " - " + name + " - " + description;
         }
-        return deviceName + " - " + name;
+        return dataSourceName + " - " + name;
     }
 
     public void defaultTextRenderer() {

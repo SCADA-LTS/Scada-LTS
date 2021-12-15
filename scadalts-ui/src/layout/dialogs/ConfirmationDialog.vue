@@ -32,17 +32,15 @@ export default {
 	name: 'ConfirmationDialog',
 
 	data() {
-		return {};
+		return {
+			dialog: false,
+		};
 	},
 
 	props: {
 		btnvisible: {
 			type: Boolean,
 			default: true,
-		},
-		dialog: {
-			type: Boolean,
-			default: false,
 		},
 		title: {
 			type: String,
@@ -55,6 +53,10 @@ export default {
 	},
 
 	methods: {
+		showDialog() {
+			this.dialog = true;
+		},
+
 		cancel() {
 			this.dialog = false;
 			this.$emit('result', false);
