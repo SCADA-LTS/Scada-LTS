@@ -81,7 +81,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			point = dataPointDao.getDataPoint(id);
 
 		if (point != null) {
-			//Permissions.ensureDataPointReadPermission(user, point);
+			Permissions.ensureDataPointReadPermission(user, point);
 
 			model.put("point", point);
 
