@@ -397,6 +397,9 @@
 </template>
 <style scoped>
 
+.v-data-footer__pagination {
+	display: none: o !important;;
+}
 .v-icon {
 	border: 0!important;
 }

@@ -823,7 +823,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			filterCondtions.add(joinOr(keywordConditions));
 		}
 
-		sql.append("SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
+		sql.append("SELECT " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
 		sql.append(from.toString());
 		sql.append(" LEFT JOIN (SELECT typeKey, count(case when("+joinOr(userCommentKeywordConditions)+") then 1 else null end) AS keywordMatched, count(1) comments FROM userComments uc GROUP BY typeKey) c ON e.id = c.typeKey");
 		sql.append(" WHERE "+joinAnd(filterCondtions));
@@ -854,8 +854,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()
 				, params.toArray(), new EventDTOSearchRowMapper());
-		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
-		return new SQLPageWithTotal<EventDTO>(page, total);
+		return new SQLPageWithTotal<EventDTO>(page, 100);
 	}
 
 	@Override
