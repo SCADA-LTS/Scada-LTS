@@ -37,9 +37,16 @@ export const graphicalViewModule = {
         },        
         REVERT_GRAPHICAL_PAGE(state) {
             state.graphicalPage = JSON.parse(JSON.stringify(state.graphicalPageBackup));
-            state.resolution = {
-                width: state.graphicalPage.width,
-                height: state.graphicalPage.height
+            if(!!state.graphicalPage) {
+                state.resolution = {
+                    width: state.graphicalPage.width,
+                    height: state.graphicalPage.height
+                }
+            } else {
+                state.resolution = {
+                    width: 1024,
+                    height: 768
+                }
             }
         },
         SET_GRAPHICAL_PAGE_BACKGROUND(state, payload) {
@@ -73,7 +80,6 @@ export const graphicalViewModule = {
                 const maxIndex = state.graphicalPage.viewComponents.reduce((prev, current) => {
                     return (prev.index > current.index) ? prev.index : current.index;
                 });
-                console.log();
                 if(typeof maxIndex === 'object') {
                     payload.index = maxIndex.index + 1;
                 } else {
@@ -254,7 +260,7 @@ function getBaseUrl() {
  * @param {Object} state - Vuex state object to modify
  * @param {Object} payload  - Object containing the new resolution data with width and height properties
  */
-function setResolution(state, payload) {
+function setResolution(state, payload = {width: 1024, height: 768}) {
     state.graphicalPage.width = payload.width;
     state.graphicalPage.height = payload.height;
     state.resolution = {
