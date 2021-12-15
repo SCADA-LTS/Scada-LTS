@@ -40,10 +40,10 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
+public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
 
 
-    private static final Log LOG = LogFactory.getLog(V2_7_1_0__CreatePointValuesDenormalized.class);
+    private static final Log LOG = LogFactory.getLog(V2_7_1_3__CreatePointValuesDenormalized.class);
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -51,7 +51,7 @@ public class V2_7_1_0__CreatePointValuesDenormalized extends BaseJavaMigration {
         final JdbcOperations questdb = DAO.query().getJdbcTemp();
         final JdbcOperations mysql = DAO.getInstance().getJdbcTemp();
 
-        URL resource = V2_7_1_0__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
+        URL resource = V2_7_1_3__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
         File schema = Paths.get(resource.toURI()).toFile();
         int limit = Common.getEnvironmentProfile().getInt("db.values.export.limit", 1001);
         boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);

@@ -98,7 +98,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
-	private static final PointValueService pointValueService = new PointValueService();
+	private final PointValueService pointValueService = new PointValueService();
 
 	private IAmChartDAO pointValueAmChartCommandRepository;
 	private IAmChartDAO pointValueAmChartQueryRepository;

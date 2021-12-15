@@ -6,7 +6,7 @@ import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 
-public class V2_7_1_0__CreateViewPointValuesDenormalized extends BaseJavaMigration {
+public class V2_7_1_3__CreateViewPointValuesDenormalized extends BaseJavaMigration {
 
 
     @Override
