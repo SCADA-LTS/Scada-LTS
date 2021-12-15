@@ -17,23 +17,15 @@
  */
 package org.scada_lts.web.mvc.controller;
 
-import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.mango.Common;
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.rt.RuntimeManager;
-import com.serotonin.mango.view.chart.BaseChartRenderer;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
-import com.serotonin.mango.view.text.BaseTextRenderer;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.dataSource.DataPointSaveHandler;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.mvc.controller.ControllerUtils;
-import com.serotonin.propertyEditor.DecimalFormatEditor;
-import com.serotonin.propertyEditor.IntegerFormatEditor;
-import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -45,12 +37,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.WebUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.rt.RuntimeManager;
+import com.serotonin.mango.view.chart.BaseChartRenderer;
+import com.serotonin.mango.view.text.BaseTextRenderer;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.dataSource.DataPointSaveHandler;
+import com.serotonin.mango.vo.event.PointEventDetectorVO;
+import com.serotonin.mango.vo.permission.Permissions;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.propertyEditor.DecimalFormatEditor;
+import com.serotonin.propertyEditor.IntegerFormatEditor;
+import com.serotonin.util.StringUtils;
 
 /**
  * Controller for data point edition
