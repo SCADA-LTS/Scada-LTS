@@ -3,8 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
-
-
     <http use-expressions="true">
         <headers>
             <cache-control/>
@@ -52,14 +50,14 @@
     <http-firewall ref="defaultHttpFirewall"/>
 
     <!-- Websocket -->
-    <!--websocket-message-broker>
+    <!--websocket-message-broker same-origin-disabled="true">
         <intercept-message pattern="/**" access="isAuthenticated()"/>
     </websocket-message-broker-->
 
     <authentication-manager id="authenticationManager">
         <authentication-provider>
             <password-encoder ref="scadaPasswordEncoder" />
-            <jdbc-user-service data-source-ref="dataSource"
+            <jdbc-user-service data-source-ref="dataSourceForSecurity"
                                users-by-username-query="select username, password, disabled = 'N' as enabled from users where username = ?"
                                authorities-by-username-query="select username, 'USER' from users where username = ?"/>
         </authentication-provider>
@@ -67,12 +65,10 @@
 
     <b:bean id="loginAuthenticationSuccessHandler" class="org.scada_lts.login.LoginAuthenticationSuccessHandler" />
 
-    <b:bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <b:bean id="dataSourceForSecurity" class="org.springframework.jndi.JndiObjectFactoryBean">
         <b:property name="expectedType" value="javax.sql.DataSource"/>
         <b:property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
     </b:bean>
-
-    <!--b:bean id="dataSource" factory-method="Common.ctx.getDatabaseAccess().getDataSource()" class="javax.sql.DataSource" lazy-init="true"/-->
 
     <b:bean id="scadaPasswordEncoder" class="org.scada_lts.login.CustomPasswordEncoder" />
 
