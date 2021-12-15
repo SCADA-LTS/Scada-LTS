@@ -751,27 +751,6 @@ public class PointValueAPI {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/point_value/deletePointValuesBeforeForDatapoint/{id}/{time}", method = RequestMethod.GET)
-    public ResponseEntity<String> deletePointValuesBeforeForDatapoint(@PathVariable("id") int id, @PathVariable("time") long time, HttpServletRequest request) {
-
-        try {
-            User user = Common.getUser(request);
-            if (user != null) {
-                pointValueService.deletePointValuesBeforeForDatapoint(id, time);
-//                pointValueService.deletePointValuesBeforeWithOutLast(id, time);
-
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<String>(HttpStatus.OK);
-    }
-
     /**
      * Convert Input Value
      * @param value Input value to be converted
