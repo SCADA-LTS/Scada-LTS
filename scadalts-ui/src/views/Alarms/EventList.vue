@@ -398,7 +398,7 @@
 <style scoped>
 
 .v-data-footer__pagination {
-	display: none: o !important;;
+	display: none !important;;
 }
 .v-icon {
 	border: 0!important;
