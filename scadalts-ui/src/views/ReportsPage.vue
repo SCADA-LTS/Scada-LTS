@@ -2,102 +2,114 @@
 	<div>
 		<h1>{{ $t('reports.title') }}</h1>
 		<v-container fluid v-if="!!reportList">	
-			<v-card>
-				<v-card-title>
-					<v-text-field
-						v-model="search"
-						@input="fetchreportList"
-						append-icon="mdi-magnify"
-						label="Search"
-						class="mr-2"
-						single-line
-						hide-details
-					></v-text-field>
-					<v-btn
-						color="primary"
-						@click="createNewScript"
-					>{{$t('reports.newReport')}}</v-btn>
-				</v-card-title>
-				<v-data-table
-					:headers="headers"
-					:items="reportListFiltered"
-					:options.sync="options"
-					:server-items-length="totalReports"
-					multi-sort
-					class="elevation-1"
-					@click:row="selectScript($event.id)"
-					>
-					<template v-slot:item.actions="{ item }">	
-						<v-icon class="mr-2" border="0" @click.stop="runScript(item.xid)" title="run">
-							mdi-cog
-						</v-icon>
-						<v-icon border="0" @click.stop="deleteScript(item.id)" title="delete">
-							mdi-delete
-						</v-icon>
-					</template>
-				</v-data-table>	
-			</v-card>
-		</v-container>
-		<v-row justify="center">
-			<v-dialog
-			v-model="dialog"
-			v-show="selectedScriptId !== null"
-			@change="selectedScriptId = null"			
-			>	
-			<v-card>
-				<v-card-title>
-					<v-row>
-						<v-col cols="6">{{$t('reports.criteria')}} </v-col>
-					</v-row>
-				</v-card-title>
-				<v-card-text>
-					<form>
+			<v-row>
+				<v-col cols="6">
+					<v-card>
+						<v-card-title>
+							<v-text-field
+								v-model="search"
+								@input="fetchreportList"
+								append-icon="mdi-magnify"
+								label="Search"
+								class="mr-2"
+								single-line
+								hide-details
+							></v-text-field>
+							<v-btn
+								color="primary"
+								@click="createNewReport"
+							>{{$t('reports.newReport')}}</v-btn>
+						</v-card-title>
+						<v-data-table
+							:headers="headers"
+							:items="reportListFiltered"
+							:options.sync="options"
+							:server-items-length="totalReports"
+							multi-sort
+							@click:row="selectScript($event.id)"
+							>
+							<template v-slot:item.actions="{ item }">	
+								<v-icon class="mr-2" border="0" @click.stop="runScript(item.xid)" title="run">
+									mdi-cog
+								</v-icon>
+								<v-icon border="0" @click.stop="deleteScript(item.id)" title="delete">
+									mdi-delete
+								</v-icon>
+							</template>
+						</v-data-table>	
+					</v-card>
+				</v-col>
+				<v-col cols="6">
 					<v-row>
 						<v-col cols="6">
 							<v-text-field :label="$t('common.name')" v-model="reportForm.name"></v-text-field>
 						</v-col>
-						<v-col cols="6">
-							<v-select 
-							:label='$t("reports.commentList.type.point")'
-							item-text="name"
-							v-model="selectedDatapointId"
-							@change="addDatapoint"
-							:items="filteredDatapoints"></v-select>
-						</v-col>
-						<v-col cols="6">
-							<v-select 
-							:label='$t("reports.events.alarms")'
-							placeholder="select datapoint"
-							item-text="name"
-							v-model="selectedDatapointId"
-							@change="addDatapoint"
-							:items='[$t("reports.events.alarms"),$t("reports.events.all"),$t("reports.events.none")]'></v-select>
-						</v-col>
-						<v-col cols="6">
+						
+						<v-col cols="2">
 							<v-checkbox 
-							:label='$t("reports.comments")'
+							label='Comments'
 							v-model="userComments"></v-checkbox>
 						</v-col>
-						<v-col cols="12">
+						<v-col cols="2">
+							<v-checkbox 
+							:label='$t("reports.schedule")'
+							v-model="schedule"></v-checkbox>
+						</v-col>
+						<v-col cols="2">
+							<v-checkbox 
+							:label='$t("reports.emailReport")'
+							v-model="emailReport"></v-checkbox>
+						</v-col>
+						
+					</v-row>
 
-							<v-radio-group row 
-                                v-model="dateRangeType" >
-                                <v-radio :label='$t("reports.relative")' value='relative'></v-radio>
-                                <v-radio :label='$t("reports.specificDates")' value='specific'></v-radio>
-                            </v-radio-group>
-	
-							
+					<v-row>
+						<v-col cols="6">
+							<v-select 
+								:label='$t("reports.events.alarms")'
+								placeholder="select datapoint"
+								item-text="name"
+								v-model="selectedDatapointId"
+								@change="addDatapoint"
+								:items='[$t("reports.events.alarms"),$t("reports.events.all"),$t("reports.events.none")]'>
+							</v-select>
+						</v-col>
+						<v-col cols="6">
+							<v-select 
+								:label='$t("reports.events.alarms")'
+								placeholder="select datapoint"
+								item-text="name"
+								v-model="selectedDatapointId"
+								@change="addDatapoint"
+								:items='[$t("reports.specificDates"),$t("reports.relative")]'>
+							</v-select>
+						</v-col>
+					</v-row>
+					
+					<v-row>
+						<!-- <v-col cols="12">
+							<v-radio-group row dense v-model="dateRangeType" >
+								<v-row>
+									<v-col cols="6">
+										<v-radio :label='$t("reports.specificDates")' value='specific'></v-radio>
+									</v-col>
+									<v-col cols="6">
+										<v-radio :label='$t("reports.relative")' value='relative'></v-radio>
+									</v-col>
+								</v-row>
+							</v-radio-group>
+						</v-col> -->
+						<v-col>
 							<v-row v-if="dateRangeType==='relative'">
-								<v-col cols="4">
-									<v-radio-group row  v-model="relativeRangeType" >
-										<v-radio :label='$t("reports.previous")' value='previous'></v-radio>
-										<v-radio :label='$t("reports.past")' value='past'></v-radio>
-									</v-radio-group>
+								<v-col cols="3">
+									<v-select item-text="label" :items='[{ label: $t("reports.previous"), value:"previous" },{ label:$t("reports.past"), value:"past" }]'>
+										
+									</v-select>
 								</v-col>
-								<v-col cols="4">
+								<v-col cols="3">
 									<v-text-field v-model="relativeRangePreviousQuantity"></v-text-field>
 								</v-col>
-								<v-col>
+								<v-col cols="3">
 									<v-select :items='[$t("common.timeperiod.days"),
 									$t("common.timeperiod.hours"),
 									$t("common.timeperiod.miliseconds"),
@@ -107,136 +119,219 @@
 									$t("common.timeperiod.title"),
 									$t("common.timeperiod.weeks"),
 									$t("common.timeperiod.years")]'/>
-									
 								</v-col>
 							</v-row>
-			
-							<v-col v-if="dateRangeType==='specific'" cols="12" class="flex">
-								<v-menu ref="start-date-menu"
-									:close-on-content-click="false"
-									:close-on-click="true"
-									:nudge-right="40"
-									transition="scale-transition"
-									offset-y
-									min-width="auto"
-									attach
-								>
-									<template v-slot:activator="{ on, attrs }">
-										<v-text-field 
+
+
+							<v-row v-if="dateRangeType==='specific'">
+
+								<v-col cols="6" class="flex">
+									<v-menu ref="start-date-menu"
+										:close-on-content-click="false"
+										:close-on-click="true"
+										:nudge-right="40"
+										transition="scale-transition"
+										offset-y
+										min-width="auto"
+										attach
+									>
+										<template v-slot:activator="{ on, attrs }">
+											<v-text-field 
+												v-model="dateRange.startDate"
+												@change="updateDateRange"
+												label="Start Date"
+												prepend-icon="mdi-calendar"
+												v-bind="attrs"
+												v-on="on"
+											></v-text-field>
+										</template>
+										<v-date-picker
 											v-model="dateRange.startDate"
 											@change="updateDateRange"
-											label="Start Date"
-											prepend-icon="mdi-calendar"
-											v-bind="attrs"
-											v-on="on"
-										></v-text-field>
-									</template>
-									<v-date-picker
-										v-model="dateRange.startDate"
-										@change="updateDateRange"
-										first-day-of-week="1"
-										no-title
-										scrollable
-									></v-date-picker>
-								</v-menu>
-
-								<v-menu ref="start-time-menu"
-									:close-on-content-click="false"
-									:close-on-click="true"
-									:nudge-right="40"
-									v-if="dateRange.startDate"
-									transition="scale-transition"
-									offset-y
-									max-width="290px"
-									min-width="290px"
-									attach
-								>
-									<template v-slot:activator="{ on, attrs }">
-										<v-text-field 
+											first-day-of-week="1"
+											no-title
+											scrollable
+										></v-date-picker>
+									</v-menu>
+								</v-col>
+								<v-col  class="flex">
+									<v-menu ref="start-time-menu"
+										:close-on-content-click="false"
+										:close-on-click="true"
+										:nudge-right="40"
+										v-if="dateRange.startDate"
+										transition="scale-transition"
+										offset-y
+										max-width="290px"
+										min-width="290px"
+										attach
+									>
+										<template v-slot:activator="{ on, attrs }">
+											<v-text-field 
+												v-model="dateRange.startTime"
+							
+												label="Start Time"
+												prepend-icon="mdi-clock-time-four-outline"
+												v-bind="attrs"
+												v-on="on"
+											></v-text-field>
+										</template>
+										<v-time-picker 
 											v-model="dateRange.startTime"
-						
-											label="Start Time"
-											prepend-icon="mdi-clock-time-four-outline"
-											v-bind="attrs"
-											v-on="on"
-										></v-text-field>
-									</template>
-									<v-time-picker 
-										v-model="dateRange.startTime"
-					
-										format="24hr" 
-										scrollable
-									></v-time-picker>
-								</v-menu>
-							</v-col>
-							<v-col cols="12" class="flex" v-if="dateRangeType==='specific'">
-								<v-menu ref="end-date-menu"
-									:close-on-content-click="false"
-									:close-on-click="true"
-									:nudge-right="40"
-									transition="scale-transition"
-									offset-y
-									min-width="auto"
-									attach
-								>
-									<template v-slot:activator="{ on, attrs }">
-										<v-text-field 
+											format="24hr" 
+											scrollable
+										></v-time-picker>
+									</v-menu>
+								</v-col>
+
+
+								<v-col cols="6">
+									<v-menu ref="end-date-menu"
+										:close-on-content-click="false"
+										:close-on-click="true"
+										:nudge-right="40"
+										transition="scale-transition"
+										offset-y
+										min-width="auto"
+										attach
+									>
+										<template v-slot:activator="{ on, attrs }">
+											<v-text-field 
+												v-model="dateRange.endDate"
+												label="End Date"
+												
+												prepend-icon="mdi-calendar"
+												v-bind="attrs"
+												v-on="on"
+											></v-text-field>
+										</template>
+										<v-date-picker
 											v-model="dateRange.endDate"
-											label="End Date"
 											
-											prepend-icon="mdi-calendar"
-											v-bind="attrs"
-											v-on="on"
-										></v-text-field>
-									</template>
-									<v-date-picker
-										v-model="dateRange.endDate"
-										
-										first-day-of-week="1"
-										no-title
-										scrollable
-									></v-date-picker>
-								</v-menu>
-								<v-menu ref="end-time-menu"
-									:close-on-content-click="false"
-									:close-on-click="true"
-									:nudge-right="40"
-									v-if="dateRange.endDate"
-									transition="scale-transition"
-									offset-y
-									max-width="290px"
-									min-width="290px"
-									attach
-								>
-									<template v-slot:activator="{ on, attrs }">
-										<v-text-field 
+											first-day-of-week="1"
+											no-title
+											scrollable
+										></v-date-picker>
+									</v-menu>
+
+								</v-col>
+								<v-col>
+									<v-menu ref="end-time-menu"
+										:close-on-content-click="false"
+										:close-on-click="true"
+										:nudge-right="40"
+										v-if="dateRange.endDate"
+										transition="scale-transition"
+										offset-y
+										max-width="290px"
+										min-width="290px"
+										attach
+									>
+										<template v-slot:activator="{ on, attrs }">
+											<v-text-field 
+												v-model="dateRange.endTime"
+												@change="fetchEventList"
+												label="End Time"
+												prepend-icon="mdi-clock-time-four-outline"
+												v-bind="attrs"
+												v-on="on"
+											></v-text-field>
+										</template>
+										<v-time-picker 
 											v-model="dateRange.endTime"
 											@change="fetchEventList"
-											label="End Time"
-											prepend-icon="mdi-clock-time-four-outline"
-											v-bind="attrs"
-											v-on="on"
-										></v-text-field>
-									</template>
-									<v-time-picker 
-										v-model="dateRange.endTime"
-										@change="fetchEventList"
-										format="24hr" 
-										scrollable
-									></v-time-picker>
-								</v-menu>
-							</v-col>
-						</v-col>
-						<v-col cols="6">
-							<v-checkbox 
-							:label='$t("reports.schedule")'
-							v-model="schedule"></v-checkbox>
+											format="24hr" 
+											scrollable
+										></v-time-picker>
+									</v-menu>
+								</v-col>
+							</v-row>
 
-							<v-checkbox 
-							:label='$t("reports.emailReport")'
-							v-model="emailReport"></v-checkbox>
+							<v-row>
+						
+			
+						<v-col cols="12">
+							<v-select 
+							item-value="id"
+							placeholder="select datapoint"
+							item-text="name"
+							v-model="selectedDatapointId"
+							@change="addDatapoint"
+							:items="filteredDatapoints"></v-select>
+
+							<table style="width:100%">
+								<tr>
+									<th>Point name</th>
+									 	<th>Data type </th>	
+										 <th>Colour 	</th>
+										 <th>Consolidated chart</th> 	
+										  <th>Actions</th> 	
+								</tr>
+								<tr v-for="p in reportForm.selectedDatapointIds">
+									<td style="width:20%">{{p.dataPointXid}}</td>
+									<td>Binary</td>
+									<td>
+										<!-- <v-color-picker></v-color-picker> -->
+										<v-text-field></v-text-field>
+									</td>
+									 
+									<td>
+										<v-checkbox/>
+									</td>
+									<td style="width:10%">
+										<v-icon color="red" style="cursor:pointer; border:0" @click="removeDatapoint(p.dataPointXid)">mdi-close</v-icon>
+									</td>
+								</tr>
+							</table>
+
+
+							<v-data-table
+								:headers="headers"
+								:items="reportListFiltered"
+								:options.sync="options"
+								:server-items-length="totalReports"
+								multi-sort
+								@click:row="selectScript($event.id)"
+								>
+								<template v-slot:item.actions="{ item }">	
+									<v-icon class="mr-2" border="0" @click.stop="runScript(item.xid)" title="run">
+										mdi-cog
+									</v-icon>
+									<v-icon border="0" @click.stop="deleteScript(item.id)" title="delete">
+										mdi-delete
+									</v-icon>
+								</template>
+							</v-data-table>	
+							
+									
+								
+						</v-col>
+						
+					</v-row>
 						</v-col>
 					</v-row>
+					
+					
+				</v-col>
+			</v-row>
+			
+		</v-container>
+		<v-row justify="center">
+			<v-dialog
+			v-model="dialog"
+			v-show="selectedScriptId !== null"
+			@change="selectedScriptId = null"	
+			max-width="80%"		
+			>	
+			<v-card>
+				<v-card-title>
+					<v-row>
+						<v-col cols="6">{{$t('reports.criteria')}} </v-col>
+					</v-row>
+				</v-card-title>
+				<v-card-text>
+					<form>
+					
 					
 				</form>
 				</v-card-text>
@@ -311,7 +406,7 @@ export default {
 	data() {
 		return {
 			relative: false,
-			dateRangeType: '',
+			dateRangeType: 'specific',
 			userComments: false,
 			schedule: false,
 			emailReport: false,
@@ -330,7 +425,7 @@ export default {
 				id: null,
 				name: '',
 				xid: '',
-				pointsOnContext: [],
+				selectedDatapointIds: [],
 				datasourceContext: '',
 				datapointContext: '',
 				script: '',
@@ -397,27 +492,28 @@ export default {
 		filteredDatapoints() {
 			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
 			return this.datapoints
-			.filter(dp => this.reportForm.pointsOnContext
+			.filter(dp => this.reportForm.selectedDatapointIds
 				.filter(sp => dp.xid === sp.dataPointXid)
 			.length === 0)
 		},
 	},
 	methods: {
-		createNewScript() {
+		
+		createNewReport() {
 			this.selectedScriptId = -1
 			
 			this.selectedScript = null
 			this.reportForm.id = -1;
 			this.reportForm.xid = '';
 			this.reportForm.name = '';
-			this.reportForm.pointsOnContext = [];
+			this.reportForm.selectedDatapointIds = [];
 			this.reportForm.script = ''
 			this.reportForm.datasourceContext = ''
 			this.reportForm.datapointContext = 'dp'
 			this.dialog = true
 		},
 		removeDatapoint(dataPointXid) {
-			this.reportForm.pointsOnContext = this.reportForm.pointsOnContext
+			this.reportForm.selectedDatapointIds = this.reportForm.selectedDatapointIds
 				.filter(p => p.dataPointXid != dataPointXid)
 		},
 		selectScript(id) {
@@ -427,7 +523,7 @@ export default {
 			this.reportForm.id = this.selectedScript.id;
 			this.reportForm.xid = this.selectedScript.xid;
 			this.reportForm.name = this.selectedScript.name;
-			this.reportForm.pointsOnContext = this.selectedScript.pointsOnContext.map( x => { return {
+			this.reportForm.selectedDatapointIds = this.selectedScript.selectedDatapointIds.map( x => { return {
 					varName: x.value ,
 					dataPointXid: (this.datapoints.find(dp => dp.id === x.id)).xid
 				}
@@ -458,8 +554,8 @@ export default {
 		},
 		addDatapoint() {
 			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
-			if (!this.reportForm.pointsOnContext.find(x => p.xid === x.dataPointXid)) {
-				this.reportForm.pointsOnContext
+			if (!this.reportForm.selectedDatapointIds.find(x => p.xid === x.dataPointXid)) {
+				this.reportForm.selectedDatapointIds
 					.push({dataPointXid: p.xid, varName: `p${p.id}`})
 				this.selectedDatapointId = null
 			}
@@ -479,6 +575,17 @@ export default {
 			this.$store.dispatch('runScript', xid);
 			this.snackbar = true
 			this.snackbarMessage = `${this.$t('reportList.scriptExecuted')} `
+		},
+		updateDateRange() {
+			let bufferDate;
+			if (this.searchFilters.endDate < this.searchFilters.startDate) {
+				bufferDate = this.searchFilters.endDate;
+				this.searchFilters.endDate = this.searchFilters.startDate;
+				this.searchFilters.startDate = bufferDate;
+				this.searchFilters.startTime = "00:00";
+				this.searchFilters.endTime = "23:59";
+			}
+			this.fetchEventList();
 		},
 		saveScript() {
 			if (this.selectedScriptId != -1) {
