@@ -511,7 +511,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
         if (dbQueryEnabled)
-            pointValueQueryRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
+            deletePointValuesBeforeForDatapoint(dataPointId, time);
         return pointValueCommandRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
     }
 
@@ -859,12 +859,23 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
-    public void deletePointValuesBeforeForDatapoint(int dataPointId, long time) throws IOException, InterruptedException {
+    public void deletePointValuesBeforeForDatapoint(int dataPointId, long time) {
         long questTime = time*1000;
-        File exported = exportFromQuestDb(dataPointId, questTime);
+        File exported = null;
+        try {
+            exported = exportFromQuestDb(dataPointId, questTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         pointValueQueryRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
         importToQuestDb(exported, dataPointId);
-        Files.delete(exported.toPath());
+        try {
+            Files.delete(exported.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public File exportFromQuestDb(int dataPointId, long timestamp) throws IOException, InterruptedException {

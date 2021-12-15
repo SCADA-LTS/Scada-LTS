@@ -39,9 +39,7 @@ import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
-import org.scada_lts.dao.pointvalues.PointValueDAO;
-import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
+import org.scada_lts.dao.pointvalues.*;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -70,6 +68,7 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
 
 import static org.scada_lts.utils.AggregateUtils.*;
+import static org.scada_lts.dao.pointvalues.PointValueAmChartUtils.*;
 
 /**
  * Service for DataPointDAO
@@ -103,13 +102,13 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointValueService pointValueService = new PointValueService();
 
-	private PointValueAmChartDAO pointValueAmChartCommandRepository;
-	private PointValueAmChartDAO pointValueAmChartQueryRepository;
+	private IAmChartDAO pointValueAmChartCommandRepository;
+	private IAmChartDAO pointValueAmChartQueryRepository;
 	private boolean dbQueryEnabled;
 
 	public DataPointService() {
 		this.pointValueAmChartCommandRepository = new PointValueAmChartDAO(DAO.getInstance().getJdbcTemp(), false);
-		this.pointValueAmChartQueryRepository = new PointValueAmChartDAO(DAO.query().getJdbcTemp(), true);
+		this.pointValueAmChartQueryRepository = new PointValueAmChartQuestDbDAO(DAO.query().getJdbcTemp());
 		this.dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
 	}
 
@@ -607,7 +606,7 @@ public class DataPointService implements MangoDataPoint {
 		if (pointIds.isEmpty())
 			return Collections.emptyList();
 		if (aggregateSettings.isEnabled()) {
-			return getPointValueAmChartRepository().convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings));
+			return convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings));
 		}
 		return getPointValueAmChartRepository().getPointValuesFromRange(getPointIds(pointIds), startTs, endTs);
 	}
@@ -617,7 +616,7 @@ public class DataPointService implements MangoDataPoint {
 		if(dataPoints.isEmpty())
 			return Collections.emptyList();
 		if (aggregateSettings.isEnabled()) {
-			return getPointValueAmChartRepository().convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, dataPoints, aggregateSettings), dataPoints.get(0).getId());
+			return PointValueAmChartUtils.convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, dataPoints, aggregateSettings), dataPoints.get(0).getId());
 		}
 		return getPointValueAmChartRepository().getPointValuesToCompareFromRange(getPointIds(dataPoints), startTs, endTs);
 	}
@@ -648,11 +647,11 @@ public class DataPointService implements MangoDataPoint {
 		return pointIds;
 	}
 
-	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs,
-																					 List<DataPointVO> pointIds,
-																					 AggregateSettings aggregateSettings) {
+	private List<DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs,
+																					   List<DataPointVO> pointIds,
+																					   AggregateSettings aggregateSettings) {
 		int limit = aggregateSettings.getValuesLimit();
-		List<PointValueAmChartDAO.DataPointSimpleValue> pvcList = getPointValueAmChartRepository()
+		List<DataPointSimpleValue> pvcList = getPointValueAmChartRepository()
 				.getPointValuesFromRangeWithLimit(getPointIds(pointIds), startTs, endTs, limit + 1);
 		if (pvcList.size() > limit) {
 			pvcList.clear();
@@ -666,12 +665,12 @@ public class DataPointService implements MangoDataPoint {
 		return pointIds.stream().mapToInt(DataPointVO::getId).toArray();
 	}
 
-	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateSortValues(long startTs, long endTs,
+	private List<DataPointSimpleValue> aggregateSortValues(long startTs, long endTs,
 																				List<DataPointVO> dataPoints,
 																				int limit, long intervalMs) {
 		return dataPoints.stream()
 				.flatMap(dataPoint -> getPointValueAmChartRepository().aggregatePointValues(dataPoint, startTs, endTs, intervalMs, limit).stream())
-				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
+				.sorted(Comparator.comparingLong(DataPointSimpleValue::getTimestamp))
 				.collect(Collectors.toList());
 	}
 
@@ -686,7 +685,7 @@ public class DataPointService implements MangoDataPoint {
 		}
 	}
 
-	private PointValueAmChartDAO getPointValueAmChartRepository() {
+	private IAmChartDAO getPointValueAmChartRepository() {
 		boolean readEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.read.enabled", true);
 		if(dbQueryEnabled && readEnabled) {
 			return pointValueAmChartQueryRepository;
