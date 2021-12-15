@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;
@@ -185,7 +184,7 @@ public class MailingListService implements MangoMailingList {
 	@Override
 	public void populateEntrySubclasses(List<EmailRecipient> entries) {
 		// Update the user type entries with their respective user objects.
-		UserDAO userDAO = new UserDAO();
+		UserService userDAO = new UserService();
 		for (EmailRecipient e : entries) {
 			if (e instanceof MailingList) {
 				setRelationalData((MailingList) e);

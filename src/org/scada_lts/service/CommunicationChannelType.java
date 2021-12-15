@@ -104,7 +104,7 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         if(address == null || address.isEmpty())
             return false;
         for(String pattern: regexExps) {
-            if(address.matches(pattern))
+            if(address.toLowerCase().matches(pattern))
                 return true;
         }
         return false;

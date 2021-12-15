@@ -4,16 +4,14 @@ package org.scada_lts.permissions.service;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.ViewDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ViewUserPermissionsService implements PermissionsService<ViewAccess, User> {
 
     private final ViewDAO viewDAO;
-
-    public ViewUserPermissionsService() {
-        this.viewDAO = new ViewDAO();
-    }
 
     public ViewUserPermissionsService(ViewDAO viewDAO) {
         this.viewDAO = viewDAO;

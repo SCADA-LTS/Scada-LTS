@@ -173,18 +173,7 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-
-        boolean sent = SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, vo.getAlias(), new AfterWork() {
-            @Override
-            public void workFail(Exception exception) {
-                LOG.error(exception);
-                service.scheduleEventFail(getVo(), evt);
-            }
-
-            @Override
-            public void workSuccess() {
-            }
-        });
+        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, vo.getAlias());
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {

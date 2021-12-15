@@ -1,4 +1,5 @@
 package org.scada_lts.web.mvc.api.json;
+import com.serotonin.mango.vo.User;
 
 import com.serotonin.mango.Common;
 
@@ -52,6 +53,24 @@ public class JsonUser {
         this.theme = theme;
         this.hideMenu = hideMenu;
         this.userProfile = userProfile;
+    }
+
+    public JsonUser(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.phone = user.getPhone();
+        this.admin = user.isAdmin();
+        this.disabled = user.isDisabled();
+        this.homeUrl = user.getHomeUrl();
+        this.lastLogin = user.getLastLogin();
+        this.receiveAlarmEmails = user.getReceiveAlarmEmails();
+        this.receiveOwnAuditEvents = user.isReceiveOwnAuditEvents();
+        this.theme = user.getTheme();
+        this.hideMenu = user.isHideMenu();
+        this.userProfile = 0;
     }
 
     public int getId() {
@@ -172,5 +191,16 @@ public class JsonUser {
 
     public void setUserProfile(int userProfile) {
         this.userProfile = userProfile;
+    }
+
+    public User mapToUser() {
+        User u = new User(this.getId(), this.getUsername(), this.getFirstName(), this.getLastName(),
+        this.getEmail(), this.getPhone(), this.isAdmin(), this.isDisabled(), this.getHomeUrl(), this.getLastLogin());
+        u.setTheme(this.getTheme());
+        u.setHideMenu(this.isHideMenu());
+        u.setReceiveOwnAuditEvents(this.isReceiveOwnAuditEvents());
+        u.setReceiveAlarmEmails(this.getReceiveAlarmEmails());
+        u.setUserProfileId(this.getUserProfile());
+        return u;
     }
 }

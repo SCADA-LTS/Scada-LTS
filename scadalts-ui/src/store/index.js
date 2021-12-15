@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import dataSource from './dataSource';
+import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
 import storeEvents from './events';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
@@ -29,6 +30,7 @@ const myLoggerForVuexMutation = (store) => {
 export default new Vuex.Store({
 	modules: {
 		dataSource,
+		dataSourceState,
 		dataPoint,
 		eventDetectorModule,
 		storeEvents,
@@ -95,6 +97,10 @@ export default new Vuex.Store({
     		let host = window.location.host.split(":");
 
 			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
+		},
+
+		updateRequestTimeout(state, timeout) {
+			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
 		}
 	},
 	actions: {
@@ -309,6 +315,7 @@ export default new Vuex.Store({
 			} else {
 				console.error('⚫️ - Not received response message!');
 			}
+
 			return false;
 		},
 	},

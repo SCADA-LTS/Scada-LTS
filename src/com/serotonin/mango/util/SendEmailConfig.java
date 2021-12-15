@@ -39,8 +39,7 @@ public class SendEmailConfig {
         validateConfig(SystemSettingsDAO.EMAIL_FROM_ADDRESS, fromAddr);
         validateConfig(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
         if(authorization) {
-            validateConfig(SystemSettingsDAO.EMAIL_SMTP_USERNAME, username);
-            validateConfig(SystemSettingsDAO.EMAIL_SMTP_PASSWORD, password);
+            validateAuthorizationConfig(username, password);
         }
         return new SendEmailConfig(fromAddr, pretty, host, port, authorization, username, password, tls);
     }
@@ -77,10 +76,29 @@ public class SendEmailConfig {
         return tls;
     }
 
+    public static void validateSystemSettings() throws Exception {
+        String fromAddr = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS);
+        String host = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_HOST);
+        boolean authorization = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_AUTHORIZATION);
+        String username = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME);
+        String password = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD);
+
+        validateConfig(SystemSettingsDAO.EMAIL_FROM_ADDRESS, fromAddr);
+        validateConfig(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
+        if(authorization) {
+            validateAuthorizationConfig(username, password);
+        }
+    }
+
     private static void validateConfig(String name, Object object) throws Exception {
         if(object == null)
             throw new IllegalStateException("Email config properties: " + name + " is null!");
         if((object instanceof String) && ((String)object).isEmpty())
             throw new IllegalStateException("Email config properties: " + name + " is empty!");
+    }
+
+    private static void validateAuthorizationConfig(String user, String password) throws Exception {
+        if((user == null || user.isEmpty()) && (password == null || password.isEmpty()))
+            throw new IllegalStateException("Email config properties: " + SystemSettingsDAO.EMAIL_SMTP_USERNAME + " / " + SystemSettingsDAO.EMAIL_SMTP_PASSWORD + " is null!");
     }
 }

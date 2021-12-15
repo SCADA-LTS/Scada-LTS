@@ -472,5 +472,7 @@
         </div>
       </td>
     </tr>
+
+    <tag:newPageNotification href="./app.shtm#/users" ref="usersNotification"/>
   </table>
 </tag:page>

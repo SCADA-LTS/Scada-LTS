@@ -21,17 +21,14 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonValue;
+import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -248,8 +245,8 @@ abstract public class CompoundComponent extends ViewComponent {
             int len = in.readInt();
             for (int i = 0; i < len; i++) {
                 String childId = in.readUTF();
-                DataPointVO dataPoint = readDataPoint(in);
-                setDataPoint(childId, dataPoint);
+                int dataPointId = in.readInt();
+                getDataPoint(dataPointId).ifPresent(dataPoint -> setDataPoint(childId, dataPoint));
             }
         }
     }
@@ -289,5 +286,17 @@ abstract public class CompoundComponent extends ViewComponent {
                 jsonSerializeDataPoint(jsonChildren, child.getId(), (PointComponent) child.getViewComponent());
         }
         map.put("children", jsonChildren);
+    }
+
+    private Optional<DataPointVO> getDataPoint(int dataPointId) {
+        return isSetDataPoint(dataPointId) ? Optional.ofNullable(readDataPoint(dataPointId)) : Optional.empty();
+    }
+
+    private boolean isSetDataPoint(int dataPointId) {
+        return dataPointId > 0;
+    }
+
+    private DataPointVO readDataPoint(int id) {
+        return new DataPointDao().getDataPoint(id);
     }
 }

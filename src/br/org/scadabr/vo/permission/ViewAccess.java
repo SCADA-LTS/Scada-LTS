@@ -50,6 +50,11 @@ public class ViewAccess extends Permission implements JsonSerializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return "ViewAccess{" +
 				"id=" + id +

@@ -17,39 +17,21 @@
  */
 package org.scada_lts.permissions.migration.dao;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.vo.DataPointVO;
+
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
-import org.scada_lts.dao.MaintenanceEventDAO;
-import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
-import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoDataSource;
-import org.scada_lts.mango.adapter.MangoPointHierarchy;
-import org.scada_lts.mango.service.DataPointService;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class OnlyMigrationDataSourceService implements MangoDataSource {
+public final class OnlyMigrationDataSourceService implements MangoDataSource {
 
 	private DataSourceDAO dataSourceDAO;
 
-	private MangoDataPoint dataPointService;
-
-	public OnlyMigrationDataSourceService(DataSourceDAO dataSourceDAO, MangoDataPoint dataPointService) {
+	public OnlyMigrationDataSourceService(DataSourceDAO dataSourceDAO) {
 		this.dataSourceDAO = dataSourceDAO;
-		this.dataPointService = dataPointService;
 	}
 
 	@Override
@@ -57,135 +39,53 @@ public class OnlyMigrationDataSourceService implements MangoDataSource {
 		return dataSourceDAO.getDataSources();
 	}
 
-	public List<DataSourceVO<?>> getDataSourcesPlc() { return dataSourceDAO.getDataSourcesPlc(); }
-
 	@Override
 	public DataSourceVO<?> getDataSource(int id) {
-		try {
-			return dataSourceDAO.getDataSource(id);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public DataSourceVO<?> getDataSource(String xid) {
-		return dataSourceDAO.getDataSource(xid);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String generateUniqueXid() {
-		return DAO.getInstance().generateUniqueXid(DataSourceVO.XID_PREFIX, "dataSources");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isXidUnique(String xid, int excludeId) {
-		return DAO.getInstance().isXidUnique(xid, excludeId, "dataSources");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
-		if (dataSource.getId() == Common.NEW_ID) {
-			dataSource.setId(dataSourceDAO.insert(dataSource));
-		} else {
-			updateDataSource(dataSource);
-			MangoPointHierarchy.getInst().changeDataSource(dataSource);
-		}
-	}
-
-	private void updateDataSource(DataSourceVO<?> dataSource) {
-		DataSourceVO<?> oldDataSource = dataSourceDAO.getDataSource(dataSource.getId());
-		dataSourceDAO.update(dataSource);
-
-		// if datasource's name has changed, update datapoints
-		if (!dataSource.getName().equals(oldDataSource.getName())) {
-			List<DataPointVO> dataPointList = dataPointService.getDataPoints(dataSource.getId(), null);
-			for (DataPointVO dataPoint : dataPointList) {
-				dataPoint.setDataSourceName(dataPoint.getName());
-				dataPoint.setDeviceName(dataPoint.getName());
-				dataPointService.updateDataPoint(dataPoint);
-			}
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void deleteDataSource(final int dataSourceId) {
-		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);
-		dataPointService.deleteDataPoints(dataSourceId);
-
-		if (dataSource != null) {
-			deleteInTransaction(dataSourceId);
-		}
-	}
-
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	private void deleteInTransaction(final int dataSourceId) {
-		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
-		dataSourceDAO.delete(dataSourceId);
-	}
-
-	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
-		List<Integer> userIDs = dataSourceDAO.getDataSourceUsersId(fromDataSourceId);
-		dataSourceDAO.batchInsert(userIDs, toDataSourceId);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int copyDataSource(final int dataSourceId, final ResourceBundle bundle) {
-		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);
-
-		//Copy the data source
-		DataSourceVO<?> dataSourceCopy = dataSource.copy();
-		dataSourceCopy.setId(Common.NEW_ID);
-		dataSourceCopy.setXid(generateUniqueXid());
-		dataSourceCopy.setEnabled(false);
-		dataSourceCopy.setState(new UserCpChangeEnableStateDs());
-
-		//TODO seroUtils
-		dataSourceCopy.setName(StringUtils.truncate(LocalizableMessage.getMessage(bundle, "common.copyPrefix", dataSource.getName()), 40));
-
-		saveDataSource(dataSourceCopy);
-
-		//Copy permissions
-		copyPermissions(dataSource.getId(), dataSourceCopy.getId());
-
-		//Copy points
-		for (DataPointVO dataPoint: dataPointService.getDataPoints(dataSourceId, null)) {
-			DataPointVO dataPointCopy = dataPoint.copy();
-			dataPointCopy.setId(Common.NEW_ID);
-			dataPointCopy.setXid(new DataPointService().generateUniqueXid());
-			dataPointCopy.setName(dataPoint.getName());
-			dataPointCopy.setDataSourceId(dataSourceCopy.getId());
-			dataPointCopy.setDataSourceName(dataSourceCopy.getName());
-			dataPointCopy.setDeviceName(dataSourceCopy.getName());
-			dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
-			dataPointCopy.getComments().clear();
-
-			//Copy event detectors
-			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
-				pointEventDetector.setId(Common.NEW_ID);
-				pointEventDetector.njbSetDataPoint(dataPointCopy);
-			}
-			dataPointService.saveDataPoint(dataPointCopy);
-
-			//Copy permissions
-			dataPointService.copyPermissions(dataPoint.getId(), dataPointCopy.getId());
-		}
-		return dataSourceCopy.getId();
+		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	public List<Integer> getDataSourceId(int userId) {
-		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
+		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	public void deleteDataSourceUser(int userId) {
-		dataSourceDAO.deleteDataSourceUser(userId);
+		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	public void insertPermissions(User user) {
-		dataSourceDAO.insertPermissions(user);
+		throw new UnsupportedOperationException();
 	}
 }

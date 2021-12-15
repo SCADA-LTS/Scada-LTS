@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -39,7 +40,9 @@ public class UsersAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                return new ResponseEntity<>(userService.getUserList(), HttpStatus.OK);
+                return new ResponseEntity<>(userService.getUsers().stream()
+                        .map(JsonUserInfo::new)
+                        .collect(Collectors.toList()), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -57,7 +60,7 @@ public class UsersAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                return new ResponseEntity<>(userService.getUserDetails(userId), HttpStatus.OK);
+                return new ResponseEntity<>(new JsonUser(userService.getUser(userId)), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -92,7 +95,9 @@ public class UsersAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return new ResponseEntity<>(userService.createUser(jsonUser), HttpStatus.OK);
+                User userToSave = jsonUser.mapToUser();
+                userService.saveUser(userToSave);
+                return new ResponseEntity<>(new JsonUser(userToSave), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -111,9 +116,10 @@ public class UsersAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                userService.updateUserDetails(jsonUser);
+                User userToSave = jsonUser.mapToUser();
+                userService.saveUser(userToSave);
                 if(jsonUser.getId() == user.getId()) {
-                    Common.setUser(request, userService.getUser(user.getId()));
+                    Common.setUser(request, userToSave);
                 }
 
                 return new ResponseEntity<>(HttpStatus.OK);

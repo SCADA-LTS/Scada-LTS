@@ -19,6 +19,7 @@
 package org.scada_lts.dao;
 
 import java.sql.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -217,14 +218,18 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_MVU_VIEW_ID+"=? and "
 				+ COLUMN_NAME_MVU_USER_ID+"=?";
 
-	private static final String WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID = ""
-			+ "select "
-			+ COLUMN_NAME_UP_VIEW_ID+ ", "
-			+ COLUMN_NAME_UP_PERMISSION + " "
-			+ "from "
-			+ "viewUsersProfiles "
-			+ "where "
-			+ COLUMN_NAME_UP_USER_PRFILE_ID+ "=?";
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"vup." + COLUMN_NAME_UP_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"viewUsersProfiles vup " +
+			"on " +
+			"vup." + COLUMN_NAME_UP_USER_PRFILE_ID + "=uup." + COLUMN_NAME_UP_USER_PRFILE_ID + " " +
+			"where " +
+			"vup." + COLUMN_NAME_UP_VIEW_ID + "=?;";
 
 	// @formatter:on
 	
@@ -437,19 +442,6 @@ public class ViewDAO implements GenericDAO<View> {
 
 	}
 
-	public List<ViewAccess> selectViewPermissionsByProfileId(int usersProfileId) {
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("selectViewPermissionsByUsersProfileId(final int usersProfileId) usersProfileId:" + usersProfileId);
-		}
-
-		return DAO.getInstance().getJdbcTemp().query(WATCHLIST_USERS_PROFILES_SELECT_BASE_ON_USERS_PROFILE_ID, new Object[]{usersProfileId}, (rs, rowNum) -> {
-			ViewAccess viewAccess = new ViewAccess();
-			viewAccess.setId(rs.getInt(COLUMN_NAME_UP_VIEW_ID));
-			viewAccess.setPermission(rs.getInt(COLUMN_NAME_UP_PERMISSION));
-			return viewAccess;
-		});
-	}
-
 	public int[] insertPermissions(final int userId, final List<ViewAccess> toInsert) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPermissions(final User user, final List<WatchListAccess> toInsert) user:" + userId + "");
@@ -505,4 +497,19 @@ public class ViewDAO implements GenericDAO<View> {
 						.nameColumnName(COLUMN_NAME_NAME)
 						.build());
     }
+
+	public List<ShareUser> selectViewShareUsers(int viewId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
+					new Object[]{viewId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
 }
