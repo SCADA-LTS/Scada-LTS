@@ -28,6 +28,7 @@ import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.*;
 import com.serotonin.mango.Common;
@@ -62,6 +63,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private String password;
 	@JsonRemoteProperty
+	private String firstName;
+	@JsonRemoteProperty
+	private String lastName;
+	@JsonRemoteProperty
 	private String email;
 	@JsonRemoteProperty
 	private String phone;
@@ -91,6 +96,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private boolean hideMenu;
 
+
+
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -111,6 +118,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+	private transient boolean hideHeader = false;
 
 	public User() { }
 
@@ -123,6 +131,58 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.disabled = disabled;
 		this.homeUrl = homeUrl;
 		this.lastLogin = lastLogin;
+	}
+
+	public User(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+		this.id = id;
+		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phone = phone;
+		this.admin = admin;
+		this.disabled = disabled;
+		this.homeUrl = homeUrl;
+		this.lastLogin = lastLogin;
+	}
+
+	public User(User user) {
+		this.id = user.id;
+		this.username = user.username;
+		this.password = user.password;
+		this.email = user.email;
+		this.phone = user.phone;
+		this.admin = user.admin;
+		this.disabled = user.disabled;
+		this.dataSourcePermissions = new ArrayList<>(user.dataSourcePermissions);
+		this.dataPointPermissions = new ArrayList<>(user.dataPointPermissions);
+		this.dataSourceProfilePermissions = new ArrayList<>(user.dataSourceProfilePermissions);
+		this.dataPointProfilePermissions = new ArrayList<>(user.dataPointProfilePermissions);
+		this.watchListProfilePermissions = new ArrayList<>(user.watchListProfilePermissions);
+		this.viewProfilePermissions = new ArrayList<>(user.viewProfilePermissions);
+		this.selectedWatchList = user.selectedWatchList;
+		this.homeUrl = user.homeUrl;
+		this.lastLogin = user.lastLogin;
+		this.receiveAlarmEmails = user.receiveAlarmEmails;
+		this.receiveOwnAuditEvents = user.receiveOwnAuditEvents;
+		this.theme = user.theme;
+		this.hideMenu = user.hideMenu;
+		this.userProfile = user.userProfile;
+		this.view = user.view;
+		this.watchList = user.watchList;
+		this.editPoint = user.editPoint;
+		this.editDataSource = user.editDataSource;
+		this.testingUtility = user.testingUtility;
+		this.reportImageData = user.reportImageData;
+		this.editPublisher = user.editPublisher;
+		this.importTask = user.importTask;
+		this.muted = user.muted;
+		this.dataExportDefinition = user.dataExportDefinition;
+		this.eventExportDefinition = user.eventExportDefinition;
+		this.attributes = user.attributes;
+		this.uploadedProject = user.uploadedProject;
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
 	}
 
 	/**
@@ -180,6 +240,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	// Convenience method for JSPs
+	@JsonIgnore
 	public boolean isDataSourcePermission() {
 		return Permissions.hasDataSourcePermission(this);
 	}
@@ -209,6 +270,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void cancelTestingUtility() {
 		setTestingUtility(null);
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	// Properties
@@ -423,6 +500,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setHideMenu(boolean hideMenu) {
 		this.hideMenu = hideMenu;
+	}
+
+	public boolean isHideHeader() {
+		return hideHeader;
+	}
+
+	public void setHideHeader(boolean hideHeader) {
+		this.hideHeader = hideHeader;
 	}
 
 	public void setAttribute(String key, Object value) {
@@ -644,4 +729,26 @@ public class User implements SetPointSource, HttpSessionBindingListener,
     public void setViewProfilePermissions(List<ViewAccess> viewProfilePermissions) {
         this.viewProfilePermissions = viewProfilePermissions;
     }
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", email='" + email + '\'' +
+				", phone='" + phone + '\'' +
+				", admin=" + admin +
+				", disabled=" + disabled +
+				", homeUrl='" + homeUrl + '\'' +
+				", lastLogin=" + lastLogin +
+				", receiveAlarmEmails=" + receiveAlarmEmails +
+				", receiveOwnAuditEvents=" + receiveOwnAuditEvents +
+				", theme='" + theme + '\'' +
+				", hideMenu=" + hideMenu +
+				", userProfile=" + userProfile +
+				", muted=" + muted +
+				", attributes=" + attributes +
+				'}';
+	}
 }

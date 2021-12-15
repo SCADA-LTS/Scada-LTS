@@ -91,7 +91,7 @@ public class ContextWrapper {
 			if (imageSet.getId().equals(id))
 				return imageSet;
 		}
-		return null;
+		return ImageSet.unavailable(id);
 	}
 
 	public DynamicImage getDynamicImage(String id) {
@@ -100,7 +100,7 @@ public class ContextWrapper {
 			if (dynamicImage.getId().equals(id))
 				return dynamicImage;
 		}
-		return null;
+		return DynamicImage.unavailable(id);
 	}
 
 	public RuntimeManager getRuntimeManager() {

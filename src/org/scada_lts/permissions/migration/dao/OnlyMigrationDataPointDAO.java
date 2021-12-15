@@ -46,7 +46,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 
-public class OnlyMigrationDataPointDAO extends DataPointDAO {
+public final class OnlyMigrationDataPointDAO extends DataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationDataPointDAO.class);
 
@@ -292,13 +292,13 @@ public class OnlyMigrationDataPointDAO extends DataPointDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void update(DataPointVO dataPoint) {
+	public int update(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(DataPointVO dataPoint) dataPoint:" + dataPoint);
 		}
 
-		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
+		return DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
 				PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()),
 				dataPoint.getXid(),
 				dataPoint.getName(),
@@ -308,7 +308,7 @@ public class OnlyMigrationDataPointDAO extends DataPointDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int id) {
+	public int delete(int id) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int id) id:" + id);
@@ -316,7 +316,7 @@ public class OnlyMigrationDataPointDAO extends DataPointDAO {
 
 		String templateDeleteIn = DATA_POINT_DELETE + "=?";
 
-		DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {id});
+		return DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {id});
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

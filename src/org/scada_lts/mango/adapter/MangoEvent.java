@@ -41,8 +41,22 @@ public interface MangoEvent {
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource, boolean signalAlarmLevelChange);
 	
 	void ackEvent(int eventId, long time, int userId, int alternateAckSource);
-	
-	//TODO userIds should be the List<Long>
+
+    void silenceEvent(int eventId, int userId);
+
+	void unsilenceEvent(int eventId, int userId);
+
+    void silenceEvents(List<Integer> eventIds, int userId);
+
+	void unsilenceEvents(List<Integer> eventIds, int userId);
+
+	void ackAllPending(long time, int userId, int alternateAckSource);
+
+    void silenceAll(int userId);
+
+    void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids);
+
+    //TODO userIds should be the List<Long>
 	void insertUserEvents(final int eventId, final List<Integer> userIds, final boolean alarm);
 	
 	void attachRelationInfo(List<EventInstance> list);
@@ -52,12 +66,16 @@ public interface MangoEvent {
 	List<EventInstance> getEventsForDataPoint(int dataPointId, int userId);
 	
 	List<EventInstance> getPendingEventsForDataPoint(int dataPointId, int userId);
+
+	List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId);
 	
 	List<EventInstance> getPendingEventsForDataSource(int dataSourceId,	int userId);
 	
 	List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId);
 	
 	List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId);
+
+	List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId);
 	
 	List<EventInstance> getPendingEvents(int userId);
 	
@@ -108,6 +126,5 @@ public interface MangoEvent {
 	int getHighestUnsilencedAlarmLevel(int userId);
 
 	EventInstance getEvent(int eventId);
-	
 
 }

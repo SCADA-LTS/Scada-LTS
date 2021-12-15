@@ -556,7 +556,6 @@ public class PointValueDAO implements IPointValueDAO {
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void executeBatchUpdateInsert( List<Object[]> params) {
-		
 		if (LOG.isTraceEnabled()) {
 			for (Object[] param : params) {
 				for (Object arg :param) {

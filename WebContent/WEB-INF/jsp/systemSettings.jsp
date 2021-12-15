@@ -97,7 +97,8 @@
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
-    
+
+<%--
     	SystemSettingsDwr.checkTypeDB(function(msg){
         	
         	if (msg == "derby") {
@@ -108,7 +109,7 @@
         		document.getElementById('radioMysql').checked = true;
 			}
         });
-    
+--%>
     
     }
     
@@ -382,7 +383,7 @@
     
     function dbBackup() {
     	alert("Not implemented !");
-    }+
+    }
 
     function refreshImages() {
 
@@ -412,15 +413,12 @@
     
   </script>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
           <span class="smallTitle"><fmt:message key="systemSettings.systemInformation"/></span>
           <tag:help id="systemInformation"/>
-        </td>
-        <td align="right">
-          <tag:img id="saveInfoSettingsImg" png="save" onclick="saveInfoSettings();" title="common.save"/>
         </td>
       </tr>
     </table>
@@ -444,7 +442,7 @@
       --%>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.instanceDescription"/></td>
-        <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>" type="text"/></td>
+        <td align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#system-info-settings'"/></td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.databaseSize"/></td>
@@ -720,7 +718,8 @@
       </tr>
     </table>
   </div>
-  
+
+<%--
    <div class="borderDiv marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
@@ -748,7 +747,7 @@
           <input id="radioMysql" name="db" type="radio"/>
         </td>
       </tr>
-<%--
+
        <tr>
         <td class="formLabel"><fmt:message key="systemSettings.dbConfiguration.Mssql"/></td>
         <td class="formField">
@@ -761,13 +760,15 @@
           <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-   --%>   
+
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  <div class="borderDiv marB marR" style="float:left">
+--%>
+
+  <div class="borderDivPadded marB marR" style="float:left">
        <table width="100%">
           <tr>
              <td>
@@ -775,22 +776,49 @@
              </td>
           </tr>
           <tr>
-             <td>
-               <button onClick="refreshImages()">Refresh</button>
+             <td align="center">
+               <input type="button" value="Refresh" onClick="refreshImages()"/>
              </td>
           </tr>
        </table>
   </div>
 
-  <div class="borderDiv marB marR" style="float:left">
-    <div id="sms-domain"></div>
-  </div>
+    <div class="borderDivPadded marB marR" style="clear:left;float:left">
+         <table align="center" "100%">
+           <tr>
+             <td>
+               <span class="smallTitle"><fmt:message key="systemSettings.newUI"/></span>
+               <tag:help id="newUISettings"/>
+             </td>
+           </tr>
+         </table>
+         <table>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
+           </tr>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
+           </tr>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
+           </tr>
+           <tr>
+             <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
+             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
+           </tr>
+           <tr>
+             <td colspan="2" id="httpMessage" class="formError"></td>
+           </tr>
+         </table>
+    </div>
 
   <div class="" style="float:left; color:white">
   #branchName
   </div>
   
-  
+                                  
 </tag:page>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
-<%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
+<tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>

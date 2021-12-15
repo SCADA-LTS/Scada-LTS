@@ -24,15 +24,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-
+import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
 import org.scada_lts.utils.QueryUtils;
+import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
+import org.scada_lts.web.mvc.api.json.JsonEventSearch;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -88,7 +91,9 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_ACT_USER_ID = "ackUserId";
 	private static final String COLUMN_NAME_USER_NAME = "username";
 	private static final String COLUMN_NAME_ALTERNATE_ACK_SOURCE = "alternateAckSource";
+	private static final String COLUMN_NAME_DATAPOINT_XID = "xid";
 	private static final String COLUMN_NAME_SILENCED = "silenced";
+	private static final String COLUMN_NAME_USER_COMMENT_COUNT = "comments";
 	private static final String COLUMN_NAME_EVENT_ID = "eventId";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	
@@ -115,13 +120,26 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String COLUMN_NAME_ALARM_EVENT_ID="eventId";
 	private static final String COLUMN_NAME_ALARM_ID="id";
 	private static final String COLUMN_NAME_ALARM_USER_ID="userId";
-	//private static final String COLUMN_NAME_ALARM_ACT_TS="actTs";
 	
 	
 	//------------- User events
 	//TODO rewrite to another class
 	private static final String COLUMN_NAME_USER_EVENTS_ID="id";
-	
+
+	private static String EVENT_FIELDS = "e." + COLUMN_NAME_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
+			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
+			"e." + COLUMN_NAME_RTN_TS + ", " +
+			"e." + COLUMN_NAME_RTN_CAUSE + ", " +
+			"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
+			"e." + COLUMN_NAME_MESSAGE + ", " +
+			"e." + COLUMN_NAME_ACT_TS + ", " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + ", " +
+			"dp."+ COLUMN_NAME_DATAPOINT_XID + ", " +
+			"ue."+ COLUMN_NAME_SILENCED + " ";
 	
 	// @formatter:off
 	private static final String BASIC_EVENT_SELECT = ""
@@ -218,6 +236,31 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		  + "where "
 				+ COLUMN_NAME_ID+"=? and "
 				+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+
+	private static final String EVENT_ACT_ALL ="" +
+			"update "
+			+" events set "
+			+ COLUMN_NAME_ACT_TS+"=?, "
+			+ COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+ "where "
+			+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
+
+	private static final String EVENT_SILENCE_ALL ="" +
+			"UPDATE "
+			+ "userEvents SET "
+			+ COLUMN_NAME_ALARM_SILENCED+"='Y' "
+			+ "WHERE userId=? ";
+
+	private static final String EVENT_ACT_IDS ="" +
+			"update "
+			+"events set "
+			+ COLUMN_NAME_ACT_TS+"=?, "
+			+ COLUMN_NAME_ACT_USER_ID+"=?, "
+			+ COLUMN_NAME_ALTERNATE_ACK_SOURCE+"=? "
+			+ "where "
+			+ COLUMN_NAME_ID+" rlike ? and "
+			+ "("+COLUMN_NAME_ACT_TS+" is null or "+COLUMN_NAME_ACT_TS+" = 0) ";
 	
 	public static final String EVENT_FILTER_ACTIVE=" "
 			+"e."+ COLUMN_NAME_RTN_APPLICABLE+"=? and (e."+ COLUMN_NAME_RTN_TS+" is null or e."+COLUMN_NAME_RTN_TS+"=0)";
@@ -433,6 +476,27 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			"ORDER BY activeTs DESC " +
 			"LIMIT ? OFFSET ?";
 
+	private static final String SELECT_SPECIFIC_EVENTS_WITH_LIMIT = "" +
+			"SELECT " +
+			"e." + COLUMN_NAME_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_ID + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_1 + ", " +
+			"e." + COLUMN_NAME_TYPE_REF_2 + ", " +
+			"e." + COLUMN_NAME_ACTIVE_TS + ", " +
+			"e." + COLUMN_NAME_RTN_APPLICABLE + ", " +
+			"e." + COLUMN_NAME_RTN_TS + ", " +
+			"e." + COLUMN_NAME_RTN_CAUSE + ", " +
+			"e." + COLUMN_NAME_ALARM_LEVEL + ", " +
+			"e." + COLUMN_NAME_MESSAGE + ", " +
+			"e." + COLUMN_NAME_ACT_TS + ", " +
+			"u." + COLUMN_NAME_USER_NAME + ", " +
+			"e." + COLUMN_NAME_ALTERNATE_ACK_SOURCE + " " +
+			"FROM events e " +
+			"LEFT JOIN users u ON u.id=e.ackUserId " +
+			"WHERE typeId=? AND typeRef1=? " +
+			"ORDER BY activeTs DESC " +
+			"LIMIT ? OFFSET ?";
+
 	private static final String SELECT_SPECIFIC_EVENT_USER_COMMENTS = "" +
 			"SELECT " +
 			"uc." + COLUMN_NAME_COMMENT_TEXT + ", " +
@@ -590,6 +654,30 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
+	private class EventDTOSearchRowMapper implements RowMapper<EventDTO> {
+		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EventDTO result = new EventDTO(
+					rs.getInt(COLUMN_NAME_ID),
+					rs.getInt(COLUMN_NAME_TYPE_ID),
+					rs.getInt(COLUMN_NAME_TYPE_REF_1),
+					rs.getInt(COLUMN_NAME_TYPE_REF_2),
+					rs.getLong(COLUMN_NAME_ACTIVE_TS),
+					rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
+					rs.getLong(COLUMN_NAME_RTN_TS),
+					rs.getInt(COLUMN_NAME_RTN_CAUSE),
+					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
+					rs.getString(COLUMN_NAME_MESSAGE),
+					rs.getLong(COLUMN_NAME_ACT_TS),
+					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
+					rs.getString(COLUMN_NAME_DATAPOINT_XID),
+					"Y".equals(rs.getString(COLUMN_NAME_SILENCED)),
+					rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
+			);
+
+			return result;
+		}
+	}
+
 	private class EventDTORowMapper implements RowMapper<EventDTO> {
 		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			EventDTO result = new EventDTO(
@@ -613,6 +701,27 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 	}
 
+	private class EventCommentDTORowMapper implements RowMapper<EventCommentDTO> {
+		public EventCommentDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EventCommentDTO result = new EventCommentDTO(
+					rs.getInt("userId"),
+					rs.getString("username"),
+					rs.getInt("commentType"),
+					rs.getInt("typeKey"),
+					rs.getString("ts"),
+					rs.getString("commentText")
+			);
+
+			return result;
+		}
+	}
+
+	private class TotalRowMapper implements RowMapper<Integer> {
+		public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getInt("TOTAL");
+		}
+	}
+
 	/**
 	 * Select from Database Event Rows containing specific Type and Reference
 	 * To increase performance there is provided a pagination function.
@@ -626,7 +735,127 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 * @return List of Events
 	 */
 	public List<EventDTO> findEventsWithLimit(int typeId, int typeRef, int limit, int offset) {
-		return  (List<EventDTO>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT, new Object[]{typeId, typeRef, limit, offset}, new EventDTORowMapper());
+		return (List<EventDTO>) DAO.getInstance().getJdbcTemp().query(SELECT_SPECIFIC_DATAPOINT_ALARMS_WITH_LIMIT, new Object[]{typeId, typeRef, limit, offset}, new EventDTORowMapper());
+	}
+	/**
+	 * Select from Database Event Rows containing specific Type and Reference
+	 * To increase performance there is provided a pagination function.
+	 *
+	 * @param query
+	 * @param user
+	 *
+	 * @return List of Events
+	 */
+	public SQLPageWithTotal<EventDTO> findEvents(
+			JsonEventSearch query,
+			User user) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuilder sql = new StringBuilder();
+
+		StringBuilder from = new StringBuilder();
+		from.append(" FROM events e ");
+		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
+		from.append(" LEFT JOIN userEvents ue ON ue.eventId = e.id " );
+
+		List<String> filterCondtions = new ArrayList<String>();
+		if (!user.isAdmin()) {
+			filterCondtions.add("u.id=?");
+			params.add(user.getId());
+		}
+
+		if (!"".equals(query.getStartDate())) {
+			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
+			String start = query.getStartDate()+' '+query.getStartTime();
+			params.add(start);
+		}
+		if (!"".equals(query.getEndDate())) {
+			filterCondtions.add("e.activeTs <= ((UNIX_TIMESTAMP(?)+60)*1000)");
+			String end = query.getEndDate()+' '+query.getEndTime();
+			params.add(end);
+		}
+		if (query.getAlarmLevel() != 0) {
+			filterCondtions.add("e.alarmLevel>=?");
+			params.add(query.getAlarmLevel());
+		}
+
+		if (query.getEventSourceType() != 0) {
+			filterCondtions.add("e.typeId=?");
+			params.add(query.getEventSourceType());
+		}
+
+		if (EventsDwr.STATUS_ACTIVE.equals(query.getStatus())) {
+			filterCondtions.add("e.rtnApplicable='Y'");
+			filterCondtions.add("e.rtnTs is null");
+		} else if (EventsDwr.STATUS_RTN.equals(query.getStatus())) {
+			filterCondtions.add("e.rtnApplicable='Y'");
+			filterCondtions.add("e.rtnTs is not null");
+		} else if (EventsDwr.STATUS_NORTN.equals(query.getStatus())) {
+			filterCondtions.add("e.rtnApplicable='N'");
+		}
+
+		List<String> userCommentKeywordConditions = new ArrayList<String>();
+		if (!"".equals(query.getKeywords())) {
+			List<String> keywordConditions = new ArrayList<String>();
+			boolean joinWithDataSource = query.getEventSourceType() == 0 || query.getEventSourceType() == 3;
+			if (joinWithDataSource) {
+				from.append(" LEFT JOIN dataSources ds ON ds.id = dp.dataSourceId");
+			}
+
+			for (String keyword : query.getKeywords().split(" ")) {
+				if (joinWithDataSource) {
+					keywordConditions.add("dp.xid LIKE ?");
+					params.add("%" + keyword + "%");
+					keywordConditions.add("dp.pointName LIKE ?");
+					params.add("%" + keyword + "%");
+					keywordConditions.add("ds.xid LIKE ?");
+					params.add("%" + keyword + "%");
+					keywordConditions.add("ds.name LIKE ?");
+					params.add("%" + keyword + "%");
+				}
+
+				userCommentKeywordConditions.add("uc.commentText like ?");
+				params.add("%" + keyword + "%");
+
+				keywordConditions.add("e.message LIKE ?");
+				params.add("%" + keyword + "%");
+			}
+			keywordConditions.add("c.keywordMatched > 1");
+			filterCondtions.add(joinOr(keywordConditions));
+		}
+
+		sql.append("SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
+		sql.append(from.toString());
+		sql.append(" LEFT JOIN (SELECT typeKey, count(case when("+joinOr(userCommentKeywordConditions)+") then 1 else null end) AS keywordMatched, count(1) comments FROM userComments uc GROUP BY typeKey) c ON e.id = c.typeKey");
+		sql.append(" WHERE "+joinAnd(filterCondtions));
+		sql.append(" GROUP BY " + EVENT_FIELDS);
+
+		if (query.getSortBy().length != 0) {
+			List<String> sorting = new ArrayList<String>();
+			for (int i = 0; i < query.getSortBy().length; i++) {
+				if ("status".equals(query.getSortBy()[i])) {
+					sorting.add(" rtnApplicable " + (query.getSortDesc()[i] ? "DESC " : "ASC "));
+					sorting.add(" rtnTs " + (query.getSortDesc()[i] ? "DESC " : "ASC "));
+				} else {
+					sorting.add(query.getSortBy()[i] + " " + (query.getSortDesc()[i] ? "DESC " : "ASC "));
+				}
+			}
+			sql.append("ORDER BY "+String.join(", ", sorting));
+		} else {
+			sql.append("ORDER BY e."+ COLUMN_NAME_ID + " DESC ");
+		}
+
+		if (query.getLimit() != 0) {
+			sql.append("LIMIT " + query.getLimit() + " " );
+		}
+
+		if (query.getOffset() != 0) {
+			sql.append("OFFSET " + query.getOffset() + " " );
+		}
+		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
+						sql.toString()
+				, params.toArray(), new EventDTOSearchRowMapper());
+		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
+		return new SQLPageWithTotal<EventDTO>(page, total);
 	}
 
 	@Override
@@ -720,8 +949,39 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		}
 				
 		DAO.getInstance().getJdbcTemp().update( EVENT_ACT, new Object[]  { actTS, userId, alternateAckSource, eventId } );
-			
+
 	}
+
+	public void ackAllPending(long actTS, long userId, int alternateAckSource) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
+		}
+		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_ALL, new Object[]  { actTS, userId, alternateAckSource } );
+	}
+
+	public void silenceAll(long userId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(" userId:"+userId);
+		}
+		DAO.getInstance().getJdbcTemp().update( EVENT_SILENCE_ALL, new Object[]  { userId } );
+	}
+
+
+
+	public void ackAllPendingSelected(long actTS, long userId, int alternateAckSource, List<Integer> ids) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("actTS:"+actTS+" userId:"+userId+" alternateAckSource:"+alternateAckSource);
+		}
+		StringJoiner joiner = new StringJoiner("|", "^(", ")$");
+
+		for (int id: ids) {
+			joiner.add((String.valueOf(id)));
+		}
+
+		DAO.getInstance().getJdbcTemp().update( EVENT_ACT_IDS, new Object[]  { actTS, userId, alternateAckSource, joiner.toString() } );
+	}
+
 	
 	public List<EventInstance> getEventsForDataPoint(int dataPointId, int userId) {	
 		return (List<EventInstance>) DAO.getInstance().getJdbcTemp().query(EVENT_SELECT_WITH_USER_DATA+" where "+ EVENT_FILTER_FOR_DATA_POINT, new Object[]{dataPointId, userId}, new UserEventRowMapper());
@@ -1153,4 +1413,37 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		return DAO.getInstance().getJdbcTemp().query(query, ids.toArray(), new EventHandlerRowMapper());
 	}
 
+	@Transactional(readOnly = true)
+	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		sql.append("SELECT uc.userId as userId, u.username as username, uc.commentType as commentType, uc.typeKey as typeKey, uc.ts as ts, uc.commentText as commentText " +
+				" FROM userComments uc LEFT JOIN users u ON u.id = uc.userId WHERE uc.typeKey=? " +
+				" ORDER BY uc.ts DESC;");
+		params.add(eventId);
+		List<EventCommentDTO> result = DAO.getInstance().getJdbcTemp().query(sql.toString(), params.toArray(), new EventCommentDTORowMapper());
+		return (List<EventCommentDTO>) result ;
+	}
+
+	public String joinAnd(List<String> conditions) {
+		StringBuilder result = new StringBuilder();
+		result.append(" 1 ");
+		for (String c:conditions) {
+			result.append(" AND (");
+			result.append(c);
+			result.append(") ");
+		}
+		return result.toString();
+	}
+
+	public String joinOr(List<String> conditions) {
+		StringBuilder result = new StringBuilder();
+		result.append(" 0 ");
+		for (String c:conditions) {
+			result.append(" OR (");
+			result.append(c);
+			result.append(") ");
+		}
+		return result.toString();
+	}
 }

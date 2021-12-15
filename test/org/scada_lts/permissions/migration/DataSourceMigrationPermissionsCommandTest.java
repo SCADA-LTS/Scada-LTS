@@ -4,9 +4,7 @@ import br.org.scadabr.db.utils.TestUtils;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
@@ -17,10 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.dao.*;
-import org.scada_lts.mango.adapter.MangoDataPoint;
-import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.*;
-import org.scada_lts.permissions.service.DataPointProfilePermissionsService;
 import org.scada_lts.permissions.service.DataSourceProfilePermissionsService;
 import org.scada_lts.permissions.service.PermissionsService;
 import utils.*;
@@ -120,10 +115,9 @@ public class DataSourceMigrationPermissionsCommandTest {
         Map<Integer, UsersProfileVO> profiles = new HashMap<>();
         profiles.put(profile.getId(), profile);
 
-        UsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
-        DataSourceDAO dataPointUserDAO = new DataSourceUserDAOMemory(usersProfileDAO);
+        IUsersProfileDAO usersProfileDAO = new UsersProfileDAOMemory(profiles, userProfiles);
 
-        profilePermissionsService = new DataSourceProfilePermissionsService(usersProfileDAO, dataPointUserDAO);
+        profilePermissionsService = new DataSourceProfilePermissionsService(usersProfileDAO);
         userPermissionsService = new PermissionsServiceUserTestImpl<>(userPermissions);
 
         PermissionsService<WatchListAccess, User> watchListUserPermissionsService = new PermissionsServiceUserTestImpl<>(new HashMap<>());
@@ -134,40 +128,41 @@ public class DataSourceMigrationPermissionsCommandTest {
         PermissionsService<DataPointAccess, UsersProfileVO> dataPointPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
         PermissionsService<ViewAccess, UsersProfileVO> viewPermissionsService = new PermissionsServiceProfileTestImpl<>(new HashMap<>());
 
-        DAO dao = mock(DAO.class);
-        when(dao.generateUniqueXid(UsersProfileVO.XID_PREFIX, "usersProfiles")).thenAnswer(a -> {
-            String pre = (String)a.getArguments()[0];
-            return pre + new Random().nextInt();
-        });
+        List<DataSourceVO<?>> dataSources = new ArrayList<>();
+        DataSourceVO<VirtualDataSourceVO> ds1 = new VirtualDataSourceVO();
+        ds1.setId(dataSourceId1);
+        DataSourceVO<VirtualDataSourceVO> ds2 = new VirtualDataSourceVO();
+        ds2.setId(dataSourceId2);
+        DataSourceVO<VirtualDataSourceVO> ds3 = new VirtualDataSourceVO();
+        ds3.setId(dataSourceId3);
+        DataSourceVO<VirtualDataSourceVO> ds4 = new VirtualDataSourceVO();
+        ds4.setId(dataSourceId4);
+        DataSourceVO<VirtualDataSourceVO> ds5 = new VirtualDataSourceVO();
+        ds5.setId(dataSourceId5);
 
-        MangoDataSource dataSourceService = mock(DataSourceService.class);
-        when(dataSourceService.getDataSource(anyInt())).thenAnswer(a -> {
-            int id = (int) a.getArguments()[0];
-            DataSourceVO<VirtualDataSourceVO> ds = new VirtualDataSourceVO();
-            ds.setId(id);
-            return ds;
-        });
+        dataSources.add(ds1);
+        dataSources.add(ds2);
+        dataSources.add(ds3);
+        dataSources.add(ds4);
+        dataSources.add(ds5);
 
         views = new ArrayList<>();
         views.add(new View());
 
-        ViewService viewService = mock(ViewService.class);
-        when(viewService.getViews()).thenReturn(views);
-        WatchListService watchListService = mock(WatchListService.class);
-        MangoDataPoint dataPointService = mock(DataPointService.class);
-
         UserDAO userDAO = mock(UserDAO.class);
         when(userDAO.getUser(anyInt())).thenReturn(user);
 
-        usersProfileService = new UsersProfileService(usersProfileDAO, dao, userDAO,
+        usersProfileService = new UsersProfileService(usersProfileDAO, userDAO,
                 watchListPermissionsService, dataPointPermissionsService,
                 profilePermissionsService, viewPermissionsService);
 
         migrationPermissionsService = new MigrationPermissionsService(dataPointUserPermissionsService,
                 userPermissionsService, watchListUserPermissionsService, viewUserPermissionsService);
 
-        migrationDataService = new MigrationDataService(dataPointService,
-                dataSourceService, viewService, watchListService, usersProfileService);
+        migrationDataService = new MigrationDataService(new HashMap<>(),
+                dataSources.stream().collect(Collectors.toMap(DataSourceVO::getId, a -> a)),
+                views.stream().collect(Collectors.toMap(View::getId, a -> a)),
+                new HashMap<>(), usersProfileService);
     }
 
     @After
@@ -178,8 +173,7 @@ public class DataSourceMigrationPermissionsCommandTest {
     @Test
     public void when_execute_for_user_and_profile_accesses_then_same_accesses() {
         //given:
-        MigrationPermissions migrationCommand = MigrationPermissions
-                .newMigration(migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService);
 
         //when:
         migrationCommand.execute(users);
@@ -200,8 +194,7 @@ public class DataSourceMigrationPermissionsCommandTest {
     @Test
     public void when_execute_for_user_and_profile_accesses_then_same_profile_accesses() {
         //given:
-        MigrationPermissions migrationCommand = MigrationPermissions
-                .newMigration(migrationPermissionsService, migrationDataService, views);
+        MigrationPermissions migrationCommand = MigrationPermissions.newMigration(migrationPermissionsService, migrationDataService);
 
         //when:
         migrationCommand.execute(users);

@@ -2,30 +2,23 @@ package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
-import org.scada_lts.dao.UsersProfileDAO;
-import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+@Service
 public class WatchListProfilePermissionsService implements PermissionsService<WatchListAccess, UsersProfileVO>{
 
-    private final WatchListDAO watchListDAO;
-    private final UsersProfileDAO usersProfileDAO;
+    private final IUsersProfileDAO usersProfileDAO;
 
-    public WatchListProfilePermissionsService() {
-        this.watchListDAO = new WatchListDAO();
-        this.usersProfileDAO = new UsersProfileDAO();
-    }
-
-    public WatchListProfilePermissionsService(WatchListDAO watchListDAO, UsersProfileDAO usersProfileDAO) {
-        this.watchListDAO = watchListDAO;
+    public WatchListProfilePermissionsService(IUsersProfileDAO usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
     }
 
     @Override
     public List<WatchListAccess> getPermissions(UsersProfileVO profile) {
-        return watchListDAO.selectWatchListPermissionsByProfileId(profile.getId());
+        return usersProfileDAO.selectWatchListPermissionsByProfileId(profile.getId());
     }
 
     @Override

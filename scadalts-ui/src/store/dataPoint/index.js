@@ -102,6 +102,10 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
+		getUniqueDataPointXid({dispatch}) {
+			return dispatch("requestGet", "/datapoint/generateUniqueXid");
+		},
+
 		getDataPointDetails({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},
@@ -118,6 +122,13 @@ const storeDataPoint = {
 			return dispatch('requestPost', {
 				url: `/point_value/setValue/${payload.xid}/${payload.type}`,
 				data: `${payload.value}`,
+			});
+		},
+
+		setCmpValue({dispatch}, payload) {
+			return dispatch('requestPost', {
+				url: `/cmp/set/${payload.id}/${payload.name}`,
+				data: payload.requestData
 			});
 		},
 
@@ -170,7 +181,7 @@ const storeDataPoint = {
 		addUserComment({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/userComment/${payload.typeId}/${payload.refId}`,
-				data: payload.comment,
+				data: { commentText: payload.comment.comment },
 			});
 		},
 
@@ -179,6 +190,14 @@ const storeDataPoint = {
 				'requestDelete',
 				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
 			);
+		},
+
+		fetchDataPointsFromDataSource({ dispatch }, dataSourceId) {
+			return dispatch('requestGet', `/datapoints/datasource?id=${dataSourceId}`);
+		},
+
+		getDatasourceByXid({ dispatch }, xid) {
+			return dispatch('requestGet', `/datasource?xid=${xid}`);
 		},
 	},
 

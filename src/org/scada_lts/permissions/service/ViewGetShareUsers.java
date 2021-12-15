@@ -2,26 +2,20 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.dao.ViewDAO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
 
+@Service
 public class ViewGetShareUsers implements GetShareUsers<View> {
 
     private final ViewDAO viewDAO;
-    private final UsersProfileDAO usersProfileDAO;
 
-    public ViewGetShareUsers() {
-        this.viewDAO = new ViewDAO();
-        this.usersProfileDAO = new UsersProfileDAO();
-    }
-
-    public ViewGetShareUsers(ViewDAO viewDAO, UsersProfileDAO usersProfileDAO) {
+    public ViewGetShareUsers(ViewDAO viewDAO) {
         this.viewDAO = viewDAO;
-        this.usersProfileDAO = usersProfileDAO;
     }
 
     @Override
@@ -31,13 +25,13 @@ public class ViewGetShareUsers implements GetShareUsers<View> {
 
     @Override
     public List<ShareUser> getShareUsersFromProfile(View object) {
-        return usersProfileDAO.selectViewShareUsers(object.getId());
+        return viewDAO.selectViewShareUsers(object.getId());
     }
 
     @Override
     public List<ShareUser> getShareUsersWithProfile(View object) {
-        List<ShareUser> shareUsers = viewDAO.getShareUsers(object.getId());
-        List<ShareUser> fromProfile = usersProfileDAO.selectViewShareUsers(object.getId());
+        List<ShareUser> shareUsers = getShareUsers(object);
+        List<ShareUser> fromProfile = getShareUsersFromProfile(object);
         return merge(shareUsers, fromProfile);
     }
 }

@@ -89,7 +89,7 @@ public final class EmailContentUtils {
                     LocalizableMessage subjectMsg;
                     LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
                     subjectMsg = new LocalizableMessage("ftl.subject.default", evt.getPrettyActiveTimestamp(),
-                            AlarmLevels.CODES.getCode(evt.getAlarmLevel()).toUpperCase(), getDataPointMessage(dataPoint), notifTypeMsg);
+                            AlarmLevels.CODES.getCode(evt.getAlarmLevel()).toUpperCase(), getDataPointMessage(dataPoint, evt.getShortMessage()), notifTypeMsg);
                     return subjectMsg.getLocalizedMessage(bundle);
                 }
             }

@@ -28,11 +28,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
+import org.scada_lts.utils.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,16 +51,19 @@ public class ViewService {
 	private Log LOG = LogFactory.getLog(ViewService.class);
 	private ViewDAO viewDAO;
 	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
-	private ViewGetShareUsers viewGetShareUsers;
+	private GetShareUsers<View> viewGetShareUsers;
+	private UsersProfileService usersProfileService;
 
 	public ViewService() {
-		viewDAO = new ViewDAO();
-		viewGetShareUsers = new ViewGetShareUsers();
+		this.viewDAO = ApplicationBeans.getBean("viewDAO", ViewDAO.class);
+		this.viewGetShareUsers = ApplicationBeans.getViewGetShareUsersBean();
+		this.usersProfileService = ApplicationBeans.getUsersProfileService();
 	}
 
-	public ViewService(ViewDAO viewDAO, ViewGetShareUsers viewGetShareUsers) {
+	public ViewService(ViewDAO viewDAO, ViewGetShareUsers viewGetShareUsers, UsersProfileService usersProfileService) {
 		this.viewDAO = viewDAO;
 		this.viewGetShareUsers = viewGetShareUsers;
+		this.usersProfileService = usersProfileService;
 	}
 	
 	public List<View> getViews() {
@@ -76,6 +80,10 @@ public class ViewService {
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		}
 		return views;
+	}
+
+	public List<ScadaObjectIdentifier> getAllViews() {
+		return viewDAO.getSimpleList();
 	}
 	
 	public List<IdName> getViewNames(int userId, int userProfileId) {
@@ -171,6 +179,7 @@ public class ViewService {
 		View v = new View();
 		v.setId(viewId);
 		viewDAO.delete(v);
+		usersProfileService.updateViewPermissions();
 	}
 
 	
@@ -191,6 +200,7 @@ public class ViewService {
 	
 	public void removeUserFromView(int viewId, int userId) {
 		viewDAO.deleteViewForUser(viewId, userId);
+		usersProfileService.updateViewPermissions();
 	}
 
 

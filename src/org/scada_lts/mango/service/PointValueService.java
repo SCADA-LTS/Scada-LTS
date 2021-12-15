@@ -802,13 +802,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                         break;
                 }
             } catch (Exception ex) {
-                LOG.error(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
+                LOG.warn(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
                 throw ex;
             }
 
             dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 

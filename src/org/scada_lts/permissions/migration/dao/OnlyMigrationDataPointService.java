@@ -24,93 +24,40 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 
-import org.quartz.SchedulerException;
-import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.*;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 
-
-import java.io.IOException;
 import java.util.*;
 
-public class OnlyMigrationDataPointService implements MangoDataPoint {
+public final class OnlyMigrationDataPointService implements MangoDataPoint {
 
 	private DataPointDAO dataPointDAO;
 
-	private UserCommentDAO userCommentDAO;
-
-	private PointEventDetectorDAO pointEventDetectorDAO;
-
-	public OnlyMigrationDataPointService(DataPointDAO dataPointDAO,
-										 UserCommentDAO userCommentDAO,
-										 PointEventDetectorDAO pointEventDetectorDAO) {
+	public OnlyMigrationDataPointService(DataPointDAO dataPointDAO) {
 		this.dataPointDAO = dataPointDAO;
-		this.userCommentDAO = userCommentDAO;
-		this.pointEventDetectorDAO = pointEventDetectorDAO;
 	}
 
 	@Override
 	public DataPointVO getDataPoint(String xId) {
-		DataPointVO dp = dataPointDAO.getDataPoint(xId);
-		setRelationalData(dp);
-		return dp;
+		throw new UnsupportedOperationException();
 	}
 	@Override
 	public DataPointVO getDataPointByXid(String xid) {
-		DataPointVO dp = dataPointDAO.getDataPoint(xid);
-		return dp;
+		throw new UnsupportedOperationException();
 	}
 	@Override
 	public DataPointVO getDataPoint(int id) {
-		DataPointVO dp = dataPointDAO.getDataPoint(id);
-		setRelationalData(dp);
-		return dp;
+		throw new UnsupportedOperationException();
 	}
 
-	private void setRelationalData(DataPointVO dp) {
-		if (dp != null) {
-			setEventDetectors(dp);
-			setPointComments(dp);
-		}
-	}
-
-	private void setEventDetectors(DataPointVO dataPoint) {
-		dataPoint.setEventDetectors(getEventDetectors(dataPoint));
+	private void setRelationalData(List<DataPointVO> dpList) {
+		throw new UnsupportedOperationException();
 	}
 
 	public List<PointEventDetectorVO> getEventDetectors(DataPointVO dataPoint) {
-
-		EventDetectorsCache.LOG.trace("getEventDetectors() dpId:" + dataPoint.getId());
-		long startTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			startTime = System.currentTimeMillis();
-		}
-
-		List<PointEventDetectorVO> result = null;
-		try {
-			boolean cacheEnable = ScadaConfig.getInstance().getBoolean(ScadaConfig.ENABLE_CACHE, false);
-			if (cacheEnable) {
-				result = EventDetectorsCache.getInstance().getEventDetectors(dataPoint);
-			} else {
-				result = pointEventDetectorDAO.getPointEventDetectors(dataPoint);
-			}
-		} catch (SchedulerException | IOException e) {
-			EventDetectorsCache.LOG.error(e);
-		}
-
-		long endTime = 0;
-		if (EventDetectorsCache.LOG.isTraceEnabled()) {
-			endTime = System.currentTimeMillis();
-		}
-		EventDetectorsCache.LOG.trace("TimeExecute:"+(endTime-startTime)+ " getEventDetectors() dpId:"+dataPoint.getId());
-
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
-	private void setPointComments(DataPointVO dp) {
-		dp.setComments(userCommentDAO.getPointComments(dp));
-	}
 
 	@Override
 	public String generateUniqueXid() {
@@ -129,7 +76,14 @@ public class OnlyMigrationDataPointService implements MangoDataPoint {
 
 	@Override
 	public List<DataPointVO> getDataPoints(Comparator<DataPointVO> comparator, boolean includeRelationalData) {
-		throw new UnsupportedOperationException();
+		List<DataPointVO> dpList = dataPointDAO.getDataPoints();
+		if (includeRelationalData) {
+			setRelationalData(dpList);
+		}
+		if (comparator != null) {
+			Collections.sort(dpList, comparator);
+		}
+		return dpList;
 	}
 
 	@Override

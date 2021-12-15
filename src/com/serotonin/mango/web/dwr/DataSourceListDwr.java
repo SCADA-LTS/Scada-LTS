@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -41,6 +40,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO.Type;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
+import org.scada_lts.mango.service.UsersProfileService;
 
 /**
  * @author Matthew Lohbihler
@@ -114,8 +114,8 @@ public class DataSourceListDwr extends BaseDwr {
 	public int deleteDataSource(int dataSourceId) {
 		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
 		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
-		UsersProfileDao usersProfileDao = new UsersProfileDao();
-		usersProfileDao.updateDataSourcePermissions();
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePermissions();
 		return dataSourceId;
 	}
 

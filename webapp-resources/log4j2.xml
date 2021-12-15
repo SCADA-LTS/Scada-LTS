@@ -2,10 +2,11 @@
 <!--  Set system property: -->
 <!-- -Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector -->
 <!-- to make all loggers asynchronous https://logging.apache.org/log4j/2.x/manual/async.html -->
-<Configuration>
+<Configuration monitorInterval="3600">
 
     <Properties>
         <Property name="logdir">${sys:catalina.base}/logs</Property>
+        <Property name="scriptLoggingLevel">ERROR</Property>
     </Properties>
 
     <Appenders>
@@ -93,6 +94,42 @@
         <Logger name="com.serotonin.db.spring.ExtendedJdbcTemplate" level="error"/>
         <Logger name="com.serotonin.mango" level="info"/>
         <Logger name="org.scada_lts.permissions.migration" level="info"/>
+
+        <!-- Script Logging Error -->
+        <Logger name="com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.rt.link.PointLinkRT" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.rt.event.handlers.ScriptHandlerRT" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="br.org.scadabr.web.dwr.ScriptsDwr" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.web.dwr.DataSourceEditDwr" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.web.dwr.ViewDwr" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.web.dwr.PointLinksDwr" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+
+        <Logger name="org.scada_lts.web.mvc.controller.ScriptController" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="org.scada_lts.mango.service.PointValueService" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <Logger name="com.serotonin.mango.view.component.ScriptComponent" level="${scriptLoggingLevel}" >
+            <AppenderRef ref="ASYNC_SCRIPT"/>
+        </Logger>
+        <!-- -->
+
 
         <Logger name="com.serotonin.modbus4j.ip.listener" level="debug">
             <AppenderRef ref="ASYNC_MODBUS"/>

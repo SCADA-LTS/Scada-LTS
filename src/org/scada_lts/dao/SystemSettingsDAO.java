@@ -21,6 +21,10 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.DbQuerySettings;
@@ -169,6 +173,8 @@ public class SystemSettingsDAO {
 	private static final String SELECT_LATEST_SCHEMA_VERSION = ""
 			+ "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1";
 	// @formatter:on
+
+	private static final Log LOG = LogFactory.getLog(SystemSettingsDAO.class);
 
 	// Value cache
 	private static final Map<String, String> cache = new HashMap<String, String>();
@@ -355,7 +361,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				Common.TimePeriods.HOURS);
-		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.5");
+		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.7.1");
 
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
@@ -389,12 +395,20 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUES);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAINTENANCE_EVENTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAILING_LISTS);
-		DAO.getInstance().getJdbcTemp().update(DELETE_USERS);
+		resetUsers();
 		DAO.getInstance().getJdbcTemp().update(DELETE_PUBLISHERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINT_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCES);
+	}
+
+	private void resetUsers() {
+		IUserDAO userDAO = ApplicationBeans.getUserDaoBean();
+		List<User> users = userDAO.getUsers();
+		for (User user : users) {
+			userDAO.delete(user.getId());
+		}
 	}
 
 	public double getDataBaseSize() {

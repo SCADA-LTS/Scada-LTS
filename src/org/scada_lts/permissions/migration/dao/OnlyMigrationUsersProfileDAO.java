@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class OnlyMigrationUsersProfileDAO extends UsersProfileDAO {
+public final class OnlyMigrationUsersProfileDAO extends UsersProfileDAO {
 
     private static final Log LOG = LogFactory.getLog(OnlyMigrationUsersProfileDAO.class);
 

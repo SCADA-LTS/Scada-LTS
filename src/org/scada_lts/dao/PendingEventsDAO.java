@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
+import org.scada_lts.utils.ApplicationBeans;
 import org.scada_lts.utils.EventTypeUtil;
 
 
@@ -115,6 +117,15 @@ public class PendingEventsDAO {
 
 	// @formatter:on
 
+	private IUserDAO userDAO;
+
+	public PendingEventsDAO() {
+		this.userDAO = ApplicationBeans.getUserDaoBean();
+	}
+
+	public PendingEventsDAO(IUserDAO userDAO) {
+		this.userDAO = userDAO;
+	}
 
 	@SuppressWarnings("rawtypes")
 	protected  List<UserCommentCache> getUserComents() {
@@ -214,7 +225,7 @@ public class PendingEventsDAO {
 
 	protected Map<Integer, List<EventInstance>> getPendingEvents() {
 
-		List<Integer> users = new UserDAO().getAll();
+		List<Integer> users = userDAO.getAll();
 
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 

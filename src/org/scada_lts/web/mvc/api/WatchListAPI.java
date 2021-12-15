@@ -2,25 +2,26 @@ package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import br.org.scadabr.protocol.iec101.common103.information.INT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
@@ -100,8 +101,9 @@ public class WatchListAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                WatchList watchList = watchListService.getWatchList(id);
-				return new ResponseEntity<>(getWatchList(watchList), HttpStatus.OK);
+				WatchList wl = watchListService.getWatchList(id);
+				watchListService.populateWatchlistData(wl);
+				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -109,6 +111,129 @@ public class WatchListAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+	@GetMapping(value = "/generateXid")
+	public ResponseEntity<String> getUniqueXid(HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null && user.isAdmin()) {
+				return new ResponseEntity<>(watchListService.generateUniqueXid(), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/validate")
+	public ResponseEntity<Map<String, Object>> isXidUnique(
+			@RequestParam String xid,
+			@RequestParam Integer id,
+			HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				Map<String, Object> response = new HashMap<>();
+				response.put("unique", watchListService.isXidUnique(xid, id));
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/order/{id}")
+	public ResponseEntity<Map<Integer, Integer>> getPointOrder(
+			@PathVariable("id") int id,
+			HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				return new ResponseEntity<>(watchListService.getDataPointOrder(id).getPointIds(), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping(value = "/order/")
+	public ResponseEntity<String> getPointOrder(
+			@RequestBody JsonDataPointOrder orderData,
+			HttpServletRequest request) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				watchListService.setDataPointOrder(orderData);
+				return new ResponseEntity<>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+    @PostMapping(value = "")
+	public ResponseEntity<JsonWatchList> createWatchList(
+			@RequestBody JsonWatchList jsonWatchList,
+			HttpServletRequest request
+	) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				WatchList wl = jsonWatchList.createWatchList();
+				wl.setUserId(user.getId());
+				watchListService.saveWatchList(wl);
+				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping(value = "")
+	public ResponseEntity<JsonWatchList> updateWatchList(
+			@RequestBody JsonWatchList jsonWatchList,
+			HttpServletRequest request
+	) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				WatchList wl = jsonWatchList.createWatchList();
+				watchListService.saveWatchList(wl);
+				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<String> deleteWatchList(
+			@PathVariable("id") Integer watchListId,
+			HttpServletRequest request
+	) {
+		try {
+			User user = Common.getUser(request);
+			if(user != null) {
+				watchListService.deleteWatchList(watchListId);
+				return new ResponseEntity<>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	/**
 	 * Get specific Watch List by Export ID
