@@ -28,7 +28,6 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.publish.persistent.PersistentSenderRT;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.publish.httpSender.HttpPointVO;
@@ -46,7 +45,6 @@ import com.serotonin.web.i18n.LocalizableMessage;
  */
 public class PublisherEditDwr extends BaseDwr {
     private DwrResponseI18n trySave(PublisherVO<? extends PublishedPointVO> p) {
-        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         p.validate(response);
@@ -87,7 +85,6 @@ public class PublisherEditDwr extends BaseDwr {
             String url, boolean usePost, List<KeyValuePair> staticHeaders, List<KeyValuePair> staticParameters,
             int cacheWarningSize, boolean changesOnly, boolean raiseResultWarning, int dateFormat,
             boolean sendSnapshot, int snapshotSendPeriods, int snapshotSendPeriodType) {
-        Permissions.ensureAdmin();
         HttpSenderVO p = (HttpSenderVO) Common.getUser().getEditPublisher();
 
         p.setName(name);
@@ -128,7 +125,6 @@ public class PublisherEditDwr extends BaseDwr {
     public DwrResponseI18n savePachubeSender(String name, String xid, boolean enabled, List<PachubePointVO> points,
             String apiKey, int timeoutSeconds, int retries, int cacheWarningSize, boolean changesOnly,
             boolean sendSnapshot, int snapshotSendPeriods, int snapshotSendPeriodType) {
-        Permissions.ensureAdmin();
         PachubeSenderVO p = (PachubeSenderVO) Common.getUser().getEditPublisher();
 
         p.setName(name);
@@ -155,7 +151,6 @@ public class PublisherEditDwr extends BaseDwr {
             List<PersistentPointVO> points, String host, int port, String authorizationKey, String xidPrefix,
             int syncType, int cacheWarningSize, boolean changesOnly, boolean sendSnapshot, int snapshotSendPeriods,
             int snapshotSendPeriodType) {
-        Permissions.ensureAdmin();
         PersistentSenderVO p = (PersistentSenderVO) Common.getUser().getEditPublisher();
 
         p.setName(name);

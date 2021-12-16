@@ -12,7 +12,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.BaseDwr;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
@@ -49,7 +48,7 @@ public class ScriptsDwr extends BaseDwr {
 	public DwrResponseI18n saveScript(int id, String xid, String name,
 			String script, List<IntValuePair> pointsOnContext,
 			List<IntValuePair> objectsOnContext) {
-		Permissions.ensureAdmin();
+
 		ContextualizedScriptVO vo = new ContextualizedScriptVO();
 		vo.setId(id);
 		vo.setXid(xid);
@@ -71,7 +70,6 @@ public class ScriptsDwr extends BaseDwr {
 	}
 
 	public void deleteScript(int scriptId) {
-		Permissions.ensureAdmin();
 		new ScriptDao().deleteScript(scriptId);
 	}
 
