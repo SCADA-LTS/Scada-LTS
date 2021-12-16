@@ -22,7 +22,6 @@ import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
