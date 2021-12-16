@@ -94,3 +94,9 @@ Cypress.Commands.add('loadConfiguration', (configuration) => {
 			log.end();
 		});
 });
+
+Cypress.Commands.add('logout', () => {
+	cy.visit('/logout.htm');
+	cy.clearLocalStorage();
+	cy.clearCookies();
+});
