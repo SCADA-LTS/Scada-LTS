@@ -2,7 +2,7 @@
 	<v-dialog max-width="600" v-model="dialog">
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmPurgeDialog"
+			ref="purgeDialogConfrim"
 			@result="purgeDialogResult"
 			:title="$t('purge.dialog.confirm.title')"
 			:message="$t('purge.dialog.confirm.text')"
@@ -14,9 +14,9 @@
 						<span>{{ $t('purge.dialog.title') }} </span>
 					</v-col>
 					<v-col cols="4">
-						<v-select 
-							dense 
-							:label="$t('purge.dialog.strategy')" 
+						<v-select
+							dense
+							:label="$t('purge.dialog.strategy')"
 							v-model="selectedPurge"
 							:items="purgeStrategies"
 						></v-select>
@@ -75,7 +75,6 @@ export default {
 
 	data() {
 		return {
-			confirmPurgeDialog: false,
 			purgeAll: false,
 			purgeType: 2,
 			purgePeriod: 1,
@@ -125,7 +124,6 @@ export default {
 		},
 
 		async purgeDialogResult(e) {
-			this.confirmPurgeDialog = false;
 			if (e) {
 				let response;
 				try {
@@ -143,11 +141,7 @@ export default {
 					} else {
 						response = await this.$store.dispatch('purgeNowAll', this.data.id);
 					}
-					if (!!response.deleted) {
-						this.$emit('result', true);
-					} else {
-						this.$emit('result', false);
-					}
+					this.$emit('result', true);
 				} catch(error) {
 					console.error(error);
 					this.$emit('result', false);
@@ -158,7 +152,7 @@ export default {
 		},
 
 		accept() {
-			this.confirmPurgeDialog = true;
+			this.$refs.purgeDialogConfrim.showDialog();
 		},
 	},
 };

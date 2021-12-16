@@ -91,22 +91,27 @@ mango.longPoll.poll = function() {
 mango.longPoll.pollCB = function(response) {
     if (response.terminated)
         return;
-    
-    if (typeof(response.highestUnsilencedAlarmLevel) != "undefined") {
-        if (response.highestUnsilencedAlarmLevel > 0) {
-            setAlarmLevelImg(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelImg"));
-            setAlarmLevelText(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelText"));
-            if (!mango.header.evtVisualizer.started)
-                mango.header.evtVisualizer.start();
-            show("__header__alarmLevelDiv");
-            mango.soundPlayer.play("level"+ response.highestUnsilencedAlarmLevel);
+
+    try {
+        if (typeof(response.highestUnsilencedAlarmLevel) != "undefined") {
+                if (response.highestUnsilencedAlarmLevel > 0) {
+                    setAlarmLevelImg(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelImg"));
+                    setAlarmLevelText(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelText"));
+                    if (!mango.header.evtVisualizer.started)
+                        mango.header.evtVisualizer.start();
+                    show("__header__alarmLevelDiv");
+                    mango.soundPlayer.play("level"+ response.highestUnsilencedAlarmLevel);
+                }
+                else {
+                	mango.header.evtVisualizer.stop();
+                    hide("__header__alarmLevelDiv");
+                    mango.soundPlayer.stop();
+                }
         }
-        else {
-        	mango.header.evtVisualizer.stop();
-            hide("__header__alarmLevelDiv");
-            mango.soundPlayer.stop();
-        }
+    } catch (e) {
+        console.error(e);
     }
+
     if (response.runtime) {
       lasTimeUpdate = response.runtime;
     }

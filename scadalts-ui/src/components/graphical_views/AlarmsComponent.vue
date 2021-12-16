@@ -105,6 +105,7 @@ export default {
 	],
 	data() {
 		return {
+			newAlarms: null,
 			LEVEL_FAULT: 1,
 			LEVEL_ALARM: 2,
 			alarms: [],
@@ -128,6 +129,7 @@ export default {
 			let llimit = String(recordsCount);
 
 			store.dispatch('getLiveAlarms', { offset: loffset, limit: llimit }).then((ret) => {
+				if (ret.length) this.newAlarms = true
 				if (this.alarms.length >= this.maximumNumbersOfRows || page > 1) {
 					if (this.showPagination == 'false') {
 						this.hidePagination = true;

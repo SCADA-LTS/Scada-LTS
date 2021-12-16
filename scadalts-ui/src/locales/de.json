@@ -13,9 +13,11 @@
 	"common.alarmlevels.title": "Alarmpriorität",
 	"common.alarmlevels.urgent": "Dringend",
 	"common.cancel": "Stornieren",
+	"common.create": "Erstellen",
+	"common.update": "Aktualisieren",
 	"common.ok": "Ok",
 	"common.save": "Speichern",
-	"common.search": "Serach",
+	"common.search": "Suche",
 	"common.snackbar.xid.not.unique": "Export ID is not unique!",
 	"common.snackbar.add.fail": "Hinzufügen fehlgeschlagen!",
 	"common.snackbar.add.success": "Erfolgreich hinzugefügt!",
@@ -38,6 +40,9 @@
 	"datapoint.type.2": "Multistate",
 	"datapoint.type.3": "Numerisch",
 	"datapoint.type.4": "Alphanumerisch",
+	"eventList.title": "Veranstaltungsliste",
+	"eventList.id": "#",
+	"eventList.datetime": "Terminzeit",
 	"datapointDetails.eventList.acknowledged": "Anerkannt bei ",
 	"datapointDetails.eventList.controls.latest": "Neueste Ereignisse anzeigen",
 	"datapointDetails.eventList.empty": "Es gibt keine Ereignisse im Zusammenhang mit diesem DataPoint. ",
@@ -372,5 +377,6 @@
 	"uiv.disable": "Behindert",
 	"uiv.enable": "Aktiviert",
 	"uiv.modal.cancel": "Stornieren",
-	"uiv.modal.ok": "Ok"
+	"uiv.modal.ok": "Ok",
+	"validation.rule.notNull": "Feld darf nicht leer sein!"
 }
