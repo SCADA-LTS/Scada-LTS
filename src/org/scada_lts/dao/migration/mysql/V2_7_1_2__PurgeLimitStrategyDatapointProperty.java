@@ -37,6 +37,7 @@ public class V2_7_1_2__PurgeLimitStrategyDatapointProperty extends BaseJavaMigra
                      ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                     DataPointVO dataPointVO = (DataPointVO) objectInputStream.readObject();
                     dataPointVO.setId(resultSet.getInt("id"));
+                    dataPointVO.setPurgeStrategy(DataPointVO.PurgeStrategy.PERIOD);
                     dataPointVO.setPurgeValuesLimit(SystemSettingsDAO
                             .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
                     return dataPointVO;

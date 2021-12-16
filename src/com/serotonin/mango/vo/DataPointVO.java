@@ -203,7 +203,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
-        purgeStrategy = 1;
+        purgeStrategy = PurgeStrategy.PERIOD;
         purgeValuesLimit = SystemSettingsDAO
                 .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE);
     }
@@ -223,7 +223,7 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         eventTextRenderer = new NoneEventRenderer();
-        purgeStrategy = 1;
+        purgeStrategy = PurgeStrategy.PERIOD;
         purgeValuesLimit = 100;
     }
 
