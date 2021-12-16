@@ -21,9 +21,11 @@ package com.serotonin.mango.vo.dataSource.http;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.db.KeyValuePair;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -97,6 +99,8 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
     private int timeoutSeconds = 30;
     @JsonRemoteProperty
     private int retries = 2;
+    @JsonRemoteProperty(innerType = KeyValuePair.class)
+    private List<KeyValuePair> staticHeaders = new ArrayList<KeyValuePair>();
 
     @JsonRemoteProperty
     private boolean stop = false;
@@ -160,6 +164,14 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         this.reactivation = reactivation;
     }
 
+    public List<KeyValuePair> getStaticHeaders() {
+        return staticHeaders;
+    }
+
+    public void setStaticHeaders(List<KeyValuePair> staticHeaders) {
+        this.staticHeaders = staticHeaders;
+    }
+
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
@@ -204,7 +216,7 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
     // /
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 1;
+    private static final int version = 2;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -215,9 +227,10 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
         out.writeInt(retries);
         out.writeBoolean(stop);
         out.writeObject(reactivation);
+        out.writeObject(staticHeaders);
     }
 
-    private void readObject(ObjectInputStream in) throws IOException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         int ver = in.readInt();
 
         // Switch on the version of the class so that version changes can be elegantly handled.
@@ -226,7 +239,7 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
             updatePeriodType = in.readInt();
             updatePeriods = in.readInt();
             timeoutSeconds = in.readInt();
-            ;
+
             retries = in.readInt();
             try {
                 stop = in.readBoolean();
@@ -238,6 +251,25 @@ public class HttpRetrieverDataSourceVO extends DataSourceVO<HttpRetrieverDataSou
             } catch (Exception e) {
                 reactivation = new ReactivationDs(false, (short) 1,(short) 1);
             }
+        } else if (ver == 2) {
+            url = SerializationHelper.readSafeUTF(in);
+            updatePeriodType = in.readInt();
+            updatePeriods = in.readInt();
+            timeoutSeconds = in.readInt();
+
+            retries = in.readInt();
+            try {
+                stop = in.readBoolean();
+            } catch (Exception e) {
+                stop = false;
+            }
+            try {
+                reactivation = (ReactivationDs) in.readObject();
+            } catch (Exception e) {
+                reactivation = new ReactivationDs(false, (short) 1,(short) 1);
+            }
+
+            staticHeaders = (List<KeyValuePair>) in.readObject();
         }
     }
 
