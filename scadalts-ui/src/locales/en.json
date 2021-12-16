@@ -711,6 +711,9 @@
 	"reports.rendered": "Rendered",
 	"reports.report": "Report",
 	"reports.reportAdded": "Report added",
+	"reports.datatype": "Datatype",
+	"reports.color": "Color",
+	"reports.actions": "Actions",
 
 	"reports.reportName": "Report name",
 	"reports.reportQueue": "Report queue",
