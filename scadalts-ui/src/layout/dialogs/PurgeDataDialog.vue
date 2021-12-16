@@ -141,11 +141,7 @@ export default {
 					} else {
 						response = await this.$store.dispatch('purgeNowAll', this.data.id);
 					}
-					if (!!response.deleted) {
-						this.$emit('result', true);
-					} else {
-						this.$emit('result', false);
-					}
+					this.$emit('result', true);
 				} catch(error) {
 					console.error(error);
 					this.$emit('result', false);
