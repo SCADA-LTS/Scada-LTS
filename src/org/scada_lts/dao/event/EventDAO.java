@@ -746,7 +746,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 *
 	 * @return List of Events
 	 */
-	public SQLPageWithTotal<EventDTO> findEvents(
+	public List<EventDTO> findEvents(
 			JsonEventSearch query,
 			User user) {
 		List<Object> params = new ArrayList<Object>();
@@ -854,7 +854,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()
 				, params.toArray(), new EventDTOSearchRowMapper());
-		return new SQLPageWithTotal<EventDTO>(page, 100);
+		return page;
 	}
 
 	@Override
