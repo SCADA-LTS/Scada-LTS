@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,6 +49,7 @@ public class MailingListsDwr extends BaseDwr {
 	private static final String DEFAULT_CRON = "1 */15 * * * ?";
 
 	public DwrResponseI18n init() {
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		response.addData("lists", new MailingListDao().getMailingLists());
 		response.addData("users", new UserDao().getUsers());
@@ -69,7 +71,7 @@ public class MailingListsDwr extends BaseDwr {
 			List<RecipientListEntryBean> entryBeans, List<Integer> inactiveIntervals,
             boolean dailyLimitSentEmails, String cronPattern, boolean collectInactiveEmails,
 			int collectInactiveEmailsNumber) {
-
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 		MailingListDao mailingListDao = new MailingListDao();
 
@@ -104,6 +106,7 @@ public class MailingListsDwr extends BaseDwr {
 	}
 
 	public void deleteMailingList(int mlId) {
+		Permissions.ensureAdmin();
 		new MailingListDao().deleteMailingList(mlId);
 	}
 

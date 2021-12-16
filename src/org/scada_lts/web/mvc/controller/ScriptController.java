@@ -21,6 +21,7 @@ import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.errors.ErrorCode;
@@ -59,6 +60,7 @@ public class ScriptController {
 		// TODO ta metoda powinna przyjmowac jako argument tresc skryptu z
 		// odpowiednimi argumentami nie powinno to isc przez baze danych !!!.
 		User user = Common.getUser(request);
+		Permissions.ensureAdmin(user);
 		String result = "";
 		if (user == null) {
 			response.setStatus(ErrorCode.USER_NOT_LOGGED);
