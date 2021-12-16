@@ -2,7 +2,7 @@
 	<v-dialog max-width="600" v-model="dialog">
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmPurgeDialog"
+			ref="purgeDialogConfrim"
 			@result="purgeDialogResult"
 			:title="$t('purge.dialog.confirm.title')"
 			:message="$t('purge.dialog.confirm.text')"
@@ -57,7 +57,6 @@ export default {
 
 	data() {
 		return {
-			confirmPurgeDialog: false,
 			purgeAll: false,
 			purgeType: 2,
 			purgePeriod: 1,
@@ -91,7 +90,6 @@ export default {
 		},
 
 		purgeDialogResult(e) {
-			this.confirmPurgeDialog = false;
 			if (e) {
 				this.$store
 					.dispatch('purgeDataPointValues', {
@@ -112,7 +110,7 @@ export default {
 		},
 
 		accept() {
-			this.confirmPurgeDialog = true;
+			this.$refs.purgeDialogConfrim.showDialog();
 		},
 	},
 };

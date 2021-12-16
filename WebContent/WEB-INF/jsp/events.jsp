@@ -240,6 +240,8 @@
     </div>
     <div id="searchResults"></div>
   </div>
+
+   <tag:newPageNotification href="./app.shtm#/alarms/scada" ref="alarmListNotification"/>
   
 <!--   <div id="datePickerDiv" style="position:relative; top:0px; left:0px;" onmouseover="cancelDatePickerExpiry()" onmouseout="expireDatePicker()"> -->
 <%--     <div widgetId="datePicker" dojoType="datepicker" dayWidth="narrow" lang="${lang}"></div> --%>
