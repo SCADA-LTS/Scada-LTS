@@ -192,6 +192,10 @@
     <url-pattern>*.mp3</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>WebContext</filter-name>
+    <url-pattern>/script/execute/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>CacheHeaders</filter-name>
     <url-pattern>/dwr/interfaces/*</url-pattern>
   </filter-mapping>
