@@ -1,6 +1,6 @@
 const storeEvents = {
 	state: {
-		highestUnsilencedAlarmLevel: -1
+		highestUnsilencedAlarmLevel: -1,
 	},
 
 	mutations: {
@@ -19,7 +19,7 @@ const storeEvents = {
 					status: payload.status,
 					keywords: payload.keywords,
 					datapoint: null,
-					limit: payload.itemsPerPage,
+					limit: payload.itemsPerPage + 1,
 					offset: payload.itemsPerPage * (payload.page - 1),
 					sortBy: !payload.sortBy.length ? [] : payload.sortBy,
 					sortDesc: !payload.sortDesc.length ? [] : payload.sortDesc,
@@ -32,7 +32,10 @@ const storeEvents = {
 		},
 
 		async getHighestUnsilencedAlarmLevel({ commit, dispatch }) {
-			commit('SET_HIGHEST_UNSILENCED_ALARM_LEVEL', await dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`));
+			commit(
+				'SET_HIGHEST_UNSILENCED_ALARM_LEVEL',
+				await dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`),
+			);
 		},
 
 		getCommentsByEventId({ dispatch }, id) {
