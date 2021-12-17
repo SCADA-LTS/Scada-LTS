@@ -18,15 +18,20 @@ public class V2_7_1_3__CreateViewPointValuesDenormalized extends BaseJavaMigrati
 
     public void createViewForPointValues(JdbcTemplate jdbcTmp) {
 
-        String createViewSQL = "CREATE OR REPLACE VIEW pointValuesDenormalized AS select pv.dataPointId, pvm.pointValue, \n" +
-                "concat(date(from_unixtime(pv.ts * 0.001)), \"T\", time(from_unixtime(pv.ts * 0.001)), \"Z\") as timestamp, pv.ts, \n" +
-                "(SELECT JSON_OBJECT('dataType', pv.dataType, 'sourceType', pva.sourceType, \n" +
-                " 'sourceId', pva.sourceId, 'username', us.username)) as metaData from \n" +
-                " (select id, CONCAT_WS('', IF(dataType in (4,5), null, pointValue), pva.textPointValueShort, pva.textPointValueLong) AS pointValue \n" +
-                "from pointValues pv left join pointValueAnnotations pva on pv.id = pva.pointValueId) as pvm, pointValues pv \n" +
-                "left join pointValueAnnotations pva on pv.id = pva.pointValueId \n" +
-                "left join users us on pva.sourceId = us.id \n" +
-                "where pvm.id = pv.id;";
+        String createViewSQL = "CREATE OR REPLACE VIEW pointValuesDenormalized AS " +
+                "SELECT " +
+                "pv.dataPointId, " +
+                "pvm.pointValue, " +
+                "CONCAT(DATE(FROM_UNIXTIME(pv.ts * 0.001)), \"T\", TIME(FROM_UNIXTIME(pv.ts * 0.001)), \"Z\") AS timestamp, " +
+                "pv.ts, " +
+                "(SELECT REPLACE(JSON_OBJECT('dataType', pv.dataType, 'sourceType', pva.sourceType, " +
+                " 'sourceId', pva.sourceId, 'username', us.username), '\"', '')) AS metaData " +
+                "FROM " +
+                " (SELECT id, CONCAT_WS('', IF(dataType IN (4,5), null, pointValue), pva.textPointValueShort, pva.textPointValueLong) AS pointValue " +
+                "FROM pointValues pv LEFT JOIN pointValueAnnotations pva ON pv.id = pva.pointValueId) AS pvm, pointValues pv " +
+                "LEFT JOIN pointValueAnnotations pva ON pv.id = pva.pointValueId " +
+                "LEFT JOIN users us ON pva.sourceId = us.id " +
+                "WHERE pvm.id = pv.id;";
 
         jdbcTmp.execute(createViewSQL);
     }

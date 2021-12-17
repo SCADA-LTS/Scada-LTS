@@ -98,13 +98,14 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
 
-	private final PointValueService pointValueService = new PointValueService();
+	private IPointValueQuestDbDAO pointValueQueryRepository;
 
 	private IAmChartDAO pointValueAmChartCommandRepository;
 	private IAmChartDAO pointValueAmChartQueryRepository;
 	private boolean dbQueryEnabled;
 
 	public DataPointService() {
+		this.pointValueQueryRepository = IPointValueQuestDbDAO.newQueryRespository();
 		this.pointValueAmChartCommandRepository = new PointValueAmChartDAO(DAO.getInstance().getJdbcTemp(), false);
 		this.pointValueAmChartQueryRepository = new PointValueAmChartQuestDbDAO(DAO.query().getJdbcTemp());
 		this.dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
@@ -322,7 +323,7 @@ public class DataPointService implements MangoDataPoint {
 		int dpId = dataPointDAO.insert(dp);
 		dp.setId(dpId);
 		saveEventDetectors(dp);
-		pointValueService.createTableForDatapoint(dpId);
+		createTableForDatapoint(dpId);
 	}
 
 	@Override
@@ -742,5 +743,11 @@ public class DataPointService implements MangoDataPoint {
 			return pointValueAmChartQueryRepository;
 		}
 		return pointValueAmChartCommandRepository;
+	}
+
+	private void createTableForDatapoint(int dpId) {
+		if (dbQueryEnabled) {
+			pointValueQueryRepository.createTableForDatapoint(dpId);
+		}
 	}
 }
