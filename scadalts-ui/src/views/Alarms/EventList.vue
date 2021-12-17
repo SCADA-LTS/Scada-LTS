@@ -7,7 +7,6 @@
 			:title="confirmTitle"
 			:message="confirmMessage"
 		></ConfirmationDialog>
-		{{options}}
 		<v-row justify="center" class="mt-6">
 			<v-dialog
 			v-model="eventDetailsDialog"
