@@ -3,24 +3,26 @@
 		<v-col cols="12">
 			<h3>{{ $t('datapointDetails.pointProperties.logging.title') }}</h3>
 		</v-col>
-		<v-col cols="12">
+		<v-col cols="12" id="point-prop-logging--type">
 			<v-select
 				v-model="data.loggingType"
 				:items="loggingTypeList"
 				item-value="id"
 				item-text="label"
+				:label="$t('datapointDetails.pointProperties.logging.type.title')"
 				dense
 			></v-select>
 		</v-col>
-		<v-col cols="12">
-			<v-row v-show="data.loggingType === 4" dense>
+		<v-col cols="12" v-show="data.loggingType === consts.loggingTypes.INTERVAL" id="log-type--interval">
+			<v-row dense>
 				<v-col cols="6">
-					{{ $t('datapointDetails.pointProperties.logging.interval.label') }}
+					<v-text-field
+						v-model="data.intervalLoggingPeriod"
+						:label="$t('datapointDetails.pointProperties.logging.interval.label')"
+						dense
+					></v-text-field>
 				</v-col>
-				<v-col cols="3">
-					<v-text-field v-model="data.intervalLoggingPeriod" dense></v-text-field>
-				</v-col>
-				<v-col cols="3">
+				<v-col cols="6">
 					<v-select
 						v-model="data.intervalLoggingPeriodType"
 						:items="intervalLoggingPeriodTypeList"
@@ -40,13 +42,16 @@
 					></v-select>
 				</v-col>
 			</v-row>
-
-			<v-row v-if="data.pointLocator.dataTypeId === 3" dense>
-				<v-col cols="6">
-					{{ $t('datapointDetails.pointProperties.logging.tolerance') }}
-				</v-col>
-				<v-col cols="6">
-					<v-text-field v-model="data.tolerance" dense></v-text-field>
+		</v-col>
+		<v-col cols="12" v-if="data.pointLocator.dataTypeId === 3" id="log-type--numeric">
+			<v-row dense>
+				<v-col cols="12">
+					<v-text-field
+						v-model="data.tolerance"
+						dense
+						:label="$t('datapointDetails.pointProperties.logging.tolerance')"
+						:disabled="data.loggingType !== consts.loggingTypes.ON_CHANGE"
+					></v-text-field>
 				</v-col>
 				<v-col cols="12">
 					<v-switch
@@ -59,6 +64,7 @@
 					<v-text-field
 						v-model="data.discardLowLimit"
 						:label="$t('datapointDetails.pointProperties.logging.discard.low')"
+						:disabled="!data.discardExtremeValues"
 						dense
 					></v-text-field>
 				</v-col>
@@ -66,28 +72,68 @@
 					<v-text-field
 						v-model="data.discardHighLimit"
 						:label="$t('datapointDetails.pointProperties.logging.discard.high')"
+						:disabled="!data.discardExtremeValues"
 						dense
 					></v-text-field>
 				</v-col>
 			</v-row>
 		</v-col>
 
-		<v-col cols="6"> {{ $t('datapointDetails.pointProperties.logging.purge') }} </v-col>
-		<v-col cols="3">
-			<v-text-field v-model="data.purgePeriod" dense></v-text-field>
-		</v-col>
-		<v-col cols="3">
+		<v-col cols="12" id="purge--select">
 			<v-select
-				v-model="data.purgeType"
-				:items="purgePeriodTypeList"
+				v-model="data.purgeStrategy"
+				:label="$t('datapointDetails.pointProperties.logging.purge.title')"
+				:items="purgeStrategyList"
 				item-value="id"
 				item-text="label"
+				:disabled="data.loggingType === consts.loggingTypes.NONE"
 				dense
 			></v-select>
 		</v-col>
-		<v-col cols="6"> {{ $t('datapointDetails.pointProperties.logging.cache') }} </v-col>
-		<v-col cols="6">
-			<v-text-field v-model="data.defaultCacheSize" dense>
+
+		<v-col cols="12" v-show="data.purgeStrategy === 1" id="purge--period">
+			<v-row dense>
+				<v-col cols="6">
+					<v-text-field
+						:label="$t('datapointDetails.pointProperties.logging.purge')"
+						v-model="data.purgePeriod"
+						:disabled="data.loggingType === consts.loggingTypes.NONE"
+						dense
+					></v-text-field>
+				</v-col>
+				<v-col cols="6">
+					<v-select
+						v-model="data.purgeType"
+						:items="purgePeriodTypeList"
+						item-value="id"
+						item-text="label"
+						:disabled="data.loggingType === consts.loggingTypes.NONE"
+						dense
+					></v-select>
+				</v-col>
+			</v-row>
+		</v-col>
+
+		<v-col cols="12" v-show="data.purgeStrategy === 2" id="purge--values">
+			<v-row dense>
+				<v-col cols="12">
+					<v-text-field
+						v-model="data.purgeValuesLimit"
+						:label="$t('datapointDetails.pointProperties.logging.purgeLimitValues')"
+						:disabled="data.loggingType === consts.loggingTypes.NONE"
+						:rules="ruleMinPurgeValues"
+						dense
+					></v-text-field>
+				</v-col>
+			</v-row>
+		</v-col>
+
+		<v-col cols="12" id="cache">
+			<v-text-field
+				v-model="data.defaultCacheSize"
+				:label="$t('datapointDetails.pointProperties.logging.cache')"
+				dense
+			>
 				<template v-slot:append-outer>
 					<v-btn text block @click="clearCache" disabled>
 						<v-icon>mdi-delete-sweep</v-icon>
@@ -132,6 +178,19 @@ export default {
 				status: false,
 				message: '',
 			},
+			consts: {
+				loggingTypes: {
+					ON_CHANGE: 1,
+					ALL: 2,
+					NONE: 3,
+					INTERVAL: 4,
+					ON_TS_CHANGE: 5,
+				},
+			},
+			ruleMinPurgeValues: [
+				v => !!v || 'Value is required.',
+				v => v > 1 || 'Value must be greater than 1.',
+			],
 		};
 	},
 
@@ -151,6 +210,9 @@ export default {
 		},
 		valueTypeList() {
 			return this.$store.state.dataPoint.valueTypeList;
+		},
+		purgeStrategyList() {
+			return this.$store.state.dataPoint.purgeStrategyList;
 		},
 	},
 

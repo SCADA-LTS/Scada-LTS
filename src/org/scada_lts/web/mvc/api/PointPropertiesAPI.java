@@ -27,9 +27,7 @@ import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 
-import static org.scada_lts.utils.PointPropertiesApiUtils.getDataPointByIdOrXid;
-import static org.scada_lts.utils.PointPropertiesApiUtils.validPointProperties;
-import static org.scada_lts.utils.PointPropertiesApiUtils.updateValuePointProperties;
+import static org.scada_lts.utils.PointPropertiesApiUtils.*;
 import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
 import static org.scada_lts.utils.ValidationUtils.validId;
 
@@ -50,7 +48,6 @@ import static org.scada_lts.utils.ValidationUtils.validId;
 public class PointPropertiesAPI {
 
     private static final Log LOG = LogFactory.getLog(PointPropertiesAPI.class);
-    private static final String ERRORS_DATA_POINT_NOT_FOUND = "{\"errors\": \"dataPoint not found\"}";
 
     private DataPointService dataPointService = new DataPointService();
 
@@ -94,6 +91,8 @@ public class PointPropertiesAPI {
                     private double discardLowLimit;
                     private double discardHighLimit;
                     private int dataTypeId;
+                    private int purgeStrategy;
+                    private int purgeValuesLimit;
 
 
                     public PropertiesPointToJSON(
@@ -115,8 +114,9 @@ public class PointPropertiesAPI {
                             boolean isDiscardExtremeValues,
                             double discardLowLimit,
                             double discardHighLimit,
-                            int dataTypeId
-
+                            int dataTypeId,
+                            int purgeStrategy,
+                            int purgeValuesLimit
                     ) {
                         this.description = description;
                         this.loggingType = loggingType;
@@ -137,6 +137,8 @@ public class PointPropertiesAPI {
                         this.discardLowLimit = discardLowLimit;
                         this.discardHighLimit = discardHighLimit;
                         this.dataTypeId = dataTypeId;
+                        this.purgeStrategy = purgeStrategy;
+                        this.purgeValuesLimit = purgeValuesLimit;
                     }
 
                     public String getDescription() {
@@ -290,6 +292,22 @@ public class PointPropertiesAPI {
                     public void setDataTypeId(int dataTypeId) {
                         this.dataTypeId = dataTypeId;
                     }
+
+                    public int getPurgeStrategy() {
+                        return purgeStrategy;
+                    }
+
+                    public void setPurgeStrategy(int purgeStrategy) {
+                        this.purgeStrategy = purgeStrategy;
+                    }
+
+                    public int getPurgeValuesLimit() {
+                        return purgeValuesLimit;
+                    }
+
+                    public void setPurgeValuesLimit(int purgeValuesLimit) {
+                        this.purgeValuesLimit = purgeValuesLimit;
+                    }
                 }
 
                 PropertiesPointToJSON p = new PropertiesPointToJSON(
@@ -311,7 +329,9 @@ public class PointPropertiesAPI {
                         dpvo.isDiscardExtremeValues(),
                         dpvo.getDiscardLowLimit(),
                         dpvo.getDiscardHighLimit(),
-                        dpvo.getPointLocator().getDataTypeId()
+                        dpvo.getPointLocator().getDataTypeId(),
+                        dpvo.getPurgeStrategy(),
+                        dpvo.getPurgeValuesLimit()
                 );
 
                 json = mapper.writeValueAsString(p);
@@ -368,10 +388,13 @@ public class PointPropertiesAPI {
                     private TextRenderer textRenderer;
                     private double tolerance;
                     private String typeKey;
+                    private int purgeStrategy;
+                    private int purgeValuesLimit;
 
                     public PropertiesPointToJSON(String chartColour, ChartRenderer chartRenderer, String descConfiguration, String dataSourceName, String dataSourceXId,
                                                  String dataTypeMessage, String deviceName, String description, Double discardHighLimit, Double discardLowLimit, int engineeringUnits, String extendedName, EventTextRenderer eventTextRenderer,
-                                                 int intervalLoggingPeriod, int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey) {
+                                                 int intervalLoggingPeriod, int intervalLoggingPeriodType, int intervalLoggingType, String name, int purgePeriod, int purgeType, TextRenderer textRenderer, double tolerance, String typeKey,
+                                                 int purgeStrategy, int purgeValuesLimit) {
 
                         this.chartColour = chartColour;
                         this.chartRenderer = chartRenderer;
@@ -395,6 +418,8 @@ public class PointPropertiesAPI {
                         this.textRenderer = textRenderer;
                         this.tolerance = tolerance;
                         this.typeKey = typeKey;
+                        this.purgeStrategy = purgeStrategy;
+                        this.purgeValuesLimit = purgeValuesLimit;
                     }
 
                     public String getChartColour() {
@@ -573,6 +598,21 @@ public class PointPropertiesAPI {
                         this.typeKey = typeKey;
                     }
 
+                    public int getPurgeStrategy() {
+                        return purgeStrategy;
+                    }
+
+                    public void setPurgeStrategy(int purgeStrategy) {
+                        this.purgeStrategy = purgeStrategy;
+                    }
+
+                    public int getPurgeValuesLimit() {
+                        return purgeValuesLimit;
+                    }
+
+                    public void setPurgeValuesLimit(int purgeValuesLimit) {
+                        this.purgeValuesLimit = purgeValuesLimit;
+                    }
                 }
 
                 //dpvo.isDiscardExtremeValues()
@@ -601,7 +641,9 @@ public class PointPropertiesAPI {
                         dpvo.getPurgeType(),
                         dpvo.getTextRenderer(),
                         dpvo.getTolerance(),
-                        dpvo.getTypeKey());
+                        dpvo.getTypeKey(),
+                        dpvo.getPurgeStrategy(),
+                        dpvo.getPurgeValuesLimit());
 
                 json = mapper.writeValueAsString(p);
 
@@ -696,35 +738,59 @@ public class PointPropertiesAPI {
         }
     }
 
-    @PatchMapping(value = "/{id}/purge")
-    public ResponseEntity<String> purgeDataPointValues(@PathVariable("id") int id,
-                                                       @RequestParam(required = false) Boolean all,
-                                                       @RequestParam(required = false) Integer type,
-                                                       @RequestParam(required = false) Integer period,
+    @PatchMapping(value = "/{id}/purgeNowPeriod")
+    public ResponseEntity<String> purgeNowPeriodDataPointValues(@PathVariable("id") Integer id,
+                                                       @RequestParam Integer type,
+                                                       @RequestParam Integer period,
                                                        HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                DataPointVO point = dataPointService.getDataPoint(id);
-                RuntimeManager rm = Common.ctx.getRuntimeManager();
-                Long count;
-                if(all != null) {
-                    if(all) {
-                        count = rm.purgeDataPointValues(point.getId());
-                        return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
-                    }
+                String error = validPurgeTypeAndPeriod(type,period);
+                if(!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
-                if(type != null && period != null) {
-                    count = rm.purgeDataPointValues(point.getId(), type, period);
-                    return new ResponseEntity<>("{\"deleted\":"+count+"}", HttpStatus.OK);
-                }
+                return purgeNowPeriodDataPointValues(id, type, period);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PatchMapping(value = "/{id}/purgeNowAll")
+    public ResponseEntity<String> purgeNowAllDataPointValues(@PathVariable("id") Integer id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                return purgeNowAllDataPointValues(id);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(value = "/{id}/purgeNowLimit")
+    public ResponseEntity<String> purgeNowWithLimitDataPointValues(@PathVariable("id") Integer id,
+                                                                @RequestParam Integer limit,
+                                                                HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                String error = validPurgeLimit(limit);
+                if(!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                return purgeNowWithLimitDataPointValues(id, limit);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping(value = "/{id}/clearcache")
@@ -775,6 +841,44 @@ public class PointPropertiesAPI {
         Map<String, String> response = new HashMap<>();
         getDataPointByIdOrXid(id, xid, dataPointService)
                 .ifPresent(a -> response.put("description", a.getDescription()));
+        if(response.isEmpty()) {
+            return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(response);
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            LOG.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<String> purgeNowPeriodDataPointValues(Integer id, Integer type, Integer period) {
+        RuntimeManager rm = Common.ctx.getRuntimeManager();
+        Map<String, Long> response = new HashMap<>();
+        getDataPointById(id, dataPointService)
+                .ifPresent(a -> response.put("deleted", rm.purgeDataPointValues(a.getId(), type, period)));
+        return prepareResponseForDataPurge(response);
+    }
+
+    private ResponseEntity<String> purgeNowAllDataPointValues(Integer id) {
+        RuntimeManager rm = Common.ctx.getRuntimeManager();
+        Map<String, Long> response = new HashMap<>();
+        getDataPointById(id, dataPointService)
+                .ifPresent(a -> response.put("deleted", rm.purgeDataPointValues(a.getId())));
+        return prepareResponseForDataPurge(response);
+    }
+
+    private ResponseEntity<String> purgeNowWithLimitDataPointValues(Integer id, Integer limit) {
+        RuntimeManager rm = Common.ctx.getRuntimeManager();
+        Map<String, Long> response = new HashMap<>();
+        getDataPointById(id, dataPointService)
+                .ifPresent(a -> response.put("deleted", rm.purgeDataPointValuesWithLimit(a.getId(), limit)));
+        return prepareResponseForDataPurge(response);
+    }
+
+    private ResponseEntity<String> prepareResponseForDataPurge(Map<String, Long> response) {
         if(response.isEmpty()) {
             return new ResponseEntity<>(formatErrorsJson("dataPoint not found"),HttpStatus.NOT_FOUND);
         }
