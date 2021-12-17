@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
-import com.serotonin.mango.web.dwr.util.AnonymousUserUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -113,10 +112,8 @@ public class ContextualizedScriptRT extends ScriptRT {
 			List<IntValuePair> objectsContext = ((ContextualizedScriptVO) vo).getObjectsOnContext();
 
 			User user = Common.getUser();
-			if(user == null) {
-				user = AnonymousUserUtils.getUser(new UserService())
-						.orElseThrow(() -> new ScriptException("User is not logged in!"));
-			}
+			if(user == null)
+				user = new UserService().getUser(vo.getUserId());
 			for (IntValuePair object : objectsContext) {
 				ScriptContextObject o = ScriptContextObject.Type.valueOf(object.getKey()).createScriptContextObject();
 				o.setUser(user);

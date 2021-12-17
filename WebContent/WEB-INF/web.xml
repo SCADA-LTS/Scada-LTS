@@ -134,6 +134,10 @@
     <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
     <async-supported>true</async-supported>
   </filter>
+  <filter>
+    <filter-name>AnonymouseWebContext</filter-name>
+    <filter-class>com.serotonin.mango.web.filter.AnonymouseWebContextFilter</filter-class>
+  </filter>
   
   <!-- Loads Spring Security config file -->
   <!-- 
@@ -194,6 +198,10 @@
   <filter-mapping>
     <filter-name>WebContext</filter-name>
     <url-pattern>/script/execute/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AnonymouseWebContext</filter-name>
+    <url-pattern>/public_view.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>CacheHeaders</filter-name>
