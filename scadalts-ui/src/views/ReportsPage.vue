@@ -26,7 +26,6 @@
 							:options.sync="options"
 							:server-items-length="totalReports"
 							multi-sort
-							@click:row="selectScript($event.id)"
 							>
 							<template v-slot:item.actions="{ item }">	
 								<v-icon class="mr-2" border="0" @click.stop="runScript(item.xid)" title="run">
@@ -230,13 +229,21 @@
 
 									<v-data-table
 										v-if="reportForm.selectedDatapoints"
-										:headers="datapoinHeaders"
+										:headers="datapointHeaders"
 										:items="reportForm.selectedDatapoints"
 										:options.sync="datapointOptions"
 										:server-items-length="totalReports"
 										multi-sort
 										@click:row="selectScript($event.id)"
 										>
+										<template v-slot:item.color="{ item }">	
+											<v-text-field></v-text-field>
+										</template>
+										<template v-slot:item.consolidatedChart="{ item }">	
+											<div style="text-align:center">
+												<v-checkbox></v-checkbox>
+											</div>
+										</template>
 										<template v-slot:item.actions="{ item }">	
 											<v-icon border="0" @click.stop="removeDatapoint(item.xid)" title="delete">
 												mdi-delete
@@ -378,7 +385,7 @@ export default {
 			totalReports: 100,
         	reportList: [],
         	loading: false,
-			datapoinHeaders: [
+			datapointHeaders: [
 				{
 					text: this.$t('reports.pointName'),
 					sortable: true,
