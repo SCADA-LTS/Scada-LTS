@@ -7,6 +7,7 @@
 			:title="confirmTitle"
 			:message="confirmMessage"
 		></ConfirmationDialog>
+		{{options}}
 		<v-row justify="center" class="mt-6">
 			<v-dialog
 			v-model="eventDetailsDialog"
@@ -285,8 +286,6 @@
 						</v-icon>
 						{{$t("eventList.silenceAll")}}</v-btn>
 				</v-col>
-
-
     		</v-row>
 			<v-data-table
 				id='eventList'
@@ -446,6 +445,7 @@ export default {
     },
 	data() {
 		return {
+			next: false,
 			mountedTs: null,
 			newAlarms: false,
 			get selectedEvent() {
@@ -605,6 +605,10 @@ export default {
 	},
 	
 	methods: {
+		nextPage(){
+			this.options = {...this.options, page: this.options.page+1}
+			this.fetchEventList()
+		},
 		getAlarms() {
 			store.dispatch('getLiveAlarms', { offset: 0, limit: 1 }).then((ret) => {
 				if (ret.length) this.newAlarms = true
@@ -684,8 +688,15 @@ export default {
 		async fetchEventList() {
 			this.loading = true;
 			const result = await this.$store.dispatch('searchEvents', { ...this.searchFilters, itemsPerPage: this.options.itemsPerPage });
-			this.eventList = result.rows;
-			this.totalEvents = result.total;
+			
+			if (result.length > this.options.itemsPerPage) {
+				this.eventList = result.slice(0,this.options.itemsPerPage);
+				this.totalEvents = this.options.itemsPerPage * this.options.page +1
+			} else {
+				this.eventList = result;
+				this.totalEvents = this.options.itemsPerPage * this.options.page
+			}
+			document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
 			this.loading = false;
 			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},
