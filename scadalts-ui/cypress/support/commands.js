@@ -47,7 +47,12 @@ Cypress.Commands.add('restLogin', (username = 'admin', password = 'admin') => {
 		autoEnd: false,
 	});
 
+	// Cypress.Cookies.debug(true);
 	cy.clearCookies({ log: false });
+	Cypress.Cookies.defaults({
+		whitelist: "JSESSIONID"
+	});
+
 	log.snapshot('before');
 	cy.request({
 		log: false,
@@ -55,6 +60,7 @@ Cypress.Commands.add('restLogin', (username = 'admin', password = 'admin') => {
 	})
 		.its('body', { log: false })
 		.should('include', 'true');
+	console.log(document.cookie);
 	log.snapshot('after');
 	log.end();
 });
