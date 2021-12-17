@@ -18,7 +18,7 @@ after(() => {
 	}
 	cy.visit('users.shtm');
 	for (let i = 0; i < 4; i++) {
-		cy.get('#usersTable > tbody:nth-of-type(3)').click();
+		cy.get('#usersTable > tbody:nth-of-type(4)').click();
 		cy.get('#userDetails #deleteImg').click();
 		cy.wait(500);
 	}
