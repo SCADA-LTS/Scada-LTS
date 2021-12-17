@@ -394,10 +394,6 @@
 	</div>
 </template>
 <style scoped>
-
-.v-data-footer__pagination {
-	display: none !important;;
-}
 .v-icon {
 	border: 0!important;
 }
