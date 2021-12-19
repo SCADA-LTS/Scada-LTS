@@ -18,27 +18,8 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.WebContextFactory;
-
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.MaintenanceEventDao;
-import com.serotonin.mango.db.dao.PublisherDao;
-import com.serotonin.mango.db.dao.ScheduledEventDao;
-import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -48,12 +29,7 @@ import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
-import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.mango.vo.event.EventTypeVO;
-import com.serotonin.mango.vo.event.MaintenanceEventVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import com.serotonin.mango.vo.event.ScheduledEventVO;
+import com.serotonin.mango.vo.event.*;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
@@ -63,8 +39,13 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.dao.PublisherDAO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContextFactory;
 import org.scada_lts.mango.service.PublisherService;
+
+import java.io.IOException;
+import java.util.*;
 
 public class EventHandlersDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(EventHandlersDwr.class);
@@ -74,7 +55,7 @@ public class EventHandlersDwr extends BaseDwr {
 
 	public Map<String, Object> getInitData() {
 		User user = Common.getUser();
-		Permissions.ensureDataSourcePermission(user);
+		Permissions.ensureAdmin(user);
 
 		EventDao eventDao = new EventDao();
 		Map<String, Object> model = new HashMap<String, Object>();
@@ -238,6 +219,7 @@ public class EventHandlersDwr extends BaseDwr {
 			String alias, boolean disabled, int targetPointId,
 			int activeAction, String activeValueToSet, int activePointId,
 			int inactiveAction, String inactiveValueToSet, int inactivePointId) {
+		Permissions.ensureAdmin();
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SET_POINT);
 		handler.setTargetPointId(targetPointId);
@@ -260,6 +242,7 @@ public class EventHandlersDwr extends BaseDwr {
 			List<RecipientListEntryBean> escalationRecipients,
 			boolean sendInactive, boolean inactiveOverride,
 			List<RecipientListEntryBean> inactiveRecipients) {
+		Permissions.ensureAdmin();
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_EMAIL);
 		handler.setActiveRecipients(activeRecipients);
@@ -278,6 +261,7 @@ public class EventHandlersDwr extends BaseDwr {
 			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
 			String alias, boolean disabled,
 			List<RecipientListEntryBean> activeRecipients) {
+		Permissions.ensureAdmin();
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SMS);
 		handler.setActiveRecipients(activeRecipients);
@@ -289,6 +273,7 @@ public class EventHandlersDwr extends BaseDwr {
 			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
 			String alias, boolean disabled, String activeProcessCommand,
 			String inactiveProcessCommand) {
+		Permissions.ensureAdmin();
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_PROCESS);
 		handler.setActiveProcessCommand(activeProcessCommand);
@@ -301,6 +286,7 @@ public class EventHandlersDwr extends BaseDwr {
 			int eventTypeRef1, int eventTypeRef2, int handlerId, String xid,
 			String alias, boolean disabled, int activeScriptCommand,
 			int inactiveScriptCommand) {
+		Permissions.ensureAdmin();
 		EventHandlerVO handler = new EventHandlerVO();
 		handler.setHandlerType(EventHandlerVO.TYPE_SCRIPT);
 		handler.setActiveScriptCommand(activeScriptCommand);
@@ -312,6 +298,7 @@ public class EventHandlersDwr extends BaseDwr {
 	private DwrResponseI18n save(int eventSourceId, int eventTypeRef1,
 			int eventTypeRef2, EventHandlerVO vo, int handlerId, String xid,
 			String alias, boolean disabled) {
+		Permissions.ensureAdmin();
 		EventTypeVO type = new EventTypeVO(eventSourceId, eventTypeRef1,
 				eventTypeRef2);
 		Permissions.ensureEventTypePermission(Common.getUser(), type);
@@ -334,6 +321,7 @@ public class EventHandlersDwr extends BaseDwr {
 	}
 
 	public void deleteEventHandler(int handlerId) {
+		Permissions.ensureAdmin();
 		EventDao eventDao = new EventDao();
 		Permissions.ensureEventTypePermission(Common.getUser(),
 				eventDao.getEventHandlerType(handlerId));

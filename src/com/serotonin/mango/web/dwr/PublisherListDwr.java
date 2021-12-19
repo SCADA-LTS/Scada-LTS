@@ -18,24 +18,25 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.util.IntMessagePair;
+import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.PublisherService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Matthew Lohbihler
  */
 public class PublisherListDwr extends BaseDwr {
     public DwrResponseI18n init() {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         List<IntMessagePair> translatedTypes = new ArrayList<IntMessagePair>();
@@ -49,6 +50,7 @@ public class PublisherListDwr extends BaseDwr {
     }
 
     public DwrResponseI18n togglePublisher(int publisherId) {
+        Permissions.ensureAdmin();
         DwrResponseI18n response = new DwrResponseI18n();
 
         RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
@@ -64,6 +66,7 @@ public class PublisherListDwr extends BaseDwr {
     }
 
     public int deletePublisher(int publisherId) {
+        Permissions.ensureAdmin();
         Common.ctx.getRuntimeManager().deletePublisher(publisherId);
         return publisherId;
     }

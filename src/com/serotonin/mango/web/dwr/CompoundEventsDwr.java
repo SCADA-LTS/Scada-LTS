@@ -18,11 +18,6 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -40,6 +35,11 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Matthew Lohbihler
  */
@@ -51,7 +51,7 @@ public class CompoundEventsDwr extends BaseDwr {
     //
     public Map<String, Object> getInitData() {
         User user = Common.getUser();
-        Permissions.ensureDataSourcePermission(user);
+        Permissions.ensureAdmin(user);
 
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -101,7 +101,7 @@ public class CompoundEventsDwr extends BaseDwr {
 
     public DwrResponseI18n saveCompoundEvent(int id, String xid, String name, int alarmLevel, boolean returnToNormal,
             String condition, boolean disabled) {
-        Permissions.ensureDataSourcePermission(Common.getUser());
+        Permissions.ensureAdmin();
 
         // Validate the given information. If there is a problem, return an appropriate error message.
         CompoundEventDetectorVO ced = new CompoundEventDetectorVO();
@@ -138,7 +138,7 @@ public class CompoundEventsDwr extends BaseDwr {
     }
 
     public void deleteCompoundEvent(int cedId) {
-        Permissions.ensureDataSourcePermission(Common.getUser());
+        Permissions.ensureAdmin();
         new CompoundEventDetectorDao().deleteCompoundEventDetector(cedId);
         Common.ctx.getRuntimeManager().stopCompoundEventDetector(cedId);
     }

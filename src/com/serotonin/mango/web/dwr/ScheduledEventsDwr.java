@@ -18,16 +18,15 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 /**
  * @author Matthew Lohbihler
@@ -64,7 +63,7 @@ public class ScheduledEventsDwr extends BaseDwr {
             boolean returnToNormal, boolean disabled, int activeYear, int activeMonth, int activeDay, int activeHour,
             int activeMinute, int activeSecond, String activeCron, int inactiveYear, int inactiveMonth,
             int inactiveDay, int inactiveHour, int inactiveMinute, int inactiveSecond, String inactiveCron) {
-        Permissions.ensureDataSourcePermission(Common.getUser());
+        Permissions.ensureAdmin();
 
         // Validate the given information. If there is a problem, return an appropriate error message.
         ScheduledEventVO se = new ScheduledEventVO();
@@ -109,7 +108,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     }
 
     public void deleteScheduledEvent(int seId) {
-        Permissions.ensureDataSourcePermission(Common.getUser());
+        Permissions.ensureAdmin();
         new ScheduledEventDao().deleteScheduledEvent(seId);
         Common.ctx.getRuntimeManager().stopSimpleEventDetector(ScheduledEventVO.getEventDetectorKey(seId));
     }
