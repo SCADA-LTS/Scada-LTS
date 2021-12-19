@@ -49,6 +49,7 @@ public class DataSourceListDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(DataSourceListDwr.class);
 
 	public DwrResponseI18n init() {
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		if (Common.getUser().isAdmin()) {
@@ -112,7 +113,7 @@ public class DataSourceListDwr extends BaseDwr {
 	}
 
 	public int deleteDataSource(int dataSourceId) {
-		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
+		Permissions.ensureAdmin();
 		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updateDataSourcePermissions();

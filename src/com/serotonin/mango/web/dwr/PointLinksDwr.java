@@ -57,6 +57,7 @@ public class PointLinksDwr extends BaseDwr {
     private static final Log LOG = LogFactory.getLog(PointLinksDwr.class);
     public Map<String, Object> init() {
         User user = Common.getUser();
+        Permissions.ensureAdmin(user);
         Map<String, Object> data = new HashMap<String, Object>();
 
         // Get the points that this user can access.
@@ -109,6 +110,7 @@ public class PointLinksDwr extends BaseDwr {
     public DwrResponseI18n savePointLink(int id, String xid, int sourcePointId, int targetPointId, String script,
             int event, boolean disabled) {
         // Validate the given information. If there is a problem, return an appropriate error message.
+        Permissions.ensureAdmin();
         PointLinkVO vo = new PointLinkVO();
         vo.setId(id);
         vo.setXid(xid);
@@ -138,6 +140,7 @@ public class PointLinksDwr extends BaseDwr {
     }
 
     public void deletePointLink(int id) {
+        Permissions.ensureAdmin();
         Common.ctx.getRuntimeManager().deletePointLink(id);
     }
 

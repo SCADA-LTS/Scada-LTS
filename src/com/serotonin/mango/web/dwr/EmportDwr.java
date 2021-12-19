@@ -209,6 +209,7 @@ public class EmportDwr extends BaseDwr {
 	public DwrResponseI18n importData(String data) {
 		ResourceBundle bundle = getResourceBundle();
 		User user = Common.getUser();
+		Permissions.ensureAdmin(user);
 		DwrResponseI18n response = EmportDwr.importDataImpl(data, bundle, user);
 
 		return response;
