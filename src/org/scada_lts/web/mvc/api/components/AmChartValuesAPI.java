@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class AmChartValuesAPI {
     private static final Log LOG = LogFactory.getLog(AmChartValuesAPI.class);
 
-    private static final DataPointService dpService = new DataPointService();
+    private final DataPointService dpService = new DataPointService();
     private static final SystemSettingsService systemSettingsService = new SystemSettingsService();
 
     @GetMapping("/")
