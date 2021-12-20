@@ -134,7 +134,7 @@ export function searchFolderInHierarchy(hierarchyEntries, folderId, debug = fals
 		} else {
 			for (let hierarchyEntry of hierarchyEntries) {
 				if (
-					hierarchyEntry.folder &&
+					!!hierarchyEntry.folder &&
 					!!hierarchyEntry.children &&
 					hierarchyEntry.children.length > 0
 				) {
