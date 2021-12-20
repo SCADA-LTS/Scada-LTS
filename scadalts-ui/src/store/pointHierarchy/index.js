@@ -25,45 +25,46 @@ const gv = {
 		ADD_POINT_HIERARCHY_ROOT_NODE(state, node) {
 			state.pointHierarchy.push(node);
 		},
-		
-		ADD_POINT_HIERARCHY_NODE(state, {parentNode, apiData}) {
+
+		ADD_POINT_HIERARCHY_NODE(state, { parentNode, apiData }) {
 			let result = searchFolderInHierarchy(state.pointHierarchy, parentNode);
-			if(!!result) {
+			if (!!result) {
 				result.children = [];
 				apiData.forEach((item) => {
 					result.children.push(new PointHierarchyNode(item));
-				})
+				});
 			}
-		}
+		},
 	},
 	actions: {
-
 		/**
 		 * Fetch point hierarchy data from specific Node
-		 * 
-		 * @param {Object} Vuex data 
+		 *
+		 * @param {Object} Vuex data
 		 * @param {*} nodeId - Node ID for which the hierarchy is to be fetched.
-		 * @returns 
+		 * @returns
 		 */
 		fetchPointHierarchyNode({ dispatch }, nodeId) {
 			return new Promise((resolve, reject) => {
-				axios.get(`.//pointHierarchy/${nodeId}`, requestConfiguration)
-					.then(resp => {
+				axios
+					.get(`.//pointHierarchy/${nodeId}`, requestConfiguration)
+					.then((resp) => {
 						resolve(resp.data);
 					})
-					.catch(error => {
+					.catch((error) => {
 						reject(error);
-					})
+					});
 			});
 		},
 
 		createPointHierarchyNode({ dispatch }, { parentNodeId, nodeName }) {
 			return new Promise((resolve, reject) => {
-				axios.post(`.//pointHierarchy/new/${parentNodeId}/${nodeName}`, requestConfiguration)
-					.then(resp => {
+				axios
+					.post(`.//pointHierarchy/new/${parentNodeId}/${nodeName}`, requestConfiguration)
+					.then((resp) => {
 						resolve(resp.data);
 					})
-					.catch(error => {
+					.catch((error) => {
 						reject(error);
 					});
 			});
@@ -71,23 +72,34 @@ const gv = {
 
 		editPointHierarchyNode({ dispatch }, { nodeId, parentNodeId, nodeName }) {
 			return new Promise((resolve, reject) => {
-				axios.post(`.//pointHierarchy/edit/${parentNodeId}/${nodeId}/${nodeName}`, requestConfiguration)
-					.then(resp => {
+				axios
+					.post(
+						`.//pointHierarchy/edit/${parentNodeId}/${nodeId}/${nodeName}`,
+						requestConfiguration,
+					)
+					.then((resp) => {
 						resolve(resp.data);
 					})
-					.catch(error => {
+					.catch((error) => {
 						reject(error);
 					});
 			});
 		},
 
-		movePointHierarchyNode({ dispatch }, { nodeId, parentNodeId, newParentNodeId, isFolder }) {
+		movePointHierarchyNode(
+			{ dispatch },
+			{ nodeId, parentNodeId, newParentNodeId, isFolder },
+		) {
 			return new Promise((resolve, reject) => {
-				axios.post(`.//pointHierarchy/move/${nodeId}/${parentNodeId}/${newParentNodeId}/${isFolder}`, requestConfiguration)
-					.then(resp => {
+				axios
+					.post(
+						`.//pointHierarchy/move/${nodeId}/${parentNodeId}/${newParentNodeId}/${isFolder}`,
+						requestConfiguration,
+					)
+					.then((resp) => {
 						resolve(resp.data);
 					})
-					.catch(error => {
+					.catch((error) => {
 						reject(error);
 					});
 			});
@@ -95,11 +107,15 @@ const gv = {
 
 		deletePointHierarchyNode({ dispatch }, { nodeId, parentNodeId, isFolder }) {
 			return new Promise((resolve, reject) => {
-				axios.post(`.//pointHierarchy/del/${parentNodeId}/${nodeId}/${isFolder}`, requestConfiguration)
-					.then(resp => {
+				axios
+					.post(
+						`.//pointHierarchy/del/${parentNodeId}/${nodeId}/${isFolder}`,
+						requestConfiguration,
+					)
+					.then((resp) => {
 						resolve(resp.data);
 					})
-					.catch(error => {
+					.catch((error) => {
 						reject(error);
 					});
 			});
@@ -109,20 +125,23 @@ const gv = {
 };
 export default gv;
 
-
-export function searchFolderInHierarchy(hierarchyEntries, folderId, debug=false) {
-    if(debug) console.debug("UTILS::SearchDataPointInPointHierarchy\nSearching...");
-    if(!!hierarchyEntries && hierarchyEntries.length > 0) {
-        let result = hierarchyEntries.find(item => (!!item.folder && item.id === folderId));
-        if(!!result) {
-            return result;
-        } else {
-            for(let i = 0; i < hierarchyEntries.length; i++) {
-                if(hierarchyEntries[i].folder && !!hierarchyEntries[i].children && hierarchyEntries[i].children.length > 0) {
-                    return searchFolderInHierarchy(hierarchyEntries[i].children, folderId);
-                }
-            }            
-        }
-    }
-    return null;
+export function searchFolderInHierarchy(hierarchyEntries, folderId, debug = false) {
+	if (debug) console.debug('UTILS::SearchDataPointInPointHierarchy\nSearching...');
+	if (!!hierarchyEntries && hierarchyEntries.length > 0) {
+		let result = hierarchyEntries.find((item) => !!item.folder && item.id === folderId);
+		if (!!result) {
+			return result;
+		} else {
+			for (let hierarchyEntry of hierarchyEntries) {
+				if (
+					hierarchyEntry.folder &&
+					!!hierarchyEntry.children &&
+					hierarchyEntry.children.length > 0
+				) {
+					return searchFolderInHierarchy(hierarchyEntry.children, folderId);
+				}
+			}
+		}
+	}
+	return null;
 }
