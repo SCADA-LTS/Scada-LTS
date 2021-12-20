@@ -2,7 +2,7 @@
 	<div>
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmAckAllToggleDialog"
+			ref="confirmDialog"
 			@result="confirmAction"
 			:title="confirmTitle"
 			:message="confirmMessage"
@@ -578,7 +578,6 @@ export default {
 					image: "images/flag_red.png"
 				}
 			},
-			confirmAckAllToggleDialog: false,
 			confirmTitle: '',
 			confirmMessage: '',
 			selectedEvents: [],
@@ -611,16 +610,16 @@ export default {
 		},
 		confirmAction(answer) {
 			if (answer) this.actionToConfirm();
-			this.confirmAckAllToggleDialog = false
+			// this.confirmDialog.showDialog()
 		},
 		askForAckAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t('eventList.acknownledgeAll')
 			this.confirmMessage = this.$t('eventList.confirmAckAllMessage')
 			this.actionToConfirm = this.acknowledgeAllEvents;
 		},
 		askForSilenceAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t("eventList.silenceAll")
 			this.confirmMessage = this.$t('eventList.silenceAllConfirmMessage')
 			this.actionToConfirm = this.silenceAllEvents;
@@ -691,7 +690,7 @@ export default {
 				this.eventList = result;
 				this.totalEvents = this.options.itemsPerPage * this.options.page
 			}
-			document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
+			// document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
 			this.loading = false;
 			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},
