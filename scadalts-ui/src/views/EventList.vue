@@ -352,7 +352,7 @@
 						mdi-database
 						</v-icon>	
 						
-						<v-icon @click.stop="gotoSystem(event.typeRef1)" v-if="item.typeId===4" title="system">
+						<v-icon @click.stop="gotoSystem(item.typeRef1, item.typeRef2)" v-if="item.typeId===4" title="system">
 							mdi-desktop-classic
 						</v-icon>
 
@@ -636,12 +636,10 @@ export default {
 		},
 
 		//system
-		gotoSystem(type,referenceId2) {
-			// window.location = `http://mango.serotoninsoftware.com/download.jsp` //png="bullet_down"
-			// if (type = 1)  TYPE_SYSTEM_STARTUP
-			if (type = 6) window.location = `compound_events.shtm?cedid=${referenceId2}"` // png="multi_bell" 
-			if (type = 7) window.location = `event_handlers.shtm?ehid=${referenceId2}` //png="cog"
-			if (type = 9) window.location = `point_links.shtm?plid=${referenceId2}` //png="link"
+		gotoSystem(referenceId1,referenceId2) {
+			if (referenceId1 == 6) window.location = `compound_events.shtm?cedid=${referenceId2}"`
+			else if (referenceId1 == 7) window.location = `event_handlers.shtm?ehid=${referenceId2}`
+			else if (referenceId1 == 9) window.location = `point_links.shtm?plid=${referenceId2}`
 		},
 		gotoCompoundEvent(compoundEventDetectorId) {
 			window.location = `compound_events.shtm?cedid=${compoundEventDetectorId}` //png="multi_bell"
