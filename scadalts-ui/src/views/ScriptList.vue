@@ -96,9 +96,6 @@
 									</td>	
 								</tr>
 							</table>
-							
-									
-								
 						</v-col>
 					</v-row>
 					<v-row>
@@ -252,9 +249,9 @@ export default {
 		filteredDatapoints() {
 			const p = this.datapoints.find(x => x.id === this.selectedDatapointId)
 			return this.datapoints
-			.filter(dp => this.scriptForm.pointsOnContext
-				.filter(sp => dp.xid === sp.dataPointXid)
-			.length === 0)
+			// .filter(dp => this.scriptForm.pointsOnContext
+			// 	.filter(sp => dp.xid === sp.dataPointXid)
+			// .length === 0)
 		},
 	},
 
@@ -278,6 +275,7 @@ export default {
 			this.scriptForm.pointsOnContext = this.scriptForm.pointsOnContext
 				.filter(p => p.dataPointXid != dataPointXid)
 		},
+		
 		selectScript(id) {
 			this.selectedScriptId = id
 			this.dialog = true
@@ -285,12 +283,13 @@ export default {
 			this.scriptForm.id = this.selectedScript.id;
 			this.scriptForm.xid = this.selectedScript.xid;
 			this.scriptForm.name = this.selectedScript.name;
-			this.scriptForm.pointsOnContext = this.selectedScript.pointsOnContext.map( x => { return {
+			this.scriptForm.pointsOnContext = this.selectedScript.pointsOnContext.map( x => { 
+				const dp = this.datapoints.find(dp => dp.id === x.key)
+				return {
 					varName: x.value ,
-					dataPointXid: (this.datapoints.find(dp => dp.id === x.id)).xid
+					dataPointXid: dp.xid 
 				}
-			}	
-			);
+			});
 
 			const oc = this.selectedScript.objectsOnContext
 			if (oc && oc.length) {
