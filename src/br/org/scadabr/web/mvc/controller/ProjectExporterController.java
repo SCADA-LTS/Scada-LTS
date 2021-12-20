@@ -19,8 +19,6 @@ public class ProjectExporterController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		Permissions.ensureAdmin(Common.getUser(request));
-
 		ZIPProjectManager exporter = new ZIPProjectManager();
 
 		exporter.exportProject(request, response);

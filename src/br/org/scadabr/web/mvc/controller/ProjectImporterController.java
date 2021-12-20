@@ -15,12 +15,10 @@ public class ProjectImporterController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-
-		Permissions.ensureAdmin(Common.getUser(request));
-
 		ZIPProjectManager importer = new ZIPProjectManager();
 
-		ModelAndView modelAndView = importer.setupToImportProject(request, response);
+		ModelAndView modelAndView = importer.setupToImportProject(request,
+				response);
 
 		return modelAndView;
 	}
