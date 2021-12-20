@@ -110,16 +110,16 @@ const gv = {
 export default gv;
 
 
-export function searchFolderInHierarchy(array, folderId, debug=false) {
+export function searchFolderInHierarchy(hierarchyEntries, folderId, debug=false) {
     if(debug) console.debug("UTILS::SearchDataPointInPointHierarchy\nSearching...");
-    if(!!array && array.length > 0) {
-        let result = array.find(item => (!!item.folder && item.id === folderId));
+    if(!!hierarchyEntries && hierarchyEntries.length > 0) {
+        let result = hierarchyEntries.find(item => (!!item.folder && item.id === folderId));
         if(!!result) {
             return result;
         } else {
-            for(let i = 0; i < array.length; i++) {
-                if(array[i].folder && !!array[i].children && array[i].children.length > 0) {
-                    return searchFolderInHierarchy(array[i].children, folderId);
+            for(let i = 0; i < hierarchyEntries.length; i++) {
+                if(hierarchyEntries[i].folder && !!hierarchyEntries[i].children && hierarchyEntries[i].children.length > 0) {
+                    return searchFolderInHierarchy(hierarchyEntries[i].children, folderId);
                 }
             }            
         }
