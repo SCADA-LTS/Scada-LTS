@@ -117,6 +117,7 @@ export default {
 			pointIds: null,
 			config: null,
 			watchListData: {id: 1, pointList: [{id:1},{id:2}]},
+			watchListPoins: [],
 			pointCompare: '',
 			response: {
 				status: false,
@@ -148,7 +149,7 @@ export default {
 				await this.config.createSeries(pl[0].pointId);
 				await this.config.createSeries(pl[1].pointId, 'valueAxis2', 'dateAxis2', 'date2');
 			} else {
-				const pl =  this.watchListData.pointList;
+				const pl =  this.watchListPoins;
 				for(let i = 0; i < pl.length; i++) {
 					await this.config.createSeries(pl[i].id)
 				};
@@ -175,7 +176,6 @@ export default {
 
 		renderChart() {
 			this.chartClass.createChart().catch((e) => {
-				console.log(e);
 				if(e.message === 'No data from that range!') {
 					this.response = {
 						status: true,
@@ -207,17 +207,16 @@ export default {
 		async loadWatchList(watchListId) {
 			this.watchListData = await this.$store.dispatch('getWatchListDetails', watchListId);
 			this.initSettings();
-			this.loadSettings();
+			this.updateSettings();
+		},
+
+		updatePointList() {
 			let points = [];
-			this.watchListData.pointList.forEach(point => {
+			this.watchListPoins = this.watchListData.pointList.filter((p) => document.getElementById(`p${p.id}ChartCB`).checked);
+			this.watchListPoins.forEach(point => {
 				points.push(point.id);
 			})
 			this.pointIds = points.join(',');
-			this.pointCompare = this.watchListData.pointList.join(',');
-			this.chartLoading = false;
-			await this.initDefaultConfiguration();
-			this.initChart();
-			this.renderChart();
 		},
 
 		saveConfiguration() {
@@ -246,7 +245,9 @@ export default {
 		async updateSettings() {
 			this.saveSettings();
 			this.disposeChart();
+			this.watchListData = await this.$store.dispatch('getWatchListDetails', this.watchListData.id);
 			this.loadSettings();
+			this.updatePointList();
 			await this.initDefaultConfiguration();
 			this.initChart();
 			this.renderChart();
