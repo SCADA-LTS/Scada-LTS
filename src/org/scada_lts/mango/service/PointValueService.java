@@ -392,8 +392,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
+    @Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
         return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLast(dataPointId, time);
+    }
+
+    @Override
+    public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override
@@ -620,6 +626,11 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     @Override
     public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
         return PointValueDAO.getInstance().deletePointValuesWithMismatchedType(dataPointId, dataType);
+    }
+
+    @Override
+    public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
+        return PointValueDAO.getInstance().deletePointValuesWithValueLimit(dataPointId, limit);
     }
 
     public void updateMetaDataPointByScript(String xid) {

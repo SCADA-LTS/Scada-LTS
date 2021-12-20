@@ -392,7 +392,7 @@ public class DataPointService implements MangoDataPoint {
 	public void deletePointHistory(int dpId, long min, long max) {
 		while (true) {
 			try {
-				pointValueDAO.deletePointValuesBeforeWithOutLast(dpId, max);
+				pointValueDAO.deletePointValuesBeforeWithOutLastTwo(dpId, max);
 				break;
 			} catch (UncategorizedSQLException e) {
                 if ("The total number of locks exceeds the lock table size".equals(e.getSQLException().getMessage())) {

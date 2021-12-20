@@ -100,21 +100,32 @@ Valores menores que o limite inferior ou maiores que o limite superior
 surgidos posteriormente ser&atilde;o descartados. Qualquer valor
 existente j&aacute; armazenado ser&aacute; mantido.</p>
 
+<p>
+    The <b>Purge strategy</b> option allows user to choose strategy of data purging. Two types are supported: <b>Period</b> and <b>Values Limit</b>.
+    O processo de descarte &eacute;
+    executado automaticamente toda manh&atilde; &agrave;s 3:05am do tempo
+    local.
+</p>
+
 <!--<p>The <b>Purge</b> settings determine how long a point's historical-->
 <!--values should be kept in the database. Values can be practically kept as-->
 <!--long as necessary, but note that performance degradation may occur if-->
 <!--the history for a given point becomes too large. (Actually performance-->
 <!--of the system depends strongly upon the host hardware.) The purge-->
 <!--process runs automatically every morning at 3:05am local time.</p>-->
-<p>A op&ccedil;&atilde;o <b>Descartar</b> determina quanto tempo os
+<p>A op&ccedil;&atilde;o <b>Period</b> determina quanto tempo os
 valores hist&oacute;ricos do ponto devem ser mantidos na base de dados.
 Os valores podem ser mantidos praticamente quanto tempo for
 necess&aacute;rio, mas note que uma degrada&ccedil;&atilde;o na
 performance do sistema pode ocorrer se o hist&oacute;rico de um dado
 ponto se tornar muito grande. (Na verdade, a performance do sistema
-depende fortemente do hardware do host.) O processo de descarte &eacute;
-executado automaticamente toda manh&atilde; &agrave;s 3:05am do tempo
-local.</p>
+depende fortemente do hardware do host)</p>
+
+<p>
+    When the <b>Values Limit</b> type is selected, every time purging is performed for datapoint, number of values set in
+    <b>Values Limit</b> will be left in database for this datapoint. The default value can be set in
+    system settings (<b>Values limit for purge</b>).
+</p>
 
 <!--<p>The <b>Default cache size</b> is the number of values that will-->
 <!--be stored in memory. This setting is especially important when a logging-->
