@@ -103,7 +103,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
-	private static final PointValueDAO4REST pointValueDao4Rest = new PointValueDAO4REST();
+	private final PointValueDAO4REST pointValueDao4Rest = new PointValueDAO4REST();
 
 	@Override
 	public String generateUniqueXid() {
@@ -218,9 +218,26 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-	public void save(User user, String value, String xid, int typePointValueOfREST) {
+	@Deprecated
+	public void save(String value, String xid, int pointValueType) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		pointValueDao4Rest.save(value, typePointValueOfREST, dpvo.getId());
+
+		PointValueTime pvt = new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
+
+		if (dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
+			Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
+		} else {
+
+			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
+					dpvo.getId());
+
+			dpRT.updatePointValue(pvt);
+		}
+	}
+
+	public void save(User user, String value, String xid, int pointValueType) {
+		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
+		pointValueDao4Rest.save(value, pointValueType, dpvo.getId());
 		setPoint(user, dpvo, value);
 	}
 
