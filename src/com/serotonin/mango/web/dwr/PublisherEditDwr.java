@@ -121,8 +121,9 @@ public class PublisherEditDwr extends BaseDwr {
     }
 
     private static void setContentTypeJsonStaticHeader(HttpSenderVO httpSenderVO, boolean useJSON) {
-        if (useJSON && (httpSenderVO.getStaticHeaders().isEmpty() || !containsKey(httpSenderVO.getStaticHeaders(), "Content-Type"))) {
-            httpSenderVO.getStaticHeaders().add(new KeyValuePair("Content-Type", "application/json"));
+        if (useJSON) {
+            if (httpSenderVO.getStaticHeaders().isEmpty() || !containsKey(httpSenderVO.getStaticHeaders(), "Content-Type"))
+                httpSenderVO.getStaticHeaders().add(new KeyValuePair("Content-Type", "application/json"));
         } else {
             httpSenderVO.getStaticHeaders().removeIf(kvp -> (kvp.getKey().equalsIgnoreCase("Content-Type") &&
                     kvp.getValue().equalsIgnoreCase("application/json")));
