@@ -14,7 +14,7 @@ plugins {
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
 
-def tomcatVersion = '9.0.41'
+def tomcatVersion = '9.0.53'
 def tomcatDirectory = System.getenv("CATALINA_HOME")
 
 // Environment variables to change
@@ -25,7 +25,6 @@ subprojects {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -147,5 +146,9 @@ test {
         includeTestsMatching "org.scada_lts.permissions.migration.MigrationPermissionsTestsSuite"
         includeTestsMatching "org.scada_lts.dao.pointvalues.PointValueAmChartDAOTest"
         includeTestsMatching "br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
+        includeTestsMatching "org.scada_lts.dao.NewInstanceUserTest"
+        includeTestsMatching "org.scada_lts.dao.NewInstanceUsersProfileTest"
+        includeTestsMatching "br.org.scadabr.vo.EqualsHashcodePermissionTest"
+        includeTestsMatching "com.serotonin.mango.web.dwr.DataPointEditDwrTest"
     }
 }

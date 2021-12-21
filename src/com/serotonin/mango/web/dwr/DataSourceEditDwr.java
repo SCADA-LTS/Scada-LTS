@@ -24,6 +24,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +43,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
+import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
@@ -92,11 +93,12 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -359,8 +361,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-        UsersProfileDao usersProfileDao = new UsersProfileDao();
-        usersProfileDao.updateDataPointPermissions();
+        UsersProfileService usersProfileService = new UsersProfileService();
+        usersProfileService.updateDataPointPermissions();
         return getPoints();
     }
 
@@ -380,8 +382,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public List<EventInstanceBean> getAlarms() {
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
-        List<EventInstance> events = new EventDao()
-                .getPendingEventsForDataSource(ds.getId(), Common.getUser()
+        List<EventInstance> events = new EventService()
+                .getPendingSimpleEventsForDataSource(ds.getId(), Common.getUser()
                         .getId());
         Collections.sort(events, new Comparator<EventInstance>() {
             @Override
@@ -1114,13 +1116,16 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                         DateFunctions.getTime(pvt.getTime()));
         } catch (DataPointStateException e) {
             response.addMessage("context", e.getLocalizableMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (ScriptException e) {
             response.addContextualMessage("script",
                     "dsEdit.meta.test.scriptError", e.getMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
-            LOG.error(infoErrorExecutionScript(e,"validateScript"));
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
             throw e;
         }
 
@@ -1298,7 +1303,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSource(String name, String xid,
                                                        int updatePeriods, int updatePeriodType, String url,
-                                                       int timeoutSeconds, int retries, boolean stop) {
+                                                       int timeoutSeconds, int retries, boolean stop,
+                                                       String username, String password, List<KeyValuePair> staticHeaders) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1310,14 +1316,82 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setTimeoutSeconds(timeoutSeconds);
         ds.setRetries(retries);
         ds.setStop(stop);
+        ds.setStaticHeaders(staticHeaders);
+        setAuthorizationStaticHeader(ds, username, password);
 
         return tryDataSourceSave(ds);
+    }
+
+    private static void setAuthorizationStaticHeader(HttpRetrieverDataSourceVO ds, String username, String password) {
+        toBasicCredentials(username, password).ifPresent(headerValue -> {
+            if (ds.getStaticHeaders().isEmpty() || !containsKey(ds.getStaticHeaders(), "Authorization")) {
+                ds.getStaticHeaders().add(new KeyValuePair("Authorization", headerValue));
+            } else {
+                for (KeyValuePair kvp : ds.getStaticHeaders()) {
+                    if (kvp.getKey().equalsIgnoreCase("Authorization")) {
+                        kvp.setValue(headerValue);
+                    }
+                }
+            }
+        });
+    }
+
+    private static boolean containsKey(List<KeyValuePair> staticHeaders, String key) {
+        for (KeyValuePair kvp : staticHeaders) {
+            if (kvp.getKey().equalsIgnoreCase(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Optional<String> toBasicCredentials(String username, String password) {
+        if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
+            byte[] credentials = (username + ':' + password).getBytes();
+            return Optional.of("Basic " + Base64.getEncoder().encodeToString(credentials));
+        }
+        return Optional.empty();
+    }
+
+    public static String[] getBasicCredentials(List<KeyValuePair> staticHeaders) {
+        return getAuthorization(staticHeaders)
+                .filter(authorization -> authorization.startsWith("Basic")
+                        || authorization.startsWith("basic"))
+                .map(authorization -> {
+                    String base64Credentials = authorization.substring("Basic".length()).trim();
+                    byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+                    String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+                    // credentials = username:password
+                    return credentials.split(":", 2);
+                })
+                .orElseGet(() -> new String[]{});
+    }
+
+    private static Optional<String> getAuthorization(List<KeyValuePair> staticHeaders) {
+        for (KeyValuePair kvp : staticHeaders) {
+            if (kvp.getKey().equalsIgnoreCase("Authorization")) {
+                return Optional.ofNullable(kvp.getValue());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public DwrResponseI18n initHttpRetriever() {
+        HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
+                .getUser().getEditDataSource();
+
+        List<KeyValuePair> staticHeaders = ds.getStaticHeaders();
+
+        DwrResponseI18n response = new DwrResponseI18n();
+        response.addData("staticHeaders", staticHeaders);
+        return response;
     }
 
     @MethodFilter
     public DwrResponseI18n saveHttpRetrieverDataSourceWithReactivationOptions(String name, String xid,
                                                                               int updatePeriods, int updatePeriodType, String url,
-                                                                              int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation) {
+                                                                              int timeoutSeconds, int retries, boolean stop, boolean sleep, short typeReactivation, short valueReactivation,
+                                                                              String username, String password, List<KeyValuePair> staticHeaders) {
         HttpRetrieverDataSourceVO ds = (HttpRetrieverDataSourceVO) Common
                 .getUser().getEditDataSource();
 
@@ -1331,6 +1405,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setStop(stop);
         ReactivationDs rDs = new ReactivationDs(sleep, typeReactivation, valueReactivation);
         ds.setReactivation(rDs);
+        ds.setStaticHeaders(staticHeaders);
+        setAuthorizationStaticHeader(ds, username, password);
 
         DwrResponseI18n result;
 
@@ -1355,10 +1431,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     @MethodFilter
     public String testHttpRetrieverValueParams(String url, int timeoutSeconds,
-                                               int retries, String valueRegex, int dataTypeId, String valueFormat) {
+                                               int retries, String valueRegex, int dataTypeId, String valueFormat,
+                                               List<KeyValuePair> staticHeaders) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
-                    timeoutSeconds, retries);
+            String data = HttpRetrieverDataSourceRT.getDataTest(url,
+                    timeoutSeconds, retries, staticHeaders);
 
             Pattern valuePattern = Pattern.compile(valueRegex);
             DecimalFormat decimalFormat = null;
@@ -1377,10 +1454,11 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     @MethodFilter
     public String testHttpRetrieverTimeParams(String url, int timeoutSeconds,
-                                              int retries, String timeRegex, String timeFormat) {
+                                              int retries, String timeRegex, String timeFormat,
+                                              List<KeyValuePair> staticHeaders) {
         try {
-            String data = HttpRetrieverDataSourceRT.getData(url,
-                    timeoutSeconds, retries);
+            String data = HttpRetrieverDataSourceRT.getDataTest(url,
+                    timeoutSeconds, retries, staticHeaders);
 
             Pattern timePattern = Pattern.compile(timeRegex);
             DateFormat dateFormat = new SimpleDateFormat(timeFormat);

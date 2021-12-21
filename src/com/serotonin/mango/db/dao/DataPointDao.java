@@ -67,7 +67,7 @@ public class DataPointDao {
     	try {
     		return dataPointService.getDataPoint(id);
     	} catch (EmptyResultDataAccessException e) {
-    		LOG.error(e);
+            LOG.warn("datapoint does not exist for id: " + id + ", msg: " + e.getMessage());
     		return null;
     	}
     	

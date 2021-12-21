@@ -2,24 +2,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Vue from 'vue';
 import App from './apps/App.vue';
-import router from './router';
+import router from './router/index';
 import store from './store';
 
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
 import VueDayjs from 'vue-dayjs-plugin';
 
-import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
 import CMP from './components/graphical_views/cmp/CMP';
+import AutoManual from './components/graphical_views/cmp2/AutoManual'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
 import LineChartComponent from './components/amcharts/LineChartComponent';
 import RangeChartComponent from './components/amcharts/RangeChartComponent';
+import TableComponent from './components/graphical_views/pointTables/SimplePointTable.vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -91,17 +91,6 @@ new Vue({
 
 Vue.use(uiv);
 
-if (window.document.getElementById('app-test') != undefined) {
-	new Vue({
-		render: (h) =>
-			h(Test, {
-				props: {
-					plabel: window.document.getElementById('app-test').getAttribute('plabel'),
-				},
-			}),
-	}).$mount('#app-test');
-}
-
 if (window.document.getElementById('app-isalive') != undefined) {
 	const isAliveDom = document.getElementById('app-isalive');
 	new Vue({
@@ -141,6 +130,34 @@ for (let i = 0; i < 20; i++) {
 		}).$mount('#' + cmpId);
 	}
 }
+
+for (let i = 0; i < 10; i++) {
+	const cmpId = `app-cmp2-${i}`;
+	const el = window.document.getElementById(cmpId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			i18n,
+			vuetify,
+			render: (h) =>
+				h(AutoManual, {
+					props: {
+						pConfig: JSON.parse(el.getAttribute('pconfig')),
+						pLabel: el.getAttribute('plabel'),
+						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null  ? el.getAttribute('ptimeRefresh') : 10000,
+						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
+						pZeroState: el.getAttribute('pzeroState') !== null ? el.getAttribute('pzeroState') : 'Auto',
+						pWidth: el.getAttribute('pwidth') !== null  ? el.getAttribute('pwidth') : 140,
+						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
+						pHideControls: el.getAttribute('phideControls') !== null,
+						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
+					},
+				})			
+		}).$mount('#' + cmpId);
+	}
+}
+
+
 
 if (window.document.getElementById('simple-component-svg') != undefined) {
 	new Vue({
@@ -183,15 +200,6 @@ if (window.document.getElementById('export-import-ph') != undefined) {
 	}).$mount('#export-import-ph');
 }
 
-if (window.document.getElementById('example-chart-cmp') != undefined) {
-	new Vue({
-		store,
-		vuetify,
-		i18n,
-		render: (h) => h(WatchListJsonChart),
-	}).$mount('#example-chart-cmp');
-}
-
 for (let x = 0; x < 10; x++) {
 	const chartId = `chart-line-${x}`;
 	const el = window.document.getElementById(chartId);
@@ -219,6 +227,8 @@ for (let x = 0; x < 10; x++) {
 						smoothLine: Number(el.getAttribute('smooth-line')),
 						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
 						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
+						webSocketEnabled: el.getAttribute('web-socket-enabled') !== null,
+						showControls: el.getAttribute('show-controls') !== null,
 					},
 				}),
 		}).$mount(`#${chartId}`);
@@ -253,6 +263,31 @@ for (let x = 0; x < 10; x++) {
 					},
 				}),
 		}).$mount(`#${chartId}`);
+	}
+}
+
+for (let x = 0; x < 10; x++) {
+	const baseId = `simple-table-${x}`;
+	const el = window.document.getElementById(baseId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			vuetify,
+			render: (h) =>
+				h(TableComponent, {
+					props: {
+						pointIds: el.getAttribute('point-ids'),
+						startDate: el.getAttribute('start-date'),
+						showTotal: el.getAttribute('total') !== null,
+						showAverage: el.getAttribute('average') !== null,
+						showMax: el.getAttribute('max') !== null,
+						showMin: el.getAttribute('min') !== null,
+						roundValue: Number(el.getAttribute('round')),
+						maxWidth: el.getAttribute('width' !== null ? Number(el.getAttribute('width')) : 600 ),
+						maxHeight: el.getAttribute('height' !== null ? Number(el.getAttribute('height')) : 400 ),
+					},
+				}),
+		}).$mount(`#${baseId}`);
 	}
 }
 

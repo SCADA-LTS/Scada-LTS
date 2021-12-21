@@ -33,7 +33,7 @@ public class SynopticPanelService {
         return (SynopticPanel) synopticPanelDAO.create(synopticPanel);
     }
 
-    public int updateSynopticPanel(SynopticPanel synopticPanel) throws EmptyResultDataAccessException {
+    public SynopticPanel updateSynopticPanel(SynopticPanel synopticPanel) throws EmptyResultDataAccessException {
         return (synopticPanelDAO.update(synopticPanel));
     }
 

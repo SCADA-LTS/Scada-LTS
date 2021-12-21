@@ -2,30 +2,24 @@ package org.scada_lts.permissions.service;
 
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
-import org.scada_lts.dao.DataPointUserDAO;
-import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.dao.IUsersProfileDAO;
+import org.springframework.stereotype.Service;
 
 
 import java.util.List;
 
+@Service
 public class DataPointProfilePermissionsService implements PermissionsService<DataPointAccess, UsersProfileVO> {
 
-    private final DataPointUserDAO dataPointUserDAO;
-    private final UsersProfileDAO usersProfileDAO;
+    private final IUsersProfileDAO usersProfileDAO;
 
-    public DataPointProfilePermissionsService() {
-        this.usersProfileDAO = new UsersProfileDAO();
-        this.dataPointUserDAO = new DataPointUserDAO();
-    }
-
-    public DataPointProfilePermissionsService(UsersProfileDAO usersProfileDAO, DataPointUserDAO dataPointUserDAO) {
+    public DataPointProfilePermissionsService(IUsersProfileDAO usersProfileDAO) {
         this.usersProfileDAO = usersProfileDAO;
-        this.dataPointUserDAO = dataPointUserDAO;
     }
 
     @Override
-    public List<DataPointAccess> getPermissions(UsersProfileVO user) {
-        return dataPointUserDAO.selectDataPointPermissionsByProfileId(user.getId());
+    public List<DataPointAccess> getPermissions(UsersProfileVO profile) {
+        return usersProfileDAO.selectDataPointPermissionsByProfileId(profile.getId());
     }
 
     @Override
@@ -34,7 +28,7 @@ public class DataPointProfilePermissionsService implements PermissionsService<Da
     }
 
     @Override
-    public void removePermissions(UsersProfileVO user, List<DataPointAccess> toRemove) {
-        usersProfileDAO.deleteDataPointUsersProfile(user.getId(), toRemove);
+    public void removePermissions(UsersProfileVO profile, List<DataPointAccess> toRemove) {
+        usersProfileDAO.deleteDataPointUsersProfile(profile.getId(), toRemove);
     }
 }

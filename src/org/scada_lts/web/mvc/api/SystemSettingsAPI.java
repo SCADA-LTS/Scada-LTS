@@ -275,6 +275,57 @@ public class SystemSettingsAPI {
         }
     }
 
+    @GetMapping(value = "/getDataRetention", produces = "application/json")
+    public ResponseEntity<SettingsDataRetention> getDataRetention(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getDataRetention");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(systemSettingsService.getDataRetentionSettings(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/saveDataRetention", consumes = "application/json")
+    public ResponseEntity<String> saveDataRetention(HttpServletRequest request, @RequestBody SettingsDataRetention jsonSettingsDataRetention) {
+        LOG.info("/api/systemSettings/saveDataRetention");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                systemSettingsService.saveDataRetentionSettings(jsonSettingsDataRetention);
+                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/purgeNow", produces = "application/json")
+    public ResponseEntity<String> purgeNow(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/purgeData");
+        LOG.warn("Purging data!");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                systemSettingsService.purgeNow();
+                return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping(value = "/getAuditEventAlarmLevels", produces = "application/json")
     public ResponseEntity<List<JsonSettingsEventLevels>> getAuditEventAlarmLevels(HttpServletRequest request) {
         LOG.info("/api/systemSettings/getAuditEventAlarmLevels");
@@ -448,7 +499,7 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                systemSettingsService.purgeData();
+                systemSettingsService.purgeAllData();
                 return new ResponseEntity<>("{\"status\": \"done\"}", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

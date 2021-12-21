@@ -393,8 +393,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
+    @Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
         return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLast(dataPointId, time);
+    }
+
+    @Override
+    public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override
@@ -623,6 +629,12 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return PointValueDAO.getInstance().deletePointValuesWithMismatchedType(dataPointId, dataType);
     }
 
+    @Override
+    public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
+        return PointValueDAO.getInstance().deletePointValuesWithValueLimit(dataPointId, limit);
+    }
+
+
     @Deprecated
     public void updateMetaDataPointByScript(String xid) {
         try {
@@ -674,13 +686,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                         break;
                 }
             } catch (Exception ex) {
-                LOG.error(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
+                LOG.warn(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
                 throw ex;
             }
 
             dataPointService.save(value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 

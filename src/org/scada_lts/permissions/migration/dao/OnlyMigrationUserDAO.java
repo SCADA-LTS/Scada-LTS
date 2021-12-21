@@ -4,6 +4,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.UserDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.*;
 import java.util.List;
 
-public class OnlyMigrationUserDAO extends UserDAO {
+public final class OnlyMigrationUserDAO extends UserDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationUserDAO.class);
 
@@ -252,7 +253,6 @@ public class OnlyMigrationUserDAO extends UserDAO {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(User user) user:" + user);
 		}
-
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE, new Object[]{
 				user.getUsername(),
 				user.getPassword(),
@@ -265,6 +265,7 @@ public class OnlyMigrationUserDAO extends UserDAO {
 				DAO.boolToChar(user.isReceiveOwnAuditEvents()),
 				user.getId()
 		});
+
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -275,5 +276,15 @@ public class OnlyMigrationUserDAO extends UserDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(USER_DELETE, new Object[]{userId});
+	}
+
+	@Override
+	public void updateHideMenu(User user) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void updateScadaTheme(User user) {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -9,8 +9,11 @@ public class JsonDataPoint {
     private String description;
     private String datasourceName;
     private int typeId;
+    private boolean settable;
 
-    public JsonDataPoint(int id, String name, String xid, boolean enabled, String description, String datasourceName, int typeId) {
+    public JsonDataPoint() { }
+
+    public JsonDataPoint(int id, String name, String xid, boolean enabled, String description, String datasourceName, int typeId, boolean settable) {
         this.id = id;
         this.name = name;
         this.xid = xid;
@@ -18,6 +21,7 @@ public class JsonDataPoint {
         this.description = description;
         this.datasourceName = datasourceName;
         this.typeId = typeId;
+        this.settable = settable;
     }
 
     public int getId() {
@@ -76,4 +80,11 @@ public class JsonDataPoint {
         this.typeId = typeId;
     }
 
+    public boolean isSettable() {
+        return settable;
+    }
+
+    public void setSettable(boolean settable) {
+        this.settable = settable;
+    }
 }

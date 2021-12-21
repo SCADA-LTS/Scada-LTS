@@ -18,17 +18,15 @@
 
 package org.scada_lts.mango.service;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.UserComment;
+import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.vo.event.EventTypeVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
@@ -37,24 +35,23 @@ import org.scada_lts.cache.UnsilencedAlarmCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
+import org.scada_lts.web.mvc.api.json.JsonEventSearch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.AuditEventType;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.UserComment;
-import com.serotonin.mango.vo.event.EventHandlerVO;
-import com.serotonin.mango.vo.event.EventTypeVO;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
@@ -125,6 +122,41 @@ public class EventService implements MangoEvent {
 	public void ackEvent(int eventId, long time, int userId, int alternateAckSource) {
 		ackEvent(eventId, time, userId, alternateAckSource, true);
 	}
+
+	@Override
+	public void silenceEvent(int eventId, int userId) {
+		userEventDAO.silenceEvent(eventId, userId);
+	}
+
+	@Override
+	public void unsilenceEvent(int eventId, int userId) {
+		userEventDAO.unsilenceEvent(eventId, userId);
+	}
+
+	@Override
+	public void silenceEvents(List<Integer> eventIds, int userId) {
+		userEventDAO.silenceEvents(eventIds, userId);
+	}
+
+	@Override
+	public void unsilenceEvents(List<Integer> eventIds, int userId) {
+		userEventDAO.unsilenceEvents(eventIds, userId);
+	}
+
+	@Override
+	public void ackAllPending(long time, int userId, int alternateAckSource) {
+		eventDAO.ackAllPending(time, userId, alternateAckSource);
+	}
+
+	@Override
+	public void silenceAll(int userId) {
+		eventDAO.silenceAll(userId);
+	}
+
+	@Override
+	public void ackSelected(long time, int userId, int alternateAckSource, List<Integer> ids) {
+		eventDAO.ackAllPendingSelected(time, userId, alternateAckSource, ids);
+	}
 	
 	@Override
 	public void insertUserEvents(int eventId, List<Integer> userIds, boolean alarm) {
@@ -156,6 +188,19 @@ public class EventService implements MangoEvent {
 		
 		return lst;
 		
+	}
+
+	@Override
+	public List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId) {
+
+		List<EventInstance> lst;
+		if (typeRef1 == -1) {
+			lst = eventDAO.getPendingEvents(typeId, userId);
+		} else {
+			lst = eventDAO.getPendingEvents(typeId, typeRef1, userId);
+		}
+		return lst;
+
 	}
 	
 	@Override
@@ -190,8 +235,14 @@ public class EventService implements MangoEvent {
 	@Override
 	public List<EventInstance> getPendingEventsForDataSource(int dataSourceId, int userId) {	
 		return getPendingEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
-	}	
-	
+	}
+
+	@Override
+	public List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId) {
+		return getPendingSimpleEvents(EventType.EventSources.DATA_SOURCE, dataSourceId, userId);
+	}
+
+
 	@Override
 	public List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId) {
 		return getPendingEvents(EventType.EventSources.PUBLISHER, publisherId,
@@ -225,9 +276,7 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
-		
 		new UserCommentDAO().insert(comment, UserComment.TYPE_EVENT, eventId);
-		 
 		return eventDAO.findById(new Object[]{eventId});
 	}
 	
@@ -375,7 +424,7 @@ public class EventService implements MangoEvent {
 		//TODO very slow We not use
 		eventDAO.attachRelationalInfo(event);
 	}
-	
+
 	@Override
 	public void insertEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		eventDAO.insertEventHandler(typeId, typeRef1, typeRef2, handler);
@@ -475,4 +524,11 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
+	public List<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
+		return eventDAO.findEvents(query, user);
+	}
+
+	public List<EventCommentDTO> findCommentsByEventId(int eventId) {
+		return eventDAO.findCommentsByEventId(eventId);
+	}
 }

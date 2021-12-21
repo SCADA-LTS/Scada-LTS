@@ -2,6 +2,10 @@ import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 
 import axios from 'axios';
+import { initWebSocket } from '../../web-socket';
+import store from '../../store';
+
+import { getValidDate } from '../utils.js';
 
 export class AmChart {
 	constructor(build) {
@@ -29,6 +33,8 @@ export class AmChart {
 		this.aggregateApiSettings = build.aggregateApiSettings;
 
 		this.refreshRate = build.refreshRate;
+		this.webSocketEnabled = build.webSocketEnabled;
+		this.webSocketInstance = null;
 		this.isCompareMode = build.isCompareMode;
 		this.lastUpdate = 0;
 		this.liveUpdateInterval = null;
@@ -77,6 +83,10 @@ export class AmChart {
 		if (!!this.refreshRate && this.refreshRate > 1000) {
 			this.startLiveUpdate();
 		}
+
+		if (!!this.webSocketEnabled) {
+			this.startLiveWebSocketUpdate();
+		}
 	}
 
 	/**
@@ -105,6 +115,72 @@ export class AmChart {
 	}
 
 	/**
+	 * Start Live Update based on the WebSocket messages
+	 * 
+	 * Connect to the WebSocket server and listen for a updates
+	 * on dedicated channels. Listen to PointValue update messages.
+	 * When the message is received, update chart PointValue.
+	 */
+	startLiveWebSocketUpdate() {
+		let pointIds = this.pointIds.split(',');
+		this.webSocketInstance = initWebSocket(
+			store.state.webSocketUrl,
+			() => {
+				pointIds.forEach(pointId => {
+					this.webSocketInstance.subscribe(`/topic/datapoint/${pointId}/value`, this.updateWebSocketPointValue.bind(this));
+				});
+			}
+		);
+	}
+
+	/**
+	 * Stop Live Update based on the WebSocket connection
+	 * 
+	 * Disconnect the WebSocket connection with the server.
+	 * Delete the webSocketInstance variable.
+	 */
+	stopLiveWebSocketUpdate() {
+		if(!!this.webSocketInstance) {
+			this.webSocketInstance.disconnect();
+			this.webSocketInstance = null;
+			console.log('WebSocket disconnected');
+		}
+	}
+
+	/**
+	 * Update Point Value based on the WebSocket messages
+	 * 
+	 * Add a new value to chart using a callback to the
+	 * WebSocket onMessage event. Parse data and add it.
+	 * @private
+	 * @param {String} data - WebSocket message
+	 */
+	updateWebSocketPointValue(data) {
+		let pointValue = JSON.parse(data.body);
+		let point = { date: new Date().getTime() }
+		pointValue.value = this.convertBinaryPointValue(pointValue.value);
+		point[pointValue.pointId] = pointValue.value;
+		this.chart.addData(point);
+	}
+
+	/**
+	 * Convert text Binary value to number
+	 * 
+	 * @private
+	 * @param {String} pointValue - Point Value recieved from the server
+	 * @returns {Number} - Point Value converted to Number
+	 */
+	convertBinaryPointValue(pointValue) {
+		if(pointValue === "true") {
+			pointValue = 1;
+		}
+		if(pointValue === "false") {
+			pointValue = 0;
+		}
+		return pointValue;
+	}
+
+	/**
 	 * Stop Live Update
 	 *
 	 * Useful when user navigate between
@@ -123,6 +199,7 @@ export class AmChart {
 	 */
 	disposeChart() {
 		if (!!this.chart) {
+			this.stopLiveWebSocketUpdate();
 			this.stopLiveUpdate();
 			this.chart.dispose();
 		}
@@ -508,7 +585,7 @@ export class AmChartBuilder {
 	 * @returns
 	 */
 	startTime(startTimestamp) {
-		this.startTimestamp = this.getValidDate(startTimestamp);
+		this.startTimestamp = getValidDate(startTimestamp);
 		return this;
 	}
 
@@ -527,7 +604,7 @@ export class AmChartBuilder {
 	 * @returns
 	 */
 	endTime(endTimestamp) {
-		this.endTimestamp = this.getValidDate(endTimestamp);
+		this.endTimestamp = getValidDate(endTimestamp);
 		return this;
 	}
 
@@ -675,6 +752,11 @@ export class AmChartBuilder {
 		return this;
 	}
 
+	withWebSocketUpdate() {
+		this.webSocketEnabled = true;
+		return this;
+	}
+
 	/**
 	 * Set Point Values Agregation on Backend
 	 * 
@@ -694,84 +776,7 @@ export class AmChartBuilder {
 		return this;
 	}
 
-	/**
-	 * Validate and conver Data
-	 * @private
-	 *
-	 * AmChart class require a numeric timestamp
-	 * to send a GET request so every date provided
-	 * by user must be converted into valid timestamp
-	 * value that will mach the further operations.
-	 *
-	 * @param {Object} date - Date to be converted
-	 * @returns {Number} valid Date timestamp
-	 */
-	getValidDate(date) {
-		if (typeof date === 'string') {
-			const regex = /\d+-((day)|(month)|(year)|(week)|(hour)|(minute))/g;
-			if (!!date.match(regex)) {
-				return this.convertDate(date);
-			} else {
-				date = new Date(date);
-				if (!isNaN(date)) {
-					return date.getTime();
-				} else {
-					throw new Error('Not valid date!');
-				}
-			}
-		} else {
-			if (date instanceof Date) {
-				return date.getTime();
-			} else {
-				return date;
-			}
-		}
-	}
-
-	/**
-	 * Convert String Data
-	 * @private
-	 *
-	 * Convert dynamic string start date
-	 * to specific timestamp.
-	 *
-	 * @param {string} dateString
-	 * @returns
-	 */
-	convertDate(dateString) {
-		let date = dateString.split('-');
-		if (date.length === 2) {
-			let now = new Date();
-			let multiplier = 1000;
-			switch (date[1]) {
-				case 'minute':
-				case 'minutes':
-					multiplier = multiplier * 60;
-					break;
-				case 'day':
-				case 'days':
-					multiplier = multiplier * 60 * 60 * 24;
-					break;
-				case 'week':
-				case 'weeks':
-					multiplier = multiplier * 60 * 60 * 24 * 7;
-					break;
-				case 'month':
-				case 'months':
-					multiplier = multiplier * 60 * 60 * 24 * 7 * 4;
-					break;
-				case 'year':
-				case 'years':
-					multiplier = multiplier * 60 * 60 * 24 * 7 * 4 * 12;
-					break;
-				default:
-					multiplier = multiplier * 60 * 60;
-			}
-			return now.getTime() - Number(date[0]) * multiplier;
-		} else {
-			throw new Error('Not valid date format! [Use for example: "1-day"]');
-		}
-	}
+	
 }
 
 export default AmChartBuilder;
