@@ -18,6 +18,9 @@
  */
 package com.serotonin.mango.web.dwr;
 
+import java.util.Iterator;
+import java.util.List;
+
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
@@ -37,9 +40,6 @@ import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.mango.web.dwr.beans.HttpSenderTester;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Matthew Lohbihler

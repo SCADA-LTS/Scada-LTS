@@ -50,7 +50,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		User user = Common.getUser(request);
-
+		Permissions.ensureAdmin(user);
 		int id;
 		DataPointDao dataPointDao = new DataPointDao();
 		String idStr = request.getParameter("dpid");

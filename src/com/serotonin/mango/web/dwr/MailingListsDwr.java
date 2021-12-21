@@ -18,6 +18,18 @@
  */
 package com.serotonin.mango.web.dwr;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.UserDao;
@@ -31,10 +43,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
 
 public class MailingListsDwr extends BaseDwr {
 	private final Log log = LogFactory.getLog(MailingListsDwr.class);

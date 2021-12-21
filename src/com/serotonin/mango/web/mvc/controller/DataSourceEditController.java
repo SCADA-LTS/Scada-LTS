@@ -47,7 +47,7 @@ public class DataSourceEditController extends ParameterizableViewController {
             throws Exception {
         DataSourceVO<?> dataSourceVO = null;
         User user = Common.getUser(request);
-
+        Permissions.ensureAdmin(user);
         // Get the id.
         int id = Common.NEW_ID;
         String idStr = request.getParameter("dsid");
@@ -57,8 +57,6 @@ public class DataSourceEditController extends ParameterizableViewController {
             if (pidStr == null) {
                 // Adding a new data source? Get the type id.
                 int typeId = Integer.parseInt(request.getParameter("typeId"));
-
-                Permissions.ensureAdmin(user);
 
                 // A new data source
                 dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
@@ -81,7 +79,6 @@ public class DataSourceEditController extends ParameterizableViewController {
             dataSourceVO = Common.ctx.getRuntimeManager().getDataSource(id);
             if (dataSourceVO == null)
                 throw new ShouldNeverHappenException("DataSource not found with id " + id);
-            Permissions.ensureDataSourcePermission(user, id);
         }
 
         // Set the id of the data source in the user object for the DWR.
