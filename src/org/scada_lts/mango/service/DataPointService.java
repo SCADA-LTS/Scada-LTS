@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -308,6 +309,7 @@ public class DataPointService implements MangoDataPoint {
 			insertDataPoint(dp);
 			PointHierarchyDAO.cachedPointHierarchy = null;
 			MangoPointHierarchy.getInst().addDataPoint(dp);
+			AuditEventType.raiseAddedEvent(AuditEventType.TYPE_DATA_POINT, dp);
 		} else {
 			updateDataPoint(dp);
 			MangoPointHierarchy.getInst().updateDataPoint(dp);
@@ -334,6 +336,7 @@ public class DataPointService implements MangoDataPoint {
 
 		updateDataPointShallow(dp);
 		saveEventDetectors(dp);
+		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_DATA_POINT, oldDp, dp);
 	}
 
 	@Override

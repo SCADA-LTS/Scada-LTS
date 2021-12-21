@@ -1350,6 +1350,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	public EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
 			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
+			AuditEventType.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 			return getEventHandler(id);
 		} else {
 			updateEventHandler(handler);
