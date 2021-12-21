@@ -162,8 +162,7 @@ public class Pop3DataSourceVO extends DataSourceVO<Pop3DataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        Pop3DataSourceVO from = (Pop3DataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, Pop3DataSourceVO from) {
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.pop3.checkPeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.pop3.server", from.pop3Server, pop3Server);

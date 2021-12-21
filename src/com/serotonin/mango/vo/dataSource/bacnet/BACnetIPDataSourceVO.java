@@ -291,8 +291,7 @@ public class BACnetIPDataSourceVO extends DataSourceVO<BACnetIPDataSourceVO> {
     }
 
     @Override
-    public void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        BACnetIPDataSourceVO from = (BACnetIPDataSourceVO) fromDS;
+    public void addPropertyChangesImpl(List<LocalizableMessage> list, BACnetIPDataSourceVO from) {
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.bacnetIp.deviceId", from.deviceId, deviceId);

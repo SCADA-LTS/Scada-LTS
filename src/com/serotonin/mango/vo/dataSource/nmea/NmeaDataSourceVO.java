@@ -129,8 +129,7 @@ public class NmeaDataSourceVO extends DataSourceVO<NmeaDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        NmeaDataSourceVO from = (NmeaDataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, NmeaDataSourceVO from) {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.nmea.port", from.commPortId, commPortId);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.nmea.baud", from.baudRate, baudRate);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.nmea.resetTimeout", from.resetTimeout, resetTimeout);

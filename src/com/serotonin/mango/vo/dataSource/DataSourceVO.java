@@ -37,7 +37,7 @@ import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.util.ChangeComparableDataSource;
+import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
@@ -78,7 +78,7 @@ import java.io.Serializable;
 import java.util.*;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
-		Serializable, Cloneable, JsonSerializable, ChangeComparableDataSource<T> {
+		Serializable, Cloneable, JsonSerializable, ChangeComparable<T> {
 	public enum Type {
 		EBI25(16, "dsEdit.ebi25", false) {
 			@Override
@@ -525,24 +525,9 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		addPropertyChangesImpl(list, from);
 	}
 
-	@Override
-	public final void addPropertyChangesDS(List<LocalizableMessage> list, DataSourceVO<?> from) {
-		AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.head.name",
-				from.getName(), name);
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid",
-				from.getXid(), xid);
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.enabled",
-				from.isEnabled(), enabled);
-
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.describeStatus", from.getState(), state);
-
-		addPropertyChangesImpl(list, from);
-	}
-
 	abstract protected void addPropertiesImpl(List<LocalizableMessage> list);
 
-	abstract protected void addPropertyChangesImpl(
-			List<LocalizableMessage> list, DataSourceVO<?> from);
+	abstract protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from);
 
 	//
 	// /

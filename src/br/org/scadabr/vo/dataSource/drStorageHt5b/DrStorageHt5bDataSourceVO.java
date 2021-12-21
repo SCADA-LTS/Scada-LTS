@@ -56,7 +56,7 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
 		// TODO Auto-generated method stub
 
 	}
@@ -83,7 +83,7 @@ public class DrStorageHt5bDataSourceVO<T extends DrStorageHt5bDataSourceVO<?>>
 	}
 
 	@Override
-	public com.serotonin.mango.vo.dataSource.DataSourceVO.Type getType() {
+	public Type getType() {
 		return TYPE;
 	}
 

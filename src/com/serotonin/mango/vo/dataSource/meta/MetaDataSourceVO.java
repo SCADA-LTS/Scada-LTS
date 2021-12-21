@@ -91,7 +91,7 @@ public class MetaDataSourceVO extends DataSourceVO<MetaDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> from) {
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, MetaDataSourceVO from) {
         // no op
     }
 

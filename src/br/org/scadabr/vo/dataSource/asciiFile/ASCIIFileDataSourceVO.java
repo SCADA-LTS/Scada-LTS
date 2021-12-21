@@ -57,7 +57,7 @@ public class ASCIIFileDataSourceVO<T extends ASCIIFileDataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> from) {
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
 		// TODO Auto-generated method stub
 
 	}
@@ -84,7 +84,7 @@ public class ASCIIFileDataSourceVO<T extends ASCIIFileDataSourceVO<?>> extends
 	}
 
 	@Override
-	public com.serotonin.mango.vo.dataSource.DataSourceVO.Type getType() {
+	public Type getType() {
 		return TYPE;
 	}
 

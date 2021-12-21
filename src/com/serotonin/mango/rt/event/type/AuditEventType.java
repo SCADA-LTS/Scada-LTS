@@ -28,8 +28,6 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.util.ChangeComparableDataSource;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.util.ChangeComparable;
@@ -117,15 +115,6 @@ public class AuditEventType extends EventType {
     public static <T> void raiseChangedEvent(int auditEventTypeId, T from, ChangeComparable<T> to) {
         List<LocalizableMessage> changes = new ArrayList<LocalizableMessage>();
         to.addPropertyChanges(changes, from);
-        if (changes.size() == 0)
-            // If the object wasn't in fact changed, don't raise an event.
-            return;
-        raiseEvent(auditEventTypeId, to, "event.audit.changed", changes.toArray());
-    }
-
-    public static void raiseChangedEventDS(int auditEventTypeId, DataSourceVO<?> from, ChangeComparableDataSource<?> to) {
-        List<LocalizableMessage> changes = new ArrayList<LocalizableMessage>();
-        to.addPropertyChangesDS(changes, from);
         if (changes.size() == 0)
             // If the object wasn't in fact changed, don't raise an event.
             return;

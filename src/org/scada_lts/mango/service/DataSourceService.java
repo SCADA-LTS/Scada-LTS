@@ -20,6 +20,7 @@ package org.scada_lts.mango.service;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -126,7 +127,7 @@ public class DataSourceService implements MangoDataSource {
 	private void updateDataSource(DataSourceVO<?> dataSource) {
 		DataSourceVO<?> oldDataSource = dataSourceDAO.getDataSource(dataSource.getId());
 		dataSourceDAO.update(dataSource);
-		AuditEventType.raiseChangedEventDS(AuditEventType.TYPE_DATA_SOURCE, oldDataSource, dataSource);
+		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_DATA_SOURCE, oldDataSource, (ChangeComparable<DataSourceVO<?>>) dataSource);
 		// if datasource's name has changed, update datapoints
 		if (!dataSource.getName().equals(oldDataSource.getName())) {
 			List<DataPointVO> dataPointList = dataPointService.getDataPoints(dataSource.getId(), null);

@@ -113,8 +113,7 @@ public class OpenV4JDataSourceVO extends DataSourceVO<OpenV4JDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        OpenV4JDataSourceVO from = (OpenV4JDataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, OpenV4JDataSourceVO from) {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.openv4j.port", from.commPortId, commPortId);
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);

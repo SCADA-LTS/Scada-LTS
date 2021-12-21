@@ -135,8 +135,7 @@ public class HttpReceiverDataSourceVO extends DataSourceVO<HttpReceiverDataSourc
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        HttpReceiverDataSourceVO from = (HttpReceiverDataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, HttpReceiverDataSourceVO from) {
         if (Arrays.equals(from.ipWhiteList, ipWhiteList))
             AuditEventType.addPropertyChangeMessage(list, "dsEdit.httpReceiver.ipWhiteList", Arrays
                     .toString(from.ipWhiteList), Arrays.toString(ipWhiteList));

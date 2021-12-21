@@ -1,11 +1,6 @@
 package br.org.scadabr.vo.dataSource.iec101;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import br.org.scadabr.rt.dataSource.iec101.IEC101EthernetDataSource;
-
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
@@ -13,6 +8,10 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 @JsonRemoteEntity
 public class IEC101EthernetDataSourceVO extends
@@ -31,7 +30,7 @@ public class IEC101EthernetDataSourceVO extends
 	}
 
 	@Override
-	public com.serotonin.mango.vo.dataSource.DataSourceVO.Type getType() {
+	public Type getType() {
 		return TYPE;
 	}
 

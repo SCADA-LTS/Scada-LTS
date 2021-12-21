@@ -34,7 +34,6 @@ import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.modbus.ModbusIpDataSource;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.modbus4j.base.ModbusUtils;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
@@ -181,9 +180,8 @@ public class ModbusIpDataSourceVO extends
 
 	@Override
 	protected void addPropertyChangesImpl(List<LocalizableMessage> list,
-                                          DataSourceVO<?> fromDS) {
-		super.addPropertyChangesImpl(list, fromDS);
-		ModbusIpDataSourceVO from = (ModbusIpDataSourceVO) fromDS;
+										  ModbusIpDataSourceVO from) {
+		super.addPropertyChangesImpl(list, from);
 		if (from.transportType != transportType)
 			AuditEventType.addPropertyChangeMessage(list,
 					"dsEdit.modbusIp.transportType",

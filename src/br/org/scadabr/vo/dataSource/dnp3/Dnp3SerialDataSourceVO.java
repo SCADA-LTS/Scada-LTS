@@ -1,25 +1,19 @@
 package br.org.scadabr.vo.dataSource.dnp3;
 
+import br.org.scadabr.rt.dataSource.dnp3.Dnp3SerialDataSource;
+import com.serotonin.json.*;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.util.SerializationHelper;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.dwr.DwrResponseI18n;
+import com.serotonin.web.i18n.LocalizableMessage;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
-
-import br.org.scadabr.rt.dataSource.dnp3.Dnp3SerialDataSource;
-
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.mango.rt.dataSource.DataSourceRT;
-import com.serotonin.mango.rt.event.type.AuditEventType;
-import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.StringUtils;
-import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.i18n.LocalizableMessage;
 
 @JsonRemoteEntity
 public class Dnp3SerialDataSourceVO extends
@@ -179,9 +173,8 @@ public class Dnp3SerialDataSourceVO extends
 
 	@Override
 	protected void addPropertyChangesImpl(List<LocalizableMessage> list,
-                                          DataSourceVO<?> fromDS) {
-		super.addPropertyChangesImpl(list, fromDS);
-		Dnp3SerialDataSourceVO from = (Dnp3SerialDataSourceVO) fromDS;
+			Dnp3SerialDataSourceVO from) {
+		super.addPropertyChangesImpl(list, from);
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.dnp3Serial.port", from.commPortId, commPortId);
 		AuditEventType.maybeAddPropertyChangeMessage(list,

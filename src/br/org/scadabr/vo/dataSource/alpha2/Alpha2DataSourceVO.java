@@ -52,7 +52,7 @@ public class Alpha2DataSourceVO<T extends Alpha2DataSourceVO<?>> extends
 	private int station = 0;
 
 	@Override
-	public com.serotonin.mango.vo.dataSource.DataSourceVO.Type getType() {
+	public Type getType() {
 		return TYPE;
 	}
 
@@ -94,8 +94,7 @@ public class Alpha2DataSourceVO<T extends Alpha2DataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-		Alpha2DataSourceVO from = (Alpha2DataSourceVO) fromDS;
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.dnp3Serial.port", from.getCommPortId(), commPortId);
 		AuditEventType.maybeAddPropertyChangeMessage(list,

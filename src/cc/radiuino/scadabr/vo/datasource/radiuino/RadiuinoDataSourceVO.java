@@ -84,7 +84,7 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 	}
 
 	@Override
-	public com.serotonin.mango.vo.dataSource.DataSourceVO.Type getType() {
+	public Type getType() {
 		return TYPE;
 	}
 
@@ -217,8 +217,7 @@ public class RadiuinoDataSourceVO<T extends RadiuinoDataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-		RadiuinoDataSourceVO from = (RadiuinoDataSourceVO) fromDS;
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.radiuino.pollingMode", from.isPollingMode(),
 				pollingMode);

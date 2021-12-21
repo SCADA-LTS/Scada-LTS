@@ -78,7 +78,7 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 	}
 
 	@Override
-	public com.serotonin.mango.vo.dataSource.DataSourceVO.Type getType() {
+	public Type getType() {
 		return TYPE;
 	}
 
@@ -207,8 +207,7 @@ public class OPCDataSourceVO<T extends OPCDataSourceVO<?>> extends
 	}
 
 	@Override
-	protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-		OPCDataSourceVO from = (OPCDataSourceVO) fromDS;
+	protected void addPropertyChangesImpl(List<LocalizableMessage> list, T from) {
 		AuditEventType.maybeAddPeriodChangeMessage(list,
 				"dsEdit.dnp3.rbePeriod", from.getUpdatePeriodType(),
 				from.getUpdatePeriods(), updatePeriodType, updatePeriods);

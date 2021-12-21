@@ -351,8 +351,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list,  DataSourceVO<?> fromDS) {
-        SnmpDataSourceVO from = (SnmpDataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, SnmpDataSourceVO from) {
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.host", from.host, host);

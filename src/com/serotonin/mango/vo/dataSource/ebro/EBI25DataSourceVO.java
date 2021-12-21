@@ -222,8 +222,7 @@ public class EBI25DataSourceVO extends DataSourceVO<EBI25DataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        EBI25DataSourceVO from = (EBI25DataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, EBI25DataSourceVO from) {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.ebi25.host", from.host, host);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.ebi25.port", from.port, port);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.ebi25.keepAlive", from.keepAlive, keepAlive);

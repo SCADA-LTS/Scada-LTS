@@ -169,8 +169,7 @@ public class OneWireDataSourceVO extends DataSourceVO<OneWireDataSourceVO> {
     }
 
     @Override
-    protected void addPropertyChangesImpl(List<LocalizableMessage> list, DataSourceVO<?> fromDS) {
-        OneWireDataSourceVO from = (OneWireDataSourceVO) fromDS;
+    protected void addPropertyChangesImpl(List<LocalizableMessage> list, OneWireDataSourceVO from) {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.1wire.port", from.commPortId, commPortId);
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType,
                 from.updatePeriods, updatePeriodType, updatePeriods);
