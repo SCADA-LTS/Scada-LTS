@@ -103,8 +103,6 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
-	private final PointValueDAO4REST pointValueDao4Rest = new PointValueDAO4REST();
-
 	@Override
 	public String generateUniqueXid() {
 		return DAO.getInstance().generateUniqueXid(DataPointVO.XID_PREFIX, "dataPoints");
@@ -237,7 +235,7 @@ public class DataPointService implements MangoDataPoint {
 
 	public void save(User user, String value, String xid, int pointValueType) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		pointValueDao4Rest.save(value, pointValueType, dpvo.getId());
+		new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
 		setPoint(user, dpvo, value);
 	}
 
