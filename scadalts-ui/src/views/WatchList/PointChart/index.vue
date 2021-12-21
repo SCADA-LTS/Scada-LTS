@@ -139,7 +139,7 @@ export default {
 
 	computed: {
 		pointList() {
-			return this.$store.state.watchListModule.pointWatcher;
+			return this.$store.getters.getWatchListChartPoints;
 		},
 
 		activeWatchList() {
@@ -156,6 +156,7 @@ export default {
 
 	watch: {
 		pointList(oldValue, newValue) {
+			console.log(oldValue);
 			if (oldValue.length !== newValue.length) {
 				console.debug('ChartLOADDDED');
 				this.init();
