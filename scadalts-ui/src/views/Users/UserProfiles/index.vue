@@ -100,7 +100,7 @@
 		<!-- Deletion Dialog -->
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="dialogDeletionVisible"
+			ref="deletionDialog"
 			@result="onDeleteDialogClose"
 			:title="$t('userprofile.dialog.delete.title')"
 			:message="$t('userprofile.dialog.delete.text')"
@@ -143,7 +143,6 @@ export default {
             activeUserProfile: -1,
 			operationQueue: null,
 			dialogCreationVisible: false,
-			dialogDeletionVisible: false,
 		};
 	},
 
@@ -180,12 +179,11 @@ export default {
 		},
 
 		openDeletionDialog(userProfile) {
-			this.dialogDeletionVisible = true;
+			this.$refs.deletionDialog.showDialog();
 			this.operationQueue = userProfile.id;
         },
 
 		onDeleteDialogClose(result) {
-			this.dialogDeletionVisible = false;
 			if (result) {
 				try {
 					this.deleteUserProfile(this.operationQueue);

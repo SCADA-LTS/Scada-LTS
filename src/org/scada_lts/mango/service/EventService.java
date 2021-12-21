@@ -524,7 +524,7 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
-	public SQLPageWithTotal<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
+	public List<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
 		return eventDAO.findEvents(query, user);
 	}
 
