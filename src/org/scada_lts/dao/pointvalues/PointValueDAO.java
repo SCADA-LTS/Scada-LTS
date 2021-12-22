@@ -163,11 +163,11 @@ public class PointValueDAO implements IPointValueDAO {
 
 
 	private static final String POINT_VALUE_INSERT = ""
-			+ "insert into pointValues ("
-			+ COLUMN_NAME_DATA_POINT_ID + ","
-			+ COLUMN_NAME_DATA_TYPE + ","
-			+ COLUMN_NAME_POINT_VALUE + ","
-			+ COLUMN_NAME_TIME_STAMP
+			+ "insert pointValues ("
+				+ COLUMN_NAME_DATA_POINT_ID + "," 
+				+ COLUMN_NAME_DATA_TYPE + "," 
+				+ COLUMN_NAME_POINT_VALUE + "," 
+				+ COLUMN_NAME_TIME_STAMP 
 			+") "
 			+ "values (?,?,?,?)";
 	
@@ -229,7 +229,23 @@ public class PointValueDAO implements IPointValueDAO {
 			+ "where "
 				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_TIME_STAMP+"<? "
 			    + "and id not in (?) ";
-	
+
+	public static final String POINT_VALUE_DELETE_BEFORE_WITHOUT_LAST_TWO = ""
+			+"delete "
+			+ "from "
+			+ "pointValues "
+			+ "where "
+			+ COLUMN_NAME_DATA_POINT_ID+"=? "
+			+ "and " + COLUMN_NAME_ID + " < "
+			+ "(select min(id) "
+			+ "from ( "
+			+ "select id "
+			+ "from pointValues "
+			+ "where dataPointId =? "
+			+ "order by id DESC "
+			+ "limit 2 "
+			+ ") lastId ) and " + COLUMN_NAME_TIME_STAMP + "<? ";
+
 	public static final String POINT_VALUE_DELETE_BASE_ON_POINT_ID = ""
 			+"delete "
 			+ "from "
@@ -248,6 +264,19 @@ public class PointValueDAO implements IPointValueDAO {
 				+ "pointValues "
 			+ "where "
 				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_DATA_TYPE+"<>?";
+
+	public static final String DELETE_POINT_VALUE_BASED_ON_DATAPOINT_WITH_VALUE_LIMIT = ""
+			+"delete "
+			+ "from "
+				+ "pointValues "
+			+ "where "
+				+ COLUMN_NAME_DATA_POINT_ID+"=? and "+COLUMN_NAME_ID+"<= " +
+			"(select " + COLUMN_NAME_ID + " from " +
+			"(select " + COLUMN_NAME_ID +
+			" from pointValues " +
+			"where " + COLUMN_NAME_DATA_POINT_ID + " =? " +
+			"order by " + COLUMN_NAME_ID + " desc " +
+			"limit 1 offset ?) lastId)";
 
 	private static final String SELECT_MAX_TIME_WHERE_DATA_POINT_ID = ""
 			+ "select max("
@@ -668,11 +697,16 @@ public class PointValueDAO implements IPointValueDAO {
     }
     
     @Override
+	@Deprecated
 	public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
 		Long lastId = jdbcTemplate.queryForObject(POINT_VALUE_ID_OF_LAST_VALUE, new Object[] { dataPointId }, Long.class );
     	return jdbcTemplate.update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time, lastId});
     }
-    
+
+	public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+		return jdbcTemplate.update(POINT_VALUE_DELETE_BEFORE_WITHOUT_LAST_TWO, new Object[] {dataPointId, dataPointId, time});
+	}
+
     @Override
 	public long deletePointValue(int dataPointId) {
     	return jdbcTemplate.update(POINT_VALUE_DELETE_BASE_ON_POINT_ID, new Object[] {dataPointId});
@@ -687,6 +721,10 @@ public class PointValueDAO implements IPointValueDAO {
 	public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
     	return jdbcTemplate.update(DELETE_POINT_VALUE_WITH_MISMATCHED_TYPE, new Object[] {dataPointId, dataType});
     }
+
+	public long deletePointValuesWithValueLimit(int dataPointId, int limit){
+		return jdbcTemplate.update(DELETE_POINT_VALUE_BASED_ON_DATAPOINT_WITH_VALUE_LIMIT, new Object[] {dataPointId, dataPointId, limit});
+	}
 
 	public PointValueTime getPointValue(long id) {
 		return ((PointValue) jdbcTemplate.queryForObject(POINT_VALUE_SELECT + " where " + POINT_VALUE_FILTER_BASE_ON_ID, new Object[] {id}, new PointValueRowMapper())).getPointValue();

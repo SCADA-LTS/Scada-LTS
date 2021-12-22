@@ -34,11 +34,11 @@
 									ref="emailSettingsComponent"
 									@changed="componentChanged"
 								></EmailSettingsComponent>
-								<MiscSettingsComponent
-									id="misc-settings"
-									ref="miscSettingsComponent"
+								<DataRetentionSettingsComponent
+									id="data-retention-settings"
+									ref="dataRetentionSettingsComponent"
 									@changed="componentChanged"
-								></MiscSettingsComponent>
+								></DataRetentionSettingsComponent>
 								<HttpSettingsComponent
 									id="http-settings"
 									ref="httpSettingsComponent"
@@ -59,6 +59,11 @@
 									ref="amChartSettingsComponent"
 									@changed="componentChanged"
 								></AmChartSettingsComponent>
+								<MiscSettingsComponent
+									id="misc-settings"
+									ref="miscSettingsComponent"
+									@changed="componentChanged"
+								></MiscSettingsComponent>
 								<ScadaConfigurationComponent
 								 id="scada-configuration"
 								></ScadaConfigurationComponent>
@@ -275,6 +280,7 @@ import SystemEventTypesComponent from './SystemEventTypesComponent';
 import EmailSettingsComponent from './EmailSettingsComponent';
 import HttpSettingsComponent from './HttpSettingsComponent';
 import MiscSettingsComponent from './MiscSettingsComponent';
+import DataRetentionSettingsComponent from './DataRetentionSettingsComponent';
 import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent';
 import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
@@ -292,6 +298,7 @@ export default {
 		EmailSettingsComponent,
 		HttpSettingsComponent,
 		MiscSettingsComponent,
+		DataRetentionSettingsComponent,
 		DefaultLoggingTypeSettingsComponent,
 		SmsDomainSettingsComponent,
 		ScadaConfigurationComponent,
@@ -400,7 +407,6 @@ export default {
 		},
 
 		async componentChanged(object) {
-			console.log(object);
 			let idx = this.componentsEdited.findIndex((x) => x.component == object.component);
 			if (idx == -1 && object.changed) {
 				this.componentsEdited.push(object);
@@ -409,7 +415,6 @@ export default {
 			} else if (idx != -1 && object.changed) {
 				this.componentsEdited[idx] = object;
 			}
-			console.log(this.componentsEdited);
 		},
 
 		saveComponent(component) {

@@ -245,6 +245,11 @@
 				  haltonfailure="yes">
 			</test>
 
+			<test name="com.serotonin.mango.web.dwr.DataPointEditDwrTest"
+				  haltonfailure="yes">
+			</test>
+
+
 			<test name="org.scada_lts.InitStaticFieldTest"
 				  haltonfailure="yes">
 			</test>

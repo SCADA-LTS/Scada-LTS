@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource.http;
 
+import com.serotonin.db.KeyValuePair;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -35,12 +36,10 @@ import com.serotonin.mango.vo.dataSource.http.HttpRetrieverDataSourceVO;
 import com.serotonin.web.http.HttpUtils;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.ds.StartStopDsRT;
 import org.scada_lts.ds.model.ReactivationDs;
-import org.scada_lts.ds.reactivation.ReactivationManager;
-import org.scada_lts.ds.reactivation.ReactivationConnectHttpRetriever;
-import org.scada_lts.ds.state.SleepStateDs;
-import org.scada_lts.ds.state.StopChangeEnableStateDs;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Matthew Lohbihler
@@ -52,11 +51,20 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     public static final int PARSE_EXCEPTION_EVENT = 2;
 
     private final HttpRetrieverDataSourceVO vo;
+    private StopSleepRT stopSleepRT;
 
     public HttpRetrieverDataSourceRT(HttpRetrieverDataSourceVO vo) {
         super(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.vo = vo;
+        this.stopSleepRT = new StopSleepRT(vo);
+    }
+
+    public HttpRetrieverDataSourceRT(HttpRetrieverDataSourceVO vo, StopSleepRT stopSleepRT) {
+        super(vo);
+        setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
+        this.vo = vo;
+        this.stopSleepRT = stopSleepRT;
     }
 
     @Override
@@ -74,7 +82,7 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
     protected void doPoll(long time) {
         String data;
         try {
-            data = getData(vo.getUrl(), vo.getTimeoutSeconds(), vo.getRetries(), vo.isStop(), vo.getReactivation());
+            data = getData(vo.getUrl(), vo.getTimeoutSeconds(), vo.getRetries(), vo.isStop(), vo.getReactivation(), vo.getStaticHeaders());
         } catch (Exception e) {
             LocalizableMessage lm;
             if (e instanceof LocalizableException)
@@ -122,14 +130,27 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
             returnToNormal(PARSE_EXCEPTION_EVENT, time);
     }
 
-    public static boolean testConnection(String url, int timeoutSeconds, int retries) {
+    private static GetMethod createMethodForClient(String url, List<KeyValuePair> staticHeaders) {
+        GetMethod method = new GetMethod(url);
+        if (!staticHeaders.isEmpty()) {
+            for (KeyValuePair kvp : staticHeaders) {
+                if (kvp.getKey().equals("Authorization")) {
+                    method.setDoAuthentication(true);
+                }
+                method.addRequestHeader(kvp.getKey(), kvp.getValue());
+            }
+        }
+        return method;
+    }
+
+    public static boolean testConnection(String url, int timeoutSeconds, int retries, List<KeyValuePair> staticHeaders) {
         String data = "";
         for (int i = 0; i <= retries; i++) {
             HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
             GetMethod method = null;
             LocalizableMessage message;
             try {
-                method = new GetMethod(url);
+                method = createMethodForClient(url, staticHeaders);
                 int responseCode = client.executeMethod(method);
                 if (responseCode == HttpStatus.SC_OK) {
                     data = HttpUtils.readResponseBody(method, READ_LIMIT);
@@ -146,14 +167,23 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         return false;
     }
 
+    @Deprecated
     public String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r) throws LocalizableException {
+        return getData(url,timeoutSeconds, retries, stop, r, Collections.emptyList());
+    }
+
+    public String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r, List<KeyValuePair> staticHeaders) throws LocalizableException {
+        return getData(url, timeoutSeconds, retries, stop, r, staticHeaders, stopSleepRT);
+    }
+
+    private static String getData(String url, int timeoutSeconds, int retries, boolean stop, ReactivationDs r, List<KeyValuePair> staticHeaders, StopSleepRT retry) throws LocalizableException {
         String data = "";
         for (int i = 0; i <= retries; i++) {
             HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
             GetMethod method = null;
             LocalizableMessage message;
             try {
-                method = new GetMethod(url);
+                method = createMethodForClient(url, staticHeaders);
                 int responseCode = client.executeMethod(method);
                 if (responseCode == HttpStatus.SC_OK) {
                     data = HttpUtils.readResponseBody(method, READ_LIMIT);
@@ -168,13 +198,9 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
             }
 
             if (retries == i && stop) {
-                StartStopDsRT stopDsRT = new StartStopDsRT(vo.getId(), false, new StopChangeEnableStateDs());
-                new Thread(stopDsRT).start();
+                retry.stop();
             } else if (retries == i && r.isSleep()) {
-                ReactivationConnectHttpRetriever rhr = new ReactivationConnectHttpRetriever();
-                ReactivationManager.getInstance().addProcess(rhr, r, vo);
-                StartStopDsRT stopDsRT = new StartStopDsRT(vo.getId(),false, new SleepStateDs());
-                new Thread(stopDsRT).start();
+                retry.sleep(r);
             }
             else if (retries == i) {
                 throw new LocalizableException(message);
@@ -183,45 +209,9 @@ public class HttpRetrieverDataSourceRT extends PollingDataSource {
         return data;
     }
 
-    @Deprecated
-    public static String getData(String url, int timeoutSeconds, int retries) throws LocalizableException {
-        // Try to get the data.
-        String data;
-        while (true) {
-            HttpClient client = Common.getHttpClient(timeoutSeconds * 1000);
-            GetMethod method = null;
-            LocalizableMessage message;
-
-            try {
-                method = new GetMethod(url);
-                int responseCode = client.executeMethod(method);
-                if (responseCode == HttpStatus.SC_OK) {
-                    data = HttpUtils.readResponseBody(method, READ_LIMIT);
-                    break;
-                }
-                message = new LocalizableMessage("event.http.response", url, responseCode);
-            }
-            catch (Exception e) {
-                message = DataSourceRT.getExceptionMessage(e);
-            }
-            finally {
-                if (method != null)
-                    method.releaseConnection();
-            }
-
-            if (retries <= 0)
-                throw new LocalizableException(message);
-            retries--;
-
-            // Take a little break instead of trying again immediately.
-            try {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e) {
-                // no op
-            }
-        }
-
-        return data;
+    public static String getDataTest(String url, int timeoutSeconds, int retries, List<KeyValuePair> staticHeaders) throws LocalizableException {
+        ReactivationDs reactivationDs = new ReactivationDs();
+        reactivationDs.setSleep(false);
+        return getData(url, timeoutSeconds, retries, false, reactivationDs, staticHeaders, null);
     }
 }

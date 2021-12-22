@@ -345,7 +345,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.sl.label", securityLevel);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.retries", retries);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.timeout", timeout);
-        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapEnabled", trapEnabled);
+        AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapPortEnabled", trapEnabled);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.trapPort", trapPort);
         AuditEventType.addPropertyMessage(list, "dsEdit.snmp.localAddress", localAddress);
     }
@@ -369,7 +369,7 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.sl.label", from.securityLevel, securityLevel);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.retries", from.retries, retries);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.timeout", from.timeout, timeout);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapEnabled", from.trapEnabled, trapEnabled);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapPortEnabled", from.trapEnabled, trapEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.trapPort", from.trapPort, trapPort);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.snmp.localAddress", from.localAddress, localAddress);
     }

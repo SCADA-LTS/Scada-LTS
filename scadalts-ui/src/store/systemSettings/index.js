@@ -15,6 +15,7 @@ const storeSystemSettings = {
 		systemInfoSettings: undefined,
 		emailSettings: undefined,
 		httpSettings: undefined,
+		dataRetentionSettings: undefined,
 		miscSettings: undefined,
 		smsDomainSettings: undefined,
 		amchartsSettings: undefined,
@@ -46,6 +47,9 @@ const storeSystemSettings = {
 		},
 		setHttpSettings(state, httpSettings) {
 			state.httpSettings = httpSettings;
+		},
+		setDataRetentionSettings(state, dataRetentionSettings) {
+			state.dataRetentionSettings = dataRetentionSettings;
 		},
 		setMiscSettings(state, miscSettings) {
 			state.miscSettings = miscSettings;
@@ -209,6 +213,20 @@ const storeSystemSettings = {
 			});
 		},
 
+		getDataRetentionSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getDataRetention').then((r) => {
+				commit('setDataRetentionSettings', r);
+				return r;
+			});
+		},
+
+		saveDataRetentionSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveDataRetention',
+				data: state.dataRetentionSettings,
+			});
+		},
+
 		getSmsDomainSettings({ commit, dispatch }) {
 			return dispatch('requestGet', '/systemSettings/getSMSDomain').then((r) => {
 				commit('setSmsDomainSettings', r);
@@ -291,6 +309,10 @@ const storeSystemSettings = {
 						reject(err);
 					});
 			});
+		},
+
+		purgeNow({dispatch}) {
+			return dispatch('requestGet', '/systemSettings/purgeNow');
 		},
 
 		configurationEqual(ctx, objects) {

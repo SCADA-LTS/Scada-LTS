@@ -19,21 +19,24 @@
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
 <script type="text/javascript">
-  function purgeNowAllChanged() {
-      var all = $get("purgeNowAll");
-      setDisabled("purgeNowPeriod", all);
-      setDisabled("purgeNowType", all);
-  }
-  
+
   function purgeNow() {
-      var all = $get("purgeNowAll");
-      if (all && !confirm("<fmt:message key="pointEdit.purge.confirm"/>"))
-          return;
-  
-      setDisabled("purgeNowBtn", true);
-      show("purgeNowWarn");
-      startImageFader("purgeNowImg");
-      DataPointEditDwr.purgeNow($get("purgeNowType"), $get("purgeNowPeriod"), all, purgeNowCB);
+    setDisabled("purgeNowBtn", true);
+    show("purgeNowWarn");
+    startImageFader("purgeNowImg");
+
+    var purgeStrategy = $get("purgeNowStrategy");
+    if (purgeStrategy == <%= DataPointVO.PurgeStrategy.PERIOD %>)
+        DataPointEditDwr.purgeNowPeriod($get("purgeNowType"), $get("purgeNowPeriod"), purgeNowCB);
+
+    if (purgeStrategy == <%= DataPointVO.PurgeStrategy.LIMIT %>)
+        DataPointEditDwr.purgeNowValuesLimit($get("purgeNowValuesLimit"), purgeNowCB);
+
+    if (purgeStrategy == <%= DataPointVO.PurgeStrategy.ALL %>) {
+        if (!confirm("<fmt:message key="pointEdit.purge.confirm"/>"))
+                  return;
+        DataPointEditDwr.purgeNowAll(purgeNowCB);
+    }
   }
   
   function purgeNowCB(result) {
@@ -42,6 +45,39 @@
       hide("purgeNowWarn");
       alert(""+ result +" <fmt:message key="pointEdit.purge.result"/>");
   }
+
+  function changePurgeNowStrategy() {
+      var purgeStrategy = $get("purgeNowStrategy");
+
+      showOrHideSectionByPurgeType(purgeStrategy);
+
+      if (purgeStrategy == <%= DataPointVO.PurgeStrategy.ALL %>) {
+          hide("purgeNowLimitSection");
+          hide("purgeNowLimitSection");
+      }
+  }
+
+  function changePurgeNowStrategyOnLoad() {
+        var purgeStrategy = $get("purgeStrategy");
+
+        showOrHideSectionByPurgeType(purgeStrategy);
+    }
+
+    function showOrHideSectionByPurgeType(purgeStrategy) {
+        if (purgeStrategy == <%= DataPointVO.PurgeStrategy.PERIOD %>)
+            show("purgeNowPeriodSection");
+        else
+            hide("purgeNowPeriodSection");
+
+        if (purgeStrategy == <%= DataPointVO.PurgeStrategy.LIMIT %>)
+            show("purgeNowLimitSection");
+        else
+            hide("purgeNowLimitSection");
+    }
+
+  dojo.addOnLoad(function() {
+        changePurgeNowStrategyOnLoad();
+    });
 </script>
 
 <div class="borderDiv marB marR" style="margin:20px; padding:10px 10px 10px 10px; border-color:blue; max-width: 800px;">
@@ -50,24 +86,40 @@
       <span class="smallTitle"><fmt:message key="pointEdit.purge.purgeNow"/></span>
       <tag:help id="pointValueLogPurging"/>
     </td></tr>
-    
-    <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.purge.olderThan"/></td>
-      <td class="formField">
-        <input id="purgeNowPeriod" type="text" value="${form.purgePeriod}" class="formShort"/>
-        <sst:select id="purgeNowType" value="${form.purgeType}">
-          <tag:timePeriodOptions sst="true" min="true" h="true" d="true" w="true" mon="true" y="true"/>
-        </sst:select>
-      </td>
-    </tr>
-    
-    <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.purge.all"/></td>
-      <td class="formField">
-        <input type="checkbox" id="purgeNowAll" onclick="purgeNowAllChanged()">
-        <label for="purgeNowAll"><fmt:message key="pointEdit.purge.allData"/></label>
-      </td>
-    </tr>
+
+    <spring:bind path="form.purgeStrategy">
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="pointEdit.logging.purgeStrategy"/></td>
+          <td class="formField">
+            <sst:select id="purgeNowStrategy" name="purgeNowStrategy" onchange="changePurgeNowStrategy();" value="${status.value}">
+              <sst:option value="<%= Integer.toString(DataPointVO.PurgeStrategy.PERIOD) %>"><fmt:message key="pointEdit.purge.type.period"/></sst:option>
+              <sst:option value="<%= Integer.toString(DataPointVO.PurgeStrategy.LIMIT) %>"><fmt:message key="pointEdit.purge.type.limit"/></sst:option>
+              <sst:option value="<%= Integer.toString(DataPointVO.PurgeStrategy.ALL) %>"><fmt:message key="pointEdit.purge.type.all"/></sst:option>
+            </sst:select>
+          </td>
+        </tr>
+    </spring:bind>
+
+    <tbody id="purgeNowPeriodSection">
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="pointEdit.purge.olderThan"/></td>
+          <td class="formField">
+            <input id="purgeNowPeriod" type="text" value="${form.purgePeriod}" class="formShort"/>
+            <sst:select id="purgeNowType" value="${form.purgeType}">
+              <tag:timePeriodOptions sst="true" min="true" h="true" d="true" w="true" mon="true" y="true"/>
+            </sst:select>
+          </td>
+        </tr>
+    </tbody>
+
+    <tbody id="purgeNowLimitSection" style="display:none;">
+      <tr>
+        <td class="formLabelRequired"><fmt:message key="pointEdit.purge.type.limit"/></td>
+        <td class="formField">
+          <input id="purgeNowValuesLimit" type="text" name="purgeNowValuesLimit" value="${form.purgeValuesLimit}" class="formShort"/>
+        </td>
+      </tr>
+    </tbody>
     
     <tr>
       <td colspan="2" align="center">
