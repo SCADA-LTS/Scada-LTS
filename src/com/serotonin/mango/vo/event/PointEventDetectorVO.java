@@ -295,7 +295,7 @@ public class PointEventDetectorVO extends SimpleEventDetectorVO implements Clone
         AuditEventType.maybeAddPropertyChangeMessage(list, "common.xid", from.xid, xid);
         AuditEventType.maybeAddPropertyChangeMessage(list, "pointEdit.detectors.alias", from.alias, alias);
         if (from.detectorType != detectorType)
-            AuditEventType.addPropertyChangeMessage(list, "pointEdit.detectors.type", from.getDef().getNameKey(),
+            AuditEventType.addPropertyChangeMessage(list, "pointEdit.detectors.type", new LocalizableMessage(from.getDef().getNameKey()),
                     new LocalizableMessage(getDef().getNameKey()));
         AuditEventType.maybeAddAlarmLevelChangeMessage(list, "common.alarmLevel", from.alarmLevel, alarmLevel);
         if (from.limit != limit || from.duration != duration || from.durationType != durationType
