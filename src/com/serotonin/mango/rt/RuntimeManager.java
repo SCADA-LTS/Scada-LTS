@@ -32,13 +32,14 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.PointEventDetectorDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
-import org.scada_lts.utils.AuditEventUtils;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -444,7 +445,7 @@ public class RuntimeManager {
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
-			AuditEventUtils.raiseAuditEvent(point, ped);
+			AuditEventUtils.raiseAuditDetectorEvent(point, ped, new PointEventDetectorDAO());
 		}
 
 		new DataPointDao().saveDataPoint(point);

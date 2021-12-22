@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
-import org.scada_lts.utils.AuditEventUtils;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.utils.QueryUtils;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;

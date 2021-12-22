@@ -22,7 +22,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
-import org.scada_lts.utils.AuditEventUtils;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;

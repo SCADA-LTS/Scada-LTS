@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
-import org.scada_lts.utils.AuditEventUtils;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;

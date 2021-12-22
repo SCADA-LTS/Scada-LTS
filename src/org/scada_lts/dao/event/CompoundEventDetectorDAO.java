@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.scada_lts.utils.AuditEventUtils;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
