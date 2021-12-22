@@ -2,7 +2,7 @@
 	<div>
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmAckAllToggleDialog"
+			ref="confirmDialog"
 			@result="confirmAction"
 			:title="confirmTitle"
 			:message="confirmMessage"
@@ -285,8 +285,6 @@
 						</v-icon>
 						{{$t("eventList.silenceAll")}}</v-btn>
 				</v-col>
-
-
     		</v-row>
 			<v-data-table
 				id='eventList'
@@ -396,7 +394,6 @@
 	</div>
 </template>
 <style scoped>
-
 .v-icon {
 	border: 0!important;
 }
@@ -443,6 +440,7 @@ export default {
     },
 	data() {
 		return {
+			next: false,
 			mountedTs: null,
 			newAlarms: false,
 			get selectedEvent() {
@@ -580,7 +578,6 @@ export default {
 					image: "images/flag_red.png"
 				}
 			},
-			confirmAckAllToggleDialog: false,
 			confirmTitle: '',
 			confirmMessage: '',
 			selectedEvents: [],
@@ -602,6 +599,10 @@ export default {
 	},
 	
 	methods: {
+		nextPage(){
+			this.options = {...this.options, page: this.options.page+1}
+			this.fetchEventList()
+		},
 		getAlarms() {
 			store.dispatch('getLiveAlarms', { offset: 0, limit: 1 }).then((ret) => {
 				if (ret.length) this.newAlarms = true
@@ -609,16 +610,16 @@ export default {
 		},
 		confirmAction(answer) {
 			if (answer) this.actionToConfirm();
-			this.confirmAckAllToggleDialog = false
+			// this.confirmDialog.showDialog()
 		},
 		askForAckAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t('eventList.acknownledgeAll')
 			this.confirmMessage = this.$t('eventList.confirmAckAllMessage')
 			this.actionToConfirm = this.acknowledgeAllEvents;
 		},
 		askForSilenceAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t("eventList.silenceAll")
 			this.confirmMessage = this.$t('eventList.silenceAllConfirmMessage')
 			this.actionToConfirm = this.silenceAllEvents;
@@ -681,8 +682,15 @@ export default {
 		async fetchEventList() {
 			this.loading = true;
 			const result = await this.$store.dispatch('searchEvents', { ...this.searchFilters, itemsPerPage: this.options.itemsPerPage });
-			this.eventList = result.rows;
-			this.totalEvents = result.total;
+			
+			if (result.length > this.options.itemsPerPage) {
+				this.eventList = result.slice(0,this.options.itemsPerPage);
+				this.totalEvents = this.options.itemsPerPage * this.options.page +1
+			} else {
+				this.eventList = result;
+				this.totalEvents = this.options.itemsPerPage * this.options.page
+			}
+			// document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
 			this.loading = false;
 			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},

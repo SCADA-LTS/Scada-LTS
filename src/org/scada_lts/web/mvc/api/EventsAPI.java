@@ -150,13 +150,13 @@ public class EventsAPI {
      * @return EventDTO List
      */
     @PostMapping(value = "/search")
-    public ResponseEntity<SQLPageWithTotal<EventDTO>> getEvents(@RequestBody JsonEventSearch query, HttpServletRequest request) {
+    public ResponseEntity<List<EventDTO>> getEvents(@RequestBody JsonEventSearch query, HttpServletRequest request) {
             LOG.info("POST::/api/events/search/");
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                SQLPageWithTotal<EventDTO> result = eventService.getEventsWithLimit(query, user);
-                return new ResponseEntity<SQLPageWithTotal<EventDTO>>(result, HttpStatus.OK);
+                List<EventDTO> result = eventService.getEventsWithLimit(query, user);
+                return new ResponseEntity<List<EventDTO>>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }

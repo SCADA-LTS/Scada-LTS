@@ -218,22 +218,33 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-
-
-	public void save(String value, String xid, int typePointValueOfREST ) {
+	@Deprecated
+	public void save(String value, String xid, int pointValueType) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		
-		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
 
-		if(dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
-            Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
-        } else {
+		PointValueTime pvt = new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
+
+		if (dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
+			Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
+		} else {
 
 			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
 					dpvo.getId());
 
 			dpRT.updatePointValue(pvt);
 		}
+	}
+
+	public void save(User user, String value, String xid, int pointValueType) {
+		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
+		new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
+		setPoint(user, dpvo, value);
+	}
+
+	private void setPoint(User user, DataPointVO point, String valueStr) {
+		Permissions.ensureDataPointSetPermission(user, point);
+		setPointImpl(point, valueStr, user);
+
 	}
 
 	public void saveAPI(User user, String value, String xid) {
