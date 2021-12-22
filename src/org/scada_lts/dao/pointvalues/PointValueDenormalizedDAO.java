@@ -561,6 +561,16 @@ class PointValueDenormalizedDAO implements IPointValueDenormalizedDAO {
 	}
 
 	@Override
+	public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+		return 0;
+	}
+
+	@Override
+	public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
+		return 0;
+	}
+
+	@Override
 	public void createTableForDatapoint(int pointId) {
 
 	}

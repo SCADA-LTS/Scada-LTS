@@ -518,7 +518,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     @Override
     public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
-        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
+        return getPointValueRepository().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override
@@ -760,7 +760,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     @Override
     public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
-        return PointValueDAO.getInstance().deletePointValuesWithValueLimit(dataPointId, limit);
+        return pointValueCommandRepository.deletePointValuesWithValueLimit(dataPointId, limit);
     }
 
 

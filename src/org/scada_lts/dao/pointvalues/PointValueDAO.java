@@ -703,6 +703,7 @@ public class PointValueDAO implements IPointValueDAO {
     	return jdbcTemplate.update(POINT_VALUE_DELETE_BEFORE, new Object[] {dataPointId, time, lastId});
     }
 
+	@Override
 	public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
 		return jdbcTemplate.update(POINT_VALUE_DELETE_BEFORE_WITHOUT_LAST_TWO, new Object[] {dataPointId, dataPointId, time});
 	}
@@ -722,6 +723,7 @@ public class PointValueDAO implements IPointValueDAO {
     	return jdbcTemplate.update(DELETE_POINT_VALUE_WITH_MISMATCHED_TYPE, new Object[] {dataPointId, dataType});
     }
 
+	@Override
 	public long deletePointValuesWithValueLimit(int dataPointId, int limit){
 		return jdbcTemplate.update(DELETE_POINT_VALUE_BASED_ON_DATAPOINT_WITH_VALUE_LIMIT, new Object[] {dataPointId, dataPointId, limit});
 	}
