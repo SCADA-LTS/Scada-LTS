@@ -249,8 +249,7 @@
 				  haltonfailure="yes">
 			</test>
 
-
-			<test name="org.scada_lts.InitStaticFieldTest"
+			<test name="org.scada_lts.InitObjectTestsSuite"
 				  haltonfailure="yes">
 			</test>
 		</junit>
