@@ -22,12 +22,18 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
+import com.serotonin.mango.view.chart.TableChartRenderer;
+import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
@@ -44,6 +50,8 @@ import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
+import org.scada_lts.dao.PointLinkDAO;
+import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
@@ -58,10 +66,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.AggregateUtils.*;
 
@@ -214,22 +218,33 @@ public class DataPointService implements MangoDataPoint {
 		return result;
 	}
 
-
-
-	public void save(String value, String xid, int typePointValueOfREST ) {
+	@Deprecated
+	public void save(String value, String xid, int pointValueType) {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-		
-		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
 
-		if(dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
-            Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
-        } else {
+		PointValueTime pvt = new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
+
+		if (dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
+			Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
+		} else {
 
 			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
 					dpvo.getId());
 
 			dpRT.updatePointValue(pvt);
 		}
+	}
+
+	public void save(User user, String value, String xid, int pointValueType) {
+		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
+		new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
+		setPoint(user, dpvo, value);
+	}
+
+	private void setPoint(User user, DataPointVO point, String valueStr) {
+		Permissions.ensureDataPointSetPermission(user, point);
+		setPointImpl(point, valueStr, user);
+
 	}
 
 	public void saveAPI(User user, String value, String xid) {
@@ -261,6 +276,29 @@ public class DataPointService implements MangoDataPoint {
 		if (dp != null) {
 			setEventDetectors(dp);
 			setPointComments(dp);
+		}
+	}
+
+	public void updateDataPointConfiguration(DataPointVO dp) {
+		if(dp.getId() != Common.NEW_ID) {
+			DataPointVO existingDataPoint = getDataPoint(dp.getId());
+			existingDataPoint.setName(dp.getName());
+			existingDataPoint.setXid(dp.getXid());
+			existingDataPoint.setDescription(dp.getDescription());
+			existingDataPoint.setEnabled(dp.isEnabled());
+			existingDataPoint.setPointLocator(dp.getPointLocator());
+			updateAndInitializeDataPoint(existingDataPoint);
+		}
+	}
+
+	public void updateAndInitializeDataPoint(DataPointVO dp) {
+		Common.ctx.getRuntimeManager().saveDataPoint(dp);
+	}
+
+	public void createDataPointConfiguration(DataPointVO dp) {
+		if(dp.getId() == Common.NEW_ID) {
+			dp.setEventDetectors(new ArrayList<>());
+			createDataPoint(dp);
 		}
 	}
 
@@ -306,14 +344,22 @@ public class DataPointService implements MangoDataPoint {
 	@Override
 	public void deleteDataPoint(int dataPointId) {
 		try {
-			DataPointVO dp = getDataPoint(dataPointId);
+			//Note: See class DataSourceEditDWR::deletePoint
+			Common.ctx.getEventManager().cancelEventsForDataPoint(dataPointId);
 			beforePointDelete(dataPointId);
 			deletePointHistory(dataPointId);
 			deleteDataPointImpl(Integer.toString(dataPointId));
+			UsersProfileService ups = new UsersProfileService();
+			ups.updateDataPointPermissions();
 		} catch (EmptyResultDataAccessException e) {
 			Log.error(e);
 			return;
 		}
+	}
+
+	public void deleteDataPoint(String dataPointXid) {
+		DataPointVO dp = getDataPoint(dataPointXid);
+		deleteDataPoint(dp.getId());
 	}
 
 	@Override
@@ -357,7 +403,7 @@ public class DataPointService implements MangoDataPoint {
 	public void deletePointHistory(int dpId, long min, long max) {
 		while (true) {
 			try {
-				pointValueDAO.deletePointValuesBeforeWithOutLast(dpId, max);
+				pointValueDAO.deletePointValuesBeforeWithOutLastTwo(dpId, max);
 				break;
 			} catch (UncategorizedSQLException e) {
                 if ("The total number of locks exceeds the lock table size".equals(e.getSQLException().getMessage())) {
@@ -680,5 +726,13 @@ public class DataPointService implements MangoDataPoint {
 			LOG.error(ex.getMessage());
 			return Optional.empty();
 		}
+	}
+
+	public DataPointVO createDataPoint(DataPointVO dataPoint) {
+		dataPoint.setEventDetectors(new ArrayList<>());
+		dataPoint.setTextRenderer(new NoneRenderer());
+		DataPointVO created = dataPointDAO.create(dataPoint);
+		Common.ctx.getRuntimeManager().saveDataPoint(created);
+		return created;
 	}
 }

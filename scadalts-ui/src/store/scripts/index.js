@@ -47,6 +47,13 @@ const storeScripts = {
 			let url = `/scripts/${id}`;
 			return dispatch('requestDelete', url);
 		},
+		fetchScripts({ dispatch }, payload) {
+
+        			return dispatch('requestPost', {
+        				url: `/scripts/search`,
+        				data: payload,
+        			});
+        		}
 	},
 	getters: {},
 };

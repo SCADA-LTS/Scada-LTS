@@ -123,7 +123,7 @@ public class PointValueDao {
 	}
 
 	public long deletePointValuesBefore(int dataPointId, long time) {
-		return pointValueService.deletePointValuesBeforeWithOutLast(dataPointId, time);
+		return pointValueService.deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
 	}
 
 	public long deletePointValues(int dataPointId) {

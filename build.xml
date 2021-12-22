@@ -244,6 +244,11 @@
 			<test name="br.org.scadabr.vo.EqualsHashcodePermissionTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="com.serotonin.mango.web.dwr.DataPointEditDwrTest"
+				  haltonfailure="yes">
+			</test>
+
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">
@@ -594,9 +599,9 @@
         <pathelement location="WebContent/WEB-INF/lib/jstl-api-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl-impl-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.13.3.jar.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.13.3.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.13.3.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.15.0.jar.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.15.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.15.0.jar"/>
 		<!-- To make Log4j2 faster use make all loggers Asynchronous -->
 		<pathelement location="WebContent/WEB-INF/lib/disruptor-3.4.2.jar"/>
 		<!-- disruptor is required for that purpose. Set system property: -->

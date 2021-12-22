@@ -35,12 +35,10 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.mango.service.MailingListService;
-import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.mango.service.*;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
@@ -627,6 +625,13 @@ public class RuntimeManager {
 			updateDataPointValuesRT(dataPointId);
 		return count;
 		//return 0;
+	}
+
+	public long purgeDataPointValuesWithLimit(int dataPointId, int limit) {
+		long count = new PointValueService().deletePointValuesWithValueLimit(dataPointId, limit);
+		if (count > 0)
+			updateDataPointValuesRT(dataPointId);
+		return count;
 	}
 
 	private void updateDataPointValuesRT(int dataPointId) {
