@@ -19,6 +19,7 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.AuditEventType;
+import org.scada_lts.utils.AuditEventUtils;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
@@ -69,11 +70,11 @@ public class MaintenanceEventService implements MangoMaintenanceEvent {
 	public void saveMaintenanceEvent(MaintenanceEventVO maintenanceEvent) {
 		if (maintenanceEvent.getId() == Common.NEW_ID) {
 			maintenanceEvent.setId(maintenanceEventDAO.insert(maintenanceEvent));
-			AuditEventType.raiseAddedEvent(AuditEventType.TYPE_MAINTENANCE_EVENT, maintenanceEvent);
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_MAINTENANCE_EVENT, maintenanceEvent);
 		} else {
 			MaintenanceEventVO oldMaintenanceEvent = maintenanceEventDAO.getMaintenanceEvent(maintenanceEvent.getId());
 			maintenanceEventDAO.update(maintenanceEvent);
-			AuditEventType.raiseChangedEvent(AuditEventType.TYPE_MAINTENANCE_EVENT, oldMaintenanceEvent, maintenanceEvent);
+			AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_MAINTENANCE_EVENT, oldMaintenanceEvent, maintenanceEvent);
 		}
 	}
 

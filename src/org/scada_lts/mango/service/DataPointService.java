@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
+import org.scada_lts.utils.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
-import com.serotonin.mango.view.chart.TableChartRenderer;
 import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
@@ -309,7 +309,7 @@ public class DataPointService implements MangoDataPoint {
 			insertDataPoint(dp);
 			PointHierarchyDAO.cachedPointHierarchy = null;
 			MangoPointHierarchy.getInst().addDataPoint(dp);
-			AuditEventType.raiseAddedEvent(AuditEventType.TYPE_DATA_POINT, dp);
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_DATA_POINT, dp);
 		} else {
 			updateDataPoint(dp);
 			MangoPointHierarchy.getInst().updateDataPoint(dp);
@@ -336,7 +336,7 @@ public class DataPointService implements MangoDataPoint {
 
 		updateDataPointShallow(dp);
 		saveEventDetectors(dp);
-		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_DATA_POINT, oldDp, dp);
+		AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_DATA_POINT, oldDp, dp);
 	}
 
 	@Override

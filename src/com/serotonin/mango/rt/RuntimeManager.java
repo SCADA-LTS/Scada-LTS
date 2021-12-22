@@ -26,20 +26,19 @@ import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
-import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.PointEventDetectorDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.utils.AuditEventUtils;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -445,32 +444,13 @@ public class RuntimeManager {
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
-			raiseAuditEvent(point, ped);
+			AuditEventUtils.raiseAuditEvent(point, ped);
 		}
 
 		new DataPointDao().saveDataPoint(point);
 
 		if (point.isEnabled())
 			startDataPoint(point);
-	}
-
-	private void raiseAuditEvent(DataPointVO point, PointEventDetectorVO ped) {
-		try {
-			getPointEventDetector(point, ped).map(fromPed -> {
-				AuditEventType.raiseChangedEvent(AuditEventType.TYPE_POINT_EVENT_DETECTOR, fromPed, ped);
-				return fromPed;
-			}).orElseGet(() -> {
-				AuditEventType.raiseAddedEvent(AuditEventType.TYPE_POINT_EVENT_DETECTOR, ped);
-				return ped;
-			});
-		} catch (Exception ex) {
-			LOG.warn(ex.getMessage(), ex);
-		}
-	}
-
-	private Optional<PointEventDetectorVO> getPointEventDetector(DataPointVO point, PointEventDetectorVO ped) {
-		List<PointEventDetectorVO> fromPed = new PointEventDetectorDAO().getPointEventDetectors(point);
-		return fromPed.stream().filter(a -> a.getId() == ped.getId()).findAny();
 	}
 
 	public void deleteDataPoint(DataPointVO point) {

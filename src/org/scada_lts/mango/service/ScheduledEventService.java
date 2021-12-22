@@ -19,6 +19,7 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.AuditEventType;
+import org.scada_lts.utils.AuditEventUtils;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.ScheduledEventDAO;
@@ -64,11 +65,11 @@ public class ScheduledEventService implements MangoScheduledEvent {
 	public void saveScheduledEvent(ScheduledEventVO scheduledEvent) {
 		if (scheduledEvent.getId() == Common.NEW_ID) {
 			scheduledEvent.setId(scheduledEventDAO.insert(scheduledEvent));
-			AuditEventType.raiseAddedEvent(AuditEventType.TYPE_SCHEDULED_EVENT, scheduledEvent);
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_SCHEDULED_EVENT, scheduledEvent);
 		} else {
 			ScheduledEventVO oldScheduledEvent = scheduledEventDAO.getScheduledEvent(scheduledEvent.getId());
 			scheduledEventDAO.update(scheduledEvent);
-			AuditEventType.raiseChangedEvent(AuditEventType.TYPE_SCHEDULED_EVENT, oldScheduledEvent, scheduledEvent);
+			AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_SCHEDULED_EVENT, oldScheduledEvent, scheduledEvent);
 		}
 	}
 
