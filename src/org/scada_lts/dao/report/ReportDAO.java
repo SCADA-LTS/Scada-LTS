@@ -18,7 +18,9 @@
 package org.scada_lts.dao.report;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.ReportVO;
+import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -37,7 +39,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for Report
@@ -131,6 +135,36 @@ public class ReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_SELECT, new ReportRowMapper());
 	}
 
+	public List<ReportVO> search(Map<String, String> query) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getReports()");
+		}
+		StringBuilder sql = new StringBuilder();
+		List<String> filterCondtions = new ArrayList<String>();
+		List<Object> params = new ArrayList<Object>();
+		if (!"".equals(query.get("keywords"))) {
+			List<String> keywordConditions = new ArrayList<String>();
+
+			for (String keyword : query.get("keywords").split(" ")) {
+				keywordConditions.add("R.name LIKE ?");
+				params.add("%" + keyword + "%");
+			}
+
+			filterCondtions.add(joinOr(keywordConditions));
+		}
+
+		sql.append("SELECT "
+			+ COLUMN_NAME_DATA + ", "
+			+ COLUMN_NAME_ID + ", "
+			+ COLUMN_NAME_USER_ID + ", "
+			+ COLUMN_NAME_NAME + ", "
+			+ "FROM reports R ");
+		sql.append(" WHERE " + joinAnd(filterCondtions));
+
+		return DAO.getInstance().getJdbcTemp().query(sql.toString(), new ReportRowMapper());
+	}
+
 	public List<ReportVO> getReports(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -186,5 +220,27 @@ public class ReportDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(REPORT_DELETE, new Object[]{id});
+	}
+
+	public String joinAnd(List<String> conditions) {
+		StringBuilder result = new StringBuilder();
+		result.append(" 1 ");
+		for (String c:conditions) {
+			result.append(" AND (");
+			result.append(c);
+			result.append(") ");
+		}
+		return result.toString();
+	}
+
+	public String joinOr(List<String> conditions) {
+		StringBuilder result = new StringBuilder();
+		result.append(" 0 ");
+		for (String c:conditions) {
+			result.append(" OR (");
+			result.append(c);
+			result.append(") ");
+		}
+		return result.toString();
 	}
 }

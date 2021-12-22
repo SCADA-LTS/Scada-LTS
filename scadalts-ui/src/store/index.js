@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
+import storeReports from './reports';
 import storeEvents from './events';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
@@ -29,6 +30,7 @@ const myLoggerForVuexMutation = (store) => {
 
 export default new Vuex.Store({
 	modules: {
+		storeReports,
 		dataSource,
 		dataSourceState,
 		dataPoint,
@@ -63,8 +65,6 @@ export default new Vuex.Store({
 			timeout: 5000,
 			// useCredentials: true,
 			// credentials: 'same-origin',
-			
-			
 		},
 		webSocketUrl: 'http://localhost:8080/ScadaBR/ws-scada/alarmLevel',
 
@@ -90,18 +90,18 @@ export default new Vuex.Store({
 	mutations: {
 		updateWebSocketUrl(state) {
 			let locale = window.location.pathname.split('/')[1];
-			if(!!locale) {
+			if (!!locale) {
 				locale += '/';
 			}
-    		let protocol = window.location.protocol;
-    		let host = window.location.host.split(":");
+			let protocol = window.location.protocol;
+			let host = window.location.host.split(':');
 
 			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
 		},
 
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
-		}
+		},
 	},
 	actions: {
 		getUserRole() {
@@ -122,16 +122,19 @@ export default new Vuex.Store({
 			});
 		},
 
-		async loginUser({dispatch}, userdata) {
+		async loginUser({ dispatch }, userdata) {
 			axios.defaults.withCredentials = true;
-			let answer = await dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`);
-			if(answer) {
+			let answer = await dispatch(
+				'requestGet',
+				`/auth/${userdata.username}/${userdata.password}`,
+			);
+			if (answer) {
 				dispatch('getUserInfo');
 			}
 			return answer;
 		},
 
-		logoutUser({state}) {
+		logoutUser({ state }) {
 			state.loggedUser = null;
 		},
 
@@ -145,7 +148,6 @@ export default new Vuex.Store({
 			commit('updateWebSocketUrl');
 			commit('INIT_WEBSOCKET_URL');
 			commit('INIT_WEBSOCKET');
-
 		},
 
 		/**

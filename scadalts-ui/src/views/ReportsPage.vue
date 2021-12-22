@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<h1>{{ $t('reports.title') }}</h1>
+		{{options}}
 		<v-container fluid v-if="!!reportList">	
 			<v-row>
 				<v-col cols="6">
@@ -8,7 +9,7 @@
 						<v-card-title>
 							<v-text-field
 								v-model="search"
-								@input="fetchreportList"
+								@input="fetchReportList"
 								append-icon="mdi-magnify"
 								label="Search"
 								class="mr-2"
@@ -174,7 +175,7 @@
 										<template v-slot:activator="{ on, attrs }">
 											<v-text-field 
 												v-model="dateRange.endTime"
-												@change="fetchEventList"
+												@change="fetchReportList"
 												label="End Time"
 												prepend-icon="mdi-clock-time-four-outline"
 												v-bind="attrs"
@@ -183,7 +184,7 @@
 										</template>
 										<v-time-picker 
 											v-model="dateRange.endTime"
-											@change="fetchEventList"
+											@change="fetchReportList"
 											format="24hr" 
 											scrollable
 											 offset-x=""
@@ -332,7 +333,7 @@ export default {
 	name: 'reportList',
 	components: {},
 	async mounted() {
-		this.fetchreportList();
+		this.fetchReportList();
 		this.datapoints = await this.$store.dispatch('getAllDatapoints');
 	},
 	watch: {
@@ -341,7 +342,7 @@ export default {
 			this.dateRange.itemsPerPage = data.itemsPerPage;
 			this.dateRange.sortBy = data.sortBy;
 			this.dateRange.sortDesc = data.sortDesc;
-			this.fetchreportList()	
+			this.fetchReportList()	
       	},
     },
 	data() {
@@ -530,15 +531,9 @@ export default {
 				.push(this.datapoints
 					.find(datapoint => datapoint.id === this.selectedDatapointId))
 		},
-		async fetchreportList() {
+		async fetchReportList() {
 			this.loading = true;
-			this.reportList = []//await this.$store.dispatch('fetchReports', this.dateRange);
-			if (!this.search) {
-				this.reportListFiltered = this.reportList
-			} else {
-				const keywords = this.search.split(' ')
-				this.reportListFiltered = this.reportList.filter(x => `${x.id} ${x.xid} ${x.name} ${x.script}`.toLowerCase().includes(keywords[0].toLowerCase()))
-			}
+			this.reportList = await this.$store.dispatch('fetchReports', {...this.options, keywords: this.search});
 			this.totalReports = this.reportList.total;
 		},
 		runScript(xid) {
@@ -555,7 +550,7 @@ export default {
 				this.searchFilters.startTime = "00:00";
 				this.searchFilters.endTime = "23:59";
 			}
-			this.fetchEventList();
+			this.fetchReportList();
 		},
 		saveScript() {
 			if (this.selectedScriptId != -1) {
@@ -566,7 +561,7 @@ export default {
 		},
 		async deleteScript(id) {
 			this.reportList = await this.$store.dispatch('deleteScript', id);
-			this.fetchreportList()
+			this.fetchReportList()
 			this.dialog = false
 			this.snackbar = true
 			this.snackbarMessage = `${this.$t('reportList.deletedScript')} #${id}`
