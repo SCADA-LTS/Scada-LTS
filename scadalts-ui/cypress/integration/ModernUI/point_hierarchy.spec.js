@@ -75,5 +75,37 @@ context('Scenario - Data Point Hierarchy validation', () => {
                 })
             })
         })
+    });
+
+    describe('Import/Export point hierarchy component', () => {
+        it('Is create folder dialog visible', () => {
+            cy.get('.slts--toolbar > :nth-child(1) > .row > button:nth-of-type(2)').click().then(() => {
+                cy.get('.v-dialog--active').should('be.visible');
+                cy.get('.v-dialog--active .v-card__title').should('contain', 'Import/Export Point Hierarchy structure');
+                cy.get('.v-dialog--active .v-card__text textarea').should('have.value', '{}');
+            })
+        })
+
+        it('Is Export button create JSON config', () => {
+            cy.get('.v-dialog--active .v-card__text button.btn-primary').click();
+        })
+
+        it('Close dialog', () => {
+            cy.get('.v-dialog--active .v-card__actions button.success--text').click();
+        })
+    })
+
+    describe('Show/Hide DataSource name', () => {
+        it('Enable DataSource name', () => {
+            cy.get('.slts--toolbar > :nth-child(1) > .row > button:nth-of-type(3)').click().then(() => {
+                cy.get('.slts-list-item--title').should('contain', 'DataPointTestDS');
+            })
+        })
+
+        it('Hide DataSource name', () => {
+            cy.get('.slts--toolbar > :nth-child(1) > .row > button:nth-of-type(3)').click().then(() => {
+                cy.get('.slts-list-item--title').should('not.contain', 'DataPointTestDS');
+            })
+        })
     })
 });
