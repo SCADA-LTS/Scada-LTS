@@ -24,14 +24,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+
+import com.serotonin.mango.rt.event.type.*;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.utils.QueryUtils;
-import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -51,15 +53,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.AuditEventType;
-import com.serotonin.mango.rt.event.type.CompoundDetectorEventType;
-import com.serotonin.mango.rt.event.type.DataPointEventType;
-import com.serotonin.mango.rt.event.type.DataSourceEventType;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.rt.event.type.MaintenanceEventType;
-import com.serotonin.mango.rt.event.type.PublisherEventType;
-import com.serotonin.mango.rt.event.type.ScheduledEventType;
-import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.dwr.EventsDwr;
@@ -1340,8 +1333,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				handler.getAlias(), 
 				new SerializationData().writeObject(handler), 
 				handler.getId() });
-		
-		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
+
+		AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
 				old, handler);
 		
 	}
@@ -1350,6 +1343,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	public EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
 			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 			return getEventHandler(id);
 		} else {
 			updateEventHandler(handler);
