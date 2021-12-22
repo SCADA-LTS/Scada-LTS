@@ -115,6 +115,9 @@ public class SystemSettingsDAO {
 	// SMS domain
 	public static final String SMS_DOMAIN = "sms.domain";
 
+	// Purge with values limit
+	public static final String VALUES_LIMIT_FOR_PURGE = "valuesLimitForPurge";
+
 	// Aggregation values
 	public static final String AGGREGATION_ENABLED = "aggregationEnabled";
 	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
@@ -377,6 +380,8 @@ public class SystemSettingsDAO {
 
 		DbQuerySettings dbQuerySettings = DbQuerySettings.fromEnvProperties();
 		DEFAULT_VALUES.put(DB_QUERY_READ_ENABLED, dbQuerySettings.isReadEnabled());
+
+		DEFAULT_VALUES.put(VALUES_LIMIT_FOR_PURGE, 100);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

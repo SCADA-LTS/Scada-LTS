@@ -527,6 +527,19 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
     }
 
+    @Override
+    public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+        String ts = TO_TIMEZONE.replace("$timestamp", String.valueOf(time*1000));
+        String query = DROP_PARTITION.replace(DATAPOINT_ID, String.valueOf(dataPointId));
+        return jdbcTemplate.update(query + WHERE_TIMESTAMP + ts);
+    }
+
+    @Override
+    public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
+        //TODO when delete operation in QuestDB will be supported
+        return 0;
+    }
+
     @Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
     public void executeBatchUpdateInsert( List<Object[]> params) {
 

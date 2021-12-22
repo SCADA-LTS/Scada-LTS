@@ -22,6 +22,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
@@ -38,7 +39,6 @@ import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
-import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -382,14 +382,14 @@ public class EventService implements MangoEvent {
 		EventHandlerVO handler = getEventHandler(handlerId);
 		
 		eventDAO.delete(handlerId);
-		
-		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
+
+		AuditEventUtils.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER,	handler);
 	}
 
 	public void deleteEventHandler(final String handlerXid) {
 		EventHandlerVO handler = getEventHandler(handlerXid);
 		eventDAO.delete(handler.getId());
-		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
+		AuditEventUtils.raiseDeletedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 	}
 	
 	@Override
@@ -428,14 +428,14 @@ public class EventService implements MangoEvent {
 	@Override
 	public void insertEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		eventDAO.insertEventHandler(typeId, typeRef1, typeRef2, handler);
-		AuditEventType.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
+		AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 	}
 
 	@Override
 	public void updateEventHandler(EventHandlerVO handler) {
 		EventHandlerVO old = getEventHandler(handler.getId());
 		eventDAO.updateEventHandler(handler);
-		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
+		AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
 				old, handler);
 	}
 		
@@ -524,7 +524,7 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
-	public SQLPageWithTotal<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
+	public List<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
 		return eventDAO.findEvents(query, user);
 	}
 

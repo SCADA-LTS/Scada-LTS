@@ -16,4 +16,6 @@ public interface IPointValueCommand {
     Object[] create(int pointId, int dataType, double dvalue, long time);
     Object[] create(PointValue entity);
     Object[] createNoTransaction(int pointId, int dataType, double dvalue, long time);
+    long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time);
+    long deletePointValuesWithValueLimit(int dataPointId, int limit);
 }

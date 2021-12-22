@@ -509,10 +509,16 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
+    @Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
         if (dbQueryEnabled)
             deletePointValuesBeforeForDatapoint(dataPointId, time);
         return pointValueCommandRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
+    }
+
+    @Override
+    public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
+        return getPointValueRepository().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override
@@ -752,6 +758,13 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return pointValueCommandRepository.deletePointValuesWithMismatchedType(dataPointId, dataType);
     }
 
+    @Override
+    public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
+        return pointValueCommandRepository.deletePointValuesWithValueLimit(dataPointId, limit);
+    }
+
+
+    @Deprecated
     public void updateMetaDataPointByScript(String xid) {
         try {
             DataPointVO dataPoint = dataPointService.getDataPoint(xid);
@@ -812,6 +825,67 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
+    public void updateMetaDataPointByScript(User user, String xid) {
+        try {
+            DataPointVO dataPoint = dataPointService.getDataPoint(xid);
+            MetaDataSourceVO metaDataSourceVO = (MetaDataSourceVO) dataSourceService.getDataSource(dataPoint.getDataSourceXid());
+
+            MetaPointLocatorVO metaPointLocatorVO = dataPoint.getPointLocator();
+
+            metaPointLocatorVO.setUpdateEvent(MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE);
+
+            MetaPointLocatorRT metaPointLocatorRT = new MetaPointLocatorRT(metaPointLocatorVO);
+
+            MetaDataSourceRT metaDataSourceRT = new MetaDataSourceRT(metaDataSourceVO);
+
+            DataPointRT dataPointRT = new DataPointRT(dataPoint, metaPointLocatorRT);
+
+            metaPointLocatorRT.initialize(Common.timer, metaDataSourceRT, dataPointRT);
+
+            String value = "";
+
+            try {
+
+                ScriptExecutor scriptExecutor = new ScriptExecutor();
+
+                Map<String, IDataPoint> context = scriptExecutor.convertContext(metaPointLocatorVO.getContext());
+
+                PointValueTime pointValueTime = scriptExecutor.execute(metaPointLocatorVO.getScript(), context, System.currentTimeMillis(), metaPointLocatorVO.getDataTypeId(), System.currentTimeMillis());
+
+                switch (metaPointLocatorVO.getDataTypeId()) {
+                    case DataTypes.BINARY:
+                        BinaryValue binaryValue = (BinaryValue) pointValueTime.getValue();
+                        if (binaryValue.getBooleanValue()) {
+                            value = "" + 1;
+                        } else {
+                            value = "" + 0;
+                        }
+                        break;
+                    case DataTypes.MULTISTATE:
+                        MultistateValue multistateValue = (MultistateValue) pointValueTime.getValue();
+                        value = "" + multistateValue.getIntegerValue();
+                        break;
+                    case DataTypes.NUMERIC:
+                        NumericValue numericValue = (NumericValue) pointValueTime.getValue();
+                        value = "" + numericValue.getDoubleValue();
+                        break;
+                    case DataTypes.ALPHANUMERIC:
+                        AlphanumericValue alphanumericValue = (AlphanumericValue) pointValueTime.getValue();
+                        value = alphanumericValue.getStringValue();
+                        break;
+                }
+            } catch (Exception ex) {
+                LOG.error(infoErrorExecutionScript(ex, dataPointRT, metaDataSourceRT));
+                throw ex;
+            }
+
+            dataPointService.save(user, value, dataPoint.getXid(), metaPointLocatorVO.getDataTypeId());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    @Deprecated
     public void updateAllMetaDataPointsFromDatasourceByScript(String dataSourceXid) {
         DataSourceVO dataSource = dataSourceService.getDataSource(dataSourceXid);
 
@@ -825,6 +899,20 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         }
     }
 
+    public void updateAllMetaDataPointsFromDatasourceByScript(User user, String dataSourceXid) {
+        DataSourceVO dataSource = dataSourceService.getDataSource(dataSourceXid);
+
+        if (dataSource.getType().getId() == DataSourceVO.Type.META.getId()) {
+            List<DataPointVO> dataPoints = dataPointService.getDataPoints(dataSource.getId(), null);
+            for (DataPointVO dp : dataPoints) {
+                updateMetaDataPointByScript(user, dp.getXid());
+            }
+        } else {
+            throw new RuntimeException("Wrong data source type. Expected meta data source. Found " + dataSource.getType().toString());
+        }
+    }
+
+    @Deprecated
     public void updateAllMetaDataPointsByScript() {
         List<DataPointVO> metaDataPoints = new ArrayList<>();
 
@@ -912,5 +1000,20 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             LOG.error(ex.getMessage(), ex);
         }
     }
+    public void updateAllMetaDataPointsByScript(User user) {
+        List<DataPointVO> metaDataPoints = new ArrayList<>();
+
+
+        dataSourceService.getDataSources()
+                .stream()
+                .filter(ds -> ds.getType().getId() == DataSourceVO.Type.META.getId())
+                .forEach(ds -> metaDataPoints.addAll(dataPointService.getDataPoints(ds.getId(), null)));
+
+        metaDataPoints
+                .stream()
+                .forEach(dp -> updateMetaDataPointByScript(user, dp.getXid()));
+
+    }
+
 }
 

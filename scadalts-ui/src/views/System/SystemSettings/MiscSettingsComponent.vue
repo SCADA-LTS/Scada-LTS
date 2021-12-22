@@ -5,14 +5,6 @@
 				{{ $t('systemsettings.misc.title') }}
 				<span v-if="isMiscSettingsEdited">*</span>
 				<v-spacer></v-spacer>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn fab icon @click="purgeData()" v-bind="attrs" v-on="on">
-							<v-icon>mdi-delete</v-icon>
-						</v-btn>
-					</template>
-					<span>{{ $t('systemsettings.tooltip.purgedata') }}</span>
-				</v-tooltip>
 			</v-card-title>
 
 			<v-card-text>
@@ -25,66 +17,6 @@
 							item-value="value"
 							item-text="text"
 							:label="$t('systemsettings.misc.uiPerformance')"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.eventPurgePeriods"
-							type="number"
-							:label="$t('systemsettings.misc.purge.events')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.eventPurgePeriodType"
-							:items="eventPurgePeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.reportPurgePeriodType"
-							type="number"
-							:label="$t('systemsettings.misc.purge.reports')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.reportPurgePeriodType"
-							:items="eventPurgePeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.futureDateLimitPeriods"
-							type="number"
-							:label="$t('systemsettings.misc.purge.future')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.futureDateLimitPeriodType"
-							:items="futureDateLimitPeriodTypeItems"
-							item-value="value"
-							item-text="text"
 							dense
 						></v-select>
 					</v-col>
@@ -116,16 +48,6 @@ export default {
 					text: this.$t('systemsettings.misc.performance.medium'),
 				},
 				{ value: 10000, text: this.$t('systemsettings.misc.performance.low') },
-			],
-			futureDateLimitPeriodTypeItems: [
-				{ value: 2, text: this.$t('timeperiod.minutes') },
-				{ value: 3, text: this.$t('timeperiod.hours') },
-			],
-			eventPurgePeriodTypeItems: [
-				{ value: 4, text: this.$t('timeperiod.days') },
-				{ value: 5, text: this.$t('timeperiod.weeks') },
-				{ value: 6, text: this.$t('timeperiod.months') },
-				{ value: 7, text: this.$t('timeperiod.years') },
 			],
 			response: {
 				color: 'success',

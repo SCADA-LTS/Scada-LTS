@@ -439,7 +439,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                dataPointService.save(value, xid, type);
+                dataPointService.save(user, value, xid, type);
 
                 return new ResponseEntity<String>(value, HttpStatus.OK);
             }
@@ -475,7 +475,7 @@ public class PointValueAPI {
                     return ResponseEntity.badRequest().body(formatErrorsJson(error));
                 }
                 if(type != PointValueTypeOfREST.TYPE_STRING) { value = convertInputValue(value); }
-                dataPointService.save(value, xid, type);
+                dataPointService.save(user, value, xid, type);
                 return new ResponseEntity<>(value, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -506,7 +506,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                dataPointService.save(value, xid, type);
+                dataPointService.save(user, value, xid, type);
 
                 return new ResponseEntity<String>(value, HttpStatus.OK);
             }
@@ -693,7 +693,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 if(dataPointService.getDataPoint(xid).getDataSourceTypeId()==DataSourceVO.Type.META.getId()) {
-                    pointValueService.updateMetaDataPointByScript(xid);
+                    pointValueService.updateMetaDataPointByScript(user, xid);
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
@@ -716,7 +716,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                pointValueService.updateAllMetaDataPointsFromDatasourceByScript(xid);
+                pointValueService.updateAllMetaDataPointsFromDatasourceByScript(user, xid);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -737,7 +737,7 @@ public class PointValueAPI {
             User user = Common.getUser(request);
             if (user != null) {
 
-                pointValueService.updateAllMetaDataPointsByScript();
+                pointValueService.updateAllMetaDataPointsByScript(user);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

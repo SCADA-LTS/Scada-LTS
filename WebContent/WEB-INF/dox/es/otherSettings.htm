@@ -9,14 +9,3 @@
     Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
  -->
 <p>El rendimiento de la interfaz de usuario representa la capacidad de respuesta de la interfaz de usuario. Esto incluye todas las actividades que son gestionadas por el mecanismo de sondeo largo, como el indicador de nivel máximo de alarma, la actualización de la lista de vigilancia, la actualización de la lista de eventos, etc. Si el host de Mango tiene una CPU de potencia limitada, se puede configurar el rendimiento de la interfaz de usuario a un nivel inferior para evitar que los navegadores de los usuarios consuman demasiada CPU del host.</p>
-
-<p>Si se marca la casilla "Enviar errores a la serotonina", las excepciones que esta instancia de Mango observe serán enviadas a la serotonina para su revisión. Si está modificando la fuente de Mango para sus propios fines, por favor, ponga este valor en desmarcado. </p>
-
-<p>Utilice la configuración de "eventos de purga" para establecer la edad máxima de un evento antes de que sea purgado de la base de datos. La purga borra permanentemente el evento y cualquier comentario del usuario asociado a él.</p>
-
-<p>Utilice la configuración de "Purgar instancias de informes" para definir la edad máxima de una instancia de informe antes de ser purgada de la base de datos. La purga elimina permanentemente la instancia de informe. Es preferible fijar este valor lo más bajo posible porque los informes pueden consumir potencialmente mucho espacio de almacenamiento disponible. La purga puede evitarse estableciendo el atributo "prevenir la purga" en la instancia del informe.</p>
-
-<p>
-  Haga clic en el botón <b>Purgar todos los datos</b> para borrar permanentemente todas las muestras puntuales que se encuentran actualmente en la base de datos. Esto puede ser útil para dar un "nuevo comienzo" a una instancia de Mango, especialmente si existen datos erróneos en las actividades de configuración y de puesta en marcha.</p>
-
-<p>Utilice los ajustes de "Rechazar valores de puntos en una fecha posterior" para definir el tiempo máximo en el futuro en que los puntos de datos aceptarán nuevos valores. Cualquier valor con una marca de tiempo que exceda este valor será rechazado, y se escribirá un mensaje de error en el registro.</p>
