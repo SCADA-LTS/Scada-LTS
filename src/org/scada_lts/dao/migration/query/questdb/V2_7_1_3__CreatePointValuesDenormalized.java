@@ -176,9 +176,9 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
                                              PaginationParams paginationParams,
                                              JdbcOperations jdbcOperations) {
         String query = "SELECT * FROM (" +
-                "    SELECT 'timestamp', 'ts', 'pointValue', 'metaData' UNION ALL" +
+                "    SELECT 'timestamp', 'ts', 'pointValue', 'metaData', 'dataType' UNION ALL" +
                 "    (" +
-                "       SELECT timestamp, ts, pointValue, metaData " +
+                "       SELECT timestamp, ts, pointValue, metaData, dataType " +
                 " FROM pointValuesDenormalized WHERE dataPointId = " + paginationParams.getDataPointId() + " LIMIT " + paginationParams.getLimit() + " OFFSET " + paginationParams.getOffset() + " " +
                 "    )" +
                 ") result INTO OUTFILE '" + csv + "' FIELDS TERMINATED BY '\t' ENCLOSED BY '' LINES TERMINATED BY '\r\n';";

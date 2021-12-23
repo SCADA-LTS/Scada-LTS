@@ -18,6 +18,6 @@
   },
   {
     "name":"dataType",
-    "type": "int"
+    "type": "INT"
   }
 ]

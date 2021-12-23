@@ -78,7 +78,8 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
             + "select "
             + COLUMN_NAME_POINT_VALUE + ", "
             + COLUMN_NAME_TS + ", "
-            + COLUMN_NAME_META_DATA + " "
+            + COLUMN_NAME_META_DATA + ", "
+            + COLUMN_NAME_DATA_TYPE + " "
             + "from "
             + TABLE_POINT_VALUES + " ";
 
@@ -117,12 +118,13 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     private static final String POINT_VALUE_INSERT = ""
             + "insert into "
             + TABLE_POINT_VALUES + " ("
-            + ""+COLUMN_NAME_POINT_VALUE + ", "
-            + ""+COLUMN_NAME_TS + ", "
-            + ""+COLUMN_NAME_TIMESTAMP + ", "
-            + ""+COLUMN_NAME_META_DATA
+            + COLUMN_NAME_POINT_VALUE + ", "
+            + COLUMN_NAME_TS + ", "
+            + COLUMN_NAME_TIMESTAMP + ", "
+            + COLUMN_NAME_META_DATA + ", "
+            + COLUMN_NAME_DATA_TYPE
             +") "
-            + "values (?,?,to_timezone(?, 'CET'),?)";
+            + "values (?,?,to_timezone(?, 'CET'),?,?)";
 
     private static final String POINT_VALUE_INCEPTION_DATA = " "
             +"select "
@@ -182,7 +184,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
     public static final String CREATE_TABLE_FOR_DATAPOINT = " "
             + "create table if not exists "
             + TABLE_POINT_VALUES + " "
-            + "(timestamp TIMESTAMP, ts LONG, pointValue STRING, metaData STRING) \n"
+            + "(timestamp TIMESTAMP, ts LONG, pointValue STRING, metaData STRING, dataType INT) \n"
             + "timestamp(timestamp) partition by MONTH";
 
     private static final String DATAPOINT_ID = "$dpId";
@@ -213,7 +215,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                 e.printStackTrace();
             }
 
-            MangoValue value = createMangoValue(rs, metaData.optInt(COLUMN_NAME_DATA_TYPE));
+            MangoValue value = createMangoValue(rs);
 
             long time = rs.getLong(COLUMN_NAME_TS);
 
@@ -249,7 +251,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                 e.printStackTrace();
             }
 
-            MangoValue value = createMangoValue(rs, metaData.optInt(COLUMN_NAME_DATA_TYPE));
+            MangoValue value = createMangoValue(rs);
             long time = rs.getLong(COLUMN_NAME_TS);
 
             PointValue pv = new PointValue();
@@ -294,34 +296,23 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
     private class LongPairRowMapper implements RowMapper<LongPair> {
         public LongPair mapRow(ResultSet rs, int index) throws SQLException {
-            JSONObject metaData = null;
-            try {
-                metaData = new JSONObject(rs.getString(COLUMN_NAME_META_DATA));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            long myLongValue = metaData.optLong(COLUMN_NAME_MIN_TIME_STAMP);
+            long myLongValue = rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
             if (rs.wasNull())
                 return null;
-            return new LongPair(myLongValue, metaData.optLong(COLUMN_NAME_MAX_TIME_STAMP));
+            return new LongPair(myLongValue, rs.getLong(COLUMN_NAME_MAX_TIME_STAMP));
         }
     }
 
     private class LongRowMapper implements RowMapper<Long> {
         public Long mapRow(ResultSet rs, int index) throws SQLException {
-            JSONObject metaData = null;
-            try {
-                metaData = new JSONObject(rs.getString(COLUMN_NAME_META_DATA));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return metaData.optLong(COLUMN_NAME_MIN_TIME_STAMP);
+            return rs.getLong(COLUMN_NAME_MIN_TIME_STAMP);
         }
     }
 
     //TODO rewrite for new types
-    MangoValue createMangoValue(ResultSet rs, int dataType)
+    MangoValue createMangoValue(ResultSet rs)
             throws SQLException{
+        int dataType = rs.getInt(COLUMN_NAME_DATA_TYPE);
         MangoValue value = null;
         switch (dataType) {
             case (DataTypes.NUMERIC):
@@ -395,7 +386,8 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                         "select "
                                 + "pv."+COLUMN_NAME_POINT_VALUE + ", "
                                 + "pv."+ COLUMN_NAME_TS + ", "
-                                + "pv." + COLUMN_NAME_META_DATA
+                                + "pv." + COLUMN_NAME_META_DATA + ", "
+                                + "pv."+ COLUMN_NAME_DATA_TYPE
                                 + " from "
                                 + "pointValues" + dpId + " pv "+ filter + myLimit, new PointValueRowMapperWithUserName(dpId));
         if (reverseOrder)
@@ -421,7 +413,8 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                         getValueBaseOnType(entity.getPointValue().getValue().getDataType(), entity.getPointValue()),
                         entity.getPointValue().getTime(),
                         entity.getPointValue().getTime()*1000,
-                        prepareMetaData(entity.getPointValue().getValue().getDataType())
+                        prepareMetaData(),
+                        entity.getPointValue().getValue().getDataType()
                 }).setValues(ps);
                 return ps;
             }
@@ -431,12 +424,11 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
 
     }
 
-    private String prepareMetaData(int dataType) {
+    private String prepareMetaData() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode metaData = mapper.createObjectNode();
         String nullValue = null;
-        metaData.put(COLUMN_NAME_DATA_TYPE, dataType)
-                .put(COLUMN_NAME_SOURCE_ID, nullValue)
+        metaData.put(COLUMN_NAME_SOURCE_ID, nullValue)
                 .put(COLUMN_NAME_USERNAME_IN_TABLE_USERS, nullValue)
                 .put(COLUMN_NAME_SOURCE_TYPE, nullValue);
         String json = null;
@@ -449,11 +441,10 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
         return json;
     }
 
-    private String prepareMetaDataAnnotations(PointValueAdnnotation pointValueAdnnotation, int dataType) {
+    private String prepareMetaDataAnnotations(PointValueAdnnotation pointValueAdnnotation) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode metaData = mapper.createObjectNode();
-        metaData.put(COLUMN_NAME_DATA_TYPE, dataType)
-                .put(COLUMN_NAME_SOURCE_ID, pointValueAdnnotation.getSourceId())
+        metaData.put(COLUMN_NAME_SOURCE_ID, pointValueAdnnotation.getSourceId())
                 .put(COLUMN_NAME_USERNAME_IN_TABLE_USERS, pointValueAdnnotation.getChangeOwner())
                 .put(COLUMN_NAME_SOURCE_TYPE, pointValueAdnnotation.getSourceType());
         String json = null;
@@ -490,7 +481,8 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                     getValueBaseOnType(dataType, pointValueTime),
                     pointValueTime.getTime(),
                     pointValueTime.getTime()*1000,
-                    prepareMetaDataAnnotations(pointValueAdnnotation, dataType)
+                    prepareMetaDataAnnotations(pointValueAdnnotation),
+                    dataType
             }).setValues(ps);
             return ps;
         });
@@ -513,7 +505,8 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
                         dvalue,
                         time,
                         time*1000,
-                        prepareMetaData(dataType)
+                        prepareMetaData(),
+                        dataType
                 }).setValues(ps);
                 return ps;
             }
@@ -560,7 +553,7 @@ public class PointValueQuestDbDAO implements IPointValueQuestDbDAO {
             if(value.get(0).length == 4) {
                 List<Object[]> paramsExt = new ArrayList<>();
                 for (Object[] args : value) {
-                    paramsExt.add(new Object[]{args[2], args[3], (long)args[3]*1000, prepareMetaData((int)args[1])});
+                    paramsExt.add(new Object[]{args[2], args[3], (long)args[3]*1000, prepareMetaData(), (int)args[1]});
                 }
                 jdbcTemplate.batchUpdate(query, paramsExt);
             } else
