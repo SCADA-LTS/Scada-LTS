@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+*/
 export const snackbarMixin = {
 	data() {
 		return {
@@ -19,6 +22,7 @@ export const snackbarMixin = {
 		 * Additionaly you can change snackbar color
 		 * or visibility duration.
 		 *
+		 * @deprecated
 		 * @param {string} message - Message to be displayed
 		 * @param {string} color - (Optional) Snackbar color
 		 * @param {number} timeout - (Optional) Visibility duration
@@ -38,7 +42,8 @@ export const snackbarMixin = {
 		 * Use generic message provider to display the
 		 * Create/Read/Update/Delete operation result status
 		 * as a snackbar.
-		 *
+		 * 
+		 * @deprecated
 		 * @param {string} type - [add, update, delete] Possible message types
 		 * @param {boolean} success - (Optional) If is failed show the 'fail' message.
 		 */

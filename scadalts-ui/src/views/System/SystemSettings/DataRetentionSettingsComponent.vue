@@ -106,9 +106,6 @@
 			@result="onDialogResult"
 		></ConfirmationDialog>
 
-		<v-snackbar v-model="response.status" :color="response.color">
-			{{ response.message }}
-		</v-snackbar>
 	</v-col>
 </template>
 <script>
@@ -138,11 +135,6 @@ export default {
 				{ value: 6, text: this.$t('timeperiod.months') },
 				{ value: 7, text: this.$t('timeperiod.years') },
 			],
-			response: {
-				color: 'success',
-				status: false,
-				message: '',
-			},
 		};
 	},
 
@@ -165,19 +157,11 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.response = {
-							status: true,
-							message: this.$t('systemsettings.notification.save.dataRetention'),
-							color: 'success',
-						};
+						this.$store.dispatch('showSuccessNotification', this.$t('systemsettings.notification.save.dataRetention'));						
 					}
 				})
 				.catch(() => {
-					this.response = {
-						status: true,
-						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger',
-					};
+					this.$store.dispatch('showErrorNotification', this.$t('systemsettings.notification.fail'));
 				});
 		},
 
@@ -254,11 +238,7 @@ export default {
 		purgeData() {
 			this.$store.dispatch('purgeData').then((resp) => {
 				if (resp === true) {
-					this.response = {
-						status: true,
-						message: this.$t('systemsettings.notification.purgedata'),
-						color: 'success',
-					};
+					this.$store.dispatch('showSuccessNotification', this.$t('systemsettings.notification.purgedata'));
 				}
 			});
 		},
@@ -268,21 +248,12 @@ export default {
 				.dispatch('purgeNow')
 				.then((r) => {
 					if (r.status === 'done') {
-						this.response = {
-							status: true,
-							message: this.$t('systemsettings.notification.purgedata'),
-							color: 'success',
-						};
+						this.$store.dispatch('showSuccessNotification', this.$t('systemsettings.notification.purgedata'));
 					}
 				})
-				.catch(
-					() =>
-						(this.response = {
-							status: true,
-							message: this.$t('systemsettings.notification.fail'),
-							color: 'danger',
-						}),
-				);
+				.catch(() => {
+					this.$store.dispatch('showErrorNotification', this.$t('systemsettings.notification.fail'));
+				});
 		},
 
 		convertTimePeriod: function (value, key) {
