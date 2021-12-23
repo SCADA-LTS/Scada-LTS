@@ -11,11 +11,11 @@ before(() => {
 	});
 });
 
-// after(() => {
-// 	cy.restLogin();
-// 	cy.visit('data_sources.shtm');
-// 	cy.get('img[src="images/icon_ds_delete.png"]').click();
-// });
+after(() => {
+	cy.restLogin();
+	cy.visit('data_sources.shtm');
+	cy.get('img[src="images/icon_ds_delete.png"]').click();
+});
 
 context('Scenario - Watch List page validation', () => {
     describe('Blank page', () => {
@@ -77,9 +77,85 @@ context('Scenario - Watch List page validation', () => {
 
         it('Provide a name and export ID', () => {
             cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(1) input').clear().type("Text WL01");
-            cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(2) label').clear().type("WL01_XID");
+            cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(2) input').clear().type("WL01_XID");
             cy.get('.v-dialog--active .v-card__actions button').eq(1).should('not.be.disabled');
         });
+
+        it('Is search DataPoint button working', () => {
+            cy.get('.v-dialog--active .watchlist-section--points .v-autocomplete input[type="text"]').clear().type("Test Binary");
+            cy.get('.menuable__content__active .v-list').children().should('have.length', 1);
+            cy.get('.menuable__content__active .v-list').children().eq(0).click().then(() => {
+                cy.get('.v-dialog--active .watchlist-section--points .v-autocomplete input[type="text"]').should('have.value', 'Test Binary DP 01');
+                cy.get('.v-input__append-outer > .v-icon').click().then(() => {
+                    cy.get('.v-dialog--active .watchlist-section--points .v-autocomplete input[type="text"]').should('have.value', '');
+                });
+            })
+            
+        });
+
+        it('Create Watch List', () => {
+            cy.get('.v-dialog--active .v-card__actions button').eq(1).click().then(() => {
+                cy.get('.slts--selectbox > .v-select').should('contain', 'Text WL01');
+                cy.get('.datapointList .list-item--content .list-item-content--name').should('contain', 'Test Binary DP 01');
+            })
+        })
+    })
+
+    describe('Edit WatchList', () => {
+        it('Click on edit button', () => {
+            cy.get('.slts--toolbar button').eq(1).click();
+        })
+
+        it('Is edit dialog visible', () => {
+            cy.get('.v-dialog--active .v-card__title').should('contain', 'Watch List configuration');
+            cy.get('.v-dialog--active .v-card__actions button').eq(1).should('not.have.attr', 'disabled');
+            cy.get('.v-dialog--active .v-card__actions button').eq(1).should('contain', 'Update');
+            cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(2) input').should('have.attr', 'disabled');
+            cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(2) input').should('have.value', 'WL01_XID');
+            cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(1) input').should('have.value', 'Text WL01');
+        })
+
+        it('Change name', () => {
+            cy.get('.v-dialog--active .v-card__text > form > :nth-child(1) > .row > :nth-child(1) input').clear().type('Cypress W1');
+        })
+
+        it('Add DataPoint', () => {
+            cy.get('.v-dialog--active .watchlist-section--points .v-autocomplete input[type="text"]').clear().type("Test Numeric");
+            cy.get('.menuable__content__active .v-list').children().should('have.length', 1);
+            cy.get('.menuable__content__active .v-list').children().eq(0).click().then(() => {
+                cy.get('.v-dialog--active .watchlist-section--points .v-autocomplete input[type="text"]').should('have.value', 'Test Numeric DP 01');
+                cy.get('.v-input--is-focused > .v-input__append-outer > .v-icon').click().then(() => {
+                    cy.get('.v-dialog--active .watchlist-section--points .v-autocomplete input[type="text"]').should('have.value', '');
+                });
+            })
+        })
+
+        it('Update Watch List', () => {
+            cy.get('.v-dialog__content--active > .v-dialog > .v-card > .v-card__actions > .primary--text').click().then(() => {
+                
+            })
+        })
+    })
+
+    describe('Delete watchList', () => {
+        it('Click on delete button', () => {
+            cy.get('.slts--toolbar button').eq(2).click();
+        })
+
+        it('Is confirmation dialog visible', () => {
+            cy.get('.v-dialog--active .v-card__title').should('contain', 'Delete Watch List');
+        })
+
+        it('Delete watchList', () => {
+            cy.get('.v-dialog--active .v-card__actions button').eq(1).click().then(() => {
+                cy.get('.slts--toolbar > :nth-child(1) > span > button').should('have.length', 1);
+                cy.get('.slts--toolbar > :nth-child(1) > span > button i.mdi-plus').should('be.visible');
+                cy.get('.watchlist-component').should('not.be.visible');
+                cy.get('.slts--selectbox > .v-select').click().then(() => {
+                    cy.get('.menuable__content__active > .v-list').children().should('have.length', 1);
+                })
+            })
+        })
     })
 
 
