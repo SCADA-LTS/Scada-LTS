@@ -22,9 +22,10 @@ public class V2_7_1_3__CreateViewPointValuesDenormalized extends BaseJavaMigrati
                 "SELECT " +
                 "pv.dataPointId, " +
                 "pvm.pointValue, " +
+                "pv.dataType, " +
                 "CONCAT(DATE(FROM_UNIXTIME(pv.ts * 0.001)), \"T\", TIME(FROM_UNIXTIME(pv.ts * 0.001)), \"Z\") AS timestamp, " +
                 "pv.ts, " +
-                "(SELECT REPLACE(JSON_OBJECT('dataType', pv.dataType, 'sourceType', pva.sourceType, " +
+                "(SELECT REPLACE(JSON_OBJECT('sourceType', pva.sourceType, " +
                 " 'sourceId', pva.sourceId, 'username', us.username), '\"', '')) AS metaData " +
                 "FROM " +
                 " (SELECT id, CONCAT_WS('', IF(dataType IN (4,5), null, pointValue), pva.textPointValueShort, pva.textPointValueLong) AS pointValue " +

@@ -15,5 +15,9 @@
   {
     "name":"metaData",
     "type": "STRING"
+  },
+  {
+    "name":"dataType",
+    "type": "int"
   }
 ]

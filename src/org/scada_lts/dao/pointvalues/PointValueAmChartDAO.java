@@ -125,9 +125,9 @@ public class PointValueAmChartDAO implements IAmChartDAO {
             LOG.warn(dataPointInfo(dataPoint));
             return Collections.emptyList();
         }
-        QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(), startTs, endTs, intervalMs, limit, denormalized);
-        return jdbcTemplate.query(aggregationQuery.getQuery(),
-                aggregationQuery.getArgs(), new PointValueChartRowMapper());
+        QueryArgs aggregationQuery = toAggregationQuery(dataPoint.getId(), dataPoint.getPointLocator().getDataTypeId(),
+                startTs, endTs, intervalMs, limit, denormalized);
+        return jdbcTemplate.query(aggregationQuery.getQuery(), aggregationQuery.getArgs(), new PointValueChartRowMapper());
     }
 
     @Override

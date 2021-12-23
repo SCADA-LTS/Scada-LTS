@@ -36,6 +36,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,7 +53,7 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
         final JdbcOperations mysql = DAO.getInstance().getJdbcTemp();
 
         URL resource = V2_7_1_3__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
-        File schema = Paths.get(resource.toURI()).toFile();
+        File schema = Paths.get(Objects.requireNonNull(resource).toURI()).toFile();
         int limit = Common.getEnvironmentProfile().getInt("db.values.export.limit", 1001);
         boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);
         boolean valuesImportEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.import.enabled", true);
@@ -61,8 +62,17 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
 
         if(overwrite) {
             try {
-                String dropQuery = "DROP TABLE pointValuesDenormalized";
-                questdb.execute(dropQuery);
+                List<String> tables = questdb.queryForList("SHOW TABLES;", String.class);
+
+                for(String table: tables) {
+                    if(!table.equalsIgnoreCase("telemetry")
+                            && !table.equalsIgnoreCase("telemetry_config")
+                            && table.contains("pointValues")) {
+                        String dropQuery = "DROP TABLE " + table + ";";
+                        questdb.execute(dropQuery);
+                    }
+                }
+
             } catch (Exception ex) {
                 LOG.warn(ex.getMessage());
             }
@@ -82,7 +92,7 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
                 }
             }
         }
-
+/*
         final String createEmptyTableQuery = "CREATE TABLE IF NOT EXISTS pointValuesDenormalized (" +
                 "dataPointId INT, " +
                 "dataType INT, " +
@@ -95,7 +105,7 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
                 "sourceId INT, " +
                 "username SYMBOL) timestamp(timestamp) PARTITION BY DAY;";
 
-        questdb.execute(createEmptyTableQuery);
+        questdb.execute(createEmptyTableQuery);*/
 
     }
 
