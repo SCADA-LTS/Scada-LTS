@@ -77,10 +77,11 @@
 						<form>
 							<v-row>
 								<v-col cols="6">
-									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid"  v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique]"></v-text-field>
+									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid"  v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique, ruleMaxLen50 ]"></v-text-field>
+								</v-ruleXidUniquValidScriptBodyext-field>
 								</v-col>
 								<v-col cols="6">
-									<v-text-field :label="$t('common.name')" v-model="scriptForm.name"></v-text-field>
+									<v-text-field :label="$t('common.name')" v-model="scriptForm.name" :rules="[ruleNotNull, ruleMaxLen40 ]"></v-text-field>
 								</v-col>
 								<v-col cols="6">
 									<v-select
@@ -125,10 +126,11 @@
 									></v-text-field>
 								</v-col>
 							</v-row>
-							<v-textarea
+							<v-textarea @input="validateScriptBody" :rules="[ruleNotNull, ruleValidScriptBody]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="scriptForm.script"
+								ref="scriptBodyTextarea"
 							></v-textarea>
 						</form>
 					</v-card-text>
@@ -199,7 +201,10 @@ export default {
 		return {
 			xidUnique: true,
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleMaxLen40: (v) => !!(v.length < 40) || this.$t('validation.rule.maxLen')+40,
+			ruleMaxLen50: (v) => !!(v.length < 50) || this.$t('validation.rule.maxLen')+50,
 			ruleXidUnique: (v) => !!this.xidUnique || this.$t('validation.rule.xid.notUnique'),
+			ruleValidScriptBody: (v) => !this.scriptBodyErrors || this.$t('validation.rule.xid.notUnique'),
 			snackbarMessage: '',
 			snackbar: false,
 			dialog: false,
@@ -280,6 +285,13 @@ export default {
 			const response = await this.$store.dispatch('validateXid', this.scriptForm)
 			this.xidUnique = response.xidRepeated === 'false' ? true: false;
 			this.$refs.xidInput.validate();
+		},
+		async validateScriptBody() {
+			const response = await this.$store.dispatch('validateScriptBody', this.scriptForm)
+
+			alert(JSON.stringify(response))
+			this.scriptBodyErrors = response.scriptBodyErrors;
+			this.$refs.scriptBodyTextarea.validate();
 		},
 		createNewScript() {
 			this.selectedScriptId = -1;

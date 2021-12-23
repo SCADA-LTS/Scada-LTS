@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api;
 
+import org.scada_lts.utils.ScriptsApiUtils;
 import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.vo.scripting.ContextualizedScriptVO;
 import br.org.scadabr.vo.scripting.ScriptVO;
@@ -103,12 +104,11 @@ public class ScriptsAPI {
     }
 
     @PostMapping(value = "/validateXid")
-    public ResponseEntity<Map<String, String>> validateScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
-        LOG.info("GET::/api/scripts/validate");
+    public ResponseEntity<Map<String, String>> validateScriptXid(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+        LOG.info("POST::/api/scripts/validateXid");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateScriptBody(jsonBodyRequest);
                 Map<String, String> response = new HashMap<>();
                 response.put("xidRepeated", isScriptPresent(jsonBodyRequest.getXid(), scriptService)?"true":"false");
                 return new ResponseEntity<>( response, HttpStatus.OK);
@@ -127,7 +127,7 @@ public class ScriptsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String error = validateScriptBody(jsonBodyRequest);
+                String error = ScriptsApiUtils.validateScriptBody(jsonBodyRequest);
                 Map<String, Object> response = new HashMap<>();
                 if (!error.isEmpty()) {
                     response.put("errors", error);

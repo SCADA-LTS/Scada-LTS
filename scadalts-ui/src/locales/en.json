@@ -871,6 +871,7 @@
 	"uiv.modal.cancel": "Cancel",
 	"uiv.modal.ok": "OK",
 	"validation.rule.notNull": "Field must not be empty!",
+	"validation.rule.maxLen": "Field length must not be longer than ",
 	"validation.rule.xid.notUnique": "Export ID is already used!",
 	"form.validation.usernameNotUnique": "That username is already taken!",
 	"form.validation.required": "That field is required!",

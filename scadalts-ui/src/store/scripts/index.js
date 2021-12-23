@@ -27,6 +27,24 @@ const storeScripts = {
 				},
 			});
 		},
+		async validateScriptBody({ dispatch }, payload) {
+			alert(JSON.stringify('PL'));
+			let url = `/scripts/validateScriptBody`;
+			return dispatch('requestPost', {
+				url,
+				data: {
+					id: payload.id,
+					userId: payload.userId,
+					xid: payload.xid,
+					name: payload.name,
+					script: payload.script,
+					pointsOnContext: payload.pointsOnContext,
+					datapointContext: payload.datapointContext,
+					datasourceContext: payload.datasourceContext,
+				},
+			});
+		},
+
 		async createScript({ dispatch }, payload) {
 			let url = `/scripts/save`;
 			return dispatch('requestPost', {
