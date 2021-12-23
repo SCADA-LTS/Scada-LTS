@@ -48,13 +48,11 @@
 				<v-card>
 					<v-card-title>
 						<v-row>
-							<v-col v-if="selectedScriptId != -1" cols="6"
-								>Script #{{ selectedScriptId }}</v-col
-							>
+							<v-col v-if="selectedScriptId != -1" cols="6">Script #{{ selectedScriptId }}</v-col>
 							<v-col v-else cols="6">{{ $t('scriptList.newScript') }}</v-col>
 							<v-col cols="12">
 								<v-btn
-									v-if="selectedScriptId"
+									v-if="selectedScriptId != -1"
 									class="mr-2"
 									color="blue"
 									@click="runScript(selectedScript.xid)"
@@ -64,7 +62,7 @@
 								</v-btn>
 
 								<v-btn
-									v-if="selectedScriptId"
+									v-if="selectedScriptId != -1"
 									@click="deleteScript(selectedScriptId)"
 									class="mr-2"
 									color="red"
@@ -79,10 +77,10 @@
 						<form>
 							<v-row>
 								<v-col cols="6">
-									<v-text-field label="xid" v-model="scriptForm.xid"></v-text-field>
+									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid"  v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique]"></v-text-field>
 								</v-col>
 								<v-col cols="6">
-									<v-text-field label="name" v-model="scriptForm.name"></v-text-field>
+									<v-text-field :label="$t('common.name')" v-model="scriptForm.name"></v-text-field>
 								</v-col>
 								<v-col cols="6">
 									<v-select
@@ -136,8 +134,8 @@
 					</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
-						<v-btn color="blue darken-1" text @click="dialog = false"> Close </v-btn>
-						<v-btn class="mr-2" color="blue" @click="saveScript()">
+						<v-btn  text @click="dialog = false"> Close </v-btn>
+						<v-btn class="mr-2 primary" @click="saveScript()">
 							<v-icon>mdi-content-save</v-icon>
 							{{ $t('scriptList.save') }}
 						</v-btn>
@@ -178,10 +176,6 @@
 
 <script>
 /**
- * File moved from /src/views/ to this location.
- * Original file could be find here:
- * https://github.com/SCADA-LTS/Scada-LTS/blob/bb5aefbf8e9cc79c372ef4de955bfc6d4e46becd/scadalts-ui/src/views/ScriptList.vue
- *
  * @author sselvaggi
  */
 import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
@@ -203,6 +197,9 @@ export default {
 	},
 	data() {
 		return {
+			xidUnique: true,
+			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
+			ruleXidUnique: (v) => !!this.xidUnique || this.$t('validation.rule.xid.notUnique'),
 			snackbarMessage: '',
 			snackbar: false,
 			dialog: false,
@@ -271,14 +268,19 @@ export default {
 	computed: {
 		filteredDatapoints() {
 			const p = this.datapoints.find((x) => x.id === this.selectedDatapointId);
-			return this.datapoints;
-			// .filter(dp => this.scriptForm.pointsOnContext
-			// 	.filter(sp => dp.xid === sp.dataPointXid)
-			// .length === 0)
+			return this.datapoints
+			.filter(dp => this.scriptForm.pointsOnContext
+				.filter(sp => dp.xid === sp.dataPointXid)
+			.length === 0)
 		},
 	},
 
 	methods: {
+		async validateXid() {
+			const response = await this.$store.dispatch('validateXid', this.scriptForm)
+			this.xidUnique = response.xidRepeated === 'false' ? true: false;
+			this.$refs.xidInput.validate();
+		},
 		createNewScript() {
 			this.selectedScriptId = -1;
 
@@ -368,11 +370,11 @@ export default {
 			this.snackbar = true;
 			this.snackbarMessage = `${this.$t('scriptList.scriptExecuted')} `;
 		},
-		saveScript() {
+		async saveScript() {
 			if (this.selectedScriptId != -1) {
-				this.$store.dispatch('updateScript', this.scriptForm);
+				response = await this.$store.dispatch('updateScript', this.scriptForm);
 			} else {
-				this.$store.dispatch('createScript', this.scriptForm);
+				response = await this.$store.dispatch('createScript', this.scriptForm);
 			}
 		},
 		async deleteScript(id) {

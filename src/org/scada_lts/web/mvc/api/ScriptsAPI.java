@@ -102,6 +102,25 @@ public class ScriptsAPI {
         }
     }
 
+    @PostMapping(value = "/validateXid")
+    public ResponseEntity<Map<String, String>> validateScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
+        LOG.info("GET::/api/scripts/validate");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                String error = validateScriptBody(jsonBodyRequest);
+                Map<String, String> response = new HashMap<>();
+                response.put("xidRepeated", isScriptPresent(jsonBodyRequest.getXid(), scriptService)?"true":"false");
+                return new ResponseEntity<>( response, HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(value = "/save")
     public ResponseEntity<Map<String, Object>> saveScript(@RequestBody JsonScript jsonBodyRequest, HttpServletRequest request) {
         LOG.info("POST::/api/scripts/save");

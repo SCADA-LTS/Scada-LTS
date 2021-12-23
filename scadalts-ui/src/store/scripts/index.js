@@ -9,38 +9,54 @@ const storeScripts = {
 		},
 		runScript({ dispatch }, xid) {
 			let url = `/scripts/execute/${xid}`;
-			return dispatch('requestPost', {url});
+			return dispatch('requestPost', { url });
 		},
-		createScript({ dispatch }, payload) {
+		async validateXid({ dispatch }, payload) {
+			let url = `/scripts/validateXid`;
+			return dispatch('requestPost', {
+				url,
+				data: {
+					id: payload.id,
+					userId: payload.userId,
+					xid: payload.xid,
+					name: payload.name,
+					script: payload.script,
+					pointsOnContext: payload.pointsOnContext,
+					datapointContext: payload.datapointContext,
+					datasourceContext: payload.datasourceContext,
+				},
+			});
+		},
+		async createScript({ dispatch }, payload) {
 			let url = `/scripts/save`;
 			return dispatch('requestPost', {
 				url,
 				data: {
 					id: payload.id,
-    				userId: payload.userId,
-    				xid: payload.xid,
-    				name: payload.name,
-    				script: payload.script,
-    				pointsOnContext: payload.pointsOnContext,
-    				datapointContext: payload.datapointContext,
-    				datasourceContext: payload.datasourceContext
-				}
+					userId: payload.userId,
+					xid: payload.xid,
+					name: payload.name,
+					script: payload.script,
+					pointsOnContext: payload.pointsOnContext,
+					datapointContext: payload.datapointContext,
+					datasourceContext: payload.datasourceContext,
+				},
 			});
 		},
-		updateScript({ dispatch }, payload) {
+		async updateScript({ dispatch }, payload) {
 			let url = `/scripts/update`;
 			return dispatch('requestPut', {
 				url,
 				data: {
 					id: payload.id,
-    				userId: payload.userId,
-    				xid: payload.xid,
-    				name: payload.name,
-    				script: payload.script,
-    				pointsOnContext: payload.pointsOnContext,
-    				datapointContext: payload.datapointContext,
-    				datasourceContext: payload.datasourceContext
-				}
+					userId: payload.userId,
+					xid: payload.xid,
+					name: payload.name,
+					script: payload.script,
+					pointsOnContext: payload.pointsOnContext,
+					datapointContext: payload.datapointContext,
+					datasourceContext: payload.datasourceContext,
+				},
 			});
 		},
 		deleteScript({ dispatch }, id) {
@@ -48,12 +64,11 @@ const storeScripts = {
 			return dispatch('requestDelete', url);
 		},
 		fetchScripts({ dispatch }, payload) {
-
-        			return dispatch('requestPost', {
-        				url: `/scripts/search`,
-        				data: payload,
-        			});
-        		}
+			return dispatch('requestPost', {
+				url: `/scripts/search`,
+				data: payload,
+			});
+		},
 	},
 	getters: {},
 };
