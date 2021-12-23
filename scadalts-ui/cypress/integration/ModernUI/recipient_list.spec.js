@@ -16,7 +16,7 @@ after(() => {
 	}
 	cy.visit('users.shtm');
 	for (let i = 0; i < 5; i++) {
-		cy.get('#usersTable > tbody:nth-of-type(3)').click();
+		cy.get('#usersTable > tbody:nth-of-type(4)').click();
 		cy.get('#userDetails #deleteImg').click();
 		cy.wait(500);
 	}
@@ -115,7 +115,7 @@ context('Scenario - Recipient List validation', () => {
 			cy.get('.v-dialog--active').find('.v-card__text .v-select').trigger('click');
 			cy.get('.v-application > .menuable__content__active > div[role="listbox"]')
 				.find('div.v-list-item')
-				.should('have.length', 6);
+				.should('have.length', 7);
 			cy.get('.v-dialog--active')
 				.find('.v-card__actions button')
 				.first()
