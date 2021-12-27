@@ -56,7 +56,7 @@ public class WebSocketConfig<S extends ExpiringSession> extends AbstractSessionW
 
     @Override
     public void configureClientOutboundChannel(ChannelRegistration registration) {
-        registration.taskExecutor().corePoolSize(8);
+        registration.taskExecutor().corePoolSize(4);
         registration.interceptors(loggingChannelInterceptor());
     }
 

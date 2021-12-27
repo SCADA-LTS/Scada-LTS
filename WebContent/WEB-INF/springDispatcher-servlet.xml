@@ -210,4 +210,10 @@
   <bean id="commonData" class="com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor"/>
 
   <bean id="servletBeans" class="org.scada_lts.web.beans.GetServletBeans"/>
+
+  <bean id="webSocketStatsMonitor" class="org.scada_lts.web.ws.config.WebSocketStatsMonitor">
+    <constructor-arg ref="subProtocolWebSocketHandler"/>
+    <constructor-arg ref="clientOutboundChannelExecutor"/>
+    <constructor-arg ref="userRegistry"/>
+  </bean>
 </beans>
