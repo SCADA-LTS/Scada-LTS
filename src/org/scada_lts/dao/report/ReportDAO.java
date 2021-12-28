@@ -143,7 +143,7 @@ public class ReportDAO {
 		StringBuilder sql = new StringBuilder();
 		List<String> filterCondtions = new ArrayList<String>();
 		List<Object> params = new ArrayList<Object>();
-		if (!"".equals(query.get("keywords"))) {
+		if (query.containsKey("keywords") && !"".equals(query.get("keywords"))) {
 			List<String> keywordConditions = new ArrayList<String>();
 
 			for (String keyword : query.get("keywords").split(" ")) {
@@ -158,7 +158,7 @@ public class ReportDAO {
 			+ COLUMN_NAME_DATA + ", "
 			+ COLUMN_NAME_ID + ", "
 			+ COLUMN_NAME_USER_ID + ", "
-			+ COLUMN_NAME_NAME + ", "
+			+ COLUMN_NAME_NAME + " "
 			+ "FROM reports R ");
 		sql.append(" WHERE " + joinAnd(filterCondtions));
 

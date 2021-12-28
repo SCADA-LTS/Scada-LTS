@@ -6,6 +6,8 @@ import About from './views/About';
 import LoginPage from './views/LoginPage';
 import HistoricalAlarms from './views/HistoricalAlarms';
 import EventList from './views/EventList';
+import ReportTabs from './views/ReportTabs';
+import ReportsData from './views/ReportsData';
 import ReportsPage from './views/ReportsPage';
 import UserList from './views/UserList';
 import SystemSettings from './views/SystemSettings';
@@ -92,10 +94,20 @@ const routing = new Router({
 		{
 			path: '/reports',
 			name: 'reports',
-			component: ReportsPage,
+			component: ReportTabs,
 			meta: {
 				requiresAuth: true,
 			},
+			children: [
+				{
+					path: 'template',
+					component: ReportsPage,
+				},
+				{
+					path: 'data',
+					component: ReportsData,
+				},
+			],
 		},
 		{
 			path: '/system-settings',

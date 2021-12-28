@@ -4,6 +4,9 @@ const storeReports = {
 	mutations: {},
 
 	actions: {
+		fetchReportInstances({ dispatch }) {
+			return dispatch('requestGet', `/reports/instances`);
+		},
 		fetchReports({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/reports/search`,
@@ -15,6 +18,9 @@ const storeReports = {
 					sortDesc: !payload.sortDesc.length ? [] : payload.sortDesc,
 				},
 			});
+		},
+		deleteReport({ dispatch }, id) {
+			return dispatch('requestDelete', `/reports/instances/${id}`);
 		},
 	},
 
