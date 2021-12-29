@@ -23,10 +23,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.rt.event.type.*;
+import com.serotonin.web.i18n.LocalizableMessage;
+import com.serotonin.web.i18n.LocalizableMessageParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.event.EventDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -304,6 +307,69 @@ public class ReportInstanceDAO {
 
 
 	public List<EventInstance> getReportInstanceEvents(int instanceId) {
-		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new EventDAO.EventRowMapper());
+		return DAO.getInstance().getJdbcTemp().query(REPORT_INSTANCE_EVENT_SELECT, new Object[] {instanceId}, new ReportEventRowMapper());
+	}
+
+	private static class ReportEventRowMapper implements RowMapper<EventInstance> {
+		public EventInstance mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			EventType type = createEventType(rs);
+
+			LocalizableMessage message;
+			try {
+				message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_E_MESSAGE));
+			} catch (LocalizableMessageParseException e) {
+				message = new LocalizableMessage("common.default",
+						rs.getString(COLUMN_NAME_E_MESSAGE));
+			}
+
+			EventInstance event = new EventInstance(
+					type,
+					rs.getLong(COLUMN_NAME_E_ACTIVE_TS),
+					DAO.charToBool(rs.getString(COLUMN_NAME_E_RTN_APP)),
+					rs.getInt(COLUMN_NAME_E_ALARM_LEVEL),
+					message,
+					message,
+					null);
+
+			event.setId(rs.getInt(COLUMN_NAME_E_ID));
+			long rtnTs = rs.getLong(COLUMN_NAME_E_RTN_TS);
+			if (!rs.wasNull())
+				event.returnToNormal(rtnTs, rs.getInt(COLUMN_NAME_E_RTN_CAUSE));
+			long ackTs = rs.getLong(COLUMN_NAME_E_ACK_TS);
+			if (!rs.wasNull()) {
+				event.setAcknowledgedTimestamp(ackTs);
+				event.setAlternateAckSource(rs.getInt(COLUMN_NAME_E_ALTERNATE_ACK_SOURCE));
+				event.setAcknowledgedByUsername(rs.getString(COLUMN_NAME_E_ACK_USERNAME));
+			}
+			return event;
+
+		}
+	}
+
+	private static EventType createEventType(ResultSet rs)
+			throws SQLException {
+		int typeId = rs.getInt(COLUMN_NAME_E_TYPE_ID);
+		switch (typeId) {
+			case EventType.EventSources.DATA_POINT:
+				return new DataPointEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1), rs.getInt(COLUMN_NAME_E_TYPE_REF2));
+			case EventType.EventSources.DATA_SOURCE:
+				return new DataSourceEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1), rs.getInt(COLUMN_NAME_E_TYPE_REF2));
+			case EventType.EventSources.SYSTEM:
+				return new SystemEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1), rs.getInt(COLUMN_NAME_E_TYPE_REF2));
+			case EventType.EventSources.COMPOUND:
+				return new CompoundDetectorEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1));
+			case EventType.EventSources.SCHEDULED:
+				return new ScheduledEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1));
+			case EventType.EventSources.PUBLISHER:
+				return new PublisherEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1), rs.getInt(COLUMN_NAME_E_TYPE_REF2));
+			case EventType.EventSources.AUDIT:
+				return new AuditEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1), rs.getInt(COLUMN_NAME_E_TYPE_REF2));
+			case EventType.EventSources.MAINTENANCE:
+				return new MaintenanceEventType(rs.getInt(COLUMN_NAME_E_TYPE_REF1));
+			default:
+				throw new ShouldNeverHappenException("Unknown event type: "
+						+ typeId);
+		}
 	}
 }
