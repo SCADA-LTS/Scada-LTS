@@ -210,6 +210,7 @@
           <td><@fmt key="reports.eventList.message"/></td>
           <td><@fmt key="reports.eventList.status"/></td>
           <td><@fmt key="events.acknowledged"/></td>
+          <td><@fmt key="reports.eventList.ackUser"/></td>
         </tr>
         
         <#assign row = 1/>
@@ -265,6 +266,11 @@
               <#if event.acknowledged>
                 ${event.fullPrettyAcknowledgedTimestamp}
                 <@fmt message=event.ackMessage/>
+              </#if>
+            </td>
+            <td>
+              <#if event.acknowledgedByUsername??>
+                ${event.acknowledgedByUsername}
               </#if>
             </td>
           </tr>

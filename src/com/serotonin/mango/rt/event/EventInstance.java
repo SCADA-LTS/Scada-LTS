@@ -27,6 +27,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 public class EventInstance {
     public interface RtnCauses {
@@ -178,7 +179,7 @@ public class EventInstance {
 
     public LocalizableMessage getExportAckMessage() {
         if (isAcknowledged()) {
-            if (acknowledgedByUserId != 0)
+            if (acknowledgedByUserId != 0 || !StringUtils.isEmpty(acknowledgedByUsername))
                 return new LocalizableMessage("events.export.ackedByUser", acknowledgedByUsername);
             if (alternateAckSource == AlternateAcknowledgementSources.DELETED_USER)
                 return new LocalizableMessage("events.export.ackedByDeletedUser");
