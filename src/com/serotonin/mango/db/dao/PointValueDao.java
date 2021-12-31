@@ -56,7 +56,7 @@ public class PointValueDao {
 			PointValueTime pointValue, SetPointSource source) {
 		long id = savePointValueImpl(pointId, pointValue, source, false);
 
-		PointValueTime savedPointValue;
+		/*PointValueTime savedPointValue;
 		int retries = 5;
 		while (true) {
 			try {
@@ -67,9 +67,9 @@ public class PointValueDao {
 					throw e;
 				retries--;
 			}
-		}
+		}*/
 
-		return savedPointValue;
+		return pointValue;
 	}
 
 	/**

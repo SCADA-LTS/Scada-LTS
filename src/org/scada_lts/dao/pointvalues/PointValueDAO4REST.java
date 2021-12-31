@@ -20,9 +20,10 @@ package org.scada_lts.dao.pointvalues;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.springframework.stereotype.Repository;
@@ -77,27 +78,52 @@ public class PointValueDAO4REST {
 				new RuntimeException("Value not compatible with type (double)");
 			}
 		} else if (typePointValueOfREST==PointValueTypeOfREST.TYPE_STRING) {
-			
-			pvt = new PointValueTime(value, new Date().getTime() );
-			Object[] resultPointValue = new PointValueDAO().createNoTransaction(dpid, DataTypes.ALPHANUMERIC, 0, new Date().getTime());
-			PointValueAdnnotation pva = new PointValueAdnnotation();
-			Long pointValueId = (Long) resultPointValue[0];
-			pva.setPointValueId(pointValueId);
-			pva.setSourceType(DataTypes.ALPHANUMERIC);
-			
-			int lengthShortValue = 128; 
-			if (value.length()<=lengthShortValue) {
-			    pva.setTextPointValueShort(value);
-			} else {
-				pva.setTextPointValueLong(value);
+
+			boolean dbWriteEnabled = Common.getEnvironmentProfile().getBoolean("db.values.write.enabled", true);
+			long pointValueId = Common.NEW_ID;
+			if(dbWriteEnabled) {
+				pvt = new PointValueTime(value, new Date().getTime());
+				Object[] resultPointValue = new PointValueDAO().createNoTransaction(dpid, DataTypes.ALPHANUMERIC, 0, new Date().getTime());
+				PointValueAdnnotation pva = new PointValueAdnnotation();
+				pointValueId = (Long) resultPointValue[0];
+				pva.setPointValueId(pointValueId);
+				pva.setSourceType(DataTypes.ALPHANUMERIC);
+
+				int lengthShortValue = 128;
+				if (value.length() <= lengthShortValue) {
+					pva.setTextPointValueShort(value);
+				} else {
+					pva.setTextPointValueLong(value);
+				}
+
+				new PointValueAdnnotationsDAO().create(pva);
+
+				if (LOG.isTraceEnabled()) {
+					LOG.trace("save data string:" + dpid);
+				}
 			}
-			
-			new PointValueAdnnotationsDAO().create(pva);
-			
-			if (LOG.isTraceEnabled()) {
-				LOG.trace("save data string:" + dpid);
+
+			boolean dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
+			if(dbQueryEnabled) {
+				pvt = new PointValueTime(value, new Date().getTime());
+				PointValue pv = new PointValue();
+				pv.setPointValue(pvt);
+				pv.setDataPointId(dpid);
+				pv.setPointValue(pvt);
+
+				PointValueAdnnotation pva = new PointValueAdnnotation();
+				pva.setPointValueId(pointValueId);
+				pva.setSourceType(DataTypes.ALPHANUMERIC);
+
+				int lengthShortValue = 128;
+				if (value.length() <= lengthShortValue) {
+					pva.setTextPointValueShort(value);
+				} else {
+					pva.setTextPointValueLong(value);
+				}
+				IPointValueDenormalizedDAO.newQueryRespository().create(pv, pva, typePointValueOfREST);
 			}
-						
+
 		} else {
 			new RuntimeException("Unknown value type");
 		}	

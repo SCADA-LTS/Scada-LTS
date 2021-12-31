@@ -19,6 +19,7 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
+import org.scada_lts.web.mvc.api.DbQuerySettings;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
 
@@ -345,5 +346,15 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT, String.valueOf(aggregateSettings.getValuesLimit()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
+    }
+
+    public DbQuerySettings getDbQuerySettings() {
+        DbQuerySettings dbQuerySettings = new DbQuerySettings();
+        dbQuerySettings.setReadEnabled(SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DB_QUERY_READ_ENABLED));
+        return dbQuerySettings;
+    }
+
+    public void saveDbQuerySettings(DbQuerySettings dbQuerySettings) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.DB_QUERY_READ_ENABLED, String.valueOf(dbQuerySettings.isReadEnabled()));
     }
 }

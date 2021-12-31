@@ -48,7 +48,7 @@ public class UserServiceTest extends TestDAO {
 	private static final int SECOND_ALARM_EMAIL = 3;
 	private static final boolean SECOND_AUDIT_EVENT = true;
 
-	private static final UserService userService = new UserService();
+	private UserService userService = new UserService();
 	private User user;
 	private User secondUser;
 

@@ -17,10 +17,17 @@
  */
 package org.scada_lts.mango.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,19 +41,23 @@ import com.serotonin.mango.rt.dataImage.types.*;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
-import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
-import org.scada_lts.dao.pointvalues.PointValueDAO;
+import org.scada_lts.dao.pointvalues.*;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.mango.adapter.MangoPointValuesWithChangeOwner;
 import org.springframework.dao.ConcurrencyFailureException;
@@ -80,20 +91,33 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     private static List<UnsavedPointValue> UNSAVED_POINT_VALUES = new ArrayList<UnsavedPointValue>();
     private static final int POINT_VALUE_INSERT_VALUES_COUNT = 4;
 
-    private static PointValueAdnnotationsDAO pointValueAnnotationsDAO = new PointValueAdnnotationsDAO();
     private DataPointService dataPointService = new DataPointService();
     private DataSourceService dataSourceService = new DataSourceService();
 
     private static final Log LOG = LogFactory.getLog(PointValueService.class);
 
-    public PointValueService() {
+    private IPointValueAdnnotationsDAO pointValueAnnotationsCommandRepository;
+    private IPointValueDAO pointValueCommandRepository;
+    private IPointValueQuestDbDAO pointValueQueryRepository;
 
+    private boolean dbQueryEnabled;
+    private boolean dbWriteEnabled;
+
+    public PointValueService() {
+        pointValueCommandRepository = IPointValueDAO.newCommandRespository();
+        pointValueQueryRepository = IPointValueQuestDbDAO.newQueryRespository();
+        pointValueAnnotationsCommandRepository = IPointValueAdnnotationsDAO.newCommandRepository();
+        dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled",
+                false);
+        dbWriteEnabled = Common.getEnvironmentProfile().getBoolean("db.values.write.enabled",
+                true);
     }
 
     @Override
     public List<PointValueAdnnotation> findAllWithAdnotationsAboutChangeOwner(){
-        return pointValueAnnotationsDAO.findAllWithAdnotationsAboutChangeOwner();
+        return getPointValueAnnotationsRepository().findAllWithUserNamePointValueAdnnotations();
     }
+
     /**
      * Only the PointValueCache should call this method during runtime. Do not
      * use.
@@ -102,20 +126,20 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                                              PointValueTime pointValue, SetPointSource source) {
         long id = savePointValueImpl(pointId, pointValue, source, false);
 
-        PointValueTime savedPointValue;
+        /*PointValueTime savedPointValue;
         int retries = 5;
         while (true) {
             try {
-                savedPointValue = PointValueDAO.getInstance().findById(new Object[]{id}).getPointValue();
+                savedPointValue = getPointValueRepository().findById(new Object[]{id}).getPointValue();
                 break;
             } catch (ConcurrencyFailureException e) {
                 if (retries <= 0)
                     throw e;
                 retries--;
             }
-        }
+        }*/
 
-        return savedPointValue;
+        return pointValue;
     }
 
     /**
@@ -227,7 +251,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
     long savePointValueInTrasaction(final int pointId, final int dataType, double dvalue, final long time, final String svalue, final SetPointSource source, boolean async) {
         // Apply database specific bounds on double values.
-        dvalue = PointValueDAO.getInstance().applyBounds(dvalue);
+        dvalue = getPointValueRepository().applyBounds(dvalue);
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
@@ -256,7 +280,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                                final long time, final String svalue, final SetPointSource source,
                                boolean async) {
         // Apply database specific bounds on double values.
-        dvalue = PointValueDAO.getInstance().applyBounds(dvalue);
+        dvalue = getPointValueRepository().applyBounds(dvalue);
 
         if (async) {
             BatchWriteBehind.add(new BatchWriteBehindEntry(pointId, dataType,
@@ -283,7 +307,70 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     private long savePointValueImpl(int pointId, int dataType, double dvalue, long time, String svalue, SetPointSource source) {
 
-        long id = (Long) PointValueDAO.getInstance().create(pointId, dataType, dvalue, time)[0];
+        long id = Common.NEW_ID;
+
+        if(dbWriteEnabled) {
+            id = createPointValue(pointId, dataType, dvalue, time, svalue, source);
+        }
+
+        if(dbQueryEnabled) {
+            createPointValueDenormalized(pointId, dataType, dvalue, time, svalue, source, id);
+        }
+
+        return id;
+    }
+
+    private void createPointValueDenormalized(int pointId, int dataType, double dvalue, long time, String svalue, SetPointSource source, long id) {
+
+        PointValue pointValue = new PointValue();
+        pointValue.setDataPointId(pointId);
+        PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation();
+        if (svalue == null && dataType == DataTypes.IMAGE) {
+            svalue = Long.toString(id);
+        }
+
+        // Check if we need to create an annotation.
+
+        Integer sourceType = null, sourceId = null;
+        if (source != null) {
+            sourceType = source.getSetPointSourceType();
+            sourceId = source.getSetPointSourceId();
+        } else {
+            sourceType = SetPointSource.Types.UNKNOWN;
+            sourceId = 1;
+        }
+
+        String shortString = null;
+        String longString = null;
+        PointValueTime pointValueTime = null;
+        if (svalue != null) {
+            if (svalue.length() > 128)
+                longString = svalue;
+            else
+                shortString = svalue;
+            pointValueTime = new PointValueTime(svalue, time);
+        } else
+            pointValueTime = new PointValueTime(dvalue, time);
+
+        pointValue.setPointValue(pointValueTime);
+        pointValue.setId(id);
+
+        pointValueAdnnotation.setPointValueId(id);
+        pointValueAdnnotation.setTextPointValueShort(shortString);
+        pointValueAdnnotation.setTextPointValueLong(longString);
+        pointValueAdnnotation.setSourceType(sourceType);
+        pointValueAdnnotation.setSourceId(sourceId);
+
+        if (source != null && source.getSetPointSourceType() == SetPointSource.Types.USER) {
+            setUsername(source, pointValueAdnnotation);
+        }
+
+        pointValueQueryRepository.create(pointValue, pointValueAdnnotation, dataType);
+    }
+
+    private long createPointValue(int pointId, int dataType, double dvalue, long time, String svalue, SetPointSource source) {
+
+        long id = (Long) pointValueCommandRepository.create(pointId, dataType, dvalue, time)[0];
 
 
         if (svalue == null && dataType == DataTypes.IMAGE) {
@@ -309,12 +396,23 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                 else
                     shortString = svalue;
             }
+
             PointValueAdnnotation pointValueAdnnotation = new PointValueAdnnotation(id, shortString, longString, sourceType, sourceId);
-            PointValueAdnnotationsDAO.getInstance().create(pointValueAdnnotation);
+            if(source != null && source.getSetPointSourceType() == SetPointSource.Types.USER) {
+                setUsername(source, pointValueAdnnotation);
+            }
+            pointValueAnnotationsCommandRepository.create(pointValueAdnnotation);
 
         }
-
         return id;
+    }
+
+    private void setUsername(SetPointSource source, PointValueAdnnotation pointValueAdnnotation) {
+        UserService userService = new UserService();
+        User user = userService.getUser(source.getSetPointSourceId());
+        if(user != null) {
+            pointValueAdnnotation.setChangeOwner(user.getUsername());
+        }
     }
 
     //TODO rewrite
@@ -327,53 +425,68 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
         return lst;
     }
 
+    private boolean isReadingFromQueryEnabled() {
+        boolean readEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.read.enabled", true);
+        return dbQueryEnabled && readEnabled;
+    }
+
 
     public List<PointValueTime> getPointValues(int dataPointId, long since) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
+        List<PointValue> lst =  getPointValueRepository().filtered(
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP
+                        .replace("$from", String.valueOf(since*1000)):
+                        PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP,
                 new Object[]{dataPointId, since}, GenericDaoCR.NO_LIMIT);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getPointValuesBetween(int dataPointId,
                                                       long from, long to) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO,
+        List<PointValue> lst = getPointValueRepository().filtered(
+                isReadingFromQueryEnabled() ?
+                        PointValueQuestDbDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO
+                                .replace("$from", String.valueOf(from*1000))
+                                .replace("$to", String.valueOf(to*1000)) :
+                        PointValueDAO.POINT_VALUE_FILTER_BASE_ON_DATA_POINT_ID_AND_TIME_STAMP_FROM_TO,
                 new Object[]{dataPointId, from, to}, GenericDaoCR.NO_LIMIT);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getLatestPointValues(int dataPointId, int limit) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+        List<PointValue> lst = getPointValueRepository().filtered(
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
+                        PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId}, limit);
         return getLstPointValueTime(lst);
     }
 
     public List<PointValueTime> getLatestPointValues(int dataPointId,
                                                      int limit, long before) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
+        List<PointValue> lst = getPointValueRepository().filtered(
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID :
+                        PointValueDAO.POINT_VALUE_FILTER_LAST_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, before}, limit);
         return getLstPointValueTime(lst);
     }
 
     public PointValueTime getLatestPointValue(int dataPointId) {
-        Long maxTs = PointValueDAO.getInstance().getLatestPointValue(dataPointId);
+        Long maxTs = getPointValueRepository().getLatestPointValue(dataPointId);
         if (maxTs == null || maxTs == 0)
             return null;
 
-        List<PointValue> lstValues = PointValueDAO.getInstance().findByIdAndTs(dataPointId, maxTs);
+        List<PointValue> lstValues = getPointValueRepository().findByIdAndTs(dataPointId, maxTs);
 
-        PointValueAdnnotationsDAO.getInstance().updateAnnotations(lstValues);
+        pointValueAnnotationsCommandRepository.updateAnnotations(lstValues);
         if (lstValues.size() == 0)
             return null;
         return lstValues.get(0).getPointValue();
     }
 
     public PointValueTime getPointValueBefore(int dataPointId, long time) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
+        List<PointValue> lst = getPointValueRepository().filtered(
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID
+                        .replace("$to", String.valueOf(time*1000)):
+                        PointValueDAO.POINT_VALUE_FILTER_BEFORE_TIME_STAMP_BASE_ON_DATA_POINT_ID,
                 new Object[]{dataPointId, time}, 1);
         if (lst != null && lst.size() > 0) {
             return lst.get(0).getPointValue();
@@ -383,9 +496,12 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
     }
 
     public PointValueTime getPointValueAt(int dataPointId, long time) {
-        List<PointValue> lst = PointValueDAO.getInstance().filtered(
-                PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
-                new Object[]{dataPointId, time}, 1);
+        List<PointValue> lst = getPointValueRepository().filtered(
+                isReadingFromQueryEnabled() ? PointValueQuestDbDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID
+                        .replace("$time", String.valueOf(time*1000)):
+                        PointValueDAO.POINT_VALUE_FILTER_AT_TIME_STAMP_BASE_ON_DATA_POINT_ID,
+                    new Object[]{dataPointId, time}, 1);
+
         if (lst != null && lst.size() > 0) {
             return lst.get(0).getPointValue();
         } else {
@@ -395,42 +511,44 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     @Deprecated
     public long deletePointValuesBeforeWithOutLast(int dataPointId, long time) {
-        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLast(dataPointId, time);
+        if (dbQueryEnabled)
+            deletePointValuesBeforeForDatapoint(dataPointId, time);
+        return pointValueCommandRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
     }
 
     @Override
     public long deletePointValuesBeforeWithOutLastTwo(int dataPointId, long time) {
-        return PointValueDAO.getInstance().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
+        return getPointValueRepository().deletePointValuesBeforeWithOutLastTwo(dataPointId, time);
     }
 
     @Override
     public long dateRangeCount(int dataPointId, long from, long to) {
-        return PointValueDAO.getInstance().dateRangeCount(dataPointId, from, to);
+        return getPointValueRepository().dateRangeCount(dataPointId, from, to);
     }
 
     @Override
     public long getInceptionDate(int dataPointId) {
-        return PointValueDAO.getInstance().getInceptionDate(dataPointId);
+        return getPointValueRepository().getInceptionDate(dataPointId);
     }
 
     @Override
     public long getStartTime(List<Integer> dataPointIds) {
-        return PointValueDAO.getInstance().getStartTime(dataPointIds);
+        return getPointValueRepository().getStartTime(dataPointIds);
     }
 
     @Override
     public long getEndTime(List<Integer> dataPointIds) {
-        return PointValueDAO.getInstance().getEndTime(dataPointIds);
+        return getPointValueRepository().getEndTime(dataPointIds);
     }
 
     @Override
     public LongPair getStartAndEndTime(List<Integer> dataPointIds) {
-        return PointValueDAO.getInstance().getStartAndEndTime(dataPointIds);
+        return getPointValueRepository().getStartAndEndTime(dataPointIds);
     }
 
     @Override
     public List<Long> getFiledataIds() {
-        return PointValueDAO.getInstance().getFiledataIds();
+        return pointValueCommandRepository.getFiledataIds();
     }
 
     /**
@@ -562,8 +680,14 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
                     int retries = 10;
                     while (true) {
                         try {
-                            PointValueDAO.getInstance().executeBatchUpdateInsert(params);
 
+                            boolean dbWriteEnabled = Common.getEnvironmentProfile().getBoolean("db.values.write.enabled", true);
+                            if(dbWriteEnabled)
+                                IPointValueDAO.newCommandRespository().executeBatchUpdateInsert(params);
+
+                            boolean dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled", false);
+                            if(dbQueryEnabled)
+                                IPointValueQuestDbDAO.newQueryRespository().executeBatchUpdateInsert(params);
                             break;
                         } catch (ConcurrencyFailureException e) {
                             if (retries <= 0) {
@@ -602,36 +726,41 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             return WorkItem.PRIORITY_HIGH;
         }
     }
-
+/*
     public PointValueTime getPointValue(long id) {
-        return PointValueDAO.getInstance().getPointValue(id);
+        return getPointValueRepository().getPointValue(id);
     }
+*/
     public List<PointValueAdnnotation> getAllPointValueAnnotations(){
-        return  pointValueAnnotationsDAO.findAll();
+        return  getPointValueAnnotationsRepository().findAllPointValueAdnnotations();
     }
 
     public void updatePointValueAnnotations(int userId) {
-        pointValueAnnotationsDAO.update(userId);
+        pointValueAnnotationsCommandRepository.update(userId);
     }
 
     @Override
     public long deletePointValues(int dataPointId) {
-        return PointValueDAO.getInstance().deletePointValue(dataPointId);
+        if (dbQueryEnabled)
+            pointValueQueryRepository.deletePointValue(dataPointId);
+        return pointValueCommandRepository.deletePointValue(dataPointId);
     }
 
     @Override
     public long deleteAllPointValue() {
-        return PointValueDAO.getInstance().deleteAllPointData();
+        if (dbQueryEnabled)
+            pointValueQueryRepository.deleteAllPointData();
+        return pointValueCommandRepository.deleteAllPointData();
     }
 
     @Override
     public long deletePointValuesWithMismatchedType(int dataPointId, int dataType) {
-        return PointValueDAO.getInstance().deletePointValuesWithMismatchedType(dataPointId, dataType);
+        return pointValueCommandRepository.deletePointValuesWithMismatchedType(dataPointId, dataType);
     }
 
     @Override
     public long deletePointValuesWithValueLimit(int dataPointId, int limit) {
-        return PointValueDAO.getInstance().deletePointValuesWithValueLimit(dataPointId, limit);
+        return pointValueCommandRepository.deletePointValuesWithValueLimit(dataPointId, limit);
     }
 
 
@@ -799,6 +928,78 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
     }
 
+    private IPointValueDAO getPointValueRepository() {
+        boolean readEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.values.read.enabled",
+                true);
+        if(dbQueryEnabled && readEnabled) {
+            return pointValueQueryRepository;
+        }
+        return pointValueCommandRepository;
+    }
+
+    private IPointValueAdnnotationsDAO getPointValueAnnotationsRepository() {
+        return pointValueAnnotationsCommandRepository;
+    }
+
+    public void createTableForDatapoint(int dpId) {
+        if (dbQueryEnabled) {
+            pointValueQueryRepository.createTableForDatapoint(dpId);
+        }
+    }
+
+    public void deletePointValuesBeforeForDatapoint(int dataPointId, long time) {
+        long questTime = time*1000;
+        File exported = null;
+        try {
+            exported = exportFromQuestDb(dataPointId, questTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pointValueQueryRepository.deletePointValuesBeforeWithOutLast(dataPointId, time);
+        importToQuestDb(exported, dataPointId);
+        try {
+            Files.delete(exported.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public File exportFromQuestDb(int dataPointId, long timestamp) throws IOException, InterruptedException {
+        String query = "select * from pointValues"+dataPointId+" where timestamp < " +
+                "timestamp_ceil('M', to_timezone(" + timestamp + ",'CET')) " +
+                " and timestamp > to_timezone(" + timestamp + ", 'CET')";
+        String url = "http://localhost:9000/exp?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+
+        HttpResponse<Path> response = client.send(request,
+                HttpResponse.BodyHandlers.ofFileDownload(Path.of(System.getProperty("java.io.tmpdir")),
+                        StandardOpenOption.CREATE, StandardOpenOption.WRITE));
+
+        Path path = response.body();
+        return path.toFile();
+
+    }
+
+    public static void importToQuestDb(File csv, int dataPointId) {
+        try {
+            URL resource = PointValueService.class.getClassLoader().getResource("questdb-schema-data-retention.json");
+            File schema = Paths.get(resource.toURI()).toFile();
+            PostMethod postMethod = new PostMethod("http://localhost:9000/imp?name=pointValues"+dataPointId+"&timestamp=timestamp&partitionBy=MONTH&overwrite=false");
+            MultipartRequestEntity entity = new MultipartRequestEntity(new Part[]{new FilePart("schema", schema), new FilePart("data", csv)}, postMethod.getParams());
+            postMethod.setRequestEntity(entity);
+            MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
+            HttpClient httpClient = new HttpClient(manager);
+            httpClient.executeMethod(postMethod);
+            String response = postMethod.getResponseBodyAsString();
+            LOG.info("QuestDb import finished: \r\n" + response);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+    }
     public void updateAllMetaDataPointsByScript(User user) {
         List<DataPointVO> metaDataPoints = new ArrayList<>();
 

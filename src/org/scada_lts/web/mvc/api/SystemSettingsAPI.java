@@ -595,4 +595,37 @@ public class SystemSettingsAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(value = "/getDbQuerySettings", produces = "application/json")
+    public ResponseEntity<DbQuerySettings> getDbQuerySettings(HttpServletRequest request) {
+        LOG.info("/api/systemSettings/getDbQueryRead");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                return new ResponseEntity<>(systemSettingsService.getDbQuerySettings(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(value = "/saveDbQuerySettings", consumes = {"text/plain", "application/*"})
+    public ResponseEntity<String> saveDbQuerySettings(HttpServletRequest request, @RequestBody DbQuerySettings dbQuerySettings) {
+        LOG.info("/api/systemSettings/saveDbQueryRead");
+        try {
+            User user = Common.getUser(request);
+            if (user != null && user.isAdmin()) {
+                systemSettingsService.saveDbQuerySettings(dbQuerySettings);
+                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

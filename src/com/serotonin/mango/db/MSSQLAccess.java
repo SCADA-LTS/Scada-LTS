@@ -31,6 +31,10 @@ public class MSSQLAccess extends BasePooledAccess {
         super(ctx);
     }
 
+    public MSSQLAccess(ServletContext ctx, String dbPrefix) {
+        super(ctx, dbPrefix);
+    }
+
     @Override
     public DatabaseType getType() {
         return DatabaseType.MSSQL;

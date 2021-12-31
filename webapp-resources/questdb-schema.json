@@ -1,0 +1,23 @@
+[
+  {
+    "name":"timestamp",
+    "type": "TIMESTAMP",
+    "pattern": "yyyy-MM-ddTHH:mm:ss.SSSZ"
+  },
+  {
+    "name":"ts",
+    "type": "LONG"
+  },
+  {
+    "name":"pointValue",
+    "type": "STRING"
+  },
+  {
+    "name":"metaData",
+    "type": "STRING"
+  },
+  {
+    "name":"dataType",
+    "type": "INT"
+  }
+]

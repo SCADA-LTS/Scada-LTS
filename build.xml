@@ -249,6 +249,9 @@
 				  haltonfailure="yes">
 			</test>
 
+			<test name="org.scada_lts.InitObjectTestsSuite"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">
@@ -660,6 +663,7 @@
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/cache-api-1.1.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/ehcache-3.9.4.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/questdb-jdk8-6.0.1.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>

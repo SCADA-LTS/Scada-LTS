@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    
+    <Resource name="jdbc/scadalts"
+          auth="Container"
+          type="javax.sql.DataSource"
+          factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+          testWhileIdle="true"
+          testOnBorrow="true"
+          testOnReturn="false"
+          validationQuery="SELECT 1"
+          validationInterval="30000"
+          timeBetweenEvictionRunsMillis="30000"
+          maxActive="80"
+          minIdle="10"
+          maxWait="10000"
+          initialSize="10"
+          removeAbandonedTimeout="1000"
+          removeAbandoned="true"
+          abandonWhenPercentageFull="75"
+          logAbandoned="true"
+          minEvictableIdleTimeMillis="30000"
+          jmxEnabled="true"
+          jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
+                                                        org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer;
+                                                        org.apache.tomcat.jdbc.pool.interceptor.ResetAbandonedTimer;
+                                                        org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport(threshold=1500)"
+          username="root"
+          password="root"
+          driverClassName="com.mysql.jdbc.Driver"
+          defaultTransactionIsolation="READ_COMMITTED"
+          connectionProperties="useSSL=false"
+          url="jdbc:mysql://localhost:3306/scadalts"
+         />
+
+    <Resource name="jdbc/scadaltsquery"
+              auth="Container"
+              type="javax.sql.DataSource"
+              username="admin"
+              password="quest"
+              driverClassName="org.postgresql.Driver"
+              defaultTransactionIsolation="READ_COMMITTED"
+              connectionProperties="useSSL=false"
+              url="jdbc:postgresql://localhost:8812/qdb"
+              maxTotal="25"
+              maxIdle="10"
+              validationQuery="select 1"
+    />
+</Context>

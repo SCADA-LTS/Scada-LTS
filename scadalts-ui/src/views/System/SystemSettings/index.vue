@@ -67,6 +67,11 @@
 								<ScadaConfigurationComponent
 								 id="scada-configuration"
 								></ScadaConfigurationComponent>
+                <DbQuerySettingsComponent
+                  ref="dbQuerySettingsComponent"
+                  @changed="componentChanged"
+                ></DbQuerySettingsComponent>
+								<ScadaConfigurationComponent></ScadaConfigurationComponent>
 							</v-row>
 						</v-col>
 					</v-row>
@@ -281,6 +286,7 @@ import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
 import AmChartSettingsComponent from './AmChartSettingsComponent';
 import DataBaseInfoComponent from './DataBaseInfoComponent';
+import DbQuerySettingsComponent from './DbQuerySettingsComponent';
 
 export default {
 	el: '#systemsettings',
@@ -298,6 +304,7 @@ export default {
 		ScadaConfigurationComponent,
 		AmChartSettingsComponent,
 		DataBaseInfoComponent,
+    DbQuerySettingsComponent,
 	},
 	filters: {
 		blank: function (value) {
@@ -347,7 +354,7 @@ export default {
 				setTimeout(() => {
 					let el = document.getElementById(element);
 					if(!!el) {
-						el.scrollIntoView();	
+						el.scrollIntoView();
 					}
 				}, 1000);
 			}

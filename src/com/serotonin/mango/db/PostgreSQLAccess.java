@@ -28,14 +28,23 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
 
 public class PostgreSQLAccess extends BasePooledAccess {
+
+    private static final Log LOG = LogFactory.getLog(PostgreSQLAccess.class);
+
     public PostgreSQLAccess(ServletContext ctx) {
         super(ctx);
+    }
+
+    public PostgreSQLAccess(ServletContext ctx, String dbPrefix) {
+        super(ctx, dbPrefix);
     }
 
     @Override
@@ -74,7 +83,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
     protected String getDriverClassName() {
         return "org.postgresql.Driver";
     }
-
+/*
     @Override
     protected boolean newDatabaseCheck(ExtendedJdbcTemplate ejt) {
         try {
@@ -99,10 +108,10 @@ public class PostgreSQLAccess extends BasePooledAccess {
                     Common.getEnvironmentProfile().getString("db.password"));
                 createSchema("/WEB-INF/db/createTables-postgresql.sql");
                 conn.close();
-                return true;                
+                return true;
             }
         } catch (SQLException ex) {
-            //Logger.getLogger(PostgreSQLAccess.class.getName()).log(Level.SEVERE, null, ex);          
+            //Logger.getLogger(PostgreSQLAccess.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(PostgreSQLAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -119,7 +128,7 @@ public class PostgreSQLAccess extends BasePooledAccess {
         }
         return false;
     }
-
+*/
     @Override
     public double applyBounds(double value) {
         if (Double.isNaN(value))

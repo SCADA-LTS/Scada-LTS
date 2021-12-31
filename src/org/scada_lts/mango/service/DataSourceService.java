@@ -54,7 +54,7 @@ public class DataSourceService implements MangoDataSource {
 	//TODO spring
 	private static final DataSourceDAO dataSourceDAO = new DataSourceDAO();
 
-	private static final DataPointService dataPointService = new DataPointService();
+	private final DataPointService dataPointService = new DataPointService();
 
 	@Override
 	public List<DataSourceVO<?>> getDataSources() {

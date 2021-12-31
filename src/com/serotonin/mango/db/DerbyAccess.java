@@ -62,6 +62,10 @@ public class DerbyAccess extends DatabaseAccess {
         super(ctx);
     }
 
+    public DerbyAccess(ServletContext ctx, String dbPrefix) {
+        super(ctx, dbPrefix);
+    }
+
     @Override
     public DatabaseType getType() {
         return DatabaseType.DERBY;

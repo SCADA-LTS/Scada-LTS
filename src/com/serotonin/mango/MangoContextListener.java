@@ -414,13 +414,31 @@ public class MangoContextListener implements ServletContextListener {
 		DatabaseAccess databaseAccess = DatabaseAccess
 				.createDatabaseAccess(ctx);
 		ctx.setAttribute(Common.ContextKeys.DATABASE_ACCESS, databaseAccess);
-		databaseAccess.initialize();
+		boolean dbQueryEnabled = Common.getEnvironmentProfile().getBoolean("dbquery.enabled",
+				false);
+		if(dbQueryEnabled) {
+			DatabaseAccess databaseQueryAccess = DatabaseAccess
+					.createDatabaseAccess(ctx, "dbquery.");
+			ctx.setAttribute(Common.ContextKeys.DATABASE_QUERY_ACCESS, databaseQueryAccess);
+
+			databaseAccess.initOnlyDatasourceJdbc();
+			databaseQueryAccess.initOnlyDatasourceJdbc();
+
+			databaseAccess.initialize();
+			databaseQueryAccess.initialize();
+		} else {
+			databaseAccess.initialize();
+		}
 	}
 
 	private void databaseTerminate(ContextWrapper ctx) {
 		DatabaseAccess databaseAccess = ctx.getDatabaseAccess();
 		if (databaseAccess != null)
 			databaseAccess.terminate();
+
+		DatabaseAccess databaseQueryAccess = ctx.getDatabaseQueryAccess();
+		if(databaseQueryAccess != null)
+			databaseQueryAccess.terminate();
 	}
 
 	//

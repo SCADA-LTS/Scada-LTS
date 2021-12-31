@@ -46,7 +46,7 @@ public interface MangoPointValues {
 
 	long deletePointValuesWithValueLimit(int dataPointId, int limit);
 	
-	PointValueTime getPointValue(long id);
+	//PointValueTime getPointValue(long id);
 	
 	void clearUnsavedPointValues();
 	
