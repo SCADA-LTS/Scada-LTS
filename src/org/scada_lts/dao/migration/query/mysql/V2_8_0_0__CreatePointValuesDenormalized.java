@@ -15,15 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao.migration.query.postgres;
-
+package org.scada_lts.dao.migration.query.mysql;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
+public class V2_8_0_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -34,15 +33,16 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
                 + "create table IF NOT EXISTS pointValuesDenormalized ("
                 + "dataPointId int,"
                 + "dataType int,"
-                + "pointValue DOUBLE PRECISION,"
+                + "pointValue double,"
                 + "ts bigint,"
                 + "textPointValueShort varchar(128),"
-                + "textPointValueLong text,"
+                + "textPointValueLong longtext,"
                 + "sourceType smallint,"
                 + "sourceId int,"
-                + "username varchar(40));";
+                + "username varchar(40)) ENGINE=InnoDB;";
 
         jdbcTemplate.execute(pointValueAnnotations);
 
     }
+
 }

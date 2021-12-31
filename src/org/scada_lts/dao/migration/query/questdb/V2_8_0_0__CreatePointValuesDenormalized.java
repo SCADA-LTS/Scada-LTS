@@ -41,10 +41,10 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
+public class V2_8_0_0__CreatePointValuesDenormalized extends BaseJavaMigration {
 
 
-    private static final Log LOG = LogFactory.getLog(V2_7_1_3__CreatePointValuesDenormalized.class);
+    private static final Log LOG = LogFactory.getLog(V2_8_0_0__CreatePointValuesDenormalized.class);
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -52,7 +52,7 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
         final JdbcOperations questdb = DAO.query().getJdbcTemp();
         final JdbcOperations mysql = DAO.getInstance().getJdbcTemp();
 
-        URL resource = V2_7_1_3__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
+        URL resource = V2_8_0_0__CreatePointValuesDenormalized.class.getClassLoader().getResource("questdb-schema.json");
         File schema = Paths.get(Objects.requireNonNull(resource).toURI()).toFile();
         int limit = Common.getEnvironmentProfile().getInt("db.values.export.limit", 1001);
         boolean overwrite = Common.getEnvironmentProfile().getBoolean("dbquery.import.overwrite", false);
@@ -143,7 +143,7 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
         try {
             String secureFilePrivQuery = "SHOW VARIABLES LIKE \"secure_file_priv\"";
             String secureFilePriv = jdbcOperations.query(secureFilePrivQuery, (resultSet, i) -> resultSet.getString("Value")).get(0);
-            if(secureFilePriv == null) {
+            if(secureFilePriv == null || "NULL".equalsIgnoreCase(secureFilePriv)) {
                 LOG.warn("The secure_file_priv constant in the mysql database has an empty null value set, this blocked the database from being exported to a file, set a value for this constant other than null:\n" +
                         "1) Setting the value to empty will make it possible to export to any location;\n" +
                         "2) Setting this parameter to a specific path will force the use of that particular path;\n" +
@@ -151,13 +151,13 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
                         "The change requires a mysql server restart. Applies to mysql version 5.7.");
                 return Optional.empty();
             }
-
-            if(!secureFilePriv.isEmpty()) {
-                File file = new File(secureFilePriv + File.separator + "pointValues" + System.currentTimeMillis() + ".csv");
+            String tempDir = System.getProperty("java.io.tmpdir");
+            if((tempDir != null && tempDir.equals(secureFilePriv)) || secureFilePriv.isEmpty()) {
+                File file = File.createTempFile("pointValues", ".csv");
+                delete(file);
                 return Optional.of(changePath(file));
             }
-            File file = File.createTempFile("pointValues",".csv");
-            delete(file);
+            File file = new File(secureFilePriv + File.separator + "pointValues" + System.currentTimeMillis() + ".csv");
             return Optional.of(changePath(file));
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -230,7 +230,7 @@ public class V2_7_1_3__CreatePointValuesDenormalized extends BaseJavaMigration {
     public static void delete(File csv) {
         try {
             Files.delete(csv.toPath());
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }
     }
