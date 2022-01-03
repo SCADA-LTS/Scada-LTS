@@ -72,11 +72,13 @@
       staticHeaderList[staticHeaderList.length] = {key: key, value: value};
       staticHeaderList.sort();
       refreshStaticHeaderList();
+      hideHttpSenderTest();
   }
   
   function removeStaticHeader(index) {
       staticHeaderList.splice(index, 1);
       refreshStaticHeaderList();
+      hideHttpSenderTest();
   }
   
   function refreshStaticHeaderList() {
@@ -114,11 +116,13 @@
       staticParameterList[staticParameterList.length] = {key: key, value: value};
       staticParameterList.sort();
       refreshStaticParameterList();
+      hideHttpSenderTest();
   }
   
   function removeStaticParameter(index) {
       staticParameterList.splice(index, 1);
       refreshStaticParameterList();
+      hideHttpSenderTest();
   }
   
   function refreshStaticParameterList() {
@@ -303,8 +307,11 @@
   function addChangeEvent(tab) {
       if(tab && tab.forEach) {
         tab.forEach(function(currentValue, currentIndex, listObj) {
-            console.log('currentValue:' + currentValue);
-            if(currentValue.type && currentValue.type != 'button')
+            if(currentValue.type && currentValue.type != 'button'
+            && currentValue.id && currentValue.id != 'sheaderKey'
+            && currentValue.id != 'sparamKey'
+            && currentValue.id != 'sheaderValue'
+            && currentValue.id != 'sparamValue')
               currentValue.addEventListener('change', function() { hideHttpSenderTest(); }, false);
             }, '');
       }
