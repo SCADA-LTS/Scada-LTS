@@ -35,7 +35,7 @@ public class V2_7_1_1__HttpRetriever extends BaseJavaMigration {
     }
 
     private void migrate(JdbcTemplate jdbcTmp) {
-        List<HttpRetrieverDataSourceVO> dataSources = jdbcTmp.query("SELECT id, data FROM dataSources where dataSourceType = 11", (resultSet, i) -> {
+        List<HttpRetrieverDataSourceVO> dataSources = jdbcTmp.query("SELECT id, xid, name, data FROM dataSources where dataSourceType = 11", (resultSet, i) -> {
             try (InputStream inputStream = resultSet.getBinaryStream("data");
                  ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                 HttpRetrieverDataSourceVO dataSourceVO = (HttpRetrieverDataSourceVO) objectInputStream.readObject();
