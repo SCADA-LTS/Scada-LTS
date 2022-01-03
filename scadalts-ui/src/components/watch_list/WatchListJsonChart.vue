@@ -165,6 +165,7 @@ export default {
 				.makeFromConfig(this.config.getConfiguration());
 			
 			const refreshRate = this.chartProperties.refreshRate;
+			this.chartClass.setApiAggregation(10000, 1.5);
 			if(!!refreshRate && refreshRate >= 5000) {
 				this.chartClass.withLiveUpdate(refreshRate);
 			}
