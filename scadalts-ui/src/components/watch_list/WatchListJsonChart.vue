@@ -212,6 +212,7 @@ export default {
 
 		async loadWatchList(watchListId) {
 			this.watchListData = await this.$store.dispatch('getWatchListDetails', watchListId);
+			if(this.watchListData.pointList.length === 0) { localStorage.removeItem(`MWL_${watchListId}_P`);}
 			this.initSettings();
 			this.updateSettings(true);
 		},
