@@ -213,7 +213,7 @@ export default {
 		async loadWatchList(watchListId) {
 			this.watchListData = await this.$store.dispatch('getWatchListDetails', watchListId);
 			this.initSettings();
-			this.updateSettings();
+			this.updateSettings(true);
 		},
 
 		updatePointList() {
@@ -248,15 +248,21 @@ export default {
 			component.saveSettings(this.watchListData.id);
 		},
 
-		async updateSettings() {
-			this.saveSettings();
-			this.disposeChart();
-			this.watchListData = await this.$store.dispatch('getWatchListDetails', this.watchListData.id);
-			this.loadSettings();
-			this.updatePointList();
-			await this.initDefaultConfiguration();
-			this.initChart();
-			this.renderChart();
+		async updateSettings(lazyLoading = false) {
+			let initialLoad = true;
+			if(lazyLoading) {
+				initialLoad = !!localStorage.getItem(`MWL_${this.watchListData.id}_P`);
+			}
+			if(initialLoad) {
+				this.saveSettings();
+				this.disposeChart();
+				this.watchListData = await this.$store.dispatch('getWatchListDetails', this.watchListData.id);
+				this.loadSettings();
+				this.updatePointList();
+				await this.initDefaultConfiguration();
+				this.initChart();
+				this.renderChart();
+			}
 		},
 
 		onSettingsSaved() {
@@ -267,7 +273,8 @@ export default {
 
 		onSettingsDeleted() {
 			this.deleteConfiguration();
-			this.updateSettings();
+			this.disposeChart();
+			localStorage.removeItem(`MWL_${this.watchListData.id}_P`);
 		},
 
 		getComponentType(type) {
