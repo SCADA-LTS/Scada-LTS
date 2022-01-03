@@ -165,13 +165,18 @@ export default {
 				.makeFromConfig(this.config.getConfiguration());
 			
 			const refreshRate = this.chartProperties.refreshRate;
-			this.chartClass.setApiAggregation(10000, 1.5);
+			if(this.chartProperties.type === 'static') {
+				this.chartClass.setApiAggregation(
+					this.config.configuration.apiLimitValues, 
+					this.config.configuration.apiLimitFactor);
+			}
 			if(!!refreshRate && refreshRate >= 5000) {
 				this.chartClass.withLiveUpdate(refreshRate);
 			}
 			if(this.chartProperties.type === 'compare') {
 				this.chartClass.compare();
 			}
+			this.chartClass.setLiveValuesLimit(this.config.configuration.valuesLimit, this.onLimitExceeded);
 			this.chartClass = this.chartClass.build();
 		},
 
@@ -275,6 +280,14 @@ export default {
 					return this.$refs.csCompareComponent;
 				default:
 					throw new Error("Chart type not recognized!");
+			}
+		},
+
+		onLimitExceeded() {
+			this.response = {
+				status: true,
+				color: 'warning',
+				message: this.$t('modernwatchlist.chart.error.livelimit')
 			}
 		}
 

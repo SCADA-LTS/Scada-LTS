@@ -25,6 +25,9 @@ export class AmChartConfigurator {
                 xAxes: builder.xAxes,
                 yAxes: builder.yAxes,
                 series: builder.series,
+                valuesLimit: builder.valuesLimit,
+                apiLimitValues: 10000,
+                apiLimitFactor: 1.5,
             }
             if(builder.exportMenu){
                 this.configuration.exporting = builder.exportMenu;
@@ -71,6 +74,7 @@ export class AmChartConfiguratorBuilder {
         this.yAxes = [];
         this.series = [];
         this.activeColor = 0;
+        this.valuesLimit = 1000;
         this.chartDefaultColors = [
             '#39B54A',
 	        '#69FF7D',
