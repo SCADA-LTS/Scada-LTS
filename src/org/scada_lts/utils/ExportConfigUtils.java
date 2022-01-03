@@ -19,7 +19,7 @@ public class ExportConfigUtils {
     public static ResponseEntity<String> export(HttpServletRequest request, HttpServletResponse response, ExportConfig exportConfig) {
         try {
             User user = Common.getUser(request);
-            if (user != null) {
+            if (user != null && user.isAdmin()) {
                 ZIPProjectManager exporter = new ZIPProjectManager(exportConfig);
                 exporter.exportProject(request, response);
                 return ResponseEntity.ok().build();
