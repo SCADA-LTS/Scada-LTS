@@ -1,7 +1,14 @@
 <template>
 	<v-app>
 		<v-row class="wl-chart-settings">
-			<v-col id="wl-chart-type-select" cols="8" md="3" order="1" order-md="0" class="button-space-start">
+			<v-col
+				id="wl-chart-type-select"
+				cols="8"
+				md="3"
+				order="1"
+				order-md="0"
+				class="button-space-start"
+			>
 				<v-btn-toggle v-model="chartType">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
@@ -32,7 +39,14 @@
 				</v-btn-toggle>
 			</v-col>
 
-			<v-col id="wl-chart-type-settings" cols="12" md="7" order="2" order-md="0" v-if="!!watchListData">
+			<v-col
+				id="wl-chart-type-settings"
+				cols="12"
+				md="7"
+				order="2"
+				order-md="0"
+				v-if="!!watchListData"
+			>
 				<ChartSettingsLiveComponent
 					ref="csLiveComponent"
 					v-show="chartType === 'live'"
@@ -50,7 +64,14 @@
 				></ChartSettingsCompareComponent>
 			</v-col>
 
-			<v-col id="wl-chart-settings" cols="4" md="2" order="1" order-md="0" class="button-space">
+			<v-col
+				id="wl-chart-settings"
+				cols="4"
+				md="2"
+				order="1"
+				order-md="0"
+				class="button-space"
+			>
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on, attrs }">
 						<v-btn fab @click="updateSettings()" v-bind="attrs" v-on="on">
@@ -62,10 +83,38 @@
 
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on, attrs }">
-						<v-btn fab @click="toggleResolution" v-bind="attrs" v-on="on">
-							<v-icon v-if="groupEnabled">mdi-chart-bar-stacked</v-icon>
-							<v-icon v-else>mdi-chart-bar</v-icon>
-						</v-btn>
+						<v-menu
+							open-on-hover
+							:close-on-content-click="false"
+							bottom
+							offset-y
+							v-bind="attrs"
+							v-on="on"
+						>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn fab @click="toggleResolution" v-bind="attrs" v-on="on">
+									<v-icon v-if="groupEnabled">mdi-chart-bar-stacked</v-icon>
+									<v-icon v-else>mdi-chart-bar</v-icon>
+								</v-btn>
+							</template>
+							<v-card v-if="!!config && !!config.configuration && groupEnabled">
+								<v-card-text>
+									<v-text-field
+										v-model="config.configuration.xAxes[0].groupCount"
+										type="number"
+										:label="$t('modernwatchlist.chartseries.aggregation.count')"
+										:hint="$t('modernwatchlist.chartseries.aggregation.count.hint')"
+										persistent-hint
+										:disabled="!config.configuration.xAxes[0].groupData"
+									></v-text-field>
+								</v-card-text>
+								<v-card-actions>
+									<v-btn block text color="primary" @click="updateValuesLimit"
+										>Apply</v-btn
+									>
+								</v-card-actions>
+							</v-card>
+						</v-menu>
 					</template>
 					<span>{{ $t('modernwatchlist.chart.panel.resolution.tooltip') }}</span>
 				</v-tooltip>
@@ -79,11 +128,23 @@
 						@saved="onSettingsSaved"
 						@deleted="onSettingsDeleted"
 					></ChartSeriesSettingsComponent>
-				</div>	
+				</div>
+			</v-col>
+		</v-row>
+		<v-row v-if="!!warnMessage">
+			<v-col cols="12">
+				<v-alert
+					@click="warnMessage = null"
+					type="warning"
+					transition="scale-transition"
+					dense
+				>
+					{{ warnMessage }}
+				</v-alert>
 			</v-col>
 		</v-row>
 		<v-row no-gutters>
-			<v-col cols="12"  id="wl-chart-container">
+			<v-col cols="12" id="wl-chart-container">
 				<div class="chartContainer" ref="chartdiv"></div>
 			</v-col>
 		</v-row>
@@ -127,7 +188,7 @@ export default {
 			},
 			pointIds: null,
 			config: null,
-			watchListData: {id: 1, pointList: [{id:1},{id:2}]},
+			watchListData: { id: 1, pointList: [{ id: 1 }, { id: 2 }] },
 			watchListPoins: [],
 			pointCompare: '',
 			response: {
@@ -135,6 +196,8 @@ export default {
 				color: '',
 				message: '',
 			},
+			warnMessage: null,
+			liveValuesLimits: [500, 1000, 5000, 10000],
 		};
 	},
 
@@ -144,7 +207,7 @@ export default {
 				return this.config.configuration.xAxes[0].groupData;
 			}
 			return false;
-		}
+		},
 	},
 
 	mounted() {
@@ -154,9 +217,11 @@ export default {
 	},
 
 	methods: {
-
 		async initDefaultConfiguration() {
-			this.config = new AmChartConfigurator(this.watchListData.id)
+			this.config = new AmChartConfigurator(
+				this.watchListData.id,
+				this.watchListPoins.length,
+			)
 				.createXAxis('dateAxis1', this.aggegation)
 				.createXAxis('dateAxis2', this.aggegation, 'date2')
 				.createYAxis('valueAxis1')
@@ -164,62 +229,66 @@ export default {
 				.createYAxis('logAxis', null, false, true)
 				.createYAxis('binAxis', null, true);
 
-			if(this.chartProperties.type === 'compare') {
+			if (this.chartProperties.type === 'compare') {
 				const pl = this.chartProperties.comparePoints;
 				await this.config.createSeries(pl[0].pointId);
 				await this.config.createSeries(pl[1].pointId, 'valueAxis2', 'dateAxis2', 'date2');
 			} else {
-				const pl =  this.watchListPoins;
-				for(let i = 0; i < pl.length; i++) {
-					await this.config.createSeries(pl[i].id)
-				};
+				const pl = this.watchListPoins;
+				for (let i = 0; i < pl.length; i++) {
+					await this.config.createSeries(pl[i].id);
+				}
 			}
-			
+
 			this.config = this.config.build();
 		},
 
 		initChart() {
-			this.chartClass = new AmChart(this.$refs.chartdiv, "xychart", this.pointIds)
+			this.chartClass = new AmChart(this.$refs.chartdiv, 'xychart', this.pointIds)
 				.startTime(this.chartProperties.startDate)
 				.endTime(this.chartProperties.endDate)
 				.makeFromConfig(this.config.getConfiguration());
-			
+
 			const refreshRate = this.chartProperties.refreshRate;
-			if(this.chartProperties.type === 'static') {
+			if (this.chartProperties.type === 'static') {
 				this.chartClass.setApiAggregation(
-					this.config.configuration.apiLimitValues, 
-					this.config.configuration.apiLimitFactor);
+					this.config.configuration.apiLimitValues,
+					this.config.configuration.apiLimitFactor,
+				);
 			}
-			if(!!refreshRate && refreshRate >= 5000) {
+			if (!!refreshRate && refreshRate >= 5000) {
 				this.chartClass.withLiveUpdate(refreshRate);
 			}
-			if(this.chartProperties.type === 'compare') {
+			if (this.chartProperties.type === 'compare') {
 				this.chartClass.compare();
 			}
-			this.chartClass.setLiveValuesLimit(this.config.configuration.valuesLimit, this.onLimitExceeded);
+			this.chartClass.setLiveValuesLimit(
+				this.config.configuration.valuesLimit,
+				this.onLimitExceeded,
+			);
 			this.chartClass = this.chartClass.build();
 		},
 
 		renderChart() {
 			this.chartClass.createChart().catch((e) => {
-				if(e.message === 'No data from that range!') {
+				if (e.message === 'No data from that range!') {
 					this.response = {
 						status: true,
 						color: 'warning',
-						message: e.message
-					}
+						message: e.message,
+					};
 				} else {
 					this.response = {
 						status: true,
 						color: 'error',
-						message: `Failed to load chart!: ${e.message}`
-					}
+						message: `Failed to load chart!: ${e.message}`,
+					};
 				}
 			});
 		},
 
 		disposeChart() {
-			if(!!this.chartClass) {
+			if (!!this.chartClass) {
 				this.chartClass.disposeChart();
 			}
 		},
@@ -232,17 +301,21 @@ export default {
 
 		async loadWatchList(watchListId) {
 			this.watchListData = await this.$store.dispatch('getWatchListDetails', watchListId);
-			if(this.watchListData.pointList.length === 0) { localStorage.removeItem(`MWL_${watchListId}_P`);}
+			if (this.watchListData.pointList.length === 0) {
+				localStorage.removeItem(`MWL_${watchListId}_P`);
+			}
 			this.initSettings();
 			this.updateSettings(true);
 		},
 
 		updatePointList() {
 			let points = [];
-			this.watchListPoins = this.watchListData.pointList.filter((p) => document.getElementById(`p${p.id}ChartCB`).checked);
-			this.watchListPoins.forEach(point => {
+			this.watchListPoins = this.watchListData.pointList.filter(
+				(p) => document.getElementById(`p${p.id}ChartCB`).checked,
+			);
+			this.watchListPoins.forEach((point) => {
 				points.push(point.id);
-			})
+			});
 			this.pointIds = points.join(',');
 		},
 
@@ -271,13 +344,17 @@ export default {
 
 		async updateSettings(lazyLoading = false) {
 			let initialLoad = true;
-			if(lazyLoading) {
+			if (lazyLoading) {
 				initialLoad = !!localStorage.getItem(`MWL_${this.watchListData.id}_P`);
 			}
-			if(initialLoad) {
+			if (initialLoad) {
+				this.warnMessage = null;
 				this.saveSettings();
 				this.disposeChart();
-				this.watchListData = await this.$store.dispatch('getWatchListDetails', this.watchListData.id);
+				this.watchListData = await this.$store.dispatch(
+					'getWatchListDetails',
+					this.watchListData.id,
+				);
 				this.loadSettings();
 				this.updatePointList();
 				await this.initDefaultConfiguration();
@@ -289,7 +366,6 @@ export default {
 		onSettingsSaved() {
 			this.saveConfiguration();
 			this.updateSettings();
-			
 		},
 
 		onSettingsDeleted() {
@@ -299,7 +375,7 @@ export default {
 		},
 
 		getComponentType(type) {
-			switch(type) {
+			switch (type) {
 				case 'live':
 					return this.$refs.csLiveComponent;
 				case 'static':
@@ -307,26 +383,25 @@ export default {
 				case 'compare':
 					return this.$refs.csCompareComponent;
 				default:
-					throw new Error("Chart type not recognized!");
+					throw new Error('Chart type not recognized!');
 			}
 		},
 
 		onLimitExceeded() {
-			this.response = {
-				status: true,
-				color: 'warning',
-				message: this.$t('modernwatchlist.chart.error.livelimit')
-			}
+			this.warnMessage = this.$t('modernwatchlist.chart.error.livelimit');
 		},
 
 		toggleResolution() {
-			if(!!this.config && !!this.config.configuration) {
-				this.config.configuration.xAxes[0].groupData = !this.config.configuration.xAxes[0].groupData;
+			if (!!this.config && !!this.config.configuration) {
+				this.config.configuration.xAxes[0].groupData = !this.config.configuration.xAxes[0]
+					.groupData;
 				this.onSettingsSaved();
 			}
-		}
+		},
 
-		
+		updateValuesLimit() {
+			this.onSettingsSaved();
+		},
 	},
 	beforeDestroy() {
 		this.disposeChart();
@@ -365,6 +440,5 @@ export default {
 	.wl-chart-settings {
 		max-height: 190px;
 	}
-
 }
 </style>

@@ -9,17 +9,6 @@
 
 				<v-card-text class="card-content">
 					<v-row id="general-settings">
-						<v-col cols="4">
-							<v-text-field
-								v-model="chartConfig.xAxes[0].groupCount"
-								type="number"
-								:label="$t('modernwatchlist.chartseries.aggregation.count')"
-								:hint="$t('modernwatchlist.chartseries.aggregation.count.hint')"
-								persistent-hint
-								:disabled="!chartConfig.xAxes[0].groupData"
-							></v-text-field>
-						</v-col>
-
 						<v-col>
 							<v-select
 								:label="$t('modernwatchlist.chartseries.valueslimit.label')"
@@ -187,14 +176,11 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn text @click="close()">{{
+					<v-btn text @click="restore()">{{
 						$t('modernwatchlist.chartseries.close')
 					}}</v-btn>
 					<v-btn text @click="deleteFromStorage()">{{
 						$t('modernwatchlist.chartseries.delete')
-					}}</v-btn>
-					<v-btn text @click="restore()">{{
-						$t('modernwatchlist.chartseries.restore')
 					}}</v-btn>
 					<v-btn text color="primary" @click="save()">{{
 						$t('modernwatchlist.chartseries.save')
@@ -227,6 +213,7 @@ export default {
 
 		restore() {
 			this.series = this.tempSeries;
+			this.close();
 		},
 
 		close() {
