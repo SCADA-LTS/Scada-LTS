@@ -60,11 +60,22 @@
 					<span>{{ $t('modernwatchlist.chart.panel.apply.tooltip') }}</span>
 				</v-tooltip>
 
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on, attrs }">
+						<v-btn fab @click="toggleResolution" v-bind="attrs" v-on="on">
+							<v-icon v-if="groupEnabled">mdi-chart-bar-stacked</v-icon>
+							<v-icon v-else>mdi-chart-bar</v-icon>
+						</v-btn>
+					</template>
+					<span>{{ $t('modernwatchlist.chart.panel.resolution.tooltip') }}</span>
+				</v-tooltip>
+
 				<div v-if="config">
 					<ChartSeriesSettingsComponent
 						:series="config.getSeriesConfiguration()"
 						:chartConfig="config.configuration"
 						:watchListName="watchListData.id"
+						:chartType="chartType"
 						@saved="onSettingsSaved"
 						@deleted="onSettingsDeleted"
 					></ChartSeriesSettingsComponent>
@@ -125,6 +136,15 @@ export default {
 				message: '',
 			},
 		};
+	},
+
+	computed: {
+		groupEnabled() {
+			if (!!this.config && !!this.config.configuration) {
+				return this.config.configuration.xAxes[0].groupData;
+			}
+			return false;
+		}
 	},
 
 	mounted() {
@@ -296,6 +316,13 @@ export default {
 				status: true,
 				color: 'warning',
 				message: this.$t('modernwatchlist.chart.error.livelimit')
+			}
+		},
+
+		toggleResolution() {
+			if(!!this.config && !!this.config.configuration) {
+				this.config.configuration.xAxes[0].groupData = !this.config.configuration.xAxes[0].groupData;
+				this.onSettingsSaved();
 			}
 		}
 

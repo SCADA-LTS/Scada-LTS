@@ -27,7 +27,7 @@ export class AmChartConfigurator {
                 series: builder.series,
                 valuesLimit: builder.valuesLimit,
                 apiLimitValues: 10000,
-                apiLimitFactor: 1.5,
+                apiLimitFactor: 1,
             }
             if(builder.exportMenu){
                 this.configuration.exporting = builder.exportMenu;
