@@ -240,6 +240,10 @@
 			<test name="br.org.scadabr.vo.EqualsHashcodePermissionTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.utils.UrlValidatorUtilsTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 
