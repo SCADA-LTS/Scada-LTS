@@ -356,7 +356,7 @@ export class AmChart {
 				.then((resp) => {
 					//Live values limit//
 					if(!!this.refreshRate && !!this.liveValuesLimit && resp.data.length > this.liveValuesLimit) {
-						this.liveValuesCb();
+						this.liveValuesCb(resp.data[resp.data.length - this.liveValuesLimit]);
 						resolve(resp.data.slice(-this.liveValuesLimit))
 					}
 					resolve(resp.data);
@@ -421,8 +421,8 @@ export class AmChart {
 	 * Default behaviour when the chart is in live mode 
 	 * and the number of received values is greater than the limit
 	 */
-	liveValuesFn() {
-		console.warn(`Values limit reached!\nReduced chart to last ${this.liveValuesLimit} values`);
+	liveValuesFn(lastEntry) {
+		console.warn(`Values limit reached!\nReduced chart to last ${this.liveValuesLimit} values\nLast entry: `,lastEntry);
 	}
 
 }

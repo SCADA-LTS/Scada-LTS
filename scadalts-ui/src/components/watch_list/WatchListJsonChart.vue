@@ -219,7 +219,7 @@ export default {
 	methods: {
 		async initDefaultConfiguration() {
 			this.config = new AmChartConfigurator(
-				this.watchListData.id,
+				`${this.watchListData.id}${this.watchListData.xid}`,
 				this.watchListPoins.length,
 			)
 				.createXAxis('dateAxis1', this.aggegation)
@@ -302,7 +302,7 @@ export default {
 		async loadWatchList(watchListId) {
 			this.watchListData = await this.$store.dispatch('getWatchListDetails', watchListId);
 			if (this.watchListData.pointList.length === 0) {
-				localStorage.removeItem(`MWL_${watchListId}_P`);
+				localStorage.removeItem(`MWL_${this.watchListData.id}${this.watchListData.xid}_P`);
 			}
 			this.initSettings();
 			this.updateSettings(true);
@@ -328,24 +328,24 @@ export default {
 		},
 
 		initSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListData.id}_P`));
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListData.id}${this.watchListData.xid}_P`));
 			this.chartType = !!loadedData ? loadedData.type : 'live';
 		},
 
 		loadSettings() {
 			let component = this.getComponentType(this.chartType);
-			this.chartProperties = component.loadSettings(this.watchListData.id);
+			this.chartProperties = component.loadSettings(`${this.watchListData.id}${this.watchListData.xid}`);
 		},
 
 		saveSettings() {
 			let component = this.getComponentType(this.chartType);
-			component.saveSettings(this.watchListData.id);
+			component.saveSettings(`${this.watchListData.id}${this.watchListData.xid}`);
 		},
 
 		async updateSettings(lazyLoading = false) {
 			let initialLoad = true;
 			if (lazyLoading) {
-				initialLoad = !!localStorage.getItem(`MWL_${this.watchListData.id}_P`);
+				initialLoad = !!localStorage.getItem(`MWL_${this.watchListData.id}${this.watchListData.xid}_P`);
 			}
 			if (initialLoad) {
 				this.warnMessage = null;
@@ -387,8 +387,8 @@ export default {
 			}
 		},
 
-		onLimitExceeded() {
-			this.warnMessage = this.$t('modernwatchlist.chart.error.livelimit');
+		onLimitExceeded(lastEntry) {
+			this.warnMessage = `${this.$t('modernwatchlist.chart.error.livelimit')} Last entry from ${new Date(lastEntry.date).toLocaleString()}`;
 		},
 
 		toggleResolution() {

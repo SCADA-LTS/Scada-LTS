@@ -201,7 +201,7 @@ export default {
 			tempSeries: undefined,
 			tab: null,
 			isModalVisible: false,
-			liveValuesLimits: [500, 1000, 5000, 10000],
+			liveValuesLimits: [100, 500, 1000, 5000, 10000, 20000],
 		};
 	},
 
