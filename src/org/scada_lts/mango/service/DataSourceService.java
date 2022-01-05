@@ -18,6 +18,9 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -28,6 +31,7 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
@@ -72,6 +76,28 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceDAO.getAllDataSources();
 	}
 
+	public boolean toggleDataSource(int id) {
+
+		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
+		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(id);
+		if(vo.isEnabled()) {
+			if(rt != null) {
+				rt.terminate();
+			}
+			vo.setEnabled(false);
+		} else {
+			if(rt != null) {
+				rt.initialize();
+			} else {
+				vo.createDataSourceRT();
+			}
+			vo.setEnabled(true);
+		}
+		vo.setState(new UserChangeEnableStateDs());
+		Common.ctx.getRuntimeManager().saveDataSource(vo);
+		return vo.isEnabled();
+	}
+
 	@Override
 	public DataSourceVO<?> getDataSource(String xid) {
 		return dataSourceDAO.getDataSource(xid);
@@ -91,6 +117,7 @@ public class DataSourceService implements MangoDataSource {
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
 		if (dataSource.getId() == Common.NEW_ID) {
 			dataSource.setId(dataSourceDAO.insert(dataSource));
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_DATA_SOURCE, dataSource);
 		} else {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
@@ -100,6 +127,7 @@ public class DataSourceService implements MangoDataSource {
 	private void updateDataSource(DataSourceVO<?> dataSource) {
 		DataSourceVO<?> oldDataSource = dataSourceDAO.getDataSource(dataSource.getId());
 		dataSourceDAO.update(dataSource);
+		AuditEventUtils.raiseChangedDataSourceEvent(oldDataSource, dataSource);
 
 		// if datasource's name has changed, update datapoints
 		if (!dataSource.getName().equals(oldDataSource.getName())) {
@@ -112,6 +140,10 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	public void updateAndInitializeDataSource(DataSourceVO<?> dataSource) {
+		Common.ctx.getRuntimeManager().saveDataSource(dataSource);
+	}
+
 	@Override
 	public void deleteDataSource(final int dataSourceId) {
 		DataSourceVO<?> dataSource = dataSourceDAO.getDataSource(dataSourceId);
@@ -119,6 +151,8 @@ public class DataSourceService implements MangoDataSource {
 
 		if (dataSource != null) {
 			deleteInTransaction(dataSourceId);
+			Common.ctx.getRuntimeManager().stopDataSource(dataSourceId);
+			Common.ctx.getEventManager().cancelEventsForDataSource(dataSourceId);
 		}
 	}
 
@@ -128,6 +162,8 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceDAO.delete(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updatePermissions();
+		//TODO: IMPORTANT: DataSources are not deleted from memory! They do not exist in database but
+		//objects are still inside RuntimeManager
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -197,5 +233,22 @@ public class DataSourceService implements MangoDataSource {
 		dataSourceDAO.insertPermissions(user);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updatePermissions();
+	}
+
+	public DataSourceVO<?> createDataSource(DataSourceVO<?> dataSource) {
+		DataSourceVO<?> created = dataSourceDAO.create(dataSource);
+		Common.ctx.getRuntimeManager().saveDataSource(created);
+		return created;
+	}
+
+	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId) {
+		List<DataPointVO> pointList = dataPointService.getDataPoints(dataSourceId, null);
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
 	}
 }

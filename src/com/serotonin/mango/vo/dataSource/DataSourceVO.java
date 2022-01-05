@@ -505,7 +505,6 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		AuditEventType.addPropertyMessage(list, "dsEdit.head.name", name);
 		AuditEventType.addPropertyMessage(list, "common.xid", xid);
 		AuditEventType.addPropertyMessage(list, "common.enabled", enabled);
-		AuditEventType.addPropertyMessage(list, "common.state", state);
 
 
 		addPropertiesImpl(list);
@@ -519,8 +518,6 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 				from.getXid(), xid);
 		AuditEventType.maybeAddPropertyChangeMessage(list, "common.enabled",
 				from.isEnabled(), enabled);
-
-		AuditEventType.maybeAddPropertyChangeMessage(list, "common.describeStatus", from.getState(), state);
 
 		addPropertyChangesImpl(list, from);
 	}

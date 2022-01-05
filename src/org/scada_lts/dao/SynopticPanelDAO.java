@@ -76,9 +76,6 @@ public class SynopticPanelDAO implements CrudOperations<SynopticPanel> {
             + "delete from synopticPanels where "
             + COLUMN_NAME_SP_ID + "=?";
 
-    private static final int DAO_EMPTY_RESULT = 0;
-    private static final int DAO_EXCEPTION = -1;
-
     @Override
     public SynopticPanel create(SynopticPanel entity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
