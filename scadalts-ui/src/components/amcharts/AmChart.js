@@ -350,6 +350,12 @@ export class AmChart {
 			requestUrl += `&limitFactor=${this.aggregateApiSettings.limitFactor}`;
 		}
 
+		if(!!this.refreshRate) {
+			requestUrl += `&configFromSystem=false&enabled=false`;
+			requestUrl += `&valuesLimit=10000`;
+			requestUrl += `&limitFactor=1`;
+		}
+
 		return new Promise((resolve, reject) => {
 			axios
 				.get(requestUrl)
@@ -785,6 +791,10 @@ export class AmChartBuilder {
 				case 'minute':
 				case 'minutes':
 					multiplier = multiplier * 60;
+					break;
+				case 'hour':
+				case 'hours':
+					multiplier = multiplier * 60 * 60;
 					break;
 				case 'day':
 				case 'days':

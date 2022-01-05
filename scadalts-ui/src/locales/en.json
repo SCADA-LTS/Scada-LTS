@@ -236,6 +236,7 @@
 	"modernwatchlist.settings.live.time.hour": "Hour(s)",
 	"modernwatchlist.settings.live.time.label": "Values from last...",
 	"modernwatchlist.settings.live.time.month": "Month(s)",
+	"modernwatchlist.settings.live.time.minute": "Minute(s)",
 	"modernwatchlist.settings.live.time.week": "Week(s)",
 	"plcalarms.alarm.acknowledge": "Alarm acknowledge",
 	"plcalarms.alarm.active": "Alarm triggered",
