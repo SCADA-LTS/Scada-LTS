@@ -28,6 +28,7 @@ export class AmChartConfigurator {
                 yAxes: builder.yAxes,
                 series: builder.series,
                 valuesLimit: builder.valuesLimit,
+                chartApiAggregation: builder.chartApiAggregation,
                 apiLimitValues: 10000,
                 apiLimitFactor: 1,
             }
@@ -78,6 +79,7 @@ export class AmChartConfiguratorBuilder {
         this.activeColor = 0;
         this.valuesLimit = 1000;
         this.pointLenght = pointLenght;
+        this.chartApiAggregation = true;
         this.chartDefaultColors = [
             '#39B54A',
 	        '#69FF7D',
