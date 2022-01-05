@@ -12,7 +12,7 @@
 				<v-btn-toggle v-model="chartType">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
-							<v-btn value="live" v-bind="attrs" v-on="on">
+							<v-btn value="live" v-bind="attrs" v-on="on" @click="unsavedChages=true">
 								{{ $t('modernwatchlist.chart.panel.live') }}
 							</v-btn>
 						</template>
@@ -21,21 +21,21 @@
 
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
-							<v-btn value="static" v-bind="attrs" v-on="on">
+							<v-btn value="static" v-bind="attrs" v-on="on" @click="unsavedChages=true">
 								{{ $t('modernwatchlist.chart.panel.static') }}
 							</v-btn>
 						</template>
 						<span>{{ $t('modernwatchlist.chart.panel.static.tooltip') }}</span>
 					</v-tooltip>
 
-					<v-tooltip bottom>
+					<!-- <v-tooltip bottom>
 						<template v-slot:activator="{ on, attrs }">
-							<v-btn value="compare" v-bind="attrs" v-on="on">
+							<v-btn value="compare" v-bind="attrs" v-on="on" @click="unsavedChages=true">
 								{{ $t('modernwatchlist.chart.panel.compare') }}
 							</v-btn>
 						</template>
 						<span>{{ $t('modernwatchlist.chart.panel.compare.tooltip') }}</span>
-					</v-tooltip>
+					</v-tooltip> -->
 				</v-btn-toggle>
 			</v-col>
 
@@ -57,11 +57,11 @@
 					v-show="chartType === 'static'"
 				></ChartSettingsStaticComponent>
 
-				<ChartSettingsCompareComponent
+				<!-- <ChartSettingsCompareComponent
 					ref="csCompareComponent"
 					:pointArray="watchListData.pointList"
 					v-show="chartType === 'compare'"
-				></ChartSettingsCompareComponent>
+				></ChartSettingsCompareComponent> -->
 			</v-col>
 
 			<v-col
@@ -75,7 +75,7 @@
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on, attrs }">
 						<v-btn fab @click="updateSettings()" v-bind="attrs" v-on="on">
-							<v-icon>mdi-refresh</v-icon>
+							<v-icon>mdi-play-circle</v-icon>
 						</v-btn>
 					</template>
 					<span>{{ $t('modernwatchlist.chart.panel.apply.tooltip') }}</span>
@@ -143,6 +143,24 @@
 				</v-alert>
 			</v-col>
 		</v-row>
+		<v-row v-if="unsavedChages">
+			<v-col cols="12">
+				<v-alert
+					dismissible
+					type="info"
+					transition="scale-transition"
+					dense
+				>
+				<span>
+					Click "play icon" to apply changes to the chart...
+				</span>
+				<span v-if="chartType === 'static'">
+					Static chart use server side aggregation by default. You can disable it in the chart settings.
+				</span>
+					
+				</v-alert>
+			</v-col>
+		</v-row>
 		<v-row no-gutters>
 			<v-col cols="12" id="wl-chart-container">
 				<div class="chartContainer" ref="chartdiv"></div>
@@ -198,6 +216,7 @@ export default {
 			},
 			warnMessage: null,
 			liveValuesLimits: [500, 1000, 5000, 10000],
+			unsavedChages: false,
 		};
 	},
 
@@ -248,9 +267,10 @@ export default {
 				.startTime(this.chartProperties.startDate)
 				.endTime(this.chartProperties.endDate)
 				.makeFromConfig(this.config.getConfiguration());
+			console.log(this.config.configuration.chartApiAggregation);
 
 			const refreshRate = this.chartProperties.refreshRate;
-			if (this.chartProperties.type === 'static') {
+			if (this.chartProperties.type === 'static' && this.config.configuration.chartApiAggregation) {
 				this.chartClass.setApiAggregation(
 					this.config.configuration.apiLimitValues,
 					this.config.configuration.apiLimitFactor,
@@ -342,6 +362,7 @@ export default {
 			component.saveSettings(`${this.watchListData.id}${this.watchListData.xid}`);
 		},
 
+	
 		async updateSettings(lazyLoading = false) {
 			let initialLoad = true;
 			if (lazyLoading) {
@@ -349,6 +370,7 @@ export default {
 			}
 			if (initialLoad) {
 				this.warnMessage = null;
+				this.unsavedChages = false;
 				this.saveSettings();
 				this.disposeChart();
 				this.watchListData = await this.$store.dispatch(

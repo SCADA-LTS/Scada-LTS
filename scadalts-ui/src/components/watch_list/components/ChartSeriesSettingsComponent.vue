@@ -19,6 +19,10 @@
 								@change="updateValuesLimit"
 							></v-select>
 						</v-col>
+						<v-col cols="6" v-if="chartType==='static'">
+							<v-switch v-model="chartConfig.chartApiAggregation" label="Server side aggregation">
+							</v-switch>
+						</v-col>
 						<!-- <v-col cols="4" v-if="chartType==='static'">
 							<v-text-field
 								v-model="chartConfig.apiLimitFactor"
