@@ -64,7 +64,7 @@ public class HttpSenderTester extends Thread implements TestingUtility {
             get.setQueryString(convertToNVPs(staticParameters));
             method = get;
         }
-
+        method.setFollowRedirects(false);
         // Add a recognizable header
         method.addRequestHeader("User-Agent", HttpSenderRT.USER_AGENT);
 
