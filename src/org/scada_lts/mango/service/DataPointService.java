@@ -19,7 +19,6 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -700,13 +699,10 @@ public class DataPointService implements MangoDataPoint {
 			pvcList.clear();
 			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
 			int revisedLimit = calculateLimit(aggregateSettings);
-			return aggregateSortValues(startTs, endTs, pointIds, revisedLimit, intervalMs);
+			long revisedStartTs = calculateStartTs(startTs, intervalMs);
+			return aggregateSortValues(revisedStartTs, endTs, pointIds, revisedLimit, intervalMs);
 		}
 		return pvcList;
-	}
-
-	private int calculateLimit(AggregateSettings aggregateSettings) {
-		return aggregateSettings.getLimitFactor() > 1.0 ? (int)Math.ceil(aggregateSettings.getValuesLimit() * aggregateSettings.getLimitFactor()) + 1 : aggregateSettings.getValuesLimit() + 1;
 	}
 
 	private int[] getPointIds(List<DataPointVO> pointIds) {
@@ -718,7 +714,7 @@ public class DataPointService implements MangoDataPoint {
 																				int limit, long intervalMs) {
 		return dataPoints.stream()
 				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs,
-						calculateLimitByDataType(getDataType(dataPoint), limit, dataPoints.size())).stream())
+						limitByDataType(dataPoint, limit)).stream())
 				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
 				.collect(Collectors.toList());
 	}
@@ -740,26 +736,5 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO created = dataPointDAO.create(dataPoint);
 		Common.ctx.getRuntimeManager().saveDataPoint(created);
 		return created;
-	}
-
-	public static int calculateLimitByDataType(int dataType, int limit, int numberOfDataPoints) {
-		if(dataType < 0)
-			return -1;
-		if(dataType == DataTypes.NUMERIC || dataType == DataTypes.BINARY) {
-			return limit;
-		}
-		return limit * numberOfDataPoints;
-	}
-
-	public static int getDataType(DataPointVO dataPoint) {
-		if(dataPoint == null) {
-			LOG.warn("dataPoint is null!");
-			return -1;
-		}
-		if(dataPoint.getPointLocator() == null) {
-			LOG.warn(dataPointInfo(dataPoint));
-			return -1;
-		}
-		return dataPoint.getPointLocator().getDataTypeId();
 	}
 }
