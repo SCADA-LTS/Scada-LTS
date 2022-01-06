@@ -68,7 +68,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
-import static org.scada_lts.dao.pointvalues.PointValueAmChartDAO.dataPointInfo;
 import static org.scada_lts.utils.AggregateUtils.*;
 
 /**
@@ -670,7 +669,7 @@ public class DataPointService implements MangoDataPoint {
 				.map(Optional::get)
 				.peek(a -> {
 					if(a.getPointLocator() == null) {
-						LOG.warn(dataPointInfo(a));
+						LOG.warn(PointValueAmChartDAO.dataPointInfo(a));
 					}
 				})
 				.filter(a -> a.getPointLocator() != null)
