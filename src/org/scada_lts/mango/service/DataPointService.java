@@ -19,6 +19,7 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -68,6 +69,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
 
+import static org.scada_lts.dao.pointvalues.PointValueAmChartDAO.dataPointInfo;
 import static org.scada_lts.utils.AggregateUtils.*;
 
 /**
@@ -669,7 +671,7 @@ public class DataPointService implements MangoDataPoint {
 				.map(Optional::get)
 				.peek(a -> {
 					if(a.getPointLocator() == null) {
-						LOG.warn(PointValueAmChartDAO.dataPointInfo(a));
+						LOG.warn(dataPointInfo(a));
 					}
 				})
 				.filter(a -> a.getPointLocator() != null)
@@ -715,7 +717,8 @@ public class DataPointService implements MangoDataPoint {
 																				List<DataPointVO> dataPoints,
 																				int limit, long intervalMs) {
 		return dataPoints.stream()
-				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs, limit).stream())
+				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs,
+						calculateLimitByDataType(getDataType(dataPoint), limit, dataPoints.size())).stream())
 				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
 				.collect(Collectors.toList());
 	}
@@ -737,5 +740,26 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO created = dataPointDAO.create(dataPoint);
 		Common.ctx.getRuntimeManager().saveDataPoint(created);
 		return created;
+	}
+
+	public static int calculateLimitByDataType(int dataType, int limit, int numberOfDataPoints) {
+		if(dataType < 0)
+			return -1;
+		if(dataType == DataTypes.NUMERIC || dataType == DataTypes.BINARY) {
+			return limit;
+		}
+		return limit * numberOfDataPoints;
+	}
+
+	public static int getDataType(DataPointVO dataPoint) {
+		if(dataPoint == null) {
+			LOG.warn("dataPoint is null!");
+			return -1;
+		}
+		if(dataPoint.getPointLocator() == null) {
+			LOG.warn(dataPointInfo(dataPoint));
+			return -1;
+		}
+		return dataPoint.getPointLocator().getDataTypeId();
 	}
 }
