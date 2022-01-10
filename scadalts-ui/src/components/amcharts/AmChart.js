@@ -33,6 +33,8 @@ export class AmChart {
 		this.lastUpdate = 0;
 		this.liveUpdateInterval = null;
 		this.liveUpdateIntervalRetries = 0;
+		this.liveValuesLimit = build.liveValuesLimit;
+		this.liveValuesCb = build.liveValuesCb || this.liveValuesFn;
 		this.scrollbarX = build.scrollbarX || false;
 	}
 
@@ -43,6 +45,7 @@ export class AmChart {
 	 * configuration during the definition.
 	 */
 	async createChart() {
+		am4core.options.minPolylineStep = 5;
 		if (!!this.jsonConfig) {
 			this.chart = am4core.createFromConfig(
 				this.jsonConfig,
@@ -340,17 +343,27 @@ export class AmChart {
 		if (!!this.isCompareMode) {
 			requestUrl += '&cmp=true';
 		}
-		if (!!this.aggregateApiSettings) {
-			requestUrl += '&configFromSystem=false';
+
+		requestUrl += '&configFromSystem=false';
+		if (!!this.aggregateApiSettings && !this.refreshRate) {
 			requestUrl += '&enabled=true';
 			requestUrl += `&valuesLimit=${this.aggregateApiSettings.valuesLimit}`;
 			requestUrl += `&limitFactor=${this.aggregateApiSettings.limitFactor}`;
+		} else {
+			requestUrl += `&enabled=false`;
+			requestUrl += `&valuesLimit=10000`;
+			requestUrl += `&limitFactor=1`;
 		}
 
 		return new Promise((resolve, reject) => {
 			axios
 				.get(requestUrl)
 				.then((resp) => {
+					//Live values limit//
+					if(!!this.refreshRate && !!this.liveValuesLimit && resp.data.length > this.liveValuesLimit) {
+						this.liveValuesCb(resp.data[resp.data.length - this.liveValuesLimit]);
+						resolve(resp.data.slice(-this.liveValuesLimit))
+					}
 					resolve(resp.data);
 				})
 				.catch((error) => {
@@ -405,6 +418,18 @@ export class AmChart {
 				console.error(`Unsupported Chart Type! (${chartType})`);
 		}
 	}
+
+	/**
+	 * Live Values Callback function
+	 * @private
+	 * 
+	 * Default behaviour when the chart is in live mode 
+	 * and the number of received values is greater than the limit
+	 */
+	liveValuesFn(lastEntry) {
+		console.warn(`Values limit reached!\nReduced chart to last ${this.liveValuesLimit} values\nLast entry: `,lastEntry);
+	}
+
 }
 
 export class AmChartBuilder {
@@ -695,6 +720,24 @@ export class AmChartBuilder {
 	}
 
 	/**
+	 * Set Live Values Limit
+	 * 
+	 * Enable the limitation of the number of values 
+	 * that will be displayed on the Live chart. If user 
+	 * wants to display more values than the limit, the
+	 * callback function will be called.
+	 * 
+	 * @param {Number} valuesLimit - [Default: 5000]. Max date elements that will be displayed on the chart.
+	 * @param {Function} callbackFn - Callback function that will be called when the limit is reached.
+	 * @returns 
+	 */
+	setLiveValuesLimit(valuesLimit = 5000, callbackFn = null) {
+		this.liveValuesLimit = valuesLimit;
+		this.liveValuesCb = callbackFn;
+		return this;
+	}
+
+	/**
 	 * Validate and conver Data
 	 * @private
 	 *
@@ -747,6 +790,10 @@ export class AmChartBuilder {
 				case 'minute':
 				case 'minutes':
 					multiplier = multiplier * 60;
+					break;
+				case 'hour':
+				case 'hours':
+					multiplier = multiplier * 60 * 60;
 					break;
 				case 'day':
 				case 'days':
