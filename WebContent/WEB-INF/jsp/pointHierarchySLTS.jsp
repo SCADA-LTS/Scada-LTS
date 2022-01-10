@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
+<%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -432,6 +433,7 @@ thead th {
 			</tr>
 		</table>
 	</div>
+	<tag:newPageNotification href="./app.shtm#/point-hierarchy" ref="pointHierarchyNotification"/>
 </body>
 
 <script src="resources/node_modules/jquery/dist/jquery.min.js"></script>

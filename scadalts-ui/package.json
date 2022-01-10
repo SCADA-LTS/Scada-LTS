@@ -1,8 +1,8 @@
 {
 	"name": "scadalts-ui",
-	"version": "0.3.0",
-	"tag": "2.6.1",
-	"milestone": "2.6.1",
+	"version": "0.4.0",
+	"tag": "2.8.0",
+	"milestone": "2.8.0",
 	"build": "1",
 	"branch": "local",
 	"commit": "5576832f3e61b3fb31fa3b914260d1ef3f33b546",

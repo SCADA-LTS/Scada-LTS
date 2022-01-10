@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -222,7 +223,7 @@ public class CompoundEventDetectorDAO implements GenericDAO<CompoundEventDetecto
 	public void delete(CompoundEventDetectorVO entity) {
 		DAO.getInstance().getJdbcTemp().update(COMPOUND_EVENT_DELETE_EVENT_HANLDERS,new Object[]{entity.getId()});
 		DAO.getInstance().getJdbcTemp().update(COMPOUND_EVENT_DELETE, new Object[]{entity.getId()});
-		AuditEventType.raiseDeletedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, entity);
+		AuditEventUtils.raiseDeletedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, entity);
 	}
 
 }

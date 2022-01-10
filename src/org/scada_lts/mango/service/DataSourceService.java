@@ -18,8 +18,9 @@
 package org.scada_lts.mango.service;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.event.type.AuditEventType;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -39,7 +40,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -117,6 +117,7 @@ public class DataSourceService implements MangoDataSource {
 	public void saveDataSource(final DataSourceVO<?> dataSource) {
 		if (dataSource.getId() == Common.NEW_ID) {
 			dataSource.setId(dataSourceDAO.insert(dataSource));
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_DATA_SOURCE, dataSource);
 		} else {
 			updateDataSource(dataSource);
 			MangoPointHierarchy.getInst().changeDataSource(dataSource);
@@ -126,6 +127,7 @@ public class DataSourceService implements MangoDataSource {
 	private void updateDataSource(DataSourceVO<?> dataSource) {
 		DataSourceVO<?> oldDataSource = dataSourceDAO.getDataSource(dataSource.getId());
 		dataSourceDAO.update(dataSource);
+		AuditEventUtils.raiseChangedDataSourceEvent(oldDataSource, dataSource);
 
 		// if datasource's name has changed, update datapoints
 		if (!dataSource.getName().equals(oldDataSource.getName())) {
