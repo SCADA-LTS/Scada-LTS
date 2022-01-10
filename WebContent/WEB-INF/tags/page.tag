@@ -211,28 +211,28 @@
             if (alarmLevel == 0)
                 textNode.innerHTML = "";
             else if (alarmLevel == 1)
-                textNode.innerHTML = "Info";
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
             else if (alarmLevel == 2)
-                textNode.innerHTML = "Urgent";
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
             else if (alarmLevel == 3)
-                textNode.innerHTML = "Critical";
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
             else if (alarmLevel == 4)
-                textNode.innerHTML = "Life Safety";
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
             else
                 textNode.innerHTML = "Unknown: "+ alarmLevel;
         }
 
         function setAlarmLevelImg(alarmLevel, imgNode) {
             if (alarmLevel == 0)
-                updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
+                updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
             else if (alarmLevel == 1)
-                updateImg(imgNode, "images/flag_blue.png", "undef", true, "visisble");
+                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visisble");
             else if (alarmLevel == 2)
-                updateImg(imgNode, "images/flag_yellow.png", "undef", true, "visisble");
+                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visisble");
             else if (alarmLevel == 3)
-                updateImg(imgNode, "images/flag_orange.png", "undef", true, "visisble");
+                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visisble");
             else if (alarmLevel == 4)
-                updateImg(imgNode, "images/flag_red.png", "undef", true, "visisble");
+                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visisble");
             else
                 updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
         }
