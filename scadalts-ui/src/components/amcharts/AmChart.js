@@ -343,15 +343,14 @@ export class AmChart {
 		if (!!this.isCompareMode) {
 			requestUrl += '&cmp=true';
 		}
-		if (!!this.aggregateApiSettings) {
-			requestUrl += '&configFromSystem=false';
+
+		requestUrl += '&configFromSystem=false';
+		if (!!this.aggregateApiSettings && !this.refreshRate) {
 			requestUrl += '&enabled=true';
 			requestUrl += `&valuesLimit=${this.aggregateApiSettings.valuesLimit}`;
 			requestUrl += `&limitFactor=${this.aggregateApiSettings.limitFactor}`;
-		}
-
-		if(!!this.refreshRate) {
-			requestUrl += `&configFromSystem=false&enabled=false`;
+		} else {
+			requestUrl += `&enabled=false`;
 			requestUrl += `&valuesLimit=10000`;
 			requestUrl += `&limitFactor=1`;
 		}
