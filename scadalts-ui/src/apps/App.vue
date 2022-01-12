@@ -14,7 +14,6 @@
 			</v-list-item>
 			<v-list-item max-width="50">
 				<v-list-item-content>
-					<span>{{highestUnsilencedAlarmLevel}}</span>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
 						<img v-if="highestUnsilencedAlarmLevel != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
 					</a>
