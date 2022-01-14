@@ -1,4 +1,5 @@
 <script>
+import svgMixin from './SvgOperationsMixin';
 /**
  * Synoptic Panel Base  Component.
  * 
@@ -7,14 +8,26 @@
  * to manipulate SVG object. Use that methods or try to override them.
  * 
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default {
 	props: ['componentData', 'componentId', 'componentEditor'],
+
+    mixins: [svgMixin], // <-- Here are all SVG manipulation functions
 	
     data() {
-		return {};
+		return {
+            pointDefinition: null,
+            valueSubscription: null,
+            enableSubcription: null,
+        };
 	},
+
+    beforeDestroy() {
+        this.unSubscribeForDataPointValue();
+        this.unSubscribeForDataPointEnabled();
+        this.onComponentDestroy();
+    },
 
 	methods: {
 
@@ -27,76 +40,149 @@ export default {
             if(xid !== undefined) {
                 return this.$store.dispatch('getDataPointValueByXid', xid);
             }
+		},        
+
+        //TODO: Think about moving this mechanism to the Vuex store.
+        //      There may be a lot of components that are subscribed
+        //      for the same data point. It is better to have a single
+        //      subscription for all of them and only notify the components
+        //      that are interested in the data point value.
+
+        /**
+         * Subscribe for Data Point details
+         * 
+         * This method try to subscribe for web socket endpoints
+         * to receive the latest data point value and enabled status.
+         * If the data point is not enabled, the component will not 
+         * be subscribed for the value updates. Using this approach
+         * we can avoid sending a lot of requests to the server.
+         * 
+         */
+        async subscribeToWebSocket() {
+            if(!!this.componentData.data && !!this.componentData.data.pointXid) {
+                
+                this.pointDefinition = await this.$store.dispatch('getDataPointValueByXid', this.componentData.data.pointXid);
+                this.onPointValueUpdate(this.pointDefinition.value);
+                this.onPointEnabledUpdate(this.pointDefinition.enabled);
+                this.enableSubcription = this.$store.state.webSocketModule.webSocket.subscribe(
+                    `/topic/datapoint/${this.pointDefinition.id}/enabled`,
+                    this.componentEnabled
+                );
+                if(this.pointDefinition.enabled) {
+                    this.subscribeForDataPointValue();
+                }
+            }
+        },
+
+        /**
+         * Point Enabled Status Update
+         * 
+         * This method is invoked when the data point enabled
+         * status is updated. If user want to take action on
+         * the status change, he can override this method in 
+         * the child component.
+         * 
+         * @param {boolean} enabled - Enabled status
+         */
+        onPointEnabledUpdate(enabled) {
+            console.warn("onPointEnabledUpdate method is not implemented!");
+        },
+
+        /**
+         * Point Value Update
+         * 
+         * This method is invoked when the data point value
+         * has changed. If user want to take action on
+         * the value change, he can override this method in 
+         * the child component.
+         * 
+         * @param {string} value - Latest Data Point Value
+         */
+        onPointValueUpdate(value) {
+			console.warn("onPointValueUpdate method is not implemented!");
 		},
 
         /**
-         * Change SVG component color
+         * On Component Destroy
          * 
-         * @param {string} component - Component unique Id
-         * @param {string} color - Hex color value
+         * This method is invoked when the data component 
+         * is destroyed. Because this component is using
+         * the "beforeDestroy()" hook to unsubscribe websocket
+         * connections we should not override that method by child.
+         * So if user want to take action on component destroy 
+         * he can override this method in the child component.
          */
-		changeComponentColor(component, color) {
-			let x = this.$svg.get(component).style().split(';');
-			for (let i = 0; i < x.length; i++) {
-				if (x[i].includes('fill:')) {
-					x[i] = `fill:${color}`;
-				}
-			}
-			this.$svg.get(component).style(x.join(';'));
-		},
+        onComponentDestroy() {},
+
+        // --- PRIVATE METHODS --- //
 
         /**
-         * Change SVG component inner text
+         * Subscribe for Data Point Value
+         * @private
          * 
-         * @param {string} component - Component unique Id
-         * @param {string} text - Text to be provided
+         * Creates a subscription for the data point value
+         * if it is not already subscribed.
          */
-		changeComponentText(component, text) {
-			if (this.$svg.get(component).node.textContent)
-				this.$svg.get(component).node.textContent = text;
-		},
+        subscribeForDataPointValue() {
+            if(!this.valueSubscription) {
+                this.valueSubscription = this.$store.state.webSocketModule.webSocket.subscribe(
+                    `/topic/datapoint/${this.pointDefinition.id}/value`,
+                    this.updateDataPointValue
+                );
+            }
+        },
 
         /**
-         * Rotate SVG component using anchor point
-         * 
-         * @param {string} component - Component unique Id
-         * @param {number} duration - (Optional) Time in ms to perform a 360 angle rotation
-         * @param {number} angle - (Optional) Angle to rotate specific component
-         * @param {boolean} loop - (Optional) Is that animation looped?
-         * 
+         * Unsubscribe for Data Point Value
+         * @private
          */
-		rotateComponent(component, duration = 3000, angle = 360, loop = true) {
-			let element = this.$svg.get(component);
-			if (element.fx) {
-				if (element.fx.play()) {
-					element.finish();
-				}
-			}
-			if (loop) {
-				element.animate(duration).rotate(angle).loop();
-			} else {
-				element.animate(duration).rotate(angle);
-			}
-		},
+        unSubscribeForDataPointValue() {
+            if(!!this.valueSubscription) {
+                this.valueSubscription.unsubscribe();
+                this.valueSubscription = null;
+            }
+        },
 
         /**
-         * Pause SVG component animation
-         * After pausing it can be restored.
-         * 
-         * @param {string} component - Component unique Id
+         * Unsubscribe for Data Point Enabled
+         * @private
          */
-		pauseComponentAnimation(component) {
-			if (this.$svg.get(component).fx) this.$svg.get(component).fx.pause();
-		},
+        unSubscribeForDataPointEnabled() {
+            if(!!this.enableSubcription) {
+                this.enableSubcription.unsubscribe();
+                this.enableSubcription = null;
+            }
+        },
 
         /**
-         * Finish SVG component animation
+         * Update Data Point Value
+         * @private
          * 
-         * @param {string} component - Component unique Id
+         * This method is called when the data point value is updated
+         * by the web socket.
+         * 
+         * @param {object} data - WebSocket message data
          */
-		finishComponentAnimation(component) {
-			if (this.$svg.get(component).fx) this.$svg.get(component).fx.finish();
-		},
+        updateDataPointValue(data) {
+            this.onPointValueUpdate(JSON.parse(data.body).value);
+        },
+
+        /**
+         * Update Data Point Enabled state
+         * @private
+         * 
+         * This method is called when the data point state is updated
+         * 
+         * @param {object} data - WebSocket message data
+         */
+        componentEnabled(data) {
+            const {enabled} = JSON.parse(data.body);
+            enabled
+                ? this.subscribeForDataPointValue()
+                : this.unSubscribeForDataPointValue();
+            this.onPointEnabledUpdate(enabled);
+        },
+
 	},
 };
 </script>

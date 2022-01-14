@@ -1,5 +1,5 @@
 # Synoptic Panel 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Author:** Radek Jajko [rjajko@softq.pl](mailto:rjajko@softq.pl)
 
 Prepare your custom SVG graphic panel and upload it into ScadaLTS Synoptic Panel. Attach 
@@ -10,6 +10,18 @@ This feature provides:
 - adding a new synoptic panel with SVG graphic element
 - deleting the synoptic panel
 - attaching datapoints to all SLTS_components
+
+## What's new:
+
+### Version 1.1.0
+- Fixed the bug with the error message that was displayed when user changed the active 
+  synoptic panel.
+- During the creation of Synoptic Panel the XID value is automatically generated.
+- Improved the initialisation of the synoptic panel. Now we don't need to wait for the 
+  first data update because data are loded at the moment when the panel is displayed.
+- Replaced the interval-update mechanism with the WebSocket subscription mechanism. Now
+  the panel is updated immediatly when the data is changed on only in this time. So there
+  is no additional performance effort for the server caused by the analyzing the API calls.
 
 ## Getting started:
 There are prepared 3 default components: _fan_, _valve_ and _waterlevel_ components. Each of this components
