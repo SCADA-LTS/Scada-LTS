@@ -22,6 +22,11 @@ This feature provides:
 - Replaced the interval-update mechanism with the WebSocket subscription mechanism. Now
   the panel is updated immediatly when the data is changed on only in this time. So there
   is no additional performance effort for the server caused by the analyzing the API calls.
+- Changed the behavior of the Valve component. If it receives a boolean value it will 
+  display "ON" or "OFF" state. What is more if it is in that OFF state the background
+  will be red and if it is in ON state the background will be green.
+- Added a new component **"Point"** that can display the current value of the data point.
+
 
 ## Getting started:
 There are prepared 3 default components: _fan_, _valve_ and _waterlevel_ components. Each of this components
@@ -48,6 +53,11 @@ rules of creating this panels that must be respected to proper work for this ele
   * ``SLTS_waterlevel_[component_id] - for main element water container (required)``
   * ``SLTS_waterlevel_[component_id]_background - water element rotated in 180 deg wich will changing its height``
   * ``SLTS_waterlevel_[component_id]_value - text element to display current data point value``
+
+  For SLTS_point component:
+  * ``SLTS_waterlevel_[component_id] - for main element water container (required)``  
+  * ``SLTS_waterlevel_[component_id]_value - text element to display current data point value``
+  * ``SLTS_waterlevel_[component_id]_label - optional text element that can be a datapoint name or custom label that was added by user.``
   
  In any element without creating a new vue.js component you can use:
  * ``SLTS_[component_name]_[component_id] - for main element (required)``
