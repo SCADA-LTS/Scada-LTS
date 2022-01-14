@@ -494,7 +494,7 @@ public class RuntimeManager {
 		try {
 			startDataPoint(vo);
 		} catch (Exception ex) {
-			LOG.error(ex.getMessage(), ex);
+			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
 			stopDataPointSafe(vo.getId());
 		}
 	}
@@ -520,7 +520,7 @@ public class RuntimeManager {
 		try {
 			stopDataPoint(dataPointId);
 		} catch (Exception ex) {
-			LOG.warn(ex.getMessage(), ex);
+			LOG.warn(ex.getMessage() + ", dataPointId : " + dataPointId + " : ", ex);
 			dataPoints.remove(dataPointId);
 		}
 	}
