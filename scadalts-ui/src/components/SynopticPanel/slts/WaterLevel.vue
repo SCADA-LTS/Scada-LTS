@@ -65,9 +65,11 @@ export default {
 
 		changeWaterLevel(value) {
 			let maxHeight = this.$svg.get(this.componentId).attr('height');
+			let maxVal = this.componentData.data.maxval;
 			let minVal = this.componentData.data.minval;
+			let hightValue = maxVal - value;
 			if (minVal === undefined || minVal === null) minVal = 0;
-			let waterLevel = (value * maxHeight) / (this.componentData.data.maxval - minVal);
+			let waterLevel = ((hightValue * maxHeight) / (maxVal - minVal));
 			this.$svg.get(`${this.componentId}_background`).animate().height(waterLevel);
 		},
 	},
