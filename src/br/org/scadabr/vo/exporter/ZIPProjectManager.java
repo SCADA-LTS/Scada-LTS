@@ -231,7 +231,7 @@ public class ZIPProjectManager {
 	private FileToPack buildJSONFile(String packAs, boolean includePointValues) {
 		String jsonToExport = EmportDwr.createExportJSON(3, true, true, true,
 				true, true, true, true, true, true, true, true, true, true,
-				true, includePointValues, maxPointValues, true, true);
+				true, includePointValues, maxPointValues, true, true, true);
 		FileToPack file = new FileToPack(packAs,
                 FileUtil.createTxtTempFile(jsonToExport));
 		return file;
