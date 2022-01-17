@@ -4,8 +4,28 @@ const storeReports = {
 	mutations: {},
 
 	actions: {
+		async sendTestEmails({ dispatch }, emails) {
+			return dispatch('requestPost', {
+				url: `/reports/sendTestEmails`,
+				data: { emails },
+			});
+		},
 		fetchReportInstances({ dispatch }) {
 			return dispatch('requestGet', `/reports/instances`);
+		},
+		setPreventPurge({ dispatch }, payload) {
+			return dispatch(
+				'requestGet',
+				`/reports/instances/${payload.id}/preventPurge/${payload.preventPurge}`,
+			);
+		},
+		saveReport({ dispatch }, payload) {
+			alert(JSON.stringify(payload));
+			return dispatch('requestPost', { url: `/reports/save`, data: payload });
+		},
+
+		runReport({ dispatch }, id) {
+			return dispatch('requestGet', `/reports/run/${id}`);
 		},
 		fetchReports({ dispatch }, payload) {
 			return dispatch('requestPost', {
@@ -24,9 +44,7 @@ const storeReports = {
 		},
 	},
 
-	getters: {
-		highestUnsilencedAlarmLevel: (state) => state.highestUnsilencedAlarmLevel,
-	},
+	getters: {},
 };
 
 export default storeReports;

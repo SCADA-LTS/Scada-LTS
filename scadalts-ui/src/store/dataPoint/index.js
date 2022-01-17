@@ -86,6 +86,20 @@ const storeDataPoint = {
 			state.datapointSimpleList = await dispatch('requestGet', `/datapoint/getAll`);
 		},
 
+		async fetchPointDataType({ state, dispatch }, xid) {
+			state.datapointSimpleList = await dispatch(
+				'requestGet',
+				`/datapoint/${xid}/dataType`,
+			);
+		},
+
+		async searchDatapoints({ state, dispatch }, keywords) {
+			return (state.datapointSimpleList = await dispatch(
+				'requestGet',
+				`/datapoints?keywordSearchc=${keywords}`,
+			));
+		},
+
 		getDataPointSimpleFilteredList({ state }, value) {
 			let data = Object.assign([], state.datapointSimpleList);
 			data = data.filter((e) => {
@@ -102,8 +116,8 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
-		getUniqueDataPointXid({dispatch}) {
-			return dispatch("requestGet", "/datapoint/generateUniqueXid");
+		getUniqueDataPointXid({ dispatch }) {
+			return dispatch('requestGet', '/datapoint/generateUniqueXid');
 		},
 
 		getDataPointDetails({ dispatch }, datapointId) {
@@ -125,10 +139,10 @@ const storeDataPoint = {
 			});
 		},
 
-		setCmpValue({dispatch}, payload) {
+		setCmpValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/cmp/set/${payload.id}/${payload.name}`,
-				data: payload.requestData
+				data: payload.requestData,
 			});
 		},
 

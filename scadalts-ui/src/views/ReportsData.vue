@@ -2,7 +2,7 @@
 	<div>
 		<v-container fluid v-if="!!reportInstanceList">	
 			<v-row>
-				<v-col cols="6">
+				<v-col cols="5">
 					<v-card>
 						<v-card-title>
 							<v-text-field
@@ -24,35 +24,43 @@
 							:options.sync="options"
 							:server-items-length="reportInstanceList.length"
 							multi-sort
+							 @click:row="clickRow"
 							>
 							<template v-slot:item.runDuration="{ item }">	
 								{{item.runEndTime - item.runStartTime}}
 							</template>
 							<template v-slot:item.actions="{ item }">	
-								<v-icon class="mr-2" style="border:0px" @click.stop="runScript(item.xid)" title="export data">
+								<a :href="`/ScadaBR/export/export.csv?instanceId=${item.id}`"><v-icon style="border:0px" title="export data">
 									mdi-download-box
-								</v-icon>
-								<v-icon style="border:0px" @click.stop="deleteScript(item.id)" title="events">
+								</v-icon></a>
+								<a :href="`/ScadaBR/eventExport/events.csv?instanceId=${item.id}`">
+								<v-icon style="border:0px" title="events">
 									mdi-bell
 								</v-icon>
-								<v-icon style="border:0px" @click.stop="deleteScript(item.id)" title="user comments">
+								</a>
+								<a :href="`/ScadaBR/userCommentExport/comments.csv?instanceId=${item.id}`">
+								<v-icon style="border:0px" title="user comments">
 									mdi-comment
 								</v-icon>
-								<v-icon style="border:0px" @click.stop="deleteScript(item.id)" title="charts">
+								</a>
+								<a :href="`/ScadaBR/reportChart.shtm?instanceId=${item.id}`">
+								<v-icon style="border:0px" title="charts">
 									mdi-chart-line
 								</v-icon>
+								</a>
 								<v-icon style="border:0px" @click.stop="deleteReport(item.id)" title="delete">
 									mdi-delete-forever
 								</v-icon>
 							</template>
 							<template v-slot:item.preventPurge="{ item }">	
-								<v-checkbox disabled :value="item.preventPurge"/>
+								<input type=checkbox @change="togglePurge(item)"  :checked="item.preventPurge"/>
 							</template>
 							
 						</v-data-table>	
+						
 					</v-card>
 				</v-col>
-				
+				<iframe id='reportChart' v-if="selectedItemId != -1"  :src="`/ScadaBR/reportChart.shtm?instanceId=${selectedItemId}`"/>
 				
 			</v-row>
 		</v-container>
@@ -79,10 +87,17 @@
 .historical-alarms {
 	z-index: -1;
 }
+iframe#reportChart {
+	width:55%;
+	height: 1200px;
+	border:0;
+	float:right
+}
 </style>
 
 <script>
 import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
+
 export default {
 	name: 'reportInstanceList',
 	components: {},
@@ -107,19 +122,16 @@ export default {
 			snackbar: false,
 			dialog: false,
 			search: '',
-			
-			datapointToSave: null,
-			selectedDatapointId: null,
+			 
 			datapoints: [],
 			options: {},
 			datapointOptions: {},
-			selectedScriptId: -1,
-			selectedScript: null,
+			selectedItemId: -1,
+			selectedItem: null,
 			  
         	reportInstanceList: [],
         	loading: false,
-			
-			
+			 
 			headers: [
 				// Report name 	Run time start 	Run duration 	From 	To 	Records 	Do not purge
 				{
@@ -169,7 +181,14 @@ export default {
 		 
 	},
 	methods: {
-		  
+		async togglePurge(value) {
+			await this.$store.dispatch('setPreventPurge', {id: value.id, preventPurge: !value.preventPurge});
+			 
+			value.preventPurge != value.preventPurge 
+		},
+		clickRow(ev) {
+			this.selectedItemId=(ev.id)
+		},
 		async fetchReportInstanceList() {
 			this.loading = true;
 			this.reportInstanceList = await this.$store.dispatch('fetchReportInstances');
