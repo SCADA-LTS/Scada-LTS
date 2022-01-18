@@ -33,7 +33,7 @@ import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;

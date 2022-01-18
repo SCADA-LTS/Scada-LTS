@@ -1,7 +1,7 @@
 package org.scada_lts.web.ws.services;
 
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,15 +20,8 @@ import java.util.Map;
 @Service
 public class DataPointServiceWebSocket extends AbstractWebSocket {
 
-    private static DataPointServiceWebSocket instance = null;
-
-    @Autowired
-    public DataPointServiceWebSocket() {
-        instance = this;
-    }
-
-    public static DataPointServiceWebSocket getInstance() {
-        return instance;
+    public DataPointServiceWebSocket(SimpMessagingTemplate template) {
+        super(template);
     }
 
     /**

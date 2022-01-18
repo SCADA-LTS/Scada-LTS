@@ -19,14 +19,12 @@ package org.scada_lts.mango.service;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
 import org.scada_lts.permissions.service.GetShareUsers;
-import org.scada_lts.utils.ApplicationBeans;
-import org.scada_lts.permissions.service.WatchListGetShareUsers;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
