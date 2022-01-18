@@ -87,9 +87,6 @@
 			></EditNodeDialog>
 		</v-container>
 
-		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
-			{{ snackbar.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -97,7 +94,6 @@ import PointHierarchyNode from '@/models/PointHierarchyNode';
 import NestedNode from './NestedNode';
 import ImportExportDialog from './dialogs/ImportExportDialog';
 import EditNodeDialog from './dialogs/EditNodeDialog';
-import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 export default {
 	components: {
@@ -105,8 +101,6 @@ export default {
 		ImportExportDialog,
 		EditNodeDialog,
 	},
-
-	mixins: [SnackbarMixin],
 
 	data() {
 		return {
@@ -162,7 +156,7 @@ export default {
 						);
 					})
 					.catch((e) => {
-						this.showSnackbar(e, 'danger');
+						this.$store.dispatch('showErrorNotification', e);
 					});
 			}
 		},
@@ -174,7 +168,7 @@ export default {
 		},
 
 		onHierarchyError(e) {
-			this.showSnackbar(e, 'danger');
+			this.$store.dispatch('showErrorNotification', e);
 		},
 	},
 };

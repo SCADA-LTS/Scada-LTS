@@ -55,6 +55,8 @@
 			</v-menu>
 		</v-app-bar>
 
+		<NotificationAlert/>
+
 		<v-main>
 			<v-container fluid>
 				<router-view></router-view>
@@ -67,13 +69,15 @@
 import webSocketMixin from '@/utils/web-socket-utils';
 import internetMixin from '@/utils/connection-status-utils';
 import NavigationBar from '../layout/NavigationBar.vue';
+import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 
 export default {
 	name: 'app',
 	mixins: [webSocketMixin, internetMixin],
 
 	components: {
-		NavigationBar
+		NavigationBar,
+		NotificationAlert
 	},
 
 	data() {
