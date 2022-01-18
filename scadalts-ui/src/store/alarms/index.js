@@ -16,7 +16,7 @@ const storeAlarms = {
 	},
 	actions: {
 		getLiveAlarms({ commit }, { offset, limit }) {
-			return new Promise( (resolve, reject) => {
+			return new Promise((resolve, reject) => {
 				axios
 					.get(`./api/alarms/live/${offset}/${limit}`)
 					.then((res) => {

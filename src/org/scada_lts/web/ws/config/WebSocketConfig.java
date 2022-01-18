@@ -24,16 +24,21 @@ public class WebSocketConfig extends WebSocketMessageBrokerConfigurationSupport 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue");
-        config.setApplicationDestinationPrefixes("/ws");
+        config.setApplicationDestinationPrefixes("/ws-scada");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/alarmLevel").setHandshakeHandler(handshakeHandler())
+        registry.addEndpoint("/ws-scada/").setHandshakeHandler(handshakeHandler())
+                .setAllowedOrigins("http://localhost:3000")
+                .withSockJS();
+
+        registry.addEndpoint("/ws-scada/alarmLevel").setHandshakeHandler(handshakeHandler())
+                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS()
-                .setStreamBytesLimit(512 * 1024) 
+                .setStreamBytesLimit(512 * 1024)
                 .setHttpMessageCacheSize(1000) 
-                .setDisconnectDelay(30 * 1000) 
+                .setDisconnectDelay(30 * 1000)
                 .setInterceptors(new HttpSessionHandshakeInterceptor()) ;
     }
     
@@ -42,7 +47,7 @@ public class WebSocketConfig extends WebSocketMessageBrokerConfigurationSupport 
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) { 
         registration.setSendTimeLimit(15 * 1000)
                     .setSendBufferSizeLimit(512 * 1024) 
-                    .setMessageSizeLimit(128 * 1024); 
+                    .setMessageSizeLimit(128 * 1024);
     } 
     
     @Bean

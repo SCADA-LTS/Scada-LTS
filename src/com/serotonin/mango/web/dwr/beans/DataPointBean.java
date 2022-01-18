@@ -23,6 +23,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class DataPointBean {
     private int id;
+    private String xid;
     private String name;
     private boolean settable;
     private int dataType;
@@ -36,6 +37,7 @@ public class DataPointBean {
         dataType = vo.getPointLocator().getDataTypeId();
         dataTypeMessage = vo.getDataTypeMessage();
         chartColour = vo.getChartColour();
+        xid = vo.getXid();
     }
 
     public int getId() {
@@ -76,5 +78,13 @@ public class DataPointBean {
 
     public String getChartColour() {
         return chartColour;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
     }
 }

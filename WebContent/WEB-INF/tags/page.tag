@@ -139,6 +139,7 @@
 <body>
 
 <!-- mainHeader -->
+<c:if test="${!sessionUser.hideHeader}">
 <div id="mainHeader">
   <div>
     <img id="logo" src="assets/logo.png" alt="Logo">
@@ -171,11 +172,12 @@
                 <c:when test="${sessionUser.hideMenu}">
                     <c:if test="${!empty sessionUser.homeUrl}">
                         <c:set var="homeUrl" value="${fn:split(sessionUser.homeUrl, '?')}" />
+                        <c:if test="${homeUrl[0] == 'app.shtm'}">
+                            <tag:menuItem href="app.shtm#/watch-list" png="desktop" key="header.newui"/>
+                            <img src="./images/menu_separator.png" class="separator"/>
+                        </c:if>
                         <c:if test="${homeUrl[0] == 'watch_list.shtm'}">
                             <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-                        </c:if>
-                        <c:if test="${homeUrl[0] == 'modern_watch_list.shtm'}">
-                          <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
                         </c:if>
                         <c:if test="${homeUrl[0] == 'views.shtm'}">
                           <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
@@ -183,20 +185,17 @@
                         <c:if test="${homeUrl[0] == 'events.shtm'}">
                           <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
                         </c:if>
-                        <c:if test="${homeUrl[0] == 'app.shtm'}">
-                          <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
-                        </c:if>
                         <c:if test="${homeUrl[0] == 'reports.shtm'}">
                           <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
                         </c:if>
                     </c:if>
                 </c:when>
              <c:otherwise>
+                <tag:menuItem href="app.shtm#/watch-list" png="desktop" key="header.newui"/>
+                <img src="./images/menu_separator.png" class="separator"/>
                 <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-                <tag:menuItem href="modern_watch_list.shtm" png="watch_list" key="header.watchlistModern"/>
                 <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
                 <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-                <tag:menuItem href="app.shtm" png="bell" key="header.alarms"/>
                 <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
              </c:otherwise>
            </c:choose>
@@ -251,7 +250,14 @@
     <div id="navbarUserInfo">
       <c:if test="${!empty sessionUser}">
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-        <span class="userName">${sessionUser.username}</span>
+        <c:choose>
+            <c:when test="${!empty sessionUser.firstName}">
+              <span class="userName">${sessionUser.firstName} ${sessionUser.lastName}</span>
+            </c:when>
+            <c:otherwise>
+              <span class="userName">${sessionUser.username}</span>
+            </c:otherwise>
+        </c:choose>
       </c:if>
     </div>
 
@@ -275,6 +281,7 @@
     </div>
   </div>
 </div>
+</c:if>
 </c:if>
 
 <div id="sltsContent" class="content">

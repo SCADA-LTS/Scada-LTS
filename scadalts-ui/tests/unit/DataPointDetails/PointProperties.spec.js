@@ -2,13 +2,15 @@ import { expect } from 'chai';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
-import PointProperties from '@/views/DataPointDetails/PointProperties';
+import PointProperties from '@/views/DataObjects/DataPointDetails/PointProperties';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
 global.requestAnimationFrame = (cb) => cb();
@@ -20,22 +22,23 @@ global.requestAnimationFrame = (cb) => cb();
  */
 function initWrapper() {
 	return prepareMountWrapper(
-		PointProperties, 
+		PointProperties,
 		modules,
-		{data: dataPointMock },
-		{stubs: [
-			'PointPropChartRenderer',
-			'PointPropEventDetectors',
-			'PointPropEventRenderer',
-			'PointPropTextRenderer',
-			'PointPropLogging',
-			'PurgeDataDialog',
-		]}
+		{ data: dataPointMock },
+		{
+			stubs: [
+				'PointPropChartRenderer',
+				'PointPropEventDetectors',
+				'PointPropEventRenderer',
+				'PointPropTextRenderer',
+				'PointPropLogging',
+				'PurgeDataDialog',
+			],
+		},
 	);
 }
 
 describe('Point Properties Tests', () => {
-
 	it('Initialize Component', () => {
 		const wrapper = initWrapper();
 		expect(wrapper.name()).to.equal('PointProperties');

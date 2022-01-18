@@ -1,5 +1,10 @@
 # Modern Charts Components
 
+## September 2021 - Version 2.1.0
+New version of the Scada-LTS modern charts components provide a new feature that
+allows user to present Real-Time data on chart. That was achived by using 
+WebSocket protocol and subscribing on a specific channel to receive a new value.
+
 ## June 2021 - Version 2.0.0
 
 ScadaLTS modern charts components it is a set of new VueJS v2.0 components designed for GraphicalView in ScadaLTS. It is based on [am4chart](https://www.amcharts.com/) library. It generates charts using JavaScript from user-side which is a new approach to charts in Scada (they were generated via server-side scripts and libraries). It is more browser load than it was before, but server application becomes lighter and gains performance.
@@ -51,6 +56,9 @@ But it is still just a chart like this old ones... What if we really want to mon
 
 **Now we've got live chart!**\
 It is refreshed every 10s (10000 ms) and when a data point will change state to different value this new one will be added to chart and the oldest one will be deleted from out chart. Now we can monitor state of datapoint in real-time with chosen by us refresh rate. For critical data, we can monitor the status of the point with a high frequency of queries to server (more real-time data but more resource consuming) and for non-critical data we can refresh chart after a few seconds.
+
+There is also a possibility to monitor the state of the point in real-time using
+web-socket connection. For more details see [WebSocket] section in the end of that file.
 
 But what if we want to display chart for **multiple data points?**
 
@@ -142,6 +150,20 @@ data count limit using **"server-values-limit"** parameter. This settings
 in ideal situation describe the amount of values that are distributed evenly on a timeline. But in real life some values are genereated at the same time or the gap between them can vary so the "ideal" situation with evenly distributed vales is almost imposible. So to fix that there is an **"server-limit-factor"** parameter that helps to achive the more reliable chart. Increasing that factor, we divide the interval into smaller blocks, so the data presenation is more accurate. There are more of this aggregated groups, but in each there are fewer values and averages to calculate.
 If from specific range there are less values than **"server-values-limit"** define that mechanism will be disabled. It tries to get the most accurate graph. AmChart works well with less than 30 000 of data point values on a single chart, so try to set up your graph to not exceed that constraint. 
 
+### **NEW FEATURE!!!** Chart Live Update via WebSocket
+Scada-LTS supports WebSocket connection to receive data updates from the server
+about the point value change. AmCharts can be configured to receive data updates
+based on that event. To enable that feature, you need to add the following
+parameter (**web-socket-enabled**) to the chart tag:
+```
+<div id="chart-line-0" point-ids="[dpID]" web-socket-enabled></div>
+```
+Remember that you should not use that property with **"refresh-rate"** that enable the same live update feature but based on the HTTP Requests. WebSocket immediately recieves the data updates so it is more efficient and faster. You are able to present
+data in real time on the chart.
+
+**Warning!**  
+AmCharts may slow down for the huge amount of data so use this feature with caution.
+
 ## Modern Chart documentation:
 
 Available properties in one place for all chart types. Charts could be exported to external file in graphical or text way. You can export to _.png, _.jpg, _.csv, _.json files.
@@ -169,6 +191,8 @@ Properties properties for Line charts
 | smooth-line | Number [0-1] | smooth-line="0.75" |
 | server-values-limit | Number | server-values-limit="10000" |
 | server-limit-factor | Number | server-limit-factor="1.5" |
+| web-socket-enabled | Boolean | web-socket-enabled |
+| show-controls | Boolean | show-controls |
 
 # Author
 

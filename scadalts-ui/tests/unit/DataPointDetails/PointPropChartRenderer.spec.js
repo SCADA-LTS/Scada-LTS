@@ -2,13 +2,15 @@ import { expect } from 'chai';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
-import PointPropChartRenderer from '@/views/DataPointDetails/PointProperties/PointPropChartRenderer';
+import PointPropChartRenderer from '@/views/DataObjects/DataPointDetails/PointProperties/PointPropChartRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
 /**
@@ -17,15 +19,10 @@ const modules = {
  * Prepare wrapper wiht all required stubs and props.
  */
 function initWrapper(props = dataPointMock) {
-	return prepareMountWrapper(
-		PointPropChartRenderer, 
-		modules,
-		{data: props}
-	);
+	return prepareMountWrapper(PointPropChartRenderer, modules, { data: props });
 }
 
 describe('Point Properties Tests --- Chart Renderer', () => {
-
 	it('Initialize Component', () => {
 		const wrapper = initWrapper();
 		expect(wrapper.name()).to.equal('PointPropChartRenderer');

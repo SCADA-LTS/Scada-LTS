@@ -136,7 +136,7 @@ export const eventRenderersTemplates = [
 			name: 'eventTextRendererNone',
 			exportName: 'EVENT_NONE',
 			nameKey: 'textRenderer.none',
-			supportedDataTypes: [1,2,3,4,5],
+			supportedDataTypes: [1, 2, 3, 4, 5],
 		},
 		text: null,
 	},

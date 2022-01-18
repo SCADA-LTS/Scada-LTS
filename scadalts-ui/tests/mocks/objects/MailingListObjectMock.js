@@ -48,6 +48,6 @@ export let mlMock = {
 	collectInactiveEmails: false,
 	dailyLimitSentEmailsNumber: 0,
 	dailyLimitSentEmails: false,
-	inactiveIntervals: [0,1,2,3],
+	inactiveIntervals: [0, 1, 2, 3],
 };
-export default mlMock
+export default mlMock;

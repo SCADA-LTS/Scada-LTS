@@ -2,35 +2,53 @@
 	<v-dialog max-width="600" v-model="dialog">
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmPurgeDialog"
+			ref="purgeDialogConfrim"
 			@result="purgeDialogResult"
 			:title="$t('purge.dialog.confirm.title')"
 			:message="$t('purge.dialog.confirm.text')"
 		></ConfirmationDialog>
 		<v-card>
-			<v-card-title class="headline"> {{ $t('purge.dialog.title') }} </v-card-title>
-			<v-card-text>
+			<v-card-title class="headline">
 				<v-row align="center">
+					<v-col cols="8">
+						<span>{{ $t('purge.dialog.title') }} </span>
+					</v-col>
 					<v-col cols="4">
+						<v-select
+							dense
+							:label="$t('purge.dialog.strategy')"
+							v-model="selectedPurge"
+							:items="purgeStrategies"
+						></v-select>
+					</v-col>
+				</v-row>
+			</v-card-title>
+			<v-card-text>
+				<v-row align="center" v-if="selectedPurge === 1">
+					<v-col cols="6">
 						<v-text-field
 							v-model="purgePeriod"
 							:label="$t('purge.dialog.older')"
-							:disabled="purgeAll"
 							dense
 						></v-text-field>
 					</v-col>
-					<v-col cols="3">
+					<v-col cols="6">
 						<v-select
 							v-model="purgeType"
 							:items="timePeriods"
 							item-value="id"
 							item-text="label"
-							:disabled="purgeAll"
 							dense
 						></v-select>
 					</v-col>
-					<v-col cols="5">
-						<v-switch v-model="purgeAll" :label="$t('purge.dialog.all')"></v-switch>
+				</v-row>
+				<v-row align="center" v-if="selectedPurge === 2">
+					<v-col cols="12">
+						<v-text-field
+							v-model="valuesLimit"
+							:label="$t('purge.dialog.values')"
+							dense
+						></v-text-field>
 					</v-col>
 				</v-row>
 			</v-card-text>
@@ -57,10 +75,25 @@ export default {
 
 	data() {
 		return {
-			confirmPurgeDialog: false,
 			purgeAll: false,
 			purgeType: 2,
 			purgePeriod: 1,
+			valuesLimit: 100,
+			selectedPurge: 0,
+			purgeStrategies: [
+				{
+					text: 'Period',
+					value: 1,
+				},
+				{
+					text: 'Values limit',
+					value: 2,
+				},
+				{
+					text: 'All',
+					value: 3,
+				},
+			],
 		};
 	},
 
@@ -90,29 +123,36 @@ export default {
 			this.$emit('result', false);
 		},
 
-		purgeDialogResult(e) {
-			this.confirmPurgeDialog = false;
+		async purgeDialogResult(e) {
 			if (e) {
-				this.$store
-					.dispatch('purgeDataPointValues', {
-						datapointId: this.data.id,
-						period: this.purgePeriod,
-						type: this.purgeType,
-						allData: this.purgeAll,
-					})
-					.then((resp) => {
-						if (resp.deleted) {
-							this.$emit('result', true);
-						} else {
-							this.$emit('result', false);
-						}
-						this.dialog = false;
-					});
+				let response;
+				try {
+					if(this.selectedPurge === 1) {
+						response = await this.$store.dispatch('purgeNowPeriod', {
+							datapointId: this.data.id,
+							type: this.purgeType,
+							period: this.purgePeriod,
+						});
+					} else if (this.selectedPurge === 2) {
+						response = await this.$store.dispatch('purgeNowLimit', {
+							datapointId: this.data.id,
+							limit: this.valuesLimit,
+						});
+					} else {
+						response = await this.$store.dispatch('purgeNowAll', this.data.id);
+					}
+					this.$emit('result', true);
+				} catch(error) {
+					console.error(error);
+					this.$emit('result', false);
+				} finally {
+					this.dialog = false;
+				}
 			}
 		},
 
 		accept() {
-			this.confirmPurgeDialog = true;
+			this.$refs.purgeDialogConfrim.showDialog();
 		},
 	},
 };

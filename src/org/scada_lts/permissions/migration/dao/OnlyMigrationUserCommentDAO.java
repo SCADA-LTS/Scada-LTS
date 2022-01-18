@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class OnlyMigrationUserCommentDAO extends UserCommentDAO {
+public final class OnlyMigrationUserCommentDAO extends UserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationUserCommentDAO.class);
 

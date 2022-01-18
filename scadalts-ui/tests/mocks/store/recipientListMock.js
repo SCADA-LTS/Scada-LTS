@@ -60,12 +60,12 @@ export const storeMailingList = {
 							referenceAddress: null,
 							referenceId: 3,
 						},
-                        {
-                            address: "mail@mail.com",
-                            recipientType: 3,
-                            referenceAddress: "mail@mail.com",
-                            referenceId: 0
-                        }
+						{
+							address: 'mail@mail.com',
+							recipientType: 3,
+							referenceAddress: 'mail@mail.com',
+							referenceId: 0,
+						},
 					],
 					cronPattern: '1 */15 * * * ?',
 					collectInactiveEmails: false,
@@ -89,21 +89,21 @@ export const storeMailingList = {
 
 		deleteMailingList({ dispatch }, mailingListId) {
 			return new Promise((resolve) => {
-				let data = {status: "deleted"};
+				let data = { status: 'deleted' };
 				resolve(data);
 			});
 		},
 
 		createMailingList({ dispatch }, mailingList) {
 			return new Promise((resolve) => {
-				let data = {status: "created"};
+				let data = { status: 'created' };
 				resolve(data);
 			});
 		},
 
 		updateMailingList({ dispatch }, mailingList) {
 			return new Promise((resolve) => {
-				let data = {status: "updated"};
+				let data = { status: 'updated' };
 				resolve(data);
 			});
 		},

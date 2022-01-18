@@ -16,6 +16,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+test-results.xml
+/.proxy-cookies
+
+
 # Editor directories and files
 .idea
 .vscode

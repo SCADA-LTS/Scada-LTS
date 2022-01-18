@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import br.org.scadabr.db.dao.ScriptDao;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
@@ -63,6 +62,8 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.ReportService;
+import org.scada_lts.mango.service.UsersProfileService;
 
 /**
  * @author Matthew Lohbihler
@@ -85,6 +86,7 @@ public class EmportDwr extends BaseDwr {
 	public static final String POINT_VALUES = "pointValues";
 	public static final String SYSTEM_SETTINGS = "systemSettings";
 	public static final String USERS_PROFILES = "usersProfiles";
+	public static final String REPORTS = "reports";
 
 	public String createExportData(int prettyIndent, boolean graphicalViews,
 			boolean eventHandlers, boolean dataSources, boolean dataPoints,
@@ -92,7 +94,8 @@ public class EmportDwr extends BaseDwr {
 			boolean pointLinks, boolean users, boolean pointHierarchy,
 			boolean mailingLists, boolean publishers, boolean watchLists,
 			boolean maintenanceEvents, boolean scripts, boolean pointValues,
-			int maxPointValues, boolean systemSettings, boolean usersProfiles) {
+			int maxPointValues, boolean systemSettings, boolean usersProfiles,
+		    boolean reports) {
 
 		if (!Common.getUser().isAdmin()) {
 			return "Only admin user can export data.";
@@ -103,7 +106,7 @@ public class EmportDwr extends BaseDwr {
 				compoundEventDetectors, pointLinks, users, pointHierarchy,
 				mailingLists, publishers, watchLists, maintenanceEvents,
 				scripts, pointValues, maxPointValues, systemSettings,
-				usersProfiles);
+				usersProfiles, reports);
 	}
 	public static String exportJSON(String xid){
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
@@ -127,7 +130,7 @@ public class EmportDwr extends BaseDwr {
 			boolean pointHierarchy, boolean mailingLists, boolean publishers,
 			boolean watchLists, boolean maintenanceEvents, boolean scripts,
 			boolean pointValues, int maxPointValues, boolean systemSettings,
-			boolean usersProfiles) {
+			boolean usersProfiles, boolean reports) {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 
 		if (graphicalViews)
@@ -190,7 +193,10 @@ public class EmportDwr extends BaseDwr {
 			data.put(SYSTEM_SETTINGS, list);
 		}
 		if (usersProfiles) {
-			data.put(USERS_PROFILES, new UsersProfileDao().getUsersProfiles());
+			data.put(USERS_PROFILES, new UsersProfileService().getUsersProfiles());
+		}
+		if (reports) {
+			data.put(REPORTS, new ReportService().getReports());
 		}
 
 		JsonWriter writer = new JsonWriter();

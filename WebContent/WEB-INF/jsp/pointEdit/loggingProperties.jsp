@@ -26,6 +26,8 @@
       var tolerance = $("tolerance");
       var purgePeriod = $("purgePeriod");
       var purgeType = $("purgeType");
+      var purgeStrategy = $("purgeStrategy");
+      var purgeValuesLimit = $("purgeValuesLimit");
       
       if ($("toleranceSection") && loggingType == <%= DataPointVO.LoggingTypes.ON_CHANGE %>)
           // On change logging for a numeric requires a tolerance setting.
@@ -36,10 +38,14 @@
       if (loggingType == <%= DataPointVO.LoggingTypes.NONE %>) {
           purgePeriod.disabled = true;
           purgeType.disabled = true;
+          purgeStrategy.disabled = true;
+          purgeValuesLimit.disabled = true;
       }
       else {
           purgePeriod.disabled = false;
           purgeType.disabled = false;
+          purgeStrategy.disabled = false;
+          purgeValuesLimit.disabled = false;
       }
       
       if (loggingType == <%= DataPointVO.LoggingTypes.INTERVAL %>)
@@ -59,6 +65,18 @@
           $("discardHighLimit").disabled = true;
       }
   }
+
+  function changePurgeWithLimit() {
+    var purgeWithLimit = $get("purgeWithLimit");
+    if (purgeWithLimit) {
+        $("purgePeriod").disabled = true;
+        $("purgeType").disabled = true;
+    }
+    else {
+        $("purgePeriod").disabled = false;
+        $("purgeType").disabled = false;
+    }
+  }
   
   function clearPointCache() {
       setDisabled("clearCacheBtn", true);
@@ -66,6 +84,20 @@
           setDisabled("clearCacheBtn", false);
       });
   }
+
+  function changePurgeStrategy() {
+        var purgeStrategy = $get("purgeStrategy");
+
+        if (purgeStrategy == <%= DataPointVO.PurgeStrategy.PERIOD %>)
+            show("purgePeriodSection");
+        else
+            hide("purgePeriodSection");
+
+        if (purgeStrategy == <%= DataPointVO.PurgeStrategy.LIMIT %>)
+            show("purgeLimitSection");
+        else
+            hide("purgeLimitSection");
+    }
   
   dojo.addOnLoad(function() {
       if (dataTypeId == <%= DataTypes.NUMERIC %>) {
@@ -78,6 +110,7 @@
       }
       changeLoggingType();
       changeDiscard();
+      changePurgeStrategy();
   });
 </script>
 
@@ -177,22 +210,44 @@
         </tr>
       </spring:bind>
     </tbody>
-      
-    <tr>
-      <td class="formLabelRequired"><fmt:message key="pointEdit.logging.purge"/></td>
-      <td class="formField">
-        <fmt:message key="pointEdit.logging.after"/> <input id="purgePeriod" type="text" name="purgePeriod" value="${form.purgePeriod}" class="formShort"/>
-        <sst:select id="purgeType" name="purgeType" value="${form.purgeType}">
-          <tag:timePeriodOptions sst="true" d="true" w="true" mon="true" y="true"/>
-        </sst:select>
-      </td>
-      <td class="formError">
-        <spring:bind path="form.purgeType">
-          <c:if test="${error.purgeType != null}"><td class="formError"><fmt:message key="${error.purgeType}"/></td><br/></c:if>
+
+    <spring:bind path="form.purgeStrategy">
+      <tr>
+        <td class="formLabelRequired"><fmt:message key="pointEdit.logging.purgeStrategy"/></td>
+        <td class="formField">
+          <sst:select id="purgeStrategy" name="purgeStrategy" onchange="changePurgeStrategy();" value="${status.value}">
+            <sst:option value="<%= Integer.toString(DataPointVO.PurgeStrategy.PERIOD) %>"><fmt:message key="pointEdit.purge.type.period"/></sst:option>
+            <sst:option value="<%= Integer.toString(DataPointVO.PurgeStrategy.LIMIT) %>"><fmt:message key="pointEdit.purge.type.limit"/></sst:option>
+          </sst:select>
+        </td>
+        <c:if test="${error.purgeStrategy != null}"><td class="formError"><fmt:message key="${status.purgeStrategy}"/></td></c:if>
+      </tr>
+    </spring:bind>
+
+    <tbody id="purgePeriodSection" style="display:none;">
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="pointEdit.logging.purge"/></td>
+          <td class="formField">
+            <fmt:message key="pointEdit.logging.after"/> <input id="purgePeriod" type="text" name="purgePeriod" value="${form.purgePeriod}" class="formShort"/>
+            <sst:select id="purgeType" name="purgeType" value="${form.purgeType}">
+              <tag:timePeriodOptions sst="true" d="true" w="true" mon="true" y="true"/>
+            </sst:select>
+          </td>
+          <c:if test="${error.purgePeriod != null}"><td class="formError"><fmt:message key="${error.purgePeriod}"/></td></c:if>
+        </tr>
+    </tbody>
+
+    <tbody id="purgeLimitSection" style="display:none;">
+        <spring:bind path="form.purgeValuesLimit">
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="pointEdit.purge.type.limit"/></td>
+              <td class="formField">
+                <input id="purgeValuesLimit" type="text" name="purgeValuesLimit" value="${status.value}" class="formShort"/>
+              </td>
+              <c:if test="${error.purgeValuesLimit != null}"><td class="formError"><fmt:message key="${error.purgeValuesLimit}"/></td></c:if>
+            </tr>
         </spring:bind>
-        <spring:bind path="form.purgePeriod"><c:if test="${error.purgePeriod != null}"><td class="formError"><fmt:message key="${error.purgePeriod}"/></td></c:if></spring:bind>
-      </td>
-    </tr>
+    </tbody>
       
     <spring:bind path="form.defaultCacheSize">
       <tr>

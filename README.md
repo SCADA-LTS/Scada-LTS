@@ -4,6 +4,7 @@ Open Source, web-based, multi-platform solution for building your own SCADA
 (Supervisory Control and Data Acquisition) system.
 Code released under [the GPL license](https://github.com/SCADA-LTS/Scada-LTS/blob/develop/LICENSE).
 
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/SCADA-LTS/Scada-LTS)
 
 [![Build Status](https://travis-ci.org/SCADA-LTS/Scada-LTS.svg?branch=develop)](https://travis-ci.org/SCADA-LTS/Scada-LTS)
@@ -26,8 +27,6 @@ Follow the [Release Section](https://github.com/SCADA-LTS/Scada-LTS/releases) to
 We follow the [Semantic Versioning Guidelines](http://semver.org/) to organize changes in our application.
 
 If you need support for deployment please contact us and find more information on [our website](http://scada-lts.comhttp://scada-lts.com/#support)
-
-
 
 ## Issues and ideas
 Have you found a bug? Do you have idea for a new feature? Open a new [Issue](https://github.com/SCADA-LTS/Scada-LTS/issues) on our GitHub project site!

@@ -43,7 +43,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OnlyMigrationDataSourceDAO extends DataSourceDAO {
+public final class OnlyMigrationDataSourceDAO extends DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationDataSourceDAO.class);
 
@@ -370,7 +370,7 @@ public class OnlyMigrationDataSourceDAO extends DataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void update(final DataSourceVO<?> dataSource) {
+	public int update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
@@ -378,7 +378,7 @@ public class OnlyMigrationDataSourceDAO extends DataSourceDAO {
 
 		DataSourceVO<?> oldDataSource = getDataSource(dataSource.getId());
 
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_UPDATE, new Object[]{
+		return DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_UPDATE, new Object[]{
 				dataSource.getXid(),
 				dataSource.getName(),
 				new SerializationData().writeObject(dataSource),
@@ -387,7 +387,7 @@ public class OnlyMigrationDataSourceDAO extends DataSourceDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void delete(int dataSourceId) {
+	public int delete(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int dataSourceId): dataSourceId" + dataSourceId);
@@ -395,7 +395,8 @@ public class OnlyMigrationDataSourceDAO extends DataSourceDAO {
 
 		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataSourceId});
 		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, new Object[]{dataSourceId});
+		return DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, new Object[]{dataSourceId});
+
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

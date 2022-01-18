@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
+<%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -432,6 +433,7 @@ thead th {
 			</tr>
 		</table>
 	</div>
+	<tag:newPageNotification href="./app.shtm#/point-hierarchy" ref="pointHierarchyNotification"/>
 </body>
 
 <script src="resources/node_modules/jquery/dist/jquery.min.js"></script>
@@ -478,8 +480,8 @@ var connectCallback = function(frame) {
     	stompClient.subscribe('/topic/alarmLevel', function(message) {
         	console.log("message[/topic/alarmLevel]:" + message.body);
     	});
-    	stompClient.subscribe("/ws/alarmLevel/register", function(message) {
-    		console.log("message[/ws/alarmLevel/register]:" + message.body);
+    	stompClient.subscribe("/ws-scada/alarmLevel/register", function(message) {
+    		console.log("message[/ws-scada/alarmLevel/register]:" + message.body);
     		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
     			var response = JSON.parse(message.body);
     			var alarmLevel = parseInt(response.alarmlevel);
@@ -497,16 +499,16 @@ var connectCallback = function(frame) {
    		            document.getElementById("__header__alarmLevelDiv").style.visibility =  "hidden";
    		        }
     		})
-    		stompClient.send("/ws/alarmLevel", {priority: 1}, "Hello, Spring STOMP - gimme my alarmLevel");
+    		stompClient.send("/ws-scada/alarmLevel", {priority: 1}, "Hello, Spring STOMP - gimme my alarmLevel");
     	} );
-    	stompClient.send("/ws/alarmLevel", {priority: 9}, "Hello, Spring STOMP");
+    	stompClient.send("/ws-scada/alarmLevel", {priority: 9}, "Hello, Spring STOMP");
 
-    	stompClient.subscribe("/ws/listusers", function(message) {
-    		console.log("message[/ws/listusers]:" + message.body);
+    	stompClient.subscribe("/ws-scada/listusers", function(message) {
+    		console.log("message[/ws-scada/listusers]:" + message.body);
     	} );
 
-    	stompClient.subscribe("/ws/session", function(message) {
-    		console.log("message[/ws/session]:" + message.body);
+    	stompClient.subscribe("/ws-scada/session", function(message) {
+    		console.log("message[/ws-scada/session]:" + message.body);
     	} );
 
 };
@@ -583,20 +585,20 @@ function disconnect() {
 
 
 function OnListUserSessions() {
-	stompClient.subscribe("/ws/listusers", function(message) {
-		console.log("message[/ws/listusers]:\n" + message.body);
+	stompClient.subscribe("/ws-scada/listusers", function(message) {
+		console.log("message[/ws-scada/listusers]:\n" + message.body);
 	} );
 }
 
 function OnListSessionsAttributes() {
-	stompClient.subscribe("/ws/session", function(message) {
-		console.log("message[/ws/session]:\n" + message.body);
+	stompClient.subscribe("/ws-scada/session", function(message) {
+		console.log("message[/ws-scada/session]:\n" + message.body);
 	} );
 }
 
 function OnListWebsocketStats() {
-	stompClient.send("/ws/websocketStats", function(message) {
-		console.log("message[/ws/websocketStats]:\n" + message.body);
+	stompClient.send("/ws-scada/websocketStats", function(message) {
+		console.log("message[/ws-scada/websocketStats]:\n" + message.body);
 	} );
 }
 
@@ -677,7 +679,7 @@ var messages = {
 
     function onloadHandler() {
     	// connecting to server websocket endpoint...
-       connect(myLocation + '/ws/alarmLevel');
+       connect(myLocation + '/ws-scada/alarmLevel');
     }
 
     function onunloadHandler() {

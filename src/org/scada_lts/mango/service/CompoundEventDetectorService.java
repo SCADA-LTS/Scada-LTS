@@ -19,6 +19,7 @@ package org.scada_lts.mango.service;
 
 import java.util.List;
 
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.event.CompoundEventDetectorDAO;
 import org.scada_lts.mango.adapter.MangoCompoundEventDetector;
@@ -67,11 +68,11 @@ public class CompoundEventDetectorService implements MangoCompoundEventDetector 
 	public void saveCompoundEventDetector(final CompoundEventDetectorVO ced) {
     	 if (ced.getId() == Common.NEW_ID) {
              cedDao.create(ced);
-             AuditEventType.raiseAddedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, ced);
+             AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, ced);
     	 } else {
-             cedDao.update(ced);
              CompoundEventDetectorVO oldCed = cedDao.findById(new Object[]{ced.getId()});
-             AuditEventType.raiseChangedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, oldCed, ced);
+             cedDao.update(ced);
+             AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_COMPOUND_EVENT_DETECTOR, oldCed, ced);
     	 }
     }
     

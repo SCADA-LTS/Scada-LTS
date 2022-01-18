@@ -15,6 +15,7 @@ const storeSystemSettings = {
 		systemInfoSettings: undefined,
 		emailSettings: undefined,
 		httpSettings: undefined,
+		dataRetentionSettings: undefined,
 		miscSettings: undefined,
 		smsDomainSettings: undefined,
 		amchartsSettings: undefined,
@@ -45,6 +46,9 @@ const storeSystemSettings = {
 		},
 		setHttpSettings(state, httpSettings) {
 			state.httpSettings = httpSettings;
+		},
+		setDataRetentionSettings(state, dataRetentionSettings) {
+			state.dataRetentionSettings = dataRetentionSettings;
 		},
 		setMiscSettings(state, miscSettings) {
 			state.miscSettings = miscSettings;
@@ -132,7 +136,7 @@ const storeSystemSettings = {
 				(r) => {
 					commit('setAuditEventTypes', r);
 					return r;
-				}
+				},
 			);
 		},
 
@@ -148,7 +152,7 @@ const storeSystemSettings = {
 				(r) => {
 					commit('setSystemEventTypes', r);
 					return r;
-				}
+				},
 			);
 		},
 
@@ -205,6 +209,20 @@ const storeSystemSettings = {
 			});
 		},
 
+		getDataRetentionSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getDataRetention').then((r) => {
+				commit('setDataRetentionSettings', r);
+				return r;
+			});
+		},
+
+		saveDataRetentionSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveDataRetention',
+				data: state.dataRetentionSettings,
+			});
+		},
+
 		getSmsDomainSettings({ commit, dispatch }) {
 			return dispatch('requestGet', '/systemSettings/getSMSDomain').then((r) => {
 				commit('setSmsDomainSettings', r);
@@ -215,7 +233,7 @@ const storeSystemSettings = {
 		saveSmsDomainSettings({ state, dispatch }) {
 			return dispatch('requestPost', {
 				url: `/systemSettings/saveSMSDomain`,
-				data: {'domainName':state.smsDomainSettings},
+				data: { domainName: state.smsDomainSettings },
 			});
 		},
 
@@ -245,7 +263,6 @@ const storeSystemSettings = {
 				commit('setDefaultLoggingType', r.defaultLoggingType);
 				return r.defaultLoggingType;
 			});
-			
 		},
 
 		saveDefaultLoggingType({ state, dispatch }) {
@@ -274,6 +291,10 @@ const storeSystemSettings = {
 						reject(err);
 					});
 			});
+		},
+
+		purgeNow({dispatch}) {
+			return dispatch('requestGet', '/systemSettings/purgeNow');
 		},
 
 		configurationEqual(ctx, objects) {
