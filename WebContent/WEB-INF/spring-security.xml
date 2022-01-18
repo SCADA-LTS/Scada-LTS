@@ -1,0 +1,77 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+         xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
+    <http use-expressions="true">
+        <headers>
+            <cache-control/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+        </headers>
+        <csrf disabled="true"/>
+
+        <!-- Login Form -->
+        <intercept-url pattern="/login.htm" access="permitAll" />
+
+        <!-- REST API -->
+        <intercept-url pattern="/api/auth/**" access="permitAll" />
+        <intercept-url pattern="/api/**" access="isAuthenticated()" />
+
+        <!-- DWR -->
+        <intercept-url pattern="/dwr/*.js" access="permitAll" />
+        <intercept-url pattern="/dwr/interface/*.js" access="permitAll" />
+        <intercept-url pattern="/dwr/**" access="permitAll" />
+
+        <!-- Static resources -->
+        <intercept-url pattern="/graphics/**" access="permitAll" />
+        <intercept-url pattern="/images/**" access="permitAll" />
+        <intercept-url pattern="/img/**" access="permitAll" />
+        <intercept-url pattern="/assets/**" access="permitAll" />
+        <intercept-url pattern="/js/**" access="permitAll" />
+        <intercept-url pattern="/css/**" access="permitAll" />
+        <intercept-url pattern="/resources/**" access="permitAll" />
+        <intercept-url pattern="/static/**" access="permitAll" />
+        <intercept-url pattern="/audio/**" access="permitAll" />
+
+        <!-- Anonymous -->
+        <intercept-url pattern="/public_view.htm" access="permitAll" />
+
+        <intercept-url pattern="/**" access="isAuthenticated()" />
+
+        <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
+                    authentication-failure-url="/login.htm?error" login-page="/login.htm"
+                    password-parameter="password" username-parameter="username"/>
+
+        <logout logout-url="/logout.htm" invalidate-session="true" />
+    </http>
+    <http-firewall ref="defaultHttpFirewall"/>
+
+    <!-- Websocket -->
+    <!--websocket-message-broker same-origin-disabled="true">
+        <intercept-message pattern="/**" access="isAuthenticated()"/>
+    </websocket-message-broker-->
+
+    <authentication-manager id="authenticationManager">
+        <authentication-provider>
+            <password-encoder ref="scadaPasswordEncoder" />
+            <jdbc-user-service data-source-ref="dataSourceForSecurity"
+                               users-by-username-query="select username, password, disabled = 'N' as enabled from users where username = ?"
+                               authorities-by-username-query="select username, 'USER' from users where username = ?"/>
+        </authentication-provider>
+    </authentication-manager>
+
+    <b:bean id="loginAuthenticationSuccessHandler" class="org.scada_lts.login.LoginAuthenticationSuccessHandler" />
+
+    <b:bean id="dataSourceForSecurity" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <b:property name="expectedType" value="javax.sql.DataSource"/>
+        <b:property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
+    </b:bean>
+
+    <b:bean id="scadaPasswordEncoder" class="org.scada_lts.login.CustomPasswordEncoder" />
+
+    <b:bean id="defaultHttpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall"/>
+
+</b:beans>

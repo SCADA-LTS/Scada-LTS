@@ -3,6 +3,7 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
@@ -11,7 +12,9 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
         http://www.springframework.org/schema/websocket
-        http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd">
+        http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd
+        http://www.springframework.org/schema/security
+        https://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
 	<context:component-scan base-package="org.scada_lts" />
 	<mvc:annotation-driven />
@@ -208,40 +211,9 @@
 
   <bean id="servletBeans" class="org.scada_lts.web.beans.GetServletBeans"/>
 
-  <!-- Highest Alarm Level -->
-  <websocket:message-broker application-destination-prefix="/app">
-    <websocket:transport send-timeout="15000" send-buffer-size="524288" message-size="131072" />
-    <websocket:stomp-endpoint path="/ws-scada" allowed-origins="http://localhost:3000">
-      <websocket:handshake-handler ref="handshakeHandler"/>
-      <websocket:sockjs stream-bytes-limit="524288" message-cache-size="1000" disconnect-delay="30000" websocket-enabled="true"/>
-    </websocket:stomp-endpoint>
-    <websocket:stomp-endpoint path="/ws-scada/alarmLevel" allowed-origins="http://localhost:3000">
-      <websocket:handshake-handler ref="handshakeHandler"/>
-      <websocket:sockjs stream-bytes-limit="524288" message-cache-size="1000" disconnect-delay="30000" websocket-enabled="true"/>
-    </websocket:stomp-endpoint>
-    <websocket:stomp-endpoint path="/ws-scada/event" allowed-origins="http://localhost:3000">
-      <websocket:handshake-handler ref="handshakeHandler"/>
-      <websocket:sockjs stream-bytes-limit="524288" message-cache-size="1000" disconnect-delay="30000" websocket-enabled="true"/>
-    </websocket:stomp-endpoint>
-    <websocket:simple-broker prefix="/topic, /queue" />
-    <websocket:client-inbound-channel>
-      <websocket:interceptors>
-        <ref bean="loggingChannelInterceptor"/>
-      </websocket:interceptors>
-    </websocket:client-inbound-channel>
-    <websocket:client-outbound-channel>
-      <websocket:executor core-pool-size="8"/>
-      <websocket:interceptors>
-        <ref bean="loggingChannelInterceptor"/>
-      </websocket:interceptors>
-    </websocket:client-outbound-channel>
-  </websocket:message-broker>
-
-  <bean id="handshakeHandler" class="org.scada_lts.web.ws.config.ScadaHandshakeHandler" />
-  <bean id="loggingChannelInterceptor" class="org.scada_lts.web.ws.config.LoggingChannelInterceptor" />
-
-  <bean id="statsMonitor" class="org.scada_lts.web.ws.config.WebSocketMessageBrokerStatsMonitor">
+  <bean id="webSocketStatsMonitor" class="org.scada_lts.web.ws.config.WebSocketStatsMonitor">
     <constructor-arg ref="subProtocolWebSocketHandler"/>
     <constructor-arg ref="clientOutboundChannelExecutor"/>
+    <constructor-arg ref="userRegistry"/>
   </bean>
 </beans>
