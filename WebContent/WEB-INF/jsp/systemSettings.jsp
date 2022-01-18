@@ -934,10 +934,6 @@
         </table>
       </div>
 
-  <div class="borderDiv marB marR" style="float:left">
-    <div id="sms-domain"></div>
-  </div>
-
   <div class="" style="float:left; color:white">
   #branchName
 
