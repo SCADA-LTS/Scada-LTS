@@ -1,16 +1,20 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.ReportDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
+import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
+import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -95,9 +99,24 @@ public class ReportsAPI {
             User user = Common.getUser(request);
             ReportVO report = new ReportVO();
 
+            report.setUserId(user.getId());
             report.setId(Integer.parseInt(query.get("id").toString()));
             report.setName(query.get("name").toString());
-            //report.setPoints(query.get("points"));
+            List<ReportPointVO> reportPoints = new ArrayList<ReportPointVO>();
+            List<HashMap<String, Object>> points = (List<HashMap<String, Object>>) query.get("points");
+
+            for (HashMap<String, Object> dp : points) {
+                if (Permissions.hasAdmin(user) || Permissions.hasDataPointReadPermission(user, dataPointService.getDataPoint((Integer) dp.get("pointId")) )) {
+                    ReportPointVO p = new ReportPointVO();
+                    p.setPointId((Integer) dp.get("pointId"));
+                    p.setColour((String) dp.get("colour"));
+                    p.setConsolidatedChart((Boolean) dp.get("consolidatedChart" ));
+                    reportPoints.add(p);
+                }
+
+            }
+
+            report.setPoints(reportPoints);
             report.setIncludeEvents(Integer.parseInt(query.get("includeEvents").toString()));
             report.setIncludeUserComments(Boolean.parseBoolean(query.get("includeUserComments").toString()));
             report.setDateRangeType(Integer.parseInt(query.get("dateRangeType").toString()));

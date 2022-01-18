@@ -20,7 +20,6 @@ const storeReports = {
 			);
 		},
 		saveReport({ dispatch }, payload) {
-			alert(JSON.stringify(payload));
 			return dispatch('requestPost', { url: `/reports/save`, data: payload });
 		},
 

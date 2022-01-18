@@ -28,8 +28,6 @@
 										:headers="datapointSearchHeaders"
 										:items="searchDatapoints"
 										multi-sort
-
-        :hide-default-footer="true"
 										@click:row="addDatapoint({pointId: $event.id ,name:$event.name})"
 									>
 										<template v-slot:item.datatype="{ item }">	
@@ -39,7 +37,7 @@
 											<div style="text-align:center">
 												<input type=checkbox style="transform: scale(1.4);"
 												:checked="item.consolidatedChart"
-												title="consolidated chart"
+												:title="$t('reports.consolidated')"
 												@change="item.consolidatedChart = !consolidatedChart"/>
 											</div>
 										</template>
@@ -53,6 +51,7 @@
 										:options.sync="datapointOptions"
 										:server-items-length="totalReports"
 										multi-sort
+										:hide-default-footer="true"
 										@click:row="selectReport($event.id)"
 										>
 										<template v-slot:item.datatype="{ item }">	
@@ -65,12 +64,12 @@
 											<div style="text-align:center">
 												<input type=checkbox   style="transform: scale(1.4);"
 												:checked="item.consolidatedChart"
-												title="consolidated chart"
+												:title="$t('reports.consolidated')"
 												@change="item.consolidatedChart = !consolidatedChart"/>
 											</div>
 										</template>	
 										<template v-slot:item.actions="{ item }">	
-											<v-icon border="0" @click.stop="removeDatapoint(item.pointId)" title="delete">
+											<v-icon border="0" @click.stop="removeDatapoint(item.pointId)" :title="$t('common.delete')">
 												mdi-delete
 											</v-icon>
 										</template>
@@ -127,14 +126,14 @@
 						<v-row>
 							<v-col cols="6">
 								<v-card-title v-if="selectedId!==-1">
-									Report #{{selectedId}}
+									{{$t('reports.reportId')}}{{selectedId}}
 								</v-card-title>
 								<v-card-title v-else>
-									New report template
+									{{$t('reports.newTemplate')}}
 								</v-card-title>
 							</v-col>
 							<v-col cols="6" style="text-align:right" >
-								<v-btn class="primary" title="save" @click="saveReport" style = "border-radius:100px;height:60px;width:60px; margin: 5px 16px" rounded>
+								<v-btn class="primary save" title="save" @click="saveReport"  rounded>
 									<v-icon>mdi-content-save</v-icon>
 								</v-btn>
 							</v-col>
@@ -149,7 +148,7 @@
 										<v-col cols="3">
 											<v-select 
 												:label='$t("reports.events")'
-												placeholder="select datapoint"
+												:placeholder="$t('reports.selectDataPoint')"
 												item-text="label"
 												v-model="reportForm.includeEvents"
 												item-value="value"
@@ -390,7 +389,7 @@
 								:label='$t("reports.emailReport")'
 								v-model="reportForm.email"></v-checkbox>
 								<v-btn v-if="reportForm.email" class="primary"
-								@click="sendTestEmails">{{$t('reports.sendTestEmails')}}</v-btn>
+								@click="sendTestEmails" :disabled="reportForm.recipients.length">{{$t('reports.sendTestEmails')}}</v-btn>
 							</v-col>
 							<v-col v-if="reportForm.email" cols="3">
 								<v-checkbox v-model="reportForm.includeData" label="Include tabular data"></v-checkbox>
@@ -462,6 +461,12 @@
 	float: left;
 	margin: 5px 15px
 }
+.save {
+	border-radius:100px;
+	height:60px;
+	width:60px; 
+	margin: 5px 16px;
+}
 </style>
 
 <script>
@@ -504,20 +509,20 @@ export default {
 			addDataPointDialog: false,
 			runDalayRules: [
 				v => 
-				this.reportForm.schedule && !!v || "Delay minutes is required",
+				this.reportForm.schedule && !!v || this.$t('reports.minutesRequired'),
 				v => 
-				this.reportForm.schedule && !isNaN(v*1) || v *1 > 0 || "Delay minutes must be number greater than cero",
+				this.reportForm.schedule && !isNaN(v*1) || v *1 > 0 || this.$t('reports.delayMustBePositive') ,
 			],
 			emailRules: [
 				v => 
-				(!v || this.validateEmail(v)) || "Email must be valid",
+				(!v || this.validateEmail(v)) || this.$t('reports.emailMustBeValid'),
 			],
 			cronRules: [
 				v => 
-				this.reportForm.schedule && !!v || "Cron pattern is required",
+				this.reportForm.schedule && !!v || this.$t('reports.cronPatternIsRequired'),
 				v =>
 				/(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})/.test(v) ||
-				"Cron pattern must be valid"
+				$t('reports.cronPatternMustBeValid')
 			],
 			
 			periodTypes:[ 

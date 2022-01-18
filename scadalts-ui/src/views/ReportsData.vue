@@ -9,7 +9,7 @@
 								v-model="search"
 								@input="fetchReportInstanceList"
 								append-icon="mdi-magnify"
-								label="Search"
+								:label="$t('common.search')"
 								class="mr-2"
 								single-line
 								hide-details
@@ -183,7 +183,6 @@ export default {
 	methods: {
 		async togglePurge(value) {
 			await this.$store.dispatch('setPreventPurge', {id: value.id, preventPurge: !value.preventPurge});
-			 
 			value.preventPurge != value.preventPurge 
 		},
 		clickRow(ev) {
