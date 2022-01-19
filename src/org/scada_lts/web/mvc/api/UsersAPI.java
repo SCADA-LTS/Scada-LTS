@@ -165,8 +165,6 @@ public class UsersAPI {
                     String current = (String) jsonBodyRequest.get("current");
                     if(StringUtils.isEmpty(password) || StringUtils.isEmpty(current))
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    if(!password.equals(current))
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     userService.updateUserPassword(
                             user.getId(),
                             password,
