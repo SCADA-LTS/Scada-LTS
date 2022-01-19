@@ -261,13 +261,13 @@
 							mdi-checkbox-marked-circle-outline
 						</v-icon>
 						{{$t("eventList.acknowledgeSelectedEvents")}}</v-btn>
-					<v-btn small @click="silenceSelectedEvents" title="silence"  color="blue" class="mr-2" >
+					<v-btn small @click="silenceSelectedEvents" :title="$t('eventList.silence')"  color="blue" class="mr-2" >
 						<v-icon class="mr-2" >
 							mdi-volume-mute
 						</v-icon>
 						{{$t("eventList.silenceSelected")}}
 						</v-btn>
-					<v-btn small @click="unsilenceSelectedEvents"  color="blue">
+					<v-btn small @click="unsilenceSelectedEvents" :title="$t('eventList.unsilence')" color="blue">
 						<v-icon class="mr-2" >
 							mdi-volume-high
 						</v-icon>
@@ -335,10 +335,10 @@
 					<template v-slot:item.actions="{ item }">
 						<span v-if="!item.ackTs">
 							<v-icon class="mr-2" border="0" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
-								mdi-volume-mute
+								mdi-volume-high
 							</v-icon>
 							<v-icon class="mr-2" border="0" @click.stop="unsilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
-								mdi-volume-high
+								mdi-volume-mute
 							</v-icon>
 						</span>
 
