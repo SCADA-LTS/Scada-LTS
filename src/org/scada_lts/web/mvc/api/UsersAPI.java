@@ -154,7 +154,7 @@ public class UsersAPI {
             if (user != null) {
                 String password = (String) jsonBodyRequest.get("password");
                 Integer userId = (Integer) jsonBodyRequest.get("userId");
-                if(userId == null || password == null)
+                if(userId == null || StringUtils.isEmpty(password))
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 if (user.isAdmin()) {
                     userService.updateUserPassword(
