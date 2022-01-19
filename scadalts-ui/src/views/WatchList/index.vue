@@ -64,7 +64,7 @@
 
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="dialogDeletionVisible"
+			ref="deletionDialog"
 			@result="onDeleteDialogClose"
 			:title="$t('watchlist.dialog.delete.title')"
 			:message="$t('watchlist.dialog.delete.text')"
@@ -97,7 +97,6 @@ export default {
 	data() {
 		return {
 			watchListSelectBox: -1,
-			dialogDeletionVisible: false,
 			watchListsArray: [],
 		};
 	},
@@ -172,11 +171,10 @@ export default {
 		},
 
 		openDeletionDialog() {
-			this.dialogDeletionVisible = true;
+			this.$refs.deletionDialog.showDialog();
 		},
 
 		onDeleteDialogClose(result) {
-			this.dialogDeletionVisible = false;
 			if (result) {
 				this.deleteWatchList();
 			}

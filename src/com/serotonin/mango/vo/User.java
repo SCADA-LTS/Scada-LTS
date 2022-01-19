@@ -52,6 +52,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.ws.beans.ScadaPrincipal;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -96,6 +97,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private boolean hideMenu;
 
+
+
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -116,6 +119,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+	private transient boolean hideHeader = false;
 
 	public User() { }
 
@@ -180,6 +184,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.uploadedProject = user.uploadedProject;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
+	}
+
+	public static User onlyId(int userId) {
+		return new User(userId, null, null, null, null, null, false, false, null, 0L);
+	}
+
+	public static User onlyIdUsername(ScadaPrincipal principal) {
+		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
 	}
 
 	/**
@@ -497,6 +509,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setHideMenu(boolean hideMenu) {
 		this.hideMenu = hideMenu;
+	}
+
+	public boolean isHideHeader() {
+		return hideHeader;
+	}
+
+	public void setHideHeader(boolean hideHeader) {
+		this.hideHeader = hideHeader;
 	}
 
 	public void setAttribute(String key, Object value) {

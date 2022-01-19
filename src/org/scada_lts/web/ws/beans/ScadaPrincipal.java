@@ -37,6 +37,10 @@ public class ScadaPrincipal  implements java.security.Principal {
 		return 0;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

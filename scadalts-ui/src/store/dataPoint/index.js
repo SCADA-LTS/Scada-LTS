@@ -77,6 +77,19 @@ const storeDataPoint = {
 			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum') },
 			{ id: 4, label: i18n.t('pointEdit.logging.value.average') },
 		],
+
+		purgeStrategyList: [
+			{
+				id: 1,
+				type: 'PERIOD',
+				label: i18n.t('pointEdit.logging.purge.type.period'),
+			},
+			{
+				id: 2,
+				type: 'LIMIT',
+				label: i18n.t('pointEdit.logging.purge.type.limit'),
+			},
+		],
 	},
 
 	mutations: {},
@@ -163,6 +176,27 @@ const storeDataPoint = {
 		clearDataPointCache({ dispatch }, datapointId) {
 			return dispatch('requestPatch', {
 				url: `/point_properties/${datapointId}/clearcache`,
+				data: null,
+			});
+		},
+
+		purgeNowPeriod({dispatch}, {datapointId, type, period}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowPeriod?type=${type}&period=${period}`,
+				data: null,
+			});
+		},
+
+		purgeNowLimit({dispatch}, {datapointId, limit}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowLimit?limit=${limit}`,
+				data: null,
+			});
+		},
+
+		purgeNowAll({dispatch}, datapointId) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowAll`,
 				data: null,
 			});
 		},

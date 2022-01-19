@@ -5,7 +5,7 @@ import storeUsersMock from '../../mocks/store/usersMock';
 import storeUserProfilesMock from '../../mocks/store/userProfilesMock';
 import { exampleUser } from '../../mocks/objects/UserMocks';
 
-import UserList from '@/views/UserList';
+import UserList from '@/views/Users/UserList';
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {

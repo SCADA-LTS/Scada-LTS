@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.serotonin.mango.view.event.BaseEventTextRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -63,7 +64,7 @@ import com.serotonin.util.StringUtils;
 @Controller
 @RequestMapping("/data_point_edit.shtm") 
 public class DataPointEditController {
-	private static final Log LOG = LogFactory.getLog(LoginController.class);
+	private static final Log LOG = LogFactory.getLog(DataPointEditController.class);
 	
 	DataPointDao dataPointDao;
 	
@@ -131,6 +132,7 @@ public class DataPointEditController {
         validate(dataPoint, errors);
         
         if (errors.isEmpty()) {
+            setDefaultPurgeValuesWhenIncorrect(dataPoint);
         	executeUpdate(request, dataPoint, errors);
         }
         
@@ -204,14 +206,19 @@ public class DataPointEditController {
         	errors.put("discardHighLimit", "validate.greaterThanDiscardLow");
 
         if (point.getLoggingType() != DataPointVO.LoggingTypes.NONE) {
-            if (point.getPurgeType() != DataPointVO.PurgeTypes.DAYS
-                    && point.getPurgeType() != DataPointVO.PurgeTypes.WEEKS
-                    && point.getPurgeType() != DataPointVO.PurgeTypes.MONTHS
-                    && point.getPurgeType() != DataPointVO.PurgeTypes.YEARS)
-            	errors.put("purgeType", "validate.required");
+            if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
+                if (point.getPurgeType() != DataPointVO.PurgeTypes.DAYS
+                        && point.getPurgeType() != DataPointVO.PurgeTypes.WEEKS
+                        && point.getPurgeType() != DataPointVO.PurgeTypes.MONTHS
+                        && point.getPurgeType() != DataPointVO.PurgeTypes.YEARS)
+                    errors.put("purgeType", "validate.required");
 
-            if (point.getPurgePeriod() <= 0)
-            	errors.put("purgePeriod", "validate.greaterThanZero");
+                if (point.getPurgePeriod() <= 0)
+                    errors.put("purgePeriod", "validate.greaterThanZero");
+            } else if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT) {
+                if (point.getPurgeValuesLimit() <= 1)
+                    errors.put("purgeValuesLimit", "validate.greaterThanOne");
+            }
         }
 
         if (point.getDefaultCacheSize() < 0)
@@ -231,5 +238,16 @@ public class DataPointEditController {
             }
             xids.add(ped.getXid());
         }		
+    }
+
+    private void setDefaultPurgeValuesWhenIncorrect(DataPointVO point) {
+        if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.PERIOD) {
+            if (point.getPurgeValuesLimit() < 2)
+                point.setPurgeValuesLimit(SystemSettingsDAO
+                        .getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+        } else if (point.getPurgeStrategy() == DataPointVO.PurgeStrategy.LIMIT) {
+            if (point.getPurgePeriod() <= 0)
+                point.setPurgePeriod(1);
+        }
     }
 }

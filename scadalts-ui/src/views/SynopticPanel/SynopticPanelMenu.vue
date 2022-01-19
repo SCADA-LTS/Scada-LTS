@@ -59,15 +59,11 @@
 			:message="$t('synopticpanels.dialog.delete.content')"
 		></ConfirmationDialog>
 
-		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
-			{{ snackbar.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
 import SynopticPanelCreator from './SynopticPanelCreator';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 /**
  * Synoptic Panel component - Menu Page
@@ -82,8 +78,6 @@ export default {
 		SynopticPanelCreator,
 		ConfirmationDialog,
 	},
-
-	mixins: [SnackbarMixin],
 
 	data() {
 		return {
@@ -106,11 +100,11 @@ export default {
 			this.$store
 				.dispatch('createSynopticPanel', synopticPanel)
 				.then(() => {
-					this.showCrudSnackbar('add');
+					this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.add.success`));
 					this.fetchSynopticPanelList();
 				})
 				.catch(() => {
-					this.showCrudSnackbar('add', false);
+					this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.add.fail`));
 				});
 		},
 
@@ -128,12 +122,12 @@ export default {
 				this.$store
 					.dispatch('deleteSynopticPanel', this.activePanel)
 					.then(() => {
-						this.showCrudSnackbar('delete');
+						this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.delete.success`));
 						this.fetchSynopticPanelList();
                         this.$router.push({ path: `/synoptic-panel/` });
 					})
 					.catch(() => {
-						this.showCrudSnackbar('delete', false);
+						this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.delete.fail`));
 					});
 			}
 		},
@@ -143,7 +137,11 @@ export default {
 		},
 
         onUpdatedSynopticPanel(status) {
-            this.showCrudSnackbar('update', status);
+			if(status) {
+				this.$store.dispatch('showSuccesNotification', this.$t(`common.snackbar.update.success`))
+			} else {
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.update.fail`))
+			}
         },
 
 		selectSynopticPanel(id) {
