@@ -1,8 +1,11 @@
 package org.scada_lts.utils;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.UserEntry;
+import com.serotonin.util.StringUtils;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
@@ -41,5 +44,22 @@ public final class ApiUtils {
             }
         }
         return true;
+    }
+
+    public static boolean validateUser(User userToSave, UserService userService) {
+        if(userToSave.getId() == Common.NEW_ID || userToSave.getId() == 0)
+            return false;
+        setPassword(userToSave, userService);
+        DwrResponseI18n response = new DwrResponseI18n();
+        userToSave.validate(response);
+        return !response.getHasMessages();
+    }
+
+    private static void setPassword(User userToSave, UserService userService) {
+        if(StringUtils.isEmpty(userToSave.getPassword())) {
+            getUser(userToSave.getId(), userService).ifPresent(userFromBase -> {
+                userToSave.setPassword(userFromBase.getPassword());
+            });
+        }
     }
 }
