@@ -50,10 +50,17 @@ public final class ApiUtils {
         if(userToSave.getId() == Common.NEW_ID || userToSave.getId() == 0)
             return false;
         setPassword(userToSave, userService);
+        return validateUserCreate(userToSave);
+    }
+
+    public static boolean validateUserCreate(User userToSave) {
+        if(userToSave.getUserProfile() == 0)
+            userToSave.setUserProfileId(-1);
         DwrResponseI18n response = new DwrResponseI18n();
         userToSave.validate(response);
         return !response.getHasMessages();
     }
+
 
     private static void setPassword(User userToSave, UserService userService) {
         if(StringUtils.isEmpty(userToSave.getPassword())) {

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.ApiUtils.validateUser;
+import static org.scada_lts.utils.ApiUtils.validateUserCreate;
 
 /**
  *
@@ -102,7 +103,7 @@ public class UsersAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 User userToSave = jsonUser.mapToUser();
-                if(!validateUser(userToSave, userService))
+                if(!validateUserCreate(userToSave))
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 userService.saveUser(userToSave);
                 return new ResponseEntity<>(new JsonUser(userToSave), HttpStatus.OK);
