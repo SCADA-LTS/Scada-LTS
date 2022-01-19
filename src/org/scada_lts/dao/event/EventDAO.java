@@ -748,13 +748,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		StringBuilder from = new StringBuilder();
 		from.append(" FROM events e ");
 		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
-		from.append(" LEFT JOIN userEvents ue ON ue.eventId = e.id " );
+		from.append(" JOIN userEvents ue ON ue.eventId = e.id " );
 
 		List<String> filterCondtions = new ArrayList<String>();
-		if (!user.isAdmin()) {
-			filterCondtions.add("u.id=?");
-			params.add(user.getId());
-		}
+		filterCondtions.add(" ue.userId = ? ");
+		params.add(user.getId());
 
 		if (!"".equals(query.getStartDate())) {
 			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
