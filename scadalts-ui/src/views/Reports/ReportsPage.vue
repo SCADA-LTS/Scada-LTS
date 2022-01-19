@@ -470,7 +470,9 @@
 </style>
 
 <script>
-import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
+/**
+ * @author sselvaggi
+ */
 const SCHEDULE_CRON = 0
 const TYPE_MAILING_LIST = 1
 const TYPE_USER = 2

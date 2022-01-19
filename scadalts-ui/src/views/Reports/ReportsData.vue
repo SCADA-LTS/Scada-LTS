@@ -96,8 +96,9 @@ iframe#reportChart {
 </style>
 
 <script>
-import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
-
+/**
+ * @author sselvaggi
+ */
 export default {
 	name: 'reportInstanceList',
 	components: {},

@@ -22,6 +22,9 @@
 </template>
 
 <script>
+/**
+ * @author sselvaggi
+ */
 import Components from '@min-gb/vuejs-components';
 
 export default {
