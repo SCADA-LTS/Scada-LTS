@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.error.EntityNotUniqueException;
@@ -151,22 +152,25 @@ public class UsersAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-
-                if(jsonBodyRequest.get("userId") == null
-                        || jsonBodyRequest.get("password") == null)
+                String password = (String) jsonBodyRequest.get("password");
+                Integer userId = (Integer) jsonBodyRequest.get("userId");
+                if(userId == null || password == null)
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 if (user.isAdmin()) {
                     userService.updateUserPassword(
-                            (Integer) jsonBodyRequest.get("userId"),
-                            (String) jsonBodyRequest.get("password")
+                            userId,
+                            password
                     );
                 } else {
-                    if(jsonBodyRequest.get("current") == null)
+                    String current = (String) jsonBodyRequest.get("current");
+                    if(StringUtils.isEmpty(password) || StringUtils.isEmpty(current))
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    if(!password.equals(current))
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     userService.updateUserPassword(
                             user.getId(),
-                            (String) jsonBodyRequest.get("password"),
-                            (String) jsonBodyRequest.get("current")
+                            password,
+                            current
                     );
                 }
                 result.put("status", "ok");
