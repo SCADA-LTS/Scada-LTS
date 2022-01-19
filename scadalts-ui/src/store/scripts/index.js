@@ -28,7 +28,6 @@ const storeScripts = {
 			});
 		},
 		async validateScriptBody({ dispatch }, payload) {
-			alert(JSON.stringify('PL'));
 			let url = `/scripts/validateScriptBody`;
 			return dispatch('requestPost', {
 				url,

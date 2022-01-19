@@ -680,6 +680,7 @@
 	"snmp.tester.noResponse": "No response received",
 	"snmp.tester.unknownHost": "Unknown host",
 	"scriptList.title": "Scripts",
+	"scriptList.selectDatapoint": "select datapoint",
 	"scriptList.id": "#",
 	"scriptList.xid": "Xid",
 	"scriptList.name": "Name",

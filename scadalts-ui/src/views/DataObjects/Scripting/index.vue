@@ -86,7 +86,7 @@
 								<v-col cols="6">
 									<v-select
 										item-value="id"
-										placeholder="select datapoint"
+										:placeholder="$t('scriptList.selectDatapoint')"
 										item-text="name"
 										v-model="selectedDatapointId"
 										@change="addDatapoint"
@@ -288,8 +288,6 @@ export default {
 		},
 		async validateScriptBody() {
 			const response = await this.$store.dispatch('validateScriptBody', this.scriptForm)
-
-			alert(JSON.stringify(response))
 			this.scriptBodyErrors = response.scriptBodyErrors;
 			this.$refs.scriptBodyTextarea.validate();
 		},
