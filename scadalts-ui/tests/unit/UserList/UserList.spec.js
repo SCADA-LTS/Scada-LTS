@@ -94,7 +94,7 @@ context('💠️ Test User List Scenario', () => {
             expect(wrapper2.vm.userProfiles[0].name).to.equal('UserProfile');
             expect(wrapper2.vm.userProfiles[0].id).to.equal(1);
             expect(wrapper2.vm.userProfiles[1].name).to.equal('None');
-            expect(wrapper2.vm.userProfiles[1].id).to.equal(0);
+            expect(wrapper2.vm.userProfiles[1].id).to.equal(-1);
         });
 
         it('Is fetchUserDetails working', async() => {
