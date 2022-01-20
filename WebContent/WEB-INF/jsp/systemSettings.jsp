@@ -942,6 +942,9 @@
           <div>
             <h2><fmt:message key="systemSettings.customCss.dialog.title"/></h2>
           </div>
+          <div class="note">
+            <fmt:message key="systemSettings.customCss.dialog.note"/>
+          </div>
           <div class="css-dialog-editor">
             <textarea
               placeholder="Enter Code Here"
