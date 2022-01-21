@@ -441,5 +441,9 @@
 	"uiv.disable": "Disable",
 	"uiv.enable": "Enable",
 	"uiv.modal.cancel": "Cancel",
-	"uiv.modal.ok": "OK"
+	"uiv.modal.ok": "OK",
+	"watchdog.response.badRequest": "Check your request data!",
+	"watchdog.response.unauthorized": "You do not have permission to this action!",
+	"watchdog.response.unavailable": "Watchdog server is unreachable!",
+	"watchdog.response.unexpected": "Scada server error occurred!",
 }
