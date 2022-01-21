@@ -41,6 +41,7 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.Tuple;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +60,7 @@ import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
@@ -159,6 +161,43 @@ public class DataPointService implements MangoDataPoint {
 			Collections.sort(dpList, comparator);
 		}
 		return dpList;
+	}
+
+	/**
+	 * Get PointList with permission validation
+	 *
+	 * Get All DataPoints with specific access permission.
+	 * To validate that you need to provide a user that should be
+	 * checked and the access type.
+	 *
+	 * @param user - User to validate
+	 * @param type - Permissions.DataPointAccessTypes entry [Read = 1, Set = 2]
+	 * @return - Filtered list of DataPoints object
+	 */
+	public List<DataPointVO> getDataPointsWithPermissions(User user, int type) {
+		List<DataPointVO> dpList = dataPointDAO.getDataPoints();
+		if(!user.isAdmin()) {
+			return dpList.stream()
+					.filter(dp -> filterDpWithReadAccess(dp, user, type))
+					.collect(Collectors.toList());
+		} else {
+			return dpList;
+		}
+	}
+
+	private boolean filterDpWithReadAccess(DataPointVO dp, User user, int type) {
+		try {
+			if(type == Permissions.DataPointAccessTypes.READ) {
+				Permissions.ensureDataPointReadPermission(user, dp);
+			} else if (type == Permissions.DataPointAccessTypes.SET) {
+				Permissions.ensureDataPointSetPermission(user, dp);
+			} else {
+				return false;
+			}
+			return true;
+		} catch (PermissionException e) {
+			return false;
+		}
 	}
 
 	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {

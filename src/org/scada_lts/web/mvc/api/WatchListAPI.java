@@ -116,7 +116,7 @@ public class WatchListAPI {
 	public ResponseEntity<String> getUniqueXid(HttpServletRequest request) {
 		try {
 			User user = Common.getUser(request);
-			if(user != null && user.isAdmin()) {
+			if(user != null) {
 				return new ResponseEntity<>(watchListService.generateUniqueXid(), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -12,10 +12,10 @@
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
-			<v-list-item max-width="50">
+			<v-list-item max-width="50" v-if="!!highestUnsilencedAlarmLevel">
 				<v-list-item-content>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
-						<img v-if="highestUnsilencedAlarmLevel != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
+						<img v-if="highestUnsilencedAlarmLevel !== -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
 					</a>
 				</v-list-item-content>
 			</v-list-item>
