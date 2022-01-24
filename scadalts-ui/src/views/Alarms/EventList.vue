@@ -48,7 +48,7 @@
 						<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
 						<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
 					</v-col>
-					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{ eventMessageI18n(selectedEvent.message)}}</v-col>
+					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{ (selectedEvent.message) | clearHtml}}</v-col>
 					<v-col v-if="selectedEvent.eventSourceType===1" cols="3"><b>{{$t('eventList.datapoint')}}</b>: {{selectedEvent.datapoint}}</v-col>
 				</v-row>
 				<v-divider></v-divider>
@@ -324,7 +324,7 @@
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{eventMessageI18n(item.message)}}
+						<a :title="(item.message) | clearHtml">{{ (item.message) | clearHtml | truncate}}</a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -591,10 +591,13 @@ export default {
 			return value.charAt(0).toUpperCase() + value.slice(1)
 		},
 		truncate(input) {
-			if (input.length > 32) {
-				return input.substring(0, 32) + '...';
+			if (input.length > 45) {
+				return input.substring(0, 45) + '...';
 			}
 			return input;
+		},
+		clearHtml(str) {
+			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ')
 		}
 	},
 	
@@ -761,7 +764,8 @@ export default {
 		},
 	  	open(item, item2) {
 			this.selectedEventId = item.id;
-	  	}
+	  	},
+		
 	},
 };
 </script>
