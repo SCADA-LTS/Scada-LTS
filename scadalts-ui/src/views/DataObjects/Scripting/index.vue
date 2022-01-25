@@ -44,21 +44,22 @@
 				v-model="dialog"
 				v-show="selectedScriptId !== null"
 				@change="selectedScriptId = null"
+				width= "70%"
 			>
 				<v-card>
 					<v-card-title>
 						<v-row>
-							<v-col v-if="selectedScriptId != -1" cols="6">Script #{{ selectedScriptId }}</v-col>
+							<v-col v-if="selectedScriptId != -1" cols="6">{{$t('scriptList.title')}} #{{ selectedScriptId }}</v-col>
 							<v-col v-else cols="6">{{ $t('scriptList.newScript') }}</v-col>
 							<v-col cols="12">
 								<v-btn
 									v-if="selectedScriptId != -1"
 									class="mr-2"
 									color="blue"
-									@click="runScript(selectedScript.xid)"
+									@click="saveAndRunScript(selectedScript.xid)"
 								>
 									<v-icon>mdi-cog</v-icon>
-									{{ $t('scriptList.run') }}
+									save and  {{ $t('scriptList.run') }}
 								</v-btn>
 
 								<v-btn
@@ -74,11 +75,10 @@
 						</v-row>
 					</v-card-title>
 					<v-card-text>
-						<form>
+						<v-form ref="editForm">
 							<v-row>
 								<v-col cols="6">
-									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid"  v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique, ruleMaxLen50 ]"></v-text-field>
-								</v-ruleXidUniquValidScriptBodyext-field>
+									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid" v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique, ruleMaxLen50 ]"></v-text-field>
 								</v-col>
 								<v-col cols="6">
 									<v-text-field :label="$t('common.name')" v-model="scriptForm.name" :rules="[ruleNotNull, ruleMaxLen40 ]"></v-text-field>
@@ -126,13 +126,13 @@
 									></v-text-field>
 								</v-col>
 							</v-row>
-							<v-textarea @input="validateScriptBody" :rules="[ruleNotNull, ruleValidScriptBody]"
+							<v-textarea :rules="[ruleNotNull]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="scriptForm.script"
 								ref="scriptBodyTextarea"
 							></v-textarea>
-						</form>
+						</v-form>
 					</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
@@ -204,7 +204,6 @@ export default {
 			ruleMaxLen40: (v) => !!(v.length < 40) || this.$t('validation.rule.maxLen')+40,
 			ruleMaxLen50: (v) => !!(v.length < 50) || this.$t('validation.rule.maxLen')+50,
 			ruleXidUnique: (v) => !!this.xidUnique || this.$t('validation.rule.xid.notUnique'),
-			ruleValidScriptBody: (v) => !this.scriptBodyErrors || this.$t('validation.rule.xid.notUnique'),
 			snackbarMessage: '',
 			snackbar: false,
 			dialog: false,
@@ -286,11 +285,6 @@ export default {
 			this.xidUnique = response.xidRepeated === 'false' ? true: false;
 			this.$refs.xidInput.validate();
 		},
-		async validateScriptBody() {
-			const response = await this.$store.dispatch('validateScriptBody', this.scriptForm)
-			this.scriptBodyErrors = response.scriptBodyErrors;
-			this.$refs.scriptBodyTextarea.validate();
-		},
 		createNewScript() {
 			this.selectedScriptId = -1;
 
@@ -300,9 +294,10 @@ export default {
 			this.scriptForm.name = '';
 			this.scriptForm.pointsOnContext = [];
 			this.scriptForm.script = '';
-			this.scriptForm.datasourceContext = '';
+			this.scriptForm.datasourceContext = 'ds';
 			this.scriptForm.datapointContext = 'dp';
 
+			this.$refs.editForm.resetValidation()
 			this.dialog = true;
 		},
 		removeDatapoint(dataPointXid) {
@@ -375,17 +370,43 @@ export default {
 			}
 			this.totalScripts = this.scriptList.total;
 		},
-		runScript(xid) {
-			this.$store.dispatch('runScript', xid);
-			this.snackbar = true;
-			this.snackbarMessage = `${this.$t('scriptList.scriptExecuted')} `;
+		async runScript(xid) {
+			try {
+				await this.$store.dispatch('runScript', xid);
+				this.snackbar = true;
+				this.snackbarMessage = `${this.$t('scriptList.successfulScriptExecution')} `;
+			} catch (e) {
+				this.snackbar = true;
+				this.snackbarMessage = `${this.$t('scriptList.failedScriptExecution')} `;
+			}	
 		},
-		async saveScript() {
-			if (this.selectedScriptId != -1) {
-				response = await this.$store.dispatch('updateScript', this.scriptForm);
-			} else {
-				response = await this.$store.dispatch('createScript', this.scriptForm);
+		async saveAndRunScript(xid) {
+			await this.saveScript(false)
+			try {
+				await this.$store.dispatch('runScript', xid);
+				this.snackbar = true;
+				this.snackbarMessage = `${this.$t('scriptList.successfulScriptExecution')} `;
+			} catch (e) {
+				this.snackbar = true;
+				this.snackbarMessage = `${this.$t('scriptList.failedScriptExecution')} `;
+			}	
+		},
+		
+		async saveScript(closeOnSaveConfirmation = true) {
+			if (this.$refs.editForm.validate()) {
+				
+				let response
+				if (this.selectedScriptId != -1) {
+					response = await this.$store.dispatch('updateScript', this.scriptForm);
+				} else {
+					response = await this.$store.dispatch('createScript', this.scriptForm);
+				}
+				this.fetchScriptList()
+				this.snackbar = true;
+				this.snackbarMessage = `${this.$t('scriptList.scriptSaved')} `;
+				if (closeOnSaveConfirmation) this.dialog = false
 			}
+            
 		},
 		async deleteScript(id) {
 			this.scriptList = await this.$store.dispatch('deleteScript', id);
