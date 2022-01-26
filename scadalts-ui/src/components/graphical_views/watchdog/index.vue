@@ -325,13 +325,13 @@ export default {
 			} else if (datapoint.check === 'not_equal') {
 				return datapoint.value !== respValue;
 			} else if (datapoint.check === 'greater' && !binary) {
-				return datapoint.value > respValue;
-			} else if (datapoint.check === 'less' && !binary) {
 				return datapoint.value < respValue;
+			} else if (datapoint.check === 'less' && !binary) {
+				return datapoint.value > respValue;
 			} else if (datapoint.check === 'greater_equal' && !binary) {
-				return datapoint.value >= respValue;
-			} else if (datapoint.check === 'less_equal' && !binary) {
 				return datapoint.value <= respValue;
+			} else if (datapoint.check === 'less_equal' && !binary) {
+				return datapoint.value >= respValue;
 			} else {
 				return false;
 			}
