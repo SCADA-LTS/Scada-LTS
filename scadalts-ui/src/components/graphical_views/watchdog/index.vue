@@ -36,14 +36,12 @@
 							<v-card>
 								<v-card-title>
 									<span>
-										{{name}} 
+										{{ name }}
 									</span>
-									<v-spacer>
-									</v-spacer>
+									<v-spacer> </v-spacer>
 									<span>
-										{{clock}}
+										{{ clock }}
 									</span>
-									
 								</v-card-title>
 								<v-card-text>
 									<v-divider></v-divider>
@@ -91,10 +89,11 @@ const WATCHDOG_API_TIME = './api/is_alive/time2';
 const WATCHDOG_API_RUNNER = './api/is_alive/watchdog';
 
 /**
- * 
+ *
  * Watchdog Component
- * 
+ *
  * @author radek2s <rjajko@softq.pl>
+ * @version 1.0.01
  */
 export default {
 	props: {
@@ -292,7 +291,7 @@ export default {
 		},
 
 		runClock() {
-			if(!this.clockInterval) {
+			if (!this.clockInterval) {
 				this.clockInterval = setInterval(() => {
 					this.clock = new Date().toLocaleString();
 				}, 1000);

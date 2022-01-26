@@ -24,3 +24,32 @@ datapoint condition value.
 | `greater` | Check if the value is greater than the specified value |
 | `less_equal` | Check if the value is less than or equal to the specified value |
 | `greater_equal` | Check if the value is greater than or equal to the specified value |
+
+## API
+
+| Parameter name | type |  Default | Description |
+| ---------- | ----------- | ----------- | ----------- |
+| `name` | string (optional) | 'IsAlive2' | Name that will be displayed as the menu title |
+| `interval` | number (optional) | 10000 | Interval time between checking the application health |
+| `wd-ip` | string (optional) | null | IP address to the WatchDog server |
+| `wd-port` | number (optional) | null | Port number to WatchDog server |
+| `dp-validation` | array (optional) | null | Array of objects that contains the DP check validation |
+| `dp-failure` | boolean | false | If that argument exists that means the DP check error will be treated as failure |
+
+
+
+## Example usage
+
+Watchdog component can be used in the following way:
+```html
+<div id="app-isalive2" 
+    name="test2" 
+    interval="3000" 
+    wd-ip="172.0.0.1" 
+    wd-port="1234" 
+    dp-validation='[{"xid":"DP_EN1", "value":1, "check":"equal"}]' 
+    dp-failure
+></div>
+```
+To embed this component in the page we need to add the new HTML component to our view and then create a following div with "app-isalive2" id. Rest of the parameters are optional.
+
