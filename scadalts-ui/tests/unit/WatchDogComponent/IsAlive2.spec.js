@@ -85,16 +85,6 @@ describe('💠️ Watchdog Unit Props Test Scenario', () => {
             expect(wrapper.vm.dpFailure).to.equal(false);
         })
 
-        it('Is Network connection OK', async () => {
-            await wrapper.vm.$nextTick();
-            expect(wrapper.vm.lastMessage.message).to.equal("Network connection");
-            expect(wrapper.vm.lastMessage.state).to.equal("OK");
-        });
-
-        it('Is component checking conditions', () => {
-            expect(wrapper.vm.checkingConditions).to.equal(true);
-        })
-
     })
 })
 
