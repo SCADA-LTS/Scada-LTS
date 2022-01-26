@@ -350,9 +350,6 @@
 					</v-row>
 				</v-col>
 			</v-row>
-			<v-snackbar v-model="response.status">
-				{{ response.message }}
-			</v-snackbar>
 		</v-col>
 	</v-row>
 </template>
@@ -414,10 +411,6 @@ export default {
 					value: true,
 				},
 			],
-			response: {
-				status: false,
-				message: '',
-			},
 		};
 	},
 
@@ -436,15 +429,13 @@ export default {
 	methods: {
 		addEventDetector(value) {
 			this.data.eventDetectors.push(value);
-			this.response.status = true;
-			this.response.message = this.$t('common.snackbar.add.success');
+			this.$store.dispatch('showSuccessNotification', this.$t('common.snackbar.add.success'))
 		},
 		addEventDetectorFail(error) {
-			this.response.status = true;
 			if(error.status === 409) {
-				this.response.message = this.$t('common.snackbar.xid.not.unique');
+				this.$store.dispatch('showErrorNotification', this.$t('common.snackbar.xid.not.unique'))
 			} else {
-				this.response.message = this.$t('common.snackbar.add.fail');
+				this.$store.dispatch('showErrorNotification', this.$t('common.snackbar.add.fail'))
 			}
 			
 		},
@@ -462,12 +453,10 @@ export default {
 					requestData: e,
 				})
 				.then((resp) => {
-					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.success');
+					this.$store.dispatch('showSuccessNotification', this.$t('common.snackbar.update.success'))
 				})
 				.catch((err) => {
-					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.fail');
+					this.$store.dispatch('showErrorNotification', this.$t('common.snackbar.update.fail'))
 				});
 		},
 
@@ -483,16 +472,13 @@ export default {
 							this.data.eventDetectors = this.data.eventDetectors.filter((el) => {
 								return el.id !== this.confirmDeleteDetector.id;
 							});
-							this.response.status = true;
-							this.response.message = this.$t('common.snackbar.delete.success');
+							this.$store.dispatch('showSuccessNotification', this.$t('common.snackbar.delete.success'))
 						} else {
-							this.response.status = true;
-							this.response.message = this.$t('common.snackbar.delete.fail');
+							this.$store.dispatch('showErrorNotification', this.$t('common.snackbar.delete.fail'))
 						}
 					})
 					.catch(() => {
-						this.response.status = true;
-						this.response.message = this.$t('common.snackbar.delete.fail');
+						this.$store.dispatch('showErrorNotification', this.$t('common.snackbar.delete.fail'))
 					});
 			}
 		},

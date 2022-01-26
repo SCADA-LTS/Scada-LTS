@@ -39,6 +39,8 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.mango.service.EventService;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -86,7 +88,7 @@ public class MiscDwr extends BaseDwr {
 
 		User user = Common.getUser();
 		if (user != null) {
-			boolean result = new EventDao()
+			boolean result = new EventService()
 					.toggleSilence(eventId, user.getId());
 			resetLastAlarmLevelChange();
 			response.addData("silenced", result);
@@ -100,7 +102,7 @@ public class MiscDwr extends BaseDwr {
 	public DwrResponseI18n silenceAll() {
 		List<Integer> silenced = new ArrayList<Integer>();
 		User user = Common.getUser();
-		EventDao eventDao = new EventDao();
+		MangoEvent eventDao = new EventService();
 		for (EventInstance evt : eventDao.getPendingEvents(user.getId())) {
 			if (!evt.isSilenced()) {
 				eventDao.toggleSilence(evt.getId(), user.getId());
@@ -128,7 +130,7 @@ public class MiscDwr extends BaseDwr {
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
 		if (user != null) {
-			EventDao eventDao = new EventDao();
+			MangoEvent eventDao = new EventService();
 			long now = System.currentTimeMillis();
 			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
 				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
@@ -297,8 +299,7 @@ public class MiscDwr extends BaseDwr {
 		HttpServletRequest httpRequest = WebContextFactory.get()
 				.getHttpServletRequest();
 		User user = Common.getUser(httpRequest);
-		EventManager eventManager = Common.ctx.getEventManager();
-		EventDao eventDao = new EventDao();
+		MangoEvent eventDao = new EventService();
 
 		LongPollData data = getLongPollData(pollSessionId, false);
 		data.updateTimestamp();
@@ -320,25 +321,6 @@ public class MiscDwr extends BaseDwr {
 
 		while (!pollRequest.isTerminated()
 				&& System.currentTimeMillis() < expireTime) {
-			if (pollRequest.isMaxAlarm() && user != null) {
-				// Check the max alarm. First check if the events have changed
-				// since the last time this request checked.
-				long lastEMUpdate = eventManager.getLastAlarmTimestamp();
-				if (state.getLastAlarmLevelChange() < lastEMUpdate) {
-					state.setLastAlarmLevelChange(lastEMUpdate);
-
-					// The events have changed. See if the user's particular max
-					// alarm level has changed.
-					int maxAlarmLevel = eventDao
-							.getHighestUnsilencedAlarmLevel(user.getId());
-					LOG.trace(toString() + " maxAlarmLevel: " + maxAlarmLevel);
-					if (maxAlarmLevel != state.getMaxAlarmLevel()) {
-						response.put("highestUnsilencedAlarmLevel",
-								maxAlarmLevel);
-						state.setMaxAlarmLevel(maxAlarmLevel);
-					}
-				}
-			}
 
 			if (pollRequest.isWatchList() && user != null) {
 				synchronized (state) {

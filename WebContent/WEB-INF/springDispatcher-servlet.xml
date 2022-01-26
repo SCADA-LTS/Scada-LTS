@@ -2,18 +2,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
         http://www.springframework.org/schema/context 
-        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd
         http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+        http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd
+        http://www.springframework.org/schema/security
+        https://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
 	<context:component-scan base-package="org.scada_lts" />
 	<mvc:annotation-driven />
-	
-	<context:annotation-config />	
+
+	<context:annotation-config />
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
      <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
      <property name="prefix"><value>/WEB-INF/jsp/</value></property>
@@ -202,4 +208,12 @@
   
   <!-- Interceptors -->
   <bean id="commonData" class="com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor"/>
+
+  <bean id="servletBeans" class="org.scada_lts.web.beans.GetServletBeans"/>
+
+  <bean id="webSocketStatsMonitor" class="org.scada_lts.web.ws.config.WebSocketStatsMonitor">
+    <constructor-arg ref="subProtocolWebSocketHandler"/>
+    <constructor-arg ref="clientOutboundChannelExecutor"/>
+    <constructor-arg ref="userRegistry"/>
+  </bean>
 </beans>

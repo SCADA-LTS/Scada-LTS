@@ -49,6 +49,7 @@ public class ReportDAO {
 	private static final Log LOG = LogFactory.getLog(ReportDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
+	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_NAME = "name";
 	private static final String COLUMN_NAME_DATA = "data";
@@ -58,16 +59,18 @@ public class ReportDAO {
 			+ "select "
 				+ COLUMN_NAME_DATA + ", "
 				+ COLUMN_NAME_ID + ", "
+				+ COLUMN_NAME_XID + ", "
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_NAME + " "
 			+ "from reports ";
 
 	private static final String REPORT_INSERT = ""
 			+ "insert into reports ("
+				+ COLUMN_NAME_XID + ", "
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_NAME + ", "
 				+ COLUMN_NAME_DATA + ") "
-			+ "values (?,?,?) ";
+			+ "values (?,?,?,?) ";
 
 	private static final String REPORT_UPDATE = ""
 			+ "update reports set "
@@ -86,6 +89,11 @@ public class ReportDAO {
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
+	private static final String REPORT_SELECT_WHERE_XID = ""
+			+ REPORT_SELECT
+			+ "where "
+			+ COLUMN_NAME_XID + "=? ";
+
 	private static final String REPORT_SELECT_WHERE_USER_ID_ORDER = ""
 				+ REPORT_SELECT
 			+ "where "
@@ -103,6 +111,7 @@ public class ReportDAO {
 			report.setId(rs.getInt(COLUMN_NAME_ID));
 			report.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			report.setName(rs.getString(COLUMN_NAME_NAME));
+			report.setXid(rs.getString(COLUMN_NAME_XID));
 			return report;
 		}
 	}
@@ -116,6 +125,21 @@ public class ReportDAO {
 		ReportVO reportVO;
 		try {
 			reportVO = DAO.getInstance().getJdbcTemp().queryForObject(REPORT_SELECT_WHERE_ID, new Object[]{id}, new ReportRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			reportVO = null;
+		}
+		return reportVO;
+	}
+
+	public ReportVO getReport(String xid) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getReport(String xid) xid:" + xid);
+		}
+
+		ReportVO reportVO;
+		try {
+			reportVO = DAO.getInstance().getJdbcTemp().queryForObject(REPORT_SELECT_WHERE_XID, new Object[]{xid}, new ReportRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			reportVO = null;
 		}
@@ -153,6 +177,7 @@ public class ReportDAO {
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSERT, Statement.RETURN_GENERATED_KEYS);
 				new ArgumentPreparedStatementSetter(new Object[]{
+						report.getXid(),
 						report.getUserId(),
 						report.getName(),
 						new SerializationData().writeObject(report)}

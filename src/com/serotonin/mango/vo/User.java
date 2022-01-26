@@ -52,6 +52,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.ws.beans.ScadaPrincipal;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -183,6 +184,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.uploadedProject = user.uploadedProject;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
+	}
+
+	public static User onlyId(int userId) {
+		return new User(userId, null, null, null, null, null, false, false, null, 0L);
+	}
+
+	public static User onlyIdUsername(ScadaPrincipal principal) {
+		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
 	}
 
 	/**

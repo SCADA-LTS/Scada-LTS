@@ -19,7 +19,6 @@ package org.scada_lts.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.EventTypeUtil;
 
 
