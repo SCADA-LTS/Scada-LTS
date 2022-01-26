@@ -296,8 +296,8 @@ export default {
 			this.scriptForm.script = '';
 			this.scriptForm.datasourceContext = 'ds';
 			this.scriptForm.datapointContext = 'dp';
-
-			this.$refs.editForm.resetValidation()
+			
+			if(!!this.$refs.editForm) this.$refs.editForm.resetValidation();
 			this.dialog = true;
 		},
 		removeDatapoint(dataPointXid) {
