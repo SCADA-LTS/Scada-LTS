@@ -168,3 +168,11 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push nightly Docker image
+        if: ${{ startsWith(github.base_ref, 'refs/head/release') || startsWith(github.base_ref, 'refs/head/preview') }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: nightly
+          labels: ${{ steps.meta.outputs.labels }}
