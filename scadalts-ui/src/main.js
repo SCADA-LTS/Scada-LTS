@@ -132,6 +132,7 @@ if (!!window.document.getElementById(watchdogId)) {
 					interval: watchdogEl.getAttribute('interval') !== null ? Number(watchdogEl.getAttribute('interval')) : 10000,
 					wdIp: watchdogEl.getAttribute('wd-ip'),
 					wdPort: watchdogEl.getAttribute('wd-port') !== null ? Number(watchdogEl.getAttribute('wd-port')) : null,
+					wdMessage: watchdogEl.getAttribute('wd-message'),
 					dpValidation: watchdogEl.getAttribute('dp-validation') !== null ? JSON.parse(watchdogEl.getAttribute('dp-validation')) : null,
 					dpFailure: watchdogEl.getAttribute('dp-failure') !== null,
 				},

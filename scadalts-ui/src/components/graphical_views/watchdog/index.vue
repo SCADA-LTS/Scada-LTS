@@ -113,6 +113,10 @@ export default {
 			type: Number,
 			default: null,
 		},
+		wdMessage: {
+			type: String,
+			default: null,
+		},
 		dpValidation: {
 			type: Array,
 			default: null,
@@ -268,6 +272,7 @@ export default {
 						await Axios.post(WATCHDOG_API_RUNNER, {
 							address: this.wdIp,
 							port: this.wdPort,
+							message: this.wdMessage || 'ping',
 						});
 						this.watchdogState.running = true;
 						this.watchdogState.errorMessage = '';

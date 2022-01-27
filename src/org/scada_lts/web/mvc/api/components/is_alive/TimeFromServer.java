@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * @autor grzegorz.bylica@gmail.com on 24.09.2019
@@ -47,6 +48,10 @@ public class TimeFromServer {
         }
     }
 
+    /**
+     * @author radek2s <rjajko@softq.pl>
+     * @return ResponseEntity with status message
+     */
     @GetMapping(value = "/time2")
     public ResponseEntity<Long> getServerTime(HttpServletRequest request) {
         LOG.info("/api/is_alive/time2");
@@ -62,6 +67,10 @@ public class TimeFromServer {
         }
     }
 
+    /**
+     * @author radek2s <rjajko@softq.pl>
+     * @return ResponseEntity with status message
+     */
     @PostMapping(value = "/watchdog")
     public ResponseEntity<String> notifyWatchdog(@RequestBody WatchDogConfig config, HttpServletRequest request) {
         String rootKey = "watchdog.response";
@@ -69,7 +78,7 @@ public class TimeFromServer {
             User user = Common.getUser(request);
             if(config == null) { return new ResponseEntity<>(rootKey + ".badRequest", HttpStatus.BAD_REQUEST); }
             if(user == null) { return new ResponseEntity<>(rootKey + ".unauthorized", HttpStatus.UNAUTHORIZED); }
-            sendWatchdogMessage(config);
+            sendWatchdogMessage(config, request);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IOException e) {
             LOG.warn(e.getMessage());
@@ -80,10 +89,12 @@ public class TimeFromServer {
         }
     }
 
-    private void sendWatchdogMessage(WatchDogConfig config) throws IOException {
+    private void sendWatchdogMessage(WatchDogConfig config, HttpServletRequest request) throws IOException {
         Socket socket = new Socket(config.getHost(), config.getPort());
         DataOutputStream messageStream = new DataOutputStream(socket.getOutputStream());
-        messageStream.writeBytes("ping");
+        String remoteAddress = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR"))
+                .orElse(request.getRemoteAddr()) ;
+        messageStream.writeBytes(remoteAddress + "|" + config.getMessage());
         socket.close();
         messageStream.close();
     }
@@ -92,8 +103,10 @@ public class TimeFromServer {
 class WatchDogConfig {
     private String host;
     private int port;
+    private String message;
 
     public WatchDogConfig() {
+        this.message = "ping";
     }
 
     public String getHost() {
@@ -110,5 +123,13 @@ class WatchDogConfig {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

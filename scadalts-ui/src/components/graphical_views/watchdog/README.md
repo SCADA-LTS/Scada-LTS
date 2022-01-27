@@ -3,6 +3,17 @@ This is a new version of classic IsAlive component that is able to detect the Sy
 when specific datapoint does not meet the specified criteria, the component will show the offline state. If the Watchdog server is defined this compoenent will send the request 
 to this server using the TCP socket connection. 
 
+Watchdog server will receive the message with format:
+```
+<requestHostAddr>|<message>
+```
+where the `requestHostAddr` is the address of the client browser that was sending the request. 
+`message` by default will be "ping" unless user not defined the `dp-message` argument in his
+UI component. This is required because the Scada-LTS application runs on the specific server machine that might be different from the client browser. So to identify the browser that 
+is sending the request we are providing that address and additional message to the socket
+connection. 
+
+
 ## Configuration
 
 Example datapoint condition configuration:
@@ -33,6 +44,7 @@ datapoint condition value.
 | `interval` | number (optional) | 10000 | Interval time between checking the application health |
 | `wd-ip` | string (optional) | null | IP address to the WatchDog server |
 | `wd-port` | number (optional) | null | Port number to WatchDog server |
+| `wd-message` | string (optional) | 'ping' | Message that will be send thought the TCP socket connection to the WatchDog server |
 | `dp-validation` | array (optional) | null | Array of objects that contains the DP check validation |
 | `dp-failure` | boolean | false | If that argument exists that means the DP check error will be treated as failure |
 
@@ -45,11 +57,17 @@ Watchdog component can be used in the following way:
 <div id="app-isalive2" 
     name="test2" 
     interval="3000" 
-    wd-ip="172.0.0.1" 
+    wd-ip="127.0.0.1" 
     wd-port="1234" 
+    wd-message="Monitoring"
     dp-validation='[{"xid":"DP_EN1", "value":1, "check":"equal"}]' 
     dp-failure
 ></div>
 ```
 To embed this component in the page we need to add the new HTML component to our view and then create a following div with "app-isalive2" id. Rest of the parameters are optional.
 
+To create your own watchdog server you can use the following command:
+```bash
+nc -4 -l 127.0.0.1 1234
+```
+When the component will check every step you should see the message received from the Scada client.
