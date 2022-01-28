@@ -786,10 +786,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		if (EventsDwr.STATUS_ACTIVE.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
-			filterCondtions.add("e.rtnTs is null");
+			filterCondtions.add("e.rtnTs = 0");
 		} else if (EventsDwr.STATUS_RTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
-			filterCondtions.add("e.rtnTs is not null");
+			filterCondtions.add("e.rtnTs > 0");
 		} else if (EventsDwr.STATUS_NORTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='N'");
 		}
