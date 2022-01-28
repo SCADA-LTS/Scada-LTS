@@ -110,6 +110,12 @@ describe('💠️ Watchdog Methods Unit Test Scenario', () => {
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(true);
         })
 
+        it('Binary DP value true, check "equal true" should be true', () => {
+            const dp = { check: 'equal', value: true }
+            const response = { type: 'BinaryValue', value: 'true' }
+            expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(true);
+        })
+
         it('Binary DP value "false", check "equal 1" should be false', () => {
             const dp = {
                 check: 'equal',
@@ -122,8 +128,20 @@ describe('💠️ Watchdog Methods Unit Test Scenario', () => {
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })
 
+        it('Binary DP value "false", check "equal true" should be false', () => {
+            const dp = { check: 'equal', value: true }
+            const response = { type: 'BinaryValue', value: 'false' }
+            expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
+        })
+
         it('Binary DP value "true", check "not_equal 1" should be false', () => {
             const dp = { check: 'not_equal', value: 1 }
+            const response = { type: 'BinaryValue', value: 'true' }
+            expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
+        })
+
+        it('Binary DP value "true", check "not_equal true" should be false', () => {
+            const dp = { check: 'not_equal', value: true }
             const response = { type: 'BinaryValue', value: 'true' }
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })
@@ -144,6 +162,12 @@ describe('💠️ Watchdog Methods Unit Test Scenario', () => {
             const dp = { check: 'equal', value: 1 }
             const response = { type: 'NumericValue', value: '1.0' }
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(true);
+        })
+
+        it('Numeric DP value "1.0", check "equal true" should be false', () => {
+            const dp = { check: 'equal', value: true }
+            const response = { type: 'NumericValue', value: '1.0' }
+            expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })
 
         it('Numeric DP value "1.5", check "equal 1" should be false', () => {

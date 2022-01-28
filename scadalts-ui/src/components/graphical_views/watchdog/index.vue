@@ -329,9 +329,11 @@ export default {
 		 */
 		checkPointCondition(datapoint, response) {
 			let respValue = null;
+			let checkValue = datapoint.value;
 			let binary = false;
 			if (response.type === 'BinaryValue') {
 				binary = true;
+				checkValue = Number(datapoint.value);
 				respValue = response.value == 'true' ? 1 : 0;
 			} else if (response.type === 'AlphanumericValue') {
 				respValue = response.value;
@@ -340,17 +342,17 @@ export default {
 			}
 
 			if (datapoint.check === 'equal') {
-				return datapoint.value === respValue;
+				return checkValue === respValue;
 			} else if (datapoint.check === 'not_equal') {
-				return datapoint.value !== respValue;
+				return checkValue !== respValue;
 			} else if (datapoint.check === 'greater' && !binary) {
-				return datapoint.value < respValue;
+				return checkValue < respValue;
 			} else if (datapoint.check === 'less' && !binary) {
-				return datapoint.value > respValue;
+				return checkValue > respValue;
 			} else if (datapoint.check === 'greater_equal' && !binary) {
-				return datapoint.value <= respValue;
+				return checkValue <= respValue;
 			} else if (datapoint.check === 'less_equal' && !binary) {
-				return datapoint.value >= respValue;
+				return checkValue >= respValue;
 			} else {
 				return false;
 			}
