@@ -8,72 +8,75 @@
 			:message="confirmMessage"
 		></ConfirmationDialog>
 		<v-row justify="center" class="mt-6">
-			<v-dialog
-			v-model="eventDetailsDialog"
-			scrollable
-			max-width="90%"
-			>
-			<v-card v-if="selectedEvent">
-				<v-card-title>
-					<v-row>
-						<v-col cols="6">Event #{{selectedEvent.id}}</v-col>
-						<v-col cols="6" class="text-right">
-							<img 
-							:src="getFlagByEvent(selectedEvent)">
+			<v-dialog v-model="eventDetailsDialog" scrollable max-width="70%">
+				<v-card v-if="selectedEvent">
+					<v-card-title>
+						<v-row>
+							<v-col cols="4">
+								<img 
+								:src="getFlagByEvent(selectedEvent)"> #{{selectedEvent.id}}</v-col>
+							<v-col cols="8" class="text-right">
+							</v-col>
+						</v-row>
+					</v-card-title>
+					<v-row style="margin: 0 2rem" > 
+						<v-col cols="3">
+							<div style="position:relative; height: 0; ">
+								<v-col><b>{{$t('eventList.createAt')}}</b>:<br> {{ $date(selectedEvent.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</v-col>
+								<v-col ><b>{{$t('eventList.alarmLevel')}}</b>:<br> 
+									{{ $t(`eventList.alarmLevel${selectedEvent.alarmLevel}`) }}
+								</v-col>
+								<v-col v-if="selectedEvent.eventSourceType===1" ><b>{{$t('eventList.datapoint')}}</b>:<br> {{selectedEvent.datapoint}}</v-col>
+								<v-col ><b>{{$t('eventList.sourceType')}}</b>:<br> {{ $t(`eventList.sourceType${selectedEvent.typeId}`) }}</v-col>
+								<v-col ><b>{{$t('eventList.status')}}</b>:<br> 
+									<span v-if="selectedEvent.rtnApplicable && !selectedEvent.rtnTs" >{{$t('eventList.STATUS_ACTIVE')}}</span>
+									<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$t('eventList.STATUS_RTN')}} {{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
+									<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
+								</v-col>
+								<v-col v-if="selectedEvent.ackTs"><b>{{$t('eventList.ackTime')}}</b>:<br> 
+									<span >  {{$date(selectedEvent.ackTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
+								</v-col>
+							</div>
 						</v-col>
-						<v-col cols="12">
-							<v-btn class="mr-2" @click="acknowledgeEventSelected" color="blue">
+						<v-col cols="9">
+							<p style="padding-top: 10px">
+								<b>{{$t('eventList.message')}}</b>:<br>
+							<span v-html="selectedEvent.message"></span>
+							</p>
+							<v-divider></v-divider>
+							<textarea style="width:100%;border: green 1px solid;  resize:none" rows="5" v-model="commentText"></textarea>
+							<v-btn style=";width:100%" class="primary" :disabled="!commentText.length" @click="publishComment">{{ $t('eventList.addComment') }}</v-btn>
+						</v-col>
+					</v-row> 
+					<v-card-text style="height: 300px;">
+						<v-row>
+							<v-col cols="3"></v-col>
+							<v-col cols="9">
+								<ul id=commentList v-for="comment in comments">
+									<li>{{comment.username}}-{{$date(comment.ts).format('YYYY-MM-DD hh:mm:ss')}}:  <span v-html="comment.commentText"></span></li>
+								</ul>
+							</v-col>
+						</v-row>
+					</v-card-text>
+					<v-divider></v-divider>
+					<form @submit.prevent="publishComment"> 
+						<v-card-actions style="padding: 15px">
+							<v-spacer></v-spacer>
+							<v-btn :disabled="selectedEvent.ackTs > 0" class="mr-2 primary" @click="acknowledgeEventSelected" >
 								<v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-									{{$t('eventList.acknowledge')}}
+								{{$t('eventList.acknowledge')}}
 							</v-btn>
-							<v-btn v-if="!selectedEvent.silenced" @click="silenceEvent({id:selectedEvent.id})"  class="mr-2" color="blue">
+							<v-btn :disabled="selectedEvent.ackTs > 0" v-if="!selectedEvent.silenced" @click="silenceEvent({id:selectedEvent.id})"  class="mr-2 primary"  >
 								<v-icon>mdi-volume-mute</v-icon>
 								{{$t('eventList.silence')}}
 							</v-btn>
-							<v-btn v-else @click="unsilenceEvent({id:selectedEvent.id})"  class="mr-2" color="blue">
+							<v-btn :disabled="selectedEvent.ackTs > 0" v-else @click="unsilenceEvent({id:selectedEvent.id})"  class="mr-2 primary">
 								<v-icon>mdi-volume-mute</v-icon>
 								{{$t('eventList.unsilence')}}
-							</v-btn>
-						</v-col>	
-					</v-row>
-				</v-card-title>
-				<v-row style="margin: 0 2rem" >
-					<v-col cols="3"><b>{{$t('eventList.createAt')}}</b>: {{ $date(selectedEvent.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</v-col>
-					<v-col cols="3"><b>{{$t('eventList.alarmLevel')}}</b>: 
-						{{ $t(`eventList.alarmLevel${selectedEvent.alarmLevel}`) }}
-					</v-col>
-					<v-col cols="3"><b>{{$t('eventList.sourceType')}}</b>: {{ $t(`eventList.sourceType${selectedEvent.typeId}`) }}</v-col>
-					<v-col cols="3"><b>{{$t('eventList.status')}}</b>: 
-						<span v-if="selectedEvent.rtnApplicable && !selectedEvent.rtnTs" >{{$t('eventList.STATUS_ACTIVE')}}</span>
-						<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
-						<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
-					</v-col>
-					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{ (selectedEvent.message) | clearHtml}}</v-col>
-					<v-col v-if="selectedEvent.eventSourceType===1" cols="3"><b>{{$t('eventList.datapoint')}}</b>: {{selectedEvent.datapoint}}</v-col>
-				</v-row>
-				<v-divider></v-divider>
-				<v-card-text style="height: 300px;">
-					<v-row>
-						<v-col cols="6">
-							<ul v-for="comment in comments">
-								<li>{{comment.username}}-{{$date(comment.ts).format('YYYY-MM-DD hh:mm:ss')}}: {{comment.commentText}}</li>
-							</ul>
-						</v-col>
-						<v-col cols="6">
-						</v-col>
-					</v-row>
-				
-				</v-card-text>
-				<v-divider></v-divider>
-				<form @submit.prevent="publishComment"> 
-				<v-card-actions>
-				 
-					<v-text-field v-model="commentText" color="blue darken-1"></v-text-field>
-					<v-btn text color="blue darken-1" @click="publishComment">Comment</v-btn>
-				
-				</v-card-actions>
-				</form>
-			</v-card>
+							</v-btn>		
+						</v-card-actions>
+					</form>
+				</v-card>
 			</v-dialog>
 		</v-row>
 		<v-container fluid v-if="!!eventList">	
@@ -216,7 +219,6 @@
 									@change="fetchEventList"
 								></v-select>
 							</v-col>
-						
 							<v-col cols="3">
 								<v-select 
 									:label="$t('eventList.status')"
@@ -227,7 +229,6 @@
 									@change="fetchEventList"
 								></v-select>
 							</v-col>
-							
 							<v-col cols="3">
 								<v-select 
 									:label="$t('eventList.sourceType')"
@@ -260,18 +261,20 @@
 						<v-icon class="mr-2" >
 							mdi-checkbox-marked-circle-outline
 						</v-icon>
-						{{$t("eventList.acknowledgeSelectedEvents")}}</v-btn>
+						{{$t("eventList.acknowledgeSelectedEvents")}}
+					</v-btn>
 					<v-btn small @click="silenceSelectedEvents" :title="$t('eventList.silence')"  color="blue" class="mr-2" >
 						<v-icon class="mr-2" >
 							mdi-volume-mute
 						</v-icon>
 						{{$t("eventList.silenceSelected")}}
-						</v-btn>
+					</v-btn>
 					<v-btn small @click="unsilenceSelectedEvents" :title="$t('eventList.unsilence')" color="blue">
 						<v-icon class="mr-2" >
 							mdi-volume-high
 						</v-icon>
-						{{$t("eventList.unsilenceSelected")}}</v-btn>
+						{{$t("eventList.unsilenceSelected")}}
+					</v-btn>
 				</v-col>
 				<v-col :cols="selectedEvents.length ? 6 : 12" class="text-right">
 					<v-btn small @click="askForAckAll" class="mr-2" color="red">
@@ -438,6 +441,12 @@ export default {
 			if (data === false) this.selectedEventId=null;
       	},
     },
+	computed: {
+		commentRows() {
+			const lines = this.commentText.split('\n').length
+			return lines < 5 ? lines : 5
+		}
+	},
 	data() {
 		return {
 			next: false,
@@ -676,16 +685,19 @@ export default {
 		gotoMaintenance(maintenanceId) {
 			window.location = `maintenance_events.shtm?meid=${maintenanceId}` //png="hammer"
 		},
-
 		async publishComment() {
 			await this.$store.dispatch('addUserComment', {
-				comment: {comment:this.commentText},
+				comment: {comment:this.replaceLineBreaksByBr(this.commentText)},
 				typeId: 1,
 				refId: this.selectedEventId,
 			});
 			this.fetchEventSelected()
 			this.fetchEventList()
 			this.commentText = ''
+			document.getElementById('commentList').scrollIntoView();
+		},
+		replaceLineBreaksByBr: function (x){
+			return x.replaceAll("\n",'<br/>')
 		},
 		async fetchEventList() {
 			this.loading = true;
@@ -709,8 +721,9 @@ export default {
 		},
 		async acknowledgeEventSelected() {
 			this.loading = true;
-			this.comments = await this.$store.dispatch('acknowledgeEvent', {eventId: this.selectedEventId});
+			await this.$store.dispatch('acknowledgeEvent', {eventId: this.selectedEventId});
 			await this.fetchEventList();
+			return true
 		},
 		async acknowledgeAllEvents() {
 			this.loading = true;
