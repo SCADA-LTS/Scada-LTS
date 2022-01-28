@@ -130,7 +130,7 @@ if (!!window.document.getElementById(watchdogId)) {
 				props: {
 					name: watchdogEl.getAttribute('name'),
 					interval: watchdogEl.getAttribute('interval') !== null ? Number(watchdogEl.getAttribute('interval')) : 10000,
-					wdIp: watchdogEl.getAttribute('wd-ip'),
+					wdHost: watchdogEl.getAttribute('wd-host'),
 					wdPort: watchdogEl.getAttribute('wd-port') !== null ? Number(watchdogEl.getAttribute('wd-port')) : null,
 					wdMessage: watchdogEl.getAttribute('wd-message'),
 					dpValidation: watchdogEl.getAttribute('dp-validation') !== null ? JSON.parse(watchdogEl.getAttribute('dp-validation')) : null,

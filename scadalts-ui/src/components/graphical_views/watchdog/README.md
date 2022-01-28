@@ -42,7 +42,7 @@ datapoint condition value.
 | ---------- | ----------- | ----------- | ----------- |
 | `name` | string (optional) | 'IsAlive2' | Name that will be displayed as the menu title |
 | `interval` | number (optional) | 10000 | Interval time between checking the application health |
-| `wd-ip` | string (optional) | null | IP address to the WatchDog server |
+| `wd-host` | string (optional) | null | IP address to the WatchDog server |
 | `wd-port` | number (optional) | null | Port number to WatchDog server |
 | `wd-message` | string (optional) | 'ping' | Message that will be send thought the TCP socket connection to the WatchDog server |
 | `dp-validation` | array (optional) | null | Array of objects that contains the DP check validation |
@@ -57,7 +57,7 @@ Watchdog component can be used in the following way:
 <div id="app-isalive2" 
     name="test2" 
     interval="3000" 
-    wd-ip="127.0.0.1" 
+    wd-host="127.0.0.1" 
     wd-port="1234" 
     wd-message="Monitoring"
     dp-validation='[{"xid":"DP_EN1", "value":1, "check":"equal"}]' 
@@ -68,6 +68,6 @@ To embed this component in the page we need to add the new HTML component to our
 
 To create your own watchdog server you can use the following command:
 ```bash
-nc -4 -l 127.0.0.1 1234
+nc -4 -lk 127.0.0.1 1234
 ```
 When the component will check every step you should see the message received from the Scada client.

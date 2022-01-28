@@ -7,14 +7,16 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -90,13 +92,13 @@ public class TimeFromServer {
     }
 
     private void sendWatchdogMessage(WatchDogConfig config, HttpServletRequest request) throws IOException {
-        Socket socket = new Socket(config.getHost(), config.getPort());
-        DataOutputStream messageStream = new DataOutputStream(socket.getOutputStream());
-        String remoteAddress = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR"))
-                .orElse(request.getRemoteAddr()) ;
-        messageStream.writeBytes(remoteAddress + "|" + config.getMessage());
-        socket.close();
-        messageStream.close();
+        try(Socket socket = new Socket(config.getHost(), config.getPort())) {
+            try(DataOutputStream messageStream = new DataOutputStream(socket.getOutputStream())) {
+                String remoteAddress = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR"))
+                        .orElse(request.getRemoteAddr()) ;
+                messageStream.writeBytes(remoteAddress + "|" + config.getMessage());
+            }
+        }
     }
 }
 

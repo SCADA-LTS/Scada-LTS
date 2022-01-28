@@ -23,7 +23,7 @@ describe('💠️ Watchdog Unit Basic Test Scenario', () => {
         })
 
         it('Is component prop wdIp is by default equal to null', () => {
-            expect(wrapper.vm.wdIp).to.equal(null);
+            expect(wrapper.vm.wdHost).to.equal(null);
         })
 
         it('Is component prop wdPort is by default equal to null', () => {
@@ -52,7 +52,7 @@ describe('💠️ Watchdog Unit Props Test Scenario', () => {
         wrapper = prepareMountWrapper(Watchdog, modules, {
             name: 'MochaTests',
             interval: 5000,
-            wdIp: '127.0.0.1',
+            wdHost: '127.0.0.1',
             wdPort: 1234,
             dpValidation: [{
                 xid: 'DP_TEST',
@@ -70,7 +70,7 @@ describe('💠️ Watchdog Unit Props Test Scenario', () => {
         })
 
         it('Is component prop wdIp is equal to "127.0.0.1"', () => {
-            expect(wrapper.vm.wdIp).to.equal('127.0.0.1');
+            expect(wrapper.vm.wdHost).to.equal('127.0.0.1');
         })
 
         it('Is component prop wdPort is equal to 1234', () => {
@@ -98,10 +98,10 @@ describe('💠️ Watchdog Methods Unit Test Scenario', () => {
 
     describe('Check Point Condition Tests', () => {
 
-        it('Binary DP value true, check "equal true" should be true', () => {
+        it('Binary DP value true, check "equal 1" should be true', () => {
             const dp = {
                 check: 'equal',
-                value: true,
+                value: 1,
             }
             const response = {
                 type: 'BinaryValue',
@@ -110,10 +110,10 @@ describe('💠️ Watchdog Methods Unit Test Scenario', () => {
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(true);
         })
 
-        it('Binary DP value "false", check "equal true" should be false', () => {
+        it('Binary DP value "false", check "equal 1" should be false', () => {
             const dp = {
                 check: 'equal',
-                value: true,
+                value: 1,
             }
             const response = {
                 type: 'BinaryValue',
@@ -122,20 +122,20 @@ describe('💠️ Watchdog Methods Unit Test Scenario', () => {
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })
 
-        it('Binary DP value "true", check "not_equal true" should be false', () => {
-            const dp = { check: 'not_equal', value: true }
+        it('Binary DP value "true", check "not_equal 1" should be false', () => {
+            const dp = { check: 'not_equal', value: 1 }
             const response = { type: 'BinaryValue', value: 'true' }
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })
 
-        it('Binary DP value "true", check "greater true" should be false', () => {
-            const dp = { check: 'greater', value: true }
+        it('Binary DP value "true", check "greater 1" should be false', () => {
+            const dp = { check: 'greater', value: 1 }
             const response = { type: 'BinaryValue', value: 'true' }
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })
 
-        it('Binary DP value "true", check "less true" should be false', () => {
-            const dp = { check: 'less', value: true }
+        it('Binary DP value "true", check "less 1" should be false', () => {
+            const dp = { check: 'less', value: 1 }
             const response = { type: 'BinaryValue', value: 'true' }
             expect(wrapper.vm.checkPointCondition(dp, response)).to.equal(false);
         })

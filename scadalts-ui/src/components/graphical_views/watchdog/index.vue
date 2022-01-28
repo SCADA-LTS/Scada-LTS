@@ -85,6 +85,7 @@
 </template>
 <script>
 import Axios from 'axios';
+import CheckError from './CheckError';
 const WATCHDOG_API_TIME = './api/is_alive/time2';
 const WATCHDOG_API_RUNNER = './api/is_alive/watchdog';
 
@@ -105,7 +106,7 @@ export default {
 			type: Number,
 			default: 10000,
 		},
-		wdIp: {
+		wdHost: {
 			type: String,
 			default: null,
 		},
@@ -213,13 +214,20 @@ export default {
 			}
 		},
 
-		areDataPointsValid() {
+		async areDataPointsValid() {
 			if (!!this.dpValidation) {
-				let promiseArray = [];
-				this.dpValidation.forEach((p) => promiseArray.push(this.validateDataPoint(p)));
-				return Promise.all(promiseArray);
+				for(let i = 0; i < this.dpValidation.length; i++) {
+					try { 
+						await this.validateDataPoint(this.dpValidation[i]);
+					} catch (e) {
+						if(e instanceof CheckError && !this.dpFailure) {
+							return;
+						} else {
+							throw e;
+						}
+					}
+				}
 			}
-			return Promise.resolve();
 		},
 
 		// NETWORK:: Network monitor methods //
@@ -249,28 +257,34 @@ export default {
 			try {
 				let resp = await Axios.get(`./api/point_value/getValue/${datapoint.xid}`);
 				if (this.checkPointCondition(datapoint, resp.data)) {
-					this.addConditionResult(`${resp.data.name} pass`, true);
+					this.addConditionResult(`${resp.data.name} (${datapoint.xid}) pass`, true);
 				} else {
 					this.addConditionResult(
-						`${resp.data.name} failed`,
+						`${resp.data.name} (${datapoint.xid}) failed`,
 						this.dpFailure ? false : 'WARN',
 					);
+					throw new CheckError();
 				}
 			} catch (error) {
-				this.addConditionResult(
-					`DataPoint ${datapoint.xid} fetching failed`,
-					false,
-					error.message,
-				);
+				if(error instanceof CheckError) {
+					console.warn('Stopping further checks');
+				} else {
+					this.addConditionResult(
+						`DataPoint ${datapoint.xid} fetching failed`,
+						false,
+						error.message,
+					);
+				}
+				throw error;
 			}
 		},
 
 		async notifyWatchdog() {
-			if (!!this.wdIp && !!this.wdPort) {
+			if (!!this.wdHost && !!this.wdPort) {
 				try {
 					if (this.lastMessage.state !== 'FAILED') {
 						await Axios.post(WATCHDOG_API_RUNNER, {
-							address: this.wdIp,
+							host: this.wdHost,
 							port: this.wdPort,
 							message: this.wdMessage || 'ping',
 						});
@@ -318,7 +332,7 @@ export default {
 			let binary = false;
 			if (response.type === 'BinaryValue') {
 				binary = true;
-				respValue = response.value == 'true';
+				respValue = response.value == 'true' ? 1 : 0;
 			} else if (response.type === 'AlphanumericValue') {
 				respValue = response.value;
 			} else {
