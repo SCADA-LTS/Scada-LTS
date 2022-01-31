@@ -46,8 +46,7 @@ datapoint condition value.
 | `wd-port` | number (optional) | null | Port number to WatchDog server |
 | `wd-message` | string (optional) | 'ping' | Message that will be send thought the TCP socket connection to the WatchDog server |
 | `dp-validation` | array (optional) | null | Array of objects that contains the DP check validation |
-| `dp-break` | boolean (optional) | false | If that argument is set the 
-datapoint check will be break if the datapoint is not valid |
+| `dp-break` | boolean (optional) | false | If that argument is set the datapoint check will be break if the datapoint is not valid |
 | `dp-failure` | boolean | false | If that argument exists that means the DP check error will be treated as failure |
 
 
