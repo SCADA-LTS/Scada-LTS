@@ -1,7 +1,5 @@
 # Watchdog component
-This is a new version of classic IsAlive component that is able to detect the System offline state. If the client browser is offline, when there is no response from the server or 
-when specific datapoint does not meet the specified criteria, the component will show the offline state. If the Watchdog server is defined this compoenent will send the request 
-to this server using the TCP socket connection. 
+This is a new version of classic IsAlive component that is able to detect the System offline state. If the client browser is offline, when there is no response from the server or when specific datapoint does not meet the specified criteria, the component will show the offline state. If the Watchdog server is defined this compoenent will send the request to this server using the TCP socket connection. 
 
 Watchdog server will receive the message with format:
 ```
@@ -25,8 +23,7 @@ Example datapoint condition configuration:
 }]
 ```
 
-User can provide the data point configuration to check if the system is online based on the 
-datapoint condition value. 
+User can provide the data point configuration to check if the system is online based on the datapoint condition value. By default any error in this DataPoint condition checking generates an "warning" message that is displayed on the component. If user want's to break the condition checking process when the first error occured he can add `dp-break` parameter to this component.  Warning message is not blocking the Watchdog Notification Process. If any error on the check should be treated as a "fail" instead of "warning" to break this communication flow user can add the `dp-failure` parameter. 
 
 | Check type | Description |
 | ---------- | ----------- |
@@ -47,7 +44,7 @@ datapoint condition value.
 | `wd-message` | string (optional) | 'ping' | Message that will be send thought the TCP socket connection to the WatchDog server |
 | `dp-validation` | array (optional) | null | Array of objects that contains the DP check validation |
 | `dp-break` | boolean (optional) | false | If that argument is set the datapoint check will be break if the datapoint is not valid |
-| `dp-failure` | boolean | false | If that argument exists that means the DP check error will be treated as failure |
+| `dp-failure` | boolean | false | If that argument exists that means the DP check error is changed from "warning" to "failure". Failure in any step is stopping the notification sending process.  |
 
 
 
