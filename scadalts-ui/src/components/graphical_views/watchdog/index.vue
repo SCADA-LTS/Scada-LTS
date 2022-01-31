@@ -192,6 +192,7 @@ export default {
 			try {
 				this.checkingConditions = true;
 				this.conditionsResult = [];
+				this.failedConditions = [];
 				this.isNetworkConnection();
 				await this.isServerConnection();
 				await this.areDataPointsValid();
