@@ -122,6 +122,10 @@ export default {
 			type: Array,
 			default: null,
 		},
+		dpBreak: {
+			type: Boolean,
+			default: false,
+		},
 		dpFailure: {
 			type: Boolean,
 			default: false,
@@ -138,6 +142,7 @@ export default {
 			},
 			checkingConditions: false,
 			conditionsResult: [],
+			failedConditions: [],
 			lastServerTime: null,
 			clock: null,
 			clockInterval: null,
@@ -146,9 +151,12 @@ export default {
 
 	computed: {
 		lastMessage() {
-			return this.conditionsResult.length > 0
-				? this.conditionsResult[this.conditionsResult.length - 1]
-				: null;
+			if(this.failedConditions.length > 0) {
+				return this.failedConditions[this.failedConditions.length - 1];
+			} else if (this.conditionsResult.length > 0) {
+				return this.conditionsResult[this.conditionsResult.length - 1];
+			} 
+			return null;
 		},
 	},
 
@@ -263,7 +271,7 @@ export default {
 						`${resp.data.name} (${datapoint.xid}) failed`,
 						this.dpFailure ? false : 'WARN',
 					);
-					throw new CheckError();
+					if(!!this.dpBreak) { throw new CheckError(); }
 				}
 			} catch (error) {
 				if(error instanceof CheckError) {
@@ -301,6 +309,13 @@ export default {
 		addConditionResult(message, result, description = null) {
 			if (typeof result === 'boolean') {
 				result = result ? 'OK' : 'FAILED';
+			}
+			if(result !== 'OK') {
+				this.failedConditions.push({
+					message,
+					state: result,
+					description,
+				});
 			}
 			this.conditionsResult.push({
 				message: message,

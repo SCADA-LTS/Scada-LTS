@@ -134,6 +134,7 @@ if (!!window.document.getElementById(watchdogId)) {
 					wdPort: watchdogEl.getAttribute('wd-port') !== null ? Number(watchdogEl.getAttribute('wd-port')) : null,
 					wdMessage: watchdogEl.getAttribute('wd-message'),
 					dpValidation: watchdogEl.getAttribute('dp-validation') !== null ? JSON.parse(watchdogEl.getAttribute('dp-validation')) : null,
+					dpBreak: watchdogEl.getAttribute('dp-break') !== null,
 					dpFailure: watchdogEl.getAttribute('dp-failure') !== null,
 				},
 			}),
