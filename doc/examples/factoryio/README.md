@@ -55,8 +55,75 @@ Visual parts - can be skipped. They're for visualization purposes:
 After you placed all described objects you should have a static scene looking like this:
 [here there will be image]
 
+### Driver setup
+Press ``F4`` key or go to ``File => Drivers `` to open driver menu. 
+From the list of devices in top left corner, select ``Modbus TCP/IP Server``.
 
+Now go to ``CONFIGURATION`` tab and configure ``I/O Points``:
+- the simulation just uses 6 sensors, and 5 actuators (no registers), so we configure the values appropriately (6,5,0,0) and press back to do the final step. If you want to use more sensors or actuators, adjust this number accordingly.
 
+[here there will be image]
+
+If you want, you can also change ``Host``, ``Port`` and ``Network adapter``, but it's not needed.
+
+Go back to driver tab, drag the sensors and the actuators to each one of the places in the driver, in a way that all of them have something assigned. 
+[here there will be image]
+
+You can save your scene and go to next step.
+
+## Integrate OpenPLC with FactoryIO
+Run ``OpenPLC Runtime`` and head over to ``localhost:8080`` adress in your browser.
+Login with default credentials:
+- login: openplc
+- password: openplc
+and go to ``Slave Devices`` tab.
+
+Now we need to add and configure FactoryIO driver as a Slave Device for OpenPLC.
+-   Device Type - must be generic Modbus TCP device
+-   SlaveID - can be any number, but must coincide with the one previously configured in the driver for FactoryIO
+-   IP Address - same address configured in the FactoryIO driver
+-   IP Port - 502 is the default ModbusTCP port, it is recommended to keep it by default, even though it is possible to change it as long as it is the same in OpenPLC ad FactoryIO driver.
+-   Discrete Inputs - starting at 0 and ending in the number of sensors (digital inputs) that we have (in our case 6)
+-   Coils - starting at 0 and ending in the number of actuators (digital outputs) that we have (in our case 5)
+-   Input Registers - there are no registers in this tutorial, so it can be configured as 0
+-   Holding Registers – Read - there are no registers in this tutorial, so it can be configured as 0
+-   Holding Registers -Write - there are no registers in this tutorial, so it can be configured as 0
+
+## Programming in OpenPLC Editor
+Now we need to create the control logic.
+Open ``OpenPLC Editor`` and create a new project:
+[here there will be image]
+
+Select ``Ladder Logic``(LD) as a language.
+
+Create new variables based on ``Slave Device`` configured in OpenPLC Runtime.
+-   The variables declared in OpenPLC Editor must fall inside the range available by the Slave Device configured in the previous point
+-   There is an auxiliary variable called ``RUN`` that will not be assigned to any input (%IX100.x) or output (%QX100.x)
+[here there will be image]
+
+With the variables already defined, it is possible to now proceed to develop the control logic, using for that purpose one of the standards in the sector ([Ladder Logic](https://en.wikipedia.org/wiki/Ladder_logic)). On a high level, the program will fulfill the following criteria:
+-   Pressing ``StartButton`` starts or stops the line
+-   Opening the Safety door will stop the line
+-   The line stops when there is a box waiting
+-   If there is a box waiting, the robot will start the suction hed, descend, rotate away from the conveyor belt, drop the box, and go back to its initial location
+
+## Runtime
+After creating a Ladder Logic in OpenPLC editor we need to export it to a ``.st`` file format, in order to comile it in OpenPLC Runtime. 
+[here there will be image]
+
+Now login to OpenPLC Runtime (default login and password: ``openplc``), and go to ``Programs`` tab. Here we need to upload exported file in ``.st`` format. After that, runtime should start compiling and after it's done, you should see this:
+[here there will be image]
+
+Now go back to ``Dashboard`` and there should appear a new button called ``Start PLC``:
+[here there will be image]
+
+Open FactoryIO with [previously](#factoryio -scene) created scene and launch it.
+
+In OpenPLC Runtime click ``Start PLC`` and go to ``Monitoring Page``, you should see previously defined variable and a light indicators.
+[here there will be image]
+
+Now in FactoryIO, press start button and you should see the final result:
+[here there will be GIF]
 
 ## References
 - [Virtual Industrial Cybersecurity Lab](https://rodrigocantera.com/en/virtual-industrial-cybersecurity-lab-part-1-installation-and-configuration-of-pfsense/) with 4 parts
