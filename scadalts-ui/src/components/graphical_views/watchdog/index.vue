@@ -12,13 +12,17 @@
 					</v-col>
 					<v-col xs="2" sm="1" class="flex-al-center" v-else>
 						<v-icon v-if="lastMessage.state === 'OK'">mdi-check</v-icon>
+						<v-icon v-else-if="lastMessage.state === 'INFO'">mdi-information</v-icon>
 						<v-icon v-else-if="lastMessage.state === 'WARN'">mdi-alert</v-icon>
 						<v-icon v-else>mdi-close</v-icon>
 					</v-col>
 					<v-col cols="9" class="flex-al-center">
 						<v-row>
-							<v-col class="flex-al-center">
-								{{ lastMessage.message }}
+							<v-col class="flex-al-center flex-column">
+								<span class="state-title"> {{ lastMessage.message }} </span>
+								<span v-if="!!lastMessage.description" class="state-description">
+									- {{ lastMessage.description }}
+								</span>
 							</v-col>
 							<v-col xs="12" md="6" v-if="!!lastServerTime">
 								<p class="state-value-label">Last message</p>
@@ -52,7 +56,7 @@
 											:key="index"
 										>
 											<v-list-item-icon>
-												<v-icon v-if="i.state === 'OK'">mdi-check</v-icon>
+												<v-icon v-if="i.state === 'OK' || i.state === 'INFO'">mdi-check</v-icon>
 												<v-icon v-else-if="i.state === 'WARN'">mdi-alert</v-icon>
 												<v-icon v-else>mdi-close</v-icon>
 											</v-list-item-icon>
@@ -88,6 +92,12 @@ import Axios from 'axios';
 import CheckError from './CheckError';
 const WATCHDOG_API_TIME = './api/is_alive/time2';
 const WATCHDOG_API_RUNNER = './api/is_alive/watchdog';
+const MSG_TYPES = {
+	OK: 'OK',
+	INFO: 'INFO',
+	WARN: 'WARN',
+	ERROR: 'FAILED',
+}
 
 /**
  *
@@ -151,11 +161,11 @@ export default {
 
 	computed: {
 		lastMessage() {
-			if(this.failedConditions.length > 0) {
+			if (this.failedConditions.length > 0) {
 				return this.failedConditions[this.failedConditions.length - 1];
 			} else if (this.conditionsResult.length > 0) {
 				return this.conditionsResult[this.conditionsResult.length - 1];
-			} 
+			}
 			return null;
 		},
 	},
@@ -206,7 +216,7 @@ export default {
 
 		// Validations and conditions //
 		isNetworkConnection() {
-			this.addConditionResult('Network connection', this.networkConnection);
+			this.addConditionResult('Network connection', this.networkConnection ? MSG_TYPES.OK : MSG_TYPES.ERROR);
 			if (!this.networkConnection) {
 				throw new Error('Network connection is not available');
 			}
@@ -215,21 +225,21 @@ export default {
 		async isServerConnection() {
 			try {
 				let resp = await Axios.get(WATCHDOG_API_TIME);
-				this.addConditionResult('Server connection', true);
+				this.addConditionResult('Server connection', MSG_TYPES.OK);
 				this.lastServerTime = new Date(resp.data).toLocaleString();
 			} catch (error) {
-				this.addConditionResult('Unable to connect to Server', false, error.message);
+				this.addConditionResult('Unable to connect to Server', MSG_TYPES.ERROR, error.message);
 				throw new Error('Unable to connect to Server');
 			}
 		},
 
 		async areDataPointsValid() {
 			if (!!this.dpValidation) {
-				for(let i = 0; i < this.dpValidation.length; i++) {
-					try { 
+				for (let i = 0; i < this.dpValidation.length; i++) {
+					try {
 						await this.validateDataPoint(this.dpValidation[i]);
 					} catch (e) {
-						if(e instanceof CheckError && !this.dpWarnAsFail) {
+						if (e instanceof CheckError && !this.dpWarnAsFail) {
 							return;
 						} else {
 							throw e;
@@ -264,23 +274,33 @@ export default {
 		// DATAPOINTS:: DataPoint monitor methods //
 		async validateDataPoint(datapoint) {
 			try {
-				let resp = await Axios.get(`./api/point_value/getValue/${datapoint.xid}`);
-				if (this.checkPointCondition(datapoint, resp.data)) {
-					this.addConditionResult(`${resp.data.name} (${datapoint.xid}) pass`, true);
+				const resp = await Axios.get(`./api/point_value/getValue/${datapoint.xid}`);
+				const checkResult = this.checkPointCondition(datapoint, resp.data);
+				const description = this.generateCheckMessage(datapoint.check, checkResult, resp.data.value, datapoint.value);
+
+				if (checkResult) {
+					this.addConditionResult(
+						`${resp.data.name} (${datapoint.xid}) - Check OK`,
+						MSG_TYPES.INFO,
+						description,
+					);
 				} else {
 					this.addConditionResult(
-						`${resp.data.name} (${datapoint.xid}) failed`,
-						this.dpWarnAsFail ? false : 'WARN',
+						`${resp.data.name} (${datapoint.xid}) check failed`,
+						this.dpWarnAsFail ? MSG_TYPES.ERROR : MSG_TYPES.WARN,
+						description,
 					);
-					if(!!this.dpBreak) { throw new CheckError(); }
+					if (!!this.dpBreak) {
+						throw new CheckError();
+					}
 				}
 			} catch (error) {
-				if(error instanceof CheckError) {
+				if (error instanceof CheckError) {
 					console.warn('Stopping further checks');
 				} else {
 					this.addConditionResult(
 						`DataPoint ${datapoint.xid} fetching failed`,
-						false,
+						MSG_TYPES.ERROR,
 						error.message,
 					);
 				}
@@ -291,7 +311,7 @@ export default {
 		async notifyWatchdog() {
 			if (!!this.wdHost && !!this.wdPort) {
 				try {
-					if (this.lastMessage.state !== 'FAILED') {
+					if (this.lastMessage.state !== MSG_TYPES.ERROR) {
 						await Axios.post(WATCHDOG_API_RUNNER, {
 							host: this.wdHost,
 							port: this.wdPort,
@@ -307,22 +327,11 @@ export default {
 			}
 		},
 
-		addConditionResult(message, result, description = null) {
-			if (typeof result === 'boolean') {
-				result = result ? 'OK' : 'FAILED';
+		addConditionResult(message, state, description = null) {
+			if(state === MSG_TYPES.WARN || state === MSG_TYPES.ERROR) {
+				this.failedConditions.push({ message, state, description });
 			}
-			if(result !== 'OK') {
-				this.failedConditions.push({
-					message,
-					state: result,
-					description,
-				});
-			}
-			this.conditionsResult.push({
-				message: message,
-				state: result,
-				description: description,
-			});
+			this.conditionsResult.push({ message, state, description });
 		},
 
 		runClock() {
@@ -373,6 +382,38 @@ export default {
 				return false;
 			}
 		},
+
+		/**
+		 * Generate description message.
+		 * @param {string} check - check type
+		 * @param {boolean} state - check result
+		 * @param {any} val - received value
+		 * @param {any} ref - reference value
+		 */
+		generateCheckMessage(check, state, val='', ref='') {
+			switch (check) {
+				case 'equal':
+					return state 
+						? `Value ${val} is equal to ${ref}` 
+						: `Value ${val} is not equal to ${ref}`;
+				case 'less':
+					return state
+						? `Value ${val} is lesser than ${ref}` 
+						: `Value ${val} is greater than ${ref}`;
+				case 'greater':
+					return state
+						? `Value ${val} is greater than ${ref}` 
+						: `Value ${val} is lesser than ${ref}`;
+				case 'less_equal':
+					return state
+						? `Value ${val} is lesser or equal to ${ref}` 
+						: `Value ${val} is not lesser or equal to ${ref}`;
+				case 'greater_equal':
+					return state
+						? `Value ${val} is greater or equal to ${ref}` 
+						: `Value ${val} is not greater or equal to ${ref}`;
+			}
+		},
 	},
 };
 </script>
@@ -380,6 +421,10 @@ export default {
 .flex-al-center {
 	display: flex;
 	align-items: center;
+}
+.flex-column {
+	display: flex;
+	flex-direction: column;
 }
 .is-loading {
 	animation: rotate 1s linear infinite;
@@ -390,11 +435,23 @@ export default {
 .is-state-ok {
 	background-color: #98e171;
 }
+.is-state-info {
+	background-color: #00bcd4;
+}
 .is-state-warn {
 	background-color: #ffff74;
 }
 .is-state-failed {
 	background-color: #ff6f6a;
+}
+.state-title {
+	font-size: 0.8em;
+    line-height: initial;
+    font-weight: bold;
+}
+.state-description {
+	font-style: italic;
+	font-size: 0.8em;
 }
 .state-value-label {
 	margin: -7px 0 !important;

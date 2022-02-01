@@ -33,6 +33,9 @@ User can provide the data point configuration to check if the system is online b
 | `less_equal` | Check if the value is less than or equal to the specified value |
 | `greater_equal` | Check if the value is greater than or equal to the specified value |
 
+- **Important note!**  
+The DataPoint Validation process check only the **LAST VALUE** of the DataPoint. Even if data point is disabled (or the data source is disabled) the validation process will be executed based on the last value of the data point. 
+
 ## API
 
 | Parameter name | type |  Default | Description |
