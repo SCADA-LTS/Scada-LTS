@@ -34,8 +34,8 @@ describe('💠️ Watchdog Unit Basic Test Scenario', () => {
             expect(wrapper.vm.dpValidation).to.equal(null);
         })
 
-        it('Is component prop dpFailure is by default equal to false', () => {
-            expect(wrapper.vm.dpFailure).to.equal(false);
+        it('Is component prop dpWarnAsFail is by default equal to false', () => {
+            expect(wrapper.vm.dpWarnAsFail).to.equal(false);
         })
 
         it('Is Alive Interval running', async () => {
@@ -81,8 +81,8 @@ describe('💠️ Watchdog Unit Props Test Scenario', () => {
             expect(wrapper.vm.dpValidation[0].xid).to.equal("DP_TEST");
         })
 
-        it('Is component prop dpFailure is by default equal to false', () => {
-            expect(wrapper.vm.dpFailure).to.equal(false);
+        it('Is component prop dpWarnAsFail is by default equal to false', () => {
+            expect(wrapper.vm.dpWarnAsFail).to.equal(false);
         })
 
     })
