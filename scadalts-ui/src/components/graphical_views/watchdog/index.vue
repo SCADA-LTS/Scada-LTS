@@ -126,7 +126,7 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		dpFailure: {
+		dpWarnAsFail: {
 			type: Boolean,
 			default: false,
 		},
@@ -229,7 +229,7 @@ export default {
 					try { 
 						await this.validateDataPoint(this.dpValidation[i]);
 					} catch (e) {
-						if(e instanceof CheckError && !this.dpFailure) {
+						if(e instanceof CheckError && !this.dpWarnAsFail) {
 							return;
 						} else {
 							throw e;
@@ -270,7 +270,7 @@ export default {
 				} else {
 					this.addConditionResult(
 						`${resp.data.name} (${datapoint.xid}) failed`,
-						this.dpFailure ? false : 'WARN',
+						this.dpWarnAsFail ? false : 'WARN',
 					);
 					if(!!this.dpBreak) { throw new CheckError(); }
 				}

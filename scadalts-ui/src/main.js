@@ -135,7 +135,7 @@ if (!!window.document.getElementById(watchdogId)) {
 					wdMessage: watchdogEl.getAttribute('wd-message'),
 					dpValidation: watchdogEl.getAttribute('dp-validation') !== null ? JSON.parse(watchdogEl.getAttribute('dp-validation')) : null,
 					dpBreak: watchdogEl.getAttribute('dp-break') !== null,
-					dpFailure: watchdogEl.getAttribute('dp-failure') !== null,
+					dpWarnAsFail: watchdogEl.getAttribute('dp-warn-as-fail') !== null,
 				},
 			}),
 	}).$mount(`#${watchdogId}`);

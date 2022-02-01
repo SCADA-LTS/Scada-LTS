@@ -44,13 +44,20 @@ User can provide the data point configuration to check if the system is online b
 | `wd-message` | string (optional) | 'ping' | Message that will be send thought the TCP socket connection to the WatchDog server |
 | `dp-validation` | array (optional) | null | Array of objects that contains the DP check validation |
 | `dp-break` | boolean (optional) | false | If that argument is set the datapoint check will be break if the datapoint is not valid |
-| `dp-failure` | boolean | false | If that argument exists that means the DP check error is changed from "warning" to "failure". Failure in any step is stopping the notification sending process.  |
-
-
+| `dp-warn-as-fail` | boolean (optional) | false | If that argument exists that means the DP check error is changed from "warning" to "failure". Failure in any step is stopping the notification sending process.  |
 
 ## Example usage
 
 Watchdog component can be used in the following way:
+
+```html
+<div id="app-isalive2"></div>
+```
+
+That was the minimal configuration to show the IsAlive2 component.  
+Below there is an example of advanced configuration with changed interval time
+and with provided WatchDog server configuraion. Based on the `dp-` prefix we are providing the datapoints that will be checked. Becasue there is a `dp-break` parameter this check will be stopped immediately when the first error occured. `dp-warn-as-fail` parameter is used to change the error message from "warning" to "failure".
+
 ```html
 <div id="app-isalive2" 
     name="test2" 
@@ -59,7 +66,7 @@ Watchdog component can be used in the following way:
     wd-port="1234" 
     wd-message="Monitoring"
     dp-validation='[{"xid":"DP_EN1", "value":1, "check":"equal"}]' 
-    dp-failure
+    dp-warn-as-fail
     dp-break
 ></div>
 ```
