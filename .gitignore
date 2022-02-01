@@ -63,6 +63,8 @@ local.properties
 /WebContent/assets/evn.properties
 /WebContent/assets/commons.css
 /WebContent/WEB-INF/classes
+/${sys:catalina.base}
+
 # Locally stored "Eclipse launch configurations"
 *.launch
 # CDT-specific
