@@ -2,8 +2,8 @@
 ## Introduction
 ### Program versions
 - FactoryIO version: v2.5.1
-- OpenPLC Runtime version: 
-- OpenPLC Editor version: 
+- OpenPLC Runtime version: v3
+- OpenPLC Editor version: v1.0
 
 This tutorial is a step-by-step introduction to OpenPLC and FactoryIO. 
 
