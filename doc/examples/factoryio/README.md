@@ -53,7 +53,8 @@ Visual parts - can be skipped. They're for visualization purposes:
 
 ### Scene
 After you placed all described objects you should have a static scene looking like this:
-[here there will be image]
+
+![Scene preview](img/factoryio-scene-preview.jpg)
 
 ### Driver setup
 Press ``F4`` key or go to ``File => Drivers `` to open driver menu. 
@@ -62,12 +63,13 @@ From the list of devices in top left corner, select ``Modbus TCP/IP Server``.
 Now go to ``CONFIGURATION`` tab and configure ``I/O Points``:
 - the simulation just uses 6 sensors, and 5 actuators (no registers), so we configure the values appropriately (6,5,0,0) and press back to do the final step. If you want to use more sensors or actuators, adjust this number accordingly.
 
-[here there will be image]
+![Scene configuration](img/factoryio-configuration.jpg)
 
 If you want, you can also change ``Host``, ``Port`` and ``Network adapter``, but it's not needed.
 
 Go back to driver tab, drag the sensors and the actuators to each one of the places in the driver, in a way that all of them have something assigned. 
-[here there will be image]
+
+![Driver setup](img/factoryio-driver.jpg)
 
 You can save your scene and go to next step.
 
@@ -92,14 +94,16 @@ Now we need to add and configure FactoryIO driver as a Slave Device for OpenPLC.
 ## Programming in OpenPLC Editor
 Now we need to create the control logic.
 Open ``OpenPLC Editor`` and create a new project:
-[here there will be image]
+
+![Project settings](img/openplc-editor-settings.jpg)
 
 Select ``Ladder Logic``(LD) as a language.
 
 Create new variables based on ``Slave Device`` configured in OpenPLC Runtime.
 -   The variables declared in OpenPLC Editor must fall inside the range available by the Slave Device configured in the previous point
 -   There is an auxiliary variable called ``RUN`` that will not be assigned to any input (%IX100.x) or output (%QX100.x)
-[here there will be image]
+
+![Variables](img/openplc-editor-variables.jpg)
 
 With the variables already defined, it is possible to now proceed to develop the control logic, using for that purpose one of the standards in the sector ([Ladder Logic](https://en.wikipedia.org/wiki/Ladder_logic)). On a high level, the program will fulfill the following criteria:
 -   Pressing ``StartButton`` starts or stops the line
@@ -107,20 +111,28 @@ With the variables already defined, it is possible to now proceed to develop the
 -   The line stops when there is a box waiting
 -   If there is a box waiting, the robot will start the suction hed, descend, rotate away from the conveyor belt, drop the box, and go back to its initial location
 
+Now, create a ladder logic scheme based on the image below:
+
+![Scheme](img/openplc-editor-scheme.jpg)
+
 ## Runtime
 After creating a Ladder Logic in OpenPLC editor we need to export it to a ``.st`` file format, in order to comile it in OpenPLC Runtime. 
-[here there will be image]
+
+![Export project](img/openplc-editor-export.jpg)
 
 Now login to OpenPLC Runtime (default login and password: ``openplc``), and go to ``Programs`` tab. Here we need to upload exported file in ``.st`` format. After that, runtime should start compiling and after it's done, you should see this:
-[here there will be image]
+
+![Compilation success](img/openplc-runtime-compile.jpg)
 
 Now go back to ``Dashboard`` and there should appear a new button called ``Start PLC``:
-[here there will be image]
+
+![Start PLC button](img/openplc-runtime-start.jpg)
 
 Open FactoryIO with [previously](#factoryio -scene) created scene and launch it.
 
 In OpenPLC Runtime click ``Start PLC`` and go to ``Monitoring Page``, you should see previously defined variable and a light indicators.
-[here there will be image]
+
+![Monitoring tab](img/openplc-runtime-monitoring.jpg)
 
 Now in FactoryIO, press start button and you should see the final result:
 [here there will be GIF]
