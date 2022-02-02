@@ -77,7 +77,7 @@ You can save your scene and go to next step.
 Run ``OpenPLC Runtime`` and head over to ``localhost:8080`` adress in your browser.
 Login with default credentials:
 - login: openplc
-- password: openplc
+- password: openplc<br>
 and go to ``Slave Devices`` tab.
 
 Now we need to add and configure FactoryIO driver as a Slave Device for OpenPLC.
@@ -120,7 +120,9 @@ After creating a Ladder Logic in OpenPLC editor we need to export it to a ``.st`
 
 ![Export project](img/openplc-editor-export.jpg)
 
-Now login to OpenPLC Runtime (default login and password: ``openplc``), and go to ``Programs`` tab. Here we need to upload exported file in ``.st`` format. After that, runtime should start compiling and after it's done, you should see this:
+Now login to OpenPLC Runtime (default login and password: ``openplc``), and go to ``Programs`` tab.<br>
+Here we need to upload exported file in ``.st`` format.<br>
+After that, runtime should start compiling and after it's done, you should see this:
 
 ![Compilation success](img/openplc-runtime-compile.jpg)
 
