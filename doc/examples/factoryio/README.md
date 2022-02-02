@@ -130,7 +130,7 @@ Now go back to ``Dashboard`` and there should appear a new button called ``Start
 
 ![Start PLC button](img/openplc-runtime-start.jpg)
 
-Open FactoryIO with [previously](#factoryio -scene) created scene and launch it.
+Open FactoryIO with [previously](#factoryio-scene) created scene and launch it.
 
 In OpenPLC Runtime click ``Start PLC`` and go to ``Monitoring Page``, you should see previously defined variable and a light indicators.
 
