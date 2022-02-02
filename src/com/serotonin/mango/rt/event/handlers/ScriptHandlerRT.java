@@ -23,13 +23,12 @@ public class ScriptHandlerRT extends EventHandlerRT {
 
 	@Override
 	public void eventInactive(EventInstance evt) {
-		ScriptVO<?> script;
+		ScriptVO<?> script = null;
 		try {
 			script = new ScriptDao().getScript(vo
 					.getInactiveScriptCommand());
 		} catch (Exception ex) {
 			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
-			throw ex;
 		}
 		if (script != null) {
 			try {
@@ -38,20 +37,19 @@ public class ScriptHandlerRT extends EventHandlerRT {
 				LOG.warn(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
 				LOG.warn(infoErrorExecutionScript(e, script));
-				throw e;
 			}
 		}
 	}
 
 	@Override
 	public void eventRaised(EventInstance evt) {
-		ScriptVO<?> script;
+		ScriptVO<?> script = null;
 		try {
 			script = new ScriptDao().getScript(vo
 					.getActiveScriptCommand());
 		} catch (Exception ex) {
 			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
-			throw ex;
+			//throw ex;
 		}
 		if (script != null) {
 			try {
@@ -60,7 +58,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 				LOG.warn(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
 				LOG.warn(infoErrorExecutionScript(e, script));
-				throw e;
+				//throw e;
 			}
 		}
 	}
