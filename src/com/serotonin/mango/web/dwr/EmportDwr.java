@@ -215,6 +215,7 @@ public class EmportDwr extends BaseDwr {
 	public DwrResponseI18n importData(String data) {
 		ResourceBundle bundle = getResourceBundle();
 		User user = Common.getUser();
+		Permissions.ensureAdmin(user);
 		DwrResponseI18n response = EmportDwr.importDataImpl(data, bundle, user);
 
 		return response;
@@ -252,6 +253,7 @@ public class EmportDwr extends BaseDwr {
 	public DwrResponseI18n importUpdate() {
 		DwrResponseI18n response;
 		User user = Common.getUser();
+		Permissions.ensureAdmin(user);
 		ImportTask importTask = user.getImportTask();
 		if (importTask != null) {
 			response = importTask.getResponse();
@@ -281,7 +283,7 @@ public class EmportDwr extends BaseDwr {
 		User user = Common.getUser();
 		ZIPProjectManager importer = user.getUploadedProject();
 		try {
-
+			Permissions.ensureAdmin(user);
 			stopRunningDataSources();
 			new SystemSettingsDAO().resetDataBase();
 			importer.importProject();

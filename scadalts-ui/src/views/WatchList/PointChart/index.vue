@@ -204,6 +204,10 @@ export default {
 			if (this.chartProperties.type === 'compare') {
 				this.chartClass.compare();
 			}
+			this.chartClass.setLiveValuesLimit(
+				this.config.configuration.valuesLimit,
+				this.onLimitExceeded,
+			);
 			this.chartClass = this.chartClass.build();
 		},
 
