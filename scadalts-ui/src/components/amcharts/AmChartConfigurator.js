@@ -14,10 +14,12 @@ export class AmChartConfigurator {
 
     constructor(builder) {
         this.configId = builder.configId;
+
         if(!!localStorage.getItem(`AmChartConfig_${this.configId}`)) {
             console.warn("Loading from SessionStorage")
             this.loadChartConfiguration();
-        } else {
+        }
+        if(!this.configuration || this.configuration.series.length !== builder.pointLenght) {         
             this.configuration = {
                 legend: {},
                 cursor: { type: "XYCursor" },
@@ -25,6 +27,10 @@ export class AmChartConfigurator {
                 xAxes: builder.xAxes,
                 yAxes: builder.yAxes,
                 series: builder.series,
+                valuesLimit: builder.valuesLimit,
+                chartApiAggregation: builder.chartApiAggregation,
+                apiLimitValues: 10000,
+                apiLimitFactor: 1,
             }
             if(builder.exportMenu){
                 this.configuration.exporting = builder.exportMenu;
@@ -65,12 +71,15 @@ export class AmChartConfiguratorBuilder {
      * Create AmChartJSONConfig step by step;
      * @param {Number} configurationId - Unique Configuration ID
      */
-    constructor(configurationId) {
+    constructor(configurationId, pointLenght = 0) {
         this.configId = configurationId;
         this.xAxes = [];
         this.yAxes = [];
         this.series = [];
         this.activeColor = 0;
+        this.valuesLimit = 1000;
+        this.pointLenght = pointLenght;
+        this.chartApiAggregation = true;
         this.chartDefaultColors = [
             '#39B54A',
 	        '#69FF7D',

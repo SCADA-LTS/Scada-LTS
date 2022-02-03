@@ -44,11 +44,14 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 
+import static org.scada_lts.utils.UrlValidatorUtils.isValid;
+
 /**
  * @author Matthew Lohbihler
  */
 @JsonRemoteEntity
 public class HttpSenderVO extends PublisherVO<HttpPointVO> {
+
     @Override
     protected void getEventTypesImpl(List<EventTypeVO> eventTypes) {
         eventTypes.add(new EventTypeVO(EventType.EventSources.PUBLISHER, getId(), HttpSenderRT.SEND_EXCEPTION_EVENT,
@@ -167,6 +170,9 @@ public class HttpSenderVO extends PublisherVO<HttpPointVO> {
 
         if (StringUtils.isEmpty(url))
             response.addContextualMessage("url", "validate.required");
+
+        if (!isValid(url))
+            response.addContextualMessage("url", "validate.invalidValue");
 
         for (HttpPointVO point : points) {
             if (StringUtils.isEmpty(point.getParameterName())) {

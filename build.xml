@@ -244,6 +244,10 @@
 			<test name="br.org.scadabr.vo.EqualsHashcodePermissionTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.utils.UrlValidatorUtilsTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">
@@ -594,9 +598,9 @@
         <pathelement location="WebContent/WEB-INF/lib/jstl-api-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl-impl-1.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/jstl.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.13.3.jar.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.13.3.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.13.3.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-core-2.16.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-api-2.16.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/log4j-1.2-api-2.16.0.jar"/>
 		<!-- To make Log4j2 faster use make all loggers Asynchronous -->
 		<pathelement location="WebContent/WEB-INF/lib/disruptor-3.4.2.jar"/>
 		<!-- disruptor is required for that purpose. Set system property: -->
@@ -655,6 +659,7 @@
         <pathelement location="WebContent/WEB-INF/lib/xmlsec-1.4.3.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/cache-api-1.1.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/ehcache-3.9.4.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/commons-validator-1.7.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
 	<path id="EAR Libraries.libraryclasspath"/>

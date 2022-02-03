@@ -18,8 +18,10 @@
  */
 package com.serotonin.mango.web.dwr;
 
+import java.net.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
@@ -28,6 +30,7 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.rt.publish.persistent.PersistentSenderRT;
 import com.serotonin.mango.vo.DataPointExtendedNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
 import com.serotonin.mango.vo.publish.httpSender.HttpPointVO;
@@ -39,11 +42,16 @@ import com.serotonin.mango.vo.publish.persistent.PersistentSenderVO;
 import com.serotonin.mango.web.dwr.beans.HttpSenderTester;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
  */
 public class PublisherEditDwr extends BaseDwr {
+
+    private static final Log LOG = LogFactory.getLog(PublisherEditDwr.class);
+
     private DwrResponseI18n trySave(PublisherVO<? extends PublishedPointVO> p) {
         DwrResponseI18n response = new DwrResponseI18n();
 
@@ -106,16 +114,26 @@ public class PublisherEditDwr extends BaseDwr {
         return trySave(p);
     }
 
-    public void httpSenderTest(String url, boolean usePost, List<KeyValuePair> staticHeaders,
-            List<KeyValuePair> staticParameters) {
-        Common.getUser().setTestingUtility(new HttpSenderTester(url, usePost, staticHeaders, staticParameters));
+    public void httpSenderTest() {
+        User user = Common.getUser();
+        if(user == null)
+            return;
+        if(user.getEditPublisher() instanceof HttpSenderVO) {
+            HttpSenderVO publisher = (HttpSenderVO)user.getEditPublisher();
+            Common.getUser().setTestingUtility(new HttpSenderTester(publisher.getUrl(), publisher.isUsePost(),
+                    publisher.getStaticHeaders(), publisher.getStaticParameters()));
+        } else {
+            LOG.warn("EditPublisher in user is other type or null.");
+        }
     }
 
     public String httpSenderTestUpdate() {
         HttpSenderTester test = Common.getUser().getTestingUtility(HttpSenderTester.class);
         if (test == null)
-            return null;
-        return test.getResult();
+            return "<font color=\"red\" style=\"font-weight: bold;\">Correct URL!</font>";
+        String result = test.getResult();
+        cancelTestingUtility();
+        return result;
     }
 
     //
