@@ -12,7 +12,9 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.service.PermissionsService;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,12 +56,11 @@ public final class PermissionsUtils {
     }
 
     public static <T extends Permission> Set<T> merge(Set<T> accesses1, Set<T> accesses2) {
-        return merge(accesses1, accesses2, Permission::getPermission, Permission::getId);
+        return mergeToSet(accesses1, accesses2, Permission::getPermission, Permission::getId, a -> true);
     }
 
     public static List<ShareUser> merge(List<ShareUser> accesses1, List<ShareUser> accesses2) {
-        return new ArrayList<>(merge(new HashSet<>(accesses1), new HashSet<>(accesses2),
-                ShareUser::getAccessType, ShareUser::getUserId));
+        return mergeToList(accesses1, accesses2, ShareUser::getAccessType, ShareUser::getUserId, a -> true);
     }
 
     public static Set<Integer> mergeInt(Set<Integer> accesses1, Set<Integer> accesses2) {
@@ -67,27 +68,19 @@ public final class PermissionsUtils {
                 .collect(Collectors.toSet());
     }
 
-    public static Set<DataPointAccess> mergeDataPointAccesses(Set<DataPointAccess> accesses1,
-                                                              Set<DataPointAccess> accesses2) {
-        return merge(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId);
+    public static Set<DataPointAccess> mergeDataPointAccesses(Collection<DataPointAccess> accesses1,
+                                                              Collection<DataPointAccess> accesses2,
+                                                              Predicate<DataPointAccess> filter) {
+        return mergeToSet(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId, filter);
     }
 
-
-    public static List<DataPointAccess> mergeDataPointAccessesList(List<DataPointAccess> accesses1,
-                                                                   List<DataPointAccess> accesses2) {
-        return new ArrayList<>(mergeDataPointAccesses(new HashSet<>(accesses1), new HashSet<>(accesses2)));
+    public static Set<DataPointAccess> mergeDataPointAccesses(Collection<DataPointAccess> accesses1,
+                                                              Collection<DataPointAccess> accesses2) {
+        return mergeToSet(accesses1, accesses2, DataPointAccess::getPermission, DataPointAccess::getDataPointId, a -> true);
     }
 
     public static <T> Set<T> reduce(Set<T> accesses, ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
-        return accesses.stream()
-                .distinct()
-                .collect(Collectors
-                        .toMap(getId::applyAsInt, a -> a,
-                                (a, b) -> getAccess.applyAsInt(a) > getAccess.applyAsInt(b) ? a : b))
-                .entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toSet());
+        return new HashSet<>(reduceStream(accesses.stream(), getAccess, getId, a -> true));
     }
 
     private static <T, U> void updatePermissions(U user, List<T> accessesFromUser,
@@ -134,9 +127,42 @@ public final class PermissionsUtils {
         return permissionsFromUser.stream().sorted(comparator).collect(Collectors.toList());
     }
 
-    private static <T> Set<T> merge(Set<T> accesses1, Set<T> accesses2,
-                                    ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
-        return reduce(Stream.concat(accesses1.stream(), accesses2.stream())
-                .collect(Collectors.toSet()), getAccess, getId);
+    private static <T> List<T> mergeToList(Collection<T> accesses1, Collection<T> accesses2,
+                                         ToIntFunction<T> getAccess, ToIntFunction<T> getId,
+                                         Predicate<T> filter) {
+        return new ArrayList<>(mergeToSet(accesses1, accesses2, getAccess, getId, filter));
+    }
+
+    private static <T> Set<T> mergeToSet(Collection<T> accesses1, Collection<T> accesses2,
+                                         ToIntFunction<T> getAccess, ToIntFunction<T> getId,
+                                         Predicate<T> filter) {
+        Collection<T> collection = mergeToCollection(accesses1, accesses2, getAccess, getId, filter);
+        if(collection instanceof HashSet) {
+            return (Set<T>)collection;
+        }
+        return new HashSet<>(collection);
+    }
+
+    private static <T> Collection<T> mergeToCollection(Collection<T> accesses1, Collection<T> accesses2,
+                                           ToIntFunction<T> getAccess, ToIntFunction<T> getId,
+                                           Predicate<T> filter) {
+        if(!accesses1.isEmpty() && !accesses2.isEmpty())
+            return reduceStream(Stream.concat(accesses1.stream(), accesses2.stream()), getAccess, getId, filter);
+        if(!accesses1.isEmpty())
+            return reduceStream(accesses1.stream(), getAccess, getId, filter);
+        return reduceStream(accesses2.stream(), getAccess, getId, filter);
+    }
+
+    private static <T> Collection<T> reduceStream(Stream<T> accesses,
+                                                  ToIntFunction<T> getAccess,
+                                                  ToIntFunction<T> getId,
+                                                  Predicate<T> filter) {
+        return accesses.filter(filter)
+                .collect(toMapReduce(getAccess, getId))
+                .values();
+    }
+
+    private static <T> Collector<T, ?, Map<Integer, T>> toMapReduce(ToIntFunction<T> getAccess, ToIntFunction<T> getId) {
+        return Collectors.toMap(getId::applyAsInt, a -> a, (a, b) -> getAccess.applyAsInt(a) > getAccess.applyAsInt(b) ? a : b);
     }
 }

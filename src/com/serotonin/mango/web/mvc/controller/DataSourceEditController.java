@@ -48,6 +48,7 @@ public class DataSourceEditController extends ParameterizableViewController {
         DataSourceVO<?> dataSourceVO = null;
         User user = Common.getUser(request);
         Permissions.ensureAdmin(user);
+
         // Get the id.
         int id = Common.NEW_ID;
         String idStr = request.getParameter("dsid");
