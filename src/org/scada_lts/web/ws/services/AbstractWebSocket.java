@@ -1,6 +1,5 @@
 package org.scada_lts.web.ws.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 /**
@@ -18,10 +17,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  */
 public abstract class AbstractWebSocket {
 
-    private SimpMessagingTemplate template;
-
-    @Autowired
-    AbstractWebSocket() { }
+    private final SimpMessagingTemplate template;
 
     /**
      * Initialization of WebSocket broker
@@ -29,10 +25,10 @@ public abstract class AbstractWebSocket {
      * Initialized by Spring during the application initialization.
      * @param template - Messaging template
      */
-    @Autowired
-    public void setTemplate(SimpMessagingTemplate template) {
+    AbstractWebSocket(SimpMessagingTemplate template) {
         this.template = template;
     }
+
 
     /**
      * Send Message by WebSocket
@@ -47,8 +43,6 @@ public abstract class AbstractWebSocket {
      * @param message - Message Body object.
      */
     public void sendWebSocketMessage(String endpointUrl, Object message) {
-        endpointUrl = "/topic" + endpointUrl;
-        template.convertAndSend(endpointUrl, message);
+        template.convertAndSend("/topic" + endpointUrl, message);
     }
-
 }

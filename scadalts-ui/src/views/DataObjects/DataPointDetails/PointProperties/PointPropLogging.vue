@@ -142,9 +142,6 @@
 				</template>
 			</v-text-field>
 		</v-col>
-		<v-snackbar v-model="response.status">
-			{{ response.message }}
-		</v-snackbar>
 	</v-row>
 </template>
 <script>
@@ -174,10 +171,6 @@ export default {
 
 	data() {
 		return {
-			response: {
-				status: false,
-				message: '',
-			},
 			consts: {
 				loggingTypes: {
 					ON_CHANGE: 1,
@@ -219,8 +212,7 @@ export default {
 	methods: {
 		clearCache() {
 			this.$store.dispatch('clearDataPointCache', this.data.id).then((resp) => {
-				this.response.status = true;
-				this.response.message = this.$t('common.snackbar.delete.success');
+				this.$store.dispatch('showSuccessNotification', this.$t('common.snackbar.delete.success'));
 			});
 		},
 	},

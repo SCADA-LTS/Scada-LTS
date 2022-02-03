@@ -96,7 +96,6 @@
 				</v-row>
 			</template>
 		</v-treeview>
-		<v-snackbar v-model="snackbar.visible">{{ snackbar.text }}</v-snackbar>
 	</div>
 </template>
 <script>
@@ -125,10 +124,6 @@ export default {
 			mailingLists: undefined,
 			modified: [],
 			isError: false,
-			snackbar: {
-				visible: false,
-				text: '',
-			},
 			TYPE_MAIL: 2,
 			TYPE_SMS: 5,
 		};
@@ -416,12 +411,10 @@ export default {
 
 				this.modified = [];
 				if (this.isError) {
-					this.snackbar.text = this.$t('plcalarms.notification.fail');
-					this.snackbar.visible = true;
+					this.$store.dispatch('showErrorNotification', this.$t('plcalarms.notification.fail'));
 					this.isError = false;
 				} else {
-					this.snackbar.text = this.$t('plcalarms.notification.save');
-					this.snackbar.visible = true;
+					this.$store.dispatch('showSuccessNotification', this.$t('plcalarms.notification.save'));
 				}
 			}
 		},
