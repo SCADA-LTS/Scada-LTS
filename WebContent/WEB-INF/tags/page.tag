@@ -56,6 +56,7 @@
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
+  <link rel="stylesheet" type="text/css" href="assets/user_styles.css"/>
   <jsp:invoke fragment="styles"/>
 
   <style type="text/css">

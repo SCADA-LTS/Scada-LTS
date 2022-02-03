@@ -1,5 +1,8 @@
 @import 'common_deprecated.css';
 @import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&subset=latin-ext");
+:root {
+	--slts-color-background: #FFFFFF;
+}
 html {
   height: 100%;
 }
@@ -473,6 +476,11 @@ span.dojoTreeNodeLabel span {
   border-style: solid;
   padding: 1px 5px;
   color: black;
+}
+
+.controlsDiv, .controlsDiv table, .controlsDiv td, .controlsDiv td div, .controlContent, .labelDiv, .windowDiv, .imageDiv {
+    background-color: var(--slts-color-background);
+    box-shadow: 3px 6px 6px 0px #00000061;
 }
 
 /*# sourceMappingURL=common.css.map */
