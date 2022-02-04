@@ -1,7 +1,6 @@
-package com.serotonin.mango.vo.dataSource;
+package com.serotonin.mango.vo;
 
 import com.serotonin.mango.Common;
-import net.sf.mbus4j.dataframes.MBusMedium;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,6 +50,13 @@ public enum TimePeriodType {
     public static TimePeriodType getType(int code) {
         return Stream.of(TimePeriodType.values())
                 .filter(a -> a.getCode() == code)
+                .findAny()
+                .orElse(TimePeriodType.SECONDS);
+    }
+
+    public static TimePeriodType getType(String name) {
+        return Stream.of(TimePeriodType.values())
+                .filter(a -> a.name().equalsIgnoreCase(name))
                 .findAny()
                 .orElse(TimePeriodType.SECONDS);
     }

@@ -223,7 +223,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch" javascript="SecondaryAddressingSearch"/>
     <convert converter="enum" match="com.serotonin.dataframes.MBusMedium" />
     <convert converter="enum" match="com.serotonin.MBusAddressing" />
-    <convert converter="enum" match="com.serotonin.mango.vo.dataSource.TimePeriodType" />
+    <convert converter="enum" match="com.serotonin.mango.vo.TimePeriodType" />
     
     <!-- End MBus4J stuff-->
     

@@ -46,7 +46,7 @@ import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
-import com.serotonin.mango.vo.dataSource.TimePeriodType;
+import com.serotonin.mango.vo.TimePeriodType;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
@@ -84,7 +84,6 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private String updateCronPattern;
     @JsonRemoteProperty
     private int executionDelaySeconds;
-    @JsonRemoteProperty
     private TimePeriodType executionDelayPeriodType = TimePeriodType.SECONDS;
 
     public PointLocatorRT createRuntime() {
@@ -389,6 +388,9 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 context.add(new IntValuePair(dp.getId(), var));
             }
         }
+
+        String delayPeriodType = json.getString("executionDelayPeriodType");
+        this.executionDelayPeriodType = TimePeriodType.getType(delayPeriodType);
     }
 
     @Override
@@ -409,5 +411,6 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             }
         }
         map.put("context", pointList);
+        map.put("executionDelayPeriodType", getExecutionDelayPeriodType());
     }
 }

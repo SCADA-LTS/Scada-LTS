@@ -290,7 +290,7 @@
     <td class="formField">
         <input id="executionDelaySeconds" type="text" class="formShort"/>
         <sst:select id="executionDelayPeriodTypeCode">
-          <tag:timePeriodOptions sst="true" ms="true" s="true" min="true" h="true"/>
+          <tag:timePeriodOptions sst="true" ms="true" s="true" min="true"/>
         </sst:select>
     </td>
   </tr>
