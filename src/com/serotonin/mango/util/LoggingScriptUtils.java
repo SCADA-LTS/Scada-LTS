@@ -1,6 +1,7 @@
 package com.serotonin.mango.util;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
@@ -214,7 +215,9 @@ public final class LoggingScriptUtils {
 
     private static String eventInfo(EventInstance event) {
         String viewInfo = "event: {0} (id: {1}, active: {2}, type: {3})";
-        return MessageFormat.format(viewInfo, event.getMessage(), event.getId(), event.getActiveTimestamp(), event.getEventType());
+        if(event.getMessage() != null)
+            return MessageFormat.format(viewInfo, event.getMessage().getLocalizedMessage(Common.getBundle()), event.getId(), event.getActiveTimestamp(), event.getEventType());
+        return MessageFormat.format(viewInfo, "no message", event.getId(), event.getActiveTimestamp(), event.getEventType());
     }
 
     private static String eventHandlerInfo(EventHandlerVO eventHandler) {
