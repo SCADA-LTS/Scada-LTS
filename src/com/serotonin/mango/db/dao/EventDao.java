@@ -191,6 +191,7 @@ public class EventDao  {
 		return eventService.toggleSilence(eventId, userId);
 	}
 
+	@Deprecated
 	public int getHighestUnsilencedAlarmLevel(int userId) {		
 		return eventService.getHighestUnsilencedAlarmLevel(userId);
 	}

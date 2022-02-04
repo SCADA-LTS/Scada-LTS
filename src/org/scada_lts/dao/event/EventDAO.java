@@ -748,13 +748,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		StringBuilder from = new StringBuilder();
 		from.append(" FROM events e ");
 		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
-		from.append(" LEFT JOIN userEvents ue ON ue.eventId = e.id " );
+		from.append(" JOIN userEvents ue ON ue.eventId = e.id " );
 
 		List<String> filterCondtions = new ArrayList<String>();
-		if (!user.isAdmin()) {
-			filterCondtions.add("u.id=?");
-			params.add(user.getId());
-		}
+		filterCondtions.add(" ue.userId = ? ");
+		params.add(user.getId());
 
 		if (!"".equals(query.getStartDate())) {
 			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
@@ -1364,16 +1362,21 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public boolean toggleSilence(int eventId, int userId, Boolean updated) {
-		String result = DAO.getInstance().getJdbcTemp().queryForObject(SILENCED_SELECT, new Object[] {eventId, userId }, String.class);
+		String result = null;
+		try {
+			result = DAO.getInstance().getJdbcTemp().queryForObject(SILENCED_SELECT, new Object[]{eventId, userId}, String.class);
+		} catch (Exception ex) {
+			LOG.warn(ex);
+		}
 		if (result == null) {
 			return true;
 		} else {
 			boolean silenced = !DAO.charToBool(result);
-			updated = 0<DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_SILENCE, new Object[] { DAO.boolToChar(silenced), eventId, userId });
-			return silenced;
+			int updatedCount = DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_SILENCE, new Object[] { DAO.boolToChar(silenced), eventId, userId });
+			return silenced && updatedCount > 0;
 		}
 	}
-	
+
 	public int getHighestUnsilencedAlarmLevel(int userId) {
 		return DAO.getInstance().getJdbcTemp().queryForObject(HIGHEST_UNSILENT_USER_ALARMS, new Object[] { DAO.boolToChar(false), userId },Integer.class);
 	}

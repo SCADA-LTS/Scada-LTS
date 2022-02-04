@@ -29,7 +29,6 @@ import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.permissions.ACLConfig;
-import org.scada_lts.permissions.PermissionWatchlistACL;
 import org.scada_lts.permissions.model.EntryDto;
 import org.scada_lts.permissions.model.PermissionDataSourceACL;
 import org.scada_lts.web.mvc.comparators.DataSourceComparator;
@@ -55,12 +54,13 @@ public class DataSourceListController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView showList(HttpServletRequest request){
 		LOG.trace("/data_sources.shtm");
+        Permissions.ensureAdmin();
 		
 		//PagingDataForm paging = new PagingDataForm();
 		List<ListParent<DataSourceVO<?>, DataPointVO>> data = getData(request, "Name", true);
         //paging.setData(data.getData());
         //paging.setNumberOfItems(data.getRowCount());
-        
+
 		Map<String, Object> model = new HashMap<String, Object>();
 		//model.put("paging", paging);
 		model.put("data", data);

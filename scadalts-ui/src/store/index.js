@@ -15,6 +15,7 @@ import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
 import watchListModule from './watchList';
+import notificationModule from './notificationStore';
 import webSocketModule from './websocketStore';
 
 import axios from 'axios';
@@ -38,6 +39,7 @@ export default new Vuex.Store({
 		pointHierarchy,
 		alarms,
 		storeUsers,
+		notificationModule,
 		userProfileModule,
 		systemSettings,
 		storeMailingList,
@@ -301,18 +303,22 @@ export default new Vuex.Store({
 		 * @param {HTTP Response} response - JSON Response from server
 		 * @returns true|false
 		 */
-		validateResponse({ state }, response) {
+		validateResponse({ state, dispatch }, response) {
 			if (!!response) {
 				if (response.status >= 200 && response.status < 300) {
 					return true;
 				} else if (response.status === 401) {
+					dispatch('showNetworkErrorNotification', 'User is not authorized!');
 					console.error('⛔️ - User is not Authorized!');
 				} else if (response.status === 400) {
+					dispatch('showNetworkErrorNotification', 'Check request data!');
 					console.error('❌️ - Bad Request! Check request data');
 				} else if (response.status === 500) {
+					dispatch('showNetworkErrorNotification', 'Server exception!');
 					console.error('🚫️ - Internal server error!\n Something went wrong!');
 				}
 			} else {
+				dispatch('showNetworkErrorNotification', 'No response received!');
 				console.error('⚫️ - Not received response message!');
 			}
 

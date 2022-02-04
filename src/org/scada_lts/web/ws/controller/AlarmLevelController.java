@@ -3,134 +3,89 @@ package org.scada_lts.web.ws.controller;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
-
+import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.service.UserHighestAlarmLevelService;
-import org.scada_lts.web.ws.beans.ScadaPrincipal;
-import org.scada_lts.web.ws.config.WebSocketConfig;
+import org.scada_lts.mango.adapter.MangoUser;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.ws.config.WebSocketStatsMonitor;
+import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.user.SimpSession;
-import org.springframework.messaging.simp.user.SimpSubscription;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
 
 @Controller
 public class AlarmLevelController {
-    private static final Log LOG = LogFactory.getLog(AlarmLevelController.class);     
+    private static final Log LOG = LogFactory.getLog(AlarmLevelController.class);
 
-    @Resource
-    private SimpUserRegistry  userRegistry;
-    
-    @Resource
-    private UserHighestAlarmLevelService userHighestAlarmLevelService;
-    
-    //@Resource
-    //private WebSocketMessageBrokerStatsMonitor statsMonitor;
-    
-    @Resource 
-    private WebSocketConfig  config;
-    
-    
-    public void setUserHighestAlarmLevelService(UserHighestAlarmLevelService userHighestAlarmLevelService) {
-    	this.userHighestAlarmLevelService = userHighestAlarmLevelService;
+    private final IHighestAlarmLevelService highestAlarmLevelService;
+    private final UserEventServiceWebSocket userEventService;
+    private final WebSocketStatsMonitor webSocketStatsMonitor;
+    private final MangoUser userService;
+
+    public AlarmLevelController(IHighestAlarmLevelService highestAlarmLevelService,
+                                UserEventServiceWebSocket userEventService,
+                                WebSocketStatsMonitor webSocketStatsMonitor) {
+        this.highestAlarmLevelService = highestAlarmLevelService;
+        this.userEventService = userEventService;
+        this.webSocketStatsMonitor = webSocketStatsMonitor;
+        this.userService = new UserService();
     }
 
-    public void setWebSocketConfig(WebSocketConfig config) {
-    	this.config = config;
-    }
-    
     @MessageMapping("/alarmLevel")
-    @SendTo("/topic/alarmLevel")
-    public String process(String message, ScadaPrincipal principal, StompHeaderAccessor accessor) throws Exception {
-        String user = principal.getName() == null ? "<unknwn>" : principal.getName();
-        LOG.info("process[" + user + "]" + "message: " + message);
-        if( principal != null )
-        	userHighestAlarmLevelService.update(principal.getId());
-        return "Hello, " + user + "! Your msg was: " + message;
-    }
-    
-    
-    @SubscribeMapping("/alarmLevel/register")
-    public String register(ScadaPrincipal principal) {
-        String user = principal.getName();
-        LOG.info("register: " + user + "["+principal.getId()+"]");
-        userHighestAlarmLevelService.update(principal.getId());
-        return user;
+    public String process(String message, UsernamePasswordAuthenticationToken principal, StompHeaderAccessor accessor) {
+        LOG.debug("process[" + principal.getName() + "]" + "message: " + message);
+        highestAlarmLevelService.doSendAlarmLevel(userService.getUser(principal.getName()), userEventService::sendAlarmLevel);
+        return "user: " + principal.getName()  + ", message: " + message;
     }
 
-    
+    @SubscribeMapping("/alarmLevel/register")
+    public String register(UsernamePasswordAuthenticationToken principal) {
+        User user = userService.getUser(principal.getName());
+        LOG.debug("register: " + user + "["+user.getId()+"]");
+        return user.getUsername();
+    }
+
     @SubscribeMapping("/listusers")
-    //@MessageMapping("/listusers")
-    //@SendTo("/ws/listusers")
-    public String listUsers(ScadaPrincipal principal) {
-        String user = principal.getName() == null ? "<unknwn>" : principal.getName();
-        LOG.info("listUsers: " + user);
-        
-        String result = "";
-        for( SimpUser u : userRegistry.getUsers() ) {
-            result += u.getName() + "\n";
-            if( u.hasSessions() ) {
-                for( SimpSession s : u.getSessions() ) {
-                    result += "\t" + s.getId() + "\n";
-                    for( SimpSubscription sub : s.getSubscriptions()) {
-                        result += "\t\t" +  sub.getId() + ": " + sub.getDestination() + "\n";
-                    }
-                }
-            }
-        }
+    public String listUsers(UsernamePasswordAuthenticationToken principal) {
+        LOG.debug("listUsers: " + principal.getName());
+        String result = webSocketStatsMonitor.toPrintUsers();
+        LOG.debug(result);
         return result;
     }
-    
     
     @SubscribeMapping("/session")
-    public String listSessionAttributes(ScadaPrincipal principal, StompHeaderAccessor accessor) {
-        String user = principal.getName() == null ? "<unknwn>" : principal.getName();
-        LOG.info("listSessionAttributes: " + user);
+    public String listSessionAttributes(UsernamePasswordAuthenticationToken principal, StompHeaderAccessor accessor) {
+        LOG.debug("listSessionAttributes: " + principal.getName());
         
-        String result = "";
+        StringBuilder result = new StringBuilder();
         Map<String, Object> attributes = accessor.getSessionAttributes();
         for( String key : attributes.keySet()) {
-            result += key + ": " + attributes.get(key).toString() +"\n";
+            result.append(key).append(": ").append(attributes.get(key).toString()).append("\n");
         }
-        return result;
+        return result.toString();
     }
-    
-    
-    //@MessageExceptionHandler
+
+    @MessageExceptionHandler
     @SendToUser("/queue/errors")
     public String handleException(Throwable exception) {
         LOG.warn("Exception caught: " + exception.getMessage());
         return exception.getMessage();
     }
-    
-    @MessageMapping("/websocketStats")
-    public String processWebsocketStats(ScadaPrincipal principal, StompHeaderAccessor accessor) {
-        String user = principal.getName() == null ? "<unknwn>" : principal.getName();
-        LOG.info("processWebsocketStats: " + user);
-        
-        SubProtocolWebSocketHandler handler = (SubProtocolWebSocketHandler) config.subProtocolWebSocketHandler();
-        String result = "Websocket Stats: \n";
-        result += handler.getStatsInfo();
-//        result += "\tCurrent sessions: " + statsMonitor.getCurrentSessions() + "\n";
-//        result += "\tSendBufferSize: " + statsMonitor.getSendBufferSize() + "\n";
-//        result += "\tOutboundPoolSize: " + statsMonitor.getOutboundPoolSize() + "\n";
-//        result += "\tOutboundPoolSize: " + statsMonitor.getOutboundPoolSize() + "\n";
-//        result += "\tOutboundLargestPoolSize: " + statsMonitor.getOutboundLargestPoolSize() + "\n";
-//        result += "\tOutboundActiveThreads: " + statsMonitor.getOutboundActiveThreads() + "\n";
-//        result += "\tOutboundQueuedTaskCount: " + statsMonitor.getOutboundQueuedTaskCount() + "\n";
-//        result += "\tOutboundCompletedTaskCount: " + statsMonitor.getOutboundCompletedTaskCount() + "\n";
+
+    @SubscribeMapping("/websocketStats")
+    public String processWebsocketStats(UsernamePasswordAuthenticationToken principal, StompHeaderAccessor accessor) {
+        LOG.debug("processWebsocketStats: " + principal);
+        String result = webSocketStatsMonitor.toPrintStats();
         LOG.debug(result);
         return result;
     }
-   
+
 }
 

@@ -130,6 +130,7 @@
             // Missing names imply that the point was deleted, so ignore.
             reportPointsArray[reportPointsArray.length] = {
                 pointId: pointId,
+                pointXid: data.xid,
                 pointName : data.name,
                 pointType : data.dataTypeMessage,
                 colour : !colour ? (!data.chartColour ? "" : data.chartColour) : colour,
@@ -396,8 +397,12 @@
     function getReportPointIdsArray() {
         var points = new Array();
         for (var i=0; i<reportPointsArray.length; i++)
-            points[points.length] = { pointId: reportPointsArray[i].pointId, colour: reportPointsArray[i].colour,
-                    consolidatedChart: reportPointsArray[i].consolidatedChart };
+            points[points.length] = {
+                pointId: reportPointsArray[i].pointId,
+                pointXid: reportPointsArray[i].pointXid,
+                colour: reportPointsArray[i].colour,
+                consolidatedChart: reportPointsArray[i].consolidatedChart
+            };
         return points;
     }
     

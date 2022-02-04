@@ -6,32 +6,32 @@
 		<v-dialog v-model="isModalVisible" width="800">
 			<v-card>
 				<v-card-title> {{ $t('modernwatchlist.chartseries.title') }} </v-card-title>
+
 				<v-card-text class="card-content">
 					<v-row id="general-settings">
-						<v-col cols="12">
-							<p>{{ $t('modernwatchlist.chartseries.aggregation.label') }}</p>
+						<v-col>
+							<v-select
+								:label="$t('modernwatchlist.chartseries.valueslimit.label')"
+								:hint="$t('modernwatchlist.chartseries.valueslimit.hint')"
+								persistent-hint
+								v-model="chartConfig.valuesLimit"
+								:items="liveValuesLimits"
+								@change="updateValuesLimit"
+							></v-select>
 						</v-col>
-
-						<v-col cols="12" class="button-space-double">
-							<v-btn-toggle v-model="chartConfig.xAxes[0].groupData" dense mandatory>
-								<v-btn :value="false">{{
-									$t('modernwatchlist.chartseries.aggregation.all')
-								}}</v-btn>
-								<v-btn :value="true">{{
-									$t('modernwatchlist.chartseries.aggregation.aggregate')
-								}}</v-btn>
-							</v-btn-toggle>
+						<v-col cols="6" v-if="chartType==='static'">
+							<v-switch v-model="chartConfig.chartApiAggregation" label="Server side aggregation">
+							</v-switch>
 						</v-col>
-
-						<v-col cols="12">
+						<!-- <v-col cols="4" v-if="chartType==='static'">
 							<v-text-field
-								v-model="chartConfig.xAxes[0].groupCount"
+								v-model="chartConfig.apiLimitFactor"
 								type="number"
-								:label="$t('modernwatchlist.chartseries.aggregation.count')"
-								:disabled="!chartConfig.xAxes[0].groupData"
-								dense
+								:label="$t('systemsettings.amchart.limitFactor')"
+								:hint="$t('systemsettings.amchart.limitFactor.hint')"
+								persistent-hint
 							></v-text-field>
-						</v-col>
+						</v-col> -->
 					</v-row>
 					<v-row id="chart-series-settings">
 						<v-col cols="12">
@@ -106,14 +106,20 @@
 											<v-col md="6" sm="12" xs="12">
 												<v-row>
 													<v-col cols="12">
-														<p>{{ $t('modernwatchlist.chartseries.stroke.color') }}</p>
+														<p>
+															{{ $t('modernwatchlist.chartseries.stroke.color') }}
+														</p>
 													</v-col>
 													<v-col cols="2">
 														<v-menu offset-y :close-on-content-click="false">
 															<template v-slot:activator="{ on }">
 																<v-btn :color="s.stroke" v-on="on" block> </v-btn>
 															</template>
-															<v-color-picker v-model="s.stroke" :close-on-content-click="false"> </v-color-picker>
+															<v-color-picker
+																v-model="s.stroke"
+																:close-on-content-click="false"
+															>
+															</v-color-picker>
 														</v-menu>
 													</v-col>
 													<v-col cols="4">
@@ -149,7 +155,11 @@
 															<template v-slot:activator="{ on }">
 																<v-btn :color="s.fill" v-on="on" block> </v-btn>
 															</template>
-															<v-color-picker v-model="s.fill" :close-on-content-click="false"> </v-color-picker>
+															<v-color-picker
+																v-model="s.fill"
+																:close-on-content-click="false"
+															>
+															</v-color-picker>
 														</v-menu>
 													</v-col>
 													<v-col cols="10">
@@ -174,14 +184,11 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn text @click="close()">{{
+					<v-btn text @click="restore()">{{
 						$t('modernwatchlist.chartseries.close')
 					}}</v-btn>
 					<v-btn text @click="deleteFromStorage()">{{
 						$t('modernwatchlist.chartseries.delete')
-					}}</v-btn>
-					<v-btn text @click="restore()">{{
-						$t('modernwatchlist.chartseries.restore')
 					}}</v-btn>
 					<v-btn text color="primary" @click="save()">{{
 						$t('modernwatchlist.chartseries.save')
@@ -195,13 +202,14 @@
 export default {
 	name: 'ChartSeriesSettingsComponent',
 
-	props: ['watchListName', 'series', 'chartConfig'],
+	props: ['watchListName', 'series', 'chartConfig', 'chartType'],
 
 	data() {
 		return {
 			tempSeries: undefined,
 			tab: null,
 			isModalVisible: false,
+			liveValuesLimits: [100, 500, 1000, 5000, 10000, 20000],
 		};
 	},
 
@@ -213,6 +221,7 @@ export default {
 
 		restore() {
 			this.series = this.tempSeries;
+			this.close();
 		},
 
 		close() {
@@ -240,6 +249,10 @@ export default {
 				series.dataFields.dateX = 'date2';
 			}
 		},
+
+		updateValuesLimit() {
+			this.chartConfig.apiLimitValues = this.chartConfig.valuesLimit;
+		}
 	},
 };
 </script>

@@ -18,6 +18,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.HttpParameterUtils;
@@ -69,6 +70,7 @@ public class ZIPProjectManager {
 	public void exportProject(HttpServletRequest request,
 							  HttpServletResponse response) throws Exception {
 
+		Permissions.ensureAdmin(Common.getUser(request));
 		extractExportParametersFromRequest(request);
 
 		response.setHeader("Content-Disposition", "attachment; filename="
@@ -231,7 +233,7 @@ public class ZIPProjectManager {
 	private FileToPack buildJSONFile(String packAs, boolean includePointValues) {
 		String jsonToExport = EmportDwr.createExportJSON(3, true, true, true,
 				true, true, true, true, true, true, true, true, true, true,
-				true, includePointValues, maxPointValues, true, true);
+				true, includePointValues, maxPointValues, true, true, true);
 		FileToPack file = new FileToPack(packAs,
                 FileUtil.createTxtTempFile(jsonToExport));
 		return file;

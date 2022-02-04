@@ -106,16 +106,11 @@
 			:message="$t('userprofile.dialog.delete.text')"
 		></ConfirmationDialog>
 
-
-		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
-			{{ snackbar.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
 import UserProfileDetails from './UserProfileDetails.vue';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 /**
  * User Profile List component - View Page
@@ -133,8 +128,6 @@ export default {
         UserProfileDetails,
 		ConfirmationDialog
     },
-
-	mixins: [SnackbarMixin],
 
 	data() {
 		return {
@@ -187,9 +180,9 @@ export default {
 			if (result) {
 				try {
 					this.deleteUserProfile(this.operationQueue);
-					this.showCrudSnackbar('delete')
+					this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.delete.success`));
 				} catch (e) {
-					this.showCrudSnackbar('delete', false)
+					this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.delete.fail`));
 					console.error(e);
 				}
 			}
@@ -207,18 +200,18 @@ export default {
 		/* EVENTS FROM CHILD COMPONENTS */
 		onUserProfileUpdate(result) {
 			if (result) {
-				this.showCrudSnackbar('update')
+				this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.update.success`));
 			} else {
-				this.showCrudSnackbar('update', false)
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.update.fail`));
 			}
         },
 
 		onUserProfileCreation(result) {
 			if (result) {
-				this.showCrudSnackbar('add')
+				this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.add.success`));
 				this.fetchUserProfileList();
 			} else {
-				this.showCrudSnackbar('add', false)
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.add.fail`));
 			}
 		},
 		

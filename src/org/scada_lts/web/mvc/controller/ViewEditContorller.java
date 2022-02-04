@@ -86,6 +86,7 @@ public class ViewEditContorller {
     protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
         View view;
         User user = Common.getUser(request);
+        Permissions.ensureAdmin(user);
 
         if (viewIdStr != null) {
             // An existing view.
