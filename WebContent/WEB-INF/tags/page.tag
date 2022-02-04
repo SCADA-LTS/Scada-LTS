@@ -247,9 +247,7 @@
 <!-- mainHeader -->
 <c:if test="${!sessionUser.hideHeader}">
 <div id="mainHeader">
-  <div>
-    <img id="logo" src="assets/logo.png" alt="Logo">
-  </div>
+  <tag:logo/>
 
   <div id="eventsRow">
     <a href="events.shtm">
