@@ -271,16 +271,6 @@ export default new Vuex.Store({
 				},
 			};
 
-			const testInput = (req, res) => {
-				axios
-					.post(state.applicationUrl, { firstName: 'Marlon' }, config)
-					.then(function (response) {
-						console.log('saved successfully');
-					})
-					.catch(function (error) {
-						console.log(error);
-					});
-			};
 			return new Promise((resolve, reject) => {
 				axios
 					.post(state.applicationUrl + payload.url, payload.data, state.requestConfig)

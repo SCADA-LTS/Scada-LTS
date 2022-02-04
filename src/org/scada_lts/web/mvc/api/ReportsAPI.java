@@ -30,6 +30,7 @@ import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
+import org.scada_lts.web.mvc.api.dto.ReportDTO;
 import org.scada_lts.web.mvc.api.json.JsonEventSearch;
 import org.scada_lts.web.mvc.api.json.JsonIdSelection;
 import org.springframework.http.HttpEntity;
@@ -93,17 +94,17 @@ public class ReportsAPI {
      * @return ReportVO List
      */
     @PostMapping(value = "/save")
-    public HttpEntity<String> save(@RequestBody Map<String, Object> query, HttpServletRequest request) {
+    public HttpEntity<String> save(@RequestBody ReportDTO query, HttpServletRequest request) {
         LOG.info("GET::/api/reports/save");
         try {
             User user = Common.getUser(request);
             ReportVO report = new ReportVO();
 
             report.setUserId(user.getId());
-            report.setId(Integer.parseInt(query.get("id").toString()));
-            report.setName(query.get("name").toString());
+            report.setId(query.getId());
+            report.setName(query.getName());
             List<ReportPointVO> reportPoints = new ArrayList<ReportPointVO>();
-            List<HashMap<String, Object>> points = (List<HashMap<String, Object>>) query.get("points");
+            List<HashMap<String, Object>> points = query.getPoints();
 
             for (HashMap<String, Object> dp : points) {
                 if (Permissions.hasAdmin(user) || Permissions.hasDataPointReadPermission(user, dataPointService.getDataPoint((Integer) dp.get("pointId")) )) {
@@ -117,33 +118,33 @@ public class ReportsAPI {
             }
 
             report.setPoints(reportPoints);
-            report.setIncludeEvents(Integer.parseInt(query.get("includeEvents").toString()));
-            report.setIncludeUserComments(Boolean.parseBoolean(query.get("includeUserComments").toString()));
-            report.setDateRangeType(Integer.parseInt(query.get("dateRangeType").toString()));
-            report.setRelativeDateType(Integer.parseInt(query.get("relativeDateType").toString()));
-            report.setPreviousPeriodCount(Integer.parseInt(query.get("previousPeriodCount").toString()));
-            report.setPreviousPeriodType(Integer.parseInt(query.get("previousPeriodType").toString()));
-            report.setPastPeriodCount(Integer.parseInt(query.get("pastPeriodCount").toString()));
-            report.setPastPeriodType(Integer.parseInt(query.get("pastPeriodType").toString()));
-            report.setFromNone(Boolean.parseBoolean(query.get("fromNone").toString()));
-            report.setFromYear(Integer.parseInt(query.get("fromYear").toString()));
-            report.setFromMonth(Integer.parseInt(query.get("fromMonth").toString()));
-            report.setFromDay(Integer.parseInt(query.get("fromDay").toString()));
-            report.setFromHour(Integer.parseInt(query.get("fromHour").toString()));
-            report.setFromMinute(Integer.parseInt(query.get("fromMinute").toString()));
-            report.setToNone(Boolean.parseBoolean(query.get("toNone").toString()));
-            report.setToYear(Integer.parseInt(query.get("toYear").toString()));
-            report.setToMonth(Integer.parseInt(query.get("toMonth").toString()));
-            report.setToDay(Integer.parseInt(query.get("toDay").toString()));
-            report.setToHour(Integer.parseInt(query.get("toHour").toString()));
-            report.setToMinute(Integer.parseInt(query.get("toMinute").toString()));
-            report.setSchedule(Boolean.parseBoolean(query.get("schedule").toString()));
-            report.setSchedulePeriod(Integer.parseInt(query.get("schedulePeriod").toString()));
-            report.setRunDelayMinutes(Integer.parseInt(query.get("runDelayMinutes").toString()));
-            report.setScheduleCron(query.get("scheduleCron").toString());
-            report.setEmail(Boolean.parseBoolean(query.get("email").toString()));
-            report.setIncludeData(Boolean.parseBoolean(query.get("includeData").toString()));
-            report.setZipData(Boolean.parseBoolean(query.get("zipData").toString()));
+            report.setIncludeEvents(query.getIncludeEvents());
+            report.setIncludeUserComments(query.isIncludeUserComments());
+            report.setDateRangeType(query.getDateRangeType());
+            report.setRelativeDateType(query.getRelativeDateType());
+            report.setPreviousPeriodCount(query.getPreviousPeriodCount());
+            report.setPreviousPeriodType(query.getPreviousPeriodType());
+            report.setPastPeriodCount(query.getPastPeriodCount());
+            report.setPastPeriodType(query.getPastPeriodType());
+            report.setFromNone(query.isFromNone());
+            report.setFromYear(query.getFromYear());
+            report.setFromMonth(query.getFromMonth());
+            report.setFromDay(query.getFromDay());
+            report.setFromHour(query.getFromHour());
+            report.setFromMinute(query.getFromMinute());
+            report.setToNone(query.isToNone());
+            report.setToYear(query.getToYear());
+            report.setToMonth(query.getToMonth());
+            report.setToDay(query.getToDay());
+            report.setToHour(query.getToHour());
+            report.setToMinute(query.getToMinute());
+            report.setSchedule(query.isSchedule());
+            report.setSchedulePeriod(query.getSchedulePeriod());
+            report.setRunDelayMinutes(query.getRunDelayMinutes());
+            report.setScheduleCron(query.getScheduleCron());
+            report.setEmail(query.isEmail());
+            report.setIncludeData(query.isIncludeData());
+            report.setZipData(query.isZipData());
 
             reportService.saveReport(report);
             List<RecipientListEntryBean> recipients;

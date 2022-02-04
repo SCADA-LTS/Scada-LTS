@@ -25,13 +25,11 @@
 /**
  * @author sselvaggi
  */
-import Components from '@min-gb/vuejs-components';
 
 export default {
 	name: 'alarmTabs',
 	
 	components: {
-		...Components,
 	},
 	mounted() {
 		this.tab = 0
@@ -39,6 +37,9 @@ export default {
 		this.interval = setInterval(() => {
 			this.fetchIntances();
 		}, 1000);
+	},
+	destroyed() {
+		clearInterval(this.interval)
 	},
 	watch: { 
 		$route(to) {

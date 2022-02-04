@@ -99,17 +99,10 @@ const storeDataPoint = {
 			state.datapointSimpleList = await dispatch('requestGet', `/datapoint/getAll`);
 		},
 
-		async fetchPointDataType({ state, dispatch }, xid) {
-			state.datapointSimpleList = await dispatch(
-				'requestGet',
-				`/datapoint/${xid}/dataType`,
-			);
-		},
-
 		async searchDatapoints({ state, dispatch }, keywords) {
 			return (state.datapointSimpleList = await dispatch(
 				'requestGet',
-				`/datapoints?keywordSearchc=${keywords}`,
+				`/datapoints?keywordSearch=${keywords}`,
 			));
 		},
 

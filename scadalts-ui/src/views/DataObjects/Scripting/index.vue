@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1>{{ $t('scriptList.title') }}</h1>
+		<h1>{{ $t('scripts.title') }}</h1>
 		{{scriptList}}
 		<v-container fluid v-if="!!scriptList">
 			<v-card>

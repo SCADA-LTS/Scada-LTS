@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.utils.SqlUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -175,16 +176,17 @@ public class ReportDAO {
 				params.add("%" + keyword + "%");
 			}
 
-			filterCondtions.add(joinOr(keywordConditions));
+			filterCondtions.add(SqlUtils.joinOr(keywordConditions));
 		}
 
 		sql.append("SELECT "
 			+ COLUMN_NAME_DATA + ", "
 			+ COLUMN_NAME_ID + ", "
+			+ COLUMN_NAME_XID + ", "
 			+ COLUMN_NAME_USER_ID + ", "
 			+ COLUMN_NAME_NAME + " "
 			+ "FROM reports R ");
-		sql.append(" WHERE " + joinAnd(filterCondtions));
+		sql.append(" WHERE " + SqlUtils.joinAnd(filterCondtions));
 
 		return DAO.getInstance().getJdbcTemp().query(sql.toString(), new ReportRowMapper());
 	}
@@ -247,25 +249,5 @@ public class ReportDAO {
 		DAO.getInstance().getJdbcTemp().update(REPORT_DELETE, new Object[]{id});
 	}
 
-	public String joinAnd(List<String> conditions) {
-		StringBuilder result = new StringBuilder();
-		result.append(" 1 ");
-		for (String c:conditions) {
-			result.append(" AND (");
-			result.append(c);
-			result.append(") ");
-		}
-		return result.toString();
-	}
-
-	public String joinOr(List<String> conditions) {
-		StringBuilder result = new StringBuilder();
-		result.append(" 0 ");
-		for (String c:conditions) {
-			result.append(" OR (");
-			result.append(c);
-			result.append(") ");
-		}
-		return result.toString();
-	}
+	
 }
