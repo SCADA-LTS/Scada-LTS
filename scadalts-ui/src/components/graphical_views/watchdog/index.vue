@@ -1,39 +1,38 @@
 <template>
 	<v-app>
-		<v-card elevation="1">
+		<v-card elevation="1" class="state-container">
 			<v-card-text>
 				<v-row
 					v-if="!!lastMessage"
 					class="state-block"
 					v-bind:class="`is-state-${lastMessage.state.toLowerCase()}`"
 				>
-					<v-col xs="2" sm="1" class="flex-al-center" v-if="checkingConditions">
+					<v-col xs="3" sm="2" class="flex-al-center" v-if="checkingConditions">
 						<v-icon class="is-loading">mdi-refresh</v-icon>
 					</v-col>
-					<v-col xs="2" sm="1" class="flex-al-center" v-else>
+					<v-col xs="3" sm="2" class="flex-al-center" v-else>
 						<v-icon v-if="lastMessage.state === 'OK'">mdi-check</v-icon>
 						<v-icon v-else-if="lastMessage.state === 'INFO'">mdi-information</v-icon>
 						<v-icon v-else-if="lastMessage.state === 'WARN'">mdi-alert</v-icon>
 						<v-icon v-else>mdi-close</v-icon>
 					</v-col>
-					<v-col cols="9" class="flex-al-center">
-						<v-row>
-							<v-col class="flex-al-center flex-column">
+					<v-col cols="8" class="flex-column flex-al-fs">
+						<v-row class="flex-column">
+							<v-col class="flex-al-fs flex-column no-pad--bottom">
 								<span class="state-title"> {{ lastMessage.message }} </span>
 								<span v-if="!!lastMessage.description" class="state-description">
 									- {{ lastMessage.description }}
 								</span>
 							</v-col>
-							<v-col xs="12" md="6" v-if="!!lastServerTime">
-								<p class="state-value-label">Last message</p>
-								{{ lastServerTime }}
+							<v-col xs="12" v-if="!!lastServerTime" class="flex-al-fs state-value-container no-pad--top">
+								<span class="state-value-label">Last message: {{ lastServerTime }}</span>
 							</v-col>
 						</v-row>
 					</v-col>
 					<v-col cols="2" class="flex-al-center">
-						<v-menu offset-y offset-x left min-width="400">
+						<v-menu offset-y offset-x left min-width="400" attach>
 							<template v-slot:activator="{ on, attrs }">
-								<v-btn icon v-bind="attrs" v-on="on">
+								<v-btn icon x-small v-bind="attrs" v-on="on">
 									<v-icon>mdi-information-outline</v-icon>
 								</v-btn>
 							</template>
@@ -422,6 +421,13 @@ export default {
 	display: flex;
 	align-items: center;
 }
+.flex-al-fs {
+	display: flex;
+	align-items: flex-start;
+}
+.flex-al-fs.col {
+	padding: 8px;
+}
 .flex-column {
 	display: flex;
 	flex-direction: column;
@@ -429,8 +435,16 @@ export default {
 .is-loading {
 	animation: rotate 1s linear infinite;
 }
+.state-container {
+	max-width: 250px;
+}
 .state-block {
 	border-radius: 5px;
+}
+.state-value-container {
+	padding: 6px;
+	font-size: 0.8em;
+	flex-basis: unset !important;
 }
 .is-state-ok {
 	background-color: #98e171;
@@ -454,13 +468,18 @@ export default {
 	font-size: 0.8em;
 }
 .state-value-label {
-	margin: -7px 0 !important;
 	font-size: 0.8em;
 	font-style: italic;
 }
 .watchdog-note {
 	margin: 0 !important;
 	font-style: italic;
+}
+.no-pad--bottom {
+	padding-bottom: 0 !important;
+}
+.no-pad--top {
+	padding-top: 0 !important;
 }
 @keyframes rotate {
 	from {
