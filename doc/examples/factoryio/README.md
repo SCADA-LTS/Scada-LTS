@@ -91,6 +91,8 @@ Now we need to add and configure FactoryIO driver as a Slave Device for OpenPLC.
 -   Holding Registers – Read - there are no registers in this tutorial, so it can be configured as 0
 -   Holding Registers -Write - there are no registers in this tutorial, so it can be configured as 0
 
+![OpenPLC and FactoryIO settings](img/openplc-factoryio-integration.jpg)
+
 ## Programming in OpenPLC Editor
 Now we need to create the control logic.
 Open ``OpenPLC Editor`` and create a new project:
