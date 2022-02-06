@@ -5,7 +5,8 @@
 - OpenPLC Runtime version: v3
 - OpenPLC Editor version: v1.0
 
-This tutorial is a step-by-step introduction to OpenPLC and FactoryIO. 
+This tutorial is a step-by-step introduction to OpenPLC and FactoryIO.
+Project files are located in ``ProjectFiles.zip`` file. Feel free to use it.
 
 - FactoryIO is a paid 3D Factory Simulation Engine for Windows. You can try it out for free with 30-days trial version.
 
