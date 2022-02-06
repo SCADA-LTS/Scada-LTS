@@ -137,7 +137,8 @@ In OpenPLC Runtime click ``Start PLC`` and go to ``Monitoring Page``, you should
 ![Monitoring tab](img/openplc-runtime-monitoring.jpg)
 
 Now in FactoryIO, press start button and you should see the final result:
-[here there will be GIF]
+
+![Monitoring tab](img/factoryio-running.gif)
 
 ## References
 - [Virtual Industrial Cybersecurity Lab](https://rodrigocantera.com/en/virtual-industrial-cybersecurity-lab-part-1-installation-and-configuration-of-pfsense/) with 4 parts
