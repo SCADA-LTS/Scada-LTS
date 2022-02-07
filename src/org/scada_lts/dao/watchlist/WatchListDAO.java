@@ -517,4 +517,13 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			return Collections.emptyList();
 		}
 	}
+
+	public List<ScadaObjectIdentifier> selectWatchListIdentifiers() {
+		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT_ORDER_BY_NAME, new Object[]{},
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
+	}
 }
