@@ -21,15 +21,11 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
 
     @Override
     public List<WatchList> getObjectsWithAccess(User user) {
-        if(user.isAdmin())
-            return watchListDAO.findAll();
         return watchListDAO.selectWatchListsWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
     public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
-        if(user.isAdmin())
-            return watchListDAO.selectWatchListIdentifiers();
         return watchListDAO.selectWatchListIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 }
