@@ -60,6 +60,7 @@ import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.mvc.api.AggregateSettings;
@@ -171,33 +172,10 @@ public class DataPointService implements MangoDataPoint {
 	 * checked and the access type.
 	 *
 	 * @param user - User to validate
-	 * @param type - Permissions.DataPointAccessTypes entry [Read = 1, Set = 2]
 	 * @return - Filtered list of DataPoints object
 	 */
-	public List<DataPointVO> getDataPointsWithPermissions(User user, int type) {
-		List<DataPointVO> dpList = dataPointDAO.getDataPoints();
-		if(!user.isAdmin()) {
-			return dpList.stream()
-					.filter(dp -> filterDpWithReadAccess(dp, user, type))
-					.collect(Collectors.toList());
-		} else {
-			return dpList;
-		}
-	}
-
-	private boolean filterDpWithReadAccess(DataPointVO dp, User user, int type) {
-		try {
-			if(type == Permissions.DataPointAccessTypes.READ) {
-				Permissions.ensureDataPointReadPermission(user, dp);
-			} else if (type == Permissions.DataPointAccessTypes.SET) {
-				Permissions.ensureDataPointSetPermission(user, dp);
-			} else {
-				return false;
-			}
-			return true;
-		} catch (PermissionException e) {
-			return false;
-		}
+	public List<DataPointVO> getDataPointsWithPermissions(User user) {
+		return new GetDataPointsWithAccess(dataPointDAO).getObjectsWithAccess(user);
 	}
 
 	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {

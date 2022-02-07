@@ -26,7 +26,9 @@ import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.restlet.Response;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.json.JsonDataPoint;
 import org.springframework.http.HttpStatus;
@@ -42,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -330,7 +331,7 @@ public class DataPointAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                List<DataPointVO> dpList = dataPointService.getDataPointsWithPermissions(user, Permissions.DataPointAccessTypes.READ);
+                List<DataPointVO> dpList = dataPointService.getDataPointsWithPermissions(user);
                 List<DatapointJSON> result = dpList.stream().map(DatapointJSON::new).collect(Collectors.toList());
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
