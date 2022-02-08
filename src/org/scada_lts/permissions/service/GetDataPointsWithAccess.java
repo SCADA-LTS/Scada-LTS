@@ -17,12 +17,15 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
 
     @Override
     public List<DataPointVO> getObjectsWithAccess(User object) {
-        if(object.isAdmin()) return dataPointDAO.getDataPoints();
+        if(object.isAdmin())
+            return dataPointDAO.getDataPoints();
         return dataPointDAO.selectDataPointsWithAccess(object.getId(), object.getUserProfile());
     }
 
     @Override
     public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User object) {
-        return dataPointDAO.selectScadaObjectIdentifiersWithAccess(object.getId(), object.getUserProfile());
+        if(object.isAdmin())
+            return dataPointDAO.getSimpleList();
+        return dataPointDAO.selectDataPointIdentifiersWithAccess(object.getId(), object.getUserProfile());
     }
 }
