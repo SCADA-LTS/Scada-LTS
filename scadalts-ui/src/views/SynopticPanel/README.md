@@ -23,9 +23,9 @@ This feature provides:
   the panel is updated immediatly when the data is changed on only in this time. So there
   is no additional performance effort for the server caused by the analyzing the API calls.
 - Changed the behavior of the Valve component. If it receives a boolean value it will 
-  display "ON" or "OFF" state. What is more if it is in that OFF state the background
+  display "ON" or "OFF" state. Moreover, if it's in OFF state, the background
   will be red and if it is in ON state the background will be green.
-- Added a new component **"Point"** that can display the current value of the data point.
+- Added a new **"Point"** component that can display the current value of the data point.
 
 
 ## Getting started:
