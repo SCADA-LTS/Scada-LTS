@@ -64,7 +64,7 @@ import com.serotonin.util.StringUtils;
 @Controller
 @RequestMapping("/data_point_edit.shtm") 
 public class DataPointEditController {
-	private static final Log LOG = LogFactory.getLog(LoginController.class);
+	private static final Log LOG = LogFactory.getLog(DataPointEditController.class);
 	
 	DataPointDao dataPointDao;
 	
@@ -86,8 +86,8 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
         User user = Common.getUser(request);
+        Permissions.ensureAdmin(user);
         dataPointDao = new DataPointDao();
         int id;
         String idStr = request.getParameter("dpid");

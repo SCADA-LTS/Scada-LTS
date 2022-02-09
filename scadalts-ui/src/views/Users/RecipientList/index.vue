@@ -96,15 +96,11 @@
 			:message="$t('recipientlist.dialog.delete.text')"
 		></ConfirmationDialog>
 
-		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
-			{{ snackbar.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
 import RecipientListDetails from './RecipientListDetails';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 /**
  * Recipient List component - View page.
@@ -128,8 +124,6 @@ export default {
 		RecipientListDetails,
 		ConfirmationDialog,
 	},
-
-	mixins: [SnackbarMixin],
 
 	data() {
 		return {
@@ -170,7 +164,7 @@ export default {
 					this.activeRecipientList.id,
 				);
 				let operationSuccess = !!resp.status && resp.status === 'deleted';
-				this.showCrudSnackbar('delete', operationSuccess);
+				this.$store.dispatch('showSuccessNotification', "Deleted successfully");
 				if (operationSuccess) {
 					this.activeRecipientList = null;
 					this.fetchRecipeintLists();
@@ -190,7 +184,7 @@ export default {
 			this.$refs.recipientListDialog.preSave();
 			let resp = await this.$store.dispatch('createMailingList', this.blankRecipientList);
 			let operationSuccess = !!resp.status && resp.status === 'created';
-			this.showCrudSnackbar('add', operationSuccess);
+			this.$store.dispatch('showSuccessNotification', "Created successfully");
 			if (operationSuccess) {
 				this.fetchRecipeintLists();
 			}
@@ -198,7 +192,12 @@ export default {
 		},
 
 		updateRecipientList(resp) {
-			this.showCrudSnackbar('update', !!resp.status && resp.status === 'updated');
+			if(resp.status === 'updated') {
+				this.$store.dispatch('showSuccessNotification', "Updated successfully");
+				this.fetchRecipeintLists();
+			} else {
+				this.$store.dispatch('showErrorNotification', "Error while updating");
+			}
 		},
 	},
 };

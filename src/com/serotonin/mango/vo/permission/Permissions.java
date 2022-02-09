@@ -34,9 +34,9 @@ import org.scada_lts.permissions.PermissionViewACL;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
+import java.util.Set;
 
-import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccessesList;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccesses;
 
 /**
  * @author Matthew Lohbihler
@@ -179,12 +179,11 @@ public class Permissions {
     }
 
     private static DataPointAccess getDataPointAccess(User user, int dataPointId) {
-        List<DataPointAccess> merged = mergeDataPointAccessesList(user.getDataPointPermissions(), user.getDataPointProfilePermissions());
-        for (DataPointAccess a : merged) {
-            if (a.getDataPointId() == dataPointId)
-                return a;
-        }
-        return null;
+        Set<DataPointAccess> merged = mergeDataPointAccesses(user.getDataPointPermissions(),
+                user.getDataPointProfilePermissions(), a -> a.getDataPointId() == dataPointId);
+        if(merged.isEmpty())
+            return null;
+        return merged.iterator().next();
     }
 
     public static int getDataPointAccessType(User user, DataPointVO point) {

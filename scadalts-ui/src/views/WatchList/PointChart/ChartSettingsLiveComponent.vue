@@ -41,6 +41,11 @@ export default {
 			startTimeMultiplier: 'hour',
 			timeOptions: [
 				{
+					id: 4,
+					text: this.$t('modernwatchlist.settings.live.time.minute'),
+					value: 'minute',
+				},
+				{
 					id: 0,
 					text: this.$t('modernwatchlist.settings.live.time.hour'),
 					value: 'hour',

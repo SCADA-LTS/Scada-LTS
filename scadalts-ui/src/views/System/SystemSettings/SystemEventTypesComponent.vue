@@ -47,10 +47,6 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
-
-		<v-snackbar v-model="response.status" :color="response.color">
-			{{ response.message }}
-		</v-snackbar>
 	</v-col>
 </template>
 <script>
@@ -64,11 +60,6 @@ export default {
 			systemEventTypes: undefined,
 			systemEventTypesStore: undefined,
 			isSystemEventEdited: false,
-			response: {
-				color: 'success',
-				status: false,
-				message: '',
-			},
 		};
 	},
 
@@ -97,19 +88,11 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.response = {
-							status: true,
-							message: this.$t('systemsettings.notification.save.systemevent'),
-							color: 'success',
-						};
+						this.$store.dispatch('showSuccessNotification', this.$t('systemsettings.notification.save.systemevent'));
 					}
 				})
 				.catch(() => {
-					this.response = {
-						status: true,
-						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger',
-					};
+					this.$store.dispatch('showErrorNotification', this.$t('systemsettings.notification.fail'));
 				});
 		},
 
