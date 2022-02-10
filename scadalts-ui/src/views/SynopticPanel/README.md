@@ -29,7 +29,7 @@ This feature provides:
 
 
 ## Getting started:
-There are prepared 3 default components: _fan_, _valve_ and _waterlevel_ components. Each of this components
+There are prepared 5 default components: _fan_, _valve_, _waterlevel_, _state_ and _point_ components. Each of this components
 has its own logic and properties. For example waterlevel indicator displays current level of liquid in specified
 container. When an attached datapoint value has changed water level is changing. \
 To start you have to firstly prepare your panel in vector graphic editor like "inkscape". There are some
@@ -55,9 +55,14 @@ rules of creating this panels that must be respected to proper work for this ele
   * ``SLTS_waterlevel_[component_id]_value - text element to display current data point value``
 
   For SLTS_point component:
-  * ``SLTS_waterlevel_[component_id] - for main element water container (required)``  
-  * ``SLTS_waterlevel_[component_id]_value - text element to display current data point value``
-  * ``SLTS_waterlevel_[component_id]_label - optional text element that can be a datapoint name or custom label that was added by user.``
+  * ``SLTS_point_[component_id] - for main element water container (required)``  
+  * ``SLTS_point_[component_id]_value - text element to display current data point value``
+  * ``SLTS_point_[component_id]_label - optional text element that can be a datapoint name or custom label that was added by user.``
+
+  For SLTS_state component:
+  * ``SLTS_state_[component_id] - for main state background element (required)``  
+  * ``SLTS_state_[component_id]_value - text element to display current data point value``
+  * ``SLTS_state_[component_id]_label - optional text element that can display the state result label defined by user.``
   
  In any element without creating a new vue.js component you can use:
  * ``SLTS_[component_name]_[component_id] - for main element (required)``

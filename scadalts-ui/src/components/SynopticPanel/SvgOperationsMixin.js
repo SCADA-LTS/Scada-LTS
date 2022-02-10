@@ -7,7 +7,9 @@
  */
 export const vectorImageOpsMixin = {
     data() {
-        return {}
+        return {
+            errorTriggered: false,
+        }
     },
 
     methods: {
@@ -39,8 +41,16 @@ export const vectorImageOpsMixin = {
          * @param {string} text - Text to be provided
          */
 		changeComponentText(component, text) {
-			if (this.$svg.get(component).node.textContent)
-				this.$svg.get(component).node.textContent = text;
+            try {
+                if (this.$svg.get(component).node.textContent)
+				    this.$svg.get(component).node.textContent = text;
+            } catch (error) {
+                if(!this.errorTriggered) {
+                    this.errorTriggered = true;
+                    console.error("Error while changing SVG component text: ", error);
+                }
+            }
+			
 		},
 
         /**
