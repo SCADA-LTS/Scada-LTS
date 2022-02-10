@@ -1,19 +1,19 @@
 /*
  * (c) 2016 Abil'I.T. http://abilit.eu/
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.scada_lts.web.mvc.controller;
 
@@ -48,42 +48,41 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
 
-
 @Controller
 public class ViewEditContorller {
     private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
-    
+
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
     private static final String SUBMIT_SAVE = "save";
     private static final String SUBMIT_DELETE = "delete";
     private static final String SUBMIT_CANCEL = "cancel";
-    
+
     private static final String FORM_VIEW = "viewEdit";
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
-    
+
 
     // TODO: these two shall be injected by Spring
-    private String uploadDirectory= "uploads/";
+    private String uploadDirectory = "uploads/";
     private String successUrl = "views.shtm";
-    
+
     private int nextImageId = -1;
-    
+
     @Autowired
     ViewEditValidator validator;
 
     public void setSuccessUrl(String successUrl) {
         this.successUrl = successUrl;
     }
-    
+
     public void setUploadDirectory(String uploadDirectory) {
         this.uploadDirectory = uploadDirectory;
     }
-    
+
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
-    protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
+    protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value = "viewId", required = false) String viewIdStr) throws Exception {
         View view;
         User user = Common.getUser(request);
         Permissions.ensureAdmin(user);
@@ -112,59 +111,58 @@ public class ViewEditContorller {
         return new ModelAndView(FORM_VIEW, model);
     }
 
-    
+
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST)
     protected ModelAndView handleImage(HttpServletRequest request, HttpServletResponse response, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form)
-    throws Exception{
+            throws Exception {
         LOG.debug("ViewEditController:showForm");
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
             View view = user.getView();
-        
+
             form.setView(view);
             view.setBackgroundFilename(null);
         }
-        
+
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             User user = Common.getUser(request);
             View view = user.getView();
-    
+
             form.setView(view);
             uploadFile(request, form);
         }
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put(FORM_OBJECT_NAME, form);
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
         return new ModelAndView(FORM_VIEW, model);
     }
-    
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
+
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = {SUBMIT_SAVE})
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
         User user = Common.getUser(request);
         View view = user.getView();
         copyViewProperties(view, form.getView());
         form.setView(view);
-        
+
         validator.validate(form, result);
-        if(result.hasErrors())
-        {
+        if (result.hasErrors()) {
             LOG.debug("ViewEditController:save: HAS ERRORS.");
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(FORM_OBJECT_NAME, form);
             model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
             model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
-            return new ModelAndView(FORM_VIEW, model);    
+            return new ModelAndView(FORM_VIEW, model);
         }
-        
+
         view.setUserId(Common.getUser(request).getId());
         new ViewDao().saveView(view);
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_CANCEL })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = {SUBMIT_CANCEL})
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
@@ -174,7 +172,7 @@ public class ViewEditContorller {
         return getSuccessRedirectView("viewId=" + form.getView().getId());
     }
 
-    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_DELETE })
+    @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = {SUBMIT_DELETE})
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
@@ -187,39 +185,55 @@ public class ViewEditContorller {
         usersProfileService.updateViewPermissions();
         return getSuccessRedirectView(null);
     }
-    
-    private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
+
+    private void uploadFile(HttpServletRequest request, ViewEditForm form) throws Exception {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             if (form.getBackgroundImageMP() != null) {
                 byte[] bytes = form.getBackgroundImageMP().getBytes();
                 if (bytes != null && bytes.length > 0) {
                     // Create the path to the upload directory.
                     String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
-                    LOG.info("ViewEditController:uploadFile: realpath="+path);
-    
+                    LOG.info("ViewEditController:uploadFile: realpath=" + path);
+
                     // Make sure the directory exists.
                     File dir = new File(path);
                     dir.mkdirs();
-                    // Get an image id.
-                    int imageId = getNextImageId(dir);
-    
-                    // Create the image file name.
-                    String filename = Integer.toString(imageId);
-                    int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
-                    if (dot != -1)
-                        filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
-    
-                    // Save the file.
-                    FileOutputStream fos = new FileOutputStream(new File(dir, filename));
-                    fos.write(bytes);
-                    fos.close();
-    
-                    form.getView().setBackgroundFilename(uploadDirectory + filename);
+
+                    boolean validExtension = false;
+                    String[] supportedExtensions = new String[] { "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png",
+                            "bmp", "dib", "svg" };
+                    String extension;
+
+                    int foo = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.') + 1;
+                    extension = form.getBackgroundImageMP().getOriginalFilename().substring(foo);
+
+                    for (String s : supportedExtensions) {
+                        if (s.equals(extension.toLowerCase())) {
+                            validExtension = true;
+                            break;
+                        }
+                    }
+
+                    // Valid image! Add it to uploads
+                    if (validExtension) {
+                        int imageId = getNextImageId(dir); // Get an image id.
+                        String filename = Integer.toString(imageId); // Create the image file name.
+                        int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
+                        if (dot != -1)
+                            filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
+
+                        // Save the file.
+                        FileOutputStream fos = new FileOutputStream(new File(dir, filename));
+                        fos.write(bytes);
+                        fos.close();
+
+                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                    }
                 }
             }
         }
     }
-    
+
     private int getNextImageId(File uploadDir) {
         if (nextImageId == -1) {
             // Synchronize
@@ -249,7 +263,7 @@ public class ViewEditContorller {
         return nextImageId++;
     }
 
-    protected  ModelAndView getSuccessRedirectView(String queryString) {
+    protected ModelAndView getSuccessRedirectView(String queryString) {
         String url = successUrl;
         if (queryString != null && queryString.trim().length() > 0) {
             if (queryString.charAt(0) != '?')
@@ -260,7 +274,7 @@ public class ViewEditContorller {
         RedirectView redirectView = new RedirectView(url, true);
         return new ModelAndView(redirectView);
     }
-    
+
     private void copyViewProperties(View targetView, View sourceView) {
         targetView.setName(sourceView.getName());
         targetView.setXid(sourceView.getXid());
