@@ -18,10 +18,7 @@
  */
 package com.serotonin.mango.rt;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -35,13 +32,14 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.PointEventDetectorDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.service.CommunicationChannel;
 import org.scada_lts.service.InactiveEventsProvider;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -374,7 +372,7 @@ public class RuntimeManager {
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
 				if (dataPoint.isEnabled())
-					startDataPoint(dataPoint);
+					startDataPointSafe(dataPoint);
 			}
 
 			LOG.info("Data source '" + vo.getName() + "' initialized");
@@ -447,6 +445,7 @@ public class RuntimeManager {
 			if (!ped.getDef().supports(dataType))
 				// Remove the detector.
 				peds.remove();
+			AuditEventUtils.raiseAuditDetectorEvent(point, ped, new PointEventDetectorDAO());
 		}
 
 		new DataPointDao().saveDataPoint(point);
@@ -457,7 +456,7 @@ public class RuntimeManager {
 
 	public void deleteDataPoint(DataPointVO point) {
 		if (point.isEnabled())
-			stopDataPoint(point.getId());
+			stopDataPointSafe(point.getId());
 		new DataPointDao().deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
@@ -488,6 +487,15 @@ public class RuntimeManager {
 		}
 	}
 
+	private void startDataPointSafe(DataPointVO vo) {
+		try {
+			startDataPoint(vo);
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
+			stopDataPointSafe(vo.getId());
+		}
+	}
+
 	private void stopDataPoint(int dataPointId) {
 		synchronized (dataPoints) {
 			// Remove this point from the data image if it is there. If not,
@@ -502,6 +510,15 @@ public class RuntimeManager {
 					l.pointTerminated();
 				p.terminate();
 			}
+		}
+	}
+
+	private void stopDataPointSafe(int dataPointId) {
+		try {
+			stopDataPoint(dataPointId);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage() + ", dataPointId : " + dataPointId + " : ", ex);
+			dataPoints.remove(dataPointId);
 		}
 	}
 

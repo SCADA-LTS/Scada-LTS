@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import br.org.scadabr.api.exception.DAOException;
 import br.org.scadabr.db.dao.ScriptDao;
@@ -70,6 +72,7 @@ import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.publish.PublisherVO;
+import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import com.serotonin.util.ProgressiveTask;
 import com.serotonin.util.StringUtils;
@@ -77,6 +80,8 @@ import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
+import org.scada_lts.mango.adapter.MangoReport;
+import org.scada_lts.mango.service.ReportService;
 
 /**
  * @author Matthew Lohbihler
@@ -135,6 +140,8 @@ public class ImportTask extends ProgressiveTask {
 	private int systemSettingsIndex;
 	private final List<JsonValue> usersProfiles;
 	private int userProfilesIndex;
+	private final List<JsonValue> reports;
+	private int reportsIndex;
 
 	private final List<Integer> disabledDataSources = new ArrayList<Integer>();
 
@@ -165,6 +172,7 @@ public class ImportTask extends ProgressiveTask {
 		pointValues = nonNullList(root, EmportDwr.POINT_VALUES);
 		systemSettings = nonNullList(root, EmportDwr.SYSTEM_SETTINGS);
 		usersProfiles = nonNullList(root, EmportDwr.USERS_PROFILES);
+		reports = nonNullList(root, EmportDwr.REPORTS);
 
 		Common.timer.execute(this);
 
@@ -354,6 +362,12 @@ public class ImportTask extends ProgressiveTask {
 
 			if (pointValuesIndex < pointValues.size()) {
 				importPointValues(pointValues.get(pointValuesIndex++)
+						.toJsonObject());
+				return;
+			}
+
+			if(reportsIndex < reports.size()) {
+				importReports(reports.get(reportsIndex++)
 						.toJsonObject());
 				return;
 			}
@@ -1073,6 +1087,48 @@ public class ImportTask extends ProgressiveTask {
 			response.addGenericMessage("emport.systemSettingsFailed");
 		}
 
+	}
+
+	private void importReports(JsonObject json) {
+		String xid = json.getString("xid");
+		MangoReport reportService = new ReportService();
+		if(!StringUtils.isEmpty(xid))
+			importReport(json, xid, reportService::getReport, reportService::saveReport);
+		else {
+			Integer id = json.getInt("id");
+			importReport(json, id, reportService::getReport, reportService::saveReport);
+		}
+	}
+
+	private <T> void importReport(JsonObject json, T id,
+								  Function<T, ReportVO> get,
+								  Consumer<ReportVO> save) {
+		String name = json.getString("name");
+		try {
+			ReportVO report;
+			boolean isNew = false;
+			if(id == null || (report = get.apply(id)) == null) {
+				report = new ReportVO();
+				isNew = true;
+			}
+			reader.populateObject(report, json);
+			if(isNew) {
+				report.setId(Common.NEW_ID);
+			} else {
+				report.setId(report.getId());
+			}
+			save.accept(report);
+			addSuccessMessage(isNew, "emport.reports.prefix", report.getName());
+		} catch (LocalizableJsonException ex) {
+			ex.printStackTrace();
+			response.addGenericMessage("emport.reports.prefix", name, ex.getMsg());
+		} catch (JsonException ex) {
+			ex.printStackTrace();
+			response.addGenericMessage("emport.reports.prefix", name, getJsonExceptionMessage(ex));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			response.addGenericMessage("emport.reports.invalid", name);
+		}
 	}
 
 	private void copyValidationMessages(DwrResponseI18n voResponse, String key,

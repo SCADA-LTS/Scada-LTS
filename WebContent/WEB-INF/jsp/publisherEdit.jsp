@@ -33,9 +33,10 @@
         if (response.hasMessages) {
             for (var i=0; i<response.messages.length; i++)
                 showMessage(response.messages[i].contextKey +"Msg", response.messages[i].contextualMessage);
-        }
-        else
+        } else {
             showMessage("message", "<fmt:message key="publisherEdit.saved"/>");
+            showHttpSenderTest();
+        }
     }
     
     function sendSnapshotChanged() {
@@ -51,6 +52,10 @@
     
     function initPublisher() {
         sendSnapshotChanged();
+    }
+
+    function showHttpSenderTest() {
+        document.getElementById("httpSenderTest").style.visibility = "visible";
     }
   </script>
   

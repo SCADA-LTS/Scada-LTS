@@ -18,15 +18,18 @@
  */
 package com.serotonin.mango.rt.event;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.serorepl.utils.StringUtils;
 
 public class EventInstance {
     public interface RtnCauses {
@@ -138,6 +141,12 @@ public class EventInstance {
         this.context = context;
     }
 
+    public static EventInstance emptySystemNoneEvent(int eventId) {
+        EventInstance eventInstance = new EventInstance(new SystemEventType(), 0, false, AlarmLevels.NONE, null, new HashMap<>());
+        eventInstance.setId(eventId);
+        return eventInstance;
+    }
+
     public LocalizableMessage getRtnMessage() {
         LocalizableMessage rtnKey = null;
 
@@ -178,7 +187,7 @@ public class EventInstance {
 
     public LocalizableMessage getExportAckMessage() {
         if (isAcknowledged()) {
-            if (acknowledgedByUserId != 0)
+            if (acknowledgedByUserId != 0 || !StringUtils.isEmpty(acknowledgedByUsername))
                 return new LocalizableMessage("events.export.ackedByUser", acknowledgedByUsername);
             if (alternateAckSource == AlternateAcknowledgementSources.DELETED_USER)
                 return new LocalizableMessage("events.export.ackedByDeletedUser");

@@ -1,6 +1,6 @@
 const storeEvents = {
 	state: {
-		highestUnsilencedAlarmLevel: -1
+		highestUnsilencedAlarmLevel: -1,
 	},
 
 	mutations: {
@@ -19,14 +19,14 @@ const storeEvents = {
 					status: payload.status,
 					keywords: payload.keywords,
 					datapoint: null,
-					limit: payload.itemsPerPage,
+					limit: payload.itemsPerPage + 1,
 					offset: payload.itemsPerPage * (payload.page - 1),
 					sortBy: !payload.sortBy.length ? [] : payload.sortBy,
 					sortDesc: !payload.sortDesc.length ? [] : payload.sortDesc,
-					startDate: payload.startDate ? payload.startDate : '',
-					endDate: payload.endDate ? payload.endDate : '',
-					startTime: payload.startTime ? payload.startTime : '',
-					endTime: payload.endTime ? payload.endTime : '',
+					startDate: payload.startDate || '',
+					endDate: payload.endDate || '',
+					startTime: payload.startTime || '',
+					endTime: payload.endTime || '',
 				},
 			});
 		},
@@ -35,7 +35,7 @@ const storeEvents = {
 			dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`).then((res) => {
 				commit('SET_HIGHEST_UNSILENCED_ALARM_LEVEL', res);
 			})
-		},
+    },
 
 		getCommentsByEventId({ dispatch }, id) {
 			return dispatch('requestGet', `/events/${id}/comments`);

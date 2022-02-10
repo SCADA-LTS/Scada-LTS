@@ -19,23 +19,25 @@
 <%@page import="com.serotonin.mango.vo.publish.httpSender.HttpSenderVO"%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 <script type="text/javascript">
-  var staticHeaderList = new Array();
+  var staticHeaderList;
   var staticParameterList = new Array();
   var allPoints = new Array();  
   var selectedPoints = new Array();  
   
   function init() {
       PublisherEditDwr.initSender(initCB);
+      initInputSelect();
   }
   dojo.addOnLoad(init);
-  
+
   function initCB(response) {
       var i;
       var list = response.data.allPoints;
       for (var i=0; i<list.length; i++)
           allPoints[allPoints.length] = {
                   id: list[i].id, name: list[i].extendedName, enabled: list[i].enabled, type: list[i].dataTypeMessage};
-          
+
+      staticHeaderList = new Array();
       list = response.data.publisher.staticHeaders;
       for (i=0; i<list.length; i++)
           staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
@@ -50,6 +52,27 @@
       for (i=0; i<list.length; i++)
           addToSelectedArray(list[i].dataPointId, list[i].parameterName, list[i].includeTimestamp);
       refreshSelectedPoints();
+      PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
+      PublisherEditDwr.getIsUseJSON(setUseJSON);
+  }
+
+  function initStaticHeaders(response) {
+    staticHeaderList = new Array();
+    var i;
+    var list = response.data.staticHeaders;
+    for (i=0; i<list.length; i++)
+      staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
+    refreshStaticHeaderList();
+    PublisherEditDwr.getBasicCredentials(staticHeaderList, setCredentials);
+  }
+
+  function setCredentials(credentials) {
+      $set("username", credentials[0]);
+      $set("password", credentials[1]);
+  }
+
+  function setUseJSON(useJSON) {
+      $set("useJSON", useJSON);
   }
   
   function addStaticHeader() {
@@ -71,11 +94,17 @@
       staticHeaderList[staticHeaderList.length] = {key: key, value: value};
       staticHeaderList.sort();
       refreshStaticHeaderList();
+      hideHttpSenderTest();
   }
   
   function removeStaticHeader(index) {
+      if (staticHeaderList[index].key == "Authorization") {
+        $set("username", "");
+        $set("password", "");
+      }
       staticHeaderList.splice(index, 1);
       refreshStaticHeaderList();
+      hideHttpSenderTest();
   }
   
   function refreshStaticHeaderList() {
@@ -113,11 +142,13 @@
       staticParameterList[staticParameterList.length] = {key: key, value: value};
       staticParameterList.sort();
       refreshStaticParameterList();
+      hideHttpSenderTest();
   }
   
   function removeStaticParameter(index) {
       staticParameterList.splice(index, 1);
       refreshStaticParameterList();
+      hideHttpSenderTest();
   }
   
   function refreshStaticParameterList() {
@@ -243,18 +274,25 @@
       for (var i=0; i<selectedPoints.length; i++)
           points[points.length] = {dataPointId: selectedPoints[i].id, parameterName: selectedPoints[i].parameterName,
                   includeTimestamp: selectedPoints[i].includeTimestamp};
-      
+
+      updateStaticHeadersList();
+
       PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true", 
     		  staticHeaderList, staticParameterList, cacheWarningSize, changesOnly, $get("raiseResultWarning"),
-    		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
+    		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType,
+              $get("username"), $get("password"), $get("useJSON"), saveHttpSenderCB);
+  }
+
+  function saveHttpSenderCB(response) {
+    savePublisherCB(response);
+    PublisherEditDwr.updateHttpSenderStaticHeaders(initStaticHeaders);
   }
   
   function httpSendTest() {
       showMessage("httpSendTestMessage", "<fmt:message key="publisherEdit.httpSender.sending"/>");
       showMessage("httpSendTestData");
       httpSendTestButtons(true);
-      PublisherEditDwr.httpSenderTest($get("url"), $get("usePost") == "true", staticHeaderList, staticParameterList,
-    		  httpSendTestCB);
+      PublisherEditDwr.httpSenderTest(httpSendTestCB);
   }
   
   function httpSendTestButtons(sending) {
@@ -291,9 +329,56 @@
       httpSendTestButtons(false);
       showMessage("httpSendTestMessage", "<fmt:message key="common.cancelled"/>");
   }
+
+  function removeAuthFromStaticHeaders() {
+    staticHeaderList = staticHeaderList.filter(header => header.key != 'Authorization');
+  }
+
+  function updateStaticHeadersList() {
+    if (!$get("username") || !$get("password")) {
+      removeAuthFromStaticHeaders();
+      refreshStaticHeaderList();
+    }
+  }
+
+  function initInputSelect() {
+      initHttpSenderTest();
+      var inputs = document.querySelectorAll('#publisherEditor input');
+      var selects = document.querySelectorAll('#publisherEditor select');
+      addChangeEvent(inputs);
+      addChangeEvent(selects);
+  }
+
+  function addChangeEvent(tab) {
+      if(tab && tab.forEach) {
+        tab.forEach(function(currentValue, currentIndex, listObj) {
+            if(currentValue.type && currentValue.type != 'button'
+            && currentValue.id && currentValue.id != 'sheaderKey'
+            && currentValue.id != 'sparamKey'
+            && currentValue.id != 'sheaderValue'
+            && currentValue.id != 'sparamValue')
+              currentValue.addEventListener('change', function() { hideHttpSenderTest(); }, false);
+            }, '');
+      }
+  }
+
+  function initHttpSenderTest() {
+    if(${not empty publisher and publisher.id != -1})
+        showHttpSenderTest();
+    else
+        hideHttpSenderTest();
+  }
+
+  function hideHttpSenderTest() {
+      document.getElementById("httpSenderTest").style.visibility = "hidden";
+  }
+
+  function showHttpSenderTest() {
+      document.getElementById("httpSenderTest").style.visibility = "visible";
+  }
 </script>
 
-<table cellpadding="0" cellspacing="0">
+<table id="publisherEditor" cellpadding="0" cellspacing="0">
   <tr>
     <td valign="top">
       <div class="borderDiv marR marB">
@@ -311,7 +396,12 @@
               </sst:select>
             </td>
           </tr>
-          
+
+          <tr>
+            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.useJSON"/></td>
+            <td class="formField"><sst:checkbox id="useJSON" /></td>
+          </tr>
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.url"/></td>
             <td class="formField">
@@ -319,7 +409,15 @@
               <div id="urlMsg" class="formError" style="display:none;"></div>
             </td>
           </tr>
-          
+
+          <tr>
+            <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.credentials"/></td>
+            <td class="formField">
+              <fmt:message key="publisherEdit.httpSender.username"/> <input type="text" id="username" class="formShort"/>
+              <fmt:message key="publisherEdit.httpSender.password"/> <input type="password" id="password" class="formShort"/>
+            </td>
+          </tr>
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticHeaders"/></td>
             <td class="formField">
@@ -365,9 +463,9 @@
         </table>
       </div>
     </td>
-    
+
     <td valign="top">
-      <div class="borderDiv marB">
+      <div id="httpSenderTest" class="borderDiv marB">
         <table>
           <tr><td class="smallTitle"><fmt:message key="publisherEdit.httpSender.sendTest"/></td></tr>
           <tr>

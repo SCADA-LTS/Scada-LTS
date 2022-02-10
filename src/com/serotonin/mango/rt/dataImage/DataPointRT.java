@@ -41,8 +41,8 @@ import com.serotonin.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
-import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 
 import java.util.*;
 
@@ -472,17 +472,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 	@Override
 	public void notifyWebSocketSubscribers(MangoValue message) {
-		DataPointServiceWebSocket ws = DataPointServiceWebSocket.getInstance();
-		if(ws != null) {
-			ws.notifyValueSubscribers(message, this.vo.getId());
-		}
+		ApplicationBeans.Lazy.getDataPointServiceWebSocketBean()
+				.ifPresent(ws -> ws.notifyValueSubscribers(message, this.vo.getId()));
 	}
 
 	public void notifyWebSocketStateSubscribers(boolean enabled) {
-		DataPointServiceWebSocket ws = DataPointServiceWebSocket.getInstance();
-		if(ws != null) {
-			ws.notifyStateSubscribers(enabled, this.vo.getId());
-		}
+		ApplicationBeans.Lazy.getDataPointServiceWebSocketBean()
+				.ifPresent(ws -> ws.notifyStateSubscribers(enabled, this.vo.getId()));
 	}
 
 	class EventNotifyWorkItem implements WorkItem {

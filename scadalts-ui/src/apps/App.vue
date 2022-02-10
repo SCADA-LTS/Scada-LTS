@@ -55,6 +55,8 @@
 			</v-menu>
 		</v-app-bar>
 
+		<NotificationAlert/>
+
 		<v-main>
 			<v-container fluid v-if="webSocketConnected || isLoginPage">
 				<router-view></router-view>
@@ -68,13 +70,15 @@
 <script>
 import internetMixin from '@/utils/connection-status-utils';
 import NavigationBar from '../layout/NavigationBar.vue';
+import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 
 export default {
 	name: 'app',
 	mixins: [internetMixin],
 
 	components: {
-		NavigationBar
+		NavigationBar,
+		NotificationAlert
 	},
 
 	data() {

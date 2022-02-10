@@ -2,7 +2,7 @@
 	<div>
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmAckAllToggleDialog"
+			ref="confirmDialog"
 			@result="confirmAction"
 			:title="confirmTitle"
 			:message="confirmMessage"
@@ -19,7 +19,7 @@
 						<v-col cols="6">Event #{{selectedEvent.id}}</v-col>
 						<v-col cols="6" class="text-right">
 							<img 
-							:src="(!!selectedEvent.rtnTs ? alarmFlags : alarmFlagsOff)[selectedEvent.alarmLevel].image">
+							:src="getFlagByEvent(selectedEvent)">
 						</v-col>
 						<v-col cols="12">
 							<v-btn class="mr-2" @click="acknowledgeEventSelected" color="blue">
@@ -48,7 +48,7 @@
 						<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
 						<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
 					</v-col>
-					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{$t(`${selectedEvent.message.split('|')[0]}`, selectedEvent.message.split('|'))}}</v-col>
+					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{ eventMessageI18n(selectedEvent.message)}}</v-col>
 					<v-col v-if="selectedEvent.eventSourceType===1" cols="3"><b>{{$t('eventList.datapoint')}}</b>: {{selectedEvent.datapoint}}</v-col>
 				</v-row>
 				<v-divider></v-divider>
@@ -285,8 +285,6 @@
 						</v-icon>
 						{{$t("eventList.silenceAll")}}</v-btn>
 				</v-col>
-
-
     		</v-row>
 			<v-data-table
 				id='eventList'
@@ -320,13 +318,13 @@
 						</v-icon>
 					</template>
 					<template v-slot:item.alarmLevel="{ item }">
-						<img :src="(!!item.rtnTs ? alarmFlags : alarmFlagsOff)[item.alarmLevel].image">
+						<img :src="getFlagByEvent(item)">
 					</template>
 					<template v-slot:item.typeId="{ item }">
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{$t(`${item.message.split('|')[0]}`, item.message.split('|')) | truncate}}
+						{{eventMessageI18n(item.message)}}
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -352,7 +350,7 @@
 						mdi-database
 						</v-icon>	
 						
-						<v-icon @click.stop="gotoSystem(event.typeRef1)" v-if="item.typeId===4" title="system">
+						<v-icon @click.stop="gotoSystem(item.typeRef1, item.typeRef2)" v-if="item.typeId===4" title="system">
 							mdi-desktop-classic
 						</v-icon>
 
@@ -396,7 +394,6 @@
 	</div>
 </template>
 <style scoped>
-
 .v-icon {
 	border: 0!important;
 }
@@ -443,6 +440,7 @@ export default {
     },
 	data() {
 		return {
+			next: false,
 			mountedTs: null,
 			newAlarms: false,
 			get selectedEvent() {
@@ -580,7 +578,6 @@ export default {
 					image: "images/flag_red.png"
 				}
 			},
-			confirmAckAllToggleDialog: false,
 			confirmTitle: '',
 			confirmMessage: '',
 			selectedEvents: [],
@@ -602,6 +599,17 @@ export default {
 	},
 	
 	methods: {
+		getFlagByEvent(event) {
+			return ((event.rtnApplicable && !!event.rtnTs) ? this.alarmFlags : this.alarmFlagsOff)[event.alarmLevel].image
+		},
+		eventMessageI18n(eventMessage) {
+			const [key, ...args ]= eventMessage.split('|')
+			return this.$t(key, args)
+		},
+		nextPage(){
+			this.options = {...this.options, page: this.options.page+1}
+			this.fetchEventList()
+		},
 		getAlarms() {
 			store.dispatch('getLiveAlarms', { offset: 0, limit: 1 }).then((ret) => {
 				if (ret.length) this.newAlarms = true
@@ -609,16 +617,16 @@ export default {
 		},
 		confirmAction(answer) {
 			if (answer) this.actionToConfirm();
-			this.confirmAckAllToggleDialog = false
+			// this.confirmDialog.showDialog()
 		},
 		askForAckAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t('eventList.acknownledgeAll')
 			this.confirmMessage = this.$t('eventList.confirmAckAllMessage')
 			this.actionToConfirm = this.acknowledgeAllEvents;
 		},
 		askForSilenceAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t("eventList.silenceAll")
 			this.confirmMessage = this.$t('eventList.silenceAllConfirmMessage')
 			this.actionToConfirm = this.silenceAllEvents;
@@ -629,12 +637,10 @@ export default {
 		},
 
 		//system
-		gotoSystem(type,referenceId2) {
-			// window.location = `http://mango.serotoninsoftware.com/download.jsp` //png="bullet_down"
-			// if (type = 1)  TYPE_SYSTEM_STARTUP
-			if (type = 6) window.location = `compound_events.shtm?cedid=${referenceId2}"` // png="multi_bell" 
-			if (type = 7) window.location = `event_handlers.shtm?ehid=${referenceId2}` //png="cog"
-			if (type = 9) window.location = `point_links.shtm?plid=${referenceId2}` //png="link"
+		gotoSystem(referenceId1,referenceId2) {
+			if (referenceId1 == 6) window.location = `compound_events.shtm?cedid=${referenceId2}"`
+			else if (referenceId1 == 7) window.location = `event_handlers.shtm?ehid=${referenceId2}`
+			else if (referenceId1 == 9) window.location = `point_links.shtm?plid=${referenceId2}`
 		},
 		gotoCompoundEvent(compoundEventDetectorId) {
 			window.location = `compound_events.shtm?cedid=${compoundEventDetectorId}` //png="multi_bell"
@@ -681,8 +687,15 @@ export default {
 		async fetchEventList() {
 			this.loading = true;
 			const result = await this.$store.dispatch('searchEvents', { ...this.searchFilters, itemsPerPage: this.options.itemsPerPage });
-			this.eventList = result.rows;
-			this.totalEvents = result.total;
+
+			if (result.length > this.options.itemsPerPage) {
+				this.eventList = result.slice(0,this.options.itemsPerPage);
+				this.totalEvents = this.options.itemsPerPage * this.options.page +1
+			} else {
+				this.eventList = result;
+				this.totalEvents = this.options.itemsPerPage * this.options.page
+			}
+			// document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
 			this.loading = false;
 			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},

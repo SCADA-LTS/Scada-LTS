@@ -79,9 +79,6 @@
 				<div class="chartContainer" ref="chartdiv"></div>
 			</v-col>
 		</v-row>
-		<v-snackbar v-model="response.status" :color="response.color">
-			{{ response.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -129,11 +126,6 @@ export default {
 			config: null,
 			// watchListData: {id: 1, pointList: [{id:1},{id:2}]}, -> this.activeWatchList.id
 			pointCompare: '',
-			response: {
-				status: false,
-				color: '',
-				message: '',
-			},
 		};
 	},
 
@@ -213,23 +205,22 @@ export default {
 			if (this.chartProperties.type === 'compare') {
 				this.chartClass.compare();
 			}
+			this.chartClass.setLiveValuesLimit(
+				this.config.configuration.valuesLimit,
+				this.onLimitExceeded,
+			);
 			this.chartClass = this.chartClass.build();
 		},
 
 		renderChart() {
 			this.chartClass.createChart().catch((e) => {
 				if (e.message === 'No data from that range!') {
-					this.response = {
-						status: true,
-						color: 'warning',
-						message: e.message,
-					};
+					this.$store.dispatch('showCustomNotification', {
+						text: e.message,
+						type: 'warning',
+					})
 				} else {
-					this.response = {
-						status: true,
-						color: 'error',
-						message: `Failed to load chart!: ${e.message}`,
-					};
+					this.$store.dispatch('showErrorNotification', `Failed to load chart!: ${e.message}`);
 				}
 			});
 		},

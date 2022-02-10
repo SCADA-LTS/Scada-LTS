@@ -77,9 +77,6 @@
 				:showLegend="true" :showScrollbar="true" :width="`${chartWidth}`"
 			></LineChartComponent>
 		</v-container>
-		<v-snackbar v-model="response.status">
-			{{ response.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -125,10 +122,6 @@ export default {
 			datasource: null,
 			chartRefreshRate: 10000,
 			chartWidth: 500,
-			response: {
-				status: false,
-				message: '',
-			},
 		};
 	},
 
@@ -186,13 +179,16 @@ export default {
 			this.$store
 				.dispatch('saveDataPointDetails', this.dataPointDetails)
 				.catch((e) => {
-					this.response.status = true;
-					this.response.message = `${this.$t('common.snackbar.update.fail')} | ${e.data.errors}`;
+					this.$store.dispatch(
+						'showErrorNotification', 
+						`${this.$t('common.snackbar.update.fail')} | ${e.data.errors}`)
 				})
 				.then((resp) => {
 					if (resp === 'saved') {
-						this.response.status = true;
-						this.response.message = this.$t('common.snackbar.update.success');
+						this.$store.dispatch(
+							'showSuccessNotification',
+							this.$t('common.snackbar.update.success')
+						);
 						this.$refs.valueHistory.fetchData();
 
 					}
