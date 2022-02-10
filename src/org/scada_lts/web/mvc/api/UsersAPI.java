@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.error.EntityNotUniqueException;
@@ -21,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.scada_lts.utils.ApiUtils.validateUser;
+import static org.scada_lts.utils.ApiUtils.validateUserCreate;
+
 /**
  *
  * @author Radoslaw Jajko rjajko@softq.pl
@@ -31,7 +35,11 @@ public class UsersAPI {
 
     private static final Log LOG = LogFactory.getLog(UsersAPI.class);
 
-    UserService userService = new UserService();
+    private UserService userService;
+
+    public UsersAPI(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping(value = "/")
     public ResponseEntity<List<JsonUserInfo>> getAll(HttpServletRequest request) {
@@ -96,6 +104,8 @@ public class UsersAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 User userToSave = jsonUser.mapToUser();
+                if(!validateUserCreate(userToSave))
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 userService.saveUser(userToSave);
                 return new ResponseEntity<>(new JsonUser(userToSave), HttpStatus.OK);
             } else {
@@ -117,6 +127,8 @@ public class UsersAPI {
             User user = Common.getUser(request);
             if(user != null) {
                 User userToSave = jsonUser.mapToUser();
+                if(!validateUser(userToSave, userService))
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 userService.saveUser(userToSave);
                 if(jsonUser.getId() == user.getId()) {
                     Common.setUser(request, userToSave);
@@ -140,17 +152,23 @@ public class UsersAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-
+                String password = (String) jsonBodyRequest.get("password");
+                Integer userId = (Integer) jsonBodyRequest.get("userId");
+                if(userId == null || StringUtils.isEmpty(password))
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 if (user.isAdmin()) {
                     userService.updateUserPassword(
-                            (Integer) jsonBodyRequest.get("userId"),
-                            (String) jsonBodyRequest.get("password")
+                            userId,
+                            password
                     );
                 } else {
+                    String current = (String) jsonBodyRequest.get("current");
+                    if(StringUtils.isEmpty(password) || StringUtils.isEmpty(current))
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     userService.updateUserPassword(
                             user.getId(),
-                            (String) jsonBodyRequest.get("password"),
-                            (String) jsonBodyRequest.get("current")
+                            password,
+                            current
                     );
                 }
                 result.put("status", "ok");

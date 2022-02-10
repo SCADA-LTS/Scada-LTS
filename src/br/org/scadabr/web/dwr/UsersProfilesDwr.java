@@ -37,6 +37,7 @@ import org.scada_lts.mango.service.UsersProfileService;
 public class UsersProfilesDwr {
 
 	public Map<String, Object> getInitData() {
+		Permissions.ensureAdmin();
 		Map<String, Object> initData = new HashMap<String, Object>();
 
 		initData.put("admin", true);

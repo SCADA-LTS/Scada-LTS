@@ -40,6 +40,8 @@ public interface MangoReport {
 
 	ReportVO getReport(int id);
 
+	ReportVO getReport(String xid);
+
 	void saveReport(ReportVO report);
 
 	void deleteReport(int reportId);

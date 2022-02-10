@@ -135,6 +135,15 @@ jobs:
         with:
           key: ${{ runner.os }}-frontend-${{ github.run_id }}
           path: ./scadalts-ui/dist
+      - name: Get Scada-LTS latest release version
+        id: relverjava
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: SCADA-LTS
+          repo: Scada-LTS
+      - name: Prepare Application Enviroment Version Vairables
+        working-directory: ./
+        run: ./version.sh ${{ steps.relverjava.outputs.release }} $GITHUB_RUN_ID $GITHUB_HEAD_REF $GITHUB_SHA $GITHUB_ACTOR $GITHUB_BASE_REF
       - name: Install static web-dependencies
         working-directory: ./WebContent/resources
         run: npm install
