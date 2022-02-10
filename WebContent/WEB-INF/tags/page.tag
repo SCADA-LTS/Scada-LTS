@@ -396,6 +396,20 @@
 <div id="sltsFooter" class="footer">
     <span>&copy;2012-2021 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
+
+<c:if test="${!!sessionUser.hideHeader}">
+    <div class="notification-alert--reset">
+        <span class="clickable" onclick="resetHideView()">Exit from embedded view</span>
+    </div>
+
+    <script type="text/javascript">
+    function resetHideView() {
+        let loc = window.location.href.split('/');
+        window.location = loc[0] + "//" + loc[2] + "/" + loc[3] + "/watch_list.shtm";
+    }
+    </script>
+</c:if>
+
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>
 </c:if>
