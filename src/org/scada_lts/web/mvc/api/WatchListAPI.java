@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import br.org.scadabr.protocol.iec101.common103.information.INT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -18,7 +17,7 @@ import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
-import org.scada_lts.web.mvc.api.json.JsonWatchListPermission;
+import org.scada_lts.web.mvc.api.json.JsonWatchListForUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -97,14 +96,16 @@ public class WatchListAPI {
 	 * @return JsonWatchList object
 	 */
 	@GetMapping(value = "/{id}")
-    public ResponseEntity<JsonWatchListPermission> getWatchListById(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<JsonWatchListForUser> getWatchListById(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("GET:" + LOG_PREFIX + "/" + id);
         try {
             User user = Common.getUser(request);
             if(user != null) {
-				WatchList wl = watchListService.getWatchList(id);
-				watchListService.populateWatchlistData(wl);
-				return new ResponseEntity<>(new JsonWatchListPermission(wl, user), HttpStatus.OK);
+				WatchList watchList = watchListService.getWatchList(id);
+				if(watchList == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(watchList);
+				return new ResponseEntity<>(new JsonWatchListForUser(watchList, user), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -250,6 +251,8 @@ public class WatchListAPI {
 			User user = Common.getUser(request);
 			if(user != null) {
 				WatchList watchList = watchListService.getWatchList(xid);
+				if(watchList == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				return new ResponseEntity<>(getWatchList(watchList), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -372,6 +375,8 @@ public class WatchListAPI {
 			if (user != null) {
 			
 				WatchList wl = watchListService.getWatchList(xid);
+				if(wl == null)
+					return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(wl);
 				List<PointJSON> lst = new ArrayList<PointJSON>();
 			
