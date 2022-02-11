@@ -24,9 +24,6 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
                 .filter(point -> Permissions.hasDataPointReadPermission(object, point))
                 .sorted(Comparator.comparing(DataPointVO::getName))
                 .collect(Collectors.toList());
-//        if(object.isAdmin())
-//            return dataPointDAO.getDataPoints();
-//        return dataPointDAO.selectDataPointsWithAccess(object.getId(), object.getUserProfile());
     }
 
     @Override
@@ -35,8 +32,5 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
                 .map(point -> new ScadaObjectIdentifier(point.getId(), point.getXid(), point.getName()))
                 .sorted(Comparator.comparing(ScadaObjectIdentifier::getName))
                 .collect(Collectors.toList());
-//        if(object.isAdmin())
-//            return dataPointDAO.getSimpleList();
-//        return dataPointDAO.selectDataPointIdentifiersWithAccess(object.getId(), object.getUserProfile());
     }
 }
