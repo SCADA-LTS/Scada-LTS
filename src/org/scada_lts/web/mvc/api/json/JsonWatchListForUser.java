@@ -18,13 +18,13 @@ public class JsonWatchListForUser {
     private ShareUserType shareUserType;
 
 
-    public JsonWatchListForUser(WatchList wl, User user) {
-        this.identifier = wl.toIdentifier();
-        this.userId = wl.getUserId();
-        this.pointList = wl.getPointList().stream()
+    public JsonWatchListForUser(WatchList watchList, User user) {
+        this.identifier = watchList.toIdentifier();
+        this.userId = watchList.getUserId();
+        this.pointList = watchList.getPointList().stream()
                 .map(point -> new DataPointOnWatchListForUser(point, getType(user, point)))
                 .collect(Collectors.toList());
-        this.shareUserType = ShareUserType.getType(wl.getUserAccess(user));
+        this.shareUserType = ShareUserType.getType(watchList.getUserAccess(user));
     }
 
     public int getUserId() {
