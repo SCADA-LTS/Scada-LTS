@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -76,7 +75,6 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final String COLUMN_NAME_USER_ID = "userId";
-	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
 
 	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
@@ -150,7 +148,6 @@ public class DataPointDAO {
 	private static final String DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
 			+ "dp." + COLUMN_NAME_ID + " in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">0) "
 			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
-
 
 	// @formatter:on
 
@@ -439,12 +436,12 @@ public class DataPointDAO {
 
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
-				new Object[] { userId },
-				new ScadaObjectIdentifierRowMapper.Builder()
-						.idColumnName(COLUMN_NAME_ID)
-						.xidColumnName(COLUMN_NAME_XID)
-						.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
-						.build());
+						new Object[] { userId },
+						new ScadaObjectIdentifierRowMapper.Builder()
+								.idColumnName(COLUMN_NAME_ID)
+								.xidColumnName(COLUMN_NAME_XID)
+								.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+								.build());
 	}
 
 }
