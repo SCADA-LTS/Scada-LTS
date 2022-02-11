@@ -374,13 +374,13 @@ public class WatchListAPI {
 			User user = Common.getUser(request);
 			if (user != null) {
 			
-				WatchList wl = watchListService.getWatchList(xid);
-				if(wl == null)
+				WatchList watchList = watchListService.getWatchList(xid);
+				if(watchList == null)
 					return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-				watchListService.populateWatchlistData(wl);
+				watchListService.populateWatchlistData(watchList);
 				List<PointJSON> lst = new ArrayList<PointJSON>();
 			
-				for (DataPointVO dpvo : wl.getPointList()){
+				for (DataPointVO dpvo : watchList.getPointList()){
 					PointJSON p = new PointJSON(dpvo.getXid(), dpvo.getName());
 					lst.add(p);
 				}
