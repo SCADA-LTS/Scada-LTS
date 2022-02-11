@@ -492,7 +492,7 @@
                 <tr>
                   <td class="formLabelRequired"><fmt:message key="viewEdit.background"/></td>
                   <td class="formField">
-                    <input type="file" name="backgroundImageMP"/>
+                    <input type="file" id="backgroundImageMP" name="backgroundImageMP" onchange="validateUploadImage()"/>
                   </td>
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
