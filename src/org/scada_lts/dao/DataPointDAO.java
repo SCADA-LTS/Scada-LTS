@@ -147,22 +147,10 @@ public class DataPointDAO {
 			+ "and "
 				+ COLUMN_NAME_EVENT_TYPE_REF1;
 
-	@Deprecated
 	private static final String DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
 			+ "dp." + COLUMN_NAME_ID + " in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">0) "
 			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
 
-	public static final String DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_NAME = " "
-			+ "dp.id in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">?) or "
-			+ "dp.id in (select dpup."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsersProfiles dpup where dpup."+ COLUMN_NAME_USER_PROFILE_ID +"=? and dpup."+COLUMN_NAME_PERMISSION+">?) "
-			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
-
-	private static final String ONLY_DATA_POINT_IDENTIFIER_SELECT = ""
-			+ "select "
-			+ "dp." + COLUMN_NAME_ID + ", "
-			+ "dp." + COLUMN_NAME_XID + ", "
-			+ "dp." + COLUMN_NAME_DATAPOINT_NAME + " "
-			+ "from dataPoints dp ";
 
 	// @formatter:on
 
@@ -445,30 +433,13 @@ public class DataPointDAO {
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
 	}
 
-	@Deprecated
 	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
 		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId}, 0);
 	}
 
-	@Deprecated
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
 				new Object[] { userId },
-				new ScadaObjectIdentifierRowMapper.Builder()
-						.idColumnName(COLUMN_NAME_ID)
-						.xidColumnName(COLUMN_NAME_XID)
-						.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
-						.build());
-	}
-
-	public List<DataPointVO> selectDataPointsWithAccess(final int userId, final int profileId) {
-		return filtered(DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_NAME,
-				new Object[] { userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE}, 0);
-	}
-
-	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(final int userId, final int profileId) {
-		return DAO.getInstance().getJdbcTemp().query(ONLY_DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_NAME,
-				new Object[] { userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
 						.xidColumnName(COLUMN_NAME_XID)

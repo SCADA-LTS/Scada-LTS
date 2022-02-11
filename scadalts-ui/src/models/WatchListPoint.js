@@ -33,13 +33,14 @@ export class WatchListPoint {
      * @param {Object} pointEvents 
      * @returns 
      */
-    createWatchListPoint(dataPoint, pointValue, pointEvents, dataSourceStatus, order = -1) {
+    createWatchListPoint(dataPoint, pointValue, pointEvents, dataSourceStatus, order = -1, permission = 1) {
         this.id = dataPoint.id;
         this.xid = dataPoint.xid;
         this.name = dataPoint.name;
         this.type = dataPoint.pointLocator.dataTypeId;
         this.enabled = dataPoint.enabled;
         this.settable = dataPoint.pointLocator.settable;
+        if(this.settable) { this.settable = permission === 2; }
         this.description = dataPoint.description;
         this.dataSourceName = dataPoint.dataSourceName;
         this.dataSourceEnabled = dataSourceStatus.enabled;

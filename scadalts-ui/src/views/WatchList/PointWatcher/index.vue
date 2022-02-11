@@ -237,7 +237,7 @@ export default {
 		fetchDataPointDetails() {
 			let reuqests = [];
 			this.dataPointList.forEach((dataPoint) => {
-				reuqests.push(this.getDataPointDetails(dataPoint.id));
+				reuqests.push(this.getDataPointDetails(dataPoint));
 			});
 			Promise.all(reuqests).then((r) => {
 				r.sort((a, b) => a.order - b.order);
@@ -245,13 +245,13 @@ export default {
 			});
 		},
 
-		getDataPointDetails(datapointId) {
+		getDataPointDetails(dataPoint) {
 			return new Promise(async (resolve, reject) => {
 				try {
-					let point = await this.$store.dispatch('getDataPointDetails', datapointId);
-					let pv = await this.$store.dispatch('getDataPointValue', datapointId);
+					let point = await this.$store.dispatch('getDataPointDetails', dataPoint.id);
+					let pv = await this.$store.dispatch('getDataPointValue', dataPoint.id);
 					let pointEvents = await this.$store.dispatch('fetchDataPointEvents', {
-						datapointId: datapointId,
+						datapointId: dataPoint.id,
 						limit: 10,
 					});
 					let ds = await this.$store.dispatch('getDatasourceByXid', point.dataSourceXid);
@@ -261,7 +261,8 @@ export default {
 						pv,
 						pointEvents,
 						ds,
-						map.get(String(datapointId))
+						map.get(String(dataPoint.id)),
+						dataPoint.permission
 					);
 
 					resolve(pointData2);

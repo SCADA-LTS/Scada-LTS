@@ -18,6 +18,7 @@ import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
+import org.scada_lts.web.mvc.api.json.JsonWatchListPermission;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -96,14 +97,14 @@ public class WatchListAPI {
 	 * @return JsonWatchList object
 	 */
 	@GetMapping(value = "/{id}")
-    public ResponseEntity<JsonWatchList> getWatchListById(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<JsonWatchListPermission> getWatchListById(@PathVariable("id") int id, HttpServletRequest request) {
         LOG.info("GET:" + LOG_PREFIX + "/" + id);
         try {
             User user = Common.getUser(request);
             if(user != null) {
 				WatchList wl = watchListService.getWatchList(id);
 				watchListService.populateWatchlistData(wl);
-				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
+				return new ResponseEntity<>(new JsonWatchListPermission(wl, user), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
