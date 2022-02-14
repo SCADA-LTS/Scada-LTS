@@ -17,36 +17,35 @@
  */
 package org.scada_lts.web.mvc.controller;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.web.mvc.form.SqlForm;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.WebUtils;
 
-import com.serotonin.db.spring.ConnectionCallbackVoid;
-import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.SerializationHelper;
+import org.springframework.web.util.WebUtils;
 
 /**
  * Controller for SQL tab
@@ -60,84 +59,118 @@ public class SqlController {
 	
 	private static final Log LOG = LogFactory.getLog(SqlController.class);
 
-	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView createForm(HttpServletRequest request)
+	@GetMapping
+	public ModelAndView createForm(HttpServletRequest request)
 			throws Exception {
 		LOG.trace("/sql.shtm");
 		
 		Permissions.ensureAdmin(request);
 		
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("form", new SqlForm());
 		return new ModelAndView("sql", model);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
+	@PostMapping
+    public ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/sql.shtm");
 		Permissions.ensureAdmin(request);
 		
 		final SqlForm form = new SqlForm(request.getParameter("sqlString"));
 		executeCommand(form, request);
 
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		model.put("form", form);
 		return new ModelAndView("sql", model);
 	}
-	
-	private void executeCommand(final SqlForm form, HttpServletRequest request){
-        DatabaseAccess databaseAccess = Common.ctx.getDatabaseAccess();
-        try {
-            if (WebUtils.hasSubmitParameter(request, "query")) {
-                databaseAccess.doInConnection(new ConnectionCallbackVoid() {
-                    public void doInConnection(Connection conn) throws SQLException {
-                        Statement stmt = conn.createStatement();
-                        ResultSet rs = stmt.executeQuery(form.getSqlString());
 
-                        ResultSetMetaData meta = rs.getMetaData();
-                        int columns = meta.getColumnCount();
-                        List<String> headers = new ArrayList<String>(columns);
-                        for (int i = 0; i < columns; i++)
-                            headers.add(meta.getColumnLabel(i + 1));
-
-                        List<List<Object>> data = new LinkedList<List<Object>>();
-                        List<Object> row;
-                        while (rs.next()) {
-                            row = new ArrayList<Object>(columns);
-                            data.add(row);
-                            for (int i = 0; i < columns; i++) {
-                                if (meta.getColumnType(i + 1) == Types.CLOB)
-                                    row.add(rs.getString(i + 1));
-                                else if (meta.getColumnType(i + 1) == Types.LONGVARBINARY
-                                        || meta.getColumnType(i + 1) == Types.BLOB || meta.getColumnType(i + 1) == Types.BINARY) {
-                                    Object o;
-                                    if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")){
-                                        o = SerializationHelper.readObject(rs.getBinaryStream(i + 1));
-                                    }
-                                    else{
-                                        o = SerializationHelper.readObject(rs.getBlob(i + 1).getBinaryStream());
-                                    }
-                                    row.add("Serialized data(" + o + ")");
-                                }
-                                else
-                                    row.add(rs.getObject(i + 1));
-                            }
-                        }
-                        form.setHeaders(headers);
-                        form.setData(data);
-                    }
-                });
+    private static void executeCommand(final SqlForm form, final HttpServletRequest request) {
+        DAO dao = DAO.getInstance();
+        if(dao != null) {
+            JdbcTemplate jdbcTemplate = dao.getJdbcTemp();
+            if (jdbcTemplate != null) {
+                execute(form, request, jdbcTemplate);
+            } else {
+                form.setError("JDBC not initialized.");
             }
-            else if (WebUtils.hasSubmitParameter(request, "update")) {
-                ExtendedJdbcTemplate ejt = new ExtendedJdbcTemplate();
-                ejt.setDataSource(databaseAccess.getDataSource());
-                int result = ejt.update(form.getSqlString());
+        } else {
+            form.setError("DAO not initialized.");
+        }
+    }
+
+    private static void execute(final SqlForm form,
+                                final HttpServletRequest request,
+                                final JdbcTemplate jdbcTemplate) {
+        if (WebUtils.hasSubmitParameter(request, "query")) {
+            try {
+                List<String> columnNames = columnNames(form.getSqlString(), jdbcTemplate);
+                List<List<Object>> query = query(form.getSqlString(), jdbcTemplate);
+
+                form.setHeaders(columnNames);
+                form.setData(query);
+            } catch (Exception ex) {
+                LOG.error(ex.getMessage(), ex);
+                form.setError(ex.getMessage());
+            }
+        }
+        else if (WebUtils.hasSubmitParameter(request, "update")) {
+            try {
+                int result = update(form.getSqlString(), jdbcTemplate);
                 form.setUpdateResult(result);
+            } catch (Exception ex) {
+                LOG.error(ex.getMessage(), ex);
+                form.setError(ex.getMessage());
             }
         }
-        catch (RuntimeException e) {
-        	form.setError(e.getMessage());
-            LOG.debug(e);
-        }
-	}
+    }
+
+    private static int update(final String sql, final JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.update(sql);
+    }
+
+    private static List<List<Object>> query(final String sql, final JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.query(sql, (rs, index) -> {
+            ResultSetMetaData meta = rs.getMetaData();
+            int columns = meta.getColumnCount();
+            List<Object> row = new LinkedList<>();
+            for (int i = 0; i < columns; i++) {
+                if (meta.getColumnType(i + 1) == Types.CLOB)
+                    row.add(rs.getString(i + 1));
+                else if (meta.getColumnType(i + 1) == Types.LONGVARBINARY
+                        || meta.getColumnType(i + 1) == Types.BLOB || meta.getColumnType(i + 1) == Types.BINARY) {
+                    Object o;
+                    if (Common.getEnvironmentProfile().getString("db.type").equals("postgres")) {
+                        o = SerializationHelper.readObject(rs.getBinaryStream(i + 1));
+                    } else {
+                        o = SerializationHelper.readObject(rs.getBlob(i + 1).getBinaryStream());
+                    }
+                    row.add("Serialized data(" + o + ")");
+                } else
+                    row.add(rs.getObject(i + 1));
+            }
+            return row;
+        });
+    }
+
+    private static List<String> columnNames(final String sql, final JdbcTemplate jdbcTemplate) {
+        List<List<String>> data = getColumnNames(sql, jdbcTemplate);
+        if(data.isEmpty())
+            return Collections.emptyList();
+        return data.get(0);
+    }
+
+    private static List<List<String>> getColumnNames(final String sql, final JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.query(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setMaxRows(1);
+            return preparedStatement;
+        }, (rs, index) -> {
+            ResultSetMetaData meta = rs.getMetaData();
+            int columns = meta.getColumnCount();
+            List<String> headers = new ArrayList<>(columns);
+            for (int i = 0; i < columns; i++)
+                headers.add(meta.getColumnLabel(i + 1));
+            return headers;
+        });
+    }
 }
