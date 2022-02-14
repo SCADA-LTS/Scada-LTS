@@ -29,7 +29,7 @@
 		"@fortawesome/vue-fontawesome": "0.1.10",
 		"@mdi/font": "5.9.55",
 		"@min-gb/vuejs-components": "0.0.7",
-		"ajv": "6.5.2",
+		"ajv": "6.12.3",
 		"axios": "^0.21.1",
 		"bootstrap": "3.4.1",
 		"core-js": "2.6.5",
