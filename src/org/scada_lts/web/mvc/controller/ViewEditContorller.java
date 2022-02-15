@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.WebUtils;
@@ -51,6 +53,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 @Controller
 public class ViewEditContorller {
+    public static final String[] SUPPORTED_EXTENSIONS = new String[]{".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png",
+            ".bmp", ".dib", ".svg"};
     private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
@@ -201,41 +205,42 @@ public class ViewEditContorller {
                     File dir = new File(path);
                     dir.mkdirs();
 
-                    boolean validExtension = false;
-                    String[] supportedExtensions = new String[] { "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png",
-                            "bmp", "dib", "svg" };
-                    String extension;
-
-                    int foo = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.') + 1;
-                    extension = form.getBackgroundImageMP().getOriginalFilename().substring(foo);
-
-                    for (String s : supportedExtensions) {
-                        if (s.equals(extension.toLowerCase())) {
-                            validExtension = true;
-                            break;
-                        }
-                    }
-
-                    // Valid image! Add it to uploads
-                    if (validExtension) {
-                        int imageId = getNextImageId(dir); // Get an image id.
-                        String filename = Integer.toString(imageId); // Create the image file name.
-                        int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
-                        if (dot != -1)
-                            filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
-
-                        // Save the file.
-                        FileOutputStream fos = new FileOutputStream(new File(dir, filename));
-                        fos.write(bytes);
-                        fos.close();
-
-                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                    MultipartFile file = form.getBackgroundImageMP();
+                    String fileName = file.getOriginalFilename();
+                    if(fileName != null) {
+                        Stream.of(SUPPORTED_EXTENSIONS)
+                                .filter(fileName::endsWith)
+                                .findFirst()
+                                .ifPresent(ext -> {
+                                    // Valid image! Add it to uploads
+                                    int imageId = getNextImageId(dir); // Get an image id.
+                                    String filename = imageId + ext; // Create the image file name.
+                                    File image = new File(dir, filename);
+                                    if(saveFile(bytes, image)) { // Save the file.
+                                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                                        LOG.info("Image file has been successfully uploaded: " + image.getName());
+                                    } else {
+                                        LOG.warn("Failed to save image file: " + image.getName());
+                                    }
+                                });
+                    } else {
+                        LOG.warn("Image file not attached: " + fileName);
                     }
                 }
             }
         }
     }
-    
+
+    private static boolean saveFile(byte[] bytes, File dest) {
+        try (FileOutputStream fos = new FileOutputStream(dest)) {
+            fos.write(bytes);
+            return true;
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+            return false;
+        }
+    }
+
     private int getNextImageId(File uploadDir) {
         if (nextImageId == -1) {
             // Synchronize
