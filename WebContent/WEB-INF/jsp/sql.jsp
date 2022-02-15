@@ -49,7 +49,7 @@
             <tr>
               <td colspan="2" align="center">
                 <input type="submit" value="<fmt:message key="sql.query"/>" name="query"/>
-                <input type="submit" value="<fmt:message key="sql.update"/>" name="update"/>
+                <input type="submit" value="<fmt:message key="sql.update"/>" name="update" style="display:none"/>
               </td>
               <td></td>
             </tr>
@@ -74,11 +74,11 @@
             </c:forEach>
           </table>
         </c:if>
-        
+
         <c:if test="${form.updateResult > -1}">
           ${form.updateResult} <fmt:message key="sql.rowsUpdated"/>
         </c:if>
-        
+
         <br/>
       </td>
     </tr>

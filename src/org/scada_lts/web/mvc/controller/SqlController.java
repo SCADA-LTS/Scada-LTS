@@ -75,7 +75,7 @@ public class SqlController {
     public ModelAndView executeSQL(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/sql.shtm");
 		Permissions.ensureAdmin(request);
-		
+
 		final SqlForm form = new SqlForm(request.getParameter("sqlString"));
 		executeCommand(form, request);
 
@@ -113,19 +113,6 @@ public class SqlController {
                 form.setError(ex.getMessage());
             }
         }
-        else if (WebUtils.hasSubmitParameter(request, "update")) {
-            try {
-                int result = update(form.getSqlString(), jdbcTemplate);
-                form.setUpdateResult(result);
-            } catch (Exception ex) {
-                LOG.error(ex.getMessage(), ex);
-                form.setError(ex.getMessage());
-            }
-        }
-    }
-
-    private static int update(final String sql, final JdbcTemplate jdbcTemplate) {
-        return jdbcTemplate.update(sql);
     }
 
     private static List<List<Object>> query(final String sql, final JdbcTemplate jdbcTemplate) {
