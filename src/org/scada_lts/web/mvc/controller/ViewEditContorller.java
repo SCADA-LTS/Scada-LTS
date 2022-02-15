@@ -200,21 +200,37 @@ public class ViewEditContorller {
                     // Make sure the directory exists.
                     File dir = new File(path);
                     dir.mkdirs();
-                    // Get an image id.
-                    int imageId = getNextImageId(dir);
-    
-                    // Create the image file name.
-                    String filename = Integer.toString(imageId);
-                    int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
-                    if (dot != -1)
-                        filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
-    
-                    // Save the file.
-                    FileOutputStream fos = new FileOutputStream(new File(dir, filename));
-                    fos.write(bytes);
-                    fos.close();
-    
-                    form.getView().setBackgroundFilename(uploadDirectory + filename);
+
+                    boolean validExtension = false;
+                    String[] supportedExtensions = new String[] { "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png",
+                            "bmp", "dib", "svg" };
+                    String extension;
+
+                    int foo = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.') + 1;
+                    extension = form.getBackgroundImageMP().getOriginalFilename().substring(foo);
+
+                    for (String s : supportedExtensions) {
+                        if (s.equals(extension.toLowerCase())) {
+                            validExtension = true;
+                            break;
+                        }
+                    }
+
+                    // Valid image! Add it to uploads
+                    if (validExtension) {
+                        int imageId = getNextImageId(dir); // Get an image id.
+                        String filename = Integer.toString(imageId); // Create the image file name.
+                        int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
+                        if (dot != -1)
+                            filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
+
+                        // Save the file.
+                        FileOutputStream fos = new FileOutputStream(new File(dir, filename));
+                        fos.write(bytes);
+                        fos.close();
+
+                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                    }
                 }
             }
         }

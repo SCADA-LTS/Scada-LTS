@@ -333,6 +333,18 @@
 		}
 	}
 
+  function validateUploadImage() {
+    var file = document.getElementById("backgroundImageMP").value;
+    var extension = file.slice(file.lastIndexOf(".") + 1).toLowerCase();
+    var supportedExtensions = ["gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "bmp", "dib", "svg"];
+    var search = supportedExtensions.indexOf(extension);
+    if (search === -1) {
+      // Image format invalid.
+      document.getElementById("backgroundImageMP").value = null;
+      alert('<fmt:message key="validate.imageExtension"/>');
+    }
+  }
+
 	function resizeViewBackgroundToResolution(size) {
 		if(document.getElementById("viewBackground").src.includes("spacer.gif")){
 			switch(size) {
@@ -480,7 +492,7 @@
                 <tr>
                   <td class="formLabelRequired"><fmt:message key="viewEdit.background"/></td>
                   <td class="formField">
-                    <input type="file" name="backgroundImageMP"/>
+                    <input type="file" id="backgroundImageMP" name="backgroundImageMP" onchange="validateUploadImage()"/>
                   </td>
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
