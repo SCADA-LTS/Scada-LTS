@@ -7,10 +7,12 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
+    
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
@@ -26,6 +28,7 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <script type="text/javascript">
+
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
     
@@ -135,6 +138,7 @@
             content.style.left = viewComponent.x +"px";
             content.style.top = viewComponent.y +"px";
         }
+
     }
     
     function updateNodeIds(elem, id) {
@@ -175,10 +179,12 @@
         closeEditors();
         compoundEditor.open(cid);
     }
+
     function openCustomEditor(cid) {
         closeEditors();
         customEditor.open(cid);
     }
+
     function moveUpComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
         if(div.style.zIndex < 99) {
@@ -187,6 +193,7 @@
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
         updateZIndexLabel(viewComponentId, div.style.zIndex);
     }
+
     function moveDownComponent(viewComponentId) {
         var div = $("c" + viewComponentId);
         if(div.style.zIndex > 1) {
@@ -195,6 +202,7 @@
         ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
         updateZIndexLabel(viewComponentId, div.style.zIndex);
     }
+
     function updateZIndexLabel(viewComponentId, value) {
         var spanIndex = document.getElementById("c" + viewComponentId + "zindex");
         spanIndex.parentNode.parentNode.style.display = "initial";
@@ -214,7 +222,9 @@
             editDiv.style.left = (pDim.x - eWidth - 5) + "px";
             editDiv.style.top = (pDim.y) +"px";
         }
+
     }
+
     function positionCustomEditor(compId, editorId) {
         // Position and display the renderer editor.
         var pDim = getNodeBounds($("c"+ compId));
@@ -224,6 +234,7 @@
         editDiv.style.left = (pDim.x) +"px";
         editDiv.style.top = (pDim.y + pDim.h) +"px";
     }
+
     function closeEditors() {
         settingsEditor.close();
         graphicRendererEditor.close();
@@ -231,43 +242,54 @@
         compoundEditor.close();
         customEditor.close();
     }
+
     function updateViewComponentLocation(divId) {
         updatePositionXY(divId);
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;
+
         // Remove the 'px's from the positions.
         lt = lt.substring(0, lt.length-2);
         tp = tp.substring(0, tp.length-2);
+
         // Save the new location.
         ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
     }
+
     function addDnD(divId) {
         var div = $(divId);
         var dragSource = new dojo.dnd.HtmlDragMoveSource(div);
         dragSource.constrainTo($("viewBackground"));
+
         // Save the drag source in the div in case it gets deleted. See below.
         div.dragSource = dragSource;
         // Also, create a function to call on drag end to update the point view's location.
         div.onDragEnd = function() {updateViewComponentLocation(divId);};
+
         dojo.event.connect(dragSource, "onDragEnd", div.onDragEnd);
     }
+
     function deleteViewComponent(viewComponentId) {
         closeEditors();
         if(confirm('<fmt:message key="common.confirmDelete"/>')) {
             ViewDwr.deleteViewComponent(viewComponentId);
+
             var div = $("c"+ viewComponentId);
+
             // Unregister the drag source from the DnD manager.
             div.dragSource.unregister();
             // Disconnect the event handling for drag ends on this guy.
             $("viewContent").removeChild(div);
         }
     }
+
     function getViewComponentId(node) {
         while (!(node.viewComponentId))
             node = node.parentNode;
         return node.viewComponentId;
     }
+
     function iconizeClicked() {
         ViewDwr.getViewComponentIds(function(ids) {
             var i, comp, content;
@@ -298,9 +320,11 @@
             }
         });
     }
+
 	function resizeViewBackground(width, height) {
 		var currentWidth = $("viewBackground").width;
 		var currentHeight = $("viewBackground").height;
+
 		if(width > currentWidth) {
 			$("viewBackground").width = parseInt(width,10) + 30;
 		}
@@ -378,6 +402,7 @@
         	document.getElementById("view.resolution").style.visibility = 'hidden';
         	document.getElementById("sizeLabel").style.visibility = 'hidden';
         }
+
 	}
   
   function validateComponentPosition(positionX, positionY) {
@@ -391,6 +416,7 @@
     positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
     return [positionX, positionY];
   }
+  
   function updatePointPosition(compId, posX, posY, referenceX, referenceY) {
     var div = document.getElementById("c" + compId);
     div.style.left = posX + "px";
@@ -404,6 +430,7 @@
         var div = $("c" + viewComponentId);
         updateZIndexLabel(viewComponentId, div.style.zIndex);
 	}
+
 	function deleteConfirm(){
 		if(document.getElementById("deleteCheckbox").checked) {
 			document.getElementById("deleteButton").style.visibility = 'visible';
@@ -415,11 +442,13 @@
 			document.getElementById("deleteButton").style.visibility = 'hidden';
 		}
 	}
-    window.onbeforeunload = confirmExit;
+
+  window.onbeforeunload = confirmExit;
     function confirmExit(){
         return false;
     }
   </script>
+
   
   <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
