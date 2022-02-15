@@ -41,8 +41,7 @@ export class WatchListPoint {
         this.enabled = dataPoint.enabled;
         this.settable = dataPoint.pointLocator.settable;
         if(this.settable) { 
-            if(typeof permission === 'string') permission = this._permisionToInt(permission);
-            this.settable = permission === 2; 
+            this.settable = permission === 2 || permission === 3; 
         }
         this.description = dataPoint.description;
         this.dataSourceName = dataPoint.dataSourceName;
@@ -64,17 +63,7 @@ export class WatchListPoint {
             multistateValues: dataPoint.textRenderer.multistateValues,
         };
         return this;
-    }
-
-    _permisionToInt(permission) {
-        switch(permission) {
-            case 'ACCESS_NONE': return 0;
-            case 'ACCESS_READ': return 1;
-            case 'ACCESS_SET': return 2;
-            case 'ACCESS_OWNER': return 2;
-            default: return 0;
-        }
-    }
+    }    
 
 }
 
