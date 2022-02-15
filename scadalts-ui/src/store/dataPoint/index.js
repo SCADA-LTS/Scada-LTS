@@ -124,7 +124,9 @@ const storeDataPoint = {
 		},
 
 		getDataPointValue({ dispatch }, datapointId) {
-			return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+			if(!!datapointId) {
+				return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+			}
 		},
 
 		getDataPointValueByXid({ dispatch }, datapointXid) {

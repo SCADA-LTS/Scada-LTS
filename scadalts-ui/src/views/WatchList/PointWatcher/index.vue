@@ -248,10 +248,11 @@ export default {
 		getDataPointDetails(dataPoint) {
 			return new Promise(async (resolve, reject) => {
 				try {
-					let point = await this.$store.dispatch('getDataPointDetails', dataPoint.id);
-					let pv = await this.$store.dispatch('getDataPointValue', dataPoint.id);
+					const pointId = dataPoint.identifier.id;
+					let point = await this.$store.dispatch('getDataPointDetails', pointId);
+					let pv = await this.$store.dispatch('getDataPointValue', pointId);
 					let pointEvents = await this.$store.dispatch('fetchDataPointEvents', {
-						datapointId: dataPoint.id,
+						datapointId: pointId,
 						limit: 10,
 					});
 					let ds = await this.$store.dispatch('getDatasourceByXid', point.dataSourceXid);
@@ -261,8 +262,8 @@ export default {
 						pv,
 						pointEvents,
 						ds,
-						map.get(String(dataPoint.id)),
-						dataPoint.permission
+						map.get(String(pointId)),
+						dataPoint.shareUserType
 					);
 
 					resolve(pointData2);
