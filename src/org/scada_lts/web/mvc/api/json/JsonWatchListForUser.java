@@ -1,11 +1,11 @@
 package org.scada_lts.web.mvc.api.json;
 
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.permissions.service.ShareUserType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +15,7 @@ public class JsonWatchListForUser {
     private int userId;
     private ScadaObjectIdentifier identifier;
     private List<DataPointOnWatchListForUser> pointList;
-    private ShareUserType shareUserType;
-
+    private int accessType;
 
     public JsonWatchListForUser(WatchList watchList, User user) {
         this.identifier = watchList.toIdentifier();
@@ -24,7 +23,7 @@ public class JsonWatchListForUser {
         this.pointList = watchList.getPointList().stream()
                 .map(point -> new DataPointOnWatchListForUser(point, getType(user, point)))
                 .collect(Collectors.toList());
-        this.shareUserType = ShareUserType.getType(watchList.getUserAccess(user));
+        this.accessType = watchList.getUserAccess(user);
     }
 
     public int getUserId() {
@@ -51,24 +50,24 @@ public class JsonWatchListForUser {
         this.pointList = pointList;
     }
 
-    public ShareUserType getShareUserType() {
-        return shareUserType;
+    public int getAccessType() {
+        return accessType;
     }
 
-    public void setShareUserType(ShareUserType shareUserType) {
-        this.shareUserType = shareUserType;
+    public void setAccessType(int accessType) {
+        this.accessType = accessType;
     }
 
     public static class DataPointOnWatchListForUser {
 
         private ScadaObjectIdentifier identifier;
         private String description;
-        private ShareUserType shareUserType;
+        private int accessType;
 
-        DataPointOnWatchListForUser(DataPointVO dp, ShareUserType shareUserType) {
+        DataPointOnWatchListForUser(DataPointVO dp, int accessType) {
             this.identifier = dp.toIdentifier();
             this.description = dp.getDescription();
-            this.shareUserType = shareUserType;
+            this.accessType = accessType;
         }
 
         public ScadaObjectIdentifier getIdentifier() {
@@ -87,20 +86,20 @@ public class JsonWatchListForUser {
             this.description = description;
         }
 
-        public ShareUserType getShareUserType() {
-            return shareUserType;
+        public int getAccessType() {
+            return accessType;
         }
 
-        public void setShareUserType(ShareUserType shareUserType) {
-            this.shareUserType = shareUserType;
+        public void setAccessType(int accessType) {
+            this.accessType = accessType;
         }
     }
 
-    private static ShareUserType getType(User user, DataPointVO dataPoint) {
+    private static int getType(User user, DataPointVO dataPoint) {
         if(dataPoint.isSettable() && Permissions.hasDataPointSetPermission(user, dataPoint))
-            return ShareUserType.ACCESS_SET;
+            return ShareUser.ACCESS_SET;
         if(Permissions.hasDataPointReadPermission(user, dataPoint))
-            return ShareUserType.ACCESS_READ;
-        return ShareUserType.ACCESS_NONE;
+            return ShareUser.ACCESS_READ;
+        return ShareUser.ACCESS_NONE;
     }
 }
