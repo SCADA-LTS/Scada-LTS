@@ -41,7 +41,7 @@ export class WatchListPoint {
         this.enabled = dataPoint.enabled;
         this.settable = dataPoint.pointLocator.settable;
         if(this.settable) { 
-            this.settable = permission === 2 || permission === 3; 
+            this.settable = (permission === 2 || permission === 3); 
         }
         this.description = dataPoint.description;
         this.dataSourceName = dataPoint.dataSourceName;

@@ -263,7 +263,7 @@ export default {
 						pointEvents,
 						ds,
 						map.get(String(pointId)),
-						dataPoint.shareUserType
+						dataPoint.accessType
 					);
 
 					resolve(pointData2);
