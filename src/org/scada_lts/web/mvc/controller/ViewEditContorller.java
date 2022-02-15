@@ -224,7 +224,7 @@ public class ViewEditContorller {
                                     }
                                 });
                     } else {
-                        LOG.warn("Image file not attached: " + fileName);
+                        LOG.warn("Image file is damaged!");
                     }
                 }
             }
