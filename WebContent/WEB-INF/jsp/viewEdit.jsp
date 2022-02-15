@@ -7,7 +7,7 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -416,7 +416,7 @@
     positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
     return [positionX, positionY];
   }
-  
+
   function updatePointPosition(compId, posX, posY, referenceX, referenceY) {
     var div = document.getElementById("c" + compId);
     div.style.left = posX + "px";
@@ -443,12 +443,13 @@
 		}
 	}
 
-  window.onbeforeunload = confirmExit;
+    window.onbeforeunload = confirmExit;
     function confirmExit(){
         return false;
     }
-  </script>
 
+
+  </script>
   
   <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
