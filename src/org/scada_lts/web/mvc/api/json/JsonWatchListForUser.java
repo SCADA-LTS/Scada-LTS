@@ -96,7 +96,7 @@ public class JsonWatchListForUser {
     }
 
     private static int getType(User user, DataPointVO dataPoint) {
-        if(dataPoint.isSettable() && Permissions.hasDataPointSetPermission(user, dataPoint))
+        if(dataPoint.getPointLocator() != null && dataPoint.getPointLocator().isSettable() && Permissions.hasDataPointSetPermission(user, dataPoint))
             return ShareUser.ACCESS_SET;
         if(Permissions.hasDataPointReadPermission(user, dataPoint))
             return ShareUser.ACCESS_READ;
