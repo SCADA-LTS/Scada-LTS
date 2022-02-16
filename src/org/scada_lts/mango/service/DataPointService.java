@@ -698,13 +698,10 @@ public class DataPointService implements MangoDataPoint {
 			pvcList.clear();
 			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
 			int revisedLimit = calculateLimit(aggregateSettings);
-			return aggregateSortValues(startTs, endTs, pointIds, revisedLimit, intervalMs);
+			long revisedStartTs = calculateStartTs(startTs, intervalMs);
+			return aggregateSortValues(revisedStartTs, endTs, pointIds, revisedLimit, intervalMs);
 		}
 		return pvcList;
-	}
-
-	private int calculateLimit(AggregateSettings aggregateSettings) {
-		return aggregateSettings.getLimitFactor() > 1.0 ? (int)Math.ceil(aggregateSettings.getValuesLimit() * aggregateSettings.getLimitFactor()) + 1 : aggregateSettings.getValuesLimit() + 1;
 	}
 
 	private int[] getPointIds(List<DataPointVO> pointIds) {
@@ -715,7 +712,8 @@ public class DataPointService implements MangoDataPoint {
 																				List<DataPointVO> dataPoints,
 																				int limit, long intervalMs) {
 		return dataPoints.stream()
-				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs, limit).stream())
+				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs,
+						limitByDataType(dataPoint, limit)).stream())
 				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
 				.collect(Collectors.toList());
 	}
