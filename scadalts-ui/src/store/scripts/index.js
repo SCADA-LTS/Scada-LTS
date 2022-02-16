@@ -27,22 +27,6 @@ const storeScripts = {
 				},
 			});
 		},
-		async validateScriptBody({ dispatch }, payload) {
-			let url = `/scripts/validateScriptBody`;
-			return dispatch('requestPost', {
-				url,
-				data: {
-					id: payload.id,
-					userId: payload.userId,
-					xid: payload.xid,
-					name: payload.name,
-					script: payload.script,
-					pointsOnContext: payload.pointsOnContext,
-					datapointContext: payload.datapointContext,
-					datasourceContext: payload.datasourceContext,
-				},
-			});
-		},
 
 		async createScript({ dispatch }, payload) {
 			let url = `/scripts/save`;
@@ -86,6 +70,10 @@ const storeScripts = {
 				data: payload,
 			});
 		},
+
+		getScriptsUniqueXid({dispatch}) {
+			return dispatch('requestGet', '/scripts/generateXid');
+		}
 	},
 	getters: {},
 };

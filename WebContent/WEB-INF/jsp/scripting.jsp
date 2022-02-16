@@ -486,5 +486,6 @@
         </div>
       </td>
     </tr>
+    <tag:newPageNotification href="./app.shtm#/scripts" ref="scriptsNotification"/>
   </table>
 </tag:page>

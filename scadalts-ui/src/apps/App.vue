@@ -187,10 +187,10 @@ export default {
 }
 </style>
 <style>
-td > button,
-td > input,
-td > select,
-td > textarea {
+#sltsContent td > button,
+#sltsContent td > input,
+#sltsContent td > select,
+#sltsContent td > textarea {
 	border-style: solid;
 }
 td > select,

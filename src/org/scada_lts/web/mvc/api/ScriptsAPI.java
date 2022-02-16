@@ -74,7 +74,7 @@ public class ScriptsAPI {
                     ScriptRT rt = script.createScriptRT();
                     rt.execute();
                 }
-                return new ResponseEntity<>(scriptService.getScripts(), HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
