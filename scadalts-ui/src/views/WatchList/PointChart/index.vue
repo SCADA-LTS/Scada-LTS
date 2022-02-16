@@ -131,7 +131,7 @@ export default {
 
 	computed: {
 		pointList() {
-			return this.$store.state.watchListModule.pointWatcher;
+			return this.$store.getters.getWatchListChartPoints;
 		},
 
 		activeWatchList() {
@@ -148,6 +148,7 @@ export default {
 
 	watch: {
 		pointList(oldValue, newValue) {
+			console.log(oldValue);
 			if (oldValue.length !== newValue.length) {
 				console.debug('ChartLOADDDED');
 				this.init();
@@ -204,6 +205,10 @@ export default {
 			if (this.chartProperties.type === 'compare') {
 				this.chartClass.compare();
 			}
+			this.chartClass.setLiveValuesLimit(
+				this.config.configuration.valuesLimit,
+				this.onLimitExceeded,
+			);
 			this.chartClass = this.chartClass.build();
 		},
 

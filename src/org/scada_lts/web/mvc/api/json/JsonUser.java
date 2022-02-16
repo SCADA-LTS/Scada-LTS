@@ -70,7 +70,7 @@ public class JsonUser {
         this.receiveOwnAuditEvents = user.isReceiveOwnAuditEvents();
         this.theme = user.getTheme();
         this.hideMenu = user.isHideMenu();
-        this.userProfile = 0;
+        this.userProfile = user.getUserProfile();
     }
 
     public int getId() {

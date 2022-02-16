@@ -42,6 +42,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.mango.service.UsersProfileService;
 
+
 /**
  * @author Matthew Lohbihler
  */
@@ -49,11 +50,12 @@ public class DataSourceListDwr extends BaseDwr {
 	private static final Log LOG = LogFactory.getLog(DataSourceListDwr.class);
 
 	public DwrResponseI18n init() {
+		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		if (Common.getUser().isAdmin()) {
 			List<IntValuePair> translatedTypes = new ArrayList<IntValuePair>();
-			List<DataSourceVO.Type> types = new ArrayList<DataSourceVO.Type>(EnumSet.allOf(DataSourceVO.Type.class));
+			List<Type> types = new ArrayList<Type>(EnumSet.allOf(Type.class));
 			// because sort not work in openJdk 1.7
 			for (int i = 0; i < types.size()-1; i++) { 
 				 Type temp;
@@ -75,8 +77,8 @@ public class DataSourceListDwr extends BaseDwr {
 				}
 			});*/
 			
-			for (DataSourceVO.Type type : types) {
-				if (type != DataSourceVO.Type.RADIUINO) {
+			for (Type type : types) {
+				if (type != Type.RADIUINO) {
 					// Allow customization settings to overwrite the default display
 					// value.
 					boolean display = SystemSettingsDAO.getBooleanValue(type.name()
@@ -112,7 +114,7 @@ public class DataSourceListDwr extends BaseDwr {
 	}
 
 	public int deleteDataSource(int dataSourceId) {
-		Permissions.ensureDataSourcePermission(Common.getUser(), dataSourceId);
+		Permissions.ensureAdmin();
 		Common.ctx.getRuntimeManager().deleteDataSource(dataSourceId);
 		UsersProfileService usersProfileService = new UsersProfileService();
 		usersProfileService.updateDataSourcePermissions();

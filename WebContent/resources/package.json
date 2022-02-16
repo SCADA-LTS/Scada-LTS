@@ -5,10 +5,10 @@
   "author": "SoftQ development team",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
-    "bootstrap": "~3.3.6",
+    "axios": "^0.21.1",
+    "bootstrap": "~3.4.1",
     "bootstrap3-dialog": "~1.35.1",
-    "jquery": "~2.2.4",
+    "jquery": "~3.6.0",
     "jquery-ui-dist": "1.12.1",
     "jquery.fancytree": "~2.18.0",
     "json-lint": "~0.1.0",

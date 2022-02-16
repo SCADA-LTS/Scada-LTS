@@ -22,6 +22,7 @@
 <%@page import="com.serotonin.mango.rt.event.type.EventType"%>
 <%@page import="com.serotonin.mango.util.freemarker.MangoEmailContent"%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+<%@ include file="/WEB-INF/jsp/include/highlight.jsp" %>
 
 
 <tag:page dwr="SystemSettingsDwr" onload="init">
@@ -421,8 +422,69 @@
         });
 
     }
-    
-    
+
+    /* CUSTOM CSS JAVASCRIPT */
+    let customCssUrl = `./api/customcss/`;
+
+    function showCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'flex';
+      initCustomCssData();
+    }
+
+    function hideCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'none';
+    }
+
+    function saveCssSettings() {
+      hideCssDialog();
+      saveCustomCssConfig();
+    }
+
+    function initCustomCssData() {
+      fetchCustomCssConfig().then((val) => {
+        document.getElementById('cssEditor').value = val;
+        updateCodeText(val, '#cssHighlightingContent');
+      });
+    }
+
+    function fetchCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('GET', customCssUrl, true);
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(null);
+      });
+    }
+
+    function saveCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('POST', customCssUrl, true);
+        req.setRequestHeader('Content-type', 'application/text');
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(document.getElementById('cssEditor').value);
+      });
+    }
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
@@ -830,35 +892,126 @@
                <span class="smallTitle"><fmt:message key="systemSettings.newUI"/></span>
                <tag:help id="newUISettings"/>
              </td>
-           </tr>
-         </table>
-         <table>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
-           </tr>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
-           </tr>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
-           </tr>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
-           </tr>
-           <tr>
-             <td colspan="2" id="httpMessage" class="formError"></td>
-           </tr>
-         </table>
-    </div>
+          </tr>
+       </table>
+       <table>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
+                  </tr>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
+                  </tr>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
+                  </tr>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" id="httpMessage" class="formError"></td>
+                  </tr>
+                </table>
+  </div>
+
+  <div class="borderDiv marB marR" style="float: left;">
+        <table>
+            <tr>
+              <td>
+                <span class="smallTitle"><fmt:message key="systemSettings.customCss.title"/></span>
+              </td>
+            </tr>
+        </table>
+        <table>
+          <tr>
+            <td>
+              <button onclick="showCssDialog()"><fmt:message key="systemSettings.customCss.edit"/></button>
+            </td>
+          </tr>
+        </table>
+      </div>
 
   <div class="" style="float:left; color:white">
   #branchName
-  </div>
+
+  <div id="css-editor-dialog">
+        <div class="css-dialog-content">
+          <div>
+            <h2><fmt:message key="systemSettings.customCss.dialog.title"/></h2>
+          </div>
+          <div class="note">
+            <fmt:message key="systemSettings.customCss.dialog.note"/>
+          </div>
+          <div class="css-dialog-editor">
+            <textarea
+              placeholder="Enter Code Here"
+              id="cssEditor"
+              class="hgl-editor"
+              spellcheck="false"
+              oninput="updateCodeText(this.value, '#cssHighlightingContent');"
+              onscroll="syncCodeScroll(this, '#cssHighlightingContent');">
+            </textarea>
+            <pre id="cssHighlighting" class="hgl-highlighting" aria-hidden="true">
+              <code id="cssHighlightingContent" class="language-css">
+              </code>
+            </pre>
+          </div>
+          <div class="css-dialog-buttons">
+          <table>
+            <tr>
+              <td>
+                <button onclick="hideCssDialog()"><fmt:message key="common.cancel"/></button>
+              </td>
+              <td>
+                <button onclick="saveCssSettings()"><fmt:message key="common.save"/></button>
+              </td>
+            </tr>
+          </table>
+          </div>
+        </div>
+      </div>
+
+
+      <style>
+      #css-editor-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #00000082;
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .css-dialog-content {
+        width: 650px;
+        height: 90%;
+        background-color: white;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        border-radius: 5px;
+        padding: 15px;
+      }
+      .css-dialog-buttons > table {
+        float: right;
+      }
+      .css-dialog-buttons  td > button {
+        margin: 0 10px;
+        padding: 3px;
+      }
+      .css-dialog-editor {
+        position: relative;
+        height: 520px;
+      }
+
+      </style>
   
-                                  
+  
 </tag:page>
 <tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>

@@ -193,7 +193,7 @@ export default {
 			this.$store.dispatch('getUserProfilesList').then((r) => {
 				this.userProfiles = r;
 				this.userProfiles.push({
-					"id": 0,
+					"id": -1,
 					"name": this.$t('common.none'),
 				});
 			});

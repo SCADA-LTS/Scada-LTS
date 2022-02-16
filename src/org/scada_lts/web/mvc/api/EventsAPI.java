@@ -278,7 +278,7 @@ public class EventsAPI {
                 for (String id: query.getIds().split(",")) {
                     ids.add(Integer.parseInt(id.trim()));
                 }
-//                eventService.silenceEvents(ids, user.getId());
+                eventService.silenceEvents(ids, user.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
