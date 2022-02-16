@@ -19,6 +19,7 @@ package org.scada_lts.web.mvc.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -194,44 +195,55 @@ public class ViewEditContorller {
     
     private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
-            if (form.getBackgroundImageMP() != null) {
-                byte[] bytes = form.getBackgroundImageMP().getBytes();
-                if (bytes != null && bytes.length > 0) {
-                    // Create the path to the upload directory.
-                    String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
-                    LOG.info("ViewEditController:uploadFile: realpath="+path);
-    
-                    // Make sure the directory exists.
-                    File dir = new File(path);
-                    dir.mkdirs();
-
-                    MultipartFile file = form.getBackgroundImageMP();
-                    String fileName = file.getOriginalFilename();
-                    if(fileName != null) {
-                        Stream.of(SUPPORTED_EXTENSIONS)
-                                .filter(fileName::endsWith)
-                                .findFirst()
-                                .ifPresent(ext -> {
-                                    // Valid image! Add it to uploads
-                                    int imageId = getNextImageId(dir); // Get an image id.
-                                    String filename = imageId + ext; // Create the image file name.
-                                    File image = new File(dir, filename);
-                                    if(saveFile(bytes, image)) { // Save the file.
-                                        form.getView().setBackgroundFilename(uploadDirectory + filename);
-                                        LOG.info("Image file has been successfully uploaded: " + image.getName());
-                                    } else {
-                                        LOG.warn("Failed to save image file: " + image.getName());
-                                    }
-                                });
-                    } else {
-                        LOG.warn("Image file is damaged!");
-                    }
-                }
+            MultipartFile file = form.getBackgroundImageMP();
+            if (file != null) {
+                upload(request, form, file);
+            } else {
+                LOG.warn("Image file is not attached.");
             }
         }
     }
 
-    private static boolean saveFile(byte[] bytes, File dest) {
+    private void upload(HttpServletRequest request, ViewEditForm form, MultipartFile file) throws IOException {
+        byte[] bytes = file.getBytes();
+        if (bytes != null && bytes.length > 0) {
+            // Create the path to the upload directory.
+            String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
+            LOG.info("ViewEditController:uploadFile: realpath="+path);
+
+            // Make sure the directory exists.
+            File dir = new File(path);
+            dir.mkdirs();
+
+            String fileName = file.getOriginalFilename();
+            if(fileName != null) {
+                saveFile(form, bytes, dir, fileName);
+            } else {
+                LOG.warn("Image file is damaged!");
+            }
+        }
+    }
+
+    private void saveFile(ViewEditForm form, byte[] bytes,
+                           File dir, String fileName) {
+        Stream.of(SUPPORTED_EXTENSIONS)
+                .filter(fileName::endsWith)
+                .findFirst()
+                .ifPresent(ext -> {
+                    // Valid image! Add it to uploads
+                    int imageId = getNextImageId(dir); // Get an image id.
+                    String filename = imageId + ext; // Create the image file name.
+                    File image = new File(dir, filename);
+                    if(writeFile(bytes, image)) { // Save the file.
+                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                        LOG.info("Image file has been successfully uploaded: " + image.getName());
+                    } else {
+                        LOG.warn("Failed to save image file: " + image.getName());
+                    }
+                });
+    }
+
+    private static boolean writeFile(byte[] bytes, File dest) {
         try (FileOutputStream fos = new FileOutputStream(dest)) {
             fos.write(bytes);
             return true;
