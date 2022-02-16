@@ -13,12 +13,16 @@ import java.util.stream.Collectors;
 public class JsonWatchListForUser {
 
     private int userId;
-    private ScadaObjectIdentifier identifier;
+    private int id;
+    private String xid;
+    private String name;
     private List<DataPointOnWatchListForUser> pointList;
     private int accessType;
 
     public JsonWatchListForUser(WatchList watchList, User user) {
-        this.identifier = watchList.toIdentifier();
+        this.id = watchList.getId();
+        this.xid = watchList.getXid();
+        this.name = watchList.getName();
         this.userId = watchList.getUserId();
         this.pointList = watchList.getPointList().stream()
                 .map(point -> new DataPointOnWatchListForUser(point, getType(user, point)))
@@ -34,12 +38,28 @@ public class JsonWatchListForUser {
         this.userId = userId;
     }
 
-    public ScadaObjectIdentifier getIdentifier() {
-        return identifier;
+    public int getId() {
+        return id;
     }
 
-    public void setIdentifier(ScadaObjectIdentifier identifier) {
-        this.identifier = identifier;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<DataPointOnWatchListForUser> getPointList() {
