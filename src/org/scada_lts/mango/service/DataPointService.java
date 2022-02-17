@@ -584,8 +584,7 @@ public class DataPointService implements MangoDataPoint {
 			final Map<Integer, List<PointFolder>> folders = pointHierarchyDAO.getFolderList();
 
 			PointHierarchy ph = new PointHierarchy();
-			PointHierarchyService phService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
-			phService.addFoldersToHierarchy(ph, 0 ,folders);
+			pointHierarchyService.addFoldersToHierarchy(ph, 0 ,folders);
 
 			List<DataPointVO> points = getDataPoints(DataPointExtendedNameComparator.instance, false);
 			for (DataPointVO dataPoint: points) {
