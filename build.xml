@@ -253,7 +253,7 @@
 				  haltonfailure="yes">
 			</test>
 
-			<test name="org.scada_lts.service.pointhierarchy.GetPointHierarchyRootTest"
+			<test name="org.scada_lts.service.pointhierarchy.PointHierarchyTestsSuite"
 				  haltonfailure="yes">
 			</test>
 

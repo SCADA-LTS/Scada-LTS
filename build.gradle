@@ -150,6 +150,6 @@ test {
         includeTestsMatching "org.scada_lts.dao.NewInstanceUsersProfileTest"
         includeTestsMatching "br.org.scadabr.vo.EqualsHashcodePermissionTest"
         includeTestsMatching "com.serotonin.mango.web.dwr.DataPointEditDwrTest"
-        includeTestsMatching "org.scada_lts.service.pointhierarchy.GetPointHierarchyRootTest"
+        includeTestsMatching "org.scada_lts.service.pointhierarchy.PointHierarchyTestsSuite"
     }
 }

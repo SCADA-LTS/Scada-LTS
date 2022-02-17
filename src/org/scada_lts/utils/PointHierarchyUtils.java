@@ -60,10 +60,11 @@ public final class PointHierarchyUtils {
         for(PointHierarchyNode node: nodes) {
             sort(node);
         }
+        nodes.sort(Comparator.comparing(PointHierarchyNode::getTitle));
     }
 
     private static void sort(PointHierarchyNode node) {
-        if(node.isFolder())
+        if(Boolean.TRUE.equals(node.isFolder()))
             node.getChildren().sort(Comparator.comparing(PointHierarchyNode::getTitle));
     }
 
@@ -72,7 +73,7 @@ public final class PointHierarchyUtils {
         for(PointHierarchyNode node: pointAndFolderNodes) {
             if(root.getKey() == node.getParentId()) {
                 root.getChildren().add(node);
-                if(node.isFolder()) {
+                if(Boolean.TRUE.equals(node.isFolder())) {
                     createTree(node, pointAndFolderNodes);
                 }
             }
@@ -82,7 +83,7 @@ public final class PointHierarchyUtils {
 
     private static void cleanTree(PointHierarchyNode root) {
         int safe = 10;
-        while (isEmpty(root) && safe > 0) {
+        while (isEmptyRoot(root, 10) && safe > 0) {
             removeEmpty(root);
             --safe;
         }
@@ -91,7 +92,7 @@ public final class PointHierarchyUtils {
     private static void removeEmpty(PointHierarchyNode root) {
         List<PointHierarchyNode> toRemove = new ArrayList<>();
         for (PointHierarchyNode node : root.getChildren()) {
-            if (node.isFolder()) {
+            if (Boolean.TRUE.equals(node.isFolder())) {
                 if (node.getChildren().isEmpty())
                     toRemove.add(node);
                 else
@@ -101,24 +102,34 @@ public final class PointHierarchyUtils {
         root.getChildren().removeAll(toRemove);
     }
 
-    private static boolean isEmpty(PointHierarchyNode root) {
+    private static boolean isEmptyRoot(PointHierarchyNode root, int safe) {
+        if(safe < 0)
+            return false;
+        if(Boolean.TRUE.equals(root.isFolder()) && root.getChildren().isEmpty())
+            return true;
         for(PointHierarchyNode node: root.getChildren()) {
-            if(node.isFolder()) {
-                if(node.getChildren().isEmpty())
+            if(Boolean.TRUE.equals(node.isFolder())) {
+                if(node.getChildren().isEmpty() || isEmptyRoot(node, --safe))
                     return true;
-                return isEmpty(node);
             }
         }
         return false;
     }
 
-    private static boolean isEmpty(PointHierarchyNode root, List<PointHierarchyNode> nodes) {
+    private static boolean isNotEmpty(PointHierarchyNode root,
+                                      List<PointHierarchyNode> nodes,
+                                      int safe) {
+        if(safe < 0)
+            return true;
         for(PointHierarchyNode node: nodes) {
             if(root.getKey() == node.getParentId()) {
-                return false;
+                if(!Boolean.TRUE.equals(node.isFolder()))
+                    return true;
+                if(isNotEmpty(node, nodes, --safe))
+                    return true;
             }
         }
-        return true;
+        return false;
     }
 
     private static List<PointHierarchyNode> getFolderNodes(HierarchyDAO hierarchyDAO) {
@@ -140,9 +151,13 @@ public final class PointHierarchyUtils {
         pointAndFolderNodes.addAll(folderNodes);
         sort(pointAndFolderNodes);
         return pointAndFolderNodes.stream()
-                .filter(a -> a.getParentId() == key)
-                .filter(a -> !a.isFolder() || withEmpty || !isEmpty(a, pointAndFolderNodes))
+                .filter(node -> node.getParentId() == key)
+                .filter(node -> filter(withEmpty, pointAndFolderNodes, node))
                 .collect(Collectors.toList());
+    }
+
+    private static boolean filter(boolean withEmpty, List<PointHierarchyNode> pointAndFolderNodes, PointHierarchyNode node) {
+        return !node.isFolder() || withEmpty || isNotEmpty(node, pointAndFolderNodes, 10);
     }
 
     private static PointHierarchyNode getRootNode(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO) {
