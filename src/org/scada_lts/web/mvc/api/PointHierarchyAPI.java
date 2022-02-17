@@ -257,7 +257,7 @@ public class PointHierarchyAPI {
     }
 
     @GetMapping(value = "/api/pointHierarchy/root")
-    public ResponseEntity<PointHierarchyNode> getPointHierarchy(HttpServletRequest request)  {
+    public ResponseEntity<PointHierarchyNode> getPointHierarchyRoot(HttpServletRequest request)  {
 
         LOG.info(request.getRequestURI());
         try {
@@ -265,6 +265,58 @@ public class PointHierarchyAPI {
             if(user != null) {
                 PointHierarchyNode root = pointHierarchyXidService.getPointHierarchyRoot(user);
                 return ResponseEntity.ok(root);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "/api/pointHierarchy/root/withEmptyDir")
+    public ResponseEntity<PointHierarchyNode> getPointHierarchyWithEmptyRoot(HttpServletRequest request)  {
+
+        LOG.info(request.getRequestURI());
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                PointHierarchyNode withEmptyRoot = pointHierarchyXidService.getPointHierarchyWithEmptyRoot(user);
+                return ResponseEntity.ok(withEmptyRoot);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "/api/pointHierarchy/{key}")
+    public @ResponseBody ResponseEntity<List<PointHierarchyNode>> getPointHierarchy(@PathVariable("key") int key, HttpServletRequest request) {
+        LOG.info(request.getRequestURI());
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                List<PointHierarchyNode> nodes = pointHierarchyXidService.getPointHierarchyByKey(user, key);
+                return ResponseEntity.ok(nodes);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "/api/pointHierarchy/{key}/withEmptyDir")
+    public @ResponseBody ResponseEntity<List<PointHierarchyNode>> getPointHierarchyWithEmpty(@PathVariable("key") int key, HttpServletRequest request) {
+        LOG.info(request.getRequestURI());
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                List<PointHierarchyNode> withEmptyNodes = pointHierarchyXidService.getPointHierarchyWithEmptyByKey(user, key);
+                return ResponseEntity.ok(withEmptyNodes);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
