@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public final class PointHierarchyUtils {
 
+    private static final int SAFE_COUNT = 20;
+
     private PointHierarchyUtils() {}
 
     public static List<PointHierarchyNode> getPointHierarchyWithEmptyByKey(User user,
@@ -69,12 +71,15 @@ public final class PointHierarchyUtils {
     }
 
     private static void createTree(PointHierarchyNode root,
-                                  List<PointHierarchyNode> pointAndFolderNodes) {
+                                   List<PointHierarchyNode> pointAndFolderNodes,
+                                   int safe) {
+        if(safe < 0)
+            return;
         for(PointHierarchyNode node: pointAndFolderNodes) {
             if(root.getKey() == node.getParentId()) {
                 root.getChildren().add(node);
                 if(Boolean.TRUE.equals(node.isFolder())) {
-                    createTree(node, pointAndFolderNodes);
+                    createTree(node, pointAndFolderNodes, --safe);
                 }
             }
         }
@@ -82,21 +87,23 @@ public final class PointHierarchyUtils {
     }
 
     private static void cleanTree(PointHierarchyNode root) {
-        int safe = 10;
-        while (isEmptyRoot(root, 10) && safe > 0) {
-            removeEmpty(root);
+        int safe = SAFE_COUNT;
+        while (isEmptyRoot(root, SAFE_COUNT) && safe > 0) {
+            removeEmpty(root, SAFE_COUNT);
             --safe;
         }
     }
 
-    private static void removeEmpty(PointHierarchyNode root) {
+    private static void removeEmpty(PointHierarchyNode root, int safe) {
+        if(safe < 0)
+            return;
         List<PointHierarchyNode> toRemove = new ArrayList<>();
         for (PointHierarchyNode node : root.getChildren()) {
             if (Boolean.TRUE.equals(node.isFolder())) {
                 if (node.getChildren().isEmpty())
                     toRemove.add(node);
                 else
-                    removeEmpty(node);
+                    removeEmpty(node, --safe);
             }
         }
         root.getChildren().removeAll(toRemove);
@@ -157,7 +164,7 @@ public final class PointHierarchyUtils {
     }
 
     private static boolean filter(boolean withEmpty, List<PointHierarchyNode> pointAndFolderNodes, PointHierarchyNode node) {
-        return !node.isFolder() || withEmpty || isNotEmpty(node, pointAndFolderNodes, 10);
+        return !node.isFolder() || withEmpty || isNotEmpty(node, pointAndFolderNodes, SAFE_COUNT);
     }
 
     private static PointHierarchyNode getRootNode(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO) {
@@ -167,7 +174,7 @@ public final class PointHierarchyUtils {
         pointAndFolderNodes.addAll(pointNodes);
         pointAndFolderNodes.addAll(folderNodes);
         PointHierarchyNode root = PointHierarchyNode.rootNode();
-        createTree(root, pointAndFolderNodes);
+        createTree(root, pointAndFolderNodes, SAFE_COUNT);
         return root;
     }
 }
