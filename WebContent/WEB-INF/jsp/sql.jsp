@@ -49,7 +49,6 @@
             <tr>
               <td colspan="2" align="center">
                 <input type="submit" value="<fmt:message key="sql.query"/>" name="query"/>
-                <input type="submit" value="<fmt:message key="sql.update"/>" name="update" style="display:none"/>
               </td>
               <td></td>
             </tr>
