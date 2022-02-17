@@ -21,6 +21,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.service.pointhierarchy.PointHierarchyXidService;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
@@ -43,8 +44,11 @@ public class PointHierarchyAPI {
 
     private static final Log LOG = LogFactory.getLog(PointHierarchyAPI.class);
 
-    //@Autowired
-    private PointHierarchyXidService pointHierarchyXidService = new PointHierarchyXidService();
+    private final PointHierarchyXidService pointHierarchyXidService;
+
+    public PointHierarchyAPI(PointHierarchyXidService pointHierarchyXidService) {
+        this.pointHierarchyXidService = pointHierarchyXidService;
+    }
 
     @RequestMapping(value = "/api/pointHierarchy/pointMoveTo/{xid_point}/{xid_folder}", method = RequestMethod.PUT)
     public ResponseEntity<String> pointMoveTo(
@@ -252,5 +256,21 @@ public class PointHierarchyAPI {
         return result;
     }
 
+    @GetMapping(value = "/api/pointHierarchy/root")
+    public ResponseEntity<PointHierarchyNode> getPointHierarchy(HttpServletRequest request)  {
 
+        LOG.info(request.getRequestURI());
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                PointHierarchyNode root = pointHierarchyXidService.getPointHierarchyRoot(user);
+                return ResponseEntity.ok(root);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

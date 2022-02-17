@@ -253,6 +253,10 @@
 				  haltonfailure="yes">
 			</test>
 
+			<test name="org.scada_lts.service.pointhierarchy.GetPointHierarchyRootTest"
+				  haltonfailure="yes">
+			</test>
+
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">

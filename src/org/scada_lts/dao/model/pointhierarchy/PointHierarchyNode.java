@@ -18,11 +18,13 @@
 
 package org.scada_lts.dao.model.pointhierarchy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.serotonin.mango.vo.DataPointVO;
 
 /**
  * Model for buffering.
@@ -76,7 +78,26 @@ public class PointHierarchyNode {
 		   this.setLazy(false);
 		}
 	}
-	
+
+	public static PointHierarchyNode pointNode(DataPointVO point) {
+		return new PointHierarchyNode(point.getId(), point.getXid(),
+				point.getPointFolderId(), point.getName(), false,
+				PointHierarchyDataSource.newInstance(point));
+	}
+
+	public static PointHierarchyNode folderNode(int id, String xid, int parentId, String name) {
+		PointHierarchyNode node = new PointHierarchyNode(id, xid, parentId, name, true, new PointHierarchyDataSource());
+		node.setChildren(new ArrayList<>());
+		return node;
+	}
+
+	public static PointHierarchyNode rootNode() {
+		PointHierarchyNode node = new PointHierarchyNode(0, "", -1, "root", true, new PointHierarchyDataSource());
+		node.setChildren(new ArrayList<>());
+		return node;
+	}
+
+
 	public int getKey() {
 		return key;
 	}
