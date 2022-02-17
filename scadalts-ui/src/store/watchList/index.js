@@ -237,7 +237,7 @@ const watchListModule = {
 
         // --- WATCHLIST POINT HIERARCHY SECTION --- //
         async loadWatchListPointHierarchyNode({ state, dispatch, commit }, node) {
-            let pointHierarchy = await dispatch('fetchPointHierarchyNode', node.id);
+            let pointHierarchy = await dispatch('fetchReducedPointHierarchyNode', node.id);
             let responseArray = [];
             pointHierarchy.forEach(ph => {
                 responseArray.push(
