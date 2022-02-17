@@ -60,6 +60,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
 import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
@@ -80,27 +81,36 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(DataPointService.class);
 
-	private static final DataPointDAO dataPointDAO = new DataPointDAO();
+	private final DataPointDAO dataPointDAO;
 
-	private DataSourceDAO dataSourceDAO = new DataSourceDAO();
+	private final DataSourceDAO dataSourceDAO;
 
 	private static final UserCommentDAO userCommentDAO = new UserCommentDAO();
 
 	private static final PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 
-	private static final PointHierarchyDAO pointHierarchyDAO = new PointHierarchyDAO();
+	private final PointHierarchyDAO pointHierarchyDAO;
 
-	private static final DataPointUserDAO dataPointUserDAO = new DataPointUserDAO();
+	private final DataPointUserDAO dataPointUserDAO ;
 
 	private static final PointValueDAO pointValueDAO = new PointValueDAO();
 
-	private static final WatchListDAO watchListDAO = new WatchListDAO();
+	private final WatchListDAO watchListDAO;
 
 	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
 
-	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
+	private final PointHierarchyService pointHierarchyService;
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
+
+	public DataPointService() {
+		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
+		this.pointHierarchyDAO =  ApplicationBeans.getBean("pointHierarchyDAO", PointHierarchyDAO.class);
+		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
+		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
+		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
+	}
 
 	@Override
 	public String generateUniqueXid() {
@@ -574,8 +584,7 @@ public class DataPointService implements MangoDataPoint {
 			final Map<Integer, List<PointFolder>> folders = pointHierarchyDAO.getFolderList();
 
 			PointHierarchy ph = new PointHierarchy();
-			PointHierarchyService phService = new PointHierarchyService();
-			phService.addFoldersToHierarchy(ph, 0 ,folders);
+			pointHierarchyService.addFoldersToHierarchy(ph, 0 ,folders);
 
 			List<DataPointVO> points = getDataPoints(DataPointExtendedNameComparator.instance, false);
 			for (DataPointVO dataPoint: points) {
