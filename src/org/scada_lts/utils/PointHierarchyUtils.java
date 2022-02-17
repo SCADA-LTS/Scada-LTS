@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public final class PointHierarchyUtils {
 
-    private static final int SAFE_COUNT = 20;
+    private static final int TREE_DEPTH = 20;
 
     private PointHierarchyUtils() {}
 
@@ -87,15 +87,15 @@ public final class PointHierarchyUtils {
     }
 
     private static void cleanTree(PointHierarchyNode root) {
-        int safe = SAFE_COUNT;
-        while (isEmptyRoot(root, SAFE_COUNT) && safe > 0) {
-            removeEmpty(root, SAFE_COUNT);
-            --safe;
+        int treeDepth = TREE_DEPTH;
+        while (isEmptyRoot(root, TREE_DEPTH) && treeDepth > 0) {
+            removeEmpty(root, TREE_DEPTH);
+            --treeDepth;
         }
     }
 
-    private static void removeEmpty(PointHierarchyNode root, int safe) {
-        if(safe < 0)
+    private static void removeEmpty(PointHierarchyNode root, int treeDepth) {
+        if(treeDepth < 0)
             return;
         List<PointHierarchyNode> toRemove = new ArrayList<>();
         for (PointHierarchyNode node : root.getChildren()) {
@@ -103,20 +103,20 @@ public final class PointHierarchyUtils {
                 if (node.getChildren().isEmpty())
                     toRemove.add(node);
                 else
-                    removeEmpty(node, --safe);
+                    removeEmpty(node, --treeDepth);
             }
         }
         root.getChildren().removeAll(toRemove);
     }
 
-    private static boolean isEmptyRoot(PointHierarchyNode root, int safe) {
-        if(safe < 0)
+    private static boolean isEmptyRoot(PointHierarchyNode root, int treeDepth) {
+        if(treeDepth < 0)
             return false;
         if(Boolean.TRUE.equals(root.isFolder()) && root.getChildren().isEmpty())
             return true;
         for(PointHierarchyNode node: root.getChildren()) {
             if(Boolean.TRUE.equals(node.isFolder())) {
-                if(node.getChildren().isEmpty() || isEmptyRoot(node, --safe))
+                if(node.getChildren().isEmpty() || isEmptyRoot(node, --treeDepth))
                     return true;
             }
         }
@@ -125,14 +125,14 @@ public final class PointHierarchyUtils {
 
     private static boolean isNotEmpty(PointHierarchyNode root,
                                       List<PointHierarchyNode> nodes,
-                                      int safe) {
-        if(safe < 0)
+                                      int treeDepth) {
+        if(treeDepth < 0)
             return true;
         for(PointHierarchyNode node: nodes) {
             if(root.getKey() == node.getParentId()) {
                 if(!Boolean.TRUE.equals(node.isFolder()))
                     return true;
-                if(isNotEmpty(node, nodes, --safe))
+                if(isNotEmpty(node, nodes, --treeDepth))
                     return true;
             }
         }
@@ -164,7 +164,7 @@ public final class PointHierarchyUtils {
     }
 
     private static boolean filter(boolean withEmpty, List<PointHierarchyNode> pointAndFolderNodes, PointHierarchyNode node) {
-        return !node.isFolder() || withEmpty || isNotEmpty(node, pointAndFolderNodes, SAFE_COUNT);
+        return !node.isFolder() || withEmpty || isNotEmpty(node, pointAndFolderNodes, TREE_DEPTH);
     }
 
     private static PointHierarchyNode getRootNode(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO) {
@@ -174,7 +174,7 @@ public final class PointHierarchyUtils {
         pointAndFolderNodes.addAll(pointNodes);
         pointAndFolderNodes.addAll(folderNodes);
         PointHierarchyNode root = PointHierarchyNode.rootNode();
-        createTree(root, pointAndFolderNodes, SAFE_COUNT);
+        createTree(root, pointAndFolderNodes, TREE_DEPTH);
         return root;
     }
 }
