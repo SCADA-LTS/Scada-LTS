@@ -5,19 +5,14 @@
 				<v-col cols="8">
 					<DataPointSearchComponent @change="datapointSelected"/>
 				</v-col>
-
 				<v-col cols="4">
 					<v-text-field disabled v-model="componentData.data.pointXid" label="Point Xid" />
 				</v-col>
-
-				<v-col cols="12" md="4">
+                <v-col cols="6">
+                    <v-switch v-model="componentData.data.showName" label="Show name"/>
+                </v-col>
+				<v-col cols="6">
 					<v-text-field v-model="componentData.data.label" label="Label:" />
-				</v-col>
-				<v-col cols="12" md="4">
-					<v-text-field v-model="componentData.data.minval" label="Min value:" />
-				</v-col>
-				<v-col cols="12" md="4">
-					<v-text-field v-model="componentData.data.maxval" label="Max value:" />
 				</v-col>
 			</v-row>
 		</v-container>
@@ -27,7 +22,7 @@
 import CustomComponentsBase from '../CustomComponentBase.vue';
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
 /**
- * SLTS-WATER_LEVEL Component
+ * SLTS-Point Component
  * 
  * @author Radoslaw Jajko <rjajko@softq.pl>
  * @version 1.1.0
@@ -38,9 +33,7 @@ export default {
 		DataPointSearchComponent,
 	},
 	data() {
-		return {
-			refreshInterval: undefined,
-		};
+		return {};
 	},
 	mounted() {
 		if (!this.componentEditor) {
@@ -49,29 +42,26 @@ export default {
 	},
 	
 	methods: {
+
 		datapointSelected(datapoint) {
 			this.componentData.data.pointXid = datapoint.xid;
 		},
-		
+
 		onPointValueUpdate(value) {
-			this.changeWaterLevel(parseFloat(value));
-		},
-		
-		onPointEnabledUpdate(enabled) {
-			enabled
-				? this.changeComponentText(`${this.componentId}_value`, this.componentData.data.label)
-				: this.changeComponentText(`${this.componentId}_value`, "N/A");
+            this.changeComponentText(`${this.componentId}_value`, value);
+            this.changeComponentText(`${this.componentId}_label`, this.componentData.data.showName
+                ? this.componentData.data.label
+                : this.pointDefinition.name);
 		},
 
-		changeWaterLevel(value) {
-			let maxHeight = this.$svg.get(this.componentId).attr('height');
-			let maxVal = this.componentData.data.maxval;
-			let minVal = this.componentData.data.minval;
-			let hightValue = maxVal - value;
-			if (minVal === undefined || minVal === null) minVal = 0;
-			let waterLevel = ((hightValue * maxHeight) / (maxVal - minVal));
-			this.$svg.get(`${this.componentId}_background`).animate().height(waterLevel);
+		onPointEnabledUpdate(enabled) {
+			if (enabled) {
+                this.changeComponentText(`${this.componentId}_value`, this.pointDefinition.value);
+			} else {
+                this.changeComponentText(`${this.componentId}_value`, "Disabled");
+			}
 		},
+
 	},
 };
 </script>

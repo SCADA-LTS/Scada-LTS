@@ -1,5 +1,5 @@
 # Synoptic Panel 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Author:** Radek Jajko [rjajko@softq.pl](mailto:rjajko@softq.pl)
 
 Prepare your custom SVG graphic panel and upload it into ScadaLTS Synoptic Panel. Attach 
@@ -11,8 +11,25 @@ This feature provides:
 - deleting the synoptic panel
 - attaching datapoints to all SLTS_components
 
+## What's new:
+
+### Version 1.1.0
+- Fixed the bug with the error message that was displayed when user changed the active 
+  synoptic panel.
+- During the creation of Synoptic Panel the XID value is automatically generated.
+- Improved the initialisation of the synoptic panel. Now we don't need to wait for the 
+  first data update because data are loded at the moment when the panel is displayed.
+- Replaced the interval-update mechanism with the WebSocket subscription mechanism. Now
+  the panel is updated immediatly when the data is changed on only in this time. So there
+  is no additional performance effort for the server caused by the analyzing the API calls.
+- Changed the behavior of the Valve component. If it receives a boolean value it will 
+  display "ON" or "OFF" state. Moreover, if it's in OFF state, the background
+  will be red and if it is in ON state the background will be green.
+- Added a new **"Point"** component that can display the current value of the data point.
+
+
 ## Getting started:
-There are prepared 3 default components: _fan_, _valve_ and _waterlevel_ components. Each of this components
+There are prepared 5 default components: _fan_, _valve_, _waterlevel_, _state_ and _point_ components. Each of this components
 has its own logic and properties. For example waterlevel indicator displays current level of liquid in specified
 container. When an attached datapoint value has changed water level is changing. \
 To start you have to firstly prepare your panel in vector graphic editor like "inkscape". There are some
@@ -36,6 +53,16 @@ rules of creating this panels that must be respected to proper work for this ele
   * ``SLTS_waterlevel_[component_id] - for main element water container (required)``
   * ``SLTS_waterlevel_[component_id]_background - water element rotated in 180 deg wich will changing its height``
   * ``SLTS_waterlevel_[component_id]_value - text element to display current data point value``
+
+  For SLTS_point component:
+  * ``SLTS_point_[component_id] - for main element water container (required)``  
+  * ``SLTS_point_[component_id]_value - text element to display current data point value``
+  * ``SLTS_point_[component_id]_label - optional text element that can be a datapoint name or custom label that was added by user.``
+
+  For SLTS_state component:
+  * ``SLTS_state_[component_id] - for main state background element (required)``  
+  * ``SLTS_state_[component_id]_value - text element to display current data point value``
+  * ``SLTS_state_[component_id]_label - optional text element that can display the state result label defined by user.``
   
  In any element without creating a new vue.js component you can use:
  * ``SLTS_[component_name]_[component_id] - for main element (required)``
