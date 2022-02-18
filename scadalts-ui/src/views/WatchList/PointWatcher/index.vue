@@ -104,6 +104,10 @@
 									</v-card-text>
 								</v-card>
 							</v-menu>
+							<v-btn small icon fab @click="togglePointVisiblityOnChart(point)">
+								<v-icon v-if="!point.onChart">mdi-chart-box-outline</v-icon>
+								<v-icon v-else>mdi-chart-box</v-icon>
+							</v-btn>
 							<v-btn small icon fab :href="`#/datapoint-details/${point.id}`">
 								<v-icon>mdi-information-outline</v-icon>
 							</v-btn>
@@ -311,6 +315,10 @@ export default {
 				}
 			}
 			return 'blue';
+		},
+
+		togglePointVisiblityOnChart(point) {
+			this.$store.commit('TOGGLE_POINT_VISIBILITY_ON_CHART', point);
 		},
 
 		deletePointFromList(point) {

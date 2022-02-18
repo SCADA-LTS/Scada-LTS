@@ -20,6 +20,7 @@ import org.scada_lts.dao.UserDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.*;
+import org.scada_lts.permissions.service.util.PermissionsUtils;
 import utils.*;
 
 import java.util.*;
@@ -30,7 +31,6 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccessesList;
 
 
 @RunWith(Parameterized.class)
@@ -470,7 +470,7 @@ public class DataPointMigrationPermissionsCommandTest {
 
         List<DataPointAccess> dataPointAccessesFromProfile = profilePermissionsService.getPermissions(usersProfileVO);
 
-        List<DataPointAccess> result = mergeDataPointAccessesList(dataPointAccesses, dataPointAccessesFromProfile);
+        List<DataPointAccess> result = new ArrayList<>(PermissionsUtils.mergeDataPointAccesses(dataPointAccesses, dataPointAccessesFromProfile));
         result.sort(Comparator.comparingInt(DataPointAccess::getDataPointId));
 
         assertEquals(expected, result);

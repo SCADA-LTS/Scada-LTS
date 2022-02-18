@@ -23,6 +23,7 @@ export class WatchListPoint {
         };
         this.wsEnable = null;
         this.wsValue = null;
+        this.onChart = true;
     }
 
     /**
@@ -62,6 +63,7 @@ export class WatchListPoint {
             zeroLabel: dataPoint.textRenderer.zeroLabel,
             multistateValues: dataPoint.textRenderer.multistateValues,
         };
+        this.onChart = true;
         return this;
     }    
 

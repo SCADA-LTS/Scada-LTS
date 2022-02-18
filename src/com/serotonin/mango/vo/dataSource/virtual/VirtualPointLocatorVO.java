@@ -135,6 +135,8 @@ public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements Jso
                 response.addContextualMessage("brownianChange.maxChange", "validate.greaterThanZero");
             if (StringUtils.isEmpty(brownianChange.getStartValue()))
                 response.addContextualMessage("brownianChange.startValue", "validate.required");
+            else
+                validateStartValueNumeric("brownianChange.startValue", brownianChange.getStartValue(), response);
         }
 
         // Increment analog
@@ -145,6 +147,9 @@ public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements Jso
                 response.addContextualMessage("incrementAnalogChange.change", "validate.greaterThanZero");
             if (StringUtils.isEmpty(incrementAnalogChange.getStartValue()))
                 response.addContextualMessage("incrementAnalogChange.startValue", "validate.required");
+            else
+                validateStartValueNumeric("incrementAnalogChange.startValue", incrementAnalogChange.getStartValue(), response);
+
         }
 
         // Increment multistate
@@ -159,6 +164,12 @@ public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements Jso
         else if (changeTypeId == ChangeTypeVO.Types.NO_CHANGE) {
             if (StringUtils.isEmpty(noChange.getStartValue()) && dataTypeId != DataTypes.ALPHANUMERIC)
                 response.addContextualMessage("noChange.startValue", "validate.required");
+            if(!StringUtils.isEmpty(noChange.getStartValue())) {
+                if (dataTypeId == DataTypes.BINARY)
+                    validateStartValueBinary("noChange.startValue", noChange.getStartValue(), response);
+                else if (dataTypeId == DataTypes.NUMERIC)
+                    validateStartValueNumeric("noChange.startValue", noChange.getStartValue(), response);
+            }
         }
 
         // Random analog
@@ -167,6 +178,8 @@ public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements Jso
                 response.addContextualMessage("randomAnalogChange.max", "validate.maxGreaterThanMin");
             if (StringUtils.isEmpty(randomAnalogChange.getStartValue()))
                 response.addContextualMessage("randomAnalogChange.startValue", "validate.required");
+            else
+                validateStartValueNumeric("randomAnalogChange.startValue", randomAnalogChange.getStartValue(), response);
         }
 
         // Random boolean
@@ -193,6 +206,8 @@ public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements Jso
                 response.addContextualMessage("analogAttractorChange.attractionPointId", "validate.required");
             if (StringUtils.isEmpty(analogAttractorChange.getStartValue()))
                 response.addContextualMessage("analogAttractorChange.startValue", "validate.required");
+            else
+                validateStartValueNumeric("analogAttractorChange.startValue", analogAttractorChange.getStartValue(), response);
         }
 
         else
@@ -210,6 +225,24 @@ public class VirtualPointLocatorVO extends AbstractPointLocatorVO implements Jso
 
             if (!found)
                 response.addGenericMessage("validate.changeType.incompatible");
+        }
+    }
+
+    private void validateStartValueNumeric(String contextKey, String value, DwrResponseI18n response) {
+        try {
+            NumericValue.parseNumeric(value);
+        } catch (NumberFormatException ex) {
+            LOG.warn(ex.getMessage());
+            response.addContextualMessage(contextKey, "validate.invalidValue");
+        }
+    }
+
+    private void validateStartValueBinary(String contextKey, String value, DwrResponseI18n response) {
+        try {
+            BinaryValue.parseBinary(value);
+        } catch (NumberFormatException ex) {
+            LOG.warn(ex.getMessage());
+            response.addContextualMessage(contextKey, "validate.invalidValue");
         }
     }
 

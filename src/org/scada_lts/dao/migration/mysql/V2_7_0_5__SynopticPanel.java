@@ -7,8 +7,8 @@ import org.flywaydb.core.api.migration.Context;
 import org.scada_lts.dao.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class V2_7_0_4__SynopticPanel extends BaseJavaMigration {
-    private static final Log LOG = LogFactory.getLog(V2_7_0_4__SynopticPanel.class);
+public class V2_7_0_5__SynopticPanel extends BaseJavaMigration {
+    private static final Log LOG = LogFactory.getLog(V2_7_0_5__SynopticPanel.class);
 
     @Override
     public void migrate(Context context) throws Exception {
