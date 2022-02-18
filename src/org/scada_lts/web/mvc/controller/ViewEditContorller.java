@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -216,7 +217,7 @@ public class ViewEditContorller {
 
             String fileName = file.getOriginalFilename();
             if(fileName != null) {
-                saveFile(form, bytes, dir, fileName);
+                saveFile(form, bytes, dir, fileName.toLowerCase(Locale.ROOT));
             } else {
                 LOG.warn("Image file is damaged!");
             }
