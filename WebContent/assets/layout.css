@@ -41,6 +41,49 @@ a.titleLink, a.titleLink:visited, a.titleLink:link {
     justify-content: space-between;
     align-items: flex-end;
 }
+#mainHeader .logo-section {
+	display: flex;
+	flex-direction: column;
+}
+#mainHeader .logo-section--title,
+#mainHeader .logo-section--details {
+	display: flex;
+}
+#mainHeader .logo-section #logo {
+	max-height: 32px;
+}
+#mainHeader .logo-section #company-container {
+	align-self: end;
+    padding: 5px;
+}
+#mainHeader .logo-section #company-name {
+	font-size: 1.6em;
+	font-weight: bold;
+	color: var(--slts-color-primary);
+}
+#mainHeader .logo-section--details {
+	padding-bottom: 3px;
+}
+
+#mainHeader .logo-section--details > * {
+	padding: 0 5px;
+}
+#mainHeader #powered-by {
+	font-weight: bold;
+	color: #00c9c9;
+}
+#mainHeader #scada-details--version{
+	color: var(--slts-color-secondary);
+}
+#mainHeader #scada-details--github {
+	font-style: italic;
+	opacity: 50%;
+}
+#mainHeader #scada-details--os {
+	opacity: 50%;
+	font-weight: bold;
+}
+
 #eventsRow {
 	align-self: center;
 }
@@ -369,4 +412,24 @@ img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="i
 form.view-edit-form {
     max-width: 100vw;
     overflow-x: auto;
+}
+
+.notification-alert--reset {
+	  position: fixed;
+    top: 0;
+    right: 0;
+    padding: 10px;
+	  margin: 15px;
+    border: 1px solid var(--slts-color-primary);
+	  animation: slideIn 0.4s;
+    animation-timing-function: cubic-bezier(0, 0, 0.36, 1.38);
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+    z-index: 99;
+}
+.notification-alert--reset > .clickable {
+    cursor: pointer;
+}
+textarea#cssEditor {
+    white-space: pre-wrap !important;
 }

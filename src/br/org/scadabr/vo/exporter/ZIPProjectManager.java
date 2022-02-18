@@ -18,6 +18,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.HttpParameterUtils;
@@ -69,6 +70,7 @@ public class ZIPProjectManager {
 	public void exportProject(HttpServletRequest request,
 							  HttpServletResponse response) throws Exception {
 
+		Permissions.ensureAdmin(Common.getUser(request));
 		extractExportParametersFromRequest(request);
 
 		response.setHeader("Content-Disposition", "attachment; filename="

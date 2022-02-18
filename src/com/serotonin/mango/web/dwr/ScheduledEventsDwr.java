@@ -64,7 +64,7 @@ public class ScheduledEventsDwr extends BaseDwr {
             boolean returnToNormal, boolean disabled, int activeYear, int activeMonth, int activeDay, int activeHour,
             int activeMinute, int activeSecond, String activeCron, int inactiveYear, int inactiveMonth,
             int inactiveDay, int inactiveHour, int inactiveMinute, int inactiveSecond, String inactiveCron) {
-        Permissions.ensureDataSourcePermission(Common.getUser());
+        Permissions.ensureAdmin();
 
         // Validate the given information. If there is a problem, return an appropriate error message.
         ScheduledEventVO se = new ScheduledEventVO();
@@ -109,7 +109,7 @@ public class ScheduledEventsDwr extends BaseDwr {
     }
 
     public void deleteScheduledEvent(int seId) {
-        Permissions.ensureDataSourcePermission(Common.getUser());
+        Permissions.ensureAdmin();
         new ScheduledEventDao().deleteScheduledEvent(seId);
         Common.ctx.getRuntimeManager().stopSimpleEventDetector(ScheduledEventVO.getEventDetectorKey(seId));
     }

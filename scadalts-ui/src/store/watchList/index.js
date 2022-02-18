@@ -17,6 +17,7 @@ const watchListModule = {
 
     mutations: {
         SET_ACTIVE_WATCHLIST(state, watchList) {
+            watchList.pointList = watchList.pointList.map(point => ({...point, onChart: true}));
             state.activeWatchList = watchList;
             state.activeWatchListRevert = JSON.parse(JSON.stringify(watchList));
         },
@@ -55,6 +56,11 @@ const watchListModule = {
             state.datapointHierarchy = datapointHierarchy;
         },
 
+        TOGGLE_POINT_VISIBILITY_ON_CHART(state, point) {
+            let dp = state.pointWatcher.find(p => p.id === point.id);
+            dp.onChart = !dp.onChart;
+        },
+
         REMOVE_POINT_FROM_WATCHLIST(state, point) {
             let x = searchDataPointInHierarchy(state.datapointHierarchy, point.id);
             if (!!x) {
@@ -80,6 +86,7 @@ const watchListModule = {
                     id: point.id,
                     xid: point.xid,
                     name: point.name,
+                    onChart: true,
                 };
                 state.activeWatchList.pointList.push(p);
             }
@@ -230,7 +237,7 @@ const watchListModule = {
 
         // --- WATCHLIST POINT HIERARCHY SECTION --- //
         async loadWatchListPointHierarchyNode({ state, dispatch, commit }, node) {
-            let pointHierarchy = await dispatch('fetchPointHierarchyNode', node.id);
+            let pointHierarchy = await dispatch('fetchReducedPointHierarchyNode', node.id);
             let responseArray = [];
             pointHierarchy.forEach(ph => {
                 responseArray.push(
@@ -313,6 +320,10 @@ const watchListModule = {
                 return state.activeWatchList.pointOrder;
             }
             return null;
+        },
+
+        getWatchListChartPoints(state) {
+            return state.pointWatcher.filter(p => p.onChart);
         }
     },
 };

@@ -4,7 +4,7 @@
 			<v-card-title class="headline"> {{$t('synopticpanels.editor.title')}} </v-card-title>
 
 			<v-card-text>
-				<v-row align="baseline">
+				<v-row align="baseline" v-if="!!panel">
 					<v-col cols="12" md="5">
 						<v-text-field :label="$t('common.name')" v-model="panel.name" dense></v-text-field>
 					</v-col>

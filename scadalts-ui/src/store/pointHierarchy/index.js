@@ -47,7 +47,30 @@ const gv = {
 		fetchPointHierarchyNode({ dispatch }, nodeId) {
 			return new Promise((resolve, reject) => {
 				axios
-					.get(`.//pointHierarchy/${nodeId}`, requestConfiguration)
+					.get(`./api/pointHierarchy/${nodeId}/withEmptyDir`, requestConfiguration)
+					.then((resp) => {
+						resolve(resp.data);
+					})
+					.catch((error) => {
+						reject(error);
+					});
+			});
+		},
+
+		/**
+		 * Fetch reduced point hierarchy data from specific Node
+		 * 
+		 * This method returns the point hierarchy structure without 
+		 * empty directories.
+		 *
+		 * @param {Object} Vuex data
+		 * @param {*} nodeId - Node ID for which the hierarchy is to be fetched.
+		 * @returns
+		 */
+		 fetchReducedPointHierarchyNode({ dispatch }, nodeId) {
+			return new Promise((resolve, reject) => {
+				axios
+					.get(`./api/pointHierarchy/${nodeId}`, requestConfiguration)
 					.then((resp) => {
 						resolve(resp.data);
 					})

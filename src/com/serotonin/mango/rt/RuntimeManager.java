@@ -372,7 +372,7 @@ public class RuntimeManager {
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
 				if (dataPoint.isEnabled())
-					startDataPoint(dataPoint);
+					startDataPointSafe(dataPoint);
 			}
 
 			LOG.info("Data source '" + vo.getName() + "' initialized");
@@ -456,7 +456,7 @@ public class RuntimeManager {
 
 	public void deleteDataPoint(DataPointVO point) {
 		if (point.isEnabled())
-			stopDataPoint(point.getId());
+			stopDataPointSafe(point.getId());
 		new DataPointDao().deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
@@ -487,6 +487,15 @@ public class RuntimeManager {
 		}
 	}
 
+	private void startDataPointSafe(DataPointVO vo) {
+		try {
+			startDataPoint(vo);
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
+			stopDataPointSafe(vo.getId());
+		}
+	}
+
 	private void stopDataPoint(int dataPointId) {
 		synchronized (dataPoints) {
 			// Remove this point from the data image if it is there. If not,
@@ -501,6 +510,15 @@ public class RuntimeManager {
 					l.pointTerminated();
 				p.terminate();
 			}
+		}
+	}
+
+	private void stopDataPointSafe(int dataPointId) {
+		try {
+			stopDataPoint(dataPointId);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage() + ", dataPointId : " + dataPointId + " : ", ex);
+			dataPoints.remove(dataPointId);
 		}
 	}
 

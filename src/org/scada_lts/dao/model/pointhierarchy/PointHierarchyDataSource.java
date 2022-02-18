@@ -19,7 +19,9 @@
 package org.scada_lts.dao.model.pointhierarchy;
 
 
-/** 
+import com.serotonin.mango.vo.DataPointVO;
+
+/**
  * Model for buffering info data source in point hierarchy cache.
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
@@ -41,6 +43,11 @@ public class PointHierarchyDataSource {
 		this.name = name;
 		this.xid = xid;
 		this.dataSourceType = dataSourceType;
+	}
+
+	public static PointHierarchyDataSource newInstance(DataPointVO point) {
+		return new PointHierarchyDataSource(point.getDataSourceId(), point.getDataSourceName(),
+				point.getDataSourceXid(), String.valueOf(point.getDataSourceTypeId()));
 	}
 	
 	public int getId() {

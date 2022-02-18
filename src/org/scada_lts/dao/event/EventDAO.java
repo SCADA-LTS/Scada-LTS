@@ -649,22 +649,32 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 	private class EventDTOSearchRowMapper implements RowMapper<EventDTO> {
 		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-			EventDTO result = new EventDTO(
-					rs.getInt(COLUMN_NAME_ID),
-					rs.getInt(COLUMN_NAME_TYPE_ID),
-					rs.getInt(COLUMN_NAME_TYPE_REF_1),
-					rs.getInt(COLUMN_NAME_TYPE_REF_2),
-					rs.getLong(COLUMN_NAME_ACTIVE_TS),
-					rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
-					rs.getLong(COLUMN_NAME_RTN_TS),
-					rs.getInt(COLUMN_NAME_RTN_CAUSE),
-					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
-					rs.getString(COLUMN_NAME_MESSAGE),
-					rs.getLong(COLUMN_NAME_ACT_TS),
-					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
-					rs.getString(COLUMN_NAME_DATAPOINT_XID),
-					"Y".equals(rs.getString(COLUMN_NAME_SILENCED)),
-					rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
+			String message = null;
+			try {
+				LocalizableMessage m = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE));
+				message = m.getLocalizedMessage(Common.getBundle());
+			} catch (LocalizableMessageParseException e) {
+				e.printStackTrace();
+				message = rs.getString(COLUMN_NAME_MESSAGE);
+			}
+
+
+				EventDTO result = new EventDTO(
+				rs.getInt(COLUMN_NAME_ID),
+				rs.getInt(COLUMN_NAME_TYPE_ID),
+				rs.getInt(COLUMN_NAME_TYPE_REF_1),
+				rs.getInt(COLUMN_NAME_TYPE_REF_2),
+				rs.getLong(COLUMN_NAME_ACTIVE_TS),
+				rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
+				rs.getLong(COLUMN_NAME_RTN_TS),
+				rs.getInt(COLUMN_NAME_RTN_CAUSE),
+				rs.getInt(COLUMN_NAME_ALARM_LEVEL),
+						message,
+				rs.getLong(COLUMN_NAME_ACT_TS),
+				rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
+				rs.getString(COLUMN_NAME_DATAPOINT_XID),
+				"Y".equals(rs.getString(COLUMN_NAME_SILENCED)),
+				rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
 			);
 
 			return result;
@@ -776,10 +786,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		if (EventsDwr.STATUS_ACTIVE.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
-			filterCondtions.add("e.rtnTs is null");
+			filterCondtions.add("e.rtnTs = 0");
 		} else if (EventsDwr.STATUS_RTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
-			filterCondtions.add("e.rtnTs is not null");
+			filterCondtions.add("e.rtnTs > 0");
 		} else if (EventsDwr.STATUS_NORTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='N'");
 		}

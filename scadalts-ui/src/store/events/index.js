@@ -31,12 +31,11 @@ const storeEvents = {
 			});
 		},
 
-		async getHighestUnsilencedAlarmLevel({ commit, dispatch }) {
-			commit(
-				'SET_HIGHEST_UNSILENCED_ALARM_LEVEL',
-				await dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`),
-			);
-		},
+		getHighestUnsilencedAlarmLevel({ commit, dispatch }) {
+			dispatch('requestGet', `/events/highestUnsilencedLevelAlarm`).then((res) => {
+				commit('SET_HIGHEST_UNSILENCED_ALARM_LEVEL', res);
+			})
+    },
 
 		getCommentsByEventId({ dispatch }, id) {
 			return dispatch('requestGet', `/events/${id}/comments`);
