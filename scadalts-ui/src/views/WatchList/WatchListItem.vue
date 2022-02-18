@@ -104,12 +104,8 @@ export default {
 				if (!!user.admin || user.id === this.activeWatchList.user.id) {
 					return 2;
 				} else {
-					let entry = this.activeWatchList.watchListUsers.find(
-						(p) => p.userId === user.id
-					);
-					if (!!entry) {
-						return entry.accessType;
-					}
+					return this.activeWatchList.accessType === 3 
+						? 2 : this.activeWatchList.accessType;
 				}
 			}
 			return 0;

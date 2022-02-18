@@ -1,6 +1,6 @@
 <template>
 	<div class="datapointList">
-		<v-dialog max-width="700" v-model="dialog">
+		<v-dialog max-width="700" v-model="dialog" persistent>
 			<template v-slot:activator="{ on, attrs }">
 				<v-badge
 					v-bind="attrs"
@@ -133,7 +133,7 @@
 						{{ $t(`common.cancel`) }}
 					</v-btn>
 					<v-btn
-						text
+						elevation="1"
 						v-if="create"
 						color="primary"
 						@click="createWatchList"
@@ -141,7 +141,7 @@
 					>
 						{{ $t(`common.create`) }}
 					</v-btn>
-					<v-btn text v-else color="primary" @click="updateWatchList">
+					<v-btn elevation="1" v-else color="primary" @click="updateWatchList" :disabled="!$store.getters.watchListConfigChanged">
 						{{ $t(`common.update`) }}
 					</v-btn>
 				</v-card-actions>
