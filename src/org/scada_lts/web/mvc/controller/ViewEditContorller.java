@@ -217,7 +217,7 @@ public class ViewEditContorller {
 
             String fileName = file.getOriginalFilename();
             if(fileName != null) {
-                saveFile(form, bytes, dir, fileName.toLowerCase(Locale.ROOT));
+                saveFile(form, bytes, dir, fileName.toLowerCase());
             } else {
                 LOG.warn("Image file is damaged!");
             }
