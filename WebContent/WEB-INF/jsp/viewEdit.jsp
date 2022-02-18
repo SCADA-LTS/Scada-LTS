@@ -336,7 +336,7 @@
   function validateUploadImage() {
     var file = document.getElementById("backgroundImageMP").value;
     var extension = file.slice(file.lastIndexOf(".") + 1).toLowerCase();
-    var supportedExtensions = ["gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "bmp", "dib", "svg"];
+    const supportedExtensions = ["apng", "avif", "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "svg", "webp", "bmp"];
     var search = supportedExtensions.indexOf(extension);
     if (search === -1) {
       // Image format invalid.

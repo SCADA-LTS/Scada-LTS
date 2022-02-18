@@ -54,8 +54,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 @Controller
 public class ViewEditContorller {
-    public static final String[] SUPPORTED_EXTENSIONS = new String[]{".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png",
-            ".bmp", ".dib", ".svg"};
+    public static final String[] SUPPORTED_EXTENSIONS = new String[]{".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp", ".bmp"};
     private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
