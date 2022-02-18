@@ -127,6 +127,7 @@ const storeDataPoint = {
 			if(!!datapointId) {
 				return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
 			}
+			return null;
 		},
 
 		getDataPointValueByXid({ dispatch }, datapointXid) {

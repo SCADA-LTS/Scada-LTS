@@ -67,7 +67,7 @@ const watchListModule = {
                 x.selected = false;
             }
             if (!!state.activeWatchList) {
-                state.activeWatchList.pointList = state.activeWatchList.pointList.filter(p => p.id !== point.id);
+                state.activeWatchList.pointList = state.activeWatchList.pointList.filter(p => p.identifier.id !== point.id);
                 state.pointWatcher = state.pointWatcher.filter(p => p.id !== point.id);
             }
 
@@ -83,11 +83,15 @@ const watchListModule = {
         ADD_POINT_TO_WATCHLIST(state, point) {
             if (!!state.activeWatchList) {
                 let p = {
-                    id: point.id,
-                    xid: point.xid,
-                    name: point.name,
+                    accessType: 1,
+                    description: '',
                     onChart: true,
-                };
+                    identifier: {
+                        id: point.id,
+                        xid: point.xid,
+                        name: point.name,
+                    }
+                }
                 state.activeWatchList.pointList.push(p);
             }
         },
@@ -197,10 +201,10 @@ const watchListModule = {
 
         createWatchList({ dispatch, state }) {
             return new Promise((resolve, reject) => {
+                let data = mapIdentifier(state.activeWatchList);
 
                 dispatch('requestPost', {
-                    url: '/watch-lists',
-                    data: state.activeWatchList,
+                    url: '/watch-lists', data
                 }).then(async (resp) => {
                     let horizontal = state.activeWatchList.horizontal;
                     let biggerChart = state.activeWatchList.biggerChart;
@@ -217,9 +221,13 @@ const watchListModule = {
 
         updateWatchList({ dispatch, state, commit }) {
             saveWatchListDetails(state.activeWatchList);
+            let data = mapIdentifier(state.activeWatchList);
+            delete data.accessType;
+            delete data.pointOrder;
+            delete data.user;
+
             dispatch('requestPut', {
-                url: '/watch-lists',
-                data: state.activeWatchList,
+                url: '/watch-lists', data
             }).then(() => {
                 commit('SET_ACTIVE_WATCHLIST', state.activeWatchList);
                 dispatch('updateWatchListPointOrder', state.activeWatchList.id).catch(e => {
@@ -339,4 +347,18 @@ function saveWatchListDetails(watchList) {
 
 function loadWatchListDetails(watchListId) {
     return JSON.parse(localStorage.getItem(`MWLD_${watchListId}`));
+}
+
+function mapIdentifier(watchList) {
+    let data = watchList;
+    let pointList = [];
+    data.pointList.forEach(p => {
+        pointList.push({
+            id: p.identifier.id,
+            xid: p.identifier.xid,
+            name: p.identifier.name,
+        });
+    });
+    data.pointList = pointList;
+    return data;
 }

@@ -12,7 +12,7 @@ export class WatchListPointHierarchyNode {
             this.children = [];
         } else {
             if(!!watchList) {
-                this.selected = !!watchList.pointList.find(p => p.id === pointHierarchyItem.key);
+                this.selected = !!watchList.pointList.find(p => p.identifier.id === pointHierarchyItem.key);
             } else {
                 this.selected = false;
             }

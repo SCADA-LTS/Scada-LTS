@@ -130,11 +130,12 @@ export default {
 		},
 	},
 
-	async mounted() {
+	mounted() {
 	    if(!this.user) {
     			this.$store.dispatch('getUserInfo');
     	}
 		this.$store.dispatch('getLocaleInfo');
+		this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		this.connectToWebSocket();
 	},
 

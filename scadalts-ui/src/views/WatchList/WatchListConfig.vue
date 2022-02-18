@@ -238,6 +238,9 @@ export default {
 					name: this.searchDataPoint.name,
 				};
 				this.$store.commit('ADD_POINT_TO_WATCHLIST', data);
+				if (!this.create) {
+					this.$store.dispatch('loadWatchListDataPointDetails', data.id);
+				}
 				this.$store.commit('CHECK_POINT_IN_PH', data.id);
 				this.searchDataPoint = null;
 			}
