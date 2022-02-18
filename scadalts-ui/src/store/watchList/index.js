@@ -81,23 +81,31 @@ const watchListModule = {
         },
 
         ADD_POINT_TO_WATCHLIST(state, point) {
+
             if (!!state.activeWatchList) {
-                let p = {
-                    accessType: 1,
-                    description: '',
-                    onChart: true,
-                    identifier: {
-                        id: point.id,
-                        xid: point.xid,
-                        name: point.name,
+                const exists = state.activeWatchList.pointList.find(x => x.identifier.id === point.id);
+                if(!exists) {
+                    let p = {
+                        accessType: 1,
+                        description: '',
+                        onChart: true,
+                        identifier: {
+                            id: point.id,
+                            xid: point.xid,
+                            name: point.name,
+                        }
                     }
+                    state.activeWatchList.pointList.push(p);    
                 }
-                state.activeWatchList.pointList.push(p);
             }
         },
 
         ADD_POINT_TO_WATCHER(state, point) {
-            state.pointWatcher.push(point);
+            const exists = state.pointWatcher.find(x => x.id === point.id);
+            if(!exists) {
+                state.pointWatcher.push(point);
+            }
+            
         },
 
         UPDATE_POINT_VALUE(state, data) {
