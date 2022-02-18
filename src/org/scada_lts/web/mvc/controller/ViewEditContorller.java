@@ -19,8 +19,11 @@ package org.scada_lts.web.mvc.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.WebUtils;
@@ -51,6 +55,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 @Controller
 public class ViewEditContorller {
+    public static final String[] SUPPORTED_EXTENSIONS = new String[]{".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp", ".bmp"};
     private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
@@ -190,36 +195,64 @@ public class ViewEditContorller {
     
     private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
-            if (form.getBackgroundImageMP() != null) {
-                byte[] bytes = form.getBackgroundImageMP().getBytes();
-                if (bytes != null && bytes.length > 0) {
-                    // Create the path to the upload directory.
-                    String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
-                    LOG.info("ViewEditController:uploadFile: realpath="+path);
-    
-                    // Make sure the directory exists.
-                    File dir = new File(path);
-                    dir.mkdirs();
-                    // Get an image id.
-                    int imageId = getNextImageId(dir);
-    
-                    // Create the image file name.
-                    String filename = Integer.toString(imageId);
-                    int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
-                    if (dot != -1)
-                        filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
-    
-                    // Save the file.
-                    FileOutputStream fos = new FileOutputStream(new File(dir, filename));
-                    fos.write(bytes);
-                    fos.close();
-    
-                    form.getView().setBackgroundFilename(uploadDirectory + filename);
-                }
+            MultipartFile file = form.getBackgroundImageMP();
+            if (file != null) {
+                upload(request, form, file);
+            } else {
+                LOG.warn("Image file is not attached.");
             }
         }
     }
-    
+
+    private void upload(HttpServletRequest request, ViewEditForm form, MultipartFile file) throws IOException {
+        byte[] bytes = file.getBytes();
+        if (bytes != null && bytes.length > 0) {
+            // Create the path to the upload directory.
+            String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
+            LOG.info("ViewEditController:uploadFile: realpath="+path);
+
+            // Make sure the directory exists.
+            File dir = new File(path);
+            dir.mkdirs();
+
+            String fileName = file.getOriginalFilename();
+            if(fileName != null) {
+                saveFile(form, bytes, dir, fileName.toLowerCase());
+            } else {
+                LOG.warn("Image file is damaged!");
+            }
+        }
+    }
+
+    private void saveFile(ViewEditForm form, byte[] bytes,
+                           File dir, String fileName) {
+        Stream.of(SUPPORTED_EXTENSIONS)
+                .filter(fileName::endsWith)
+                .findFirst()
+                .ifPresent(ext -> {
+                    // Valid image! Add it to uploads
+                    int imageId = getNextImageId(dir); // Get an image id.
+                    String filename = imageId + ext; // Create the image file name.
+                    File image = new File(dir, filename);
+                    if(writeFile(bytes, image)) { // Save the file.
+                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                        LOG.info("Image file has been successfully uploaded: " + image.getName());
+                    } else {
+                        LOG.warn("Failed to save image file: " + image.getName());
+                    }
+                });
+    }
+
+    private static boolean writeFile(byte[] bytes, File dest) {
+        try (FileOutputStream fos = new FileOutputStream(dest)) {
+            fos.write(bytes);
+            return true;
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+            return false;
+        }
+    }
+
     private int getNextImageId(File uploadDir) {
         if (nextImageId == -1) {
             // Synchronize
