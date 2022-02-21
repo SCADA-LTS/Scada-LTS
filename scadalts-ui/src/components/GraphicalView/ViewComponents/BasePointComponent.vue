@@ -254,7 +254,7 @@ export default {
 					'getDataPointValueByXid',
 					this.component.dataPointXid,
 				);
-				console.log(`dupa:${dp}`)
+				console.log(`test:${dp}`)
 				switch (dp.type) {
 					case 'BinaryValue':
 						return 1;
