@@ -50,8 +50,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 
 @Controller
-public class ViewEditContorller {
-    private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
+public class ViewEditController {
+    private static final Log LOG = LogFactory.getLog(ViewEditController.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
