@@ -104,6 +104,7 @@
 import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent';
 import BaseViewComponent from './BaseViewComponent.vue';
 
+
 export default {
 	components: {
 		BaseViewComponent,
@@ -189,6 +190,7 @@ export default {
 			}
 		},
 
+
 		async getPointValue() {
 			try {
 				const res = await this.$store.dispatch(
@@ -252,6 +254,7 @@ export default {
 					'getDataPointValueByXid',
 					this.component.dataPointXid,
 				);
+				console.log(`dupa:${dp}`)
 				switch (dp.type) {
 					case 'BinaryValue':
 						return 1;
@@ -264,6 +267,7 @@ export default {
 					default:
 						return 0;
 				}
+				
 			} catch (e) {
 				console.error(e);
 				return -1;
