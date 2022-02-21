@@ -52,6 +52,7 @@ public class SystemSettingsService {
         settings.put("databaseType", this.getDatabaseType());
         settings.put("scadaConfig", this.getScadaConfig());
         settings.put("aggregateSettings", this.getAggregateSettings());
+        settings.put("dataPointRuntimeSynchronized", this.isDataPointRtSynchronized());
 
         return settings;
     }
@@ -331,5 +332,13 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT, String.valueOf(aggregateSettings.getValuesLimit()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
+    }
+
+    public void saveDataPointRtSynchronized(boolean dataPointRtSynchronized) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_SYNCHRONIZED, String.valueOf(dataPointRtSynchronized));
+    }
+
+    public boolean isDataPointRtSynchronized() {
+        return SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_SYNCHRONIZED);
     }
 }
