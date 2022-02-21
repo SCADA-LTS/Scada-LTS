@@ -5,16 +5,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.view.ShareUser;
+import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.permissions.service.GetWatchListsWithAccess;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
 import org.scada_lts.web.mvc.api.json.JsonWatchListForUser;
@@ -66,20 +70,16 @@ public class WatchListAPI {
 		try {
 			User user = Common.getUser(request);
 			if(user != null) {
-				List<WatchList> watchListList;
 				if(user.isAdmin()) {
-					watchListList = watchListService.getWatchLists();
+					List<WatchList> watchListList = watchListService.getWatchLists();
+					List<ScadaObjectIdentifier> response = watchListList.stream()
+							.map(watchList -> watchList.toIdentifier())
+							.collect(Collectors.toList());
+					return new ResponseEntity<>(response, HttpStatus.OK);
 				} else {
-					watchListList = watchListService.getWatchLists(
-							user.getId(),
-							user.getUserProfile()
-					);
+					List<ScadaObjectIdentifier> response = new GetWatchListsWithAccess().getObjectIdentifiersWithAccess(user);
+					return new ResponseEntity<>(response, HttpStatus.OK);
 				}
-				//TODO: Improve the performance of DAO query by reducing unnecessary data.
-				List<ScadaObjectIdentifier> response = new ArrayList<>();
-				watchListList.forEach(wl -> response.add(new ScadaObjectIdentifier(
-										wl.getId(), wl.getXid(), wl.getName())));
-				return new ResponseEntity<>(response, HttpStatus.OK);
 			} else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -105,6 +105,8 @@ public class WatchListAPI {
 				if(watchList == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(watchList);
+				if(watchList.getUserAccess(user) < ShareUser.ACCESS_READ)
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				return new ResponseEntity<>(new JsonWatchListForUser(watchList, user), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -208,6 +210,12 @@ public class WatchListAPI {
 		try {
 			User user = Common.getUser(request);
 			if(user != null) {
+				WatchList fromBase = watchListService.getWatchList(jsonWatchList.getId());
+				if(fromBase == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(fromBase);
+				if(fromBase.getUserAccess(user) < ShareUser.ACCESS_READ)
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				WatchList wl = jsonWatchList.createWatchList();
 				watchListService.saveWatchList(wl);
 				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
@@ -221,13 +229,19 @@ public class WatchListAPI {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<String> deleteWatchList(
-			@PathVariable("id") Integer watchListId,
+			@PathVariable(value = "id", required = true) Integer watchListId,
 			HttpServletRequest request
 	) {
 		try {
 			User user = Common.getUser(request);
 			if(user != null) {
-				watchListService.deleteWatchList(watchListId);
+				WatchList fromBase = watchListService.getWatchList(watchListId);
+				if(fromBase == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(fromBase);
+				if(fromBase.getUserAccess(user) < ShareUser.ACCESS_SET)
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				watchListService.deleteWatchList(fromBase.getId());
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -245,7 +259,7 @@ public class WatchListAPI {
 	 * @return JsonWatchList object
 	 */
 	@GetMapping(value = "/xid/{xid}")
-	public ResponseEntity<JsonWatchList> getWatchListByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
+	public ResponseEntity<JsonWatchList> getWatchListByXid(@PathVariable(value = "xid", required = true) String xid, HttpServletRequest request) {
 		LOG.info("GET:" + LOG_PREFIX + "/xid/" + xid);
 		try {
 			User user = Common.getUser(request);
@@ -253,6 +267,9 @@ public class WatchListAPI {
 				WatchList watchList = watchListService.getWatchList(xid);
 				if(watchList == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(watchList);
+				if(watchList.getUserAccess(user) < ShareUser.ACCESS_READ)
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				return new ResponseEntity<>(getWatchList(watchList), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -306,14 +323,12 @@ public class WatchListAPI {
 						this.name = name;
 					}
 				}
-				
-				int userId = user.getId();
+
 				List<WatchList> lstWL;
 				if (user.isAdmin()) {
 					lstWL = watchListService.getWatchLists();
 				} else {
-					int profileId = user.getUserProfile();
-					lstWL = watchListService.getWatchLists(user.getId(), profileId);
+					lstWL = new GetWatchListsWithAccess().getObjectsWithAccess(user);
 				}				
 				
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
@@ -378,6 +393,8 @@ public class WatchListAPI {
 				if(watchList == null)
 					return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(watchList);
+				if(watchList.getUserAccess(user) < ShareUser.ACCESS_READ)
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				List<PointJSON> lst = new ArrayList<PointJSON>();
 			
 				for (DataPointVO dpvo : watchList.getPointList()){
@@ -440,7 +457,8 @@ public class WatchListAPI {
 				}
 			
 				DataPointVO dp = dataPointService.getDataPoint(xid);
-				
+				if(!Permissions.hasDataPointReadPermission(user, dp))
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				List<PointValueTime> listValues = pointValueService.getPointValuesBetween(dp.getId(), fromData, toData);
 				
 				List<ValueToJSON> values = new ArrayList<ValueToJSON>();
