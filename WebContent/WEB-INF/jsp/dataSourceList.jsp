@@ -171,7 +171,7 @@
                         <c:forEach items="${listParent.list}" var="point">
                           <tr id="pointRow${point.id}">
                             <td>${point.name}</td>
-                            <td><sst:i18n message="${point.dataTypeMessage}"/></td>
+                            <td><sst:i18n message="${point.dataTypeMessage}"/> / <sst:i18n message="${point.configurationDescription}"/></td>
                             <td align="center">
                               <c:choose>
                                 <c:when test="${point.enabled}">
