@@ -74,17 +74,7 @@ const routing = new Router({
 			component: ReportTabs,
 			meta: {
 				requiresAuth: true,
-			},
-			children: [
-				{
-					path: 'template',
-					component: ReportsPage,
-				},
-				{
-					path: 'data',
-					component: ReportsData,
-				},
-			],
+			}
 		},
 		{
 			path: '/watch-list',

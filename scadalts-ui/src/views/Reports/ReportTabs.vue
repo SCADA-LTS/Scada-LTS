@@ -1,85 +1,67 @@
 <template>
-	<div class="reports">
-
-		
-		<v-card>
-			<v-tabs
-			v-model="tab"
-			@change="changeTab"
-			>
-				<v-tab
-					v-for="item in items"
-					:key="item.tab"
-					:class="{'blink':(item.tab === 'data' && newInstances)}"
-				>
-					{{ item.content }}
-				</v-tab>
+	<div>
+		<v-container fluid>
+			<v-tabs v-model="tab">
+				<v-tab> Template </v-tab>
+				<v-tab :class="{ 'blink': isUnreadedReport }" @click="move"> Instances </v-tab>
 			</v-tabs>
-		</v-card>				
-        <router-view></router-view>
 
+			<v-tabs-items v-model="tab">
+				<v-tab-item>
+					<ReportsPage v-if="tab === 0" />
+				</v-tab-item>
+				<v-tab-item>
+					<ReportsData v-if="tab === 1" />
+				</v-tab-item>
+			</v-tabs-items>
+		</v-container>
 	</div>
 </template>
 
 <script>
+import { READED_REPORT_INSTANCE } from '../../store/reports/types';
 /**
- * @author sselvaggi
+ * @author sselvaggi, radek2s
+ * @version 1.1.0
+ * Simplified version of reports tabs.
  */
-
+import ReportsData from './ReportsData';
+import ReportsPage from './ReportsPage';
 export default {
-	name: 'alarmTabs',
-	
+	name: 'ReportsTabs',
+
 	components: {
+		ReportsPage,
+		ReportsData,
 	},
+
 	mounted() {
-		this.tab = 0
-		this.changeTab(this.tab)
 		this.interval = setInterval(() => {
 			this.fetchIntances();
-		}, 1000);
+		}, 5000);
 	},
+
 	destroyed() {
-		clearInterval(this.interval)
+		clearInterval(this.interval);
 	},
-	watch: { 
-		$route(to) {
-			switch (to.name) {
-				case 'template': this.tab = 0
-				 break
-				case 'data': this.tab = 1 
-				break
-			} 
-			if (this.tab === 1 ) this.newInstances = false
-		},
+
+	data() {
+		return {
+			tab: 0,
+		};
 	},
-	data () {
-      return {
-		tab: 0,
-		instances:-1,
-	newInstances: false,
-		items: [
-			{ tab: 'template', content: 'Template' },
-			{ tab: 'data', content: 'Data' },
-		],
-      }
-    },
+
+	computed: {
+		isUnreadedReport() { return this.$store.state.storeReports.unreadedInstance; }
+	},
+	
 	methods: {
-		async fetchIntances() {
-			this.$store.dispatch('fetchReportInstances')
-			.then((ret) => {
-				if (this.instances!=-1 && this.instances < ret.length) {
-					this.newInstances = true;
-				}
-				this.instances = ret.length
-			});
+		fetchIntances() {
+			this.$store.dispatch('fetchReportInstances');
 		},
-		changeTab(index) {
-			this.$router.push({ path: `/reports/${this.items[index].tab}` });
-		},
+		move() {
+			this.$store.commit(READED_REPORT_INSTANCE);
+		}
 	},
 };
 </script>
-
-<style lang="scss" scoped>
-
-</style>

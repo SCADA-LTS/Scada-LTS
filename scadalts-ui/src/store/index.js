@@ -258,34 +258,6 @@ export default new Vuex.Store({
 		},
 
 		/**
-		 * HTTP Request POST method to push data to the REST API
-		 *
-		 * @param {*} param0 - Vuex Store variables
-		 * @param {*} payload - {url, data} JS object with request data.
-		 */
-		async requestPostPlainText({ state, dispatch }, payload) {
-			var config = {
-				headers: {
-					'Content-Length': 0,
-					'Content-Type': 'text/plain',
-				},
-			};
-
-			return new Promise((resolve, reject) => {
-				axios
-					.post(state.applicationUrl + payload.url, payload.data, state.requestConfig)
-					.then(async (r) => {
-						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
-					})
-					.catch(async (error) => {
-						(await dispatch('validateResponse', error.response))
-							? console.warn('Request Exception...')
-							: reject(error.response);
-					});
-			});
-		},
-
-		/**
 		 * Convert from select to specific Timestamp since past.
 		 *
 		 * @param {*} param0
