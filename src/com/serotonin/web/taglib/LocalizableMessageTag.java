@@ -14,10 +14,10 @@ public class LocalizableMessageTag extends OutTag {
     }
 
     public void setEscapeQuotes(boolean escapeQuotes) {
-        super.setEscapeXml(true);
+        super.setEscapeXml(escapeQuotes);
     }
 
     public void setEscapeDQuotes(boolean escapeDQuotes) {
-        super.setEscapeXml(true);
+        super.setEscapeXml(escapeDQuotes);
     }
 }
