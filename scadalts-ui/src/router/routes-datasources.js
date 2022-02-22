@@ -29,7 +29,6 @@ export const routes = [
         component: DataPointDetails,
         meta: {
             requiresAuth: true,
-            requiresAdmin: true
         },
     },
     {
