@@ -547,7 +547,7 @@ public class SystemSettingsAPI {
 
     @GetMapping(value = "/dataPointRtSynchronized", produces = "application/json")
     public ResponseEntity<Boolean> getDataPointRtSynchronized(HttpServletRequest request) {
-        LOG.info("/api/systemSettings/getAggregateSettings");
+        LOG.info("/api/systemSettings/dataPointRtSynchronized");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
