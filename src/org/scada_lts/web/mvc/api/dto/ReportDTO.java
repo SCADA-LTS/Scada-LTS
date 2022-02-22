@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.dto;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.ReportPointVO;
+import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ public class ReportDTO {
     private int id;
     private String name;
     private List<HashMap<String, Object>> points;
+    private List<RecipientListEntryBean> recipients;
 
     private int includeEvents;
     private boolean includeUserComments;
@@ -45,7 +47,7 @@ public class ReportDTO {
     public ReportDTO() {
     }
 
-    public ReportDTO(int id, String name, List<HashMap<String, Object>> points, int includeEvents, boolean includeUserComments, int dateRangeType, int relativeDateType, int previousPeriodCount, int previousPeriodType, int pastPeriodCount, int pastPeriodType, boolean fromNone, int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute, boolean toNone, int toYear, int toMonth, int toDay, int toHour, int toMinute, boolean schedule, int schedulePeriod, int runDelayMinutes, String scheduleCron, boolean email, boolean includeData, boolean zipData) {
+    public ReportDTO(int id, String name, List<HashMap<String, Object>> points, int includeEvents, boolean includeUserComments, int dateRangeType, int relativeDateType, int previousPeriodCount, int previousPeriodType, int pastPeriodCount, int pastPeriodType, boolean fromNone, int fromYear, int fromMonth, int fromDay, int fromHour, int fromMinute, boolean toNone, int toYear, int toMonth, int toDay, int toHour, int toMinute, boolean schedule, int schedulePeriod, int runDelayMinutes, String scheduleCron, boolean email, boolean includeData, boolean zipData, List<RecipientListEntryBean> recipients) {
         this.id = id;
         this.name = name;
         this.points = points;
@@ -76,6 +78,7 @@ public class ReportDTO {
         this.email = email;
         this.includeData = includeData;
         this.zipData = zipData;
+        this.recipients = recipients;
     }
 
     public int getId() {
@@ -316,5 +319,13 @@ public class ReportDTO {
 
     public void setZipData(boolean zipData) {
         this.zipData = zipData;
+    }
+
+    public List<RecipientListEntryBean> getRecipients() {
+        return recipients;
+    }
+
+    public void setRecipients(List<RecipientListEntryBean> recipients) {
+        this.recipients = recipients;
     }
 }

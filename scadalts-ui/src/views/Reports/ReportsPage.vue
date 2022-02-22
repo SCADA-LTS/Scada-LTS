@@ -38,7 +38,7 @@
 									<v-icon :title="$t('reports.copy')"> mdi-content-copy </v-icon>
 								</v-btn>
 
-								<v-btn icon @click.stop="deleteReport(item.id)">
+								<v-btn icon @click.stop="deleteReport(item)">
 									<v-icon :title="$t('reports.delete')"> mdi-delete </v-icon>
 								</v-btn>
 							</template>
@@ -58,6 +58,13 @@
 				<ReportsForm ref="ReportsForm" @saved="onReportSaved"></ReportsForm>
 			</v-col>
 		</v-row>
+		<ConfirmationDialog
+        	:btnvisible="false"
+        	ref="confirmationDialog"
+        	title="Do you want to delete this report?"
+        	message="This operation cannot be undone."
+        	@result="onConfirmationDialogResult"
+    	></ConfirmationDialog>
 	</v-container>
 </template>
 <script>
@@ -66,6 +73,7 @@
  * 
  */
 import ScadaReportForm from '../../models/ScadaReportForm';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
 import ReportsForm from './ReportsForm';
 
 export default {
@@ -73,6 +81,7 @@ export default {
 
 	components: {
 		ReportsForm,
+		ConfirmationDialog
 	},
 
 	async mounted() {
@@ -166,15 +175,23 @@ export default {
 				this.$store.dispatch('showErrorNotification', "Failed to create a report");
 			});
 		},
+
+		deleteReport(report) {
+			this.selectedReport = report
+			this.$refs.confirmationDialog.showDialog();
+		},
 		
-		deleteReport(id) {
-			this.$store.dispatch('deleteReport', id)
-			.then(() => {
-				this.$store.dispatch('showSuccessNotification', "Report deleted successfully");
-				this.fetchReportTemplates();})
-			.catch(() => {
-				this.$store.dispatch('showErrorNotification', "Report deletion failed");
-			});
+		onConfirmationDialogResult(e) {
+			if(e) {
+				this.$store.dispatch('deleteReport', this.selectedReport.id)
+				.then(() => {
+					this.$store.dispatch('showSuccessNotification', "Report deleted successfully");
+					this.fetchReportTemplates();})
+				.catch(() => {
+					this.$store.dispatch('showErrorNotification', "Report deletion failed");
+				});
+			}
+			
 		},
 
 		_updateReportPointsDetails(pointList) {

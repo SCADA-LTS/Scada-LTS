@@ -53,7 +53,7 @@
 					</v-card>
 				</v-col>
 				<v-col cols="12" lg="7">
-					<iframe id='reportChart' v-if="!!selectedItem"  :src="`/ScadaBR/reportChart.shtm?instanceId=${selectedItem.id}`"/>
+					<!-- <iframe id='reportChart' v-if="!!selectedItem"  :src="`/ScadaBR/reportChart.shtm?instanceId=${selectedItem.id}`"/> -->
 				</v-col>
 			</v-row>
 		</v-container>
@@ -145,7 +145,8 @@ export default {
 
 		deleteReport(id) {
 			this.$store.dispatch('deleteReportInstance', id).then(() => {
-				this.dispatch('fetchReportInstances');
+				this.$store.dispatch('showSuccessNotification', "Deleted successfully");
+				this.$store.dispatch('fetchReportInstances');
 			});
 		},
 	},

@@ -85,6 +85,21 @@ public class ReportsAPI {
         }
     }
 
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity<String> deleteReport(@PathVariable("id") int id, HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null && user.isAdmin()) {
+                reportService.deleteReport(id);
+                return new ResponseEntity<>("DELETED", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
     /**
@@ -145,6 +160,7 @@ public class ReportsAPI {
             report.setEmail(query.isEmail());
             report.setIncludeData(query.isIncludeData());
             report.setZipData(query.isZipData());
+            report.setRecipients(query.getRecipients());
 
             reportService.saveReport(report);
             List<RecipientListEntryBean> recipients;

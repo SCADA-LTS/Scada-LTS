@@ -82,8 +82,11 @@ const storeReports = {
 			});
 		},
 		deleteReport({ dispatch }, id) {
-			return dispatch('requestDelete', `/reports/instances/${id}`);
+			return dispatch('requestDelete', `/reports/${id}`);
 		},
+		deleteReportInstance({ dispatch }, id) {
+			return dispatch('requestDelete', `/reports/instances/${id}`);
+		}
 	},
 
 	getters: {
