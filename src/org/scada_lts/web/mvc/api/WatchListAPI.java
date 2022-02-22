@@ -33,6 +33,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.hasDataPointReadPermission;
+import static org.scada_lts.permissions.service.GetWatchListsWithAccess.hasWatchListReadPermission;
+import static org.scada_lts.permissions.service.GetWatchListsWithAccess.hasWatchListSetPermission;
 
 /**
  * Controller for API watchList
@@ -105,7 +107,7 @@ public class WatchListAPI {
 				if(watchList == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(watchList);
-				if(watchList.getUserAccess(user) < ShareUser.ACCESS_READ)
+				if(!hasWatchListReadPermission(user, watchList))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				return new ResponseEntity<>(new JsonWatchListForUser(watchList, user), HttpStatus.OK);
             } else {
@@ -214,7 +216,7 @@ public class WatchListAPI {
 				if(fromBase == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(fromBase);
-				if(fromBase.getUserAccess(user) < ShareUser.ACCESS_READ)
+				if(!hasWatchListReadPermission(user, fromBase))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				WatchList wl = jsonWatchList.createWatchList();
 				watchListService.saveWatchList(wl);
@@ -239,7 +241,7 @@ public class WatchListAPI {
 				if(fromBase == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(fromBase);
-				if(fromBase.getUserAccess(user) < ShareUser.ACCESS_SET)
+				if(!hasWatchListSetPermission(user, fromBase))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				watchListService.deleteWatchList(fromBase.getId());
 				return new ResponseEntity<>(HttpStatus.OK);
@@ -268,7 +270,7 @@ public class WatchListAPI {
 				if(watchList == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(watchList);
-				if(watchList.getUserAccess(user) < ShareUser.ACCESS_READ)
+				if(!hasWatchListReadPermission(user, watchList))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				return new ResponseEntity<>(getWatchList(watchList), HttpStatus.OK);
 			} else {
