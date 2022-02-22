@@ -3,8 +3,8 @@
  *
  */
 import { searchDataPointInHierarchy } from './utils';
-import WatchListPoint from '@/models/WatchListPoint'
-import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
+import WatchListPoint from '@models/WatchListPoint'
+import WatchListPointHierarchyNode from '@models/WatchListPointHierarchyNode';
 
 const watchListModule = {
     state: {

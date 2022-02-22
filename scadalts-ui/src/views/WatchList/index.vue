@@ -74,7 +74,7 @@
 <script>
 import draggable from 'vuedraggable';
 
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@dialogs/ConfirmationDialog';
 
 import PointWatcher from './PointWatcher';
 import PointChart from './PointChart/index.vue';

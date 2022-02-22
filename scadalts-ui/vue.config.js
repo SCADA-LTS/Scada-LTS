@@ -1,6 +1,7 @@
 const { secureCookieProxy } = require('http-proxy-middleware-secure-cookies');
 var webpack = require('webpack');
 const fs = require('fs');
+const path = require('path');
 const packageJson = JSON.parse(fs.readFileSync('./package.json'));
 const tag = packageJson.tag || 0;
 const version = packageJson.version || 0;
@@ -30,6 +31,15 @@ module.exports = {
 				},
 			}),
 		],
+		resolve: {
+			alias: {
+				'@s': path.resolve(__dirname, 'src/store/'),
+				'@c': path.resolve(__dirname, 'src/components/'),
+				'@layout': path.resolve(__dirname, 'src/layout/'),
+				'@dialogs': path.resolve(__dirname, 'src/layout/dialogs/'),
+				'@models': path.resolve(__dirname, 'src/models/'),
+			}
+		},
 	},
 	pluginOptions: {
 		i18n: {

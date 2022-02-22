@@ -142,8 +142,8 @@ import draggable from 'vuedraggable';
 import PointValueSet from './PointValueSet';
 import PointValueRenderer from './PointValueRenderer';
 
-import EventScadaItem from '@/layout/lists/events/EventScadaItem';
-import WatchListPoint from '@/models/WatchListPoint';
+import EventScadaItem from '@layout/lists/events/EventScadaItem';
+import WatchListPoint from '@models/WatchListPoint';
 
 /**
  *
