@@ -23,6 +23,6 @@
 --%><%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %><%--
 --%><%@ taglib prefix="mango" uri="/WEB-INF/tld/mango.tld" %><%--
 --%><%@ taglib prefix="log" uri="http://jakarta.apache.org/taglibs/log-1.0" %><%--
---%><%@ taglib prefix="sst" uri="http://www.serotoninsoftware.com/tags" %><%--
+--%><%@ taglib prefix="sst" uri="/WEB-INF/tld/escape.tld" %><%--
 --%><%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %><%--
 --%><%@ taglib prefix="mobileTag" tagdir="/WEB-INF/tags/mobile" %>
