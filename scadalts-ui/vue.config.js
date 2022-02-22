@@ -38,7 +38,8 @@ module.exports = {
 				'@layout': path.resolve(__dirname, 'src/layout/'),
 				'@dialogs': path.resolve(__dirname, 'src/layout/dialogs/'),
 				'@models': path.resolve(__dirname, 'src/models/'),
-			}
+			},
+			extensions: ['.js', '.vue', '.json']
 		},
 	},
 	pluginOptions: {
