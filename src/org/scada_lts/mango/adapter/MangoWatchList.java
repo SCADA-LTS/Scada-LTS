@@ -54,4 +54,6 @@ public interface MangoWatchList {
 	List<WatchList> getWatchListsWithAccess(User user);
 
 	List<ScadaObjectIdentifier> getWatchListIdentifiersWithAccess(User user);
+
+    void addPointsForWatchList(WatchList watchList);
 }

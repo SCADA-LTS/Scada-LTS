@@ -10,6 +10,8 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
+
 public class JsonWatchListForUser {
 
     private int userId;
@@ -24,7 +26,7 @@ public class JsonWatchListForUser {
         this.xid = watchList.getXid();
         this.name = watchList.getName();
         this.userId = watchList.getUserId();
-        this.pointList = watchList.getPointList().stream()
+        this.pointList = filteringByAccess(user, watchList.getPointList()).stream()
                 .map(point -> new DataPointOnWatchListForUser(point, getType(user, point)))
                 .collect(Collectors.toList());
         this.accessType = watchList.getUserAccess(user);
@@ -116,6 +118,8 @@ public class JsonWatchListForUser {
     }
 
     private static int getType(User user, DataPointVO dataPoint) {
+        if(user.isAdmin())
+            return ShareUser.ACCESS_OWNER;
         if(dataPoint.getPointLocator() != null && dataPoint.getPointLocator().isSettable() && Permissions.hasDataPointSetPermission(user, dataPoint))
             return ShareUser.ACCESS_SET;
         if(Permissions.hasDataPointReadPermission(user, dataPoint))

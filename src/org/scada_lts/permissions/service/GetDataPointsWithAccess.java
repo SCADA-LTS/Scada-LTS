@@ -39,6 +39,12 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
                 .collect(Collectors.toList());
     }
 
+    public static List<DataPointVO> filteringByNoAccess(User user, List<DataPointVO> dataPoints) {
+        return dataPoints.stream()
+                .filter(point -> !Permissions.hasDataPointReadPermission(user, point))
+                .collect(Collectors.toList());
+    }
+
     public static boolean hasDataPointReadPermission(User user, DataPointVO dataPoint) {
         return Permissions.hasDataPointReadPermission(user, dataPoint);
     }

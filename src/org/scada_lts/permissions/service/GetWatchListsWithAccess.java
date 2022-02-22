@@ -31,10 +31,10 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
     }
 
     public static boolean hasWatchListReadPermission(User user, WatchList watchList) {
-        return user.isAdmin() || watchList.getUserAccess(user) >= ShareUser.ACCESS_READ;
+        return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_READ;
     }
 
     public static boolean hasWatchListSetPermission(User user, WatchList watchList) {
-        return user.isAdmin() || watchList.getUserAccess(user) >= ShareUser.ACCESS_SET;
+        return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_SET;
     }
 }

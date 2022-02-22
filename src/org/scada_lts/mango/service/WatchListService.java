@@ -165,10 +165,12 @@ public class WatchListService implements MangoWatchList {
 		watchListDAO.addWatchListUsers(watchList);
 	}
 
+	@Deprecated
 	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
 		return watchListDAO.getDataPointOrder(watchListId);
 	}
 
+	@Deprecated
 	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
 		watchListDAO.setDataPointOrder(pointOrder);
 	}
@@ -197,4 +199,8 @@ public class WatchListService implements MangoWatchList {
 		return getObjectsWithAccess.getObjectIdentifiersWithAccess(user);
 	}
 
+	@Override
+	public void addPointsForWatchList(WatchList watchList) {
+		watchListDAO.addPointsForWatchList(watchList);
+	}
 }

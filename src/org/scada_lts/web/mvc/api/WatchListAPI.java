@@ -1,16 +1,13 @@
 package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -25,16 +22,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.hasDataPointReadPermission;
 import static org.scada_lts.permissions.service.GetWatchListsWithAccess.hasWatchListReadPermission;
 import static org.scada_lts.permissions.service.GetWatchListsWithAccess.hasWatchListSetPermission;
+import static org.scada_lts.utils.WatchListApiUtils.*;
 
 /**
  * Controller for API watchList
@@ -51,14 +48,23 @@ public class WatchListAPI {
 	private static final Log LOG = LogFactory.getLog(WatchListAPI.class);
 	private static final String LOG_PREFIX = "/api/watch-lists";
 
-	@Resource
-	private WatchListService watchListService;
-	
-	@Resource
-	private PointValueService pointValueService;
-	
-	@Resource
-	private DataPointService dataPointService;
+	private final WatchListService watchListService;
+	private final PointValueService pointValueService;
+	private final DataPointService dataPointService;
+
+	public WatchListAPI() {
+		this.watchListService = new WatchListService();
+		this.pointValueService = new PointValueService();
+		this.dataPointService = new DataPointService();
+	}
+
+	public WatchListAPI(WatchListService watchListService,
+						PointValueService pointValueService,
+						DataPointService dataPointService) {
+		this.watchListService = watchListService;
+		this.pointValueService = pointValueService;
+		this.dataPointService = dataPointService;
+	}
 
 	/**
 	 * Get WatchList brief list
@@ -158,7 +164,14 @@ public class WatchListAPI {
 		try {
 			User user = Common.getUser(request);
 			if(user != null) {
-				return new ResponseEntity<>(watchListService.getDataPointOrder(id).getPointIds(), HttpStatus.OK);
+				WatchList watchList = watchListService.getWatchList(id);
+				if(watchList == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(watchList);
+				if(!hasWatchListReadPermission(user, watchList))
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				Map<Integer, Integer> result = getPointIds(user, watchList);
+				return new ResponseEntity<>(result, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
@@ -168,13 +181,20 @@ public class WatchListAPI {
 	}
 
 	@PutMapping(value = "/order/")
-	public ResponseEntity<String> getPointOrder(
+	public ResponseEntity<String> updatePointOrder(
 			@RequestBody JsonDataPointOrder orderData,
 			HttpServletRequest request) {
 		try {
 			User user = Common.getUser(request);
 			if(user != null) {
-				watchListService.setDataPointOrder(orderData);
+				WatchList watchList = watchListService.getWatchList(orderData.getWatchListId());
+				if(watchList == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(watchList);
+				if(!hasWatchListSetPermission(user, watchList))
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				watchList.setPointList(toDataPointsOrdered(orderData, watchList));
+				watchListService.addPointsForWatchList(watchList);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -184,7 +204,7 @@ public class WatchListAPI {
 		}
 	}
 
-    @PostMapping(value = "")
+	@PostMapping(value = "")
 	public ResponseEntity<JsonWatchList> createWatchList(
 			@RequestBody JsonWatchList jsonWatchList,
 			HttpServletRequest request
@@ -192,10 +212,10 @@ public class WatchListAPI {
 		try {
 			User user = Common.getUser(request);
 			if(user != null) {
-				WatchList wl = jsonWatchList.createWatchList();
-				wl.setUserId(user.getId());
-				watchListService.saveWatchList(wl);
-				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
+				WatchList watchList = jsonWatchList.createWatchList();
+				watchList.setUserId(user.getId());
+				watchListService.saveWatchList(watchList);
+				return new ResponseEntity<>(new JsonWatchList(watchList), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
@@ -216,11 +236,10 @@ public class WatchListAPI {
 				if(fromBase == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(fromBase);
-				if(!hasWatchListReadPermission(user, fromBase))
+				if(!hasWatchListSetPermission(user, fromBase))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-				WatchList wl = jsonWatchList.createWatchList();
-				watchListService.saveWatchList(wl);
-				return new ResponseEntity<>(new JsonWatchList(wl), HttpStatus.OK);
+				saveWatchList(jsonWatchList, user, fromBase, watchListService);
+				return new ResponseEntity<>(new JsonWatchList(jsonWatchList.createWatchList()), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
@@ -272,7 +291,7 @@ public class WatchListAPI {
 				watchListService.populateWatchlistData(watchList);
 				if(!hasWatchListReadPermission(user, watchList))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-				return new ResponseEntity<>(getWatchList(watchList), HttpStatus.OK);
+				return new ResponseEntity<>(toJsonWatchList(user, watchList), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
@@ -281,86 +300,95 @@ public class WatchListAPI {
 		}
 	}
 
-    private JsonWatchList getWatchList(WatchList watchList) {
-		watchListService.populateWatchlistData(watchList);
-		List<ScadaObjectIdentifier> pointList = new ArrayList<>();
-		watchList.getPointList().forEach(p -> {
-			pointList.add(new ScadaObjectIdentifier(p.getId(), p.getXid(), p.getName()));
-		});
-		return new JsonWatchList(
-				watchList.getId(),
-				watchList.getXid(),
-				watchList.getName(),
-				watchList.getUserId(),
-				pointList,
-				watchList.getWatchListUsers()
-		);
-	}
-
-	@RequestMapping(value = "/api/watchlist/getNames", method = RequestMethod.GET)
-	public ResponseEntity<String> getNames(HttpServletRequest request) {
+	@GetMapping(value = "/api/watchlist/getNames")
+	public ResponseEntity<List<ScadaObjectIdentifier>> getNames(HttpServletRequest request) {
 		LOG.info("/api/watchlist/getNames");
 		try {
 			User user = Common.getUser(request);
 		
 			if (user != null) {
-				
-				class WatchListJSON implements Serializable{
-					private String xid;
-					private String name;
-					WatchListJSON(String xid,String name) {
-						this.setXid(xid);
-						this.setName(name);
-					}
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-				}
-
-				List<WatchList> lstWL;
-				if (user.isAdmin()) {
-					lstWL = watchListService.getWatchLists();
-				} else {
-					lstWL = watchListService.getWatchListsWithAccess(user);
-				}				
-				
-				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
-				for (WatchList wl:lstWL) {
-					WatchListJSON wlJ = new WatchListJSON(wl.getXid(), wl.getName());
-					lst.add(wlJ);
-				}
-				
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(lst);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);				
+				List<ScadaObjectIdentifier> result = getWatchListIdentifiers(user, watchListService);
+				return new ResponseEntity<>(result,HttpStatus.OK);
 			} 
 			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			
 		} catch (Exception e) {
 			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	/**
+	 * 
+	 * @param xid
+	 * @param request
+	 * @return
+	 */
+	@GetMapping(value = "/getPoints/{xid}")
+	public ResponseEntity<List<ScadaObjectIdentifier>> getPoints(@PathVariable("xid") String xid, HttpServletRequest request) {
+		
+		LOG.info("/api/watchlist/getPoints/{xid} xid:"+xid);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				WatchList watchList = watchListService.getWatchList(xid);
+				if(watchList == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				watchListService.populateWatchlistData(watchList);
+				if(!hasWatchListReadPermission(user, watchList))
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				List<ScadaObjectIdentifier> result = filteringByAccess(user, watchList.getPointList())
+						.stream()
+						.map(DataPointVO::toIdentifier)
+						.collect(Collectors.toList());
+				return new ResponseEntity<>(result, HttpStatus.OK);
+			}
+			
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
-	
-	class PointJSON implements Serializable{
+	@GetMapping(value = "/getChartData/{xid}/{fromData}/{toData}")
+	public ResponseEntity<DataChartJSON> getChartData(@PathVariable("xid") String xid, @PathVariable("fromData") Long fromData, @PathVariable("toData") Long toData, HttpServletRequest request) {
+		
+		LOG.info("/api/watchlist/getChartData/{xid}/{fromData}/{toData} xid:"+xid+" fromData:"+fromData+" toData:"+toData);
+		
+		try {
+			User user = Common.getUser(request);
+			if (user != null) {
+				DataPointVO point = dataPointService.getDataPoint(xid);
+				if(point == null)
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				if(!hasDataPointReadPermission(user, point))
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				List<ValueToJSON> values = pointValueService.getPointValuesBetween(point.getId(), fromData, toData)
+						.stream()
+						.map(value -> ValueToJSON.newInstance(value, point))
+						.collect(Collectors.toList());
+				return new ResponseEntity<>(new DataChartJSON(xid, point.getName(), values),HttpStatus.OK);
+			}
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		
+		} catch (Exception e) {
+			LOG.error(e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	private static class DataChartJSON implements Serializable{
 		private String xid;
 		private String name;
-		PointJSON(String xid,String name) {
+		private List<ValueToJSON> values;
+		DataChartJSON(String xid, String name, List<ValueToJSON> values) {
 			this.setXid(xid);
 			this.setName(name);
+			this.setValues(values);
 		}
 		public String getXid() {
 			return xid;
@@ -374,121 +402,11 @@ public class WatchListAPI {
 		public void setName(String name) {
 			this.name = name;
 		}
-	}
-
-	/**
-	 * 
-	 * @param xid
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/getPoints/{xid}", method = RequestMethod.GET)
-	public ResponseEntity<String> getPoints(@PathVariable("xid") String xid, HttpServletRequest request) {
-		
-		LOG.info("/api/watchlist/getPoints/{xid} xid:"+xid);
-		
-		try {
-			User user = Common.getUser(request);
-			if (user != null) {
-			
-				WatchList watchList = watchListService.getWatchList(xid);
-				if(watchList == null)
-					return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-				watchListService.populateWatchlistData(watchList);
-				if(watchList.getUserAccess(user) < ShareUser.ACCESS_READ)
-					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-				List<PointJSON> lst = new ArrayList<PointJSON>();
-			
-				for (DataPointVO dpvo : watchList.getPointList()){
-					PointJSON p = new PointJSON(dpvo.getXid(), dpvo.getName());
-					lst.add(p);
-				}
-				
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-			
-				json = mapper.writeValueAsString(lst);
-				
-			
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-			
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		public List<ValueToJSON> getValues() {
+			return values;
+		}
+		public void setValues(List<ValueToJSON> values) {
+			this.values=values;
 		}
 	}
-	
-	@RequestMapping(value = "/getChartData/{xid}/{fromData}/{toData}", method = RequestMethod.GET)
-	public ResponseEntity<String> getChartData(@PathVariable("xid") String xid, @PathVariable("fromData") Long fromData, @PathVariable("toData") Long toData, HttpServletRequest request) {
-		
-		LOG.info("/api/watchlist/getChartData/{xid}/{fromData}/{toData} xid:"+xid+" fromData:"+fromData+" toData:"+toData);
-		
-		try {
-			User user = Common.getUser(request);
-			if (user != null) {
-				class DataChartJSON implements Serializable{
-					private String xid;
-					private String name;
-					private List<ValueToJSON> values;
-					DataChartJSON(String xid, String name, List<ValueToJSON> values) {
-						this.setXid(xid);
-						this.setName(name);
-						this.setValues(values);
-					}
-					public String getXid() {
-						return xid;
-					}
-					public void setXid(String xid) {
-						this.xid = xid;
-					}
-					public String getName() {
-						return name;
-					}
-					public void setName(String name) {
-						this.name = name;
-					}
-					public List<ValueToJSON> getValues() {
-						return values;
-					}
-					public void setValues(List<ValueToJSON> values) {
-						this.values=values;
-					}
-				}
-			
-				DataPointVO dp = dataPointService.getDataPoint(xid);
-				if(!hasDataPointReadPermission(user, dp))
-					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-				List<PointValueTime> listValues = pointValueService.getPointValuesBetween(dp.getId(), fromData, toData);
-				
-				List<ValueToJSON> values = new ArrayList<ValueToJSON>();
-				
-				for (PointValueTime pvt : listValues) {
-					ValueToJSON v = new ValueToJSON();
-					v.set(pvt, dp);
-					values.add(v);
-				}
-			
-				DataChartJSON dataChartJSON = new DataChartJSON(xid, dp.getName(), values);
-				
-				String json = null;
-				ObjectMapper mapper = new ObjectMapper();
-				
-				json = mapper.writeValueAsString(dataChartJSON);
-				
-				return new ResponseEntity<String>(json,HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-		
-		} catch (Exception e) {
-			LOG.error(e);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		
-		
-	}
-
 }

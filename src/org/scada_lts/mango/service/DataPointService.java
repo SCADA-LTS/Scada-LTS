@@ -20,8 +20,6 @@ package org.scada_lts.mango.service;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -248,23 +246,6 @@ public class DataPointService implements MangoDataPoint {
 			}
 		}
 		return result;
-	}
-
-	@Deprecated
-	public void save(String value, String xid, int pointValueType) {
-		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-
-		PointValueTime pvt = new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
-
-		if (dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
-			Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
-		} else {
-
-			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
-					dpvo.getId());
-
-			dpRT.updatePointValue(pvt);
-		}
 	}
 
 	public void save(User user, String value, String xid, int pointValueType) {
@@ -641,25 +622,6 @@ public class DataPointService implements MangoDataPoint {
 		}
 
 		return counts;
-	}
-
-	@Deprecated
-	public List<DataPointAccess> getDataPointAccessList(final int userId) {
-		return dataPointUserDAO.getDataPointAccessList(userId);
-	}
-
-    @Deprecated
-	public void deleteDataPointUser(int userId) {
-		dataPointUserDAO.delete(userId);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataPointPermissions();
-	}
-
-    @Deprecated
-	public void insertPermissions(User user) {
-		dataPointUserDAO.insertPermissions(user);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataPointPermissions();
 	}
 
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {

@@ -172,6 +172,12 @@ class ValueToJSON implements Serializable {
     private String chartColour;
     private boolean enabled;
 
+    public static ValueToJSON newInstance(PointValueTime pointValueTime, DataPointVO dataPoint) {
+        ValueToJSON value = new ValueToJSON();
+        value.set(pointValueTime, dataPoint);
+        return value;
+    }
+
     void set(PointValueTime pvt, DataPointVO dpvo) {
         setId(dpvo.getId());
         setValue(pvt.getValue());
