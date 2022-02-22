@@ -250,7 +250,7 @@
     <div id="navbarUserInfo">
       <c:if test="${!empty sessionUser}">
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-        <span class="userName">${sessionUser.username}</span>
+        <span class="userName"><c:out value="${sessionUser.username}"/></span>
       </c:if>
     </div>
 
