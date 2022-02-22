@@ -73,7 +73,7 @@ public class WatchListAPI {
 				if(user.isAdmin()) {
 					List<WatchList> watchListList = watchListService.getWatchLists();
 					List<ScadaObjectIdentifier> response = watchListList.stream()
-							.map(watchList -> watchList.toIdentifier())
+							.map(WatchList::toIdentifier)
 							.collect(Collectors.toList());
 					return new ResponseEntity<>(response, HttpStatus.OK);
 				} else {
