@@ -1,0 +1,18 @@
+{
+    "include": [
+        "src/**/*"
+    ],
+    "compilerOptions": {
+      "target": "es2017",
+      "allowSyntheticDefaultImports": false,
+      "baseUrl": "./",
+      "paths": {
+        "@s/*": ["src/store/*"],
+        "@c/*": ["src/components/*"],
+        "@layout/*": ["src/layout/*"],
+        "@dialogs/*": ["src/layout/dialogs/*"],
+        "@models/*": ["src/models/*"],
+      }
+    }, 
+    "exclude": ["node_modules", "dist"]
+  }
