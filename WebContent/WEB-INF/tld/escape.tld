@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+    <description>Custom tag library for the Serotonin applications. Author: Matthew Lohbihler</description>
+    <display-name>Serotonin Taglib</display-name>
+    <tlib-version>1.1</tlib-version>
+    <short-name>sst</short-name>
+    <uri>http://www.serotoninsoftware.com/tags</uri>
+
+    <tag>
+        <name>browserType</name>
+        <tag-class>com.serotonin.web.taglib.BrowserTypeTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>start</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>end</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>listSort</name>
+        <tag-class>com.serotonin.web.taglib.ListSortTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>label</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>labelKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>field</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>paging</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>excludeParams</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>upImageSrc</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>upImageWidth</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>upImageHeight</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>upImageAlt</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>downImageSrc</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>downImageWidth</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>downImageHeight</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>downImageAlt</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>imageAlign</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>mailto</name>
+        <tag-class>com.serotonin.web.taglib.MailtoTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>email</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>subject</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            Write out an option using the selected value from the select tag.
+            Use with the select tag.
+        </description>
+        <name>option</name>
+        <tag-class>com.serotonin.web.taglib.OptionTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>pageNumber</name>
+        <tag-class>com.serotonin.web.taglib.PageNumberTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>paging</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>rows</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pageLabelKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>ofLabelKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>rowsLabelKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>noRowsLabelKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>pagination</name>
+        <tag-class>com.serotonin.web.taglib.PaginationTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>paging</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>delimeter</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>excludeParams</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>indices</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>prefix</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>previousLabelKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>nextLabelKey</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>paginationUrl</name>
+        <tag-class>com.serotonin.web.taglib.PaginationUrlTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>excludeParams</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>paging</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>randomOption</name>
+        <tag-class>com.serotonin.web.taglib.RandomOptionTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>weight</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>random</name>
+        <tag-class>com.serotonin.web.taglib.RandomTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>count</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            Writes a select input tag. Use with the option tag.
+        </description>
+        <name>select</name>
+        <tag-class>com.serotonin.web.taglib.SelectTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>size</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onchange</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onclick</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onblur</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onmouseover</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onmouseout</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>urchin</name>
+        <tag-class>com.serotonin.web.taglib.UrchinTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>scriptOnly</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>codeOnly</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            Writes a radio input tag.
+        </description>
+        <name>radio</name>
+        <tag-class>com.serotonin.web.taglib.RadioTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>selectedValue</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onchange</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            Writes a checkbox input tag.
+        </description>
+        <name>checkbox</name>
+        <tag-class>com.serotonin.web.taglib.CheckboxTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>selectedValue</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>onclick</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>style</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>appPath</name>
+        <tag-class>com.serotonin.web.taglib.AppPathTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>list</name>
+        <tag-class>com.serotonin.web.taglib.ListTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>var</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>listEntry</name>
+        <tag-class>com.serotonin.web.taglib.ListEntryTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>listVar</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>listAdd</name>
+        <tag-class>com.serotonin.web.taglib.ListAddTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>list</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>element</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>map</name>
+        <tag-class>com.serotonin.web.taglib.MapTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>var</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>mapEntry</name>
+        <tag-class>com.serotonin.web.taglib.MapEntryTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>resolveMacros</name>
+        <tag-class>com.serotonin.web.taglib.ResolveMacrosTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>pattern</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>param</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>i18n</name>
+        <tag-class>com.serotonin.web.taglib.LocalizableMessageTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>message</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>key</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>escapeQuotes</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>escapeDQuotes</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>convert</name>
+        <tag-class>com.serotonin.web.taglib.DwrConvertTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>obj</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>buildQueryString</name>
+        <tag-class>com.serotonin.web.taglib.QueryStringBuilderTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>var</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>omitIfEmpty</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+
+    <!--
+      Functions
+     -->
+    <function>
+        <name>size</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>int size(java.lang.Object)</function-signature>
+    </function>
+
+    <function>
+        <name>get</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>int get(java.lang.Object, int)</function-signature>
+    </function>
+
+    <function>
+        <name>contains</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>boolean contains(java.util.Collection, java.lang.Object)</function-signature>
+    </function>
+
+    <function>
+        <name>containsInt</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>boolean contains(int, int[])</function-signature>
+    </function>
+
+    <function>
+        <name>quotEncode</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String quotEncode(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>dquotEncode</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String dquotEncode(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>crlfToBr</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String crlfToBr(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>escapeWhitespace</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String escapeWhitespace(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>escapeLessThan</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String escapeLessThan(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>escapeQuotes</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String escapeQuotes(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>truncate</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String truncate(java.lang.String, int)</function-signature>
+    </function>
+
+    <function>
+        <name>lower</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String lower(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>time</name>
+        <function-class>com.serotonin.web.taglib.DateFunctions</function-class>
+        <function-signature>java.lang.String getTime(long)</function-signature>
+    </function>
+
+    <function>
+        <name>fullTime</name>
+        <function-class>com.serotonin.web.taglib.DateFunctions</function-class>
+        <function-signature>java.lang.String getFullMinuteTime(long)</function-signature>
+    </function>
+
+    <function>
+        <name>fullSecondTime</name>
+        <function-class>com.serotonin.web.taglib.DateFunctions</function-class>
+        <function-signature>java.lang.String getFullSecondTime(long)</function-signature>
+    </function>
+
+    <function>
+        <name>constant</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.Object getConstant(java.lang.String, java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>toInt</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>int toInt(java.lang.Number)</function-signature>
+    </function>
+
+    <function>
+        <name>replaceMacro</name>
+        <function-class>com.serotonin.util.StringUtils</function-class>
+        <function-signature>java.lang.String replaceMacro(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>urlEncode</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String urlEncode(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>urlDecode</name>
+        <function-class>com.serotonin.web.taglib.Functions</function-class>
+        <function-signature>java.lang.String urlDecode(java.lang.String)</function-signature>
+    </function>
+
+</taglib>
