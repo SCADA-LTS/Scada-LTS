@@ -19,6 +19,7 @@ package org.scada_lts.permissions.migration.dao;
 
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
@@ -188,6 +189,16 @@ public final class OnlyMigrationDataPointService implements MangoDataPoint {
 
 	@Override
 	public List<PointHistoryCount> getTopPointHistoryCounts() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> searchDataPointsBy(String searchText) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user) {
 		throw new UnsupportedOperationException();
 	}
 }

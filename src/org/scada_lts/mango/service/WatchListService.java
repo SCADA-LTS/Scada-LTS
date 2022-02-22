@@ -20,10 +20,14 @@ package org.scada_lts.mango.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetShareUsers;
+import org.scada_lts.permissions.service.GetWatchListsWithAccess;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.springframework.stereotype.Service;
@@ -47,17 +51,20 @@ public class WatchListService implements MangoWatchList {
 	private WatchListDAO watchListDAO;
 	private GetShareUsers<WatchList> getShareUsers;
 	private UsersProfileService usersProfileService;
+	private GetObjectsWithAccess<WatchList, User> getObjectsWithAccess;
 
 	public WatchListService() {
 		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
 		this.getShareUsers = ApplicationBeans.getWatchListGetShareUsersBean();
 		this.usersProfileService = ApplicationBeans.getUsersProfileService();
+		this.getObjectsWithAccess = new GetWatchListsWithAccess(watchListDAO);
 	}
 
 	public WatchListService(WatchListDAO watchListDAO, GetShareUsers<WatchList> getShareUsers, UsersProfileService usersProfileService) {
 		this.watchListDAO = watchListDAO;
 		this.getShareUsers = getShareUsers;
 		this.usersProfileService = usersProfileService;
+		this.getObjectsWithAccess = new GetWatchListsWithAccess(watchListDAO);
 	}
 
 	@Override
@@ -178,6 +185,16 @@ public class WatchListService implements MangoWatchList {
 	public void removeUserFromWatchList(int watchListId, int userId) {
 		watchListDAO.deleteUserFromWatchList(watchListId, userId);
 		usersProfileService.updateWatchlistPermissions();
+	}
+
+	@Override
+	public List<WatchList> getWatchListsWithAccess(User user) {
+		return getObjectsWithAccess.getObjectsWithAccess(user);
+	}
+
+	@Override
+	public List<ScadaObjectIdentifier> getWatchListIdentifiersWithAccess(User user) {
+		return getObjectsWithAccess.getObjectIdentifiersWithAccess(user);
 	}
 
 }

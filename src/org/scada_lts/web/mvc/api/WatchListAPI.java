@@ -11,14 +11,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.view.ShareUser;
-import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
-import org.scada_lts.permissions.service.GetWatchListsWithAccess;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
 import org.scada_lts.web.mvc.api.json.JsonWatchListForUser;
@@ -33,6 +31,8 @@ import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.hasDataPointReadPermission;
 
 /**
  * Controller for API watchList
@@ -77,7 +77,7 @@ public class WatchListAPI {
 							.collect(Collectors.toList());
 					return new ResponseEntity<>(response, HttpStatus.OK);
 				} else {
-					List<ScadaObjectIdentifier> response = new GetWatchListsWithAccess().getObjectIdentifiersWithAccess(user);
+					List<ScadaObjectIdentifier> response = watchListService.getWatchListIdentifiersWithAccess(user);
 					return new ResponseEntity<>(response, HttpStatus.OK);
 				}
 			} else {
@@ -328,7 +328,7 @@ public class WatchListAPI {
 				if (user.isAdmin()) {
 					lstWL = watchListService.getWatchLists();
 				} else {
-					lstWL = new GetWatchListsWithAccess().getObjectsWithAccess(user);
+					lstWL = watchListService.getWatchListsWithAccess(user);
 				}				
 				
 				List<WatchListJSON> lst = new ArrayList<WatchListJSON>();
@@ -457,7 +457,7 @@ public class WatchListAPI {
 				}
 			
 				DataPointVO dp = dataPointService.getDataPoint(xid);
-				if(!Permissions.hasDataPointReadPermission(user, dp))
+				if(!hasDataPointReadPermission(user, dp))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				List<PointValueTime> listValues = pointValueService.getPointValuesBetween(dp.getId(), fromData, toData);
 				

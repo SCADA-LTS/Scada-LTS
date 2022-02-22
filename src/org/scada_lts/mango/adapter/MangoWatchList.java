@@ -19,7 +19,9 @@ package org.scada_lts.mango.adapter;
 
 import java.util.List;
 
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 /** 
  * Base on the WatchListDao
@@ -49,4 +51,7 @@ public interface MangoWatchList {
 
 	void saveWatchList(WatchList watchList);
 
+	List<WatchList> getWatchListsWithAccess(User user);
+
+	List<ScadaObjectIdentifier> getWatchListIdentifiersWithAccess(User user);
 }

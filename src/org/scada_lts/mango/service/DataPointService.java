@@ -61,7 +61,7 @@ import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.permissions.service.GetDataPointsWithAccess;
-import org.scada_lts.permissions.service.util.PermissionsUtils;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
@@ -106,6 +106,8 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
+	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
+
 	public DataPointService() {
 		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
 		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
@@ -113,6 +115,7 @@ public class DataPointService implements MangoDataPoint {
 		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
 		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
 		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
+		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
 	}
 
 	@Override
@@ -184,8 +187,9 @@ public class DataPointService implements MangoDataPoint {
 	 * @param user - User to validate
 	 * @return - Filtered list of DataPoints object
 	 */
-	public List<DataPointVO> getDataPointsWithPermissions(User user) {
-		return new GetDataPointsWithAccess(dataPointDAO).getObjectsWithAccess(user);
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user) {
+		return getDataPointsWithAccess.getObjectsWithAccess(user);
 	}
 
 	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {
@@ -761,5 +765,14 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO created = dataPointDAO.create(dataPoint);
 		Common.ctx.getRuntimeManager().saveDataPoint(created);
 		return created;
+	}
+
+	@Override
+	public List<DataPointVO> searchDataPointsBy(String searchText) {
+		if (searchText != null) {
+			String[] keywords = searchText.split("\\s+");
+			return searchDataPoints(keywords);
+		}
+		return getDataPoints(Comparator.comparing(DataPointVO::getName), false);
 	}
 }

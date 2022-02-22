@@ -20,8 +20,7 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
 
     @Override
     public List<DataPointVO> getObjectsWithAccess(User object) {
-        return dataPointDAO.getDataPoints().stream()
-                .filter(point -> Permissions.hasDataPointReadPermission(object, point))
+        return filteringByAccess(object, dataPointDAO.getDataPoints()).stream()
                 .sorted(Comparator.comparing(DataPointVO::getName))
                 .collect(Collectors.toList());
     }
@@ -29,8 +28,18 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     @Override
     public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User object) {
         return getObjectsWithAccess(object).stream()
-                .map(point -> new ScadaObjectIdentifier(point.getId(), point.getXid(), point.getName()))
+                .map(DataPointVO::toIdentifier)
                 .sorted(Comparator.comparing(ScadaObjectIdentifier::getName))
                 .collect(Collectors.toList());
+    }
+
+    public static List<DataPointVO> filteringByAccess(User user, List<DataPointVO> dataPoints) {
+        return dataPoints.stream()
+                .filter(point -> Permissions.hasDataPointReadPermission(user, point))
+                .collect(Collectors.toList());
+    }
+
+    public static boolean hasDataPointReadPermission(User user, DataPointVO dataPoint) {
+        return Permissions.hasDataPointReadPermission(user, dataPoint);
     }
 }
