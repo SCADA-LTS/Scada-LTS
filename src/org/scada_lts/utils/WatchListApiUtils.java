@@ -67,11 +67,20 @@ public final class WatchListApiUtils {
                 .collect(Collectors.toMap(DataPointVO::getId, point -> point));
     }
 
-    public static void saveWatchList(JsonWatchList fromUi, User user,
-                                     WatchList fromBase, WatchListService watchListService) {
+    public static WatchList getWatchListToSave(JsonWatchList fromUi, User user, WatchList fromBase) {
         WatchList watchListToSave = fromUi.createWatchList();
+        watchListToSave.setWatchListUsers(fromBase.getWatchListUsers());
         List<DataPointVO> notAccessForUser = filteringByNoAccess(user, fromBase.getPointList());
-        watchListToSave.getPointList().addAll(notAccessForUser);
-        watchListService.saveWatchList(watchListToSave);
+        List<DataPointVO> dataPoints = new ArrayList<>(watchListToSave.getPointList());
+        dataPoints.addAll(notAccessForUser);
+        watchListToSave.getPointList().clear();
+        watchListToSave.setPointList(dataPoints);
+        return watchListToSave;
+    }
+
+    public static WatchList getWatchListToRead(JsonWatchList jsonWatchList, WatchListService watchListService) {
+        WatchList watchListToRead = jsonWatchList.createWatchList();
+        watchListService.populateWatchlistData(watchListToRead);
+        return watchListToRead;
     }
 }

@@ -14,6 +14,8 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.WatchListService;
+import org.scada_lts.permissions.service.GetShareUsers;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonDataPointOrder;
 import org.scada_lts.web.mvc.api.json.JsonWatchList;
 import org.scada_lts.web.mvc.api.json.JsonWatchListForUser;
@@ -238,8 +240,9 @@ public class WatchListAPI {
 				watchListService.populateWatchlistData(fromBase);
 				if(!hasWatchListSetPermission(user, fromBase))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-				saveWatchList(jsonWatchList, user, fromBase, watchListService);
-				return new ResponseEntity<>(new JsonWatchList(jsonWatchList.createWatchList()), HttpStatus.OK);
+				WatchList watchListToSave = getWatchListToSave(jsonWatchList, user, fromBase);
+				watchListService.saveWatchList(watchListToSave);
+				return new ResponseEntity<>(new JsonWatchList(getWatchListToRead(jsonWatchList, watchListService)), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
