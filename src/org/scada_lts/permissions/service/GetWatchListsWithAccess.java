@@ -37,4 +37,8 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
     public static boolean hasWatchListSetPermission(User user, WatchList watchList) {
         return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_SET;
     }
+
+    public static boolean hasWatchListOwnerPermission(User user, WatchList watchList) {
+        return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_OWNER;
+    }
 }

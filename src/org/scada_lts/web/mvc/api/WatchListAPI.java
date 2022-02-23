@@ -31,8 +31,7 @@ import com.serotonin.mango.vo.WatchList;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.hasDataPointReadPermission;
-import static org.scada_lts.permissions.service.GetWatchListsWithAccess.hasWatchListReadPermission;
-import static org.scada_lts.permissions.service.GetWatchListsWithAccess.hasWatchListSetPermission;
+import static org.scada_lts.permissions.service.GetWatchListsWithAccess.*;
 import static org.scada_lts.utils.WatchListApiUtils.*;
 
 /**
@@ -263,7 +262,7 @@ public class WatchListAPI {
 				if(fromBase == null)
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				watchListService.populateWatchlistData(fromBase);
-				if(!hasWatchListSetPermission(user, fromBase))
+				if(!hasWatchListOwnerPermission(user, fromBase))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				watchListService.deleteWatchList(fromBase.getId());
 				return new ResponseEntity<>(HttpStatus.OK);
