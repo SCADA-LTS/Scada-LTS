@@ -103,6 +103,7 @@
 <script>
 import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent';
 import BaseViewComponent from './BaseViewComponent.vue';
+import TextRenderer from '../../../bl/TextRender.js'
 
 
 export default {
@@ -131,6 +132,7 @@ export default {
 			},
 			events: [],
 			eventsLoading: false,
+			textRenderer: {},
 		};
 	},
 
@@ -142,6 +144,7 @@ export default {
 
 	mounted() {
 		this.connectToPointWebSocket(this.component.dataPointId);
+		this.getDataPointType();
 		this.getPointValue();
 	},
 
@@ -178,7 +181,7 @@ export default {
 		},
 
 		updatePointValue(data) {
-			const value = JSON.parse(data.body).value;
+			const value = this.textRenderer.render(JSON.parse(data.body).value);
 			this.$emit('value-update', value);
 		},
 
@@ -199,7 +202,8 @@ export default {
 				);
 				this.$emit('status-update', res.enabled);
 				if (res.enabled === true) {
-					this.$emit('value-update', res.value);
+					const value = this.textRenderer.render(res.value);
+					this.$emit('value-update', value);
 				}
 			} catch (e) {
 				console.error(e);
@@ -254,7 +258,10 @@ export default {
 					'getDataPointValueByXid',
 					this.component.dataPointXid,
 				);
-				console.log(`test:${dp}`)
+
+				let renderer = dp.textRenderer
+				this.textRenderer = new TextRenderer(renderer)
+				
 				switch (dp.type) {
 					case 'BinaryValue':
 						return 1;

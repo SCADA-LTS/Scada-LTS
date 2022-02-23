@@ -25,6 +25,7 @@
 			</template>
 
 			<template v-slot:renderer>
+				
 				<v-row>
 					<v-col> Hi! slot </v-col>
 				</v-row>
@@ -39,6 +40,7 @@
 </template>
 <script>
 import BasePointComponent from '../BasePointComponent.vue';
+import TextRenderer from '../../../../bl/TextRender'
 export default {
 	components: {
 		BasePointComponent,
