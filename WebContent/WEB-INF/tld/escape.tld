@@ -525,7 +525,7 @@
 
     <tag>
         <name>i18n</name>
-        <tag-class>com.serotonin.web.taglib.LocalizableMessageTag</tag-class>
+        <tag-class>com.serotonin.web.taglib.LocalizableMessageOutTag</tag-class>
         <body-content>empty</body-content>
         <attribute>
             <name>message</name>
