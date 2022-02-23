@@ -4,7 +4,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.taglibs.standard.tag.rt.core.OutTag;
 
-public class LocalizableMessageTag extends OutTag {
+public class LocalizableMessageOutTag extends OutTag {
     public void setMessage(LocalizableMessage message) {
         super.setValue(message.getLocalizedMessage(Common.getBundle()));
     }
