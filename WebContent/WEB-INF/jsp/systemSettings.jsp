@@ -408,8 +408,14 @@
         });
 
     }
-    
-    
+
+    function toUiPerformanceId() {
+        var uiPerformance = $get("uiPerformanceId");
+        if(!uiPerformance) {
+            uiPerformance = 1000;
+        }
+        $set("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>", uiPerformance);
+    }
   </script>
   
   <div class="borderDiv marB marR" style="float:left">
@@ -670,7 +676,9 @@
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
         <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
+          <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
+          <select id="uiPerformanceId" onchange="toUiPerformanceId()">
+            <option value=""></option>
             <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
             <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
             <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
