@@ -78,9 +78,12 @@ public final class WatchListApiUtils {
         return watchListToSave;
     }
 
-    public static WatchList getWatchListToRead(JsonWatchList jsonWatchList, WatchListService watchListService) {
-        WatchList watchListToRead = jsonWatchList.createWatchList();
-        watchListService.populateWatchlistData(watchListToRead);
+    public static WatchList getWatchListToRead(WatchList watchListToSave, User loggedUser) {
+        WatchList watchListToRead = watchListToSave.copy();
+        watchListToRead.setPointList(filteringByAccess(loggedUser, watchListToSave.getPointList()));
+        watchListToRead.setWatchListUsers(watchListToSave.getWatchListUsers().stream()
+                .filter(share -> share.getUserId() == loggedUser.getId())
+                .collect(Collectors.toList()));
         return watchListToRead;
     }
 }

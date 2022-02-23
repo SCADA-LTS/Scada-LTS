@@ -192,4 +192,15 @@ public class WatchList implements JsonSerializable {
     public ScadaObjectIdentifier toIdentifier() {
         return new ScadaObjectIdentifier(getId(), getXid(), getName());
     }
+
+    public WatchList copy() {
+        WatchList watchList = new WatchList();
+        watchList.setId(id);
+        watchList.setXid(xid);
+        watchList.setUserId(userId);
+        watchList.setName(name);
+        watchList.setPointList(new ArrayList<>(pointList));
+        watchList.setWatchListUsers(new ArrayList<>(watchListUsers));
+        return watchList;
+    }
 }
