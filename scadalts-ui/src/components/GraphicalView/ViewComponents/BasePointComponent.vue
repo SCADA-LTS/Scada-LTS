@@ -8,7 +8,7 @@
 		@edit-menu="onEditMenu"
 	>
 		<template v-slot:default="data">
-			<slot v-bind:data="data" />
+			<slot v-bind:data="data" /> 
 		</template>
 
 		<template v-slot:layout>
@@ -181,8 +181,8 @@ export default {
 		},
 
 		updatePointValue(data) {
-			const value = this.textRenderer.render(JSON.parse(data.body).value);
-			this.$emit('value-update', value);
+			const value = this.textRenderer.render(JSON.parse(data.body).value)
+			this.$emit('value-update', value)
 		},
 
 		updatePointStatus(data) {
