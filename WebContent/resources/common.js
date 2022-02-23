@@ -84,7 +84,6 @@ mango.longPoll.start = function() {
 };
 
 mango.longPoll.poll = function() {
-    mango.longPoll.lastPoll = new Date().getTime();
     MiscDwr.doLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollCB);
 }
 
@@ -129,16 +128,7 @@ mango.longPoll.pollCB = function(response) {
     
     if (response.customViewStates)
         mango.view.setData(response.customViewStates);
-    
-    if (mango.longPoll.lastPoll) {
-        var duration = new Date().getTime() - mango.longPoll.lastPoll;
-        if (duration < 300) {
-            // The response happened too quick. This may indicate a problem, 
-            // so just wait a bit before polling again. 
-            setTimeout(mango.longPoll.poll, 1000);
-            return;
-        }
-    }
+
     // Poll again immediately.
     mango.longPoll.poll();
 }

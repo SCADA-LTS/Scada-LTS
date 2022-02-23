@@ -438,16 +438,18 @@ public class MiscDwr extends BaseDwr {
 				}
 			}
 
-			if (!response.isEmpty())
+			if (waitTime == 0)
 				break;
 
 			synchronized (pollRequest) {
 				try {
 					pollRequest.wait(waitTime);
 				} catch (InterruptedException e) {
-					// no op
+					Thread.currentThread().interrupt();
 				}
 			}
+
+			break;
 
 		}
 
