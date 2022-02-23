@@ -32,7 +32,7 @@
 						class="header-settings--buttons"
 					></WatchListConfig>
 					<WatchListConfig
-						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 2"
+						v-if="activeWatchList && activeWatchList.id !== -1 && userRights >= 2"
 						:key="activeWatchList.id"
 						@update="updateWatchList"
 						class="header-settings--buttons"
@@ -40,7 +40,7 @@
 					<v-btn
 						fab
 						elevation="1"
-						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 2"
+						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 3"
 						@click="openDeletionDialog"
 						class="header-settings--buttons"
 						><v-icon>mdi-minus-circle</v-icon>
@@ -114,10 +114,9 @@ export default {
 			const user = this.$store.state.loggedUser;
 			if (!!user && !!this.activeWatchList) {
 				if (!!user.admin || user.id === this.activeWatchList.user.id) {
-					return 2;
+					return 3;
 				} else {
-					return this.activeWatchList.accessType === 3 
-						? 2 : this.activeWatchList.accessType;
+					return this.activeWatchList.accessType;
 				}
 			}
 			return 0;

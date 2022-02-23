@@ -108,7 +108,7 @@
 								<v-icon v-if="!point.onChart">mdi-chart-box-outline</v-icon>
 								<v-icon v-else>mdi-chart-box</v-icon>
 							</v-btn>
-							<v-btn small icon fab :href="`#/datapoint-details/${point.id}`">
+							<v-btn small icon fab :href="`#/datapoint-details/${point.id}`" v-if="isAdmin">
 								<v-icon>mdi-information-outline</v-icon>
 							</v-btn>
 							<v-btn
@@ -186,8 +186,21 @@ export default {
 	},
 
 	computed: {
-		pointList() {
-			return this.$store.state.watchListModule.pointWatcher;
+		isAdmin() {
+			try {
+				return !!this.$store.state.loggedUser.admin
+			} catch(e) {
+				return false;
+			}
+			
+		},
+		pointList: {
+			get() {
+				return this.$store.state.watchListModule.pointWatcher;
+			},
+			set(value) {
+				this.$store.commit('SET_POINT_WATCHER', value);
+			}
 		},
 	},
 
@@ -254,6 +267,7 @@ export default {
 				try {
 					const pointId = dataPoint.identifier.id;
 					let point = await this.$store.dispatch('getDataPointDetails', pointId);
+					console.log(this.$store);
 					let pv = await this.$store.dispatch('getDataPointValue', pointId);
 					let pointEvents = await this.$store.dispatch('fetchDataPointEvents', {
 						datapointId: pointId,
@@ -279,6 +293,7 @@ export default {
 
 		checkMove: function (e) {
 			this.drag = false;
+			console.log("moved");
 			this.$store.commit('SET_POINT_MOVED', this.pointList);
 		},
 
@@ -324,6 +339,7 @@ export default {
 		deletePointFromList(point) {
 			this.$store.commit('REMOVE_POINT_FROM_WATCHLIST', point);
 			this.pointList = this.pointList.filter((p) => p.id !== point.id);
+			this.$store.dispatch('updateWatchList');
 		},
 
 		showPointValueSetDialog(point) {

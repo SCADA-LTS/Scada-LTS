@@ -41,7 +41,7 @@ const watchListModule = {
             state.pointWatcher = pointArray
         },
 
-        SET_POINT_MOVED(state, pointListOrder) {
+        SET_POINT_MOVED({dispatch}, pointListOrder) {
             let change = false;
             for(let i = 0; i < pointListOrder.length; i++) {
                 change = pointListOrder[i].order !== i;
@@ -49,7 +49,7 @@ const watchListModule = {
                     break;
                 }
             }
-            state.pointMoved = change;
+            dispatch('updateWatchList');
         },
 
         SET_DATAPOINT_HIERARCHY(state, datapointHierarchy) {
@@ -229,7 +229,7 @@ const watchListModule = {
 
         updateWatchList({ dispatch, state, commit }) {
             saveWatchListDetails(state.activeWatchList);
-            let data = mapIdentifier(state.activeWatchList);
+            let data = mapIdentifier(state.activeWatchList, state.pointWatcher);
             delete data.accessType;
             delete data.pointOrder;
             delete data.user;
@@ -238,10 +238,10 @@ const watchListModule = {
                 url: '/watch-lists', data
             }).then(() => {
                 commit('SET_ACTIVE_WATCHLIST', state.activeWatchList);
-                dispatch('updateWatchListPointOrder', state.activeWatchList.id).catch(e => {
-                    console.error(e);
-                    console.error("Failed to update WatchList Point Order");
-                });
+                // dispatch('updateWatchListPointOrder', state.activeWatchList.id).catch(e => {
+                //     console.error(e);
+                //     console.error("Failed to update WatchList Point Order");
+                // });
             });
 
 
@@ -320,7 +320,7 @@ const watchListModule = {
     },
 
     getters: {
-        watchListConfigChanged(state) {
+        watchListConfigChanged: (state) => () => {
             let change = false;
             if (!!state.activeWatchList && !!state.activeWatchListRevert) {
                 change = JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
@@ -331,14 +331,14 @@ const watchListModule = {
             return change;
         },
 
-        getWatchListPointOrder(state) {
+        getWatchListPointOrder: (state) => () => {
             if (!!state.activeWatchList) {
                 return state.activeWatchList.pointOrder;
             }
             return null;
         },
 
-        getWatchListChartPoints(state) {
+        getWatchListChartPoints: (state) => () => {
             return state.pointWatcher.filter(p => p.onChart);
         }
     },
@@ -357,14 +357,16 @@ function loadWatchListDetails(watchListId) {
     return JSON.parse(localStorage.getItem(`MWLD_${watchListId}`));
 }
 
-function mapIdentifier(watchList) {
+function mapIdentifier(watchList, reference = null) {
+    console.debug("Mapping...");
     let data = watchList;
     let pointList = [];
-    data.pointList.forEach(p => {
+    if (!reference) reference = data.pointList;
+    reference.forEach(p => {
         pointList.push({
-            id: p.identifier.id,
-            xid: p.identifier.xid,
-            name: p.identifier.name,
+            id: p.id,
+            xid: p.xid,
+            name: p.name,
         });
     });
     data.pointList = pointList;
