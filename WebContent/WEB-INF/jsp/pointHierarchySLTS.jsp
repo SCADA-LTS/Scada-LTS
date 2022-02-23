@@ -294,7 +294,7 @@ thead th {
 						<div class="btn-group pull-right menu">
 							<c:if test="${!empty sessionUser}">
 								<a href="" class="btn btn-xs"><span><fmt:message
-											key="header.user" />: <b>${sessionUser.username}</b>
+											key="header.user" />: <b><c:out value="${sessionUser.username}"/></b>
 									</mark></span></a>
 
 								<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
