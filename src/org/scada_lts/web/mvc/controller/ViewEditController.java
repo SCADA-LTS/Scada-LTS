@@ -50,8 +50,8 @@ import com.serotonin.mango.vo.permission.Permissions;
 
 
 @Controller
-public class ViewEditContorller {
-    private static final Log LOG = LogFactory.getLog(ViewEditContorller.class);
+public class ViewEditController {
+    private static final Log LOG = LogFactory.getLog(ViewEditController.class);
     
     private static final String SUBMIT_UPLOAD = "upload";
     private static final String SUBMIT_CLEAR_IMAGE = "clearImage";
@@ -86,7 +86,6 @@ public class ViewEditContorller {
     protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
         View view;
         User user = Common.getUser(request);
-        Permissions.ensureAdmin(user);
 
         if (viewIdStr != null) {
             // An existing view.
