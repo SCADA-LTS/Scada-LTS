@@ -486,7 +486,7 @@ public class RuntimeManager {
 	}
 
 	public static DataPointRT createDataPointRT(DataPointVO vo) {
-		boolean dataPointRtSynchronized = new SystemSettingsService().isDataPointRtSynchronized();
+		boolean dataPointRtSynchronized = new SystemSettingsService().isDataPointRtValueSynchronized();
 		if(dataPointRtSynchronized)
 			return new DataPointSynchronizedRT(vo, vo.getPointLocator().createRuntime());
 		return new DataPointRT(vo, vo.getPointLocator().createRuntime());

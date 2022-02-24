@@ -4,14 +4,16 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 
-public class SystemSettingsUtils {
+public final class SystemSettingsUtils {
 
-    private static final String DATAPOINT_RUNTIME_SYNCHRONIZED_KEY = "datapoint.runtime.synchronized";
+    private SystemSettingsUtils() {}
+
+    private static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY = "datapoint.runtime.value.synchronized";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
-    public static boolean isDataPointRtSynchronized() {
+    public static boolean isDataPointRtValueSynchronized() {
         try {
-            return ScadaConfig.getInstance().getBoolean(DATAPOINT_RUNTIME_SYNCHRONIZED_KEY, false);
+            return ScadaConfig.getInstance().getBoolean(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY, false);
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return false;

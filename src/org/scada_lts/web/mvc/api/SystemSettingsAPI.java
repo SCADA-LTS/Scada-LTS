@@ -551,7 +551,7 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(systemSettingsService.isDataPointRtSynchronized(), HttpStatus.OK);
+                return new ResponseEntity<>(systemSettingsService.isDataPointRtValueSynchronized(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -567,7 +567,7 @@ public class SystemSettingsAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                systemSettingsService.saveDataPointRtSynchronized(dataPointRtSynchronized);
+                systemSettingsService.saveDataPointRtValueSynchronized(dataPointRtSynchronized);
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
