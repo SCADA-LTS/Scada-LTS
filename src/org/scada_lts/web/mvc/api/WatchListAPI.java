@@ -224,7 +224,7 @@ public class WatchListAPI {
 	}
 
 	@PutMapping(value = "")
-	public ResponseEntity<JsonWatchList> updateWatchList(
+	public ResponseEntity<JsonWatchListForUser> updateWatchList(
 			@RequestBody JsonWatchList jsonWatchList,
 			HttpServletRequest request
 	) {
@@ -239,7 +239,7 @@ public class WatchListAPI {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				WatchList watchListToSave = getWatchListToSave(jsonWatchList, user, fromBase);
 				watchListService.saveWatchList(watchListToSave);
-				return new ResponseEntity<>(new JsonWatchList(getWatchListToRead(watchListToSave, user)), HttpStatus.OK);
+				return new ResponseEntity<>(new JsonWatchListForUser(getWatchListToRead(watchListToSave, user), user), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}

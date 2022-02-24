@@ -64,7 +64,7 @@ public final class WatchListApiUtils {
 
     public static Map<Integer, DataPointVO> toMap(WatchList watchList) {
         return watchList.getPointList().stream()
-                .collect(Collectors.toMap(DataPointVO::getId, point -> point));
+                .collect(Collectors.toMap(DataPointVO::getId, point -> point, (a, b) -> a));
     }
 
     public static WatchList getWatchListToSave(JsonWatchList fromUi, User user, WatchList fromBase) {
