@@ -267,7 +267,6 @@ export default {
 				try {
 					const pointId = dataPoint.identifier.id;
 					let point = await this.$store.dispatch('getDataPointDetails', pointId);
-					console.log(this.$store);
 					let pv = await this.$store.dispatch('getDataPointValue', pointId);
 					let pointEvents = await this.$store.dispatch('fetchDataPointEvents', {
 						datapointId: pointId,
@@ -293,8 +292,8 @@ export default {
 
 		checkMove: function (e) {
 			this.drag = false;
-			console.log("moved");
 			this.$store.commit('SET_POINT_MOVED', this.pointList);
+			this.$store.dispatch('updateWatchList');
 		},
 
 		countActiveEvents(eventTable) {

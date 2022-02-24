@@ -41,15 +41,8 @@ const watchListModule = {
             state.pointWatcher = pointArray
         },
 
-        SET_POINT_MOVED({dispatch}, pointListOrder) {
-            let change = false;
-            for(let i = 0; i < pointListOrder.length; i++) {
-                change = pointListOrder[i].order !== i;
-                if(change) {
-                    break;
-                }
-            }
-            dispatch('updateWatchList');
+        SET_POINT_MOVED(state, pointListOrder) {
+
         },
 
         SET_DATAPOINT_HIERARCHY(state, datapointHierarchy) {
@@ -236,12 +229,13 @@ const watchListModule = {
 
             dispatch('requestPut', {
                 url: '/watch-lists', data
-            }).then(() => {
-                commit('SET_ACTIVE_WATCHLIST', state.activeWatchList);
-                // dispatch('updateWatchListPointOrder', state.activeWatchList.id).catch(e => {
-                //     console.error(e);
-                //     console.error("Failed to update WatchList Point Order");
-                // });
+            }).then(async (r) => {
+                let details = loadWatchListDetails(r.id);
+                if (!!details) {
+                    r.horizontal = details.horizontal;
+                    r.biggerChart = details.biggerChart;
+                }
+                commit('SET_ACTIVE_WATCHLIST', r);
             });
 
 
@@ -320,7 +314,7 @@ const watchListModule = {
     },
 
     getters: {
-        watchListConfigChanged: (state) => () => {
+        watchListConfigChanged: (state) => {
             let change = false;
             if (!!state.activeWatchList && !!state.activeWatchListRevert) {
                 change = JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
@@ -331,14 +325,14 @@ const watchListModule = {
             return change;
         },
 
-        getWatchListPointOrder: (state) => () => {
+        getWatchListPointOrder: (state) => {
             if (!!state.activeWatchList) {
                 return state.activeWatchList.pointOrder;
             }
             return null;
         },
 
-        getWatchListChartPoints: (state) => () => {
+        getWatchListChartPoints: (state) => {
             return state.pointWatcher.filter(p => p.onChart);
         }
     },
