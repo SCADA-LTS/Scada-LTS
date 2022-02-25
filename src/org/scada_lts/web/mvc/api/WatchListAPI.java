@@ -204,7 +204,7 @@ public class WatchListAPI {
 	}
 
 	@PostMapping(value = "")
-	public ResponseEntity<JsonWatchList> createWatchList(
+	public ResponseEntity<JsonWatchListForUser> createWatchList(
 			@RequestBody JsonWatchList jsonWatchList,
 			HttpServletRequest request
 	) {
@@ -214,7 +214,7 @@ public class WatchListAPI {
 				WatchList watchList = jsonWatchList.createWatchList();
 				watchList.setUserId(user.getId());
 				watchListService.saveWatchList(watchList);
-				return new ResponseEntity<>(new JsonWatchList(watchList), HttpStatus.OK);
+				return new ResponseEntity<>(new JsonWatchListForUser(watchList, user), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
@@ -280,7 +280,7 @@ public class WatchListAPI {
 	 * @return JsonWatchList object
 	 */
 	@GetMapping(value = "/xid/{xid}")
-	public ResponseEntity<JsonWatchList> getWatchListByXid(@PathVariable(value = "xid", required = true) String xid, HttpServletRequest request) {
+	public ResponseEntity<JsonWatchListForUser> getWatchListByXid(@PathVariable(value = "xid", required = true) String xid, HttpServletRequest request) {
 		LOG.info("GET:" + LOG_PREFIX + "/xid/" + xid);
 		try {
 			User user = Common.getUser(request);
@@ -291,7 +291,7 @@ public class WatchListAPI {
 				watchListService.populateWatchlistData(watchList);
 				if(!hasWatchListReadPermission(user, watchList))
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-				return new ResponseEntity<>(toJsonWatchList(user, watchList), HttpStatus.OK);
+				return new ResponseEntity<>(new JsonWatchListForUser(watchList, user), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}

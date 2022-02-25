@@ -27,21 +27,6 @@ public final class WatchListApiUtils {
         return result;
     }
 
-    public static JsonWatchList toJsonWatchList(User user, WatchList watchList) {
-        List<ScadaObjectIdentifier> pointList = filteringByAccess(user, watchList.getPointList())
-                .stream()
-                .map(DataPointVO::toIdentifier)
-                .collect(Collectors.toList());
-        return new JsonWatchList(
-                watchList.getId(),
-                watchList.getXid(),
-                watchList.getName(),
-                watchList.getUserId(),
-                pointList,
-                watchList.getWatchListUsers()
-        );
-    }
-
     public static List<ScadaObjectIdentifier> getWatchListIdentifiers(User user, WatchListService watchListService) {
         if (user.isAdmin()) {
             return watchListService.getWatchLists()
