@@ -1,4 +1,5 @@
 <template>
+<div>
 	<div v-if="dataPointDetails && datasource">
 		<v-container fluid>
 			<ConfirmationDialog
@@ -78,6 +79,11 @@
 			></LineChartComponent>
 		</v-container>
 	</div>
+	<div v-else>
+		<v-skeleton-loader type="article">
+		</v-skeleton-loader>
+	</div>
+</div>
 </template>
 <script>
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
@@ -145,15 +151,20 @@ export default {
 		},
 
 		async fetchDataPointDetails(datapointId) {
-			this.dataPointDetails = await this.$store.dispatch(
-				'getDataPointDetails',
-				datapointId,
-			);
-			this.datasource = await this.$store.dispatch(
-				'getDatasourceByXid',
-				this.dataPointDetails.dataSourceXid,
-			);
-
+			try {
+				this.dataPointDetails = await this.$store.dispatch(
+					'getDataPointDetails',
+					datapointId,
+				);
+				this.datasource = await this.$store.dispatch(
+					'getDatasourceByXid',
+					this.dataPointDetails.dataSourceXid,
+				);
+			} catch (e) {
+				this.dataPointDetails = null;
+				this.datasource = null;
+				console.error(e);
+			}
 		},
 		async toggleDataPoint() {
 			if (this.datasource.enabled) {

@@ -420,11 +420,11 @@ const ds = {
 		dataSourceList(state) {
 			let datasources = [];
 			state.dataSources.forEach(dsType => {
-                datasources.push({
-                    value: `${dsType}`,
-                    text: i18n.t(`datasource.type.${dsType}`)
-                });
-            });
+				datasources.push({
+					value: `${dsType}`,
+					text: i18n.t(`datasource.type.${dsType}`)
+				});
+			});	
             return datasources;
 		},
 

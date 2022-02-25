@@ -1,10 +1,19 @@
 /**
+ * Improved WatchList Vuex store
+ * 
+ * Now actions are defined in a separate file "actions" next to this
+ * index file. That can improve the code maintenance and user will know
+ * from what are available actions to dispatch. 
+ * 
  * @author Radoslaw Jajko
- *
+ * @version 1.1.0
  */
 import { searchDataPointInHierarchy } from './utils';
-import WatchListPoint from '@/models/WatchListPoint'
-import WatchListPointHierarchyNode from '@/models/WatchListPointHierarchyNode';
+import { createWatchList, deleteWatchList, getWatchList, loadWatchList, setupWatchList, updateWatchList } from './actions';
+import WatchListPoint from '@models/WatchListPoint'
+import WatchListPointHierarchyNode from '@models/WatchListPointHierarchyNode';
+import WatchList from '@models/watchlist/WatchListEntry';
+import WatchListJson from '@models/watchlist/WatchListJson';
 
 const watchListModule = {
     state: {
@@ -12,7 +21,6 @@ const watchListModule = {
         activeWatchListRevert: null,
         pointWatcher: [], //More detailed information about the point
         datapointHierarchy: [],
-        pointMoved: false,
     },
 
     mutations: {
@@ -27,29 +35,12 @@ const watchListModule = {
         },
 
         SET_BLANK_ACTIVE_WATCHLIST(state, uniqueXid = "WL_00001") {
-            state.activeWatchList = {
-                id: -1,
-                name: '',
-                xid: uniqueXid,
-                userId: '',
-                pointList: [],
-                watchListUsers: [],
-            }
+            state.activeWatchList = new WatchList();
+            state.activeWatchList.xid = uniqueXid;
         },
 
         SET_POINT_WATCHER(state, pointArray) {
             state.pointWatcher = pointArray
-        },
-
-        SET_POINT_MOVED(state, pointListOrder) {
-            let change = false;
-            for(let i = 0; i < pointListOrder.length; i++) {
-                change = pointListOrder[i].order !== i;
-                if(change) {
-                    break;
-                }
-            }
-            state.pointMoved = change;
         },
 
         SET_DATAPOINT_HIERARCHY(state, datapointHierarchy) {
@@ -67,7 +58,7 @@ const watchListModule = {
                 x.selected = false;
             }
             if (!!state.activeWatchList) {
-                state.activeWatchList.pointList = state.activeWatchList.pointList.filter(p => p.id !== point.id);
+                state.activeWatchList.pointList = state.activeWatchList.pointList.filter(p => p.identifier.id !== point.id);
                 state.pointWatcher = state.pointWatcher.filter(p => p.id !== point.id);
             }
 
@@ -81,19 +72,31 @@ const watchListModule = {
         },
 
         ADD_POINT_TO_WATCHLIST(state, point) {
+
             if (!!state.activeWatchList) {
-                let p = {
-                    id: point.id,
-                    xid: point.xid,
-                    name: point.name,
-                    onChart: true,
-                };
-                state.activeWatchList.pointList.push(p);
+                const exists = state.activeWatchList.pointList.find(x => x.identifier.id === point.id);
+                if(!exists) {
+                    let p = {
+                        accessType: 1,
+                        description: '',
+                        onChart: true,
+                        identifier: {
+                            id: point.id,
+                            xid: point.xid,
+                            name: point.name,
+                        }
+                    }
+                    state.activeWatchList.pointList.push(p);    
+                }
             }
         },
 
         ADD_POINT_TO_WATCHER(state, point) {
-            state.pointWatcher.push(point);
+            const exists = state.pointWatcher.find(x => x.id === point.id);
+            if(!exists) {
+                state.pointWatcher.push(point);
+            }
+            
         },
 
         UPDATE_POINT_VALUE(state, data) {
@@ -134,105 +137,72 @@ const watchListModule = {
             return dispatch('requestGet', '/watch-lists/');
         },
 
-
-        getWatchListPointOrder({ dispatch }, id) {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    let orderMap = new Map();
-                    let result = await dispatch('requestGet', `/watch-lists/order/${id}`);
-                    Object.keys(result).forEach(key => {
-                        orderMap.set(key, result[key]);
-                    });
-                    resolve(orderMap);
-                } catch (e) {
-                    console.error(e);
-                    reject(new Map());
-                }
+        [loadWatchList]({dispatch}, watchListId) {
+            dispatch(getWatchList, watchListId).then((data) => {
+                dispatch(setupWatchList, data);
             });
         },
 
-        updateWatchListPointOrder({ state, dispatch }, watchListId) {
-            let data = {
-                watchListId,
-                pointIds: {}
-            };
-            for (let order = 0; order < state.pointWatcher.length; order++) {
-                data.pointIds[state.pointWatcher[order].id] = order;
+        async [setupWatchList]({dispatch, commit}, watchList) {
+            try {
+                let userData = await dispatch('getUserDetails', watchList.userId);
+                let wl = WatchList.create(watchList, userData);
+                commit('SET_ACTIVE_WATCHLIST', wl);
+                return wl;
+            } catch (e) {
+                commit('SET_ACTIVE_WATCHLIST', new WatchList());
+                console.error("Failed to setup watchlist", watchList);
             }
+        },
 
-            return dispatch('requestPut', {
-                url: '/watch-lists/order/',
-                data
+        [getWatchList]({dispatch}, watchListId) {
+            return new Promise((resolve, reject) => {
+                dispatch('requestGet', `/watch-lists/${watchListId}`).then((data => {
+                    resolve(data);
+                })).catch(e => {
+                    reject(e);
+                })
+            })
+        },
+
+        [createWatchList]({dispatch, state}) {
+            return new Promise((resolve, reject) => {
+                dispatch('requestPost', {
+                    url: '/watch-lists', data: WatchListJson.map(state.activeWatchList)
+                }).then(resp => {
+                    state.activeWatchList.saveDetails();
+                    dispatch(setupWatchList, resp).then(wl => {
+                        resolve(wl);
+                    });
+                }).catch((e) => {
+                    console.error("Failed to save", e);
+                    reject(e);
+                });
             });
         },
 
-
-
-        getWatchListDetails({ dispatch, commit }, id) {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    let watchList = await dispatch('requestGet', `/watch-lists/${id}`);
-                    let details = loadWatchListDetails(id);
-                    if (!!details) {
-                        watchList.horizontal = details.horizontal;
-                        watchList.biggerChart = details.biggerChart;
-                    } else {
-                        watchList.horizontal = true;
-                        watchList.biggerChart = false;
-                    }
-
-                    watchList.pointOrder = await dispatch('getWatchListPointOrder', id);
-                    watchList.user = await dispatch('getUserDetails', watchList.userId);
-                    commit('SET_ACTIVE_WATCHLIST', watchList);
-                    resolve(watchList);
-                } catch (e) {
+        [updateWatchList]({dispatch, state}) {
+            return new Promise((resolve, reject) => {
+                dispatch('requestPut', {
+                    url: '/watch-lists', data: WatchListJson.map(state.activeWatchList, state.pointWatcher)
+                }).then(resp => {
+                    state.activeWatchList.saveDetails();
+                    dispatch(setupWatchList, resp).then(wl => {
+                        resolve(wl);
+                    })
+                }).catch((e) => {
+                    console.error("Failed to update", e);
                     reject(e);
-                }
+                })
             })
+        },
+
+        [deleteWatchList]({ dispatch, state }) {
+            return dispatch('requestDelete', `/watch-lists/${state.activeWatchList.id}`);
         },
 
         getWatchListUniqueXid({ dispatch }) {
             return dispatch('requestGet', `/watch-lists/generateXid`);
-        },
-
-        createWatchList({ dispatch, state }) {
-            return new Promise((resolve, reject) => {
-
-                dispatch('requestPost', {
-                    url: '/watch-lists',
-                    data: state.activeWatchList,
-                }).then(async (resp) => {
-                    let horizontal = state.activeWatchList.horizontal;
-                    let biggerChart = state.activeWatchList.biggerChart;
-                    await dispatch('getWatchListDetails', resp.id);
-                    state.activeWatchList.horizontal = horizontal;
-                    state.activeWatchList.biggerChart = biggerChart;
-                    saveWatchListDetails(state.activeWatchList);
-                    resolve(resp);
-                }).catch((e) => {
-                    reject(e);
-                });
-            });
-        },
-
-        updateWatchList({ dispatch, state, commit }) {
-            saveWatchListDetails(state.activeWatchList);
-            dispatch('requestPut', {
-                url: '/watch-lists',
-                data: state.activeWatchList,
-            }).then(() => {
-                commit('SET_ACTIVE_WATCHLIST', state.activeWatchList);
-                dispatch('updateWatchListPointOrder', state.activeWatchList.id).catch(e => {
-                    console.error(e);
-                    console.error("Failed to update WatchList Point Order");
-                });
-            });
-
-
-        },
-
-        deleteWatchList({ dispatch, state }) {
-            return dispatch('requestDelete', `/watch-lists/${state.activeWatchList.id}`);
         },
 
         // --- WATCHLIST POINT HIERARCHY SECTION --- //
@@ -260,8 +230,7 @@ const watchListModule = {
                     let pv = await dispatch('getDataPointValue', datapointId);
                     let pe = await dispatch('fetchDataPointEvents', { datapointId, limit: 10 })
                     let ds = await dispatch('getDatasourceByXid', dp.dataSourceXid);
-                    let order = state.activeWatchList.pointOrder.get(datapointId);
-                    let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe, ds, order);
+                    let pointData2 = new WatchListPoint().createWatchListPoint(dp, pv, pe, ds);
                     commit('ADD_POINT_TO_WATCHER', pointData2);
                     resolve(pointData2);
                 } catch (e) {
@@ -296,47 +265,27 @@ const watchListModule = {
             });
         },
 
-        updateActiveWatchList({ commit, state }, newValue) {
-            commit('UPDATE_ACTIVE_WATCHLIST', newValue);
-            return state.activeWatchList;
-        },
-
     },
 
     getters: {
-        watchListConfigChanged(state) {
+        watchListConfigChanged: (state) => {
             let change = false;
             if (!!state.activeWatchList && !!state.activeWatchListRevert) {
                 change = JSON.stringify(state.activeWatchList) !== JSON.stringify(state.activeWatchListRevert);
             }
-            if(!!state.pointMoved) {
-                change = true;
-            }
             return change;
         },
 
-        getWatchListPointOrder(state) {
+        getWatchListPointOrder: (state) => {
             if (!!state.activeWatchList) {
                 return state.activeWatchList.pointOrder;
             }
             return null;
         },
 
-        getWatchListChartPoints(state) {
+        getWatchListChartPoints: (state) => {
             return state.pointWatcher.filter(p => p.onChart);
         }
     },
 };
 export default watchListModule;
-
-function saveWatchListDetails(watchList) {
-    let saveData = {
-        horizontal: watchList.horizontal,
-        biggerChart: watchList.biggerChart,
-    };
-    localStorage.setItem(`MWLD_${watchList.id}`, JSON.stringify(saveData));
-}
-
-function loadWatchListDetails(watchListId) {
-    return JSON.parse(localStorage.getItem(`MWLD_${watchListId}`));
-}

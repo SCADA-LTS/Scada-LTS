@@ -17,14 +17,12 @@
  */
 package org.scada_lts.web.mvc.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.restlet.Response;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.json.JsonDataPoint;
@@ -35,13 +33,14 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.hasDataPointReadPermission;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -62,9 +61,9 @@ public class DataPointAPI {
             User user = Common.getUser(request);
             if(user != null) {
                 if(id != null) {
-                    return new ResponseEntity<>(dataPointService.getDataPoint(id), HttpStatus.OK);
+                    return getDataPoint(id, user, dataPointService::getDataPoint);
                 } else if (xid != null){
-                    return new ResponseEntity<>(dataPointService.getDataPoint(xid), HttpStatus.OK);
+                    return getDataPoint(xid, user, dataPointService::getDataPoint);
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -84,11 +83,11 @@ public class DataPointAPI {
             User user = Common.getUser(request);
             if(user != null) {
                 if(id != null) {
-                    return new ResponseEntity<>(
-                            dataPointService.getDataPoints(id, null)
-                                    .stream().map(DataPointJson::new)
-                                    .collect(Collectors.toList()),
-                            HttpStatus.OK);
+                    List<DataPointJson> result = filteringByAccess(user, dataPointService.getDataPoints(id, null))
+                            .stream()
+                            .map(DataPointJson::new)
+                            .collect(Collectors.toList());
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
@@ -107,7 +106,7 @@ public class DataPointAPI {
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 Map<String, Object> response = new HashMap<>();
                 response.put("unique", dataPointService.isXidUnique(xid, id));
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -125,7 +124,7 @@ public class DataPointAPI {
     ) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 return new ResponseEntity<>(dataPointService.generateUniqueXid(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -142,7 +141,7 @@ public class DataPointAPI {
     ) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 return new ResponseEntity<>(
                         new DataPointJson(dataPointService.createDataPoint(datapoint.createDataPointVO())),
                         HttpStatus.OK);
@@ -161,7 +160,7 @@ public class DataPointAPI {
     ) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 dataPointService.updateDataPointConfiguration(datapoint.createDataPointVO());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -180,7 +179,7 @@ public class DataPointAPI {
     ) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 if(id != null) {
                     dataPointService.deleteDataPoint(id);
                 } else if(xid != null) {
@@ -202,18 +201,10 @@ public class DataPointAPI {
             User user = Common.getUser(request);
             if(user != null) {
                 if(id != null) {
-                    List<JsonDataPoint> result = new ArrayList<>();
-                    List<DataPointVO> list = dataPointService.getDataPoints(id, null);
-                    list.forEach(point -> result.add(new JsonDataPoint(
-                            point.getId(),
-                            point.getName(),
-                            point.getXid(),
-                            point.isEnabled(),
-                            point.getDescription(),
-                            point.getDataSourceName(),
-                            point.getPointLocator().getDataTypeId(),
-                            point.getPointLocator().isSettable()
-                    )));
+                    List<JsonDataPoint> result = filteringByAccess(user, dataPointService.getDataPoints(id, null))
+                            .stream()
+                            .map(JsonDataPoint::newInstance)
+                            .collect(Collectors.toList());
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -234,51 +225,10 @@ public class DataPointAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                List<DataPointVO> lstDP;
-
-                if (searchText != null) {
-                    String[] keywords = searchText.split("\\s+");
-                    List<JsonDataPoint> result = new ArrayList<>();
-                    for (DataPointVO dp: dataPointService.searchDataPoints(keywords)){
-                        JsonDataPoint jdp = new JsonDataPoint(
-                                dp.getId(),
-                                dp.getName(),
-                                dp.getXid(),
-                                dp.isEnabled(),
-                                dp.getDescription(),
-                                dp.getDataSourceName(),
-                                dp.getPointLocator().getDataTypeId(),
-                                dp.getPointLocator().isSettable()
-                        );
-
-                        result.add(jdp);
-                    }
-                    return new ResponseEntity<List<JsonDataPoint>>(result, HttpStatus.OK);
-                }
-
-                Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
-                    @Override
-                    public int compare(DataPointVO o1, DataPointVO o2) {
-                        return 0;
-                    }
-                };
-
-                lstDP = dataPointService.getDataPoints(comparator, false);
-
-                List<JsonDataPoint> result = new ArrayList<>();
-                for (DataPointVO dp:lstDP){
-                    JsonDataPoint jdp = new JsonDataPoint(
-                            dp.getId(),
-                            dp.getName(),
-                            dp.getXid(),
-                            dp.isEnabled(),
-                            dp.getDescription(),
-                            dp.getDataSourceName(),
-                            dp.getPointLocator().getDataTypeId(),
-                            dp.getPointLocator().isSettable()
-                    );
-                    result.add(jdp);
-                }
+                List<JsonDataPoint> result = filteringByAccess(user, dataPointService.searchDataPointsBy(searchText))
+                        .stream()
+                        .map(JsonDataPoint::newInstance)
+                        .collect(Collectors.toList());
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -287,7 +237,6 @@ public class DataPointAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getConfigurationByXid(
@@ -324,48 +273,22 @@ public class DataPointAPI {
     }
 
     @RequestMapping(value = "/api/datapoint/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
+    public ResponseEntity<List<DatapointJSON>> getAll(HttpServletRequest request) {
         LOG.info("/api/datapoint/getAll");
-
         try {
             User user = Common.getUser(request);
-
             if (user != null) {
-
-
-                List<DataPointVO> lstDP;
-
-                Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
-                    @Override
-                    public int compare(DataPointVO o1, DataPointVO o2) {
-                        return 0;
-                    }
-                };
-
-                if (user.isAdmin()) {
-                    lstDP = dataPointService.getDataPoints(comparator, false);
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
-
-                List<DatapointJSON> lst = new ArrayList<>();
-                for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDescription());
-                    lst.add(dpJ);
-                }
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
-
-                return new ResponseEntity<String>(json,HttpStatus.OK);
+                List<DatapointJSON> result = dataPointService.getDataPointsWithAccess(user)
+                        .stream()
+                        .map(DatapointJSON::new)
+                        .collect(Collectors.toList());
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -376,13 +299,11 @@ public class DataPointAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                List<DatapointJSON> resultList = new ArrayList<>();
-                List<DataPointVO> datapointList = dataPointService.getPlcDataPoints(datasourceId);
-                for(DataPointVO datapoint: datapointList) {
-                    DatapointJSON dp = new DatapointJSON(datapoint.getId(), datapoint.getName(), datapoint.getXid(), datapoint.getDescription());
-                    resultList.add(dp);
-                }
-                return new ResponseEntity<>(resultList, HttpStatus.OK);
+                List<DatapointJSON> result = filteringByAccess(user, dataPointService.getPlcDataPoints(datasourceId))
+                        .stream()
+                        .map(DatapointJSON::new)
+                        .collect(Collectors.toList());
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -405,6 +326,13 @@ public class DataPointAPI {
             this.setDescription(description);
         }
 
+        DatapointJSON(DataPointVO dp) {
+            this.setId(dp.getId());
+            this.setName(dp.getName());
+            this.setXid(dp.getXid());
+            this.setDescription(dp.getDescription());
+        }
+
         public long getId() { return id; }
         public void setId(long id) { this.id = id; }
         public String getName() {
@@ -422,6 +350,15 @@ public class DataPointAPI {
             this.xid = xid;
         }
         public void setDescription(String description) { this.description = description; }
+    }
+
+    private static <T> ResponseEntity<DataPointVO> getDataPoint(T id, User user, Function<T, DataPointVO> get) {
+        DataPointVO dataPoint = get.apply(id);
+        if(dataPoint == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(!hasDataPointReadPermission(user, dataPoint))
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(dataPoint, HttpStatus.OK);
     }
 }
 

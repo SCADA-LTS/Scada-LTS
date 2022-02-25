@@ -124,13 +124,14 @@ export default new Vuex.Store({
 			});
 		},
 
-		async loginUser({dispatch}, userdata) {
+		loginUser({dispatch}, userdata) {
 			axios.defaults.withCredentials = true;
-			let answer = await dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`);
-			if(answer) {
-				dispatch('getUserInfo');
-			}
-			return answer;
+			dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`)
+			.then((resp) => {
+				if(resp) {
+					dispatch('getUserInfo');
+				}
+			});
 		},
 
 		logoutUser({state}) {

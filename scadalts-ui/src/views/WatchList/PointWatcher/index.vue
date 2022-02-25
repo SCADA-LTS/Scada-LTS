@@ -108,7 +108,7 @@
 								<v-icon v-if="!point.onChart">mdi-chart-box-outline</v-icon>
 								<v-icon v-else>mdi-chart-box</v-icon>
 							</v-btn>
-							<v-btn small icon fab :href="`#/datapoint-details/${point.id}`">
+							<v-btn small icon fab :href="`#/datapoint-details/${point.id}`" v-if="isAdmin">
 								<v-icon>mdi-information-outline</v-icon>
 							</v-btn>
 							<v-btn
@@ -142,14 +142,15 @@ import draggable from 'vuedraggable';
 import PointValueSet from './PointValueSet';
 import PointValueRenderer from './PointValueRenderer';
 
-import EventScadaItem from '@/layout/lists/events/EventScadaItem';
-import WatchListPoint from '@/models/WatchListPoint';
+import EventScadaItem from '@layout/lists/events/EventScadaItem';
+import WatchListPoint from '@models/WatchListPoint';
+import { updateWatchList } from '@s/watchList/actions';
 
 /**
  *
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default {
 	name: 'PointWatcher',
@@ -186,8 +187,21 @@ export default {
 	},
 
 	computed: {
-		pointList() {
-			return this.$store.state.watchListModule.pointWatcher;
+		isAdmin() {
+			try {
+				return !!this.$store.state.loggedUser.admin
+			} catch(e) {
+				return false;
+			}
+			
+		},
+		pointList: {
+			get() {
+				return this.$store.state.watchListModule.pointWatcher;
+			},
+			set(value) {
+				this.$store.commit('SET_POINT_WATCHER', value);
+			}
 		},
 	},
 
@@ -241,7 +255,7 @@ export default {
 		fetchDataPointDetails() {
 			let reuqests = [];
 			this.dataPointList.forEach((dataPoint) => {
-				reuqests.push(this.getDataPointDetails(dataPoint.id));
+				reuqests.push(this.getDataPointDetails(dataPoint));
 			});
 			Promise.all(reuqests).then((r) => {
 				r.sort((a, b) => a.order - b.order);
@@ -249,13 +263,14 @@ export default {
 			});
 		},
 
-		getDataPointDetails(datapointId) {
+		getDataPointDetails(dataPoint) {
 			return new Promise(async (resolve, reject) => {
 				try {
-					let point = await this.$store.dispatch('getDataPointDetails', datapointId);
-					let pv = await this.$store.dispatch('getDataPointValue', datapointId);
+					const pointId = dataPoint.identifier.id;
+					let point = await this.$store.dispatch('getDataPointDetails', pointId);
+					let pv = await this.$store.dispatch('getDataPointValue', pointId);
 					let pointEvents = await this.$store.dispatch('fetchDataPointEvents', {
-						datapointId: datapointId,
+						datapointId: pointId,
 						limit: 10,
 					});
 					let ds = await this.$store.dispatch('getDatasourceByXid', point.dataSourceXid);
@@ -265,7 +280,7 @@ export default {
 						pv,
 						pointEvents,
 						ds,
-						map.get(String(datapointId))
+						dataPoint.accessType
 					);
 
 					resolve(pointData2);
@@ -277,7 +292,7 @@ export default {
 
 		checkMove: function (e) {
 			this.drag = false;
-			this.$store.commit('SET_POINT_MOVED', this.pointList);
+			this.$store.dispatch(updateWatchList);
 		},
 
 		countActiveEvents(eventTable) {
@@ -322,6 +337,7 @@ export default {
 		deletePointFromList(point) {
 			this.$store.commit('REMOVE_POINT_FROM_WATCHLIST', point);
 			this.pointList = this.pointList.filter((p) => p.id !== point.id);
+			this.$store.dispatch(updateWatchList);
 		},
 
 		showPointValueSetDialog(point) {

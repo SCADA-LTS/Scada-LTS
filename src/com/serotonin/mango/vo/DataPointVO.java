@@ -47,6 +47,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.IOException;
@@ -1130,5 +1131,9 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     public static boolean validIntervalLoggingPeriodType(int intervalLoggingPeriodType) {
         return Common.TIME_PERIOD_CODES.isValidId(intervalLoggingPeriodType);
+    }
+
+    public ScadaObjectIdentifier toIdentifier() {
+        return new ScadaObjectIdentifier(getId(), getXid(), getName());
     }
 }

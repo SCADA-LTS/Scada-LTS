@@ -539,6 +539,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		}
 	}
 
+	@Deprecated
 	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
 		if(LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointOrder()");
@@ -553,6 +554,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 	}
 
+	@Deprecated
 	public void setDataPointOrder(JsonDataPointOrder pointOrder) {
 
 		//Delete all order

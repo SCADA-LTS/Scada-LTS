@@ -4,34 +4,40 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.web.beans.ApplicationBeans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class JsonWatchList extends ScadaObjectIdentifier {
+public class JsonWatchList {
 
+    private int id;
+    private String xid;
+    private String name;
     private int userId;
     private List<ScadaObjectIdentifier> pointList;
     private List<ShareUser> watchListUsers;
 
-    public JsonWatchList() {
-        super();
-    }
+    public JsonWatchList() {}
 
     public JsonWatchList(int id, String xid, String name, int userId, List<ScadaObjectIdentifier> pointList, List<ShareUser> watchListUsers) {
-        super(id, xid, name);
+        this.id = id;
+        this.xid = xid;
+        this.name = name;
         this.userId = userId;
         this.pointList = pointList;
         this.watchListUsers = watchListUsers;
     }
 
-    public JsonWatchList(WatchList wl) {
-        super(wl.getId(), wl.getXid(), wl.getName());
-        this.userId = wl.getUserId();
-        pointList = new ArrayList<>();
-        wl.getPointList().forEach(p -> pointList.add(new ScadaObjectIdentifier(p.getId(), p.getXid(), p.getName())));
-        watchListUsers = ApplicationBeans.getWatchListGetShareUsersBean().getShareUsersWithProfile(wl);
+    public JsonWatchList(WatchList watchList) {
+        this.id = watchList.getId();
+        this.xid = watchList.getXid();
+        this.name = watchList.getName();
+        this.userId = watchList.getUserId();
+        pointList = watchList.getPointList().stream()
+                .map(DataPointVO::toIdentifier)
+                .collect(Collectors.toCollection(ArrayList::new));
+        watchListUsers = watchList.getWatchListUsers();
     }
 
     public int getUserId() {
@@ -56,6 +62,30 @@ public class JsonWatchList extends ScadaObjectIdentifier {
 
     public void setWatchListUsers(List<ShareUser> watchListUsers) {
         this.watchListUsers = watchListUsers;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public WatchList createWatchList() {

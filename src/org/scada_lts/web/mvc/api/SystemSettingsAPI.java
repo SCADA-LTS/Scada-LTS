@@ -407,7 +407,7 @@ public class SystemSettingsAPI {
     public ResponseEntity<JsonSettingsSystemInfo> getSystemInfo(HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
+            if (user != null) {
                 return new ResponseEntity<>(systemSettingsService.getSystemInfoSettings(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

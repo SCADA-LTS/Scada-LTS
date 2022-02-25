@@ -18,6 +18,7 @@
 package org.scada_lts.mango.adapter;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
@@ -87,4 +88,8 @@ public interface MangoDataPoint {
 	void savePointsInFolder(PointFolder folder);
 
 	List<PointHistoryCount> getTopPointHistoryCounts();
+
+	List<DataPointVO> searchDataPointsBy(String searchText);
+
+	List<DataPointVO> getDataPointsWithAccess(User user);
 }

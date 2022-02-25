@@ -99,6 +99,7 @@ docker/app/**
 .idea
 scadabr-1.1.0-RC.iml
 scadabr-1.1.0-RC_.iml
+${sys:catalina.base}/
 
 ###########################
 # jrebel
@@ -115,3 +116,4 @@ build
 databases
 gradlew
 gradlew.bat
+TEST*.xml
