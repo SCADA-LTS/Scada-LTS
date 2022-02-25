@@ -65,7 +65,9 @@ public final class WatchListApiUtils {
 
     public static WatchList getWatchListToRead(WatchList watchListToSave, User loggedUser) {
         WatchList watchListToRead = watchListToSave.copy();
-        watchListToRead.setPointList(filteringByAccess(loggedUser, watchListToSave.getPointList()));
+        List<DataPointVO> dataPoints = filteringByAccess(loggedUser, watchListToSave.getPointList());
+        watchListToRead.getPointList().clear();
+        watchListToRead.setPointList(dataPoints);
         watchListToRead.setWatchListUsers(watchListToSave.getWatchListUsers().stream()
                 .filter(share -> share.getUserId() == loggedUser.getId())
                 .collect(Collectors.toList()));
