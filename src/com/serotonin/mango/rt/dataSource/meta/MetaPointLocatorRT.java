@@ -196,7 +196,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         @Override
         public void run(long fireTime) {
             // Execute the update
-            execute(fireTime - vo.getExecutionDelaySeconds() * 1000, new ArrayList<Integer>());
+            execute(fireTime - vo.executionDelayMs(), new ArrayList<Integer>());
 
             // Schedule the next timeout.
             synchronized (LOCK) {
@@ -220,7 +220,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         }
         else
             timeout = DateUtils.next(time, updateEventId);
-        return timeout + vo.getExecutionDelaySeconds() * 1000;
+        return timeout + vo.executionDelayMs();
     }
 
     class ExecutionDelayTimeout extends TimerTask {
@@ -228,7 +228,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
         private final List<Integer> sourceIds;
 
         public ExecutionDelayTimeout(long updateTime, List<Integer> sourceIds) {
-            super(new OneTimeTrigger(new Date(updateTime + vo.getExecutionDelaySeconds() * 1000)));
+            super(new OneTimeTrigger(new Date(updateTime + vo.executionDelayMs())));
             this.updateTime = updateTime;
             this.sourceIds = sourceIds;
             timer.schedule(this);

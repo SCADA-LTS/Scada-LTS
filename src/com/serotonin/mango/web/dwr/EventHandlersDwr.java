@@ -215,7 +215,7 @@ public class EventHandlersDwr extends BaseDwr {
 		Permissions.ensureDataSourcePermission(Common.getUser(),
 				pointVO.getDataSourceId());
 
-		MangoValue value = MangoValue.stringToValue(valueStr, pointVO
+		MangoValue value = MangoValue.stringToValue(valueStr == null ? "0" : valueStr, pointVO
 				.getPointLocator().getDataTypeId());
 
 		Map<String, Object> model = new HashMap<String, Object>();
