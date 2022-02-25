@@ -544,37 +544,4 @@ public class SystemSettingsAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @GetMapping(value = "/dataPointRtSynchronized", produces = "application/json")
-    public ResponseEntity<Boolean> getDataPointRtSynchronized(HttpServletRequest request) {
-        LOG.info("/api/systemSettings/dataPointRtSynchronized");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(systemSettingsService.isDataPointRtValueSynchronized(), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping(value = "/dataPointRtSynchronized/{dataPointRtSynchronized}", consumes = "application/json")
-    public ResponseEntity<String> saveDataPointRtSynchronized(HttpServletRequest request, @PathVariable Boolean dataPointRtSynchronized) {
-        LOG.info("/api/systemSettings/dataPointRtSynchronized");
-        try {
-            User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                systemSettingsService.saveDataPointRtValueSynchronized(dataPointRtSynchronized);
-                return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

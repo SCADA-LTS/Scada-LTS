@@ -120,7 +120,7 @@ public class SystemSettingsDAO {
 	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
 	public static final String AGGREGATION_LIMIT_FACTOR = "aggregationLimitFactor";
 
-	public static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED = "dataPointRuntimeValueSynchronized";
+	public static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED = "dataPointRtValueSynchronized";
 
 	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
 	private static final String DELETE_MANGO_VIEWS = "delete from mangoViews";
