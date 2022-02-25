@@ -184,7 +184,7 @@ const watchListModule = {
         [updateWatchList]({dispatch, state}) {
             return new Promise((resolve, reject) => {
                 dispatch('requestPut', {
-                    url: '/watch-lists', data: WatchListJson.map(state.activeWatchList)
+                    url: '/watch-lists', data: WatchListJson.map(state.activeWatchList, state.pointWatcher)
                 }).then(resp => {
                     state.activeWatchList.saveDetails();
                     dispatch(setupWatchList, resp).then(wl => {

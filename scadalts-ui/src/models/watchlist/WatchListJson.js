@@ -10,7 +10,7 @@ export default class WatchListJson {
         this.watchListUsers = [];
     }
 
-    static map(wl) {
+    static map(wl, order = null) {
         if(!wl instanceof WatchList) {
             throw new Error("Not supported Type!")
         }
@@ -26,6 +26,9 @@ export default class WatchListJson {
         } else if (wl.pointList.length > 0 && wl.pointList[0].identifier.id !== undefined) {
             json.pointList = wl.pointList.map(
                 (p) => {return {id: p.identifier.id, xid: p.identifier.xid, name: p.identifier.name}});
+        }
+        if(!!order && order.length > 0) {
+            json.pointList = order.map(p => {return {id: p.id, xid: p.xid, name: p.name}});
         }
         return json;
     }
