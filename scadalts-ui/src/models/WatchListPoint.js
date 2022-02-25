@@ -10,7 +10,6 @@ export class WatchListPoint {
         this.description = description;
         this.dataSourceName = "";
         this.dataSourceEnabled = true;
-        this.order = -1;
         this.value = 0;
         this.timestamp = 0;
         this.events = [];
@@ -34,7 +33,7 @@ export class WatchListPoint {
      * @param {Object} pointEvents 
      * @returns 
      */
-    createWatchListPoint(dataPoint, pointValue, pointEvents, dataSourceStatus, order = -1, permission = 1) {
+    createWatchListPoint(dataPoint, pointValue, pointEvents, dataSourceStatus, permission = 1) {
         this.id = dataPoint.id;
         this.xid = dataPoint.xid;
         this.name = dataPoint.name;
@@ -47,7 +46,6 @@ export class WatchListPoint {
         this.description = dataPoint.description;
         this.dataSourceName = dataPoint.dataSourceName;
         this.dataSourceEnabled = dataSourceStatus.enabled;
-        this.order = order;
         this.value = pointValue.value;
         this.timestamp = new Date(pointValue.ts).toLocaleTimeString();
         this.events = pointEvents;

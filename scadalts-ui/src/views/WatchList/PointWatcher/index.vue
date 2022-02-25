@@ -144,12 +144,13 @@ import PointValueRenderer from './PointValueRenderer';
 
 import EventScadaItem from '@layout/lists/events/EventScadaItem';
 import WatchListPoint from '@models/WatchListPoint';
+import { updateWatchList } from '@s/watchList/actions';
 
 /**
  *
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default {
 	name: 'PointWatcher',
@@ -279,7 +280,6 @@ export default {
 						pv,
 						pointEvents,
 						ds,
-						map.get(String(pointId)),
 						dataPoint.accessType
 					);
 
@@ -292,8 +292,7 @@ export default {
 
 		checkMove: function (e) {
 			this.drag = false;
-			this.$store.commit('SET_POINT_MOVED', this.pointList);
-			this.$store.dispatch('updateWatchList');
+			this.$store.dispatch(updateWatchList);
 		},
 
 		countActiveEvents(eventTable) {
@@ -338,7 +337,7 @@ export default {
 		deletePointFromList(point) {
 			this.$store.commit('REMOVE_POINT_FROM_WATCHLIST', point);
 			this.pointList = this.pointList.filter((p) => p.id !== point.id);
-			this.$store.dispatch('updateWatchList');
+			this.$store.dispatch(updateWatchList);
 		},
 
 		showPointValueSetDialog(point) {

@@ -79,9 +79,10 @@ import ConfirmationDialog from '@dialogs/ConfirmationDialog';
 import PointWatcher from './PointWatcher';
 import PointChart from './PointChart/index.vue';
 import WatchListConfig from './WatchListConfig';
+import { createWatchList, deleteWatchList, updateWatchList } from '@s/watchList/actions';
 /**
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default {
 	name: 'WatchList',
@@ -106,7 +107,7 @@ export default {
 				return this.$store.state.watchListModule.activeWatchList;
 			},
 			set(newValue) {
-				return this.$store.dispatch('updateActiveWatchList', newValue);
+				return this.$store.commit('UPDATE_ACTIVE_WATCHLIST', newValue);
 			},
 		},
 
@@ -141,7 +142,7 @@ export default {
 		},
 
 		createWatchList() {
-			this.$store.dispatch('createWatchList').then((resp) => {
+			this.$store.dispatch(createWatchList).then((resp) => {
 				this.watchListsArray.push({
 					id: resp.id,
 					xid: resp.xid,
@@ -153,12 +154,12 @@ export default {
 		},
 
 		updateWatchList() {
-			this.$store.dispatch('updateWatchList');
+			this.$store.dispatch(updateWatchList);
 			this.$router.go();
 		},
 
 		deleteWatchList() {
-			this.$store.dispatch('deleteWatchList').then(() => {
+			this.$store.dispatch(deleteWatchList).then(() => {
 				this.watchListsArray = this.watchListsArray.filter(
 					(wl) => wl.id !== this.activeWatchList.id
 				);

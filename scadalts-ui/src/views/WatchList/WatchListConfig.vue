@@ -154,7 +154,7 @@
  *
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default {
 	name: 'WatchListConfig',
@@ -193,7 +193,7 @@ export default {
 				return this.$store.state.watchListModule.activeWatchList;
 			},
 			set(newValue) {
-				return this.$store.dispatch('updateActiveWatchList', newValue);
+				return this.$store.commit('UPDATE_ACTIVE_WATCHLIST', newValue);
 			},
 		},
 	},
