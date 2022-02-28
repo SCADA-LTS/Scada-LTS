@@ -46,6 +46,7 @@ import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
+import com.serotonin.mango.vo.TimePeriodType;
 import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
@@ -83,6 +84,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private String updateCronPattern;
     @JsonRemoteProperty
     private int executionDelaySeconds;
+    private TimePeriodType executionDelayPeriodType = TimePeriodType.SECONDS;
 
     public PointLocatorRT createRuntime() {
         return new MetaPointLocatorRT(this);
@@ -114,6 +116,28 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
     public void setExecutionDelaySeconds(int executionDelaySeconds) {
         this.executionDelaySeconds = executionDelaySeconds;
+    }
+
+    public TimePeriodType getExecutionDelayPeriodType() {
+        return executionDelayPeriodType;
+    }
+
+    public void setExecutionDelayPeriodType(TimePeriodType executionDelayPeriodType) {
+        this.executionDelayPeriodType = executionDelayPeriodType;
+    }
+
+    public int getExecutionDelayPeriodTypeCode() {
+        if(executionDelayPeriodType == null)
+            return 0;
+        return executionDelayPeriodType.getCode();
+    }
+
+    public void setExecutionDelayPeriodTypeCode(int code) {
+        this.executionDelayPeriodType = TimePeriodType.getType(code);
+    }
+
+    public long executionDelayMs() {
+        return getExecutionDelayPeriodType().toMs(getExecutionDelaySeconds());
     }
 
     public int getDataTypeId() {
@@ -257,7 +281,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     // Serialization
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 4;
+    private static final int version = 5;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -268,6 +292,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         out.writeInt(updateEvent);
         SerializationHelper.writeSafeUTF(out, updateCronPattern);
         out.writeInt(executionDelaySeconds);
+        out.writeObject(executionDelayPeriodType);
     }
 
     @SuppressWarnings("unchecked")
@@ -315,6 +340,16 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             updateCronPattern = SerializationHelper.readSafeUTF(in);
             executionDelaySeconds = in.readInt();
         }
+        else if (ver == 5) {
+            context = (List<IntValuePair>) in.readObject();
+            script = SerializationHelper.readSafeUTF(in);
+            dataTypeId = in.readInt();
+            settable = in.readBoolean();
+            updateEvent = in.readInt();
+            updateCronPattern = SerializationHelper.readSafeUTF(in);
+            executionDelaySeconds = in.readInt();
+            executionDelayPeriodType = (TimePeriodType) in.readObject();
+        }
     }
 
     @Override
@@ -353,6 +388,9 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 context.add(new IntValuePair(dp.getId(), var));
             }
         }
+
+        String delayPeriodType = json.getString("executionDelayPeriodType");
+        this.executionDelayPeriodType = TimePeriodType.getType(delayPeriodType);
     }
 
     @Override
@@ -373,5 +411,6 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             }
         }
         map.put("context", pointList);
+        map.put("executionDelayPeriodType", getExecutionDelayPeriodType());
     }
 }

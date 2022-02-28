@@ -78,7 +78,8 @@
       $set("updateEvent", locator.updateEvent);
       $set("updateCronPattern", locator.updateCronPattern);
       $set("executionDelaySeconds", locator.executionDelaySeconds);
-      
+      $set("executionDelayPeriodTypeCode", locator.executionDelayPeriodTypeCode);
+
       updateEventChanged();
 	        
   }
@@ -91,6 +92,7 @@
       locator.updateEvent = $get("updateEvent");
       locator.updateCronPattern = $get("updateCronPattern");
       locator.executionDelaySeconds = $get("executionDelaySeconds");
+      locator.executionDelayPeriodTypeCode = $get("executionDelayPeriodTypeCode");
       
       DataSourceEditDwr.saveMetaPointLocator(currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
   }
@@ -285,6 +287,11 @@
   
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.meta.delay"/></td>
-    <td class="formField"><input id="executionDelaySeconds" type="text" class="formShort"/></td>
+    <td class="formField">
+        <input id="executionDelaySeconds" type="text" class="formShort"/>
+        <sst:select id="executionDelayPeriodTypeCode">
+          <tag:timePeriodOptions sst="true" ms="true" s="true" min="true"/>
+        </sst:select>
+    </td>
   </tr>
 </tag:pointList>
