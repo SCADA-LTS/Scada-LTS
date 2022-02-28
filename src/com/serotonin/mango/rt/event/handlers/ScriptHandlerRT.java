@@ -5,13 +5,13 @@ import javax.script.ScriptException;
 import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
-import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorInitializationScript;
+import static com.serotonin.mango.util.LoggingScriptUtils.*;
 
 public class ScriptHandlerRT extends EventHandlerRT {
 
@@ -23,13 +23,17 @@ public class ScriptHandlerRT extends EventHandlerRT {
 
 	@Override
 	public void eventInactive(EventInstance evt) {
+		if(vo.getInactiveScriptCommand() == Common.NEW_ID) {
+			LOG.trace("Inactive script not set: " + generateContext(evt, vo));
+			return;
+		}
 		ScriptVO<?> script;
 		try {
 			script = new ScriptDao().getScript(vo
 					.getInactiveScriptCommand());
 		} catch (Exception ex) {
 			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
-			throw ex;
+			return;
 		}
 		if (script != null) {
 			try {
@@ -38,20 +42,23 @@ public class ScriptHandlerRT extends EventHandlerRT {
 				LOG.warn(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
 				LOG.warn(infoErrorExecutionScript(e, script));
-				throw e;
 			}
 		}
 	}
 
 	@Override
 	public void eventRaised(EventInstance evt) {
+		if(vo.getActiveScriptCommand() == Common.NEW_ID) {
+			LOG.trace("Active script not set: " + generateContext(evt, vo));
+			return;
+		}
 		ScriptVO<?> script;
 		try {
 			script = new ScriptDao().getScript(vo
 					.getActiveScriptCommand());
 		} catch (Exception ex) {
 			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
-			throw ex;
+			return;
 		}
 		if (script != null) {
 			try {
@@ -60,7 +67,6 @@ public class ScriptHandlerRT extends EventHandlerRT {
 				LOG.warn(infoErrorExecutionScript(e, script), e);
 			} catch (Exception e) {
 				LOG.warn(infoErrorExecutionScript(e, script));
-				throw e;
 			}
 		}
 	}

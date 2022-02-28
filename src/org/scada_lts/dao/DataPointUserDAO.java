@@ -133,7 +133,7 @@ public class DataPointUserDAO {
 		});
 	}
 
-	public List<DataPointAccess> getDataPointAccessList(final int userId) {
+	private List<DataPointAccess> getDataPointAccessList(final int userId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("getDataPointAccessList(final int userId) userId:" + userId);
@@ -173,6 +173,7 @@ public class DataPointUserDAO {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	@Deprecated
 	public void insertPermissions(final User user) {
 
 		if (LOG.isTraceEnabled()) {

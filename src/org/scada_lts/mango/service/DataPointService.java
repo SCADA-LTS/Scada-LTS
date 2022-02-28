@@ -20,8 +20,6 @@ package org.scada_lts.mango.service;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,6 +39,7 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import com.serotonin.mango.vo.permission.PermissionException;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.Tuple;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +58,8 @@ import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.AggregateSettings;
@@ -103,6 +104,8 @@ public class DataPointService implements MangoDataPoint {
 
 	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
+	private final GetObjectsWithAccess<DataPointVO, User> getDataPointsWithAccess;
+
 	public DataPointService() {
 		this.dataPointDAO = ApplicationBeans.getBean("dataPointDAO", DataPointDAO.class);
 		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
@@ -110,6 +113,7 @@ public class DataPointService implements MangoDataPoint {
 		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
 		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
 		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
+		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
 	}
 
 	@Override
@@ -171,6 +175,21 @@ public class DataPointService implements MangoDataPoint {
 		return dpList;
 	}
 
+	/**
+	 * Get PointList with permission validation
+	 *
+	 * Get All DataPoints with specific access permission.
+	 * To validate that you need to provide a user that should be
+	 * checked and the access type.
+	 *
+	 * @param user - User to validate
+	 * @return - Filtered list of DataPoints object
+	 */
+	@Override
+	public List<DataPointVO> getDataPointsWithAccess(User user) {
+		return getDataPointsWithAccess.getObjectsWithAccess(user);
+	}
+
 	public Map<DataPointVO, List<PointValue>> getDataPoints(String partOfNameDS, String typeDS, String partOfNamePoint, Date startTime, Date endTime) {
 
 		List<DataPointVO> listAllPoints = new LinkedList<>();
@@ -227,23 +246,6 @@ public class DataPointService implements MangoDataPoint {
 			}
 		}
 		return result;
-	}
-
-	@Deprecated
-	public void save(String value, String xid, int pointValueType) {
-		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
-
-		PointValueTime pvt = new PointValueDAO4REST().save(value, pointValueType, dpvo.getId());
-
-		if (dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
-			Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
-		} else {
-
-			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
-					dpvo.getId());
-
-			dpRT.updatePointValue(pvt);
-		}
 	}
 
 	public void save(User user, String value, String xid, int pointValueType) {
@@ -622,25 +624,6 @@ public class DataPointService implements MangoDataPoint {
 		return counts;
 	}
 
-	@Deprecated
-	public List<DataPointAccess> getDataPointAccessList(final int userId) {
-		return dataPointUserDAO.getDataPointAccessList(userId);
-	}
-
-    @Deprecated
-	public void deleteDataPointUser(int userId) {
-		dataPointUserDAO.delete(userId);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataPointPermissions();
-	}
-
-    @Deprecated
-	public void insertPermissions(User user) {
-		dataPointUserDAO.insertPermissions(user);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataPointPermissions();
-	}
-
 	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
 		JsonBinaryEventTextRenderer json = new JsonBinaryEventTextRenderer();
 		if (value == 0) {
@@ -744,5 +727,14 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO created = dataPointDAO.create(dataPoint);
 		Common.ctx.getRuntimeManager().saveDataPoint(created);
 		return created;
+	}
+
+	@Override
+	public List<DataPointVO> searchDataPointsBy(String searchText) {
+		if (searchText != null) {
+			String[] keywords = searchText.split("\\s+");
+			return searchDataPoints(keywords);
+		}
+		return getDataPoints(Comparator.comparing(DataPointVO::getName), false);
 	}
 }

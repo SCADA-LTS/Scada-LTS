@@ -62,6 +62,7 @@ import draggable from 'vuedraggable';
 
 import PointWatcher from './PointWatcher';
 import PointChart from './PointChart';
+import { loadWatchList } from '@s/watchList/actions';
 
 export default {
 	name: 'WatchListItem',
@@ -94,7 +95,7 @@ export default {
 				return this.$store.state.watchListModule.activeWatchList;
 			},
 			set(newValue) {
-				return this.$store.dispatch('updateActiveWatchList', newValue);
+				return this.$store.commit('UPDATE_ACTIVE_WATCHLIST', newValue);
 			},
 		},
 
@@ -104,12 +105,8 @@ export default {
 				if (!!user.admin || user.id === this.activeWatchList.user.id) {
 					return 2;
 				} else {
-					let entry = this.activeWatchList.watchListUsers.find(
-						(p) => p.userId === user.id
-					);
-					if (!!entry) {
-						return entry.accessType;
-					}
+					return this.activeWatchList.accessType === 3 
+						? 2 : this.activeWatchList.accessType;
 				}
 			}
 			return 0;
@@ -122,7 +119,7 @@ export default {
 
 	methods: {
 		async fetchWatchListDetails(watchListId) {
-			await this.$store.dispatch('getWatchListDetails', watchListId);
+			await this.$store.dispatch(loadWatchList, watchListId);
 			this.loadWatchListLayout();
 			this.$emit('routeChanged', Number(watchListId));
 		},
