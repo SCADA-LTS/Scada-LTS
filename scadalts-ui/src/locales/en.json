@@ -978,5 +978,18 @@
 	"watchlist.dialog.delete.title": "Delete Watch List",
 	"watchlist.dialog.delete.text": "Are you sure? That operation can not be undone?",
 	"watchlist.datapoint.pointvalue.set": "Set value:",
-	"watchlist.datapoint.pointvalue.new": "New value:"
+	"watchlist.datapoint.pointvalue.new": "New value:",
+	"event.system.compound": "Compound detector failure",
+	"event.system.email": "Email send failure",
+	"event.system.maxAlarmChanged": "Maximum alarm level changed",
+	"event.system.pointLink": "Point link failure",
+	"event.system.process": "Process event handler failure",
+	"event.system.setPoint": "Set point event handler failure",
+	"event.system.shutdown": "System shutdown",
+	"event.system.startup": "System startup",
+	"event.system.userLogin": "User login",
+	"watchdog.response.badRequest": "Check your request data!",
+	"watchdog.response.unauthorized": "You do not have permission to this action!",
+	"watchdog.response.unavailable": "Watchdog server is unreachable!",
+	"watchdog.response.unexpected": "Scada server error occurred!"
 }
