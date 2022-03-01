@@ -56,7 +56,7 @@ export default {
 	data() {
 		return {
 			content: '(n/a)',
-			renderer_color
+			renderer_color: '#212121',
 		};
 	},
 
