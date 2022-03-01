@@ -34,17 +34,17 @@ export default class TextRenderer {
         if (this.def.typeName === "textRendererPlain") {
             // defaulot color
         } else if (this.def.typeName === "textRendererBinary") {
-            if (ret == "true") {
-                ret = this.def.oneColour
+            if (value == "true") {
+                 ret = this.def.oneColour
             } else 
-            if (ret == "false") {
-                ret = this.def.zeroColour
+            if (value == "false") {
+                 ret = this.def.zeroColour
             }
         }  else if (this.def.typeName === "textRendererAnalog") {
             // default color
         } else if (this.def.typeName == "textRendererMultistate") {
             ret = this.def.multistateValues.filter(function(o){ return o.key==value})[0].colour
-            if (ret == null) {
+            if (value == null) {
                 ret = this.#DEFAULT_COLOR
             } 
         }
