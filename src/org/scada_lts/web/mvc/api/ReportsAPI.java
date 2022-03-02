@@ -1,38 +1,23 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.MailingListDao;
-import com.serotonin.mango.db.dao.ReportDao;
-import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
-import com.serotonin.mango.vo.DataPointExtendedNameComparator;
+import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.vo.report.ReportInstance;
+import com.serotonin.mango.vo.report.ReportJob;
 import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
-import com.serotonin.mango.web.dwr.beans.DataPointBean;
-import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.report.ReportInstancePointDAO;
 import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.ReportService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.utils.SQLPageWithTotal;
-import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
-import org.scada_lts.web.mvc.api.dto.EventDTO;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.web.mvc.api.dto.ReportDTO;
-import org.scada_lts.web.mvc.api.json.JsonEventSearch;
-import org.scada_lts.web.mvc.api.json.JsonIdSelection;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -113,65 +98,24 @@ public class ReportsAPI {
         LOG.info("GET::/api/reports/save");
         try {
             User user = Common.getUser(request);
-            ReportVO report = new ReportVO();
-
-            report.setUserId(user.getId());
-            report.setId(query.getId());
-            report.setName(query.getName());
-            List<ReportPointVO> reportPoints = new ArrayList<ReportPointVO>();
-            List<HashMap<String, Object>> points = query.getPoints();
-
-            for (HashMap<String, Object> dp : points) {
-                if (Permissions.hasAdmin(user) || Permissions.hasDataPointReadPermission(user, dataPointService.getDataPoint((Integer) dp.get("pointId")) )) {
-                    ReportPointVO p = new ReportPointVO();
-                    p.setPointId((Integer) dp.get("pointId"));
-                    p.setColour((String) dp.get("colour"));
-                    p.setConsolidatedChart((Boolean) dp.get("consolidatedChart" ));
-                    reportPoints.add(p);
-                }
-
-            }
-
-            report.setPoints(reportPoints);
-            report.setIncludeEvents(query.getIncludeEvents());
-            report.setIncludeUserComments(query.isIncludeUserComments());
-            report.setDateRangeType(query.getDateRangeType());
-            report.setRelativeDateType(query.getRelativeDateType());
-            report.setPreviousPeriodCount(query.getPreviousPeriodCount());
-            report.setPreviousPeriodType(query.getPreviousPeriodType());
-            report.setPastPeriodCount(query.getPastPeriodCount());
-            report.setPastPeriodType(query.getPastPeriodType());
-            report.setFromNone(query.isFromNone());
-            report.setFromYear(query.getFromYear());
-            report.setFromMonth(query.getFromMonth());
-            report.setFromDay(query.getFromDay());
-            report.setFromHour(query.getFromHour());
-            report.setFromMinute(query.getFromMinute());
-            report.setToNone(query.isToNone());
-            report.setToYear(query.getToYear());
-            report.setToMonth(query.getToMonth());
-            report.setToDay(query.getToDay());
-            report.setToHour(query.getToHour());
-            report.setToMinute(query.getToMinute());
-            report.setSchedule(query.isSchedule());
-            report.setSchedulePeriod(query.getSchedulePeriod());
-            report.setRunDelayMinutes(query.getRunDelayMinutes());
-            report.setScheduleCron(query.getScheduleCron());
-            report.setEmail(query.isEmail());
-            report.setIncludeData(query.isIncludeData());
-            report.setZipData(query.isZipData());
-            report.setRecipients(query.getRecipients());
-
-            reportService.saveReport(report);
-            List<RecipientListEntryBean> recipients;
-            if (user != null) {
-                return new ResponseEntity<String>(
-                        "Ok",
-                        HttpStatus.OK
-                );
-            } else {
+            if(user == null) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
+            List<HashMap<String, Object>> points = query.getPoints();
+            List<ReportPointVO> reportPoints = new ArrayList<>();
+            for (HashMap<String, Object> dp : points) {
+                Integer pointId = (Integer)dp.get("pointId");
+                if(pointId != null) {
+                    DataPointVO point = dataPointService.getDataPoint(pointId);
+                    if (point != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, point)) {
+                        reportPoints.add(ReportPointVO.newInstance(dp));
+                    }
+                }
+            }
+            ReportVO report = ReportVO.createReport(query, user, reportPoints);
+            reportService.saveReport(report);
+            ReportJob.scheduleReportJob(report);
+            return new ResponseEntity<>("Ok", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -183,33 +127,25 @@ public class ReportsAPI {
        try {
            User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                String[] toAddrs = new String[body.get("emails").size()];
-                for (int i = 0; i < body.get("emails").size(); i++) {
-                    toAddrs[i]= body.get("emails").get(i);
-                }
+                List<String> addresses = body.get("emails");
 
-                DwrResponseI18n response = new DwrResponseI18n();
-
-                if (toAddrs.length == 0)
-                    response.addGenericMessage("js.email.noRecipForEmail");
+                if (addresses == null || addresses.isEmpty())
+                    return new ResponseEntity<>(LocalizableMessage.getMessage(Common.getBundle(),"js.email.noRecipForEmail"), HttpStatus.BAD_REQUEST);
                 else {
-                    try {
-                        ResourceBundle bundle = Common.getBundle();
-                        Map<String, Object> model = new HashMap<String, Object>();
-                        model.put("user", Common.getUser());
-                        model.put("message", new LocalizableMessage(
-                               "reports.recipTestEmailMessage"));
-                        MangoEmailContent cnt = new MangoEmailContent("testEmail",
-                               model, bundle, I18NUtils.getMessage(bundle,
-                               "ftl.testEmail"), Common.UTF8);
-                        EmailWorkItem.queueEmail(toAddrs, cnt);
-                        return new ResponseEntity<String>(
-                                "OK",
-                                HttpStatus.OK
-                        );
-                    } catch (Exception e) {
-                        response.addGenericMessage("common.default", e.getMessage());
-                    }
+                    List<String> errors = new ArrayList<>();
+                    boolean sent = SendMsgUtils.sendEmailTestSync(new HashSet<>(addresses), new AfterWork() {
+                        @Override
+                        public void workFail(Exception exception) {
+                            errors.add(LocalizableMessage.getMessage(Common.getBundle(),"common.default", exception.getMessage()));
+                        }
+                        @Override
+                        public void workSuccess() {}
+                    });
+                    if(sent && errors.isEmpty())
+                        return new ResponseEntity<>("OK", HttpStatus.OK);
+                    if(!sent)
+                        return new ResponseEntity<>("Email has not been sent.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(errors.get(0), HttpStatus.BAD_REQUEST);
                 }
             } else {
                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -217,7 +153,6 @@ public class ReportsAPI {
        } catch (Exception e) {
            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
        }
-       return null;
    }
 
     /**

@@ -21,7 +21,6 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
-import com.serotonin.mango.web.dwr.beans.DataPointBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
@@ -245,7 +244,7 @@ public class DataPointAPI {
             HttpServletRequest request) {
         LOG.info("/api/datapoint/getAllByXid/{xid}");
 
-        if( !xid.isEmpty() || xid != null ) {
+        if(xid != null && !xid.isEmpty()) {
             try {
                 User user = Common.getUser(request);
                 if (user != null) {

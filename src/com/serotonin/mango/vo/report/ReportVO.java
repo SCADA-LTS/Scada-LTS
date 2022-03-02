@@ -40,6 +40,7 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.SerializationHelper;
 import org.scada_lts.mango.adapter.MangoUser;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.dto.ReportDTO;
 
 /**
  * @author Matthew Lohbihler
@@ -149,6 +150,43 @@ public class ReportVO implements Serializable, JsonSerializable {
         fromDay = dt.getDayOfMonth();
         fromHour = dt.getHourOfDay();
         fromMinute = dt.getMinuteOfHour();
+    }
+
+    public static ReportVO createReport(ReportDTO query, User user, List<ReportPointVO> reportPoints) {
+        ReportVO report = new ReportVO();
+        report.setUserId(user.getId());
+        report.setId(query.getId());
+        report.setName(query.getName());
+        report.setPoints(reportPoints);
+        report.setIncludeEvents(query.getIncludeEvents());
+        report.setIncludeUserComments(query.isIncludeUserComments());
+        report.setDateRangeType(query.getDateRangeType());
+        report.setRelativeDateType(query.getRelativeDateType());
+        report.setPreviousPeriodCount(query.getPreviousPeriodCount());
+        report.setPreviousPeriodType(query.getPreviousPeriodType());
+        report.setPastPeriodCount(query.getPastPeriodCount());
+        report.setPastPeriodType(query.getPastPeriodType());
+        report.setFromNone(query.isFromNone());
+        report.setFromYear(query.getFromYear());
+        report.setFromMonth(query.getFromMonth());
+        report.setFromDay(query.getFromDay());
+        report.setFromHour(query.getFromHour());
+        report.setFromMinute(query.getFromMinute());
+        report.setToNone(query.isToNone());
+        report.setToYear(query.getToYear());
+        report.setToMonth(query.getToMonth());
+        report.setToDay(query.getToDay());
+        report.setToHour(query.getToHour());
+        report.setToMinute(query.getToMinute());
+        report.setSchedule(query.isSchedule());
+        report.setSchedulePeriod(query.getSchedulePeriod());
+        report.setRunDelayMinutes(query.getRunDelayMinutes());
+        report.setScheduleCron(query.getScheduleCron());
+        report.setEmail(query.isEmail());
+        report.setIncludeData(query.isIncludeData());
+        report.setZipData(query.isZipData());
+        report.setRecipients(query.getRecipients());
+        return report;
     }
 
     public int getId() {

@@ -442,30 +442,41 @@ export default {
 		},
 
 		initDateTimeFields() {
-			const today = new Date();
+
+			const todayFormatted = new Date().toISOString();
+			const todayDateFormatted = todayFormatted.substring(0, 10);
+			const todayTimeFormatted = todayFormatted.substring(11, 16);
+
+			const fromFormatted = new Date(Date.UTC(this.report.fromYear, this.report.fromMonth - 1, this.report.fromDay, this.report.fromHour, this.report.fromMinute)).toISOString();
+            const fromDateFormatted = fromFormatted.substring(0, 10);
+            const fromTimeFormatted = fromFormatted.substring(11, 16);
+
+            const toFormatted = new Date(Date.UTC(this.report.toYear, this.report.toMonth - 1, this.report.toDay, this.report.toHour, this.report.toMinute)).toISOString();
+            const toDateFormatted = toFormatted.substring(0, 10);
+            const toTimeFormatted = toFormatted.substring(11, 16);
 
 			if(this.report.fromYear === 0 && this.report.fromMonth === 0 && this.report.fromDay === 0) {
-				this.startDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+				this.startDate = todayDateFormatted;
 			} else {
-				this.startDate = `${this.report.fromYear}-${this.report.fromMonth}-${this.report.fromDay}`;
+				this.startDate = fromDateFormatted;
 			}
 
 			if(this.report.fromHour === 0 && this.report.fromMinute === 0) {
 				this.startTime = `00:00`;
 			} else {
-				this.startTime = `${this.report.fromHour}:${this.report.fromMinute}`;
+				this.startTime = fromTimeFormatted;
 			}
 
 			if(this.report.toYear === 0 && this.report.toMonth === 0 && this.report.toDay === 0) {
-				this.endDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+				this.endDate = todayDateFormatted;
 			} else {
-				this.endDate = `${this.report.fromYear}-${this.report.fromMonth}-${this.report.fromDay}`;
+				this.endDate = toDateFormatted;
 			}
 
 			if(this.report.toHour === 0 && this.report.toMinute === 0) {
-				this.endTime = `${today.getHours()}:${today.getMinutes()}`;
+				this.endTime = todayTimeFormatted;
 			} else {
-				this.endTime = `${this.report.fromHour}:${this.report.fromMinute}`;
+				this.endTime = toTimeFormatted;
 			}
 		},
 
