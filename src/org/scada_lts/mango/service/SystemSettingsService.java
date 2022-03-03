@@ -128,7 +128,7 @@ public class SystemSettingsService {
         json.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
         json.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
-        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
         return json;
     }
 
@@ -141,7 +141,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, json.getFutureDateLimitPeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, json.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, json.isDataPointRuntimeValueSynchronized());
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, String.valueOf(json.isDataPointRuntimeValueSynchronized()));
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {

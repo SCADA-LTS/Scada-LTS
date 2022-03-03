@@ -145,7 +145,7 @@ public class SystemSettingsDwr extends BaseDwr {
 				.getValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR));
 
 		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsDAO
-				.getBooleanValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+				.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
 
 		return settings;
 	}
@@ -314,10 +314,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
-
-		systemSettingsDAO.setBooleanValue(
+		systemSettingsDAO.setValue(
 				SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
-				dataPointRtValueSynchronized);
+				String.valueOf(dataPointRtValueSynchronized));
 	}
 
 	@MethodFilter
