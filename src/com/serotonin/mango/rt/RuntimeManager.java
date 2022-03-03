@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.serotonin.mango.db.dao.*;
+import com.serotonin.mango.rt.dataImage.*;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
@@ -48,11 +49,6 @@ import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.dataImage.DataPointEventMulticaster;
-import com.serotonin.mango.rt.dataImage.DataPointListener;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
@@ -472,8 +468,7 @@ public class RuntimeManager {
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
 				// Change the VO into a data point implementation.
-				DataPointRT dataPoint = new DataPointRT(vo, vo
-						.getPointLocator().createRuntime());
+				DataPointRT dataPoint = createDataPointRT(vo);
 
 				// Add/update it in the data image.
 				dataPoints.put(dataPoint.getId(), dataPoint);
@@ -488,6 +483,13 @@ public class RuntimeManager {
 				ds.addDataPoint(dataPoint);
 			}
 		}
+	}
+
+	public static DataPointRT createDataPointRT(DataPointVO vo) {
+		boolean dataPointRtSynchronized = new SystemSettingsService().isDataPointRtValueSynchronized();
+		if(dataPointRtSynchronized)
+			return new DataPointSynchronizedRT(vo, vo.getPointLocator().createRuntime());
+		return new DataPointRT(vo, vo.getPointLocator().createRuntime());
 	}
 
 	private void startDataPointSafe(DataPointVO vo) {

@@ -445,5 +445,6 @@
 	"watchdog.response.badRequest": "Check your request data!",
 	"watchdog.response.unauthorized": "You do not have permission to this action!",
 	"watchdog.response.unavailable": "Watchdog server is unreachable!",
-	"watchdog.response.unexpected": "Scada server error occurred!"
+	"watchdog.response.unexpected": "Scada server error occurred!",
+	"systemsettings.misc.dataPointRuntimeValueSynchronized": "Datapoint runtime value synchronized"
 }
