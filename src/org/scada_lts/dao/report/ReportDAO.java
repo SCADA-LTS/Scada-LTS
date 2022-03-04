@@ -18,11 +18,14 @@
 package org.scada_lts.dao.report;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.ReportVO;
+import com.serotonin.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SerializationData;
+import org.scada_lts.utils.SqlUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -37,7 +40,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for Report
@@ -155,6 +160,37 @@ public class ReportDAO {
 		return DAO.getInstance().getJdbcTemp().query(REPORT_SELECT, new ReportRowMapper());
 	}
 
+	public List<ReportVO> search(Map<String, String> query) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getReports()");
+		}
+		StringBuilder sql = new StringBuilder();
+		List<String> filterCondtions = new ArrayList<String>();
+		List<Object> params = new ArrayList<Object>();
+		if (query.containsKey("keywords") && !"".equals(query.get("keywords"))) {
+			List<String> keywordConditions = new ArrayList<String>();
+
+			for (String keyword : query.get("keywords").split(" ")) {
+				keywordConditions.add("R.name LIKE ?");
+				params.add("%" + keyword + "%");
+			}
+
+			filterCondtions.add(SqlUtils.joinOr(keywordConditions));
+		}
+
+		sql.append("SELECT "
+			+ COLUMN_NAME_DATA + ", "
+			+ COLUMN_NAME_ID + ", "
+			+ COLUMN_NAME_XID + ", "
+			+ COLUMN_NAME_USER_ID + ", "
+			+ COLUMN_NAME_NAME + " "
+			+ "FROM reports R ");
+		sql.append(" WHERE " + SqlUtils.joinAnd(filterCondtions));
+
+		return DAO.getInstance().getJdbcTemp().query(sql.toString(), new ReportRowMapper());
+	}
+
 	public List<ReportVO> getReports(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -212,4 +248,6 @@ public class ReportDAO {
 
 		DAO.getInstance().getJdbcTemp().update(REPORT_DELETE, new Object[]{id});
 	}
+
+	
 }

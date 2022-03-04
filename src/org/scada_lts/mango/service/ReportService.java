@@ -33,11 +33,13 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -45,6 +47,7 @@ import java.util.ResourceBundle;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class ReportService implements MangoReport {
 
 	//	@Autowired
@@ -89,6 +92,10 @@ public class ReportService implements MangoReport {
 	@Override
 	public List<ReportVO> getReports(int userId) {
 		return reportDAO.getReports(userId);
+	}
+
+	public List<ReportVO> search(Map<String, String> query) {
+		return reportDAO.search(query);
 	}
 
 	@Override

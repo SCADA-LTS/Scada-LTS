@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.serotonin.json.*;
@@ -27,6 +28,14 @@ public class ReportPointVO implements Serializable, JsonSerializable {
     private String colour;
     @JsonRemoteProperty
     private boolean consolidatedChart;
+
+    public static ReportPointVO newInstance(HashMap<String, Object> dp) {
+        ReportPointVO reportPointVO = new ReportPointVO();
+        reportPointVO.setPointId((Integer) dp.get("pointId"));
+        reportPointVO.setColour((String) dp.get("colour"));
+        reportPointVO.setConsolidatedChart((Boolean) dp.get("consolidatedChart"));
+        return reportPointVO;
+    }
 
     public int getPointId() {
         return pointId;

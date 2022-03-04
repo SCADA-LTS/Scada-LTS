@@ -1,7 +1,6 @@
 package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
@@ -10,7 +9,6 @@ import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.rt.maint.work.EmailNotificationWorkItem;
-import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
@@ -154,6 +152,29 @@ public final class SendMsgUtils {
         } catch (Exception e) {
             LOG.error(MessageFormat.format("Info about email: {0}, StackTrace: {1}",
                     getInfoEmail(evt,notificationType,alias),
+                    ExceptionUtils.getStackTrace(e)));
+            return false;
+        }
+    }
+
+    public static boolean sendEmailTestSync(Set<String> addresses, AfterWork afterWork) {
+        try {
+
+            SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
+
+            MangoEmailContent content = EmailContentUtils.createEmailTest();
+            String[] toAddrs = addresses.toArray(new String[0]);
+
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+
+            // Send the email.
+            EmailNotificationWorkItem emailNotificationWorkItem = EmailNotificationWorkItem.newInstance(internetAddresses, content, afterWork, sendEmailConfig);
+            emailNotificationWorkItem.execute();
+            return true;
+
+        } catch (Exception e) {
+            LOG.error(MessageFormat.format("Info about email: {0}, StackTrace: {1}",
+                    "test",
                     ExceptionUtils.getStackTrace(e)));
             return false;
         }

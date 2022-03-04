@@ -244,7 +244,7 @@ public class DataPointAPI {
             HttpServletRequest request) {
         LOG.info("/api/datapoint/getAllByXid/{xid}");
 
-        if( !xid.isEmpty() || xid != null ) {
+        if(xid != null && !xid.isEmpty()) {
             try {
                 User user = Common.getUser(request);
                 if (user != null) {
