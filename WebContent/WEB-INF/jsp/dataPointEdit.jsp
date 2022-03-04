@@ -20,8 +20,8 @@
 
 <tag:page dwr="DataPointEditDwr">
 
-     <link href="resources/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
-     <script type="text/javascript" src="resources/sweetalert2/dist/sweetalert2.min.js"></script>
+     <link href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
+     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
      <style type="text/css">
 
