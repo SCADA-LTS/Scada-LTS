@@ -10,6 +10,7 @@ import VueLogger from 'vuejs-logger';
 import VueDayjs from 'vue-dayjs-plugin';
 
 import IsAlive from './components/graphical_views/IsAlive';
+import Watchdog from './components/graphical_views/watchdog';
 import CMP from './components/graphical_views/cmp/CMP';
 import AutoManual from './components/graphical_views/cmp2/AutoManual'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
@@ -108,6 +109,29 @@ if (window.document.getElementById('app-isalive') != undefined) {
 	}).$mount('#app-isalive');
 }
 
+const watchdogId = "app-isalive2";
+if (!!window.document.getElementById(watchdogId)) {
+	const watchdogEl = document.getElementById(watchdogId);
+	new Vue({
+		store,
+		i18n,
+		vuetify,
+		render: (h) =>
+			h(Watchdog, {
+				props: {
+					name: watchdogEl.getAttribute('name'),
+					interval: watchdogEl.getAttribute('interval') !== null ? Number(watchdogEl.getAttribute('interval')) : 10000,
+					wdHost: watchdogEl.getAttribute('wd-host'),
+					wdPort: watchdogEl.getAttribute('wd-port') !== null ? Number(watchdogEl.getAttribute('wd-port')) : null,
+					wdMessage: watchdogEl.getAttribute('wd-message'),
+					dpValidation: watchdogEl.getAttribute('dp-validation') !== null ? JSON.parse(watchdogEl.getAttribute('dp-validation')) : null,
+					dpBreak: watchdogEl.getAttribute('dp-break') !== null,
+					dpWarnAsFail: watchdogEl.getAttribute('dp-warn-as-fail') !== null,
+				},
+			}),
+	}).$mount(`#${watchdogId}`);
+}
+
 for (let i = 0; i < 20; i++) {
 	const cmpId = `app-cmp-${i}`;
 	if (window.document.getElementById(cmpId) != undefined) {
@@ -144,15 +168,15 @@ for (let i = 0; i < 10; i++) {
 					props: {
 						pConfig: JSON.parse(el.getAttribute('pconfig')),
 						pLabel: el.getAttribute('plabel'),
-						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null  ? el.getAttribute('ptimeRefresh') : 10000,
+						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null ? el.getAttribute('ptimeRefresh') : 10000,
 						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
 						pZeroState: el.getAttribute('pzeroState') !== null ? el.getAttribute('pzeroState') : 'Auto',
-						pWidth: el.getAttribute('pwidth') !== null  ? el.getAttribute('pwidth') : 140,
+						pWidth: el.getAttribute('pwidth') !== null ? el.getAttribute('pwidth') : 140,
 						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
 						pHideControls: el.getAttribute('phideControls') !== null,
 						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
 					},
-				})			
+				})
 		}).$mount('#' + cmpId);
 	}
 }

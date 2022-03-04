@@ -12,7 +12,9 @@ import dataSourceRoutes from './routes-datasources';
 import eventRoutes from './routes-events';
 
 import GraphicalView from '../views/GraphicalViews';
-import Reports from '../views/Reports';
+import ReportTabs from '../views/Reports/ReportTabs';
+import ReportsPage from '../views/Reports/ReportsPage';
+import ReportsData from '../views/Reports/ReportsData';
 import SynopticPanelMenu from '../views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from '../views/SynopticPanel/SynopticPanelItem';
 import WatchList from '../views/WatchList';
@@ -66,15 +68,14 @@ const routing = new Router({
 				},
 			],
 		},
-        {
-            path: '/reports',
+		{
+			path: '/reports',
 			name: 'reports',
-			component: Reports,
+			component: ReportTabs,
 			meta: {
-                requiresAuth: true
-            }
-
-        },
+				requiresAuth: true,
+			}
+		},
 		{
 			path: '/watch-list',
 			name: 'watch-list',

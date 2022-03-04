@@ -151,6 +151,7 @@ public class EventsAPI {
      */
     @PostMapping(value = "/search")
     public ResponseEntity<List<EventDTO>> getEvents(@RequestBody JsonEventSearch query, HttpServletRequest request) {
+
             LOG.info("POST::/api/events/search/");
         try {
             User user = Common.getUser(request);

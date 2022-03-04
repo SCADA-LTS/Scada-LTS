@@ -1,6 +1,5 @@
 package org.scada_lts.web.mvc.api.json;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

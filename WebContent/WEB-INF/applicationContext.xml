@@ -177,4 +177,23 @@
 
   <bean id="sessionRepository" class="org.springframework.session.MapSessionRepository"/>
   <!-- -->
+
+  <!-- Point Hierarchy -->
+  <bean id="dataPointDAO" class="org.scada_lts.dao.DataPointDAO"/>
+  <bean id="hierarchyDAO" class="org.scada_lts.dao.HierarchyDAO"/>
+  <bean id="pointHierarchyXidDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO" />
+  <bean id="pointHierarchyDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyDAO" />
+
+  <bean id="pointHierarchyXidService" class="org.scada_lts.service.pointhierarchy.PointHierarchyXidService" >
+    <constructor-arg ref="pointHierarchyXidDAO"/>
+    <constructor-arg ref="dataPointDAO"/>
+    <constructor-arg ref="hierarchyDAO"/>
+  </bean>
+
+  <bean id="pointHierarchyService" class="org.scada_lts.service.pointhierarchy.PointHierarchyService"  >
+    <constructor-arg ref="pointHierarchyXidDAO"/>
+    <constructor-arg ref="dataPointDAO"/>
+    <constructor-arg ref="hierarchyDAO"/>
+  </bean>
+  <!-- -->
 </beans>

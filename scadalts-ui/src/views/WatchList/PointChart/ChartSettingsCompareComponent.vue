@@ -255,6 +255,8 @@ export default {
 					};
 					this.pointList.push(pointDetails);
 					resolve(true);
+				}).catch(() => {
+					resolve(false);
 				});
 			});
 		},

@@ -129,6 +129,7 @@ public class ReportsDwr extends BaseDwr {
         Permissions.ensureReportPermission(user, report);
 
         // Update the new values.
+        report.setUserId(user.getId());
         report.setName(name);
         report.setPoints(points);
         report.setIncludeEvents(includeEvents);

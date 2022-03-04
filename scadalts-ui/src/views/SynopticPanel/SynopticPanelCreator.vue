@@ -1,11 +1,5 @@
 <template>
 	<v-dialog v-model="dialogVisible" max-width="500px">
-		<template v-slot:activator="{ on, attrs }">
-			<v-btn elevation="0" fab v-bind="attrs" v-on="on">
-				<v-icon>mdi-plus</v-icon>
-			</v-btn>
-		</template>
-
 		<v-card id="dialog-synoptic-panel-creation">
 			<v-card-title> {{$t('synopticpanels.creator.title')}} </v-card-title>
 
@@ -41,8 +35,9 @@
  * Synoptic Panel component - Item creator
  *
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
+import SynopticPanel from './SynopticPanel';
 export default {
 	name: 'SynopticPanelCreator',
 
@@ -50,13 +45,7 @@ export default {
 		return {
 			dialogVisible: false,
 			loadedImage: undefined,
-			synopticPanel: {
-				id: -1,
-				name: '',
-				xid: 'SP_',
-				vectorImage: '',
-				componentData: '[]',
-			},
+			synopticPanel: new SynopticPanel(),
 		};
 	},
 
@@ -69,6 +58,16 @@ export default {
 				.catch((e) => {
 					console.error(e);
 				});
+		},
+
+		async showDialog() {
+			this.dialogVisible = true;
+			this.resetToDefaults();
+			try {
+				this.synopticPanel.xid = await this.$store.dispatch('getSynopticPanelUniqueXid');
+			} catch (e) {
+				console.warn("Failed to get unique xid for synoptic panel");
+			}
 		},
 
 		closeDialog() {
@@ -92,13 +91,7 @@ export default {
 
 		resetToDefaults() {
 			this.loadedImage = null;
-			this.synopticPanel = {
-				id: -1,
-				name: '',
-				xid: 'SP_',
-				vectorImage: '',
-				componentData: '[]',
-			}
+			this.synopticPanel = new SynopticPanel();
 		}
 	},
 };

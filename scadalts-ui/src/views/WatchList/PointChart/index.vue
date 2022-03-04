@@ -148,9 +148,8 @@ export default {
 
 	watch: {
 		pointList(oldValue, newValue) {
-			console.log(oldValue);
 			if (oldValue.length !== newValue.length) {
-				console.debug('ChartLOADDDED');
+				console.debug('Chart Loaded');
 				this.init();
 			}
 		},
@@ -158,13 +157,15 @@ export default {
 
 	methods: {
 		async init() {
-			this.chartLoading = true;
-			this.initSettings();
-			this.loadSettings();
-			this.chartLoading = false;
-			await this.initDefaultConfiguration();
-			this.initChart();
-			this.renderChart();
+			if(this.pointList.length > 0) {
+				this.chartLoading = true;
+				this.initSettings();
+				this.loadSettings();
+				this.chartLoading = false;
+				await this.initDefaultConfiguration();
+				this.initChart();
+				this.renderChart();
+			}
 		},
 
 		async initDefaultConfiguration() {

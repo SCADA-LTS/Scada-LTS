@@ -40,6 +40,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 /**
  * @author Matthew Lohbihler
@@ -186,5 +187,20 @@ public class WatchList implements JsonSerializable {
                     watchListUsers.add(shareUser);
             }
         }
+    }
+
+    public ScadaObjectIdentifier toIdentifier() {
+        return new ScadaObjectIdentifier(getId(), getXid(), getName());
+    }
+
+    public WatchList copy() {
+        WatchList watchList = new WatchList();
+        watchList.setId(id);
+        watchList.setXid(xid);
+        watchList.setUserId(userId);
+        watchList.setName(name);
+        watchList.setPointList(new ArrayList<>(pointList));
+        watchList.setWatchListUsers(new ArrayList<>(watchListUsers));
+        return watchList;
     }
 }

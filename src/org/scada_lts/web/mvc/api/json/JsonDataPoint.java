@@ -1,5 +1,7 @@
 package org.scada_lts.web.mvc.api.json;
 
+import com.serotonin.mango.vo.DataPointVO;
+
 public class JsonDataPoint {
 
     private int id;
@@ -22,6 +24,18 @@ public class JsonDataPoint {
         this.datasourceName = datasourceName;
         this.typeId = typeId;
         this.settable = settable;
+    }
+
+    public static JsonDataPoint newInstance(DataPointVO point) {
+        return new JsonDataPoint(
+                point.getId(),
+                point.getName(),
+                point.getXid(),
+                point.isEnabled(),
+                point.getDescription(),
+                point.getDataSourceName(),
+                point.getPointLocator().getDataTypeId(),
+                point.getPointLocator().isSettable());
     }
 
     public int getId() {
