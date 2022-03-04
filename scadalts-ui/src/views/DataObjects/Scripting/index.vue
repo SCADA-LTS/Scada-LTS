@@ -156,6 +156,17 @@
 			:title="$t('scriptList.dialog.conf.header')"
 			:message="$t('scriptList.dialog.conf.message')"
 		></ConfirmationDialog>
+
+		<div class="text-center ma-2">
+			<v-snackbar v-model="snackbar">
+				{{ snackbarMessage }}
+				<template v-slot:action="{ attrs }">
+					<v-btn color="pink" text v-bind="attrs" @click="snackbar = false">{{
+						$t('common.close')
+					}}</v-btn>
+				</template>
+			</v-snackbar>
+		</div>
 	</div>
 </template>
 <style scoped>
@@ -205,6 +216,9 @@ export default {
 			ruleMaxLen40: (v) => !!(v.length < 40) || this.$t('validation.rule.maxLen')+40,
 			ruleMaxLen50: (v) => !!(v.length < 50) || this.$t('validation.rule.maxLen')+50,
 			ruleXidUnique: (v) => !!this.xidUnique || this.$t('validation.rule.xid.notUnique'),
+			ruleValidScriptBody: (v) => !this.scriptBodyErrors || this.$t('validation.rule.xid.notUnique'),
+			snackbarMessage: '',
+			snackbar: false,
 			dialog: false,
 			search: '',
 			scriptListFiltered: [],
@@ -284,6 +298,14 @@ export default {
 			this.xidUnique = response.xidRepeated === 'false' ? true: false;
 			this.$refs.xidInput.validate();
 		},
+
+		async validateScriptBody() {
+			const response = await this.$store.dispatch('validateScriptBody', this.scriptForm)
+
+			alert(JSON.stringify(response))
+			this.scriptBodyErrors = response.scriptBodyErrors;
+			this.$refs.scriptBodyTextarea.validate();
+		},
 		async createNewScript() {
 			this.selectedScriptId = -1;
 
@@ -300,7 +322,7 @@ export default {
 			} catch (e) {
 				this.scriptForm.xid = ''
 			}
-			
+
 			if(!!this.$refs.editForm) this.$refs.editForm.resetValidation();
 			this.dialog = true;
 		},
@@ -380,27 +402,29 @@ export default {
 				this.$store.dispatch('showSuccessNotification', this.$t('scriptList.successfulScriptExecution'));
 			} catch (e) {
 				this.$store.dispatch('showErrorNotification', this.$t('scriptList.failedScriptExecution'));
-			}	
+			}
 		},
 		async saveAndRunScript(xid) {
 			await this.saveScript(false);
 			this.runScript(xid);
 		},
-		
+
 		async saveScript(closeOnSaveConfirmation = true) {
 			if (this.$refs.editForm.validate()) {
 				let method = this.selectedScriptId != -1 ? 'updateScript' : 'createScript';
-				await this.$store.dispatch(method, this.scriptForm); 
+				await this.$store.dispatch(method, this.scriptForm);
 				this.fetchScriptList();
 				this.$store.dispatch('showSuccessNotification', this.$t('scriptList.scriptSaved'));
 				if (closeOnSaveConfirmation) this.dialog = false
 			}
-            
+
 		},
 		async deleteScript(id) {
 			this.scriptList = await this.$store.dispatch('deleteScript', id);
 			this.fetchScriptList();
 			this.dialog = false;
+            this.snackbar = true;
+            this.snackbarMessage = `${this.$t('scriptList.deletedScript')} #${id}`;
 			this.$store.dispatch('showSuccessNotification', `${this.$t('scriptList.deletedScript')} #${id}`);
 		},
 
