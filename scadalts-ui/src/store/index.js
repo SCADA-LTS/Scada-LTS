@@ -5,6 +5,7 @@ import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
 import storeReports from './reports';
 import storeEvents from './events';
+import storeScripts from './scripts';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import pointHierarchy from './pointHierarchy';
@@ -42,6 +43,7 @@ export default new Vuex.Store({
 		alarms,
 		storeUsers,
 		notificationModule,
+		storeScripts,
 		userProfileModule,
 		systemSettings,
 		storeMailingList,

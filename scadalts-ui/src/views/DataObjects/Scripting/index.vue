@@ -1,7 +1,7 @@
 <template>
 	<div>
-		<h1>{{ $t('scripts.title') }}</h1>
-		{{scriptList}}
+		<h1>{{ $t('scriptList.title') }}</h1>
+
 		<v-container fluid v-if="!!scriptList">
 			<v-card>
 				<v-card-title>
@@ -9,7 +9,7 @@
 						v-model="search"
 						@input="fetchScriptList"
 						append-icon="mdi-magnify"
-						label="Search"
+						:label="$t('common.search')"
 						class="mr-2"
 						single-line
 						hide-details
@@ -28,12 +28,13 @@
 					@click:row="selectScript($event.id)"
 				>
 					<template v-slot:item.actions="{ item }">
-						<v-icon class="mr-2" border="0" @click.stop="runScript(item.xid)" title="run">
-							mdi-cog
-						</v-icon>
-						<v-icon border="0" @click.stop="deleteScript(item.id)" title="delete">
-							mdi-delete
-						</v-icon>
+						<v-btn icon @click.stop="runScript(item.xid)">
+							<v-icon title="run">mdi-cog</v-icon>
+						</v-btn>
+
+						<v-btn icon @click.stop="onScriptDelete(item.id)">
+							<v-icon title="delete">mdi-delete</v-icon>
+						</v-btn>
 					</template>
 				</v-data-table>
 			</v-card>
@@ -44,49 +45,51 @@
 				v-model="dialog"
 				v-show="selectedScriptId !== null"
 				@change="selectedScriptId = null"
+				max-width="800px"
 			>
 				<v-card>
 					<v-card-title>
 						<v-row>
-							<v-col v-if="selectedScriptId != -1" cols="6">Script #{{ selectedScriptId }}</v-col>
+							<v-col v-if="selectedScriptId != -1" cols="6">{{$t('scriptList.title')}} #{{ selectedScriptId }}</v-col>
 							<v-col v-else cols="6">{{ $t('scriptList.newScript') }}</v-col>
-							<v-col cols="12">
+							<v-col cols="4">
 								<v-btn
 									v-if="selectedScriptId != -1"
-									class="mr-2"
-									color="blue"
-									@click="runScript(selectedScript.xid)"
+									block
+									elevation="1"
+									@click="saveAndRunScript(selectedScript.xid)"
 								>
 									<v-icon>mdi-cog</v-icon>
-									{{ $t('scriptList.run') }}
+									{{ $t('scriptList.saveRun') }}
 								</v-btn>
-
+							</v-col>
+							<v-col cols="2">
 								<v-btn
 									v-if="selectedScriptId != -1"
-									@click="deleteScript(selectedScriptId)"
-									class="mr-2"
-									color="red"
+									@click="onScriptDelete(selectedScriptId)"
+									block
+									elevation="1"
+									color="error"
 								>
 									<v-icon>mdi-delete</v-icon>
-									{{ $t('scriptList.delete') }}
+									{{ $t('common.delete') }}
 								</v-btn>
 							</v-col>
 						</v-row>
 					</v-card-title>
 					<v-card-text>
-						<form>
+						<v-form ref="editForm">
 							<v-row>
-								<v-col cols="6">
-									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid"  v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique, ruleMaxLen50 ]"></v-text-field>
-								</v-ruleXidUniquValidScriptBodyext-field>
-								</v-col>
 								<v-col cols="6">
 									<v-text-field :label="$t('common.name')" v-model="scriptForm.name" :rules="[ruleNotNull, ruleMaxLen40 ]"></v-text-field>
 								</v-col>
 								<v-col cols="6">
+									<v-text-field ref="xidInput" :label="$t('common.xid')" @input="validateXid" v-model="scriptForm.xid" :rules="[ruleNotNull, ruleXidUnique, ruleMaxLen50 ]"></v-text-field>
+								</v-col>
+								<v-col cols="6">
 									<v-select
 										item-value="id"
-										placeholder="select datapoint"
+										:placeholder="$t('scriptList.selectDatapoint')"
 										item-text="name"
 										v-model="selectedDatapointId"
 										@change="addDatapoint"
@@ -116,35 +119,43 @@
 								<v-col cols="6">
 									<v-text-field
 										v-model="scriptForm.datapointContext"
-										label="Datapoints commands"
+										:label="$t('scriptList.dialog.command.datapoints')"
 									></v-text-field>
 								</v-col>
 								<v-col cols="6">
 									<v-text-field
 										v-model="scriptForm.datasourceContext"
-										label="Datasources commands"
+										:label="$t('scriptList.dialog.command.datasources')"
 									></v-text-field>
 								</v-col>
 							</v-row>
-							<v-textarea @input="validateScriptBody" :rules="[ruleNotNull, ruleValidScriptBody]"
+							<v-textarea :rules="[ruleNotNull]"
 								style="width: 100%; font-family: monospace"
 								:label="$t('scriptList.script')"
 								v-model="scriptForm.script"
 								ref="scriptBodyTextarea"
 							></v-textarea>
-						</form>
+						</v-form>
 					</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
 						<v-btn  text @click="dialog = false"> Close </v-btn>
-						<v-btn class="mr-2 primary" @click="saveScript()">
+						<v-btn elevation="1" color="primary" @click="saveScript()">
 							<v-icon>mdi-content-save</v-icon>
-							{{ $t('scriptList.save') }}
+							{{ $t('common.save') }}
 						</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
 		</v-row>
+
+		<ConfirmationDialog
+			:btnvisible="false"
+			ref="deleteScriptDialog"
+			@result="onScriptDeleteConfirm"
+			:title="$t('scriptList.dialog.conf.header')"
+			:message="$t('scriptList.dialog.conf.message')"
+		></ConfirmationDialog>
 
 		<div class="text-center ma-2">
 			<v-snackbar v-model="snackbar">
@@ -180,10 +191,11 @@
 /**
  * @author sselvaggi
  */
-import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
+import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+
 export default {
 	name: 'scriptList',
-	components: {},
+	components: { ConfirmationDialog },
 	async mounted() {
 		this.fetchScriptList();
 		this.datapoints = await this.$store.dispatch('getAllDatapoints');
@@ -246,21 +258,21 @@ export default {
 					value: 'id',
 				},
 				{
-					text: this.$t('scriptList.xid'),
-					align: 'center',
-					sortable: true,
-					value: 'xid',
-				},
-				{
 					text: this.$t('scriptList.name'),
 					align: 'center',
 					sortable: true,
 					value: 'name',
 				},
 				{
-					text: this.$t('scriptList.actions'),
+					text: this.$t('scriptList.xid'),
 					align: 'center',
 					sortable: true,
+					value: 'xid',
+				},
+				{
+					text: this.$t('scriptList.actions'),
+					align: 'end',
+					sortable: false,
 					value: 'actions',
 				},
 			],
@@ -286,6 +298,7 @@ export default {
 			this.xidUnique = response.xidRepeated === 'false' ? true: false;
 			this.$refs.xidInput.validate();
 		},
+
 		async validateScriptBody() {
 			const response = await this.$store.dispatch('validateScriptBody', this.scriptForm)
 
@@ -293,18 +306,24 @@ export default {
 			this.scriptBodyErrors = response.scriptBodyErrors;
 			this.$refs.scriptBodyTextarea.validate();
 		},
-		createNewScript() {
+		async createNewScript() {
 			this.selectedScriptId = -1;
 
 			this.selectedScript = null;
 			this.scriptForm.id = -1;
-			this.scriptForm.xid = '';
 			this.scriptForm.name = '';
 			this.scriptForm.pointsOnContext = [];
 			this.scriptForm.script = '';
-			this.scriptForm.datasourceContext = '';
+			this.scriptForm.datasourceContext = 'ds';
 			this.scriptForm.datapointContext = 'dp';
 
+			try {
+				this.scriptForm.xid = await this.$store.dispatch('getScriptsUniqueXid');
+			} catch (e) {
+				this.scriptForm.xid = ''
+			}
+
+			if(!!this.$refs.editForm) this.$refs.editForm.resetValidation();
 			this.dialog = true;
 		},
 		removeDatapoint(dataPointXid) {
@@ -377,25 +396,46 @@ export default {
 			}
 			this.totalScripts = this.scriptList.total;
 		},
-		runScript(xid) {
-			this.$store.dispatch('runScript', xid);
-			this.snackbar = true;
-			this.snackbarMessage = `${this.$t('scriptList.scriptExecuted')} `;
-		},
-		async saveScript() {
-			if (this.selectedScriptId != -1) {
-				response = await this.$store.dispatch('updateScript', this.scriptForm);
-			} else {
-				response = await this.$store.dispatch('createScript', this.scriptForm);
+		async runScript(xid) {
+			try {
+				await this.$store.dispatch('runScript', xid);
+				this.$store.dispatch('showSuccessNotification', this.$t('scriptList.successfulScriptExecution'));
+			} catch (e) {
+				this.$store.dispatch('showErrorNotification', this.$t('scriptList.failedScriptExecution'));
 			}
+		},
+		async saveAndRunScript(xid) {
+			await this.saveScript(false);
+			this.runScript(xid);
+		},
+
+		async saveScript(closeOnSaveConfirmation = true) {
+			if (this.$refs.editForm.validate()) {
+				let method = this.selectedScriptId != -1 ? 'updateScript' : 'createScript';
+				await this.$store.dispatch(method, this.scriptForm);
+				this.fetchScriptList();
+				this.$store.dispatch('showSuccessNotification', this.$t('scriptList.scriptSaved'));
+				if (closeOnSaveConfirmation) this.dialog = false
+			}
+
 		},
 		async deleteScript(id) {
 			this.scriptList = await this.$store.dispatch('deleteScript', id);
 			this.fetchScriptList();
 			this.dialog = false;
-			this.snackbar = true;
-			this.snackbarMessage = `${this.$t('scriptList.deletedScript')} #${id}`;
+            this.snackbar = true;
+            this.snackbarMessage = `${this.$t('scriptList.deletedScript')} #${id}`;
+			this.$store.dispatch('showSuccessNotification', `${this.$t('scriptList.deletedScript')} #${id}`);
 		},
+
+		onScriptDelete(id) {
+			this.$refs.deleteScriptDialog.showDialog();
+			this.operationQueue = id;
+		},
+
+		onScriptDeleteConfirm(e) {
+			if(e) { this.deleteScript(this.operationQueue); }
+		}
 	},
 };
 </script>

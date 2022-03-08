@@ -4,9 +4,11 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
 import org.scada_lts.dao.ScriptDAO;
 import org.scada_lts.mango.adapter.MangoScript;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ScriptService implements MangoScript {
 
     private ScriptDAO scriptDAO = new ScriptDAO();
@@ -50,3 +52,6 @@ public class ScriptService implements MangoScript {
         return scriptDAO.isXidUnique(xid, excludeId);
     }
 }
+
+
+
