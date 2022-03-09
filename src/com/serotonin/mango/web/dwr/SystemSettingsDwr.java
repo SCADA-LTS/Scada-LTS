@@ -144,6 +144,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR));
 
+		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsDAO
+				.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+
 		return settings;
 	}
 
@@ -285,31 +288,35 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	@MethodFilter
 	public void saveMiscSettings(int eventPurgePeriodType,
-			int eventPurgePeriods, int reportPurgePeriodType,
-			int reportPurgePeriods, int uiPerformance, boolean groveLogging,
-			int futureDateLimitPeriodType, int futureDateLimitPeriods) {
+								 int eventPurgePeriods, int reportPurgePeriodType,
+								 int reportPurgePeriods, int uiPerformance, boolean groveLogging,
+								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
+								 boolean dataPointRtValueSynchronized) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		systemSettingsDAO
 				.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
 						eventPurgePeriodType);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS,
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS,
 				eventPurgePeriods);
-		SystemSettingsDAO.setIntValue(
+		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE,
 				reportPurgePeriodType);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
 				reportPurgePeriods);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
 				uiPerformance);
-		SystemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
 				groveLogging);
-		SystemSettingsDAO.setIntValue(
+		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				futureDateLimitPeriodType);
-		SystemSettingsDAO.setIntValue(
+		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
+		systemSettingsDAO.setValue(
+				SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
+				String.valueOf(dataPointRtValueSynchronized));
 	}
 
 	@MethodFilter
