@@ -5,6 +5,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.QueryArgs;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -281,24 +282,6 @@ public class PointValueAmChartDAO {
             args.add(limit);
         }
         return new QueryArgs(sqlQuery, args.toArray());
-    }
-
-    public static class QueryArgs {
-        private String query;
-        private Object[] args;
-
-        QueryArgs(String query, Object[] args) {
-            this.query = query;
-            this.args = args;
-        }
-
-        public String getQuery() {
-            return query;
-        }
-
-        public Object[] getArgs() {
-            return args;
-        }
     }
 
     public static String dataPointInfo(DataPointVO dataPoint) {

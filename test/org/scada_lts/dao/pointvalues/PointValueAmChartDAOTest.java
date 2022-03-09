@@ -2,6 +2,7 @@ package org.scada_lts.dao.pointvalues;
 
 import com.serotonin.mango.DataTypes;
 import org.junit.Test;
+import org.scada_lts.dao.QueryArgs;
 
 
 import static org.junit.Assert.*;
@@ -22,7 +23,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, avg(pointValue) AS pointValue, max(ts) AS ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? GROUP BY dataPointId, floor(ts/?) ORDER BY ts ASC LIMIT ?";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -37,7 +38,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType, intervalMs, limit};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -52,7 +53,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, pointValue, ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? ORDER BY ts ASC LIMIT ?";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -67,7 +68,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType, limit};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -82,7 +83,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, max(pointValue) AS pointValue, max(ts) AS ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? GROUP BY dataPointId, floor(ts/?) ORDER BY ts ASC LIMIT ?";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -97,7 +98,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected =new Object[]{dataPointId, startTs, endTs, dataType, intervalMs, limit};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -112,7 +113,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, pointValue, ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? ORDER BY ts ASC LIMIT ?";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -127,7 +128,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType, limit};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -145,7 +146,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, pointValue, ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? ORDER BY ts ASC";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -161,7 +162,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -176,7 +177,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, avg(pointValue) AS pointValue, max(ts) AS ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? GROUP BY dataPointId, floor(ts/?) ORDER BY ts ASC";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -192,7 +193,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType, intervalMs};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -207,7 +208,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, max(pointValue) AS pointValue, max(ts) AS ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? GROUP BY dataPointId, floor(ts/?) ORDER BY ts ASC";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -223,7 +224,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType, intervalMs};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());
@@ -238,7 +239,7 @@ public class PointValueAmChartDAOTest {
         String queryExpected = "SELECT dataPointId, pointValue, ts FROM pointValues WHERE dataPointId=? AND ts >=? AND ts <=? AND dataType=? ORDER BY ts ASC";
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertEquals(queryExpected, queryArgs.getQuery());
@@ -254,7 +255,7 @@ public class PointValueAmChartDAOTest {
         Object[] argsExpected = new Object[]{dataPointId, startTs, endTs, dataType};
 
         //when:
-        PointValueAmChartDAO.QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
+        QueryArgs queryArgs = PointValueAmChartDAO.toAggregationQuery(dataPointId, dataType, startTs, endTs, intervalMs, limit);
 
         //then:
         assertArrayEquals(argsExpected, queryArgs.getArgs());

@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.*;
 import com.serotonin.util.StringUtils;
@@ -94,8 +95,11 @@ public class ReportService implements MangoReport {
 		return reportDAO.getReports(userId);
 	}
 
-	public List<ReportVO> search(Map<String, String> query) {
-		return reportDAO.search(query);
+	@Override
+	public List<ReportVO> search(User user, Map<String, String> query) {
+		if(user.isAdmin())
+			return reportDAO.search(query);
+		return reportDAO.search(user.getId(), query);
 	}
 
 	@Override
