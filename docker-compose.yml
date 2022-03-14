@@ -18,7 +18,9 @@ services:
         volumes:
             -   ./docker/volumes/databases:/home/
     scadalts:
-        image: scadalts/scadalts:master
+        image: scadalts/scadalts:latest
+        environment:
+            - CATALINA_OPTS=-Xmx512m -Xms512m
         ports: 
             - "8080:8080"
         depends_on: 
