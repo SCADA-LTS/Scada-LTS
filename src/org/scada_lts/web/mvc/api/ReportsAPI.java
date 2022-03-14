@@ -53,13 +53,13 @@ public class ReportsAPI {
      * @return ReportVO List
      */
     @PostMapping(value = "/search")
-    public ResponseEntity<List<ReportVO>> getAll(@RequestParam Map<String, String> query, HttpServletRequest request) {
-        LOG.info("GET::/api/reports/getAll");
+    public ResponseEntity<List<ReportVO>> search(@RequestParam Map<String, String> query, HttpServletRequest request) {
+        LOG.info("GET::/api/reports/search");
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                return new ResponseEntity<List<ReportVO>>(
-                    reportService.search(query),
+                return new ResponseEntity<>(
+                    reportService.search(user, query),
                     HttpStatus.OK
                 );
             } else {
