@@ -113,7 +113,8 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
 
     protected void initializeTimerTask() {
         int updateEventId = vo.getUpdateEvent();
-        if (updateEventId != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE)
+        if (updateEventId != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE
+                && updateEventId != MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE)
             // Scheduled update. Create the timeout that will update this point.
             timerTask = new ScheduledUpdateTimeout(calculateTimeout(timer.currentTimeMillis()));
     }
@@ -138,6 +139,9 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     //
     public void pointChanged(PointValueTime oldValue, PointValueTime newValue) {
         // No op. Events are covered in pointUpdated.
+        if (vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE) {
+            execute(newValue);
+        }
     }
 
     public void pointSet(PointValueTime oldValue, PointValueTime newValue) {
@@ -147,25 +151,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     public void pointUpdated(PointValueTime newValue) {
         // Ignore if this is not a context update.
         if (vo.getUpdateEvent() == MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_UPDATE) {
-            // Check for infinite loops
-            List<Integer> sourceIds;
-            if (threadLocal.get() == null)
-                sourceIds = new ArrayList<Integer>();
-            else
-                sourceIds = threadLocal.get();
-
-            long time = newValue.getTime();
-            if (vo.getExecutionDelaySeconds() == 0)
-                execute(time, sourceIds);
-            else {
-                synchronized (LOCK) {
-                    if (initialized) {
-                        if (timerTask != null)
-                            timerTask.cancel();
-                        timerTask = new ExecutionDelayTimeout(time, sourceIds);
-                    }
-                }
-            }
+            execute(newValue);
         }
     }
 
@@ -300,6 +286,28 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
             context = scriptExecutor.convertContext(vo.getContext());
         } catch (Exception e) {
             LOG.warn(infoErrorInitializationScript(e, dataPoint, dataSource));
+        }
+    }
+
+    private void execute(PointValueTime newValue) {
+        // Check for infinite loops
+        List<Integer> sourceIds;
+        if (threadLocal.get() == null)
+            sourceIds = new ArrayList<Integer>();
+        else
+            sourceIds = threadLocal.get();
+
+        long time = newValue.getTime();
+        if (vo.getExecutionDelaySeconds() == 0)
+            execute(time, sourceIds);
+        else {
+            synchronized (LOCK) {
+                if (initialized) {
+                    if (timerTask != null)
+                        timerTask.cancel();
+                    timerTask = new ExecutionDelayTimeout(time, sourceIds);
+                }
+            }
         }
     }
 
