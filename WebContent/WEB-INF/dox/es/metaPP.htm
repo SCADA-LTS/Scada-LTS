@@ -139,6 +139,7 @@ Cada objeto StartAndRuntime tiene las siguientes propiedades:
 <h1>Ejecución del guión</h1>
 <p>Cada vez que se ejecuta un guión desde un punto, el resultado se asigna al punto como un valor de actualización. La hora (fecha?) de ejecución de un guión puede ser controlada con el valor <b>Actualizar evento</b>. El parámetro "Actualización de contexto" activa el guión cada vez que se actualiza un punto de contexto. Los otros parámetros desencadenan la ejecución del guión en una fecha programada.</p>
 <p>El parámetro <b>Tiempo de ejecución</b> puede ser configurado para prevenir la ejecución múltiple no deseada de un guión. Si utiliza la opción "Actualizar contexto", la ejecución del guión se lanzará cada vez que se actualice un punto del contexto. Además, si los disparadores del guión se basan en el tiempo, el guión puede ejecutarse antes de que se actualicen los puntos y devolver resultados sesgados. El retraso en la ejecución del guión puede llevar a resultados más fiables. Si utiliza "Actualizar contexto" para la ejecución, el guión se ejecutará x segundos después de la última actualización de un punto de contexto. Para la ejecución basada en el tiempo, el guión se ejecutará x segundos después del evento definido.</p>
+<p>La configuraci&oacute;n <b>Context change</b> hace que el script se ejecute cada vez que se cambia un punto dentro de su contexto. </p>
 
 <h1>Más ejemplos</h1>
 <p>El siguiente guión calcula el promedio de rotación horaria de los puntos "n1" y "n2":</p>
