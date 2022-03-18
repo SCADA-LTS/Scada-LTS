@@ -57,7 +57,7 @@ public class MetaPointLocatorRT extends PointLocatorRT implements DataPointListe
     private static final ThreadLocal<List<Integer>> threadLocal = new ThreadLocal<List<Integer>>();
     private static final int MAX_RECURSION = 10;
 
-    final Boolean LOCK = new Boolean(false);
+    final Object LOCK = new Object();
 
     final MetaPointLocatorVO vo;
     AbstractTimer timer;
