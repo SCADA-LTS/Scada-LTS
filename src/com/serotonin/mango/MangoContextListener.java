@@ -248,6 +248,8 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.SNMP.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.SQL",
 				DataSourceVO.Type.SQL.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.TANGO",
+				DataSourceVO.Type.TANGO.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.HTTP_RECEIVER",
 				DataSourceVO.Type.HTTP_RECEIVER.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.ONE_WIRE",

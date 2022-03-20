@@ -28,10 +28,21 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    warLib.extendsFrom runtime
+}
+
 dependencies {
+    def excludeStuff = {
+        exclude group: 'nanocontainer', module: 'nanocontainer-remoting'
+        exclude group: 'picocontainer', module: 'picocontainer'
+    }
+
     providedCompile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
     providedCompile fileTree(include: ['*.jar'], dir: 'lib')
     providedCompile 'org.apache.tomcat:tomcat-catalina:' + tomcatVersion
+    providedCompile 'org.tango-controls:TangORB:9.6.8', excludeStuff
+    warLib 'org.tango-controls:TangORB:9.6.8', excludeStuff
 }
 sourceSets {
     main {
@@ -59,6 +70,8 @@ war {
         from 'webapp-resources/'
         into 'classes/'
     }
+    classpath configurations.warLib
+    classpath = classpath.files
 }
 
 task clearDockerDir(type: Delete) {

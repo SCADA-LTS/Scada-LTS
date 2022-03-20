@@ -70,6 +70,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.change.ChangeStatus;
+import org.tango_controls.scada_lts.vo.dataSource.tango.TangoDataSourceVO;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -295,6 +296,12 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			@Override
 			public DataSourceVO<?> createDataSourceVO() {
 				return new RadiuinoDataSourceVO();
+			}
+		},
+		TANGO(42, "dsEdit.tango", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new TangoDataSourceVO();
 			}
 		};
 

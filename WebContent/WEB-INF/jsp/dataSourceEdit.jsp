@@ -376,6 +376,10 @@
 			<jsp:include page="dataSourceEdit/editSql.jsp" />
 		</c:when>
 		<c:when
+			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.TANGO']}">
+			<jsp:include page="dataSourceEdit/editTango.jsp" />
+		</c:when>
+		<c:when
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.HTTP_RECEIVER']}">
 			<jsp:include page="dataSourceEdit/editHttpReceiver.jsp" />
 		</c:when>
