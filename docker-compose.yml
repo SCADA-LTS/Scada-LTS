@@ -28,3 +28,12 @@ services:
         expose: ["8080", "8000"]
         links:
             - database:database
+        command:
+          - /usr/bin/wait-for-it
+          - --host=database
+          - --port=3306
+          - --timeout=30
+          - --strict
+          - --
+          - /usr/local/tomcat/bin/catalina.sh
+          - run
