@@ -20,6 +20,16 @@
 							dense
 						></v-select>
 					</v-col>
+					<v-col cols="6">
+                        <v-checkbox
+                            @change="watchDataChange()"
+                            v-model="miscSettings.dataPointRuntimeValueSynchronized"
+                            item-value="value"
+                            item-text="text"
+                            :label="$t('systemsettings.misc.dataPointRuntimeValueSynchronized')"
+                            dense
+                        ></v-checkbox>
+                    </v-col>
 				</v-row>
 			</v-card-text>
 		</v-card>

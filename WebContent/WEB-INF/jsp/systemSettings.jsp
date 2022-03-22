@@ -775,12 +775,6 @@
         </td>
       </tr>
       <tr>
-         <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
-         <td class="formField">
-           <input id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>" type="checkbox" class="formShort"/>
-         </td>
-      </tr>
-      <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.valuesLimitForPurge"/></td>
         <td><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#data-retention-settings'"/></td>
       </tr>
@@ -822,6 +816,12 @@
               <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
             </select>
           </td>
+        </tr>
+        <tr>
+           <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+           <td class="formField">
+             <input id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>" type="checkbox" class="formShort"/>
+           </td>
         </tr>
         <tr>
           <td colspan="2" id="miscMessage" class="formError"></td>

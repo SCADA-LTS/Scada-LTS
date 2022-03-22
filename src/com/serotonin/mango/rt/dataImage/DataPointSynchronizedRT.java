@@ -18,21 +18,10 @@
  */
 package com.serotonin.mango.rt.dataImage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.PointValueDao;
-import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
@@ -47,7 +36,12 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.util.ObjectUtils;
-import org.scada_lts.web.ws.ScadaWebSocketListener;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.web.beans.ApplicationBeans;
+
+import java.util.*;
 
 public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT {
     private static final Log LOG = LogFactory.getLog(DataPointSynchronizedRT.class);
@@ -71,9 +65,6 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     private List<IValueTime> averagingValues;
     private final Object intervalLoggingLock = new Object();
     private TimerTask intervalLoggingTask;
-
-    // WebSocket notification
-    private final List<ScadaWebSocketListener<String, Integer>> scadaWebSocketListeners = new CopyOnWriteArrayList<>();
 
     /**
      * This is the value around which tolerance decisions will be made when
@@ -313,7 +304,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         }
 
         if (saveValue){
-            this.notifyWebSocketListeners(newValue.getValue().toString());
+            this.notifyWebSocketSubscribers(newValue.getValue());
             valueCache.savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
         }
 
@@ -516,25 +507,17 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     }
 
     @Override
-    public void addWebSocketListener(ScadaWebSocketListener listener) {
-        scadaWebSocketListeners.add(listener);
+    public void notifyWebSocketSubscribers(MangoValue message) {
+        ApplicationBeans.Lazy.getDataPointServiceWebSocketBean()
+                .ifPresent(ws -> ws.notifyValueSubscribers(message, this.vo.getId()));
     }
 
-    @Override
-    public void removeWebSocketListener(ScadaWebSocketListener listener) {
-        scadaWebSocketListeners.remove(listener);
+    public void notifyWebSocketStateSubscribers(boolean enabled) {
+        ApplicationBeans.Lazy.getDataPointServiceWebSocketBean()
+                .ifPresent(ws -> ws.notifyStateSubscribers(enabled, this.vo.getId()));
     }
 
-    @Override
-    public void notifyWebSocketListeners(String message) {
-        if(!scadaWebSocketListeners.isEmpty()) {
-            scadaWebSocketListeners.forEach(observer -> {
-                observer.sendWebSocketMessage(message, this.vo.getId());
-            });
-        }
-    }
-
-    static class EventNotifyWorkItem implements WorkItem {
+    class EventNotifyWorkItem implements WorkItem {
         private final DataPointListener listener;
         private final PointValueTime oldValue;
         private final PointValueTime newValue;
@@ -602,6 +585,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         }
 
         initializeIntervalLogging();
+        notifyWebSocketStateSubscribers(true);
     }
     @Override
     public void terminate() {
@@ -614,6 +598,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
             }
         }
         Common.ctx.getEventManager().cancelEventsForDataPoint(vo.getId());
+        notifyWebSocketStateSubscribers(false);
     }
 
     @Override
