@@ -1,0 +1,17 @@
+<%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.tango.deviceID"/></td>
+          <td class="formField"><input id="deviceID" type="text" value="${dataSource.deviceID}"/></td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.tango.hostName"/></td>
+          <td class="formField"><input id="hostName" type="text" value="${dataSource.hostName}"/></td>
+        </tr>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.tango.port"/></td>
+          <td class="formField"><input id="port" type="text" value="${dataSource.port}"/></td>
+        </tr>
+      </table>
+      <tag:dsEvents/>
+    </div>
+</td>

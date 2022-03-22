@@ -60,6 +60,7 @@ import com.serotonin.mango.vo.dataSource.persistent.PersistentDataSourceVO;
 import com.serotonin.mango.vo.dataSource.pop3.Pop3DataSourceVO;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
+import com.serotonin.mango.vo.dataSource.tango.TangoDataSourceVO;
 import com.serotonin.mango.vo.dataSource.viconics.ViconicsDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
@@ -295,6 +296,12 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			@Override
 			public DataSourceVO<?> createDataSourceVO() {
 				return new RadiuinoDataSourceVO();
+			}
+		},
+		TANGO(42, "dsEdit.tango", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new TangoDataSourceVO();
 			}
 		};
 
