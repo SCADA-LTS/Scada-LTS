@@ -5,11 +5,13 @@ import java.io.Serializable;
 public class JsonSettingsMisc implements Serializable {
 
     private int uiPerformance;
+    private boolean dataPointRuntimeValueSynchronized;
 
     public JsonSettingsMisc() {}
 
-    public JsonSettingsMisc(int uiPerformance) {
+    public JsonSettingsMisc(int uiPerformance, boolean dataPointRuntimeValueSynchronized) {
         this.uiPerformance = uiPerformance;
+        this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
     }
 
     public int getUiPerformance() {
@@ -20,5 +22,11 @@ public class JsonSettingsMisc implements Serializable {
         this.uiPerformance = uiPerformance;
     }
 
+    public boolean isDataPointRuntimeValueSynchronized() {
+        return dataPointRuntimeValueSynchronized;
+    }
 
+    public void setDataPointRuntimeValueSynchronized(boolean dataPointRuntimeValueSynchronized) {
+        this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
+    }
 }

@@ -42,6 +42,7 @@ export default {
 				},
 				{ value: 10000, text: this.$t('systemsettings.misc.performance.low') },
 			],
+			dataPointRuntimeValueSynchronized: false,
 		};
 	},
 

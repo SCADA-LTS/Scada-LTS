@@ -89,7 +89,8 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>);
-            
+            $set("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>);
+
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
             
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
@@ -255,6 +256,7 @@
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
                 $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
                 function() {
                     stopImageFader("saveMiscSettingsImg");
                     setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
@@ -771,6 +773,12 @@
             <tag:timePeriodOptions min="true" h="true"/>
           </select>
         </td>
+      </tr>
+      <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+         <td class="formField">
+           <input id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>" type="checkbox" class="formShort"/>
+         </td>
       </tr>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.valuesLimitForPurge"/></td>
