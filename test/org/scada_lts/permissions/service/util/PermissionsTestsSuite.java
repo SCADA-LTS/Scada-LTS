@@ -11,7 +11,10 @@ import org.junit.runners.Suite;
         UpdateWatchListProfilePermissionsTest.class,
         UpdateDataPointProfilePermissionsTest.class,
         UpdateDataSourceProfilePermissionsTest.class,
-        MergePermissionsTest.class
+        MergePermissionsTest.class,
+        MergeDataPointPermissionsParameterizedTest.class,
+        MergePermissionsParameterizedTest.class,
+        MergeShareUserParameterizedTest.class
 })
 public class PermissionsTestsSuite {
 }

@@ -12,10 +12,10 @@
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
-			<v-list-item max-width="50">
+			<v-list-item max-width="50" v-if="!!highestUnsilencedAlarmLevel">
 				<v-list-item-content>
 					<a @click="goToEvents" :style="{cursor: (this.$route.name==='scada')? 'auto':'pointer'}">
-						<img v-if="highestUnsilencedAlarmLevel != -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
+						<img v-if="highestUnsilencedAlarmLevel !== -1" :src="alarmFlags[highestUnsilencedAlarmLevel].image"/>
 					</a>
 				</v-list-item-content>
 			</v-list-item>
@@ -55,10 +55,14 @@
 			</v-menu>
 		</v-app-bar>
 
+		<NotificationAlert/>
+
 		<v-main>
-			<v-container fluid>
+			<v-container fluid v-if="webSocketConnected || isLoginPage">
 				<router-view></router-view>
 			</v-container>
+			<v-skeleton-loader v-else type="article">
+			</v-skeleton-loader>
 		</v-main>
 	</v-app>
 </template>
@@ -67,28 +71,25 @@
 import NavigationBar from '../layout/NavigationBar.vue'
 import webSocketMixin from '@/utils/web-socket-utils';
 import internetMixin from '@/utils/connection-status-utils';
+import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 
 export default {
 	name: 'app',
-	mixins: [webSocketMixin, internetMixin],
+	mixins: [internetMixin],
 
 	components: {
-		NavigationBar
+		NavigationBar,
+		NotificationAlert
 	},
 
 	data() {
 		return {
+			wsConnectionRetires: 5,
 			onAppOnline: () => {
 				this.wsLive = true;
 			},
 			onAppOffline() {
 				this.wsLive = false;
-			},
-			wsCallback: () => {
-				this.wsLive = true;
-				this.wsSubscribeTopic(`alarm`, async(x) => {
-					await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
-				});
 			},
 			wsLive: false,
 			alarmFlags: {
@@ -121,18 +122,52 @@ export default {
 		},
 		highestUnsilencedAlarmLevel() {
             return this.$store.state.storeEvents.highestUnsilencedAlarmLevel;
-		}
+		},
+		webSocketConnected() {
+			return this.$store.state.webSocketModule.webSocketConnection;
+		},
+		isLoginPage() {
+			return this.$route.name === 'login';
+		},
 	},
 
-	async mounted() {
+	mounted() {
 	    if(!this.user) {
     			this.$store.dispatch('getUserInfo');
     	}
 		this.$store.dispatch('getLocaleInfo');
-		await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
+		this.$store.dispatch('getHighestUnsilencedAlarmLevel');
+		this.connectToWebSocket();
+	},
+
+	destroyed() {
+		this.unSubscribeAlarms();
 	},
 
 	methods: {
+		subscribeForAlarms() {
+			this.wsConnectionRetires = 5;
+			this.alarmSubscription = this.$store.state.webSocketModule.webSocket.subscribe(`/topic/alarm`, this.getHighestAlarmLevel);
+		},
+
+		unSubscribeAlarms() {
+			this.alarmSubscription.unsubscribe();
+		},
+
+		connectToWebSocket() {
+			if(!!this.webSocketConnected) {
+				this.subscribeForAlarms();
+			} else if (!this.webSocketConnected && this.wsConnectionRetires > 0){
+				this.wsConnectionRetires--;
+				console.debug("Failed to connect to websocket. Remaining retries: " + this.wsConnectionRetires);
+				setTimeout(this.connectToWebSocket, 1000);
+			}
+		},
+
+		getHighestAlarmLevel() {
+			this.$store.dispatch('getHighestUnsilencedAlarmLevel');
+		},
+
 		goToEvents() {
 			if (this.$route.name !== 'scada') {
 				this.$router.push({ name: 'scada' });
@@ -154,10 +189,10 @@ export default {
 }
 </style>
 <style>
-td > button,
-td > input,
-td > select,
-td > textarea {
+#sltsContent td > button,
+#sltsContent td > input,
+#sltsContent td > select,
+#sltsContent td > textarea {
 	border-style: solid;
 }
 td > select,

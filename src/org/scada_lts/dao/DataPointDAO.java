@@ -436,11 +436,11 @@ public class DataPointDAO {
 
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
-                new Object[] { userId },
-                new ScadaObjectIdentifierRowMapper.Builder()
-                        .idColumnName(COLUMN_NAME_ID)
-                        .xidColumnName(COLUMN_NAME_XID)
-                        .nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
-                        .build());
+		new Object[] { userId },
+		new ScadaObjectIdentifierRowMapper.Builder()
+			.idColumnName(COLUMN_NAME_ID)
+			.xidColumnName(COLUMN_NAME_XID)
+			.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+			.build());
 	}
 }

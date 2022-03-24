@@ -56,7 +56,16 @@
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
+  <link rel="stylesheet" type="text/css" href="assets/user_styles.css"/>
   <jsp:invoke fragment="styles"/>
+
+  <style type="text/css">
+    #__header__alarmLevelImg {
+        height: 32px !important;
+        width: 32px !important;
+        vertical-align: middle !important;
+    }
+  </style>
 
   <!-- Scripts -->
   <script type="text/javascript">
@@ -78,6 +87,10 @@
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
+  <c:if test="${!empty sessionUser}">
+      <script src="resources/node_modules/stompjs/lib/stomp.js"></script>
+      <script src="resources/sockjs-0.3.4.js"></script>
+  </c:if>
   <c:forEach items="${dwr}" var="dwrname">
     <script type="text/javascript" src="dwr/interface/${dwrname}.js"></script></c:forEach>
   <c:forTokens items="${js}" var="jsname" delims=", ">
@@ -111,6 +124,7 @@
         <c:if test="${sessionUser.hideMenu}">
           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
         </c:if>
+        dojo.addOnLoad(function() { onloadHandler(); });
       </c:if>
 
       function setLocale(locale) {
@@ -131,6 +145,99 @@
           checkFullScreen();
         }
       }
+
+    <c:if test="${!empty sessionUser}">
+        var errorCallback = function(error) {
+            alert("Connect error:" + error);
+        }
+
+        var stompClient = null;
+
+        var connectCallback = function(frame) {
+            //console.log('Connected: ' + frame);
+
+            stompClient.subscribe("/app/alarmLevel/register", function(message) {
+                //console.log("message[/app/alarmLevel/register]:" + message.body);
+                stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
+                    var response = JSON.parse(message.body);
+                    var alarmLevel = parseInt(response.alarmlevel);
+                    //console.log("response.alarmLevel: "+response.alarmlevel);
+                    if (alarmLevel > 0) {
+                        document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
+                        setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
+                        setAlarmLevelText(alarmLevel, "__header__alarmLevelText");
+                        document.getElementById("__header__alarmLevelDiv").style.visibility='visible';
+                        document.getElementById("__header__alarmLevelImg").style.visibility='visible';
+                    }
+                    else {
+                        document.getElementById("__header__alarmLevelText").innerHTML = "";
+                        document.getElementById("__header__alarmLevelImg").style.visibility='hidden';
+                        document.getElementById("__header__alarmLevelDiv").style.visibility='hidden';
+                    }
+                })
+                stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP - gimme my alarmLevel");
+            } );
+            stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
+        };
+
+        function connect(url, headers, errorCallback, connectCallback) {
+            var socket = new SockJS(url);
+            var stompClient = Stomp.over(socket);
+            stompClient.heartbeat.outgoing = 20000;
+            stompClient.heartbeat.incoming = 0;
+            stompClient.debug = null;
+            stompClient.connect(headers, connectCallback, errorCallback);
+            return stompClient;
+        }
+
+        function disconnect() {
+            if(stompClient != null) {
+                console.log("Disconnecting...");
+                stompClient.disconnect(function() {
+                    console.log("Disconnected");
+                    stompClient = null;
+                });
+            }
+        }
+
+        function onloadHandler() {
+           var location = window.location;
+           var appName = location.pathname.split("/")[1];
+           var myLocation = location.origin + "/" + appName+ "/";
+           stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
+        }
+
+        function setAlarmLevelText(alarmLevel, textNode) {
+            textNode = document.getElementById(textNode);
+            if (alarmLevel == 0)
+                textNode.innerHTML = "";
+            else if (alarmLevel == 1)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
+            else if (alarmLevel == 2)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
+            else if (alarmLevel == 3)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
+            else if (alarmLevel == 4)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
+            else
+                textNode.innerHTML = "Unknown: "+ alarmLevel;
+        }
+
+        function setAlarmLevelImg(alarmLevel, imgNode) {
+            if (alarmLevel == 0)
+                updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
+            else if (alarmLevel == 1)
+                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visisble");
+            else if (alarmLevel == 2)
+                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visisble");
+            else if (alarmLevel == 3)
+                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visisble");
+            else if (alarmLevel == 4)
+                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visisble");
+            else
+                updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
+        }
+    </c:if>
     </script>
   </c:if>
 </head>
@@ -140,13 +247,11 @@
 <!-- mainHeader -->
 <c:if test="${!sessionUser.hideHeader}">
 <div id="mainHeader">
-  <div>
-    <img id="logo" src="assets/logo.png" alt="Logo">
-  </div>
+  <tag:logo/>
 
   <div id="eventsRow">
     <a href="events.shtm">
-      <span id="__header__alarmLevelDiv" style="display:none;">
+      <span id="__header__alarmLevelDiv">
         <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
         <span id="__header__alarmLevelText"></span>
       </span>
@@ -233,7 +338,9 @@
 
         <div class="spacer">
           <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnect()">
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
+          </span>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </div>
       </c:if>
@@ -289,6 +396,20 @@
 <div id="sltsFooter" class="footer">
     <span>&copy;2012-2021 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
+
+<c:if test="${!!sessionUser.hideHeader}">
+    <div class="notification-alert--reset">
+        <span class="clickable" onclick="resetHideView()">Exit from embedded view</span>
+    </div>
+
+    <script type="text/javascript">
+    function resetHideView() {
+        let loc = window.location.href.split('/');
+        window.location = loc[0] + "//" + loc[2] + "/" + loc[3] + "/watch_list.shtm";
+    }
+    </script>
+</c:if>
+
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>
 </c:if>

@@ -120,26 +120,38 @@ public class SystemSettingsService {
 
     public JsonSettingsMisc getMiscSettings() {
         JsonSettingsMisc json = new JsonSettingsMisc();
-        json.setGroveLogging(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.GROVE_LOGGING));
-        json.setEventPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE));
-        json.setEventPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
-        json.setReportPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE));
-        json.setReportPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
-        json.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
-        json.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
+        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
         return json;
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING, json.isGroveLogging());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, json.getEventPurgePeriodType());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS, json.getEventPurgePeriods());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE, json.getReportPurgePeriodType());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS, json.getReportPurgePeriods());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, json.getFutureDateLimitPeriodType());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, json.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, String.valueOf(json.isDataPointRuntimeValueSynchronized()));
+    }
+
+    public SettingsDataRetention getDataRetentionSettings() {
+        SettingsDataRetention settings = new SettingsDataRetention();
+        settings.setGroveLogging(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.GROVE_LOGGING));
+        settings.setEventPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE));
+        settings.setEventPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
+        settings.setReportPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE));
+        settings.setReportPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
+        settings.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
+        settings.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
+        settings.setValuesLimitForPurge(SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+        return settings;
+    }
+
+    public void saveDataRetentionSettings(SettingsDataRetention settings) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING, settings.isGroveLogging());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, settings.getEventPurgePeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS, settings.getEventPurgePeriods());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE, settings.getReportPurgePeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS, settings.getReportPurgePeriods());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, settings.getFutureDateLimitPeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, settings.getFutureDateLimitPeriods());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, settings.getValuesLimitForPurge());
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {
@@ -262,7 +274,11 @@ public class SystemSettingsService {
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
     }
 
-    public void purgeData() {
+    public void purgeAllData() {
+        Common.ctx.getRuntimeManager().purgeDataPointValues();
+    }
+
+    public void purgeNow() {
         DataPurge dataPurge = new DataPurge();
         dataPurge.execute(System.currentTimeMillis());
     }
@@ -331,5 +347,9 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT, String.valueOf(aggregateSettings.getValuesLimit()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
+    }
+
+    public boolean isDataPointRtValueSynchronized() {
+        return SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED);
     }
 }

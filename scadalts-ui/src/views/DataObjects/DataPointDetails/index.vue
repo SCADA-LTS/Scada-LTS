@@ -1,4 +1,5 @@
 <template>
+<div>
 	<div v-if="dataPointDetails && datasource">
 		<v-container fluid>
 			<ConfirmationDialog
@@ -74,13 +75,15 @@
 		</v-container>
 		<v-container fluid>
 			<LineChartComponent :pointIds="this.$route.params.id" :refreshRate="chartRefreshRate"
-				:showLegend="true" :showScrollbar="true" :width="chartWidth"
+				:showLegend="true" :showScrollbar="true" :width="`${chartWidth}`"
 			></LineChartComponent>
 		</v-container>
-		<v-snackbar v-model="response.status">
-			{{ response.message }}
-		</v-snackbar>
 	</div>
+	<div v-else>
+		<v-skeleton-loader type="article">
+		</v-skeleton-loader>
+	</div>
+</div>
 </template>
 <script>
 import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
@@ -125,10 +128,6 @@ export default {
 			datasource: null,
 			chartRefreshRate: 10000,
 			chartWidth: 500,
-			response: {
-				status: false,
-				message: '',
-			},
 		};
 	},
 
@@ -152,15 +151,20 @@ export default {
 		},
 
 		async fetchDataPointDetails(datapointId) {
-			this.dataPointDetails = await this.$store.dispatch(
-				'getDataPointDetails',
-				datapointId,
-			);
-			this.datasource = await this.$store.dispatch(
-				'getDatasourceByXid',
-				this.dataPointDetails.dataSourceXid,
-			);
-
+			try {
+				this.dataPointDetails = await this.$store.dispatch(
+					'getDataPointDetails',
+					datapointId,
+				);
+				this.datasource = await this.$store.dispatch(
+					'getDatasourceByXid',
+					this.dataPointDetails.dataSourceXid,
+				);
+			} catch (e) {
+				this.dataPointDetails = null;
+				this.datasource = null;
+				console.error(e);
+			}
 		},
 		async toggleDataPoint() {
 			if (this.datasource.enabled) {
@@ -185,20 +189,20 @@ export default {
 		saveDataPointDetails() {
 			this.$store
 				.dispatch('saveDataPointDetails', this.dataPointDetails)
+				.catch((e) => {
+					this.$store.dispatch(
+						'showErrorNotification', 
+						`${this.$t('common.snackbar.update.fail')} | ${e.data.errors}`)
+				})
 				.then((resp) => {
 					if (resp === 'saved') {
-						this.response.status = true;
-						this.response.message = this.$t('common.snackbar.update.success');
-						this.$refs.valueHistory.reconnect();
+						this.$store.dispatch(
+							'showSuccessNotification',
+							this.$t('common.snackbar.update.success')
+						);
+						this.$refs.valueHistory.fetchData();
 
-					} else {
-						this.response.status = true;
-						this.response.message = this.$t('common.snackbar.update.fail');
 					}
-				})
-				.catch(() => {
-					this.response.status = true;
-					this.response.message = this.$t('common.snackbar.update.fail');
 				});
 		},
 

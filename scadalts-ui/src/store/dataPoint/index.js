@@ -77,6 +77,19 @@ const storeDataPoint = {
 			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum') },
 			{ id: 4, label: i18n.t('pointEdit.logging.value.average') },
 		],
+
+		purgeStrategyList: [
+			{
+				id: 1,
+				type: 'PERIOD',
+				label: i18n.t('pointEdit.logging.purge.type.period'),
+			},
+			{
+				id: 2,
+				type: 'LIMIT',
+				label: i18n.t('pointEdit.logging.purge.type.limit'),
+			},
+		],
 	},
 
 	mutations: {},
@@ -98,6 +111,13 @@ const storeDataPoint = {
 			state.datapointSimpleList = await dispatch('requestGet', request);
 		},
 
+		async searchDatapoints({ state, dispatch }, keywords) {
+			return (state.datapointSimpleList = await dispatch(
+				'requestGet',
+				`/datapoints?keywordSearch=${keywords}`,
+			));
+		},
+
 		getDataPointSimpleFilteredList({ state }, value) {
 			let data = Object.assign([], state.datapointSimpleList);
 			data = data.filter((e) => {
@@ -114,8 +134,8 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
-		getUniqueDataPointXid({dispatch}) {
-			return dispatch("requestGet", "/datapoint/generateUniqueXid");
+		getUniqueDataPointXid({ dispatch }) {
+			return dispatch('requestGet', '/datapoint/generateUniqueXid');
 		},
 
 		getDataPointDetails({ dispatch }, datapointId) {
@@ -123,7 +143,10 @@ const storeDataPoint = {
 		},
 
 		getDataPointValue({ dispatch }, datapointId) {
-			return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+			if(!!datapointId) {
+				return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+			}
+			return null;
 		},
 
 		getDataPointValueByXid({ dispatch }, datapointXid) {
@@ -137,10 +160,10 @@ const storeDataPoint = {
 			});
 		},
 
-		setCmpValue({dispatch}, payload) {
+		setCmpValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/cmp/set/${payload.id}/${payload.name}`,
-				data: payload.requestData
+				data: payload.requestData,
 			});
 		},
 
@@ -161,6 +184,27 @@ const storeDataPoint = {
 		clearDataPointCache({ dispatch }, datapointId) {
 			return dispatch('requestPatch', {
 				url: `/point_properties/${datapointId}/clearcache`,
+				data: null,
+			});
+		},
+
+		purgeNowPeriod({dispatch}, {datapointId, type, period}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowPeriod?type=${type}&period=${period}`,
+				data: null,
+			});
+		},
+
+		purgeNowLimit({dispatch}, {datapointId, limit}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowLimit?limit=${limit}`,
+				data: null,
+			});
+		},
+
+		purgeNowAll({dispatch}, datapointId) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowAll`,
 				data: null,
 			});
 		},

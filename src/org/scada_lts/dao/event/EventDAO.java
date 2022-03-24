@@ -24,14 +24,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+
+import com.serotonin.mango.rt.event.type.*;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
+import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.utils.QueryUtils;
-import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -51,15 +53,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.type.AuditEventType;
-import com.serotonin.mango.rt.event.type.CompoundDetectorEventType;
-import com.serotonin.mango.rt.event.type.DataPointEventType;
-import com.serotonin.mango.rt.event.type.DataSourceEventType;
-import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.rt.event.type.MaintenanceEventType;
-import com.serotonin.mango.rt.event.type.PublisherEventType;
-import com.serotonin.mango.rt.event.type.ScheduledEventType;
-import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.web.dwr.EventsDwr;
@@ -391,9 +384,12 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	private static final String EVENT_HANDLER_FILTER_N= " "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
 			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+"=? ";
-			
-	
-	
+
+	private static final String EVENT_HANDLER_FILTER_REF2= " "
+			+ COLUMN_NAME_EVENT_HANDLER_TYPE_ID+"=? and "
+			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF1+"=? and "
+			+ COLUMN_NAME_EVENT_HANDLER_TYPE_REF2+"=?";
+
 	private static final String EVENT_HANDLER_FILTER_ID=" "
 			+ COLUMN_NAME_EVENT_HANDLER_ID+"=?";
 	
@@ -656,22 +652,32 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 	private class EventDTOSearchRowMapper implements RowMapper<EventDTO> {
 		public EventDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-			EventDTO result = new EventDTO(
-					rs.getInt(COLUMN_NAME_ID),
-					rs.getInt(COLUMN_NAME_TYPE_ID),
-					rs.getInt(COLUMN_NAME_TYPE_REF_1),
-					rs.getInt(COLUMN_NAME_TYPE_REF_2),
-					rs.getLong(COLUMN_NAME_ACTIVE_TS),
-					rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
-					rs.getLong(COLUMN_NAME_RTN_TS),
-					rs.getInt(COLUMN_NAME_RTN_CAUSE),
-					rs.getInt(COLUMN_NAME_ALARM_LEVEL),
-					rs.getString(COLUMN_NAME_MESSAGE),
-					rs.getLong(COLUMN_NAME_ACT_TS),
-					rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
-					rs.getString(COLUMN_NAME_DATAPOINT_XID),
-					"Y".equals(rs.getString(COLUMN_NAME_SILENCED)),
-					rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
+			String message = null;
+			try {
+				LocalizableMessage m = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_MESSAGE));
+				message = m.getLocalizedMessage(Common.getBundle());
+			} catch (LocalizableMessageParseException e) {
+				e.printStackTrace();
+				message = rs.getString(COLUMN_NAME_MESSAGE);
+			}
+
+
+				EventDTO result = new EventDTO(
+				rs.getInt(COLUMN_NAME_ID),
+				rs.getInt(COLUMN_NAME_TYPE_ID),
+				rs.getInt(COLUMN_NAME_TYPE_REF_1),
+				rs.getInt(COLUMN_NAME_TYPE_REF_2),
+				rs.getLong(COLUMN_NAME_ACTIVE_TS),
+				rs.getString(COLUMN_NAME_RTN_APPLICABLE).equals("Y"),
+				rs.getLong(COLUMN_NAME_RTN_TS),
+				rs.getInt(COLUMN_NAME_RTN_CAUSE),
+				rs.getInt(COLUMN_NAME_ALARM_LEVEL),
+						message,
+				rs.getLong(COLUMN_NAME_ACT_TS),
+				rs.getInt(COLUMN_NAME_ALTERNATE_ACK_SOURCE),
+				rs.getString(COLUMN_NAME_DATAPOINT_XID),
+				"Y".equals(rs.getString(COLUMN_NAME_SILENCED)),
+				rs.getInt(COLUMN_NAME_USER_COMMENT_COUNT)
 			);
 
 			return result;
@@ -746,7 +752,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 *
 	 * @return List of Events
 	 */
-	public SQLPageWithTotal<EventDTO> findEvents(
+	public List<EventDTO> findEvents(
 			JsonEventSearch query,
 			User user) {
 		List<Object> params = new ArrayList<Object>();
@@ -755,13 +761,11 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		StringBuilder from = new StringBuilder();
 		from.append(" FROM events e ");
 		from.append(" LEFT JOIN dataPoints dp ON e.typeId = 1 AND dp.id = e.typeRef2" );
-		from.append(" LEFT JOIN userEvents ue ON ue.eventId = e.id " );
+		from.append(" JOIN userEvents ue ON ue.eventId = e.id " );
 
 		List<String> filterCondtions = new ArrayList<String>();
-		if (!user.isAdmin()) {
-			filterCondtions.add("u.id=?");
-			params.add(user.getId());
-		}
+		filterCondtions.add(" ue.userId = ? ");
+		params.add(user.getId());
 
 		if (!"".equals(query.getStartDate())) {
 			filterCondtions.add("e.activeTs >= (UNIX_TIMESTAMP(?)*1000)");
@@ -785,10 +789,10 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 
 		if (EventsDwr.STATUS_ACTIVE.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
-			filterCondtions.add("e.rtnTs is null");
+			filterCondtions.add("e.rtnTs = 0");
 		} else if (EventsDwr.STATUS_RTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='Y'");
-			filterCondtions.add("e.rtnTs is not null");
+			filterCondtions.add("e.rtnTs > 0");
 		} else if (EventsDwr.STATUS_NORTN.equals(query.getStatus())) {
 			filterCondtions.add("e.rtnApplicable='N'");
 		}
@@ -823,7 +827,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			filterCondtions.add(joinOr(keywordConditions));
 		}
 
-		sql.append("SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
+		sql.append("SELECT " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
 		sql.append(from.toString());
 		sql.append(" LEFT JOIN (SELECT typeKey, count(case when("+joinOr(userCommentKeywordConditions)+") then 1 else null end) AS keywordMatched, count(1) comments FROM userComments uc GROUP BY typeKey) c ON e.id = c.typeKey");
 		sql.append(" WHERE "+joinAnd(filterCondtions));
@@ -854,8 +858,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()
 				, params.toArray(), new EventDTOSearchRowMapper());
-		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
-		return new SQLPageWithTotal<EventDTO>(page, total);
+		return page;
 	}
 
 	@Override
@@ -1270,7 +1273,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	}
 	
 	public List<EventHandlerVO> getEventHandlers(int typeId, int ref1, int ref2) {
-		//return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
+		if(ref2 > 0)
+			return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_REF2, new Object[] {typeId, ref1, ref2}, new EventHandlerRowMapper());
 		return (List<EventHandlerVO>) DAO.getInstance().getJdbcTemp().query(EVENT_HANDLER_SELECT+" where "+ EVENT_HANDLER_FILTER_N, new Object[] {typeId, ref1}, new EventHandlerRowMapper());
 	}
 	
@@ -1341,8 +1345,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 				handler.getAlias(), 
 				new SerializationData().writeObject(handler), 
 				handler.getId() });
-		
-		AuditEventType.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
+
+		AuditEventUtils.raiseChangedEvent(AuditEventType.TYPE_EVENT_HANDLER,
 				old, handler);
 		
 	}
@@ -1351,6 +1355,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	public EventHandlerVO saveEventHandler(int typeId, int typeRef1, int typeRef2, EventHandlerVO handler) {
 		if (handler.getId() == Common.NEW_ID) {
 			int id = insertEventHandler(typeId, typeRef1, typeRef2,handler);
+			AuditEventUtils.raiseAddedEvent(AuditEventType.TYPE_EVENT_HANDLER, handler);
 			return getEventHandler(id);
 		} else {
 			updateEventHandler(handler);
@@ -1371,16 +1376,21 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public boolean toggleSilence(int eventId, int userId, Boolean updated) {
-		String result = DAO.getInstance().getJdbcTemp().queryForObject(SILENCED_SELECT, new Object[] {eventId, userId }, String.class);
+		String result = null;
+		try {
+			result = DAO.getInstance().getJdbcTemp().queryForObject(SILENCED_SELECT, new Object[]{eventId, userId}, String.class);
+		} catch (Exception ex) {
+			LOG.warn(ex);
+		}
 		if (result == null) {
 			return true;
 		} else {
 			boolean silenced = !DAO.charToBool(result);
-			updated = 0<DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_SILENCE, new Object[] { DAO.boolToChar(silenced), eventId, userId });
-			return silenced;
+			int updatedCount = DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_SILENCE, new Object[] { DAO.boolToChar(silenced), eventId, userId });
+			return silenced && updatedCount > 0;
 		}
 	}
-	
+
 	public int getHighestUnsilencedAlarmLevel(int userId) {
 		return DAO.getInstance().getJdbcTemp().queryForObject(HIGHEST_UNSILENT_USER_ALARMS, new Object[] { DAO.boolToChar(false), userId },Integer.class);
 	}

@@ -108,21 +108,17 @@
 
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="dialogDeletionVisible"
+			ref="deletionDialog"
 			@result="onDeleteDialogClose"
 			:title="$t('userDetails.dialog.delete.title')"
 			:message="$t('userDetails.dialog.delete.text')"
 		></ConfirmationDialog>
 
-		<v-snackbar v-model="snackbar.visible" :color="snackbar.color">
-			{{ snackbar.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
 import UserDetails from './UserDetails';
 import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
-import SnackbarMixin from '@/layout/snackbars/SnackbarMixin.js';
 
 /**
  * User List component - View page.
@@ -143,8 +139,6 @@ export default {
 		ConfirmationDialog,
 	},
 
-	mixins: [SnackbarMixin],
-
 	data() {
 		return {
 			userListLoaded: false,
@@ -153,7 +147,6 @@ export default {
 			selectedUser: null,
 			createdUser: null,
 			userPassword: '',
-			dialogDeletionVisible: false,
 			dialogCreationVisible: false,
 			operationQueue: null,
 			retriesCounter: 0,
@@ -200,7 +193,7 @@ export default {
 			this.$store.dispatch('getUserProfilesList').then((r) => {
 				this.userProfiles = r;
 				this.userProfiles.push({
-					"id": 0,
+					"id": -1,
 					"name": this.$t('common.none'),
 				});
 			});
@@ -216,11 +209,10 @@ export default {
 
 		openDeletionDialog(itemId) {
 			this.operationQueue = itemId;
-			this.dialogDeletionVisible = true;
+			this.$refs.deletionDialog.showDialog();
 		},
 
 		onDeleteDialogClose(result) {
-			this.dialogDeletionVisible = false;
 			if (result) {
 				this.deleteUser(this.operationQueue);
 			}
@@ -234,9 +226,9 @@ export default {
 				if(this.selectedUser.id === userId) {
 					this.selectedUser = null;
 				}
-				this.showCrudSnackbar('delete')
+				this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.delete.success`));
 			} catch (e) {
-				this.showCrudSnackbar('delete', false)
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.delete.fail`));
 				console.error(e);
 			}			
 		},
@@ -255,10 +247,10 @@ export default {
 				requestData.password = this.userPassword;
 				try {
 					await this.$store.dispatch('createUser', requestData);
-					this.showCrudSnackbar('add');
+					this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.add.success`));
 					this.fetchUserList();
 				} catch (e) {
-					this.showCrudSnackbar('add', false);
+					this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.add.fail`));
 				}
 			}
         },
@@ -270,20 +262,26 @@ export default {
 		async onUpdateUserDetails() {
 			try {
 				await this.$store.dispatch('updateUser', this.selectedUser);
-				this.showCrudSnackbar('update');
+				this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.update.success`));
 			} catch (e) {
-				this.showCrudSnackbar('update', false);
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.update.fail`));
 			}
 		},
 
 		onPasswordChanged(result) {
-			this.showCrudSnackbar('update', result);
+			if(result) {
+				this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.update.success`));
+			} else {
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.update.fail`));
+			}
 		},
 
 		onUserProfileCreated(result) {
-			this.showCrudSnackbar('add', result);
 			if(result) {
+				this.$store.dispatch('showSuccessNotification', this.$t(`common.snackbar.add.success`));
 				this.fetchUserProfiles();
+			} else {
+				this.$store.dispatch('showErrorNotification', this.$t(`common.snackbar.add.fail`));
 			}
 		}
 

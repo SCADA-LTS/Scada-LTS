@@ -18,10 +18,12 @@
 package org.scada_lts.dao.report;
 
 import com.mysql.jdbc.Statement;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.QueryArgs;
 import org.scada_lts.dao.SerializationData;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -38,6 +40,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+
+import static org.scada_lts.utils.ReportDaoUtils.searchQuery;
 
 /**
  * DAO for Report
@@ -49,6 +54,7 @@ public class ReportDAO {
 	private static final Log LOG = LogFactory.getLog(ReportDAO.class);
 
 	private static final String COLUMN_NAME_ID = "id";
+	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 	private static final String COLUMN_NAME_NAME = "name";
 	private static final String COLUMN_NAME_DATA = "data";
@@ -58,16 +64,18 @@ public class ReportDAO {
 			+ "select "
 				+ COLUMN_NAME_DATA + ", "
 				+ COLUMN_NAME_ID + ", "
+				+ COLUMN_NAME_XID + ", "
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_NAME + " "
 			+ "from reports ";
 
 	private static final String REPORT_INSERT = ""
 			+ "insert into reports ("
+				+ COLUMN_NAME_XID + ", "
 				+ COLUMN_NAME_USER_ID + ", "
 				+ COLUMN_NAME_NAME + ", "
 				+ COLUMN_NAME_DATA + ") "
-			+ "values (?,?,?) ";
+			+ "values (?,?,?,?) ";
 
 	private static final String REPORT_UPDATE = ""
 			+ "update reports set "
@@ -86,6 +94,11 @@ public class ReportDAO {
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
+	private static final String REPORT_SELECT_WHERE_XID = ""
+			+ REPORT_SELECT
+			+ "where "
+			+ COLUMN_NAME_XID + "=? ";
+
 	private static final String REPORT_SELECT_WHERE_USER_ID_ORDER = ""
 				+ REPORT_SELECT
 			+ "where "
@@ -103,6 +116,7 @@ public class ReportDAO {
 			report.setId(rs.getInt(COLUMN_NAME_ID));
 			report.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			report.setName(rs.getString(COLUMN_NAME_NAME));
+			report.setXid(rs.getString(COLUMN_NAME_XID));
 			return report;
 		}
 	}
@@ -122,6 +136,21 @@ public class ReportDAO {
 		return reportVO;
 	}
 
+	public ReportVO getReport(String xid) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getReport(String xid) xid:" + xid);
+		}
+
+		ReportVO reportVO;
+		try {
+			reportVO = DAO.getInstance().getJdbcTemp().queryForObject(REPORT_SELECT_WHERE_XID, new Object[]{xid}, new ReportRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			reportVO = null;
+		}
+		return reportVO;
+	}
+
 	public List<ReportVO> getReports() {
 
 		if (LOG.isTraceEnabled()) {
@@ -129,6 +158,19 @@ public class ReportDAO {
 		}
 
 		return DAO.getInstance().getJdbcTemp().query(REPORT_SELECT, new ReportRowMapper());
+	}
+
+	public List<ReportVO> search(Map<String, String> query) {
+		return search(Common.NEW_ID, query);
+	}
+
+	public List<ReportVO> search(int userId, Map<String, String> query) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("search(int userId, Map<String, String> query)");
+		}
+		QueryArgs sql = searchQuery(userId, query, REPORT_SELECT);
+		return DAO.getInstance().getJdbcTemp().query(sql.getQuery(), sql.getArgs(), new ReportRowMapper());
 	}
 
 	public List<ReportVO> getReports(int userId) {
@@ -153,6 +195,7 @@ public class ReportDAO {
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement preparedStatement = connection.prepareStatement(REPORT_INSERT, Statement.RETURN_GENERATED_KEYS);
 				new ArgumentPreparedStatementSetter(new Object[]{
+						report.getXid(),
 						report.getUserId(),
 						report.getName(),
 						new SerializationData().writeObject(report)}
@@ -187,4 +230,5 @@ public class ReportDAO {
 
 		DAO.getInstance().getJdbcTemp().update(REPORT_DELETE, new Object[]{id});
 	}
+
 }

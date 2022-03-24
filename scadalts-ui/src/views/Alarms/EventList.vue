@@ -2,78 +2,81 @@
 	<div>
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="confirmAckAllToggleDialog"
+			ref="confirmDialog"
 			@result="confirmAction"
 			:title="confirmTitle"
 			:message="confirmMessage"
 		></ConfirmationDialog>
 		<v-row justify="center" class="mt-6">
-			<v-dialog
-			v-model="eventDetailsDialog"
-			scrollable
-			max-width="90%"
-			>
-			<v-card v-if="selectedEvent">
-				<v-card-title>
-					<v-row>
-						<v-col cols="6">Event #{{selectedEvent.id}}</v-col>
-						<v-col cols="6" class="text-right">
-							<img 
-							:src="(!!selectedEvent.rtnTs ? alarmFlags : alarmFlagsOff)[selectedEvent.alarmLevel].image">
+			<v-dialog v-model="eventDetailsDialog" scrollable max-width="70%">
+				<v-card v-if="selectedEvent">
+					<v-card-title>
+						<v-row>
+							<v-col cols="4">
+								<img 
+								:src="getFlagByEvent(selectedEvent)"> #{{selectedEvent.id}}</v-col>
+							<v-col cols="8" class="text-right">
+							</v-col>
+						</v-row>
+					</v-card-title>
+					<v-row style="margin: 0 2rem" > 
+						<v-col cols="3">
+							<div style="position:relative; height: 0; ">
+								<v-col><b>{{$t('eventList.createAt')}}</b>:<br> {{ $date(selectedEvent.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</v-col>
+								<v-col ><b>{{$t('eventList.alarmLevel')}}</b>:<br> 
+									{{ $t(`eventList.alarmLevel${selectedEvent.alarmLevel}`) }}
+								</v-col>
+								<v-col v-if="selectedEvent.eventSourceType===1" ><b>{{$t('eventList.datapoint')}}</b>:<br> {{selectedEvent.datapoint}}</v-col>
+								<v-col ><b>{{$t('eventList.sourceType')}}</b>:<br> {{ $t(`eventList.sourceType${selectedEvent.typeId}`) }}</v-col>
+								<v-col ><b>{{$t('eventList.status')}}</b>:<br> 
+									<span v-if="selectedEvent.rtnApplicable && !selectedEvent.rtnTs" >{{$t('eventList.STATUS_ACTIVE')}}</span>
+									<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$t('eventList.STATUS_RTN')}} {{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
+									<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
+								</v-col>
+								<v-col v-if="selectedEvent.ackTs"><b>{{$t('eventList.ackTime')}}</b>:<br> 
+									<span >  {{$date(selectedEvent.ackTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
+								</v-col>
+							</div>
 						</v-col>
-						<v-col cols="12">
-							<v-btn class="mr-2" @click="acknowledgeEventSelected" color="blue">
+						<v-col cols="9">
+							<p style="padding-top: 10px">
+								<b>{{$t('eventList.message')}}</b>:<br>
+							<span v-html="selectedEvent.message"></span>
+							</p>
+							<v-divider></v-divider>
+							<textarea style="width:100%;border: green 1px solid;  resize:none" rows="5" v-model="commentText"></textarea>
+							<v-btn style=";width:100%" class="primary" :disabled="!commentText.length" @click="publishComment">{{ $t('eventList.addComment') }}</v-btn>
+						</v-col>
+					</v-row> 
+					<v-card-text style="height: 300px;">
+						<v-row>
+							<v-col cols="3"></v-col>
+							<v-col cols="9">
+								<ul id=commentList v-for="comment in comments">
+									<li>{{comment.username}}-{{$date(comment.ts).format('YYYY-MM-DD hh:mm:ss')}}:  <span v-html="comment.commentText"></span></li>
+								</ul>
+							</v-col>
+						</v-row>
+					</v-card-text>
+					<v-divider></v-divider>
+					<form @submit.prevent="publishComment"> 
+						<v-card-actions style="padding: 15px">
+							<v-spacer></v-spacer>
+							<v-btn :disabled="selectedEvent.ackTs > 0" class="mr-2 primary" @click="acknowledgeEventSelected" >
 								<v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-									{{$t('eventList.acknowledge')}}
+								{{$t('eventList.acknowledge')}}
 							</v-btn>
-							<v-btn v-if="!selectedEvent.silenced" @click="silenceEvent({id:selectedEvent.id})"  class="mr-2" color="blue">
+							<v-btn :disabled="selectedEvent.ackTs > 0" v-if="!selectedEvent.silenced" @click="silenceEvent({id:selectedEvent.id})"  class="mr-2 primary"  >
 								<v-icon>mdi-volume-mute</v-icon>
 								{{$t('eventList.silence')}}
 							</v-btn>
-							<v-btn v-else @click="unsilenceEvent({id:selectedEvent.id})"  class="mr-2" color="blue">
+							<v-btn :disabled="selectedEvent.ackTs > 0" v-else @click="unsilenceEvent({id:selectedEvent.id})"  class="mr-2 primary">
 								<v-icon>mdi-volume-mute</v-icon>
 								{{$t('eventList.unsilence')}}
-							</v-btn>
-						</v-col>	
-					</v-row>
-				</v-card-title>
-				<v-row style="margin: 0 2rem" >
-					<v-col cols="3"><b>{{$t('eventList.createAt')}}</b>: {{ $date(selectedEvent.activeTs).format('YYYY-MM-DD hh:mm:ss') }}</v-col>
-					<v-col cols="3"><b>{{$t('eventList.alarmLevel')}}</b>: 
-						{{ $t(`eventList.alarmLevel${selectedEvent.alarmLevel}`) }}
-					</v-col>
-					<v-col cols="3"><b>{{$t('eventList.sourceType')}}</b>: {{ $t(`eventList.sourceType${selectedEvent.typeId}`) }}</v-col>
-					<v-col cols="3"><b>{{$t('eventList.status')}}</b>: 
-						<span v-if="selectedEvent.rtnApplicable && !selectedEvent.rtnTs" >{{$t('eventList.STATUS_ACTIVE')}}</span>
-						<span v-if="selectedEvent.rtnApplicable && selectedEvent.rtnTs">{{$date(selectedEvent.rtnTs).format('YYYY-MM-DD hh:mm:ss')}}</span>
-						<span v-if="!selectedEvent.rtnApplicable">{{$t('eventList.STATUS_NORTN')}}</span>
-					</v-col>
-					<v-col cols="9"><b>{{$t('eventList.message')}}</b>: {{$t(`${selectedEvent.message.split('|')[0]}`, selectedEvent.message.split('|'))}}</v-col>
-					<v-col v-if="selectedEvent.eventSourceType===1" cols="3"><b>{{$t('eventList.datapoint')}}</b>: {{selectedEvent.datapoint}}</v-col>
-				</v-row>
-				<v-divider></v-divider>
-				<v-card-text style="height: 300px;">
-					<v-row>
-						<v-col cols="6">
-							<ul v-for="comment in comments">
-								<li>{{comment.username}}-{{$date(comment.ts).format('YYYY-MM-DD hh:mm:ss')}}: {{comment.commentText}}</li>
-							</ul>
-						</v-col>
-						<v-col cols="6">
-						</v-col>
-					</v-row>
-				
-				</v-card-text>
-				<v-divider></v-divider>
-				<form @submit.prevent="publishComment"> 
-				<v-card-actions>
-				 
-					<v-text-field v-model="commentText" color="blue darken-1"></v-text-field>
-					<v-btn text color="blue darken-1" @click="publishComment">Comment</v-btn>
-				
-				</v-card-actions>
-				</form>
-			</v-card>
+							</v-btn>		
+						</v-card-actions>
+					</form>
+				</v-card>
 			</v-dialog>
 		</v-row>
 		<v-container fluid v-if="!!eventList">	
@@ -216,7 +219,6 @@
 									@change="fetchEventList"
 								></v-select>
 							</v-col>
-						
 							<v-col cols="3">
 								<v-select 
 									:label="$t('eventList.status')"
@@ -227,7 +229,6 @@
 									@change="fetchEventList"
 								></v-select>
 							</v-col>
-							
 							<v-col cols="3">
 								<v-select 
 									:label="$t('eventList.sourceType')"
@@ -260,18 +261,20 @@
 						<v-icon class="mr-2" >
 							mdi-checkbox-marked-circle-outline
 						</v-icon>
-						{{$t("eventList.acknowledgeSelectedEvents")}}</v-btn>
-					<v-btn small @click="silenceSelectedEvents" title="silence"  color="blue" class="mr-2" >
+						{{$t("eventList.acknowledgeSelectedEvents")}}
+					</v-btn>
+					<v-btn small @click="silenceSelectedEvents" :title="$t('eventList.silence')"  color="blue" class="mr-2" >
 						<v-icon class="mr-2" >
 							mdi-volume-mute
 						</v-icon>
 						{{$t("eventList.silenceSelected")}}
-						</v-btn>
-					<v-btn small @click="unsilenceSelectedEvents"  color="blue">
+					</v-btn>
+					<v-btn small @click="unsilenceSelectedEvents" :title="$t('eventList.unsilence')" color="blue">
 						<v-icon class="mr-2" >
 							mdi-volume-high
 						</v-icon>
-						{{$t("eventList.unsilenceSelected")}}</v-btn>
+						{{$t("eventList.unsilenceSelected")}}
+					</v-btn>
 				</v-col>
 				<v-col :cols="selectedEvents.length ? 6 : 12" class="text-right">
 					<v-btn small @click="askForAckAll" class="mr-2" color="red">
@@ -285,8 +288,6 @@
 						</v-icon>
 						{{$t("eventList.silenceAll")}}</v-btn>
 				</v-col>
-
-
     		</v-row>
 			<v-data-table
 				id='eventList'
@@ -320,13 +321,13 @@
 						</v-icon>
 					</template>
 					<template v-slot:item.alarmLevel="{ item }">
-						<img :src="(!!item.rtnTs ? alarmFlags : alarmFlagsOff)[item.alarmLevel].image">
+						<img :src="getFlagByEvent(item)">
 					</template>
 					<template v-slot:item.typeId="{ item }">
 						{{ $t(`eventList.sourceType${item.typeId}`) }}
 					</template>
 					<template v-slot:item.message="{ item }">
-						{{$t(`${item.message.split('|')[0]}`, item.message.split('|')) | truncate}}
+						<a :title="(item.message) | clearHtml">{{ (item.message) | clearHtml | truncate}}</a>
 					</template>
 
 					<template v-slot:item.status="{ item }">
@@ -337,10 +338,10 @@
 					<template v-slot:item.actions="{ item }">
 						<span v-if="!item.ackTs">
 							<v-icon class="mr-2" border="0" @click.stop="silenceEvent(item);return false" v-if="!item.silenced" title="silence">
-								mdi-volume-mute
+								mdi-volume-high
 							</v-icon>
 							<v-icon class="mr-2" border="0" @click.stop="unsilenceEvent(item);return false" v-if="item.silenced" title="unsilence">
-								mdi-volume-high
+								mdi-volume-mute
 							</v-icon>
 						</span>
 
@@ -352,7 +353,7 @@
 						mdi-database
 						</v-icon>	
 						
-						<v-icon @click.stop="gotoSystem(event.typeRef1)" v-if="item.typeId===4" title="system">
+						<v-icon @click.stop="gotoSystem(item.typeRef1, item.typeRef2)" v-if="item.typeId===4" title="system">
 							mdi-desktop-classic
 						</v-icon>
 
@@ -396,7 +397,6 @@
 	</div>
 </template>
 <style scoped>
-
 .v-icon {
 	border: 0!important;
 }
@@ -446,8 +446,15 @@ export default {
 			if (data === false) this.selectedEventId=null;
       	},
     },
+	computed: {
+		commentRows() {
+			const lines = this.commentText.split('\n').length
+			return lines < 5 ? lines : 5
+		}
+	},
 	data() {
 		return {
+			next: false,
 			mountedTs: null,
 			newAlarms: false,
 			get selectedEvent() {
@@ -571,7 +578,23 @@ export default {
 					image: "images/flag_red_off.png"
 				}
 			},
+      
 			confirmAckAllToggleDialog: false,
+
+			alarmFlags: {
+				1: {
+					image: "images/flag_blue.png"
+				},
+				2: {
+					image: "images/flag_yellow.png"
+				},
+				3: {
+					image: "images/flag_orange.png"
+				},
+				4: {
+					image: "images/flag_red.png"
+				}
+			},
 			confirmTitle: '',
 			confirmMessage: '',
 			selectedEvents: [],
@@ -585,14 +608,28 @@ export default {
 			return value.charAt(0).toUpperCase() + value.slice(1)
 		},
 		truncate(input) {
-			if (input.length > 32) {
-				return input.substring(0, 32) + '...';
+			if (input.length > 45) {
+				return input.substring(0, 45) + '...';
 			}
 			return input;
+		},
+		clearHtml(str) {
+			return str.replace(/<[^>]*>?/gm, '').replaceAll('&nbsp;', ' ')
 		}
 	},
 	
 	methods: {
+		getFlagByEvent(event) {
+			return ((event.rtnApplicable && !!event.rtnTs) ? this.alarmFlags : this.alarmFlagsOff)[event.alarmLevel].image
+		},
+		eventMessageI18n(eventMessage) {
+			const [key, ...args ]= eventMessage.split('|')
+			return this.$t(key, args)
+		},
+		nextPage(){
+			this.options = {...this.options, page: this.options.page+1}
+			this.fetchEventList()
+		},
 		getAlarms() {
 			store.dispatch('getLiveAlarms', { offset: 0, limit: 1 }).then((ret) => {
 				if (ret.length) this.newAlarms = true
@@ -600,16 +637,16 @@ export default {
 		},
 		confirmAction(answer) {
 			if (answer) this.actionToConfirm();
-			this.confirmAckAllToggleDialog = false
+			// this.confirmDialog.showDialog()
 		},
 		askForAckAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t('eventList.acknownledgeAll')
 			this.confirmMessage = this.$t('eventList.confirmAckAllMessage')
 			this.actionToConfirm = this.acknowledgeAllEvents;
 		},
 		askForSilenceAll() {
-			this.confirmAckAllToggleDialog = true
+			this.$refs.confirmDialog.showDialog()
 			this.confirmTitle = this.$t("eventList.silenceAll")
 			this.confirmMessage = this.$t('eventList.silenceAllConfirmMessage')
 			this.actionToConfirm = this.silenceAllEvents;
@@ -620,12 +657,10 @@ export default {
 		},
 
 		//system
-		gotoSystem(type,referenceId2) {
-			// window.location = `http://mango.serotoninsoftware.com/download.jsp` //png="bullet_down"
-			// if (type = 1)  TYPE_SYSTEM_STARTUP
-			if (type = 6) window.location = `compound_events.shtm?cedid=${referenceId2}"` // png="multi_bell" 
-			if (type = 7) window.location = `event_handlers.shtm?ehid=${referenceId2}` //png="cog"
-			if (type = 9) window.location = `point_links.shtm?plid=${referenceId2}` //png="link"
+		gotoSystem(referenceId1,referenceId2) {
+			if (referenceId1 == 6) window.location = `compound_events.shtm?cedid=${referenceId2}"`
+			else if (referenceId1 == 7) window.location = `event_handlers.shtm?ehid=${referenceId2}`
+			else if (referenceId1 == 9) window.location = `point_links.shtm?plid=${referenceId2}`
 		},
 		gotoCompoundEvent(compoundEventDetectorId) {
 			window.location = `compound_events.shtm?cedid=${compoundEventDetectorId}` //png="multi_bell"
@@ -658,22 +693,32 @@ export default {
 		gotoMaintenance(maintenanceId) {
 			window.location = `maintenance_events.shtm?meid=${maintenanceId}` //png="hammer"
 		},
-
 		async publishComment() {
 			await this.$store.dispatch('addUserComment', {
-				comment: {comment:this.commentText},
+				comment: {comment:this.replaceLineBreaksByBr(this.commentText)},
 				typeId: 1,
 				refId: this.selectedEventId,
 			});
 			this.fetchEventSelected()
 			this.fetchEventList()
 			this.commentText = ''
+			document.getElementById('commentList').scrollIntoView();
+		},
+		replaceLineBreaksByBr: function (x){
+			return x.replaceAll("\n",'<br/>')
 		},
 		async fetchEventList() {
 			this.loading = true;
 			const result = await this.$store.dispatch('searchEvents', { ...this.searchFilters, itemsPerPage: this.options.itemsPerPage });
-			this.eventList = result.rows;
-			this.totalEvents = result.total;
+
+			if (result.length > this.options.itemsPerPage) {
+				this.eventList = result.slice(0,this.options.itemsPerPage);
+				this.totalEvents = this.options.itemsPerPage * this.options.page +1
+			} else {
+				this.eventList = result;
+				this.totalEvents = this.options.itemsPerPage * this.options.page
+			}
+			// document.getElementsByClassName('v-data-footer__pagination')[0].innerHTML=''
 			this.loading = false;
 			await this.$store.dispatch('getHighestUnsilencedAlarmLevel');
 		},
@@ -684,8 +729,9 @@ export default {
 		},
 		async acknowledgeEventSelected() {
 			this.loading = true;
-			this.comments = await this.$store.dispatch('acknowledgeEvent', {eventId: this.selectedEventId});
+			await this.$store.dispatch('acknowledgeEvent', {eventId: this.selectedEventId});
 			await this.fetchEventList();
+			return true
 		},
 		async acknowledgeAllEvents() {
 			this.loading = true;
@@ -739,7 +785,8 @@ export default {
 		},
 	  	open(item, item2) {
 			this.selectedEventId = item.id;
-	  	}
+	  	},
+		
 	},
 };
 </script>

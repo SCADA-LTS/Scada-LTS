@@ -18,11 +18,8 @@
 package org.scada_lts.web.mvc.controller;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,14 +36,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /** 
  * Controller for points hierarchy.
@@ -59,8 +54,11 @@ public class PointHierarchyController {
 
 	private static final Log LOG = LogFactory.getLog(PointHierarchyController.class);
 
-	//TODO add @Autowire
-	private PointHierarchyService phService = new PointHierarchyService();
+	private final PointHierarchyService pointHierarchyService;
+
+	public PointHierarchyController(PointHierarchyService pointHierarchyService) {
+		this.pointHierarchyService = pointHierarchyService;
+	}
 
 	@RequestMapping(value = "/pointHierarchySLTS", method = RequestMethod.GET)
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
@@ -88,7 +86,7 @@ public class PointHierarchyController {
 			LOG.trace("/pointHierarchy/{key} key:" + key);
 		}
 		User user = Common.getUser(request);
-		if (user.isAdmin()) {
+		if (user != null && user.isAdmin()) {
 			String json = "";
 			List<PointHierarchyNode> lst = null;
 			try {
@@ -124,7 +122,7 @@ public class PointHierarchyController {
 					List<PointHierarchyNode> elements = PointHierarchyCache.getInstance().getOnBaseParentId(key);
 					for (PointHierarchyNode element : elements) {
 						if (!element.isFolder()) {
-							phService.move(parentId, 0, element.getKey(), false);
+							pointHierarchyService.move(parentId, 0, element.getKey(), false);
 						}
 					}
 				} catch (Exception e) {
@@ -132,10 +130,10 @@ public class PointHierarchyController {
 					ok = false;
 				}
 
-			  	ok = phService.delete(parentId, key, isFolder);
+			  	ok = pointHierarchyService.delete(parentId, key, isFolder);
 			} else {
 				// is point
-			  ok = phService.move(parentId, 0, key, isFolder);
+			  ok = pointHierarchyService.move(parentId, 0, key, isFolder);
 			}
 
 			String json = "";
@@ -161,7 +159,7 @@ public class PointHierarchyController {
 
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			int id = phService.add(PointHierarchyCache.ROOT, newTitle);
+			int id = pointHierarchyService.add(PointHierarchyCache.ROOT, newTitle);
 			ObjectMapper mapper = new ObjectMapper();
 			String json = "";
 			try {
@@ -183,7 +181,7 @@ public class PointHierarchyController {
 		}
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			boolean ok = phService.edt(parentId, key, newTitle, true);
+			boolean ok = pointHierarchyService.edt(parentId, key, newTitle, true);
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -205,7 +203,7 @@ public class PointHierarchyController {
 				+ oldParentId + "" + " newParentId:" + newParentId + "" + " isFolder:" + isFolder);
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			phService.move(oldParentId, newParentId, key, isFolder);
+			pointHierarchyService.move(oldParentId, newParentId, key, isFolder);
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -224,7 +222,7 @@ public class PointHierarchyController {
 		LOG.info("/pointHierarchy/find/{search} search:"+search+" page:"+page);
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			List<PointHierarchyNode> lst = phService.search(search, page);
+			List<PointHierarchyNode> lst = pointHierarchyService.search(search, page);
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -243,7 +241,7 @@ public class PointHierarchyController {
 		LOG.info("/pointHierarchy/paths/{key}/{isFolder} key:"+key+" isFolder:"+isFolder+" interval:"+interval);
 		User user = Common.getUser(request);
 		if (user.isAdmin()) {
-			List<PointHierarchyNode> lst = phService.getPaths(key, isFolder);
+			List<PointHierarchyNode> lst = pointHierarchyService.getPaths(key, isFolder);
 			String json = "";
 			ObjectMapper mapper = new ObjectMapper();
 			try {

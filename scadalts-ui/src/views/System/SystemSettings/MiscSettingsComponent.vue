@@ -5,14 +5,6 @@
 				{{ $t('systemsettings.misc.title') }}
 				<span v-if="isMiscSettingsEdited">*</span>
 				<v-spacer></v-spacer>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on, attrs }">
-						<v-btn fab icon @click="purgeData()" v-bind="attrs" v-on="on">
-							<v-icon>mdi-delete</v-icon>
-						</v-btn>
-					</template>
-					<span>{{ $t('systemsettings.tooltip.purgedata') }}</span>
-				</v-tooltip>
 			</v-card-title>
 
 			<v-card-text>
@@ -28,79 +20,22 @@
 							dense
 						></v-select>
 					</v-col>
-
 					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.eventPurgePeriods"
-							type="number"
-							:label="$t('systemsettings.misc.purge.events')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.eventPurgePeriodType"
-							:items="eventPurgePeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.reportPurgePeriodType"
-							type="number"
-							:label="$t('systemsettings.misc.purge.reports')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.reportPurgePeriodType"
-							:items="eventPurgePeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.futureDateLimitPeriods"
-							type="number"
-							:label="$t('systemsettings.misc.purge.future')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.futureDateLimitPeriodType"
-							:items="futureDateLimitPeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
+                        <v-checkbox
+                            @change="watchDataChange()"
+                            v-model="miscSettings.dataPointRuntimeValueSynchronized"
+                            item-value="value"
+                            item-text="text"
+                            :label="$t('systemsettings.misc.dataPointRuntimeValueSynchronized')"
+                            dense
+                        ></v-checkbox>
+                    </v-col>
 				</v-row>
 			</v-card-text>
 		</v-card>
-
-		<v-snackbar v-model="response.status" :color="response.color">
-			{{ response.message }}
-		</v-snackbar>
 	</v-col>
 </template>
 <script>
-import { object } from '@amcharts/amcharts4/core';
-import i18n from '../../../i18n';
-
 export default {
 	name: 'MiscSettingsComponent',
 
@@ -117,21 +52,7 @@ export default {
 				},
 				{ value: 10000, text: this.$t('systemsettings.misc.performance.low') },
 			],
-			futureDateLimitPeriodTypeItems: [
-				{ value: 2, text: this.$t('timeperiod.minutes') },
-				{ value: 3, text: this.$t('timeperiod.hours') },
-			],
-			eventPurgePeriodTypeItems: [
-				{ value: 4, text: this.$t('timeperiod.days') },
-				{ value: 5, text: this.$t('timeperiod.weeks') },
-				{ value: 6, text: this.$t('timeperiod.months') },
-				{ value: 7, text: this.$t('timeperiod.years') },
-			],
-			response: {
-				color: 'success',
-				status: false,
-				message: '',
-			},
+			dataPointRuntimeValueSynchronized: false,
 		};
 	},
 
@@ -154,19 +75,11 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.response = {
-							status: true,
-							message: this.$t('systemsettings.notification.save.misc'),
-							color: 'success',
-						};
+						this.$store.dispatch('showSuccessNotification', this.$t('systemsettings.notification.save.misc'));
 					}
 				})
 				.catch(() => {
-					this.response = {
-						status: true,
-						message: this.$t('systemsettings.notification.fail'),
-						color: 'danger',
-					};
+					this.$store.dispatch('showErrorNotification', this.$t('systemsettings.notification.fail'));
 				});
 		},
 
@@ -221,11 +134,7 @@ export default {
 			}).then(() => {
 				this.$store.dispatch('purgeData').then((resp) => {
 					if (resp === true) {
-						this.response = {
-							status: true,
-							message: this.$t('systemsettings.notification.purgedata'),
-							color: 'success',
-						};
+						this.$store.dispatch('showSuccessNotification', this.$t('systemsettings.notification.purgedata'));
 					}
 				});
 			});

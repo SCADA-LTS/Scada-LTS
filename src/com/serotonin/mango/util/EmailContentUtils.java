@@ -12,6 +12,7 @@ import com.serotonin.mango.web.email.MangoTextContent;
 import com.serotonin.mango.web.email.UsedImagesDirective;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.email.EmailInline;
+import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.template.TemplateException;
 import org.scada_lts.dao.SystemSettingsDAO;
@@ -46,6 +47,17 @@ public final class EmailContentUtils {
 
         addInLineToContent(inlineImages, content);
         return content;
+    }
+
+    public static MangoEmailContent createEmailTest() throws TemplateException, IOException {
+        ResourceBundle bundle = Common.getBundle();
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("user", Common.getUser());
+        model.put("message", new LocalizableMessage(
+                "reports.recipTestEmailMessage"));
+        return new MangoEmailContent("testEmail",
+                model, bundle, I18NUtils.getMessage(bundle,
+                "ftl.testEmail"), Common.UTF8);
     }
 
     private static void addInLineToContent(UsedImagesDirective inlineImages, MangoEmailContent content) {

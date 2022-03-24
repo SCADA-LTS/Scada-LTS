@@ -33,7 +33,8 @@
         EmportDwr.createExportData($get("prettyIndent"), $get("graphicalViews"), $get("eventHandlers"),
                 $get("dataSources"), $get("dataPoints"), $get("scheduledEvents"), $get("compoundEventDetectors"),
                 $get("pointLinks"), $get("users"), $get("pointHierarchy"), $get("mailingLists"), $get("publishers"),
-                $get("watchLists"), $get("maintenanceEvents"),$get("scripts"),$get("pointValues"),$get("pointValuesMax"),$get("systemSettings"), $get("usersProfiles"), function(data) {
+                $get("watchLists"), $get("maintenanceEvents"),$get("scripts"),$get("pointValues"),$get("pointValuesMax"),
+                $get("systemSettings"), $get("usersProfiles"), $get("reports"), function(data) {
             $set("emportData", data);
             setDisabled("exportJsonBtn", false);
         });
@@ -159,6 +160,7 @@
         $set("pointValues", checked);
         $set("systemSettings", checked);
         $set("usersProfiles", checked);
+        $set("reports", checked);
     }
 
     function dataPointsCheckboxChanged() {
@@ -225,10 +227,11 @@
 				</label><br /> <input type="checkbox" id="compoundEventDetectors" /> <label
 					for="compoundEventDetectors"><fmt:message
 							key="header.compoundEvents" />
-				</label><br /></td>
-				<td><input type="checkbox" id="pointLinks" /> <label
-					for="pointLinks"><fmt:message key="header.pointLinks" />
-				</label><br /> <input type="checkbox" id="users" /> <label for="users"><fmt:message
+				</label><br /> <input type="checkbox" id="pointLinks" /> <label
+                    for="pointLinks"><fmt:message key="header.pointLinks" />
+                </label><br />
+                </td>
+				<td><input type="checkbox" id="users" /> <label for="users"><fmt:message
 							key="header.users" />
 				</label><br /> <input type="checkbox" id="pointHierarchy" /> <label
 					for="pointHierarchy"><fmt:message
@@ -247,7 +250,12 @@
 				</label><br />
 				<input type="checkbox" id="usersProfiles" /> <label
 					for="usersProfiles"><fmt:message key="header.usersProfiles" />
-				</label><br />
+				</label>
+				<br />
+				<input type="checkbox" id="reports" /> <label
+                    for="reports"><fmt:message key="header.reports" />
+                </label>
+                <br />
 				</td>
 				<!--          <input type="checkbox" id="reports"/> <label for="reports"><fmt:message key="header.reports"/></label><br/>-->
 				<!--          <input type="checkbox" id="systemSettings"/> <label for="systemSettings"><fmt:message key="header.systemSettings"/></label><br/>-->

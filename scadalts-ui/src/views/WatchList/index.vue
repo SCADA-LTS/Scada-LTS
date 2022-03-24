@@ -32,7 +32,7 @@
 						class="header-settings--buttons"
 					></WatchListConfig>
 					<WatchListConfig
-						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 2"
+						v-if="activeWatchList && activeWatchList.id !== -1 && userRights >= 2"
 						:key="activeWatchList.id"
 						@update="updateWatchList"
 						class="header-settings--buttons"
@@ -40,7 +40,7 @@
 					<v-btn
 						fab
 						elevation="1"
-						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 2"
+						v-if="activeWatchList && activeWatchList.id !== -1 && userRights === 3"
 						@click="openDeletionDialog"
 						class="header-settings--buttons"
 						><v-icon>mdi-minus-circle</v-icon>
@@ -64,7 +64,7 @@
 
 		<ConfirmationDialog
 			:btnvisible="false"
-			:dialog="dialogDeletionVisible"
+			ref="deletionDialog"
 			@result="onDeleteDialogClose"
 			:title="$t('watchlist.dialog.delete.title')"
 			:message="$t('watchlist.dialog.delete.text')"
@@ -74,14 +74,15 @@
 <script>
 import draggable from 'vuedraggable';
 
-import ConfirmationDialog from '@/layout/dialogs/ConfirmationDialog';
+import ConfirmationDialog from '@dialogs/ConfirmationDialog';
 
 import PointWatcher from './PointWatcher';
 import PointChart from './PointChart/index.vue';
 import WatchListConfig from './WatchListConfig';
+import { createWatchList, deleteWatchList, updateWatchList } from '@s/watchList/actions';
 /**
  * @author Radoslaw Jajko <rjajko@softq.pl>
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default {
 	name: 'WatchList',
@@ -97,7 +98,6 @@ export default {
 	data() {
 		return {
 			watchListSelectBox: -1,
-			dialogDeletionVisible: false,
 			watchListsArray: [],
 		};
 	},
@@ -107,7 +107,7 @@ export default {
 				return this.$store.state.watchListModule.activeWatchList;
 			},
 			set(newValue) {
-				return this.$store.dispatch('updateActiveWatchList', newValue);
+				return this.$store.commit('UPDATE_ACTIVE_WATCHLIST', newValue);
 			},
 		},
 
@@ -115,14 +115,9 @@ export default {
 			const user = this.$store.state.loggedUser;
 			if (!!user && !!this.activeWatchList) {
 				if (!!user.admin || user.id === this.activeWatchList.user.id) {
-					return 2;
+					return 3;
 				} else {
-					let entry = this.activeWatchList.watchListUsers.find(
-						(p) => p.userId === user.id
-					);
-					if (!!entry) {
-						return entry.accessType;
-					}
+					return this.activeWatchList.accessType;
 				}
 			}
 			return 0;
@@ -147,7 +142,7 @@ export default {
 		},
 
 		createWatchList() {
-			this.$store.dispatch('createWatchList').then((resp) => {
+			this.$store.dispatch(createWatchList).then((resp) => {
 				this.watchListsArray.push({
 					id: resp.id,
 					xid: resp.xid,
@@ -159,11 +154,12 @@ export default {
 		},
 
 		updateWatchList() {
-			this.$store.dispatch('updateWatchList');
+			this.$store.dispatch(updateWatchList);
+			this.$router.go();
 		},
 
 		deleteWatchList() {
-			this.$store.dispatch('deleteWatchList').then(() => {
+			this.$store.dispatch(deleteWatchList).then(() => {
 				this.watchListsArray = this.watchListsArray.filter(
 					(wl) => wl.id !== this.activeWatchList.id
 				);
@@ -172,11 +168,10 @@ export default {
 		},
 
 		openDeletionDialog() {
-			this.dialogDeletionVisible = true;
+			this.$refs.deletionDialog.showDialog();
 		},
 
 		onDeleteDialogClose(result) {
-			this.dialogDeletionVisible = false;
 			if (result) {
 				this.deleteWatchList();
 			}

@@ -20,8 +20,8 @@
 
 <tag:page dwr="DataPointEditDwr">
 
-     <link href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
-     <script type="text/javascript" src="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.js"></script>
+     <link href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" type="text/css">
+     <script type="text/javascript" src="resources/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 
      <style type="text/css">
 
@@ -163,6 +163,10 @@
                        jQuery("#purgePeriod").val(prop.purgePeriod);
                        jQuery("#purgeType").val(prop.purgeType);
                        jQuery("#defaultCacheSize").val(prop.defaultCacheSize);
+
+                       jQuery("#purgeStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeNowStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeValuesLimit").val(prop.purgeValuesLimit);
 
                    }
 

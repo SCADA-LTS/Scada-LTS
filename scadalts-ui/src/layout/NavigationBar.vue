@@ -80,7 +80,7 @@
 						<v-list-item-icon>
 							<v-icon>mdi-folder-multiple</v-icon>
 						</v-list-item-icon>
-						<v-list-item-title> Point Hierarchy </v-list-item-title>
+						<v-list-item-title> {{ $t('pointHierarchy.title') }} </v-list-item-title>
 					</v-list-item>
 
 					<v-list-item link href="#/point-links">

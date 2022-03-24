@@ -81,7 +81,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			point = dataPointDao.getDataPoint(id);
 
 		if (point != null) {
-			//Permissions.ensureDataPointReadPermission(user, point);
+			Permissions.ensureDataPointReadPermission(user, point);
 
 			model.put("point", point);
 
@@ -114,10 +114,7 @@ public class DataPointDetailsController extends ParameterizableViewController {
 			model.put("users", users);
 
 			// Determine whether the link to edit the point should be displayed
-			model.put(
-					"pointEditor",
-					Permissions.hasDataSourcePermission(user,
-							point.getDataSourceId()));
+			model.put("pointEditor", user.isAdmin());
 
 			// Put the events in the model.
 			model.put("events",

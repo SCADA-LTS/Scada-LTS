@@ -3,7 +3,9 @@ import Vuex from 'vuex';
 import dataSource from './dataSource';
 import dataSourceState from './dataSource/editorState';
 import dataPoint from './dataPoint';
+import storeReports from './reports';
 import storeEvents from './events';
+import storeScripts from './scripts';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
 import graphicalViewModule from './graphicalViews';
@@ -16,6 +18,7 @@ import storeAlarmsNotifications from './alarms/notifications';
 import systemSettings from './systemSettings';
 import SynopticPanelModule from './synopticPanel';
 import watchListModule from './watchList';
+import notificationModule from './notificationStore';
 import webSocketModule from './websocketStore';
 import staticResources from './static';
 
@@ -31,6 +34,7 @@ const myLoggerForVuexMutation = (store) => {
 
 export default new Vuex.Store({
 	modules: {
+		storeReports,
 		dataSource,
 		dataSourceState,
 		dataPoint,
@@ -42,6 +46,8 @@ export default new Vuex.Store({
 		alarms,
 		staticResources,
 		storeUsers,
+		notificationModule,
+		storeScripts,
 		userProfileModule,
 		systemSettings,
 		storeMailingList,
@@ -67,8 +73,6 @@ export default new Vuex.Store({
 			timeout: 5000,
 			// useCredentials: true,
 			// credentials: 'same-origin',
-			
-			
 		},
 		webSocketUrl: 'http://localhost:8080/ScadaBR/ws-scada/alarmLevel',
 
@@ -94,18 +98,18 @@ export default new Vuex.Store({
 	mutations: {
 		updateWebSocketUrl(state) {
 			let locale = window.location.pathname.split('/')[1];
-			if(!!locale) {
+			if (!!locale) {
 				locale += '/';
 			}
-    		let protocol = window.location.protocol;
-    		let host = window.location.host.split(":");
+			let protocol = window.location.protocol;
+			let host = window.location.host.split(':');
 
 			state.webSocketUrl = `${protocol}//${host[0]}:${host[1]}/${locale}ws-scada/alarmLevel`;
 		},
 
 		updateRequestTimeout(state, timeout) {
 			state.requestConfig.timeout = timeout > 1000 ? timeout : 1000;
-		}
+		},
 	},
 	actions: {
 		getUserRole() {
@@ -126,16 +130,17 @@ export default new Vuex.Store({
 			});
 		},
 
-		async loginUser({dispatch}, userdata) {
+		loginUser({dispatch}, userdata) {
 			axios.defaults.withCredentials = true;
-			let answer = await dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`);
-			if(answer) {
-				dispatch('getUserInfo');
-			}
-			return answer;
+			dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`)
+			.then((resp) => {
+				if(resp) {
+					dispatch('getUserInfo');
+				}
+			});
 		},
 
-		logoutUser({state}) {
+		logoutUser({ state }) {
 			state.loggedUser = null;
 		},
 
@@ -149,7 +154,6 @@ export default new Vuex.Store({
 			commit('updateWebSocketUrl');
 			commit('INIT_WEBSOCKET_URL');
 			commit('INIT_WEBSOCKET');
-
 		},
 
 		/**
@@ -323,18 +327,22 @@ export default new Vuex.Store({
 		 * @param {HTTP Response} response - JSON Response from server
 		 * @returns true|false
 		 */
-		validateResponse({ state }, response) {
+		validateResponse({ state, dispatch }, response) {
 			if (!!response) {
 				if (response.status >= 200 && response.status < 300) {
 					return true;
 				} else if (response.status === 401) {
+					dispatch('showNetworkErrorNotification', 'User is not authorized!');
 					console.error('⛔️ - User is not Authorized!');
 				} else if (response.status === 400) {
+					dispatch('showNetworkErrorNotification', 'Check request data!');
 					console.error('❌️ - Bad Request! Check request data');
 				} else if (response.status === 500) {
+					dispatch('showNetworkErrorNotification', 'Server exception!');
 					console.error('🚫️ - Internal server error!\n Something went wrong!');
 				}
 			} else {
+				dispatch('showNetworkErrorNotification', 'No response received!');
 				console.error('⚫️ - Not received response message!');
 			}
 

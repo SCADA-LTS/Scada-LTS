@@ -1280,6 +1280,81 @@ paths:
                 properties:
                   deleted:
                     type: number
+  /point_properties/{id}/purgeNowPeriod:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'type'
+          in: 'query'
+          required: true
+          schema:
+            type: number
+        - name: 'period'
+          in: 'query'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: number
+  /point_properties/{id}/purgeNowAll:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: number
+  /point_properties/{id}/purgeNowLimit:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'limit'
+          in: 'query'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: number
   /point_properties/{id}/clearcache:
     patch:
       tags:

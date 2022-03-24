@@ -34,11 +34,11 @@
 									ref="emailSettingsComponent"
 									@changed="componentChanged"
 								></EmailSettingsComponent>
-								<MiscSettingsComponent
-									id="misc-settings"
-									ref="miscSettingsComponent"
+								<DataRetentionSettingsComponent
+									id="data-retention-settings"
+									ref="dataRetentionSettingsComponent"
 									@changed="componentChanged"
-								></MiscSettingsComponent>
+								></DataRetentionSettingsComponent>
 								<HttpSettingsComponent
 									id="http-settings"
 									ref="httpSettingsComponent"
@@ -59,6 +59,11 @@
 									ref="amChartSettingsComponent"
 									@changed="componentChanged"
 								></AmChartSettingsComponent>
+								<MiscSettingsComponent
+									id="misc-settings"
+									ref="miscSettingsComponent"
+									@changed="componentChanged"
+								></MiscSettingsComponent>
 								<ScadaConfigurationComponent
 								 id="scada-configuration"
 								></ScadaConfigurationComponent>
@@ -256,9 +261,6 @@
 			<v-spacer></v-spacer>
 		</v-container>
 
-		<v-snackbar v-model="response.status" :color="response.color">
-			{{ response.message }}
-		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -270,6 +272,7 @@ import SystemEventTypesComponent from './SystemEventTypesComponent';
 import EmailSettingsComponent from './EmailSettingsComponent';
 import HttpSettingsComponent from './HttpSettingsComponent';
 import MiscSettingsComponent from './MiscSettingsComponent';
+import DataRetentionSettingsComponent from './DataRetentionSettingsComponent';
 import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent';
 import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
@@ -286,6 +289,7 @@ export default {
 		EmailSettingsComponent,
 		HttpSettingsComponent,
 		MiscSettingsComponent,
+		DataRetentionSettingsComponent,
 		DefaultLoggingTypeSettingsComponent,
 		SmsDomainSettingsComponent,
 		ScadaConfigurationComponent,
@@ -318,11 +322,6 @@ export default {
 				{ value: 'de', text: 'Deutsch' },
 				{ value: 'en', text: 'English' },
 			],
-			response: {
-				color: 'success',
-				status: false,
-				message: '',
-			},
 		};
 	},
 	mounted() {
@@ -363,16 +362,10 @@ export default {
 			});
 		},
 		generateNotification(type, content) {
-			this.response = {
-				status: true,
-				message: content,
-				color: type,
-			};
-			// this.$notify({
-			// 	placement: 'bottom-right',
-			// 	type,
-			// 	content,
-			// });
+			this.$store.dispatch('showCustomNotification', {
+				text: content,
+				type: type,
+			});
 		},
 		async loadClock() {
 			let result = await store.dispatch('getSystemStartupTime');
@@ -393,7 +386,6 @@ export default {
 		},
 
 		async componentChanged(object) {
-			console.log(object);
 			let idx = this.componentsEdited.findIndex((x) => x.component == object.component);
 			if (idx == -1 && object.changed) {
 				this.componentsEdited.push(object);
@@ -402,7 +394,6 @@ export default {
 			} else if (idx != -1 && object.changed) {
 				this.componentsEdited[idx] = object;
 			}
-			console.log(this.componentsEdited);
 		},
 
 		saveComponent(component) {

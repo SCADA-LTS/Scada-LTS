@@ -22,6 +22,7 @@
 <%@page import="com.serotonin.mango.rt.event.type.EventType"%>
 <%@page import="com.serotonin.mango.util.freemarker.MangoEmailContent"%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
+<%@ include file="/WEB-INF/jsp/include/highlight.jsp" %>
 
 
 <tag:page dwr="SystemSettingsDwr" onload="init">
@@ -88,7 +89,8 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>);
-            
+            $set("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>);
+
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
             
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
@@ -253,14 +255,8 @@
     
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
-                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
-                1,
-                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
-                $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
                 function() {
                     stopImageFader("saveMiscSettingsImg");
                     setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
@@ -268,6 +264,23 @@
         setUserMessage("miscMessage");
         startImageFader("saveMiscSettingsImg");
     }
+
+    function saveDataRetentionSettings() {
+            SystemSettingsDwr.saveDataRetentionSettings(
+                    $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIODS %>"/>"),
+                    1,
+                    $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
+                    $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                    function() {
+                        stopImageFader("saveDataRetentionSettingsImg");
+                        setUserMessage("dataRetentionMessage", "<fmt:message key="systemSettings.dataRetentionSaved"/>");
+                    });
+            setUserMessage("dataRetentionMessage");
+            startImageFader("saveDataRetentionSettingsImg");
+        }
     
     function setUserMessage(type, msg) {
         if (msg)
@@ -299,11 +312,13 @@
     }
     
     function purgeNow() {
-        SystemSettingsDwr.purgeNow(function() {
-            stopImageFader("purgeNowImg");
-            dbSizeUpdate();
-        });
-        startImageFader("purgeNowImg");
+        if (confirm("<fmt:message key="systemSettings.purgeDataPointStrategyConfirm"/>")) {
+            SystemSettingsDwr.purgeNow(function() {
+                stopImageFader("purgeNowImg");
+                dbSizeUpdate();
+            });
+            startImageFader("purgeNowImg");
+        }
     }
     
     function saveLangSettings() {
@@ -317,9 +332,9 @@
     
     function checkPurgeAllData() {
         if (confirm("<fmt:message key="systemSettings.purgeDataConfirm"/>")) {
-            setUserMessage("miscMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
+            setUserMessage("dataRetentionMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
             SystemSettingsDwr.purgeAllData(function(msg) {
-                setUserMessage("miscMessage", msg);
+                setUserMessage("dataRetentionMessage", msg);
                 dbSizeUpdate();
             });
         }
@@ -409,8 +424,69 @@
         });
 
     }
-    
-    
+
+    /* CUSTOM CSS JAVASCRIPT */
+    let customCssUrl = `./api/customcss/`;
+
+    function showCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'flex';
+      initCustomCssData();
+    }
+
+    function hideCssDialog() {
+      let dialog = document.getElementById('css-editor-dialog');
+      dialog.style.display = 'none';
+    }
+
+    function saveCssSettings() {
+      hideCssDialog();
+      saveCustomCssConfig();
+    }
+
+    function initCustomCssData() {
+      fetchCustomCssConfig().then((val) => {
+        document.getElementById('cssEditor').value = val;
+        updateCodeText(val, '#cssHighlightingContent');
+      });
+    }
+
+    function fetchCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('GET', customCssUrl, true);
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(null);
+      });
+    }
+
+    function saveCustomCssConfig() {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open('POST', customCssUrl, true);
+        req.setRequestHeader('Content-type', 'application/text');
+        req.onload = () => {
+          if (req.status === 200) {
+            resolve(req.responseText);
+          } else {
+            reject(req.status);
+          }
+        };
+        req.onerror = () => {
+          reject(req.status);
+        }
+        req.send(document.getElementById('cssEditor').value);
+      });
+    }
   </script>
   
   <div class="borderDivPadded marB marR" style="float:left">
@@ -478,7 +554,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -499,7 +575,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -520,7 +596,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -545,7 +621,7 @@
       </tr>
     </table>
   </div>
-  <div class="borderDiv marB marR" style="clear:left;float:left">
+  <div class="borderDivPadded marB marR" style="clear:left;float:left">
     <table width="100%">
       <tr>
         <td>
@@ -610,7 +686,7 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
@@ -652,29 +728,19 @@
     </table>
   </div>
   
-  <div class="borderDiv marB marR" style="float:left">
+  <div class="borderDivPadded marB marR" style="float:left">
     <table width="100%">
       <tr>
         <td>
-          <span class="smallTitle"><fmt:message key="systemSettings.otherSettings"/></span>
-          <tag:help id="otherSettings"/>
+          <span class="smallTitle"><fmt:message key="systemSettings.dataRetentionSettings"/></span>
+          <tag:help id="dataRetentionSettings"/>
         </td>
         <td align="right">
-          <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+          <tag:img id="saveDataRetentionSettingsImg" png="save" onclick="saveDataRetentionSettings();" title="common.save"/>
         </td>
       </tr>
     </table>
     <table>
-      <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
-        <td class="formField">
-          <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
-            <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
-            <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
-            <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
-          </select>
-        </td>
-      </tr>
       <%--
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.groveLogging"/></td>
@@ -700,11 +766,6 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" align="center">
-          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()"/>
-        </td>
-      </tr>
-      <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.futureDateLimit"/></td>
         <td class="formField">
           <input id="<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>" type="text" class="formShort"/>
@@ -714,13 +775,62 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" id="miscMessage" class="formError"></td>
+        <td class="formLabelRequired"><fmt:message key="systemSettings.valuesLimitForPurge"/></td>
+        <td><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#data-retention-settings'"/></td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" value="<fmt:message key="systemSettings.purgeData"/>" onclick="checkPurgeAllData()" style="margin: 5px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="button" value="<fmt:message key="systemSettings.purgeNow"/>" onclick="purgeNow()" style="margin: 5px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" id="dataRetentionMessage" class="formError"></td>
       </tr>
     </table>
   </div>
 
+    <div class="borderDivPadded marB marR" style="float:left">
+      <table width="100%">
+        <tr>
+          <td>
+            <span class="smallTitle"><fmt:message key="systemSettings.otherSettings"/></span>
+            <tag:help id="otherSettings"/>
+          </td>
+          <td align="right">
+            <tag:img id="saveMiscSettingsImg" png="save" onclick="saveMiscSettings();" title="common.save"/>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
+          <td class="formField">
+            <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
+              <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
+              <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
+              <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+           <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+           <td class="formField">
+             <input id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>" type="checkbox" class="formShort"/>
+           </td>
+        </tr>
+        <tr>
+          <td colspan="2" id="miscMessage" class="formError"></td>
+        </tr>
+      </table>
+    </div>
+
 <%--
-   <div class="borderDiv marB marR" style="float:left">
+   <div class="borderDivPadded marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
         <td>
@@ -790,35 +900,126 @@
                <span class="smallTitle"><fmt:message key="systemSettings.newUI"/></span>
                <tag:help id="newUISettings"/>
              </td>
-           </tr>
-         </table>
-         <table>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
-           </tr>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
-           </tr>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
-           </tr>
-           <tr>
-             <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
-             <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
-           </tr>
-           <tr>
-             <td colspan="2" id="httpMessage" class="formError"></td>
-           </tr>
-         </table>
-    </div>
+          </tr>
+       </table>
+       <table>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.smsDomain"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#sms-domain-settings'"/></td>
+                  </tr>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.amCharts"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#aggregation-settings'"/></td>
+                  </tr>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.defaultDataPointLoggingType"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#default-logging-type-settings'"/></td>
+                  </tr>
+                  <tr>
+                    <td class="formLabelRequired"><fmt:message key="systemSettings.environmentSettings"/></td>
+                    <td colspan="2" align="center"><input type="button" value="<fmt:message key="systemSettings.setInNewUI"/>" onClick="location.href='app.shtm#/system-settings#scada-configuration'"/></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" id="httpMessage" class="formError"></td>
+                  </tr>
+                </table>
+  </div>
+
+  <div class="borderDiv marB marR" style="float: left;">
+        <table>
+            <tr>
+              <td>
+                <span class="smallTitle"><fmt:message key="systemSettings.customCss.title"/></span>
+              </td>
+            </tr>
+        </table>
+        <table>
+          <tr>
+            <td>
+              <button onclick="showCssDialog()"><fmt:message key="systemSettings.customCss.edit"/></button>
+            </td>
+          </tr>
+        </table>
+      </div>
 
   <div class="" style="float:left; color:white">
   #branchName
-  </div>
+
+  <div id="css-editor-dialog">
+        <div class="css-dialog-content">
+          <div>
+            <h2><fmt:message key="systemSettings.customCss.dialog.title"/></h2>
+          </div>
+          <div class="note">
+            <fmt:message key="systemSettings.customCss.dialog.note"/>
+          </div>
+          <div class="css-dialog-editor">
+            <textarea
+              placeholder="Enter Code Here"
+              id="cssEditor"
+              class="hgl-editor"
+              spellcheck="false"
+              oninput="updateCodeText(this.value, '#cssHighlightingContent');"
+              onscroll="syncCodeScroll(this, '#cssHighlightingContent');">
+            </textarea>
+            <pre id="cssHighlighting" class="hgl-highlighting" aria-hidden="true">
+              <code id="cssHighlightingContent" class="language-css">
+              </code>
+            </pre>
+          </div>
+          <div class="css-dialog-buttons">
+          <table>
+            <tr>
+              <td>
+                <button onclick="hideCssDialog()"><fmt:message key="common.cancel"/></button>
+              </td>
+              <td>
+                <button onclick="saveCssSettings()"><fmt:message key="common.save"/></button>
+              </td>
+            </tr>
+          </table>
+          </div>
+        </div>
+      </div>
+
+
+      <style>
+      #css-editor-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #00000082;
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .css-dialog-content {
+        width: 650px;
+        height: 90%;
+        background-color: white;
+        color: black;
+        display: flex;
+        flex-direction: column;
+        border-radius: 5px;
+        padding: 15px;
+      }
+      .css-dialog-buttons > table {
+        float: right;
+      }
+      .css-dialog-buttons  td > button {
+        margin: 0 10px;
+        padding: 3px;
+      }
+      .css-dialog-editor {
+        position: relative;
+        height: 520px;
+      }
+
+      </style>
   
-                                  
+  
 </tag:page>
 <tag:newPageNotification href="./app.shtm#/system-settings" ref="systemSettingsNotification"/>
