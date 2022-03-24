@@ -184,7 +184,7 @@ export default {
 	        const raw_value = JSON.parse(data.body).value
 			const value = this.textRenderer.render(raw_value)
 			this.$emit('value-update', value)
-			this.$emit('color-update', this.textRenderer.color(raw_value))
+			this.$emit('color-update', this.textRenderer.color(value))
 		},
 
 		updatePointStatus(data) {
@@ -207,7 +207,7 @@ export default {
 				if (res.enabled === true) {
 					const value = this.textRenderer.render(res.value)
 					this.$emit('value-update', res.value)
-					this.$emit('color-update', this.textRenderer.color(res.value))
+					this.$emit('color-update', this.textRenderer.color(value))
 				}
 			} catch (e) {
 				console.error(e);
