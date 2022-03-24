@@ -4,6 +4,7 @@
 			:component="component"
 			@value-update="onValueUpdate"
 			@status-update="onStatusUpdate"
+			@color-update="onColorUpdate"
 			@update="$emit('update')"
 			@click="$emit('click', $event)"
 			@mousedown="$emit('mousedown', $event)"
@@ -17,7 +18,7 @@
 						<span v-if="component.displayPointName">
 							{{ component.nameOverride || component.name }}:
 						</span>
-						<span>
+						<span v-bind:style="{color:renderer_color}">
 							{{ content }}
 						</span>
 					</div>
@@ -40,7 +41,6 @@
 </template>
 <script>
 import BasePointComponent from '../BasePointComponent.vue';
-import TextRenderer from '../../../../bl/TextRender'
 export default {
 	components: {
 		BasePointComponent,
@@ -56,12 +56,14 @@ export default {
 	data() {
 		return {
 			content: '(n/a)',
+			renderer_color: '#212121',
 		};
 	},
 
 	methods: {
 		onValueUpdate(value) {
 			this.content = value;
+
 		},
 		onStatusUpdate(value) {
 			if (value) {
@@ -70,6 +72,9 @@ export default {
 				this.content = '(N/A)';
 			}
 		},
+		onColorUpdate(color) {
+			this.renderer_color = color;
+		}
 	},
 };
 </script>
