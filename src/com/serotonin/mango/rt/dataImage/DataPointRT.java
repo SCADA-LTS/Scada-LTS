@@ -28,7 +28,6 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.WorkItem;
-import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.view.stats.AnalogStatistics;
 import com.serotonin.mango.view.stats.IValueTime;
@@ -36,17 +35,15 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
-import com.serotonin.util.ILifecycle;
 import com.serotonin.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.web.ws.ScadaWebSockets;
 
 import java.util.*;
 
-public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
+public class DataPointRT implements IDataPointRT {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
 	private static final PvtTimeComparator pvtTimeComparator = new PvtTimeComparator();
 
@@ -91,20 +88,28 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		this.pointLocator = null;
 		valueCache = new PointValueCache();
 	}
+
+	@Override
 	public PointValueCache getPointValueCache(){
 		return this.valueCache;
 	}
 
+	@Override
 	public List<PointValueTime> getLatestPointValues(int limit) {
 		return valueCache.getLatestPointValues(limit);
 	}
+
+	@Override
     public List<PointValueTime> getLatestPointValuesUsedForJunitTest(int limit) {
 	    return valueCache.getLatestPointValuesUsedForTest(limit);
     }
+
+	@Override
     public void addCollectionIntoCache(PointValueTime pvt){
 	    valueCache.addPointValueTimeIntoCacheForTest(pvt);
     }
 
+	@Override
 	public PointValueTime getPointValueBefore(long time) {
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() < time)
@@ -114,6 +119,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		return new PointValueDao().getPointValueBefore(vo.getId(), time);
 	}
 
+	@Override
 	public PointValueTime getPointValueAt(long time) {
 		for (PointValueTime pvt : valueCache.getCacheContents()) {
 			if (pvt.getTime() == time)
@@ -123,6 +129,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		return new PointValueDao().getPointValueAt(vo.getId(), time);
 	}
 
+	@Override
 	public List<PointValueTime> getPointValues(long since) {
 		List<PointValueTime> result = new PointValueDao().getPointValues(
 				vo.getId(), since);
@@ -139,6 +146,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		return result;
 	}
 
+	@Override
 	public List<PointValueTime> getPointValuesBetween(long from, long to) {
 		List<PointValueTime> result = new PointValueDao()
 				.getPointValuesBetween(vo.getId(), from, to);
@@ -162,10 +170,12 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	 * 
 	 * @param newValue
 	 */
+	@Override
 	public void updatePointValue(PointValueTime newValue) {
 		savePointValue(newValue, null, true);
 	}
 
+	@Override
 	public void updatePointValue(PointValueTime newValue, boolean async) {
 		savePointValue(newValue, null, async);
 	}
@@ -181,6 +191,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	 *            was set from the UI, or could be a program run by schedule or
 	 *            on event.
 	 */
+	@Override
 	public void setPointValue(PointValueTime newValue, SetPointSource source) {
 		if (source == null)
 			savePointValue(newValue, source, true);
@@ -231,8 +242,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			return;
 		}
 
-		boolean backdated = pointValue != null
-				&& newValue.getTime() < pointValue.getTime();
+		PointValueTime oldValue = getOldAndSetNew(newValue);
+
+		boolean backdated = oldValue != null
+				&& newValue.getTime() < oldValue.getTime();
 
 		// Determine whether the new value qualifies for logging.
 		boolean logValue;
@@ -240,7 +253,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		boolean saveValue = true;
 		switch (vo.getLoggingType()) {
 		case DataPointVO.LoggingTypes.ON_CHANGE:
-			if (pointValue == null)
+			if (oldValue == null)
 				logValue = true;
 			else if (backdated)
 				// Backdated. Ignore it
@@ -262,7 +275,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 						logValue = false;
 				} else
 					logValue = !ObjectUtils.isEqual(newValue.getValue(),
-							pointValue.getValue());
+							oldValue.getValue());
 			}
 
 			saveValue = logValue;
@@ -271,10 +284,10 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			logValue = true;
 			break;
 		case DataPointVO.LoggingTypes.ON_TS_CHANGE:
-			if (pointValue == null)
+			if (oldValue == null)
 				logValue = true;
 			else
-				logValue = newValue.getTime() != pointValue.getTime();
+				logValue = newValue.getTime() != oldValue.getTime();
 
 			saveValue = logValue;
 			break;
@@ -292,9 +305,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 
 
 		// Ignore historical values.
-		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
-			PointValueTime oldValue = pointValue;
-			pointValue = newValue;
+		if (oldValue == null || newValue.getTime() >= oldValue.getTime()) {
 			fireEvents(oldValue, newValue, source != null, false);
 		} else
 			fireEvents(null, newValue, false, true);
@@ -350,21 +361,23 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 	}
 
+	@Override
 	public void scheduleTimeout(long fireTime) {
+		PointValueTime currentValue = getPointValue();
 		synchronized (intervalLoggingLock) {
 			MangoValue value;
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.INSTANT)
-				value = PointValueTime.getValue(pointValue);
+				value = PointValueTime.getValue(currentValue);
 			else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MAXIMUM
 					|| vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MINIMUM) {
 				value = PointValueTime.getValue(intervalValue);
-				intervalValue = pointValue;
+				intervalValue = currentValue;
 			} else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE) {
 				AnalogStatistics stats = new AnalogStatistics(intervalValue,
 						averagingValues, intervalStartTime, fireTime);
 				value = new NumericValue(stats.getAverage());
 
-				intervalValue = pointValue;
+				intervalValue = currentValue;
 				averagingValues.clear();
 				intervalStartTime = fireTime;
 			} else
@@ -381,10 +394,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	//
 	// / Purging
 	//
+	@Override
 	public void resetValues() {
 		valueCache.reset();
 		if (vo.getLoggingType() != DataPointVO.LoggingTypes.NONE)
-			pointValue = valueCache.getLatestPointValue();
+			getOldAndSetNew(valueCache.getLatestPointValue());
 	}
 
 	//
@@ -392,39 +406,48 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	// / Properties
 	// /
 	//
+	@Override
 	public int getId() {
 		return vo.getId();
 	}
 
+	@Override
 	public PointValueTime getPointValue() {
-		return pointValue;
+		return getOldAndSetNew(null);
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <T extends PointLocatorRT> T getPointLocator() {
 		return (T) pointLocator;
 	}
 
+	@Override
 	public int getDataSourceId() {
 		return vo.getDataSourceId();
 	}
 
+	@Override
 	public DataPointVO getVO() {
 		return vo;
 	}
 
+	@Override
 	public int getDataTypeId() {
 		return vo.getPointLocator().getDataTypeId();
 	}
 
+	@Override
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
+	@Override
 	public void setAttribute(String key, Object value) {
 		attributes.put(key, value);
 	}
 
+	@Override
 	public Object getAttribute(String key) {
 		return attributes.get(key);
 	}
@@ -526,15 +549,16 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	//
 	// Lifecycle
 	//
+	@Override
 	public void initialize() {
 		rm = Common.ctx.getRuntimeManager();
 
 		// Get the latest value for the point from the database.
-		pointValue = valueCache.getLatestPointValue();
+		PointValueTime oldValue = getOldAndSetNew(valueCache.getLatestPointValue());
 
 		// Set the tolerance origin if this is a numeric
-		if (pointValue != null && pointValue.getValue() instanceof NumericValue)
-			toleranceOrigin = pointValue.getDoubleValue();
+		if (oldValue != null && oldValue.getValue() instanceof NumericValue)
+			toleranceOrigin = oldValue.getDoubleValue();
 
 		// Add point event listeners
 		for (PointEventDetectorVO ped : vo.getEventDetectors()) {
@@ -551,6 +575,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		notifyWebSocketStateSubscribers(true);
 	}
 
+	@Override
 	public void terminate() {
 		terminateIntervalLogging();
 
@@ -564,17 +589,28 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		notifyWebSocketStateSubscribers(false);
 	}
 
+	@Override
 	public void joinTermination() {
 		// no op
 	}
 
+	@Override
 	public void initializeHistorical() {
 		rm = Common.ctx.getRuntimeManager();
 		initializeIntervalLogging();
 	}
 
+	@Override
 	public void terminateHistorical() {
 		terminateIntervalLogging();
 	}
 
+	protected PointValueTime getOldAndSetNew(PointValueTime newValue) {
+		if(newValue == null) {
+			return pointValue;
+		}
+		PointValueTime oldValue = pointValue;
+		pointValue = newValue;
+		return oldValue;
+	}
 }
