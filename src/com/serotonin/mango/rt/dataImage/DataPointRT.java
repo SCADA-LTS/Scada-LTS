@@ -554,11 +554,12 @@ public class DataPointRT implements IDataPointRT {
 		rm = Common.ctx.getRuntimeManager();
 
 		// Get the latest value for the point from the database.
-		PointValueTime oldValue = getOldAndSetNew(valueCache.getLatestPointValue());
+		PointValueTime lastValue = valueCache.getLatestPointValue();
+		getOldAndSetNew(lastValue);
 
 		// Set the tolerance origin if this is a numeric
-		if (oldValue != null && oldValue.getValue() instanceof NumericValue)
-			toleranceOrigin = oldValue.getDoubleValue();
+		if (lastValue != null && lastValue.getValue() instanceof NumericValue)
+			toleranceOrigin = lastValue.getDoubleValue();
 
 		// Add point event listeners
 		for (PointEventDetectorVO ped : vo.getEventDetectors()) {
