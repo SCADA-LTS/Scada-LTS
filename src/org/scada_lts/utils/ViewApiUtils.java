@@ -9,11 +9,11 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.*;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.dto.view.GraphicalViewDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.*;
@@ -165,7 +165,7 @@ public final class ViewApiUtils {
         StringBuilder msg = new StringBuilder();
         if (dataPoint.isEmpty())
             msg.append("DataPoint doesn't exist;");
-        if (dataPoint.isPresent() && !Permissions.hasDataPointReadPermission(user, dataPoint.get()))
+        if (dataPoint.isPresent() && !GetDataPointsWithAccess.hasDataPointReadPermission(user, dataPoint.get()))
             msg.append("No permission to read datapoint for current user;");
         return msg.toString();
     }
@@ -246,21 +246,17 @@ public final class ViewApiUtils {
     }
 
     private static String validateImageSet(String imageSetId) {
-        Optional<ImageSet> imageSet = Optional.ofNullable(Common.ctx.getImageSet(imageSetId));
+        ImageSet imageSet = Common.ctx.getImageSet(imageSetId);
         StringBuilder msg = new StringBuilder();
-        if (imageSet.isEmpty())
-            msg.append("ImageSet doesn't exist;");
-        if (imageSet.isPresent() && !imageSet.get().isAvailable())
+        if (!imageSet.isAvailable())
             msg.append("ImageSet not available;");
         return msg.toString();
     }
 
     private static String validateDynamicImage(String dynamicImageId) {
-        Optional<DynamicImage> dynamicImage = Optional.ofNullable(Common.ctx.getDynamicImage(dynamicImageId));
+        DynamicImage dynamicImage = Common.ctx.getDynamicImage(dynamicImageId);
         StringBuilder msg = new StringBuilder();
-        if (dynamicImage.isEmpty())
-            msg.append("DynamicImage doesn't exist;");
-        if (dynamicImage.isPresent() && !dynamicImage.get().isAvailable())
+        if (!dynamicImage.isAvailable())
             msg.append("DynamicImage not available;");
         return msg.toString();
     }

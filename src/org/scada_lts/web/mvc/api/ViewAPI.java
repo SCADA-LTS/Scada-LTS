@@ -466,9 +466,10 @@ public class ViewAPI {
                 if(!error.isEmpty()) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
-                return viewService.getImageSet(id)
-                        .map(a -> new ResponseEntity<>(a, HttpStatus.OK))
-                        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                ImageSet imageSet = viewService.getImageSet(id);
+                if(imageSet.isAvailable())
+                    return new ResponseEntity<>(imageSet, HttpStatus.OK);
+                return new ResponseEntity<>(imageSet, HttpStatus.NOT_FOUND);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

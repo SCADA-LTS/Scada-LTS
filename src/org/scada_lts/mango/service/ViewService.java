@@ -34,6 +34,7 @@ import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetShareUsers;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
@@ -264,8 +265,8 @@ public class ViewService {
 		return images;
 	}
 
-	public Optional<ImageSet> getImageSet(String id) {
-		return Common.ctx.getImageSets().stream().filter(i -> i.getId().equals(id)).findAny();
+	public ImageSet getImageSet(String id) {
+		return Common.ctx.getImageSet(id);
 	}
 
 	public List<UploadImage> getUploadImages() throws IOException {
@@ -305,6 +306,6 @@ public class ViewService {
 	}
 
 	public boolean checkUserViewPermissions(User user, View view) {
-		return user.isAdmin() || view.getUserId() == user.getId() || view.getViewUsers().stream().anyMatch(u -> u.getUserId() == user.getId());
+		return GetViewsWithAccess.hasViewReadPermission(user, view);
 	}
 }

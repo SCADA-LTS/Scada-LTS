@@ -14,7 +14,6 @@ import eventRoutes from './routes-events';
 import GraphicalView from '../views/GraphicalViews';
 
 import PublicView from '../views/GraphicalViews/AnonymousViewPage';
-import Reports from '../views/Reports';
 import ReportTabs from '../views/Reports/ReportTabs';
 import ReportsPage from '../views/Reports/ReportsPage';
 import ReportsData from '../views/Reports/ReportsData';
