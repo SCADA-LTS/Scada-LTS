@@ -720,7 +720,11 @@
       <tr>
          <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
          <td class="formField">
-           <input id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>" type="checkbox" class="formShort"/>
+           <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
+             <option value="LOW">Low</option>
+             <option value="MEDIUM">Medium</option>
+             <option value="HIGH">High</option>
+           </select>
          </td>
       </tr>
       <tr>

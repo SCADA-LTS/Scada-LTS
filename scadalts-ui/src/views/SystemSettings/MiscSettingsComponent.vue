@@ -88,15 +88,16 @@
 							dense
 						></v-select>
 					</v-col>
-					<v-col cols="6">
-                        <v-checkbox
+					<v-col cols="12">
+                        <v-select
                             @change="watchDataChange()"
                             v-model="miscSettings.dataPointRuntimeValueSynchronized"
+                            :items="dataPointRuntimeValueSynchronized"
                             item-value="value"
                             item-text="text"
                             :label="$t('systemsettings.misc.dataPointRuntimeValueSynchronized')"
                             dense
-                        ></v-checkbox>
+                        ></v-select>
                     </v-col>
 				</v-row>
 			</v-card-text>
@@ -142,7 +143,11 @@ export default {
 				status: false,
 				message: '',
 			},
-			dataPointRuntimeValueSynchronized: false,
+			dataPointRuntimeValueSynchronized: [
+                { value: 'LOW', text: 'Low' },
+                { value: 'MEDIUM', text: 'Medium' },
+                { value: 'HIGH', text: 'High' },
+            ]
 		};
 	},
 

@@ -130,11 +130,12 @@ public class ScriptExecutor {
 				IDataPoint point = context.get(varName);
 				int dt = point.getDataTypeId();
 
+				PointValueTime currentValue = point.getPointValue();
 				LOG.debug("Var: "
 						+ varName
 						+ ", value: "
-						+ (point.getPointValue() == null ? "null" : point
-								.getPointValue().toString()));
+						+ (currentValue == null ? "null" : currentValue.toString()));
+
 
 				if (dt == DataTypes.BINARY) {
 					scope.put(varName, scope, new BinaryPointWrapper(point,

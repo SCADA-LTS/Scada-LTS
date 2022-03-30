@@ -244,6 +244,10 @@
 			<test name="org.scada_lts.utils.UrlValidatorUtilsTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="com.serotonin.mango.rt.dataImage.datapointrt.DataPointRtTestsSuite"
+				  haltonfailure="yew">
+			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>
 
