@@ -246,7 +246,15 @@
 			</test>
 
 			<test name="com.serotonin.mango.rt.dataImage.datapointrt.DataPointRtTestsSuite"
-				  haltonfailure="yew">
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.dataImage.DataPointSyncModeTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
+				  haltonfailure="yes">
 			</test>
 		</junit>
 		<record action="stop" name="${junit.log.name}"/>

@@ -446,5 +446,8 @@
 	"watchdog.response.unauthorized": "You do not have permission to this action!",
 	"watchdog.response.unavailable": "Watchdog server is unreachable!",
 	"watchdog.response.unexpected": "Scada server error occurred!",
-	"systemsettings.misc.dataPointRuntimeValueSynchronized": "Reduce duplicate datapoint values"
+	"systemsettings.misc.dataPointRuntimeValueSynchronized": "Duplicate values reduction",
+	"systemsettings.misc.dataPointRuntimeValueSynchronized.all": "All",
+	"systemsettings.misc.dataPointRuntimeValueSynchronized.partial": "Partial",
+	"systemsettings.misc.dataPointRuntimeValueSynchronized.none": "None"
 }

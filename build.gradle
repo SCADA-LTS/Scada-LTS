@@ -154,5 +154,7 @@ test {
         includeTestsMatching "org.scada_lts.dao.NewInstanceUsersProfileTest"
         includeTestsMatching "br.org.scadabr.vo.EqualsHashcodePermissionTest"
         includeTestsMatching "com.serotonin.mango.rt.dataImage.datapointrt.DataPointRtTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.DataPointSyncModeTest"
+        includeTestsMatching "com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
     }
 }

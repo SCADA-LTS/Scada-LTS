@@ -144,9 +144,9 @@ export default {
 				message: '',
 			},
 			dataPointRuntimeValueSynchronized: [
-                { value: 'LOW', text: 'Low' },
-                { value: 'MEDIUM', text: 'Medium' },
-                { value: 'HIGH', text: 'High' },
+                { value: 'NONE', text: this.$t('systemsettings.misc.dataPointRuntimeValueSynchronized.none')  },
+                { value: 'PARTIAL', text: this.$t('systemsettings.misc.dataPointRuntimeValueSynchronized.partial') },
+                { value: 'ALL', text: this.$t('systemsettings.misc.dataPointRuntimeValueSynchronized.all') },
             ]
 		};
 	},
