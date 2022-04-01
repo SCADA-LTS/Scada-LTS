@@ -37,7 +37,7 @@
   <!-- Meta -->
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
   <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="Copyright" content="ScadaLTS &copy;2020"/>
+  <meta name="Copyright" content="ScadaLTS &copy;${toYear}"/>
   <meta name="DESCRIPTION" content="ScadaLTS Software"/>
   <meta name="KEYWORDS" content="ScadaLTS Software"/>
 
@@ -152,7 +152,7 @@
 
   <div>
     <c:if test="${!empty instanceDescriptionHeader}">
-      <span id="instanceDescriptionHeader" align="right" valign="bottom" class="projectTitle"><a href="system_settings.shtm" class="projectTitle">${instanceDescriptionHeader}</a></span>
+      <span id="instanceDescriptionHeader" align="right" valign="bottom" class="projectTitle"><a href="system_settings.shtm" style="text-decoration: none;color:grey">${instanceDescriptionHeader}</a></span>
     </c:if>
   </div>
 </div>
