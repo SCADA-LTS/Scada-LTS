@@ -160,9 +160,12 @@ Each StartAndRuntime object has the following properties:
 
 <h1>Script execution</h1>
 <p>Each time a point's script is run, the result is assigned to the point as a value update. 
-The times at which a script gets executed can be controlled with the <b>Update event</b> value. 
-The "Context update" setting causes the script to be run whenever a point within its context is updated. 
-The other setting cause the script to run at the indicated time event.</p>
+The times at which a script gets executed can be controlled with the <b>Update event</b> value.</p>
+
+<p><b>Context update</b> setting causes the script to be run whenever a point within its context is updated. </p>
+<p><b>Context change</b> setting causes the script to be run whenever a point within its context is changed. </p>
+<p>The other setting cause the script to run at the indicated time event.</p>
+
 <p>The <b>Execution delay</b> setting can be used to prevent unwanted multiple executions of a script. 
 Often, a script's context will use multiple points, but&mdash;when using "Context update" 
 execution&mdash;because each point's update causes a script execution, the update of all points each, 
