@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * SystemSettings DAO
@@ -170,7 +171,7 @@ public class SystemSettingsDAO {
 			+ DATABASE_STATEMENT + ";";
 
 	private static final String SELECT_LATEST_SCHEMA_VERSION = ""
-			+ "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1";
+			+ "SELECT version FROM schema_version ORDER BY installed_rank DESC LIMIT 1";
 	// @formatter:on
 
 	private static final Log LOG = LogFactory.getLog(SystemSettingsDAO.class);
@@ -327,7 +328,7 @@ public class SystemSettingsDAO {
 	public static final Map<String, Object> DEFAULT_VALUES = new HashMap<String, Object>();
 
 	static {
-		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "0.7.0");
+		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "Unknown");
 
 		DEFAULT_VALUES.put(HTTP_CLIENT_PROXY_SERVER, "");
 		DEFAULT_VALUES.put(HTTP_CLIENT_PROXY_PORT, -1);
@@ -360,7 +361,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				Common.TimePeriods.HOURS);
-		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.5");
+		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Click and set instance description");
 
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
@@ -373,7 +374,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(AGGREGATION_ENABLED, aggregateSettings.isEnabled());
 		DEFAULT_VALUES.put(AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
 		DEFAULT_VALUES.put(AGGREGATION_VALUES_LIMIT, aggregateSettings.getValuesLimit());
-		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.isDataPointRtValueSynchronized());
+		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().name());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -433,5 +434,9 @@ public class SystemSettingsDAO {
 		}
 
 		return size.get(0);
+	}
+
+	public static <R> R getObject(String key, Function<String, R> convert) {
+		return convert.apply(getValue(key, String.valueOf(DEFAULT_VALUES.get(key))));
 	}
 }

@@ -124,6 +124,7 @@ abstract public class BaseDwr {
         }
     }
 
+    @Deprecated
     protected void setPrettyText(WatchListState state, DataPointVO pointVO, Map<String, Object> model,
             PointValueTime pointValue) {
         String prettyText = Functions.getHtmlText(pointVO, pointValue);
@@ -134,6 +135,16 @@ abstract public class BaseDwr {
                 state.setTime(Functions.getTime(pointValue));
             pointVO.updateLastValue(pointValue);
         }
+    }
+
+    protected void setPrettyTextWithoutEqual(WatchListState state, DataPointVO pointVO, Map<String, Object> model,
+                                             PointValueTime pointValue) {
+        String prettyText = Functions.getHtmlText(pointVO, pointValue);
+        model.put("text", prettyText);
+        state.setValue(prettyText);
+        if (pointValue != null)
+            state.setTime(Functions.getTime(pointValue));
+        pointVO.updateLastValue(pointValue);
     }
 
     protected void setChange(DataPointVO pointVO, BasePointState state, DataPointRT point, HttpServletRequest request,

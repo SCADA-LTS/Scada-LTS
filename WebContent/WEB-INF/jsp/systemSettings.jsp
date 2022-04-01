@@ -98,7 +98,7 @@
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
-    
+    /*
     	SystemSettingsDwr.checkTypeDB(function(msg){
         	
         	if (msg == "derby") {
@@ -108,7 +108,7 @@
         	if (msg == "mysql") {
         		document.getElementById('radioMysql').checked = true;
 			}
-        });
+        });*/
     
     
     }
@@ -720,7 +720,11 @@
       <tr>
          <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
          <td class="formField">
-           <input id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>" type="checkbox" class="formShort"/>
+           <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
+             <option value="NONE"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
+             <option value="PARTIAL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
+             <option value="ALL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
+           </select>
          </td>
       </tr>
       <tr>
@@ -728,8 +732,8 @@
       </tr>
     </table>
   </div>
-  
-   <div class="borderDiv marB marR" style="float:left">
+
+   <!--div class="borderDiv marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
         <td>
@@ -788,7 +792,7 @@
              </td>
           </tr>
        </table>
-  </div>
+  </div-->
 
   <div class="borderDiv marB marR" style="float:left">
     <div id="sms-domain"></div>

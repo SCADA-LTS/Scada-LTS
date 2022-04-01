@@ -60,6 +60,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
     public static final int UPDATE_EVENT_CONTEXT_UPDATE = 0;
     public static final int UPDATE_EVENT_CRON = 100;
+    public static final int UPDATE_EVENT_CONTEXT_CHANGE = 101;
 
     public static ExportCodes UPDATE_EVENT_CODES = new ExportCodes();
     static {
@@ -71,6 +72,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         UPDATE_EVENT_CODES.addElement(TimePeriods.MONTHS, "MONTHS", "dsEdit.meta.event.month");
         UPDATE_EVENT_CODES.addElement(TimePeriods.YEARS, "YEARS", "dsEdit.meta.event.year");
         UPDATE_EVENT_CODES.addElement(UPDATE_EVENT_CRON, "CRON", "dsEdit.meta.event.cron");
+        UPDATE_EVENT_CODES.addElement(UPDATE_EVENT_CONTEXT_CHANGE, "CONTEXT_CHANGE", "dsEdit.meta.event.context.change");
     }
 
     private List<IntValuePair> context = new ArrayList<IntValuePair>();
@@ -79,7 +81,7 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private int dataTypeId;
     @JsonRemoteProperty
     private boolean settable;
-    private int updateEvent = UPDATE_EVENT_CONTEXT_UPDATE;
+    private int updateEvent = UPDATE_EVENT_CONTEXT_CHANGE;
     @JsonRemoteProperty
     private String updateCronPattern;
     @JsonRemoteProperty
@@ -208,11 +210,15 @@ public class MetaPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
                 response.addContextualMessage("updateCronPattern", "validate.invalidCron", updateCronPattern);
             }
         }
-        else if (updateEvent != UPDATE_EVENT_CONTEXT_UPDATE && !Common.TIME_PERIOD_CODES.isValidId(updateEvent))
+        else if (updateEvent != UPDATE_EVENT_CONTEXT_UPDATE && updateEvent != UPDATE_EVENT_CONTEXT_CHANGE
+                && !Common.TIME_PERIOD_CODES.isValidId(updateEvent))
             response.addContextualMessage("updateEvent", "validate.invalidValue");
 
         if (executionDelaySeconds < 0)
             response.addContextualMessage("executionDelaySeconds", "validate.cannotBeNegative");
+
+        if (executionDelayPeriodType == TimePeriodType.MILLISECONDS && executionDelaySeconds != 0 && executionDelaySeconds < 100)
+            response.addContextualMessage("executionDelaySeconds", "validate.invalidValue");
     }
 
     private boolean validateVarName(String varName) {
