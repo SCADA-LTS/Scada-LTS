@@ -12,13 +12,13 @@ public class JsonSettingsMisc implements Serializable {
     private int uiPerformance;
     private int futureDateLimitPeriodType;
     private int futureDateLimitPeriods;
-    private boolean dataPointRuntimeValueSynchronized;
+    private String dataPointRuntimeValueSynchronized;
 
     public JsonSettingsMisc() {}
 
     public JsonSettingsMisc(boolean groveLogging, int eventPurgePeriodType, int eventPurgePeriods,
                             int reportPurgePeriodType, int reportPurgePeriods, int uiPerformance,
-                            int futureDateLimitPeriodType, int futureDateLimitPeriods, boolean dataPointRuntimeValueSynchronized) {
+                            int futureDateLimitPeriodType, int futureDateLimitPeriods, String dataPointRuntimeValueSynchronized) {
         this.groveLogging = groveLogging;
         this.eventPurgePeriodType = eventPurgePeriodType;
         this.eventPurgePeriods = eventPurgePeriods;
@@ -94,11 +94,11 @@ public class JsonSettingsMisc implements Serializable {
         this.futureDateLimitPeriods = futureDateLimitPeriods;
     }
 
-    public boolean isDataPointRuntimeValueSynchronized() {
+    public String getDataPointRuntimeValueSynchronized() {
         return dataPointRuntimeValueSynchronized;
     }
 
-    public void setDataPointRuntimeValueSynchronized(boolean dataPointRuntimeValueSynchronized) {
+    public void setDataPointRuntimeValueSynchronized(String dataPointRuntimeValueSynchronized) {
         this.dataPointRuntimeValueSynchronized = dataPointRuntimeValueSynchronized;
     }
 }

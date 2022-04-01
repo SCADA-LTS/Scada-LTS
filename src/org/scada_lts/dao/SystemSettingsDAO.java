@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * SystemSettings DAO
@@ -373,7 +374,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(AGGREGATION_ENABLED, aggregateSettings.isEnabled());
 		DEFAULT_VALUES.put(AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
 		DEFAULT_VALUES.put(AGGREGATION_VALUES_LIMIT, aggregateSettings.getValuesLimit());
-		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.isDataPointRtValueSynchronized());
+		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().name());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -433,5 +434,9 @@ public class SystemSettingsDAO {
 		}
 
 		return size.get(0);
+	}
+
+	public static <R> R getObject(String key, Function<String, R> convert) {
+		return convert.apply(getValue(key, String.valueOf(DEFAULT_VALUES.get(key))));
 	}
 }
