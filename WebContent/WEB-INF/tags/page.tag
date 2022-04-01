@@ -139,9 +139,7 @@
 
 <!-- mainHeader -->
 <div id="mainHeader">
-  <div>
-    <img id="logo" src="assets/logo.png" alt="Logo">
-  </div>
+  <tag:logo/>
 
   <div id="eventsRow">
     <a href="events.shtm">
