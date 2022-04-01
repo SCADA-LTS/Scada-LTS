@@ -62,6 +62,7 @@ import org.scada_lts.cache.DataSourcePointsCache;
 import org.scada_lts.cache.EventDetectorsCache;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.cache.ViewHierarchyCache;
+import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
@@ -93,6 +94,7 @@ public class MangoContextListener implements ServletContextListener {
 		Common.ctx = new ContextWrapper(ctx);
 		
 		new MangoScadaConfig().init();
+		ScadaVersion.getInstance().printScadaVersionProperties(log);
 
 		// Initialize the timer
 		Common.timer.init(new ThreadPoolExecutor(0, 1000, 30L,
