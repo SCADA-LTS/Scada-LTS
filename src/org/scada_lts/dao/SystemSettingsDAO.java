@@ -171,7 +171,7 @@ public class SystemSettingsDAO {
 			+ DATABASE_STATEMENT + ";";
 
 	private static final String SELECT_LATEST_SCHEMA_VERSION = ""
-			+ "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1";
+			+ "SELECT version FROM schema_version ORDER BY installed_rank DESC LIMIT 1";
 	// @formatter:on
 
 	private static final Log LOG = LogFactory.getLog(SystemSettingsDAO.class);
@@ -328,7 +328,7 @@ public class SystemSettingsDAO {
 	public static final Map<String, Object> DEFAULT_VALUES = new HashMap<String, Object>();
 
 	static {
-		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "0.7.0");
+		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "Unknown");
 
 		DEFAULT_VALUES.put(HTTP_CLIENT_PROXY_SERVER, "");
 		DEFAULT_VALUES.put(HTTP_CLIENT_PROXY_PORT, -1);
@@ -361,7 +361,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				Common.TimePeriods.HOURS);
-		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.5");
+		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Click and set instance description");
 
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
