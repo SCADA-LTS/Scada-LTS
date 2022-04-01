@@ -71,7 +71,7 @@ public class DataPointDetailsDwr extends BaseDwr {
 
 		PointValueTime pointValue = prepareBasePointState(Integer.toString(pointVO.getId()), state, pointVO, pointRT,
 				model);
-		setPrettyText(state, pointVO, model, pointValue);
+		setPrettyTextWithoutEqual(state, pointVO, model, pointValue);
 		if (state.getValue() != null)
 			setChange(pointVO, state, pointRT, request, model, user);
 
