@@ -98,7 +98,7 @@
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
-    
+    /*
     	SystemSettingsDwr.checkTypeDB(function(msg){
         	
         	if (msg == "derby") {
@@ -108,7 +108,7 @@
         	if (msg == "mysql") {
         		document.getElementById('radioMysql').checked = true;
 			}
-        });
+        });*/
     
     
     }
@@ -728,8 +728,8 @@
       </tr>
     </table>
   </div>
-  
-   <div class="borderDiv marB marR" style="float:left">
+
+   <!--div class="borderDiv marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
         <td>
@@ -788,7 +788,7 @@
              </td>
           </tr>
        </table>
-  </div>
+  </div-->
 
   <div class="borderDiv marB marR" style="float:left">
     <div id="sms-domain"></div>

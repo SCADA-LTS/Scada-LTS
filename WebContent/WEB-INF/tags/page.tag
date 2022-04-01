@@ -30,7 +30,7 @@
 <html>
 <head>
   <title><c:choose>
-    <c:when test="${!empty instanceDescription}">${instanceDescription}</c:when>
+    <c:when test="${!empty instanceDescriptionHeader}">${instanceDescriptionHeader}</c:when>
     <c:otherwise><fmt:message key="header.title"/></c:otherwise>
   </c:choose></title>
 
@@ -151,8 +151,8 @@
   </div>
 
   <div>
-    <c:if test="${!empty instanceDescription}">
-      <span id="instanceDescription" align="right" valign="bottom" class="projectTitle">${instanceDescription}</span>
+    <c:if test="${!empty instanceDescriptionHeader}">
+      <span id="instanceDescriptionHeader" align="right" valign="bottom" class="projectTitle"><a href="system_settings.shtm" class="projectTitle">${instanceDescriptionHeader}</a></span>
     </c:if>
   </div>
 </div>
@@ -278,7 +278,7 @@
   <jsp:doBody/>
 </div>
 <div id="sltsFooter" class="footer">
-    <span>&copy;2012-2021 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+    <span>&copy;2012-${toYear} Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
 </div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>

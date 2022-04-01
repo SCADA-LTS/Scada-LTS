@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.scada_lts.cache.PointHierarchyCache;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
@@ -76,6 +77,7 @@ public class PointHierarchyController {
 				
 				model.put("appName", request.getContextPath());
 				model.put("appPort", request.getLocalPort());
+				model.put("toYear",  DateTime.now().getYear());
 				return new ModelAndView("pointHierarchySLTS", model);
 			} 
 		}

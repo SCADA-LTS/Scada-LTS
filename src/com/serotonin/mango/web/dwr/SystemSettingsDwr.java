@@ -369,11 +369,11 @@ public class SystemSettingsDwr extends BaseDwr {
 	public void saveInfoSettings(String newVersionNotificationLevel,
 			String instanceDescription) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setValue(
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		systemSettingsDAO.setValue(
 				SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL,
 				newVersionNotificationLevel);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
+		systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
 				instanceDescription);
 	}
 
