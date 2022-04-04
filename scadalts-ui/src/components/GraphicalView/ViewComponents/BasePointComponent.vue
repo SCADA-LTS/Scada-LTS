@@ -7,10 +7,9 @@
 		@mousedown="$emit('mousedown', $event)"
 		@edit-menu="onEditMenu"
 	>
-		<template v-slot:default="data">
-			<slot v-bind:data="data" /> 
+		<template v-slot:default="data">		
+			<slot v-bind:data="data"/> 
 		</template>
-
 		<template v-slot:layout>
 			<v-col cols="12">
 				<v-text-field
@@ -103,7 +102,7 @@
 <script>
 import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent';
 import BaseViewComponent from './BaseViewComponent.vue';
-import TextRenderer from '../../../bl/TextRender.js'
+import TextRenderer from '../../../bl/TextRender.js';
 
 
 export default {
@@ -133,6 +132,7 @@ export default {
 			events: [],
 			eventsLoading: false,
 			textRenderer: {},
+			color: '#212121',
 		};
 	},
 
@@ -181,13 +181,16 @@ export default {
 		},
 
 		updatePointValue(data) {
-			const value = this.textRenderer.render(JSON.parse(data.body).value)
+	        const raw_value = JSON.parse(data.body).value
+			const value = this.textRenderer.render(raw_value)
 			this.$emit('value-update', value)
+			this.$emit('color-update', this.textRenderer.color(raw_value))
 		},
 
 		updatePointStatus(data) {
 			const status = JSON.parse(data.body).enabled;
-			this.$emit('status-update', status);
+			this.$emit('status-update', status)
+			this.$emit('color-update', '#212121')
 			if (status === true) {
 				this.getPointValue();
 			}
@@ -202,8 +205,9 @@ export default {
 				);
 				this.$emit('status-update', res.enabled);
 				if (res.enabled === true) {
-					const value = this.textRenderer.render(res.value);
-					this.$emit('value-update', value);
+					const value = this.textRenderer.render(res.value)
+					this.$emit('value-update', res.value)
+					this.$emit('color-update', this.textRenderer.color(res.value))
 				}
 			} catch (e) {
 				console.error(e);
