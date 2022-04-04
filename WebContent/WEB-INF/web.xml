@@ -285,7 +285,7 @@
     <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>springDispatcher</servlet-name>
+    <servlet-name>default</servlet-name>
     <url-pattern>*.map</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -352,7 +352,7 @@
     <servlet-name>default</servlet-name>
     <url-pattern>*.mp3</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>springDispatcher</servlet-name>
     <url-pattern>/</url-pattern>

@@ -49,7 +49,6 @@ import com.serotonin.util.ArrayUtils;
 import com.serotonin.util.ObjectUtils;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.mango.service.UsersProfileService;
 
 public class WatchListDwr extends BaseDwr {
 	public Map<String, Object> init() {
@@ -292,7 +291,7 @@ public class WatchListDwr extends BaseDwr {
 			// Text renderers don't help here. Create a thumbnail.
 			setImageText(request, state, pointVO, model, pointValue);
 		} else
-			setPrettyText(state, pointVO, model, pointValue);
+			setPrettyTextWithoutEqual(state, pointVO, model, pointValue);
 
 		if (pointVO.isSettable())
 			setChange(pointVO, state, point, request, model, user);

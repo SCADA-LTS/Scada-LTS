@@ -20,6 +20,10 @@
 
 	<property name="webapp-resources.dir" value="webapp-resources/"/>
 
+	<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>
+	<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
+	<property name="web.classes.dir"  value="WebContent/WEB-INF/classes"/>
+
 	<path id="tomcat.ant.classpath">
 		<pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
 	</path>
@@ -257,6 +261,18 @@
 				  haltonfailure="yes">
 			</test>
 
+
+			<test name="com.serotonin.mango.rt.dataImage.datapointrt.DataPointRtTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.dataImage.DataPointSyncModeTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">
@@ -281,9 +297,6 @@
 
 	<target name="create-war" description="Build and deploy WAR archive.">
 		<record action="start" name="${war.log.name}"/>
-		<property name="js-ui.dir"  value="WebContent/resources/js-ui"/>
-		<property name="src-js-ui.dir" value="scadalts-ui/dist"/>
-		<property name="web.classes.dir"  value="WebContent/WEB-INF/classes"/>
 
 		<delete dir="${js-ui.dir}/app"/>
 		<delete dir="${js-ui.dir}/views"/>
@@ -478,6 +491,11 @@
 		create-war,
 		deploy-tomcat"/>
 
+	<target name="deploy-dev" description="Deploy application to Tomcat workdir" depends="
+		clear-tomcat,
+		create-war-dev,
+		deploy-tomcat"/>
+
 	<target name="build-run" description="Build and run application" depends="
 		build,
 		deploy,
@@ -504,13 +522,13 @@
 
 	<target name="build-run-debug" depends="
 		build,
-		deploy,
+		deploy-dev,
 		run-debug
 	"/>
 
 	<target name="build-skip-test-run-debug" depends="
 		build-skip-test,
-		deploy,
+		deploy-dev,
 		run-debug
 	"/>
 
@@ -532,6 +550,138 @@
 		</copy>
 		<record action="stop" name="${build-project.log.src.name}"/>
 
+	</target>
+
+	<target name="create-war-dev" description="Build and deploy WAR archive.">
+		<record action="start" name="${war.log.name}"/>
+
+		<mkdir dir="${js-ui.dir}/app/js"/>
+		<mkdir dir="${js-ui.dir}/app/css"/>
+		<mkdir dir="${js-ui.dir}/app/fonts"/>
+		<mkdir dir="${js-ui.dir}/views/js"/>
+		<mkdir dir="${js-ui.dir}/views/css"/>
+		<mkdir dir="${js-ui.dir}/pointHierarchy/js"/>
+		<mkdir dir="${js-ui.dir}/pointHierarchy/css"/>
+		<mkdir dir="${js-ui.dir}/ds/js"/>
+		<mkdir dir="${js-ui.dir}/ds/css"/>
+		<mkdir dir="${js-ui.dir}/modernWatchList/js"/>
+		<mkdir dir="${js-ui.dir}/modernWatchList/css"/>
+
+		<!-- -->
+		<mkdir dir="${src-js-ui.dir}/css/"/>
+		<mkdir dir="${src-js-ui.dir}/js/"/>
+		<mkdir dir="${src-js-ui.dir}/fonts/"/>
+
+		<!-- copy content for app -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/app/css" taskname="copy app css">
+			<fileset dir="${src-js-ui.dir}/css/">
+				<include name="app.css"/>
+				<include name="chunk-vendors.css"/>
+			</fileset>
+		</copy>
+
+		<copy includeemptydirs="false" todir="${js-ui.dir}/app/js" taskname="copy app.js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="app.js"/>
+				<include name="chunk-vendors.js"/>
+				<include name="app.js.map"/>
+				<include name="chunk-vendors.js.map"/>
+			</fileset>
+		</copy>
+
+		<copy includeemptydirs="false" todir="${js-ui.dir}/app/fonts" taskname="copy app.js">
+			<fileset dir="${src-js-ui.dir}/fonts/">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+
+		<!-- copy content for views -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/css" taskname="copy for views css">
+			<fileset dir="${src-js-ui.dir}/css/">
+				<include name="cmp-component.css"/>
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/js" taskname="copy for views js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="cmp-component.js"/>
+				<include name="isalive-component.js"/>
+				<include name="simple-component-svg.js"/>
+				<include name="test-component.js"/>
+				<include name="cmp-component.js.map"/>
+				<include name="isalive-component.js.map"/>
+				<include name="simple-component-svg.js.map"/>
+				<include name="test-component.js.map"/>
+			</fileset>
+		</copy>
+
+		<!-- copy content for ds (data source) -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/ds/css" taskname="copy for ds css">
+			<fileset dir="${src-js-ui.dir}/css/">
+				<include name="sleep-and-reactivation-ds-component.css"/>
+			</fileset>
+		</copy>
+
+		<copy includeemptydirs="false" todir="${js-ui.dir}/ds/js" taskname="copy for ds js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="sleep-and-reactivation-ds-component.js"/>
+				<include name="sleep-and-reactivation-ds-component.js.map"/>
+			</fileset>
+		</copy>
+
+		<!-- copy content for ph -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/pointHierarchy/js" taskname="copy for ph js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="ph.js"/>
+				<include name="ph.js.map"/>
+			</fileset>
+		</copy>
+
+		<!-- copy content for modern watch list chart -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/modernWatchList/js" taskname="copy for mwl js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="example-chart-cmp.js"/>
+				<include name="xlsx.js"/>
+				<include name="pdfmake.js"/>
+				<include name="canvg.js"/>
+				<include name="example-chart-cmp.js.map"/>
+				<include name="xlsx.js.map"/>
+				<include name="pdfmake.js.map"/>
+				<include name="canvg.js.map"/>
+			</fileset>
+		</copy>
+
+		<!-- copy content for modern charts -->
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/js" taskname="copy for charts js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="step-line-chart-component.js"/>
+				<include name="step-line-chart-component.js.map"/>
+			</fileset>
+		</copy>
+
+		<copy includeemptydirs="false" todir="${js-ui.dir}/views/js" taskname="copy for live-alarms js">
+			<fileset dir="${src-js-ui.dir}/js/">
+				<include name="live-alarms-component.js"/>
+				<include name="live-alarms-component.js.map"/>
+			</fileset>
+		</copy>
+
+		<delete dir="${web.classes.dir}"/>
+		<mkdir dir="${web.classes.dir}"/>
+		<copy includeemptydirs="false" todir="${web.classes.dir}">
+			<fileset dir="${build-project.src.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</copy>
+
+		<copy includeemptydirs="false" todir="${web.classes.dir}">
+			<fileset dir="${webapp-resources.dir}" />
+		</copy>
+
+		<war destfile="ScadaBR.war"
+			 basedir="WebContent"
+			 needxmlfile="false">
+		</war>
+		<record action="stop" name="${war.log.name}"/>
 	</target>
 
 	<path id="benchmark.classpath">

@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.scada_lts.config.ScadaVersion;
+import org.joda.time.DateTime;
+import org.scada_lts.config.ScadaVersion;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,9 +39,10 @@ public class CommonDataInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         request.setAttribute("availableLanguages", Common.getLanguages());
         request.setAttribute("lang", ControllerUtils.getLocale(request).getLanguage());
-        request.setAttribute("instanceDescription", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
+        request.setAttribute("instanceDescriptionHeader", SystemSettingsDAO.getValue(SystemSettingsDAO.INSTANCE_DESCRIPTION));
         request.setAttribute("NEW_ID", Common.NEW_ID);
         request.setAttribute("scadaVersion", ScadaVersion.getInstance());
+        request.setAttribute("toYear", DateTime.now().getYear());
         return true;
     }
 

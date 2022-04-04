@@ -61,6 +61,15 @@ war {
     }
 }
 
+task warDev(type: War) {
+    dependsOn(':scadalts-ui:copyNewUiWithSourceMap')
+    from 'WebContent'
+    webInf {
+        from 'webapp-resources/'
+        into 'classes/'
+    }
+}
+
 task clearDockerDir(type: Delete) {
     delete files("docker/volumes/webapps/ScadaBR.war")
 }
@@ -119,11 +128,11 @@ task buildRun(type: GradleBuild) {
 }
 
 task buildRunDebug(type: GradleBuild) {
-    tasks = ['clearTomcat', 'test', 'war', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'test', 'warDev', 'deployTomcat', 'runDebug']
 }
 
 task buildRunDebugDev(type: GradleBuild) {
-    tasks = ['clearTomcat', 'installWebDependency', 'test', 'war', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'installWebDependency', 'test', 'warDev', 'deployTomcat', 'runDebug']
 }
 
 test {
@@ -155,5 +164,8 @@ test {
         includeTestsMatching "br.org.scadabr.vo.EqualsHashcodePermissionTest"
         includeTestsMatching "com.serotonin.mango.web.dwr.DataPointEditDwrTest"
         includeTestsMatching "org.scada_lts.service.pointhierarchy.PointHierarchyTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.datapointrt.DataPointRtTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.DataPointSyncModeTest"
+        includeTestsMatching "com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
     }
 }

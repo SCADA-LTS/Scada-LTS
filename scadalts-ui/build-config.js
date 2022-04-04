@@ -18,7 +18,7 @@ const json = require(pkgJsonPath);
 
 // ----- PACKAGE.JSON VARIABLES ----- //
 var tag = '0.3.0';
-var milestone = '2.6.0';
+var milestone = 'Unknown';
 var build = '0';
 var branch = 'local';
 var commit = 'N/A';

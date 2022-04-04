@@ -51,7 +51,7 @@ public class ScadaVersion {
     private static void setUpScadaVersionProperties() {
         if (configuration != null) {
             showVersionInfo = Boolean.parseBoolean(configuration.getProperty("slts.version.show", "false"));
-            versionNumber = configuration.getProperty("slts.version.number",  Common.getVersion());
+            versionNumber = configuration.getProperty("slts.version.number",  "Unknown");
             buildNumber = Integer.parseInt(configuration.getProperty("slts.version.build", "0"));
             commitNumber = configuration.getProperty("slts.version.commit", "");
             runningOs = configuration.getProperty("slts.version.os", System.getProperty("os.name") + System.getProperty("os.version"));

@@ -4,6 +4,7 @@ import br.org.scadabr.db.configuration.ConfigurationDB;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
@@ -121,13 +122,13 @@ public class SystemSettingsService {
     public JsonSettingsMisc getMiscSettings() {
         JsonSettingsMisc json = new JsonSettingsMisc();
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
-        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
         return json;
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
-        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, String.valueOf(json.isDataPointRuntimeValueSynchronized()));
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, json.getDataPointRuntimeValueSynchronized());
     }
 
     public SettingsDataRetention getDataRetentionSettings() {
@@ -349,7 +350,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
     }
 
-    public boolean isDataPointRtValueSynchronized() {
-        return SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED);
+    public DataPointSyncMode getDataPointRtValueSynchronized() {
+        return SystemSettingsDAO.getObject(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode::typeOf);
     }
 }
