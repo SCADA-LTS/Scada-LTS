@@ -14,7 +14,7 @@ const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
 	publicPath: process.env.NODE_ENV === 'production' ? '/ScadaBR/' : '/',
 	filenameHashing: false,
-	productionSourceMap: false,
+	productionSourceMap: true,
 	configureWebpack: {
 		devtool: 'source-map',
 		plugins: [

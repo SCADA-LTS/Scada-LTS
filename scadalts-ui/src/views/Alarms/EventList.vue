@@ -426,7 +426,11 @@ export default {
 	computed: {
 		alarmFlags() {
 			return this.$store.state.staticResources.alarmFlags;
-		}
+		},
+        commentRows() {
+            const lines = this.commentText.split('\n').length
+            return lines < 5 ? lines : 5
+        }
 	},
 	watch: {
     	options (data) {
@@ -446,12 +450,6 @@ export default {
 			if (data === false) this.selectedEventId=null;
       	},
     },
-	computed: {
-		commentRows() {
-			const lines = this.commentText.split('\n').length
-			return lines < 5 ? lines : 5
-		}
-	},
 	data() {
 		return {
 			next: false,
