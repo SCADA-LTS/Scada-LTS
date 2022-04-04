@@ -12,9 +12,12 @@ import dataSourceRoutes from './routes-datasources';
 import eventRoutes from './routes-events';
 
 import GraphicalView from '../views/GraphicalViews';
+
+import PublicView from '../views/GraphicalViews/AnonymousViewPage';
 import ReportTabs from '../views/Reports/ReportTabs';
 import ReportsPage from '../views/Reports/ReportsPage';
 import ReportsData from '../views/Reports/ReportsData';
+
 import SynopticPanelMenu from '../views/SynopticPanel/SynopticPanelMenu';
 import SynopticPanelItem from '../views/SynopticPanel/SynopticPanelItem';
 import WatchList from '../views/WatchList';
@@ -22,6 +25,7 @@ import WatchListItem from '../views/WatchList/WatchListItem';
 import UnauthorizedPage from '../views/401.vue';
 
 import store from '../store/index';
+import GraphicalViewPage from '../views/GraphicalViews/GraphicalViewPage';
 
 Vue.use(Router);
 
@@ -54,7 +58,25 @@ const routing = new Router({
 			component: GraphicalView,
 			meta: {
                 requiresAuth: true
-            }
+            },
+			children: [
+				{
+					path: ':id',
+					component: GraphicalViewPage
+				}
+			]
+
+        },
+		{
+            path: '/public-view',
+			name: 'public-view',
+			component: PublicView,
+			children: [
+				{
+					path: ':id',
+					component: GraphicalViewPage
+				}
+			]
 
         },
 		{

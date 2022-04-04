@@ -8,7 +8,7 @@ export const routes = [
     {
         path: '/',
         name: 'home',
-        component: Alarms,
+        component: AlarmsTabs,
         meta: {
             requiresAuth: true
         },

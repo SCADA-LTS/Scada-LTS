@@ -95,8 +95,20 @@ const storeDataPoint = {
 	mutations: {},
 
 	actions: {
-		async fetchDataPointSimpleList({ state, dispatch }) {
-			state.datapointSimpleList = await dispatch('requestGet', `/datapoint/getAll`);
+		/**
+		 * Fetch DataPoint List
+		 * 
+		 * Additionaly user can filter list by specific datapoint type.
+		 * 
+		 * @param {*} param0 
+		 * @param {Array} datapointTypes - Array of datapoint types to download.
+		 */
+		async fetchDataPointSimpleList({ state, dispatch }, datapointTypes) {
+			let request = '/datapoint/getAll';
+			if(!!datapointTypes) {
+				request += `?types=${datapointTypes.join(',')}`;
+			}
+			state.datapointSimpleList = await dispatch('requestGet', request);
 		},
 
 		async searchDatapoints({ state, dispatch }, keywords) {

@@ -93,6 +93,10 @@ public class View implements Serializable, JsonSerializable {
 		return null;
 	}
 
+	public void setViewComponents(List<ViewComponent> viewComponents) {
+		this.viewComponents = viewComponents;
+	}
+
 	public void removeViewComponent(ViewComponent vc) {
 		if (vc != null)
 			viewComponents.remove(vc);

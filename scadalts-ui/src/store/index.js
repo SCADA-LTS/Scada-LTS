@@ -8,6 +8,7 @@ import storeEvents from './events';
 import storeScripts from './scripts';
 import eventDetectorModule from './dataPoint/eventDetecotrs';
 import graphicView from './graphicView';
+import graphicalViewModule from './graphicalViews';
 import pointHierarchy from './pointHierarchy';
 import alarms from './alarms';
 import storeUsers from './users';
@@ -19,6 +20,7 @@ import SynopticPanelModule from './synopticPanel';
 import watchListModule from './watchList';
 import notificationModule from './notificationStore';
 import webSocketModule from './websocketStore';
+import staticResources from './static';
 
 import axios from 'axios';
 
@@ -39,8 +41,10 @@ export default new Vuex.Store({
 		eventDetectorModule,
 		storeEvents,
 		graphicView,
+		graphicalViewModule,
 		pointHierarchy,
 		alarms,
+		staticResources,
 		storeUsers,
 		notificationModule,
 		storeScripts,
@@ -183,6 +187,24 @@ export default new Vuex.Store({
 			return new Promise((resolve, reject) => {
 				axios
 					.post(state.applicationUrl + payload.url, payload.data, state.requestConfig)
+					.then(async (r) => {
+						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+					})
+					.catch(async (error) => {
+						(await dispatch('validateResponse', error.response))
+							? console.warn('Request Exception...')
+							: reject(error.response);
+					});
+			});
+		},
+
+		requestPostFile({ state, dispatch }, {url, data, headers}) {
+			const fileHeaders = {
+				'Content-Type': 'multipart/form-data'
+			}
+			return new Promise((resolve, reject) => {
+				axios
+					.post(state.applicationUrl + url, data, {headers: headers || fileHeaders })
 					.then(async (r) => {
 						(await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
 					})

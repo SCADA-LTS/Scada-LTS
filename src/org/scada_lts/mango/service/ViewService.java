@@ -20,20 +20,27 @@ package org.scada_lts.mango.service;
 /** 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import br.org.scadabr.vo.exporter.util.FileUtil;
+import com.serotonin.mango.view.ImageSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.GetShareUsers;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
+
+import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
+import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.scada_lts.web.beans.ApplicationBeans;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,15 +51,20 @@ import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
 
 @Service
 public class ViewService {
-	
+
 	private Log LOG = LogFactory.getLog(ViewService.class);
 	private ViewDAO viewDAO;
 	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
 	private GetShareUsers<View> viewGetShareUsers;
 	private UsersProfileService usersProfileService;
+
+	private String fileSeparator = System.getProperty("file.separator");
 
 	public ViewService() {
 		this.viewDAO = ApplicationBeans.getBean("viewDAO", ViewDAO.class);
@@ -84,6 +96,17 @@ public class ViewService {
 
 	public List<ScadaObjectIdentifier> getAllViews() {
 		return viewDAO.getSimpleList();
+	}
+
+	public List<ScadaObjectIdentifier> getAllViewsForUser(User user) {
+		if (user.isAdmin())
+			return viewDAO.getSimpleList();
+		List<View> views = getViews(user.getId(), user.getUserProfile());
+		List<ScadaObjectIdentifier> simpleList = new ArrayList<>();
+		for (View view : views) {
+			simpleList.add(new ScadaObjectIdentifier(view.getId(),view.getXid(), view.getName()));
+		}
+		return simpleList;
 	}
 	
 	public List<IdName> getViewNames(int userId, int userProfileId) {
@@ -173,6 +196,29 @@ public class ViewService {
 		usersPermissions.clear();
 	}
 
+	public int saveViewAPI(View view) throws IOException {
+		LOG.debug("View name: " + view.getName());
+		String backgroundFilename = view.getBackgroundFilename();
+		setWidthAndHeight(view, backgroundFilename);
+		int id = -1;
+		if (view.getId() == Common.NEW_ID) {
+			id = (int) viewDAO.create(view)[0];
+		} else {
+			viewDAO.update(view);
+		}
+
+		usersPermissions.clear();
+		return id;
+	}
+
+	private void setWidthAndHeight(View view, String backgroundFilename) throws IOException {
+		if (backgroundFilename != null && !backgroundFilename.isEmpty()) {
+			UploadImage uploadImage = createUploadImage(new File(getBackgroundImagePath(backgroundFilename)));
+			view.setHeight(uploadImage.getHeight());
+			view.setWidth(uploadImage.getWidth());
+		}
+	}
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void removeView(final int viewId) {
 		viewDAO.deleteViewForUser(viewId);
@@ -206,5 +252,60 @@ public class ViewService {
 
 	public List<ScadaObjectIdentifier> getSimpleViews() {
 		return viewDAO.selectViewIdentifiers();
+	}
+
+	public List<ImageSetIdentifier> getImageSets() {
+		List<ImageSetIdentifier> images = new ArrayList<>();
+		for (ImageSet imageSet : Common.ctx.getImageSets()) {
+			if (!imageSet.isDynamicImage()) {
+				ImageSetIdentifier imageSetIdentifier = new ImageSetIdentifier(imageSet.getId(), imageSet.getName(), imageSet.getImageCount());
+				images.add(imageSetIdentifier);
+			}
+		}
+		return images;
+	}
+
+	public ImageSet getImageSet(String id) {
+		return Common.ctx.getImageSet(id);
+	}
+
+	public List<UploadImage> getUploadImages() throws IOException {
+		List<File> files = FileUtil.getFilesOnDirectory(getUploadsPath());
+
+		List<UploadImage> images = new ArrayList<>();
+		for (File file : files) {
+			images.add(createUploadImage(file));
+		}
+
+		return images;
+	}
+
+	public UploadImage uploadBackgroundImage(MultipartFile multipartFile) throws IOException {
+		File file = new File(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+
+		multipartFile.transferTo(file);
+
+		return createUploadImage(file);
+	}
+
+	private UploadImage createUploadImage(File file) throws IOException {
+		BufferedImage bimg = ImageIO.read(file);
+		int width = bimg.getWidth();
+		int height = bimg.getHeight();
+
+		String filePartialPath = "uploads" + fileSeparator + file.getName();
+		return new UploadImage(file.getName(), filePartialPath, width, height);
+	}
+
+	private String getUploadsPath() {
+		return Common.ctx.getServletContext().getRealPath(fileSeparator) + "uploads";
+	}
+
+	private String getBackgroundImagePath(String backgroundFilename) {
+		return Common.ctx.getServletContext().getRealPath(fileSeparator) + fileSeparator + backgroundFilename;
+	}
+
+	public boolean checkUserViewPermissions(User user, View view) {
+		return GetViewsWithAccess.hasViewReadPermission(user, view);
 	}
 }

@@ -68,8 +68,9 @@
 </template>
 
 <script>
+import NavigationBar from '../layout/NavigationBar.vue'
+import webSocketMixin from '@/utils/web-socket-utils';
 import internetMixin from '@/utils/connection-status-utils';
-import NavigationBar from '../layout/NavigationBar.vue';
 import NotificationAlert from '../layout/snackbars/NotificationAlert.vue';
 
 export default {

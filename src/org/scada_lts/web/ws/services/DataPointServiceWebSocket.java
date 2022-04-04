@@ -42,11 +42,37 @@ public class DataPointServiceWebSocket extends AbstractWebSocket {
         sendWebSocketMessage(url, response);
     }
 
+    /**
+     * Notify Subscribers about PointValue change
+     *
+     * Send a message to specific channel regard to
+     * the provided pointId value. Message will contain the
+     * point value and the id od that point.
+     *
+     * @param pointValue Mango Point Value
+     * @param pointXid XID identifier of point destination
+     */
+    public void notifyValueSubscribers(MangoValue pointValue, String pointXid) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("pointXid", pointXid);
+        response.put("value", pointValue.toString());
+        String url = "/datapoint/" + pointXid + "/value";
+        sendWebSocketMessage(url, response);
+    }
+
     public void notifyStateSubscribers(boolean enabled, int pointId) {
         Map<String, Object> response = new HashMap<>();
         response.put("pointId", pointId);
         response.put("enabled", enabled);
         String url = "/datapoint/" + pointId + "/enabled";
+        sendWebSocketMessage(url, response);
+    }
+
+    public void notifyStateSubscribers(boolean enabled, String pointXid) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("pointXid", pointXid);
+        response.put("enabled", enabled);
+        String url = "/datapoint/" + pointXid + "/enabled";
         sendWebSocketMessage(url, response);
     }
 

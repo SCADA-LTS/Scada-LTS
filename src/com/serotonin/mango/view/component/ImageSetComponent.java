@@ -40,6 +40,7 @@ import com.serotonin.util.SerializationHelper;
  */
 @JsonRemoteEntity
 abstract public class ImageSetComponent extends PointComponent {
+
     protected ImageSet imageSet;
     @JsonRemoteProperty
     private boolean displayText;

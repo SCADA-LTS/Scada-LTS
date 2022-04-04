@@ -23,6 +23,11 @@
 	</v-dialog>
 </template>
 <script>
+/**
+ * Confirmation dialog
+ * @deprecated - Use ConfirmationDialogV2 it can handle the data that is passed to it
+ */
+
 export default {
 	name: 'ConfirmationDialog',
 

@@ -66,6 +66,11 @@ public class ButtonComponent extends ScriptComponent {
 	}
 
 	private void createButtonScript() {
+		String content = createButtonScriptContent();
+		setScript(content);
+	}
+
+	public String createButtonScriptContent() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("var s = '';").append("if (value) ");
 		sb.append(" s += \"<input type='button' class='simpleRenderer' value='").append(whenOnLabel).append("' ");
@@ -88,7 +93,7 @@ public class ButtonComponent extends ScriptComponent {
 		sb.append("background-color:").append(getBkgdColorOverride()).append(";");
 		sb.append("'/>").append("\"; ");
 		sb.append(" return s;");
-		setScript(sb.toString());
+		return sb.toString();
 	}
 
 	@Override
