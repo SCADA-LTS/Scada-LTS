@@ -845,7 +845,7 @@
         </td>
       </tr>
       </table>
-      
+      <%--
       <table align="center">
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Derby"/></td>
@@ -860,7 +860,6 @@
           <input id="radioMysql" name="db" type="radio"/>
         </td>
       </tr>
-<%--
        <tr>
         <td class="formLabel"><fmt:message key="systemSettings.dbConfiguration.Mssql"/></td>
         <td class="formField">
@@ -873,11 +872,12 @@
           <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-   --%>   
+
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
+     --%>
   </div>
 --%>
 

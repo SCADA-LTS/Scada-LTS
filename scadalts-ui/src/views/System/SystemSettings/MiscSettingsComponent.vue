@@ -20,66 +20,6 @@
 							dense
 						></v-select>
 					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.eventPurgePeriods"
-							type="number"
-							:label="$t('systemsettings.misc.purge.events')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.eventPurgePeriodType"
-							:items="eventPurgePeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.reportPurgePeriodType"
-							type="number"
-							:label="$t('systemsettings.misc.purge.reports')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.reportPurgePeriodType"
-							:items="eventPurgePeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
-
-					<v-col cols="6">
-						<v-text-field
-							v-model="miscSettings.futureDateLimitPeriods"
-							type="number"
-							:label="$t('systemsettings.misc.purge.future')"
-							@input="watchDataChange()"
-							dense
-						></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							@change="watchDataChange()"
-							v-model="miscSettings.futureDateLimitPeriodType"
-							:items="futureDateLimitPeriodTypeItems"
-							item-value="value"
-							item-text="text"
-							dense
-						></v-select>
-					</v-col>
 					<v-col cols="12">
                         <v-select
                             @change="watchDataChange()"
@@ -113,21 +53,6 @@ export default {
 				},
 				{ value: 10000, text: this.$t('systemsettings.misc.performance.low') },
 			],
-			futureDateLimitPeriodTypeItems: [
-				{ value: 2, text: this.$t('timeperiod.minutes') },
-				{ value: 3, text: this.$t('timeperiod.hours') },
-			],
-			eventPurgePeriodTypeItems: [
-				{ value: 4, text: this.$t('timeperiod.days') },
-				{ value: 5, text: this.$t('timeperiod.weeks') },
-				{ value: 6, text: this.$t('timeperiod.months') },
-				{ value: 7, text: this.$t('timeperiod.years') },
-			],
-			response: {
-				color: 'success',
-				status: false,
-				message: '',
-			},
 			dataPointRuntimeValueSynchronized: [
                 { value: 'NONE', text: this.$t('systemsettings.misc.dataPointRuntimeValueSynchronized.none')  },
                 { value: 'PARTIAL', text: this.$t('systemsettings.misc.dataPointRuntimeValueSynchronized.partial') },
