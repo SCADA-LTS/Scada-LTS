@@ -2,10 +2,12 @@ package com.serotonin.mango.rt.dataImage.datapointrt.config;
 
 import br.org.scadabr.db.utils.TestUtils;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
+import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -60,12 +62,13 @@ public class ConfigDataPointRtTest {
     private static final PointValueDAOMemory pointValueDAOMemory = new PointValueDAOMemory();
     private static final int NUMBER_OF_TESTS = 20;
 
-    private final PointValueTime oldValue;
-    private final PointValueTime oldValueWithUser;
-    private final PointValueTime newValue;
-    private final PointValueTime newValueWithUser;
-    private final PointValueTime newValue2;
-    private final PointValueTime newValueWithUser2;
+    private PointValueTime oldValue;
+    private PointValueTime oldValueWithUser;
+    private PointValueTime newValue;
+    private PointValueTime newValueWithUser;
+    private PointValueTime newValue2;
+    private PointValueTime newValueWithUser2;
+
     private final int dataTypeId;
     private final String dataType;
     private final String startValue;
@@ -82,44 +85,66 @@ public class ConfigDataPointRtTest {
 
     public ConfigDataPointRtTest(DataPointSyncMode sync, Object oldValue, Object newValue, Object newValue2,
                                  int dataTypeId, String dataType, String startValue) {
-        this.oldValue = new PointValueTime(MangoValue.objectToValue(oldValue), System.currentTimeMillis());
-        this.newValue = new PointValueTime(MangoValue.objectToValue(newValue), System.currentTimeMillis() + 10);
+        setPointValueTime(oldValue, newValue, newValue2, dataTypeId);
         this.dataTypeId = dataTypeId;
         this.dataType = dataType;
         this.startValue = startValue;
         this.tolerance = 0.0;
         this.user = TestUtils.newUser(123);
-        this.oldValueWithUser = new PointValueTime(this.oldValue.getValue(), this.oldValue.getTime());
-        this.oldValueWithUser.setWhoChangedValue(user.getUsername());
-        this.newValueWithUser = new PointValueTime(this.newValue.getValue(), this.newValue.getTime());
-        this.newValueWithUser.setWhoChangedValue(user.getUsername());
-        this.newValue2 = new PointValueTime(MangoValue.objectToValue(newValue2), System.currentTimeMillis() + 15);
-        this.newValueWithUser2 = new PointValueTime(this.newValue2.getValue(), this.newValue2.getTime());
-        this.newValueWithUser2.setWhoChangedValue(user.getUsername());
+        setPointValueTimeWithUser(oldValue, newValue, newValue2, dataTypeId);
         this.sync = sync;
         config();
     }
 
     public ConfigDataPointRtTest(DataPointSyncMode sync, Object oldValue, Object newValue, Object newValue2,
                                  int dataTypeId, String dataType, String startValue, double tolerance) {
-
-        this.oldValue = new PointValueTime(MangoValue.objectToValue(oldValue), System.currentTimeMillis());
-        this.newValue = new PointValueTime(MangoValue.objectToValue(newValue), System.currentTimeMillis() + 10);
+        setPointValueTime(oldValue, newValue, newValue2, dataTypeId);
         this.dataTypeId = dataTypeId;
         this.dataType = dataType;
         this.startValue = startValue;
         this.tolerance = tolerance;
         this.user = TestUtils.newUser(123);
-        this.oldValueWithUser = new PointValueTime(this.oldValue.getValue(), this.oldValue.getTime());
-        this.oldValueWithUser.setWhoChangedValue(user.getUsername());
-        this.newValueWithUser = new PointValueTime(this.newValue.getValue(), this.newValue.getTime());
-        this.newValueWithUser.setWhoChangedValue(user.getUsername());
-        this.newValue2 = new PointValueTime(MangoValue.objectToValue(newValue2), System.currentTimeMillis() + 15);
-        this.newValueWithUser2 = new PointValueTime(this.newValue2.getValue(), this.newValue2.getTime());
-        this.newValueWithUser2.setWhoChangedValue(user.getUsername());
+        setPointValueTimeWithUser(oldValue, newValue, newValue2, dataTypeId);
         this.sync = sync;
         config();
+    }
 
+    private void setPointValueTime(Object oldValue, Object newValue, Object newValue2, int dataTypeId) {
+        if(dataTypeId == DataTypes.ALPHANUMERIC) {
+            this.oldValue = new AnnotatedPointValueTime(MangoValue.objectToValue(oldValue), System.currentTimeMillis(), 1, 123);
+            this.newValue = new AnnotatedPointValueTime(MangoValue.objectToValue(newValue), System.currentTimeMillis() + 10, 1, 123);
+            this.newValue2 = new AnnotatedPointValueTime(MangoValue.objectToValue(newValue2), System.currentTimeMillis() + 15, 1, 123);
+
+        } else {
+            this.oldValue = new PointValueTime(MangoValue.objectToValue(oldValue), System.currentTimeMillis());
+            this.newValue = new PointValueTime(MangoValue.objectToValue(newValue), System.currentTimeMillis() + 10);
+            this.newValue2 = new PointValueTime(MangoValue.objectToValue(newValue2), System.currentTimeMillis() + 15);
+
+        }
+    }
+
+    private void setPointValueTimeWithUser(Object oldValue, Object newValue, Object newValue2, int dataTypeId) {
+        if(dataTypeId == DataTypes.ALPHANUMERIC) {
+            this.oldValueWithUser = new AnnotatedPointValueTime(MangoValue.objectToValue(oldValue), this.oldValue.getTime(), 1, 123);
+            this.oldValueWithUser.setWhoChangedValue(user.getUsername());
+
+            this.newValueWithUser =  new AnnotatedPointValueTime(MangoValue.objectToValue(newValue), this.newValue.getTime(), 1, 123);
+            this.newValueWithUser.setWhoChangedValue(user.getUsername());
+
+            this.newValueWithUser2 =  new AnnotatedPointValueTime(MangoValue.objectToValue(newValue2), this.newValue2.getTime(), 1, 123);
+            this.newValueWithUser2.setWhoChangedValue(user.getUsername());
+
+        } else {
+            this.oldValueWithUser = new PointValueTime(MangoValue.objectToValue(oldValue), this.oldValue.getTime());
+            this.oldValueWithUser.setWhoChangedValue(user.getUsername());
+
+            this.newValueWithUser = new PointValueTime(MangoValue.objectToValue(newValue), this.newValue.getTime());
+            this.newValueWithUser.setWhoChangedValue(user.getUsername());
+
+            this.newValueWithUser2 = new PointValueTime(MangoValue.objectToValue(newValue2), this.newValue2.getTime());
+            this.newValueWithUser2.setWhoChangedValue(user.getUsername());
+
+        }
     }
 
     private void config() {

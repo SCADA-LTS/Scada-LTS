@@ -30,7 +30,7 @@ public abstract class AbstractDataPointRtToleranceMultiTest extends ConfigDataPo
     @Before
     public void config() {
         dataPointRT = start();
-        initValue(dataPointRT);
+        //initValue(dataPointRT);
     }
 
     @Test

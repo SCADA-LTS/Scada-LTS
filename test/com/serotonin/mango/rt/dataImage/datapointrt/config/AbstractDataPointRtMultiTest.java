@@ -25,7 +25,7 @@ public abstract class AbstractDataPointRtMultiTest extends ConfigDataPointRtTest
     @Before
     public void config() {
         dataPointRT = start();
-        initValue(dataPointRT);
+        //initValue(dataPointRT);
     }
 
     @Test
