@@ -36,8 +36,6 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     private PointValueState pointValue;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private final ThreadLocal<PointValueState> threadLocalValue = new ThreadLocal<>();
-
     public DataPointSynchronizedRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
     }
