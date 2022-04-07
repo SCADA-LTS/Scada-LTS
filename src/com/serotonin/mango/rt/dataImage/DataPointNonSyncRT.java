@@ -110,7 +110,7 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
                 if (oldValue == null) {
                     logValue = true;
                     if(newValue.getValue() instanceof NumericValue) {
-                        this.toleranceOrigin = newValue.getDoubleValue();
+                        updateToleranceOrigin(newValue, true);
                     }
                 } else if (backdated)
                     // Backdated. Ignore it
@@ -118,7 +118,7 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
                 else {
                     if (newValue.getValue() instanceof NumericValue) {
                         // Get the new double
-                        logValue = updateToleranceOrigin(newValue);
+                        logValue = updateToleranceOrigin(newValue, false);
                     } else
                         logValue = !ObjectUtils.isEqual(newValue.getValue(), oldValue.getValue());
                 }
@@ -173,7 +173,11 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
         return pointValue;
     }
 
-    private boolean updateToleranceOrigin(PointValueTime newValue) {
+    private boolean updateToleranceOrigin(PointValueTime newValue, boolean updateForce) {
+        if(updateForce) {
+            this.toleranceOrigin = newValue.getDoubleValue();
+            return true;
+        }
         boolean logValue;
         double newd = newValue.getDoubleValue();
         // See if the new value is outside of the tolerance.

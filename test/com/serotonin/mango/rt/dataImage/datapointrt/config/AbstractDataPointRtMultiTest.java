@@ -5,6 +5,7 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.util.ObjectUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import utils.TestConcurrentUtils;
@@ -12,6 +13,9 @@ import utils.TestConcurrentUtils;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 
 public abstract class AbstractDataPointRtMultiTest extends ConfigDataPointRtTest {
@@ -26,6 +30,11 @@ public abstract class AbstractDataPointRtMultiTest extends ConfigDataPointRtTest
     public void config() {
         dataPointRT = start();
         //initValue(dataPointRT);
+    }
+
+    @After
+    public void clean() {
+        clear();
     }
 
     @Test
@@ -118,5 +127,42 @@ public abstract class AbstractDataPointRtMultiTest extends ConfigDataPointRtTest
         assertFalse("isEqual", ObjectUtils.isEqual(newValue.getValue(), oldValue.getValue()));
         assertTrue("not isEqual", ObjectUtils.isEqual(newValue.getValue(), newValue.getValue()));
         assertEquals(pointValuesExpected.size(), pointValues.size());
+    }
+
+    @Test
+    public void when_setPointValue_by_User_then_verify_create_times() {
+
+        //given:
+        PointValueTime oldValue = getOldValueWithUser();
+        PointValueTime newValue = getNewValueWithUser();
+        PointValueTime newValue2 = getNewValueWithUser2();
+        List<PointValueTime> pointValuesExpected = getPointValuesWithUserExpected();
+
+        //when:
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, oldValue, getUser());
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, newValue, getUser());
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, newValue2, getUser());
+
+        //then:
+        verify(getPointValueDAOMock(), times(pointValuesExpected.size()))
+                .create(eq(dataPointRT.getId()), eq(getDataTypeId()), anyDouble(), anyLong());
+    }
+
+    @Test
+    public void when_setPointValue_then_verify_applyBounds_times() {
+
+        //given:
+        PointValueTime oldValue = getOldValue();
+        PointValueTime newValue = getNewValue();
+        PointValueTime newValue2 = getNewValue2();
+        List<PointValueTime> pointValuesExpected = getPointValuesExpected();
+
+        //when:
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, oldValue, null);
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, newValue, null);
+        TestConcurrentUtils.biConsumer(getNumberOfLaunches(), dataPointRT::setPointValue, newValue2, null);
+
+        //then:
+        verify(getPointValueDAOMock(), times(pointValuesExpected.size())).applyBounds(anyDouble());
     }
 }

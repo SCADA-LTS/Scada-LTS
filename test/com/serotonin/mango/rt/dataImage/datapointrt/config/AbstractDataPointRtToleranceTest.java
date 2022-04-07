@@ -5,12 +5,17 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.util.ObjectUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.verification.VerificationModeFactory;
 
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 
 public abstract class AbstractDataPointRtToleranceTest extends ConfigDataPointRtTest {
@@ -28,6 +33,11 @@ public abstract class AbstractDataPointRtToleranceTest extends ConfigDataPointRt
     @Before
     public void config() {
         dataPointRT = start();
+    }
+
+    @After
+    public void clean() {
+        clear();
     }
 
     @Test
@@ -120,5 +130,42 @@ public abstract class AbstractDataPointRtToleranceTest extends ConfigDataPointRt
         assertFalse("isEqual", ObjectUtils.isEqual(newValue.getValue(), oldValue.getValue()));
         assertTrue("not isEqual", ObjectUtils.isEqual(newValue.getValue(), newValue.getValue()));
         assertEquals(pointValuesExpected.size(), pointValues.size());
+    }
+
+    @Test
+    public void when_setPointValue_by_User_then_verify_create_times() {
+
+        //given:
+        PointValueTime oldValue = getOldValueWithUser();
+        PointValueTime newValue = getNewValueWithUser();
+        PointValueTime newValue2 = getNewValueWithUser2();
+        List<PointValueTime> pointValuesExpected = getPointValuesWithUserExpected(exepected);
+
+        //when:
+        dataPointRT.setPointValue(oldValue, getUser());
+        dataPointRT.setPointValue(newValue, getUser());
+        dataPointRT.setPointValue(newValue2, getUser());
+
+        //then:
+        verify(getPointValueDAOMock(), times(pointValuesExpected.size()))
+                .create(eq(dataPointRT.getId()), eq(getDataTypeId()), anyDouble(), anyLong());
+    }
+
+    @Test
+    public void when_setPointValue_then_verify_applyBounds_times() {
+
+        //given:
+        PointValueTime oldValue = getOldValue();
+        PointValueTime newValue = getNewValue();
+        PointValueTime newValue2 = getNewValue2();
+        List<PointValueTime> pointValuesExpected = getPointValuesExpected(exepected);
+
+        //when:
+        dataPointRT.setPointValue(oldValue, null);
+        dataPointRT.setPointValue(newValue, null);
+        dataPointRT.setPointValue(newValue2, null);
+
+        //then:
+        verify(getPointValueDAOMock(), VerificationModeFactory.times(pointValuesExpected.size())).applyBounds(anyDouble());
     }
 }

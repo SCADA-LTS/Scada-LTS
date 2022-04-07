@@ -37,6 +37,7 @@ import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.SystemSettingsService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import utils.PointValueDAOMemory;
@@ -47,12 +48,14 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.clearInvocations;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({DAO.class, Common.class, PointValueDAO.class, PointValueAdnnotationsDAO.class,
-        DataPointDao.class, DataSourceDao.class, VirtualDataSourceRT.class, RuntimeManager.class})
+        DataPointDao.class, DataSourceDao.class, VirtualDataSourceRT.class, RuntimeManager.class,
+        PointValueService.class, PointValueDAO.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class ConfigDataPointRtTest {
@@ -80,6 +83,7 @@ public class ConfigDataPointRtTest {
     private final DataPointSyncMode sync;
 
     private RuntimeManager runtimeManagerMock;
+    private PointValueDAO pointValueDAOMock;
     private DataSourceVO dataSourceVO;
     private DataPointVO dataPointVO;
 
@@ -93,7 +97,7 @@ public class ConfigDataPointRtTest {
         this.user = TestUtils.newUser(123);
         setPointValueTimeWithUser(oldValue, newValue, newValue2, dataTypeId);
         this.sync = sync;
-        config();
+        init();
     }
 
     public ConfigDataPointRtTest(DataPointSyncMode sync, Object oldValue, Object newValue, Object newValue2,
@@ -106,7 +110,7 @@ public class ConfigDataPointRtTest {
         this.user = TestUtils.newUser(123);
         setPointValueTimeWithUser(oldValue, newValue, newValue2, dataTypeId);
         this.sync = sync;
-        config();
+        init();
     }
 
     private void setPointValueTime(Object oldValue, Object newValue, Object newValue2, int dataTypeId) {
@@ -147,7 +151,7 @@ public class ConfigDataPointRtTest {
         }
     }
 
-    private void config() {
+    private void init() {
         try {
             preconfig();
         } catch (Exception ex) {
@@ -186,29 +190,30 @@ public class ConfigDataPointRtTest {
         dataPointVO.setDataSourceName(dataSourceVO.getName());
         dataPointVO.setDeviceName(dataSourceVO.getName());
 
-        PointValueAdnnotationsDAO pointValueAdnnotationsDAO = mock(PointValueAdnnotationsDAO.class);
-        when(pointValueAdnnotationsDAO.create(any(PointValueAdnnotation.class))).thenAnswer(a -> {
+        PointValueAdnnotationsDAO pointValueAdnnotationsDAOMock = mock(PointValueAdnnotationsDAO.class);
+        when(pointValueAdnnotationsDAOMock.create(any(PointValueAdnnotation.class))).thenAnswer(a -> {
             Object[] args = a.getArguments();
             return pointValueDAOMemory.create((PointValueAdnnotation)args[0]);
         });
         whenNew(PointValueAdnnotationsDAO.class)
                 .withNoArguments()
-                .thenReturn(pointValueAdnnotationsDAO);
+                .thenReturn(pointValueAdnnotationsDAOMock);
 
-        PointValueDAO pointValueDAO = mock(PointValueDAO.class);
-        when(pointValueDAO.create(anyInt(), anyInt(), anyDouble(), anyLong()))
+        pointValueDAOMock = mock(PointValueDAO.class);
+        when(pointValueDAOMock.create(anyInt(), anyInt(), anyDouble(), anyLong()))
                 .thenAnswer(a -> {
                     Object[] args = a.getArguments();
                     return pointValueDAOMemory.create((int)args[0], (int)args[1], (double)args[2], (long)args[3]);
                 });
-        when(pointValueDAO.getPointValue(anyLong())).thenAnswer(a -> {
+
+        when(pointValueDAOMock.getPointValue(anyLong())).thenAnswer(a -> {
             Object[] args = a.getArguments();
             return pointValueDAOMemory.getPointValue((long)args[0]);
         });
-        when(pointValueDAO.applyBounds(anyDouble())).thenCallRealMethod();
-        whenNew(PointValueDAO.class)
-                .withNoArguments()
-                .thenReturn(pointValueDAO);
+        when(pointValueDAOMock.applyBounds(anyDouble())).thenCallRealMethod();
+
+        mockStatic(PointValueDAO.class);
+        when(PointValueDAO.getInstance()).thenReturn(pointValueDAOMock);
 
         ContextWrapper contextWrapper = mock(ContextWrapper.class);
         Common.ctx = contextWrapper;
@@ -229,38 +234,37 @@ public class ConfigDataPointRtTest {
                 .thenAnswer(a -> runtimeManager.getDataPoint((int)a.getArguments()[0]));
         when(contextWrapper.getRuntimeManager()).thenReturn(runtimeManagerMock);
 
-        BackgroundProcessing backgroundProcessing = mock(BackgroundProcessing.class);
-        when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessing);
+        BackgroundProcessing backgroundProcessingMock = mock(BackgroundProcessing.class);
+        when(contextWrapper.getBackgroundProcessing()).thenReturn(backgroundProcessingMock);
 
-        EventManager eventManager = mock(EventManager.class);
-        when(contextWrapper.getEventManager()).thenReturn(eventManager);
+        EventManager eventManagerMock = mock(EventManager.class);
+        when(contextWrapper.getEventManager()).thenReturn(eventManagerMock);
 
-        DataPointService dataPointService = mock(DataPointService.class);
+        DataPointService dataPointServiceMock = mock(DataPointService.class);
         whenNew(DataPointService.class)
                 .withNoArguments()
-                .thenReturn(dataPointService);
-        when(dataPointService.getDataPoint(anyInt())).thenReturn(dataPointVO);
+                .thenReturn(dataPointServiceMock);
+        when(dataPointServiceMock.getDataPoint(anyInt())).thenReturn(dataPointVO);
 
-        DataSourceService dataSourceService = mock(DataSourceService.class);
+        DataSourceService dataSourceServiceMock = mock(DataSourceService.class);
         whenNew(DataSourceService.class)
                 .withNoArguments()
-                .thenReturn(dataSourceService);
-        when(dataSourceService.getDataSource(anyInt())).thenReturn(dataSourceVO);
+                .thenReturn(dataSourceServiceMock);
+        when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        TimeoutTask timeoutTask = mock(TimeoutTask.class);
+        TimeoutTask timeoutTaskMock = mock(TimeoutTask.class);
         whenNew(TimeoutTask.class)
                 .withAnyArguments()
-                .thenReturn(timeoutTask);
+                .thenReturn(timeoutTaskMock);
 
-        SystemSettingsService systemSettingsService = mock(SystemSettingsService.class);
-        when(systemSettingsService.getDataPointRtValueSynchronized()).thenReturn(sync);
+        SystemSettingsService systemSettingsServiceMock = mock(SystemSettingsService.class);
+        when(systemSettingsServiceMock.getDataPointRtValueSynchronized()).thenReturn(sync);
         whenNew(SystemSettingsService.class)
                 .withNoArguments()
-                .thenReturn(systemSettingsService);
+                .thenReturn(systemSettingsServiceMock);
     }
 
-    @After
-    public void clean() {
+    public void clear() {
         pointValueDAOMemory.clear();
     }
 
@@ -394,5 +398,9 @@ public class ConfigDataPointRtTest {
 
     protected int getNumberOfLaunches() {
         return numberOfLaunches;
+    }
+
+    public PointValueDAO getPointValueDAOMock() {
+        return pointValueDAOMock;
     }
 }
