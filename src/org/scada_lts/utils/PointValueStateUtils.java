@@ -20,20 +20,20 @@ public final class PointValueStateUtils {
         return false;
     }
 
-    public static boolean isLogValue(PointValueTime newValue, PointValueState oldValue, DataPointVO vo) {
-        double toleranceOrigin = getToleranceOrigin(newValue, oldValue, false);
+    public static boolean isLogValue(PointValueTime newValue, PointValueState oldState, DataPointVO vo) {
+        double toleranceOrigin = getToleranceOrigin(newValue, oldState, false);
         if(isLoggingTypeIn(vo, DataPointVO.LoggingTypes.ON_CHANGE, DataPointVO.LoggingTypes.ALL,
                 DataPointVO.LoggingTypes.ON_TS_CHANGE)) {
             switch (vo.getLoggingType()) {
                 case DataPointVO.LoggingTypes.ON_CHANGE:
-                    return isChange(newValue, oldValue, toleranceOrigin, vo.getTolerance());
+                    return isChange(newValue, oldState, toleranceOrigin, vo.getTolerance());
                 case DataPointVO.LoggingTypes.ALL:
                     return true;
                 case DataPointVO.LoggingTypes.ON_TS_CHANGE:
-                    if (oldValue == null)
+                    if (oldState == null)
                         return true;
                     else
-                        return newValue.getTime() != oldValue.getNewValue().getTime();
+                        return newValue.getTime() != oldState.getNewValue().getTime();
                 default:
                     return false;
             }
@@ -42,11 +42,11 @@ public final class PointValueStateUtils {
         }
     }
 
-    public static double getToleranceOrigin(PointValueTime newValue, PointValueState oldValue, boolean logValue) {
-        if(oldValue == null || logValue)
+    public static double getToleranceOrigin(PointValueTime newValue, PointValueState oldState, boolean logValue) {
+        if(oldState == null || logValue)
             return newValue.getValue() instanceof NumericValue ? newValue.getDoubleValue() : 0.0;
         else
-            return oldValue.getToleranceOrigin();
+            return oldState.getToleranceOrigin();
 
     }
 
@@ -58,15 +58,15 @@ public final class PointValueStateUtils {
         return true;
     }
 
-    public static boolean isBackdated(PointValueTime newValue, PointValueState oldValue) {
-        return oldValue != null && newValue.getTime() < oldValue.getNewValue().getTime();
+    public static boolean isBackdated(PointValueTime newValue, PointValueState oldState) {
+        return oldState != null && newValue.getTime() < oldState.getNewValue().getTime();
     }
 
-    private static boolean isChange(PointValueTime newValue, PointValueState oldValue,
+    private static boolean isChange(PointValueTime newValue, PointValueState oldState,
                                     double toleranceOrigin, double tolerance) {
-        if (oldValue == null) {
+        if (oldState == null) {
             return true;
-        } else if (isBackdated(newValue, oldValue)) {
+        } else if (isBackdated(newValue, oldState)) {
             return false;
         } else {
             if (newValue.getValue() instanceof NumericValue) {
@@ -75,7 +75,7 @@ public final class PointValueStateUtils {
                     diff = -diff;
                 return diff > tolerance;
             }
-            return !ObjectUtils.isEqual(newValue.getValue(), oldValue.getNewValue().getValue());
+            return !ObjectUtils.isEqual(newValue.getValue(), oldState.getNewValue().getValue());
         }
     }
 }
