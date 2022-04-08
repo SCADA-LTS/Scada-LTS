@@ -195,6 +195,7 @@ export default {
         console.debug(`Refresh time: ${this.pTimeRefresh}`);
         this.initializeErrorHandlers();
         this.refreshInterval = setInterval(() => {
+             this.componentState = this.pZeroState;
             this.checkConditions();
         }, this.pTimeRefresh);
     },
@@ -222,25 +223,33 @@ export default {
          */
         async checkConditions() {
             this.loading = true;
-            this.componentState = this.pZeroState;
+            //this.componentState = this.pZeroState;
             const conditions = [...this.pConfig.state.analiseInOrder];
 
             for(let i = 0; i < conditions.length; i++) {
                 try {
-                    
+                    let check = false;
                     let myXids = [];
 
                     for (let j =0; j < conditions[i].toChecked.length; j++) {
-                        myXids.push(JSON.stringify(conditions[i].toChecked[0].xid))
+                        if (!!conditions[i].toChecked[0].xid) {
+                            myXids.push(JSON.stringify(conditions[i].toChecked[0].xid))
+                            check = true;
+                        }
                     }
                     
-                    this.dataPointValues = await new ApiCMP().get(myXids.join(',').slice(1,-1))
+                    if (check) {
 
-                    let conditionResult = eval(`(${this.dataPointValues.data[0].value}${conditions[i].toChecked[0].equals})`)
+                        this.dataPointValues = await new ApiCMP().get(myXids.join(',').slice(1,-1))
+
+                        let conditionResult = eval(`(${this.dataPointValues.data[0].value}${conditions[i].toChecked[0].equals})`)
                     
-                    if (conditionResult) {
-                        this.componentState = conditions[i].name;
-                        break;
+                        if (conditionResult) {
+                            this.componentState = conditions[i].name;
+                            break;
+                        }
+                    } else {
+                        this.componentState = this.pZeroState;
                     }
                     
                 } catch (e) {
