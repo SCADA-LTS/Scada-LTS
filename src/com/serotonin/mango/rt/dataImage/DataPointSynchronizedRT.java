@@ -26,6 +26,9 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.utils.PointValueStateUtils;
+
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT {
@@ -33,7 +36,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     private static final Log LOG = LogFactory.getLog(DataPointSynchronizedRT.class);
 
     // Runtime data.
-    private PointValueState pointValue;
+    private PointValueState pointValueState;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public DataPointSynchronizedRT(DataPointVO vo, PointLocatorRT pointLocator) {
@@ -91,51 +94,24 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
             return;
         }
 
-        PointValueState state = createAndUpdateState(newValue, getVO());
-        savePointValue(source, async, state);
-    }
-
-    private void savePointValue(SetPointSource source, boolean async, PointValueState state) {
-        PointValueTime oldValue = state.getOldValue();
-        PointValueTime newValue = state.getNewValue();
-
-        boolean logValue = state.isLogValue();
-        boolean saveValue = state.isSaveValue();
-
-        if (PointValueState.isLoggingTypeIn(getVO(), DataPointVO.LoggingTypes.INTERVAL) && !state.isBackdated()) {
-            intervalSave(newValue);
-        }
-
-        if (saveValue) {
-            this.notifyWebSocketListeners(newValue.getValue().toString());
-            getPointValueCache().savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
-        }
-
-        if (!state.isBackdated()) {
-            fireEvents(oldValue, newValue, source != null, false);
-        } else
-            fireEvents(null, newValue, false, true);
+        createAndUpdateState(newValue, getVO()).ifPresent(state -> {
+            try {
+                savePointValue(source, async, state);
+            } catch (Exception ex) {
+                LOG.warn(ex.getMessage(), ex);
+            }
+        });
     }
 
     @Override
     public PointValueTime getPointValue() {
         lock.readLock().lock();
         try {
-            if(pointValue == null)
+            if(pointValueState == null)
                 return null;
-            return pointValue.getNewValue();
+            return pointValueState.getNewValue();
         } finally {
             lock.readLock().unlock();
-        }
-    }
-
-    private PointValueState createAndUpdateState(PointValueTime newValue, DataPointVO vo) {
-        lock.writeLock().lock();
-        try {
-            pointValue = PointValueState.newState(newValue, pointValue, vo);
-            return pointValue;
-        } finally {
-            lock.writeLock().unlock();
         }
     }
 
@@ -162,5 +138,40 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     @Override
     public String toString() {
         return "DataPointSynchronizedRT(id=" + getId() + ", name=" + getVO().getName() + ")";
+    }
+
+    private Optional<PointValueState> createAndUpdateState(PointValueTime newValue, DataPointVO vo) {
+        lock.writeLock().lock();
+        try {
+            pointValueState = PointValueState.newState(newValue, pointValueState, vo);
+            return Optional.of(pointValueState);
+        } catch(Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+            return Optional.empty();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    private void savePointValue(SetPointSource source, boolean async, PointValueState state) {
+        PointValueTime oldValue = state.getOldValue();
+        PointValueTime newValue = state.getNewValue();
+
+        boolean logValue = state.isLogValue();
+        boolean saveValue = state.isSaveValue();
+
+        if (PointValueStateUtils.isLoggingTypeIn(getVO(), DataPointVO.LoggingTypes.INTERVAL) && !state.isBackdated()) {
+            intervalSave(newValue);
+        }
+
+        if (saveValue) {
+            this.notifyWebSocketListeners(newValue.getValue().toString());
+            getPointValueCache().savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
+        }
+
+        if (!state.isBackdated()) {
+            fireEvents(oldValue, newValue, source != null, false);
+        } else
+            fireEvents(null, newValue, false, true);
     }
 }
