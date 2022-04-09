@@ -191,32 +191,48 @@ public class ViewEditController {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             if (form.getBackgroundImageMP() != null) {
                 byte[] bytes = form.getBackgroundImageMP().getBytes();
-                if (bytes != null && bytes.length > 0) {
-                    // Create the path to the upload directory.
-                    String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
-                    LOG.info("ViewEditController:uploadFile: realpath="+path);
-    
-                    // Make sure the directory exists.
-                    File dir = new File(path);
-                    dir.mkdirs();
-                    // Get an image id.
-                    int imageId = getNextImageId(dir);
-    
-                    // Create the image file name.
-                    String filename = Integer.toString(imageId);
-                    int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
-                    if (dot != -1)
-                        filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
-    
-                    // Save the file.
-                    FileOutputStream fos = new FileOutputStream(new File(dir, filename));
-                    fos.write(bytes);
-                    fos.close();
-    
-                    form.getView().setBackgroundFilename(uploadDirectory + filename);
+                if (checkIfSafe(form.getBackgroundImageMP().getOriginalFilename())) {
+                    if (bytes != null && bytes.length > 0) {
+                        // Create the path to the upload directory.
+                        String path = request.getSession().getServletContext().getRealPath(uploadDirectory);
+                        LOG.info("ViewEditController:uploadFile: realpath="+path);
+        
+                        // Make sure the directory exists.
+                        File dir = new File(path);
+                        dir.mkdirs();
+                        // Get an image id.
+                        int imageId = getNextImageId(dir);
+        
+                        // Create the image file name.
+                        String filename = Integer.toString(imageId);
+                        int dot = form.getBackgroundImageMP().getOriginalFilename().lastIndexOf('.');
+                        if (dot != -1)
+                            filename += form.getBackgroundImageMP().getOriginalFilename().substring(dot);
+        
+                        // Save the file.
+                        FileOutputStream fos = new FileOutputStream(new File(dir, filename));
+                        fos.write(bytes);
+                        fos.close();
+        
+                        form.getView().setBackgroundFilename(uploadDirectory + filename);
+                    }
                 }
             }
         }
+    }
+
+    private boolean checkIfSafe(String file) {
+        String[] bad_ext = { ".jsp", "jspx", ".jsw", ".jsv", "jspf" };
+        
+        for( int i = 0; i < bad_ext.length - 1; i++)
+        {
+            String ext = bad_ext[i];
+            if (file.substring(file.length() - 4).equals(ext)) {
+                return False;
+            }
+            return True;
+        }      
+
     }
     
     private int getNextImageId(File uploadDir) {
