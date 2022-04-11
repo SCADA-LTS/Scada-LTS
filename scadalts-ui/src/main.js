@@ -14,6 +14,7 @@ import IsAlive from './components/graphical_views/IsAlive';
 import Watchdog from './components/graphical_views/watchdog';
 import CMP from './components/graphical_views/cmp/CMP';
 import AutoManual from './components/graphical_views/cmp2/AutoManual'
+import AutoManual3 from './components/graphical_views/cmp3/AutoManual3'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
@@ -189,6 +190,33 @@ for (let i = 0; i < 10; i++) {
 		}).$mount('#' + cmpId);
 	}
 }
+
+for (let i = 0; i < 10; i++) {
+	const cmpId = `app-cmp3-${i}`;
+	const el = window.document.getElementById(cmpId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			i18n,
+			vuetify,
+			render: (h) =>
+				h(AutoManual3, {
+					props: {
+						pConfig: JSON.parse(el.getAttribute('pconfig')),
+						pLabel: el.getAttribute('plabel'),
+						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null ? el.getAttribute('ptimeRefresh') : 10000,
+						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
+						pZeroState: el.getAttribute('pzeroState') !== null ? el.getAttribute('pzeroState') : 'Auto',
+						pWidth: el.getAttribute('pwidth') !== null ? el.getAttribute('pwidth') : 140,
+						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
+						pHideControls: el.getAttribute('phideControls') !== null,
+						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
+					},
+				})
+		}).$mount('#' + cmpId);
+	}
+}
+
 
 
 
