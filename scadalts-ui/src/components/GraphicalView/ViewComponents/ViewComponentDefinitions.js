@@ -69,7 +69,7 @@ export const viewComponentDefinitions = {
                 definition: ViewComponentAlarmListJs
             }, {
                 title: 'ON/OFF Button',
-                datapointTypes: 'Any type',
+                datapointTypes: 'Binary',
                 description: 'Create a button',
                 definition: ViewComponentButtonJs
             }, {
