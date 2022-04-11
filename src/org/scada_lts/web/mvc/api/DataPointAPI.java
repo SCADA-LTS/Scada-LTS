@@ -39,8 +39,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.hasDataPointReadPermission;
@@ -276,13 +275,14 @@ public class DataPointAPI {
     }
 
     @RequestMapping(value = "/api/datapoint/getAll", method = RequestMethod.GET)
-    public ResponseEntity<List<DatapointJSON>> getAll(HttpServletRequest request) {
+    public ResponseEntity<List<DatapointJSON>> getAll(@RequestParam(value = "types", required = false) Integer[] types, HttpServletRequest request) {
         LOG.info("/api/datapoint/getAll");
         try {
             User user = Common.getUser(request);
             if (user != null) {
                 List<DatapointJSON> result = dataPointService.getDataPointsWithAccess(user)
                         .stream()
+                        .filter(a -> filteringByTypes(types, a))
                         .map(DatapointJSON::new)
                         .collect(Collectors.toList());
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -321,12 +321,14 @@ public class DataPointAPI {
         private String name;
         private String xid;
         private String description;
+        private int type;
 
-        DatapointJSON(long id, String name, String xid, String description) {
-            this.setId(id);
-            this.setName(name);
-            this.setXid(xid);
-            this.setDescription(description);
+        public DatapointJSON(long id, String name, String xid, String description, int type) {
+            this.id = id;
+            this.name = name;
+            this.xid = xid;
+            this.description = description;
+            this.type = type;
         }
 
         DatapointJSON(DataPointVO dp) {
@@ -334,6 +336,8 @@ public class DataPointAPI {
             this.setName(dp.getName());
             this.setXid(dp.getXid());
             this.setDescription(dp.getDescription());
+            if(dp.getPointLocator() != null)
+            this.setType(dp.getPointLocator().getDataTypeId());
         }
 
         public long getId() { return id; }
@@ -353,6 +357,14 @@ public class DataPointAPI {
             this.xid = xid;
         }
         public void setDescription(String description) { this.description = description; }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
     }
 
     private static <T> ResponseEntity<DataPointVO> getDataPoint(T id, User user, Function<T, DataPointVO> get) {
@@ -362,6 +374,14 @@ public class DataPointAPI {
         if(!hasDataPointReadPermission(user, dataPoint))
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(dataPoint, HttpStatus.OK);
+    }
+
+    private static boolean filteringByTypes(Integer[] types, DataPointVO point) {
+        if(types == null)
+            return true;
+        if(Objects.isNull(point.getPointLocator()))
+            return false;
+        return Stream.of(types).anyMatch(type -> point.getPointLocator().getDataTypeId() == type);
     }
 }
 

@@ -38,6 +38,7 @@ import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
+import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -516,7 +517,7 @@ public class EventService implements MangoEvent {
 		return eventDAO.findEventsWithLimit(EventType.EventSources.DATA_POINT, datapointId, limit, offset);
 	}
 
-	public List<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
+	public SQLPageWithTotal<EventDTO> getEventsWithLimit(JsonEventSearch query, User user) {
 		return eventDAO.findEvents(query, user);
 	}
 
