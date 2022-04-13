@@ -21,13 +21,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
@@ -51,11 +50,11 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
+import static org.scada_lts.utils.UploadFileUtils.isToUpload;
 
 
 @Controller
 public class ViewEditController {
-    public static final String[] SUPPORTED_EXTENSIONS = new String[]{".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp", ".bmp"};
     private static final Log LOG = LogFactory.getLog(ViewEditController.class);
 
     private static final String SUBMIT_UPLOAD = "upload";
@@ -196,7 +195,10 @@ public class ViewEditController {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             MultipartFile file = form.getBackgroundImageMP();
             if (file != null) {
-                upload(request, form, file);
+                if(isToUpload(file))
+                    upload(request, form, file);
+                else
+                    LOG.warn("Image file is invalid: " + file);
             } else {
                 LOG.warn("Image file is not attached.");
             }
@@ -225,21 +227,15 @@ public class ViewEditController {
 
     private void saveFile(ViewEditForm form, byte[] bytes,
                           File dir, String fileName) {
-        Stream.of(SUPPORTED_EXTENSIONS)
-                .filter(fileName::endsWith)
-                .findFirst()
-                .ifPresent(ext -> {
-                    // Valid image! Add it to uploads
-                    int imageId = getNextImageId(dir); // Get an image id.
-                    String filename = imageId + ext; // Create the image file name.
-                    File image = new File(dir, filename);
-                    if(writeFile(bytes, image)) { // Save the file.
-                        form.getView().setBackgroundFilename(uploadDirectory + filename);
-                        LOG.info("Image file has been successfully uploaded: " + image.getName());
-                    } else {
-                        LOG.warn("Failed to save image file: " + image.getName());
-                    }
-                });
+        int imageId = getNextImageId(dir); // Get an image id.
+        String filename = createFileName(imageId, fileName); // Create the image file name.
+        File image = new File(dir, filename);
+        if (writeFile(bytes, image)) { // Save the file.
+            form.getView().setBackgroundFilename(uploadDirectory + filename);
+            LOG.info("Image file has been successfully uploaded: " + image.getName());
+        } else {
+            LOG.warn("Failed to save image file: " + image.getName());
+        }
     }
 
     private static boolean writeFile(byte[] bytes, File dest) {
@@ -299,5 +295,9 @@ public class ViewEditController {
         targetView.setResolution(sourceView.getResolution());
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
+    }
+
+    private String createFileName(int imageId, String fileName) {
+        return imageId + "." + FilenameUtils.getExtension(fileName);
     }
 }

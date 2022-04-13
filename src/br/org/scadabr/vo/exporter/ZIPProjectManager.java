@@ -35,6 +35,9 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 
+import static org.scada_lts.utils.UploadFileUtils.filteringGraphicsFiles;
+import static org.scada_lts.utils.UploadFileUtils.filteringUploadFiles;
+
 public class ZIPProjectManager {
 	private static final String JSON_FILE_NAME = "json_project.txt";
 	private static final String PROJECT_DESCRIPTION_FILE_NAME = "project_description.txt";
@@ -168,9 +171,6 @@ public class ZIPProjectManager {
 		byte[] buf = new byte[1024];
 		try {
 			for (ZipEntry zipEntry : uploadFiles) {
-				InputStream zipinputstream;
-
-				zipinputstream = this.zipFile.getInputStream(zipEntry);
 
 				String entryName = zipEntry.getName();
 
@@ -189,16 +189,15 @@ public class ZIPProjectManager {
 						break;
 					}
 					File dirFile = new File(appPath + directory);
-					dirFile.mkdir();
+					dirFile.mkdirs();
 				}
 
-				FileOutputStream out = new FileOutputStream(f);
-
-				while ((n = zipinputstream.read(buf, 0, 1024)) > -1)
-					out.write(buf, 0, n);
-
-				out.close();
-				zipinputstream.close();
+				try (InputStream zipinputstream = this.zipFile.getInputStream(zipEntry)) {
+					try (FileOutputStream out = new FileOutputStream(f)) {
+						while ((n = zipinputstream.read(buf, 0, 1024)) > -1)
+							out.write(buf, 0, n);
+					}
+				}
 			}
 
 		} catch (Exception e) {
@@ -207,11 +206,11 @@ public class ZIPProjectManager {
 	}
 
 	private List<ZipEntry> getUploadFiles() {
-		return filterZipFiles(uploadsFolder);
+		return filteringUploadFiles(filterZipFiles(uploadsFolder), zipFile);
 	}
 
 	private List<ZipEntry> getGraphicsFiles() {
-		return filterZipFiles(graphicsFolder);
+		return filteringGraphicsFiles(filterZipFiles(graphicsFolder), zipFile);
 	}
 
 	private List<ZipEntry> filterZipFiles(String startsWith) {
@@ -244,7 +243,7 @@ public class ZIPProjectManager {
 				FILE_SEPARATOR)
 				+ "uploads";
 
-		List<File> files = FileUtil.getFilesOnDirectory(uploadFolder);
+		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(uploadFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 		for (File file : files) {
@@ -262,7 +261,7 @@ public class ZIPProjectManager {
 				FILE_SEPARATOR)
 				+ "graphics";
 
-		List<File> files = FileUtil.getFilesOnDirectory(graphicFolder);
+		List<File> files = filteringGraphicsFiles(FileUtil.getFilesOnDirectory(graphicFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 
