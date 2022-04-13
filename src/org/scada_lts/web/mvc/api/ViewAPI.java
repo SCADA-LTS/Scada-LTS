@@ -504,6 +504,9 @@ public class ViewAPI {
             User user = Common.getUser(request);
             if (user != null) {
                 UploadImage uploadImage = viewService.uploadBackgroundImage(file);
+                if(uploadImage == null) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
                 return new ResponseEntity<>(uploadImage, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -156,8 +156,6 @@ public final class UploadFileUtils {
 
     private static boolean isSvg(String name) {
         String ext = FilenameUtils.getExtension(name);
-        if(ext == null)
-            return false;
-        return ext.equals("svg");
+        return "svg".equals(ext);
     }
 }
