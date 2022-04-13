@@ -169,9 +169,11 @@ public class ZIPProjectManager {
 
 		for (ZipEntry zipEntry : uploadFiles) {
 			String entryName = zipEntry.getName();
-			if(!entryName.isEmpty()) {
-				File file = new File(appPath + entryName.replace("..", ""));
+			if(!entryName.isEmpty() && !entryName.contains("..")) {
+				File file = new File(appPath + entryName);
 				writeToFile(zipEntry, file);
+			} else {
+				LOG.error("entryName is empty or invalid: " + entryName);
 			}
 		}
 	}
