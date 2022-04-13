@@ -46,7 +46,7 @@ public final class UploadFileUtils {
             return false;
         if(isThumbsFile(fileName))
             return false;
-        return isImageByMimetype(file) && (isImageBitmap(file) || isSvg(file.getName()));
+        return isImageByMimetype(fileName) && (isImageBitmap(file) || isSvg(fileName));
     }
 
     public static boolean isThumbsFile(File file) {
@@ -98,7 +98,7 @@ public final class UploadFileUtils {
         if(zipFile == null || entry == null)
             return true;
         if(isThumbsFile(entry.getName()))
-            return true;
+            return false;
         return isImageByMimetype(entry.getName()) && (isImageBitmap(zipFile, entry) || isSvg(entry.getName()));
     }
 
@@ -121,13 +121,6 @@ public final class UploadFileUtils {
     }
 
     private static boolean isImageByMimetype(String fileName) {
-        if(fileName == null)
-            return false;
-        return isImageByMimetype(new File(fileName));
-    }
-
-    private static boolean isImageByMimetype(MultipartFile multipartFile) {
-        String fileName = multipartFile.getOriginalFilename();
         if(fileName == null)
             return false;
         return isImageByMimetype(new File(fileName));
@@ -162,6 +155,9 @@ public final class UploadFileUtils {
     }
 
     private static boolean isSvg(String name) {
-        return FilenameUtils.getExtension(name).equals("svg");
+        String ext = FilenameUtils.getExtension(name);
+        if(ext == null)
+            return false;
+        return ext.equals("svg");
     }
 }
