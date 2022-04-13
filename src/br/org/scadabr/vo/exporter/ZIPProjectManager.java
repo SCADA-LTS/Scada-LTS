@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -169,11 +170,15 @@ public class ZIPProjectManager {
 
 		for (ZipEntry zipEntry : uploadFiles) {
 			String entryName = zipEntry.getName();
-			if(!entryName.isEmpty() && !entryName.contains("..")) {
+			if(!entryName.isEmpty()) {
 				File file = new File(appPath + entryName);
-				writeToFile(zipEntry, file);
+				Path path = file.toPath().normalize();
+				if(path.startsWith(appPath))
+					writeToFile(zipEntry, file);
+				else
+					LOG.error("entryName is invalid: " + entryName);
 			} else {
-				LOG.error("entryName is empty or invalid: " + entryName);
+				LOG.error("entryName is empty");
 			}
 		}
 	}
