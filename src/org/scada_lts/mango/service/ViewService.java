@@ -37,6 +37,7 @@ import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 
+import org.scada_lts.utils.UploadFileUtils;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -56,7 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 
 import static org.scada_lts.utils.UploadFileUtils.filteringUploadFiles;
-import static org.scada_lts.utils.UploadFileUtils.isToUpload;
+import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 @Service
 public class ViewService {
@@ -284,10 +285,10 @@ public class ViewService {
 	}
 
 	public UploadImage uploadBackgroundImage(MultipartFile multipartFile) throws IOException {
-		if(!isToUpload(multipartFile)) {
+		if(!isToUploads(multipartFile)) {
 			return null;
 		}
-		File file = new File(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+		File file = new File( getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
 
 		multipartFile.transferTo(file);
 
@@ -303,7 +304,7 @@ public class ViewService {
 			height = bimg.getHeight();
 		}
 
-		String filePartialPath = "uploads" + fileSeparator + file.getName();
+		String filePartialPath = fileSeparator + "uploads" + fileSeparator + file.getName();
 		return new UploadImage(file.getName(), filePartialPath, width, height);
 	}
 

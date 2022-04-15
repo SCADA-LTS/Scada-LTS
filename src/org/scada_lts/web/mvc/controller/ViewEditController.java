@@ -50,7 +50,7 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
-import static org.scada_lts.utils.UploadFileUtils.isToUpload;
+import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 
 @Controller
@@ -195,7 +195,7 @@ public class ViewEditController {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             MultipartFile file = form.getBackgroundImageMP();
             if (file != null) {
-                if(isToUpload(file))
+                if(isToUploads(file))
                     upload(request, form, file);
                 else
                     LOG.warn("Image file is invalid: " + file);
