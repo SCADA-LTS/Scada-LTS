@@ -40,7 +40,7 @@ public final class SvgUtils {
             "Attribute 'inkscape:label' is not allowed to appear in element 'g'.",
             "Attribute 'inkscape:groupmode' is not allowed to appear in element 'g'.",
             "must appear on element",
-            "rdf:RDF"
+            "Invalid content was found starting with element 'rdf:RDF'. No child element is expected at this point."
     };
 
     public static boolean isSvg(File svg) {
