@@ -35,8 +35,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 
-import static org.scada_lts.utils.UploadFileUtils.filteringGraphicsFiles;
-import static org.scada_lts.utils.UploadFileUtils.filteringUploadFiles;
+import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ZIPProjectManager {
 	private static final String JSON_FILE_NAME = "json_project.txt";
@@ -330,6 +329,9 @@ public class ZIPProjectManager {
 		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) request;
 
 		MultipartFile multipartFile = mpRequest.getFile("importFile");
+		if(!isZip(multipartFile)) {
+			throw new IllegalArgumentException("Invalid zip file: " + multipartFile.getOriginalFilename());
+		}
 
 		File projectFile = File.createTempFile("temp", "");
 		FileOutputStream fos = new FileOutputStream(projectFile);

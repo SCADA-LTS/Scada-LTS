@@ -41,6 +41,10 @@ public final class UploadFileUtils {
         return filter(files, UploadFileUtils::isToUploads);
     }
 
+    public static boolean isZip(MultipartFile multipartFile) {
+        return isZipFile(multipartFile.getOriginalFilename());
+    }
+
     public static boolean isToUploads(MultipartFile file) {
         if(file == null)
             return false;
@@ -152,6 +156,12 @@ public final class UploadFileUtils {
         String mimeType = getMimetype(new File(fileName));
         return mimeType != null && mimeType.equalsIgnoreCase("text/plain");
     }
+
+    private static boolean isZipFile(String fileName) {
+        String mimeType = getMimetype(new File(fileName));
+        return mimeType != null && mimeType.equalsIgnoreCase("application/zip");
+    }
+
 
     private static boolean isThumbsFile(String fileName) {
         return IGNORE_THUMBS.equalsIgnoreCase(fileName);
