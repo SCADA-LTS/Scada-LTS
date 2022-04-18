@@ -25,22 +25,22 @@ public final class SvgUtils {
 
     public static boolean isSvg(File svg) {
         return createDocumentXml(svg)
-                .map(doc -> isSvg(doc, SvgSchema.SVG_1_0_20010904)
-                        || isSvg(doc, SvgSchema.SVG_1_1_20110816))
+                .map(doc -> SvgSchema.SVG_1_0_20010904.isSvg(doc)
+                        || SvgSchema.SVG_1_1_20110816.isSvg(doc))
                 .orElse(false);
     }
 
     public static boolean isSvg(MultipartFile svg) {
         return createDocumentXml(svg)
-                .map(doc -> isSvg(doc, SvgSchema.SVG_1_0_20010904)
-                        || isSvg(doc, SvgSchema.SVG_1_1_20110816))
+                .map(doc -> SvgSchema.SVG_1_0_20010904.isSvg(doc)
+                        || SvgSchema.SVG_1_1_20110816.isSvg(doc))
                 .orElse(false);
     }
 
     public static boolean isSvg(ZipFile zipFile, ZipEntry entry) {
         return createDocumentXml(zipFile, entry)
-                .map(doc -> isSvg(doc, SvgSchema.SVG_1_0_20010904)
-                        || isSvg(doc, SvgSchema.SVG_1_1_20110816))
+                .map(doc -> SvgSchema.SVG_1_0_20010904.isSvg(doc)
+                        || SvgSchema.SVG_1_1_20110816.isSvg(doc))
                 .orElse(false);
     }
 
@@ -58,15 +58,6 @@ public final class SvgUtils {
                 .orElse(false);
     }
 
-    private static boolean isSvg(Document document, SvgSchema svg) {
-        try {
-            svg.validate(document);
-            return true;
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOG.error(ex.getMessage());
-            return false;
-        }
-    }
 
     private static Optional<Document> createDocumentXml(ZipFile zipFile, ZipEntry entry) {
         try(InputStream inputStream = zipFile.getInputStream(entry)) {

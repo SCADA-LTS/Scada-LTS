@@ -57,7 +57,20 @@ public enum SvgSchema {
         this.schemaLanguage = schemaLanguage;
     }
 
-    public void validate(Document document) throws SAXException, ParserConfigurationException, IOException {
+    public boolean isSvg(Document document) {
+        try {
+            validate(document);
+            return true;
+        } catch (SAXException ex) {
+            LOG.warn(ex.getMessage());
+            return false;
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            return false;
+        }
+    }
+
+    private void validate(Document document) throws SAXException, IOException {
         Node copy = document.cloneNode(true);
         removeIgnoreTags(copy, 20);
         validate(copy);
