@@ -9,6 +9,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -97,6 +98,8 @@ public final class SvgUtils {
 
     public static Document parseXml(InputStream inputStream) throws SAXException, ParserConfigurationException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         dbFactory.setNamespaceAware(true);
         dbFactory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

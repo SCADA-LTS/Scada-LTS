@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.*;
 
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.XMLConstants;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -80,6 +80,8 @@ public enum SvgSchema {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(schemaLanguage);
         Schema schema = schemaFactory.newSchema(schemaFile);
         Validator validator = schema.newValidator();
+        validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         validator.setErrorHandler(new ErrorHandler() {
             @Override
             public void warning(SAXParseException exception) throws SAXException {
