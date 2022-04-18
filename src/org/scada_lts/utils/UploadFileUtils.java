@@ -41,7 +41,8 @@ public final class UploadFileUtils {
     }
 
     public static boolean isZip(MultipartFile multipartFile) {
-        return isZipFile(multipartFile.getOriginalFilename());
+        return isZipFile(multipartFile.getOriginalFilename()) && !isSvg(multipartFile)
+                && !isXml(multipartFile) && !isImageBitmap(multipartFile);
     }
 
     public static boolean isToUploads(MultipartFile file) {

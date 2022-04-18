@@ -59,6 +59,13 @@ public final class SvgUtils {
                 .orElse(false);
     }
 
+    public static boolean isXml(MultipartFile file) {
+        return createDocumentXml(file).stream()
+                .map(a -> true)
+                .findAny()
+                .orElse(false);
+    }
+
 
     private static Optional<Document> createDocumentXml(ZipFile zipFile, ZipEntry entry) {
         try(InputStream inputStream = zipFile.getInputStream(entry)) {
