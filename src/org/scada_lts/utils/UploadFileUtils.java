@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static org.scada_lts.utils.SvgUtils.isSvg;
-import static org.scada_lts.utils.SvgUtils.isXml;
+import static org.scada_lts.utils.SvgUtils.*;
 
 public final class UploadFileUtils {
 

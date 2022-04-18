@@ -28,6 +28,7 @@ public class UploadBackgroundFileUtilsTest {
         datas.add(new Object[] {"pngFile.png", true});
         datas.add(new Object[] {"svgFile.svg", true});
         datas.add(new Object[] {"354.svg", true});
+        datas.add(new Object[] {"354-bad.svg", false});
 
         datas.add(new Object[] {"jspFile.jsp", false});
         datas.add(new Object[] {"xmlFile.xml", false});
