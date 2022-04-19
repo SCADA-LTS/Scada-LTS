@@ -10,12 +10,13 @@
                                 color="primary"
                                 :size="15"
                                 v-if="loading"
-                            ></v-progress-circular>
-                        </div>
+                            ></v-progress-circular>                           
+                        </div>                     
                         <div class="state-container" :class="{ 'state-container-small': this.pWidth < 700, 'state-container--x-small': this.pWidth < 200 }">
                             <div>
                                 <div v-if="!!pLabel" class="cmp-label">
                                     {{ pLabel }}
+                                    <span style="color:red;">{{ err }}</span>
                                 </div>
                                 <transition name="slide-fade" mode="out-in">
                                     <div class="cmp-state" :key="componentState">
@@ -23,15 +24,7 @@
                                     </div>
                                 </transition>
                             </div>
-                            
-                            <v-alert
-                                    dense
-                                    v-if="!!errorActive"
-                                    border="left"
-                                    colored-border
-                                    type="error"
-                                    class="error-alert"
-                            >{{errorActive}}</v-alert>
+                                                  
 
                         </div>
                     </div>
@@ -112,6 +105,7 @@ class ApiCMP {
 					reject(reason);
 				}
 			} catch (e) {
+                console.log(`errr cmp ${e}`)
 				reject(e);
 			}
 		});
@@ -181,6 +175,7 @@ export default {
             errorActive: '',
             errorHandlers: new Map(),
             componentState:'NOT-CHECKED',
+            err: '',
         }
     },
 
@@ -222,8 +217,10 @@ export default {
          * values or comparing them, display error.
          */
         async checkConditions() {
+            this.componentState = 'NOT-CHECKED';
+            this.errorHandlers = new Map();
             this.loading = true;
-            //this.componentState = this.pZeroState;
+            this.err = '';               
             const conditions = [...this.pConfig.state.analiseInOrder];
 
             for(let i = 0; i < conditions.length; i++) {
@@ -239,30 +236,26 @@ export default {
                     }
                     
                     if (check) {
+                  
+                            this.dataPointValues = await new ApiCMP().get(myXids.join(',').slice(1,-1))
 
-                        this.dataPointValues = await new ApiCMP().get(myXids.join(',').slice(1,-1))
-
-                        let conditionResult = eval(`(${this.dataPointValues.data[0].value}${conditions[i].toChecked[0].equals})`)
-                    
-                        if (conditionResult) {
-                            this.componentState = conditions[i].name;
-                            break;
-                        }
+                            let conditionResult = eval(`(${this.dataPointValues.data[0].value}${conditions[i].toChecked[0].equals})`)
+                        
+                            if (conditionResult) {
+                                this.componentState = conditions[i].name;
+                                break;
+                            }                       
                     } else {
                         this.componentState = this.pZeroState;
                     }
                     
                 } catch (e) {
-                    console.debug("Exception occured:",e);
-                    if(!!e && e.status === 401) {
-                       this.addNetworkError(conditions[i].name, e.message);
-                    } else {
-                        this.addNetworkError(conditions[i].name, this.$t('component.automanual.errors.conn'));
-                    }
+                    console.error(`${this.label}, status: ${conditions[i].name}, Exception occured: ${e}`)
+                    this.err = 'err'
                 }
             }
             this.disableChange = this.disableComponent;
-            this.loading = false;
+            this.loading = false;        
         },
 
         /**
