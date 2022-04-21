@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.HttpParameterUtils;
@@ -165,44 +168,42 @@ public class ZIPProjectManager {
 		String appPath = Common.ctx.getServletContext().getRealPath(
 				FILE_SEPARATOR);
 
-		byte[] buf = new byte[1024];
-		try {
-			for (ZipEntry zipEntry : uploadFiles) {
-				InputStream zipinputstream;
-
-				zipinputstream = this.zipFile.getInputStream(zipEntry);
-
-				String entryName = zipEntry.getName();
-
-				int n;
-
-				String fileName = zipEntry.getName();
-
-				File f = new File(appPath + fileName);
-
-				File newFile = new File(entryName);
-
-				String directory = newFile.getParent();
-
-				if (directory != null) {
-					if (newFile.isDirectory()) {
-						break;
-					}
-					File dirFile = new File(appPath + directory);
-					dirFile.mkdir();
-				}
-
-				FileOutputStream out = new FileOutputStream(f);
-
-				while ((n = zipinputstream.read(buf, 0, 1024)) > -1)
-					out.write(buf, 0, n);
-
-				out.close();
-				zipinputstream.close();
+		for (ZipEntry zipEntry : uploadFiles) {
+			String entryName = zipEntry.getName();
+			if(!entryName.isEmpty()) {
+				File file = new File(appPath + entryName);
+				Path path = file.toPath().normalize();
+				if(path.startsWith(appPath))
+					writeToFile(zipEntry, file);
+				else
+					LOG.error("entryName is invalid: " + entryName);
+			} else {
+				LOG.error("entryName is empty");
 			}
+		}
+	}
 
+	private void writeToFile(ZipEntry zipEntry, File file) {
+		try {
+			if(!Files.isDirectory(file.toPath())) {
+				String ext = FilenameUtils.getExtension(file.getName());
+				if (!ext.isEmpty()) {
+					if (file.getParent() != null) {
+						File dir = new File(file.getParent());
+						dir.mkdirs();
+					}
+					try (FileOutputStream out = new FileOutputStream(file)) {
+						try (InputStream zipinputstream = this.zipFile.getInputStream(zipEntry)) {
+							int n;
+							byte[] buf = new byte[1024];
+							while ((n = zipinputstream.read(buf, 0, 1024)) > -1)
+								out.write(buf, 0, n);
+						}
+					}
+				}
+			}
 		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Write error for file: " + file + ", message: " + e.getMessage(), e);
 		}
 	}
 
@@ -285,15 +286,12 @@ public class ZIPProjectManager {
 		ZipEntry jsonFile = zipFile
 				.getEntry(ProjectExporterController.PROJECT_DESCRIPTION_FILE_NAME);
 
-		DataInputStream in = new DataInputStream(
-				zipFile.getInputStream(jsonFile));
-
-		model.put("projectName", in.readLine());
-		model.put("projectDescription", in.readLine());
-		model.put("projectServerVersion", in.readLine());
-		model.put("exportDate", in.readLine());
-
-		in.close();
+		try(DataInputStream in = new DataInputStream(zipFile.getInputStream(jsonFile))) {
+			model.put("projectName", in.readLine());
+			model.put("projectDescription", in.readLine());
+			model.put("projectServerVersion", in.readLine());
+			model.put("exportDate", in.readLine());
+		}
 	}
 
 	private void extractExportParametersFromRequest(HttpServletRequest request) {
@@ -329,9 +327,9 @@ public class ZIPProjectManager {
 		MultipartFile multipartFile = mpRequest.getFile("importFile");
 
 		File projectFile = File.createTempFile("temp", "");
-		FileOutputStream fos = new FileOutputStream(projectFile);
-		fos.write(multipartFile.getBytes());
-		fos.close();
+		try(FileOutputStream fos = new FileOutputStream(projectFile)) {
+			fos.write(multipartFile.getBytes());
+		}
 		projectFile.deleteOnExit();
 
 		this.zipFile = toZipFile(projectFile);
@@ -358,21 +356,21 @@ public class ZIPProjectManager {
 	private String getJsonContent() throws Exception {
 		ZipEntry jsonFile = zipFile
 				.getEntry(ProjectExporterController.JSON_FILE_NAME);
-		zipFile.getInputStream(jsonFile);
-
-		return convertContentToString(zipFile.getInputStream(jsonFile));
+		try(InputStream inputStream = zipFile.getInputStream(jsonFile)) {
+			return convertContentToString(inputStream);
+		}
 	}
 
 	private String convertContentToString(InputStream inputStream)
 			throws Exception {
-		DataInputStream in = new DataInputStream(inputStream);
-		String strLine;
+		try(DataInputStream in = new DataInputStream(inputStream)) {
+			String strLine;
 
-		StringBuilder contentAsString = new StringBuilder();
-		while ((strLine = in.readLine()) != null) {
-			contentAsString.append(strLine).append("\n");
+			StringBuilder contentAsString = new StringBuilder();
+			while ((strLine = in.readLine()) != null) {
+				contentAsString.append(strLine).append("\n");
+			}
+			return contentAsString.toString();
 		}
-		in.close();
-		return contentAsString.toString();
 	}
 }
