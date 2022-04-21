@@ -5,8 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        /*PointValueStateTest.class,
-        DataPointRtOneThreadTestsSuite.class,*/
-        DataPointRtMultiThreadTestsSuite.class
+        PointValueStateTest.class,
+        DataPointRtOneThreadTestsSuite.class,
+        //DataPointRtMultiThreadTestsSuite.class
 })
 public class DataPointRtTestsSuite {}

@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT {
 
     private static final Log LOG = LogFactory.getLog(DataPointSynchronizedRT.class);
-    private static final String POINT_VALUE_INTERVAL_IS_NOT_INITIALIZED = "PointValueInterval is not initialized!";
+    private static final String POINT_VALUE_INTERVAL_IS_NOT_INITIALIZED = "PointValueIntervalLogging is not initialized!";
 
     // Runtime data.
     private PointValueState pointValueState;
