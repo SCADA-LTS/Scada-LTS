@@ -6,7 +6,6 @@ import org.apache.commons.logging.LogFactory;
 
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -27,7 +26,7 @@ public class ScadaVersion {
 
     private static boolean showVersionInfo;
     private static String versionNumber;
-    private static int buildNumber;
+    private static String buildNumber;
     private static String commitNumber;
     private static String runningOs;
     private static String runningJava;
@@ -40,11 +39,12 @@ public class ScadaVersion {
     private ScadaVersion() {
         try {
             configuration = new Properties();
-            FileInputStream fis = new FileInputStream(getScadaVersionFilePath());
-            configuration.load(fis);
+            try(FileInputStream fis = new FileInputStream(getScadaVersionFilePath())) {
+                configuration.load(fis);
+            }
             setUpScadaVersionProperties();
-        } catch (IOException e) {
-            LOG.error("Failed to load 'version.properties' file! Using default values.");
+        } catch (Exception e) {
+            LOG.error("Failed to load 'version.properties' file! Using default values. Message: " + e.getMessage());
         }
     }
 
@@ -52,7 +52,7 @@ public class ScadaVersion {
         if (configuration != null) {
             showVersionInfo = Boolean.parseBoolean(configuration.getProperty("slts.version.show", "false"));
             versionNumber = configuration.getProperty("slts.version.number",  "Unknown");
-            buildNumber = Integer.parseInt(configuration.getProperty("slts.version.build", "0"));
+            buildNumber = configuration.getProperty("slts.version.build", "0");
             commitNumber = configuration.getProperty("slts.version.commit", "");
             runningOs = configuration.getProperty("slts.version.os", System.getProperty("os.name") + System.getProperty("os.version"));
             runningJava = System.getProperty("java.runtime.name") + System.getProperty("java.runtime.version");
@@ -111,7 +111,7 @@ public class ScadaVersion {
         return versionNumber;
     }
 
-    public int getBuildNumber() {
+    public String getBuildNumber() {
         return buildNumber;
     }
 
