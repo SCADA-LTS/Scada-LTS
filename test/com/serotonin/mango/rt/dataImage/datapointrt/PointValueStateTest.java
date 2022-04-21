@@ -15,17 +15,20 @@ public class PointValueStateTest {
 
     private final double delta = 0.00001;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void when_newState_with_newValue_is_null_then_IllegalArgumentException() {
+    @Test
+    public void when_newState_with_newValue_is_null_then_empty() {
 
         //given:
         PointValueTime newValue = null;
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         PointValueState oldState = PointValueState.newState(new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis()),
-                null, dataPointVO);
+                PointValueState.empty(), dataPointVO);
 
         //when:
-        PointValueState.newState(newValue, oldState, dataPointVO);
+        PointValueState result = PointValueState.newState(newValue, oldState, dataPointVO);
+
+        //then:
+        assertTrue(result.isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -42,12 +45,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_then_newValue() {
+    public void when_newState_with_oldState_is_empty_then_newValue() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);
@@ -57,12 +60,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_then_toleranceOrigin_no_zero() {
+    public void when_newState_with_oldState_is_empty_then_toleranceOrigin_no_zero() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);
@@ -73,12 +76,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_and_logging_all_then_toleranceOrigin_no_zero() {
+    public void when_newState_with_oldState_is_empty_and_logging_all_then_toleranceOrigin_no_zero() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ALL);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);
@@ -89,12 +92,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_and_logging_interval_then_toleranceOrigin_no_zero() {
+    public void when_newState_with_oldState_is_empty_and_logging_interval_then_toleranceOrigin_no_zero() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1.0), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.INTERVAL);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);
@@ -105,12 +108,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_and_alphanumeric_then_toleranceOrigin_zero() {
+    public void when_newState_with_oldState_is_empty_and_alphanumeric_then_toleranceOrigin_zero() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue("abc"), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);
@@ -121,12 +124,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_and_binary_then_toleranceOrigin_zero() {
+    public void when_newState_with_oldState_is_empty_and_binary_then_toleranceOrigin_zero() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(false), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);
@@ -137,12 +140,12 @@ public class PointValueStateTest {
     }
 
     @Test
-    public void when_newState_with_oldState_is_null_and_multistate_then_toleranceOrigin_zero() {
+    public void when_newState_with_oldState_is_empty_and_multistate_then_toleranceOrigin_zero() {
 
         //given:
         PointValueTime expectedValue = new PointValueTime(MangoValue.objectToValue(1), System.currentTimeMillis());
         DataPointVO dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
-        PointValueState oldState = null;
+        PointValueState oldState = PointValueState.empty();
 
         //when:
         PointValueState result = PointValueState.newState(expectedValue, oldState, dataPointVO);

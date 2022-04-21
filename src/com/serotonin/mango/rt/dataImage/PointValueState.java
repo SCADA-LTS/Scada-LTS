@@ -15,6 +15,7 @@ public class PointValueState {
     private final boolean logValue;
     private final boolean saveValue;
     private final boolean backdated;
+    private static final PointValueState EMPTY = new PointValueState(null, null, null);
 
     private PointValueState(PointValueTime newValue, PointValueState oldState, DataPointVO vo) {
         if(oldState != null && newValue != null) {
@@ -24,13 +25,6 @@ public class PointValueState {
             this.toleranceOrigin = PointValueStateUtils.getToleranceOrigin(newValue, oldState, logValue);
             this.saveValue = PointValueStateUtils.isSaveValue(vo, logValue);
             this.backdated = PointValueStateUtils.isBackdated(newValue, oldState);
-        } else if (newValue != null) {
-            this.newValue = newValue;
-            this.oldValue = null;
-            this.logValue = PointValueStateUtils.isLogValue(newValue, null, vo);
-            this.toleranceOrigin = PointValueStateUtils.getToleranceOrigin(newValue, null, logValue);
-            this.saveValue = PointValueStateUtils.isSaveValue(vo, logValue);
-            this.backdated = false;
         } else {
             this.newValue = null;
             this.oldValue = null;
@@ -44,9 +38,19 @@ public class PointValueState {
     public static PointValueState newState(PointValueTime newValue, PointValueState oldState, DataPointVO vo) {
         if(vo == null)
             throw new IllegalArgumentException(PointValueState.class.getName() + " - DataPointVO class object cannot be null.");
+        if(newValue != null && oldState == null)
+            throw new IllegalArgumentException(PointValueState.class.getName() + " - An object of class PointValueTime representing newValue is not null then oldState cannot be null.");
         if(newValue == null)
-            throw new IllegalArgumentException(PointValueState.class.getName() + " - An object of class PointValueTime representing newValue cannot be null.");
+            return empty();
         return new PointValueState(newValue, oldState, vo);
+    }
+
+    public static PointValueState empty() {
+        return EMPTY;
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
     public PointValueTime getNewValue() {

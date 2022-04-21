@@ -30,7 +30,7 @@ public final class PointValueStateUtils {
                 case DataPointVO.LoggingTypes.ALL:
                     return true;
                 case DataPointVO.LoggingTypes.ON_TS_CHANGE:
-                    if (oldState == null)
+                    if (oldState.isEmpty())
                         return true;
                     else
                         return newValue.getTime() != oldState.getNewValue().getTime();
@@ -43,7 +43,7 @@ public final class PointValueStateUtils {
     }
 
     public static double getToleranceOrigin(PointValueTime newValue, PointValueState oldState, boolean logValue) {
-        if(oldState == null || logValue)
+        if(oldState.isEmpty() || logValue)
             return newValue.getValue() instanceof NumericValue ? newValue.getDoubleValue() : 0.0;
         else
             return oldState.getToleranceOrigin();
@@ -59,12 +59,12 @@ public final class PointValueStateUtils {
     }
 
     public static boolean isBackdated(PointValueTime newValue, PointValueState oldState) {
-        return oldState != null && newValue.getTime() < oldState.getNewValue().getTime();
+        return !oldState.isEmpty() && newValue.getTime() < oldState.getNewValue().getTime();
     }
 
     private static boolean isChange(PointValueTime newValue, PointValueState oldState,
                                     double toleranceOrigin, double tolerance) {
-        if (oldState == null) {
+        if (oldState.isEmpty()) {
             return true;
         } else if (isBackdated(newValue, oldState)) {
             return false;

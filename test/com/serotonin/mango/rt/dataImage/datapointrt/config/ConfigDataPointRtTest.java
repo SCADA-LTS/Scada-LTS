@@ -24,7 +24,6 @@ import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.web.ContextWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -172,7 +171,7 @@ public class ConfigDataPointRtTest {
         dataSourceVO.setEnabled(true);
         dataSourceVO.setId(567);
         dataSourceVO.setName("test_ds");
-        dataSourceVO.setXid("test_xid");
+        dataSourceVO.setXid("test_ds_xid");
 
         VirtualPointLocatorVO virtualPointLocatorVO = new VirtualPointLocatorVO();
         virtualPointLocatorVO.setDataTypeId(dataTypeId);
@@ -181,6 +180,8 @@ public class ConfigDataPointRtTest {
 
         dataPointVO = new DataPointVO(DataPointVO.LoggingTypes.ON_CHANGE);
         dataPointVO.setId(321);
+        dataPointVO.setName("test_dp");
+        dataPointVO.setXid("test_dp_xid");
         dataPointVO.setDefaultCacheSize(defaultCacheSize);
         dataPointVO.setTolerance(tolerance);
         dataPointVO.setPointLocator(virtualPointLocatorVO);

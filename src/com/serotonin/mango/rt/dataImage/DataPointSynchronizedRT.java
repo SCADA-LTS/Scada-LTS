@@ -34,20 +34,27 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT {
 
     private static final Log LOG = LogFactory.getLog(DataPointSynchronizedRT.class);
+    private static final String POINT_VALUE_INTERVAL_IS_NOT_INITIALIZED = "PointValueInterval is not initialized!";
 
     // Runtime data.
     private PointValueState pointValueState;
+    private PointValueIntervalLogging pointValueIntervalLogging;
+
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public DataPointSynchronizedRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
+        this.pointValueState = PointValueState.empty();
     }
+
     public DataPointSynchronizedRT(DataPointVO vo, PointLocatorRT pointLocator, int cacheSize, int maxSize) {
         super(vo, pointLocator, cacheSize, maxSize);
+        this.pointValueState = PointValueState.empty();
     }
 
     public DataPointSynchronizedRT(DataPointVO vo) {
         super(vo);
+        this.pointValueState = PointValueState.empty();
     }
 
     @Override
@@ -107,12 +114,60 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
     public PointValueTime getPointValue() {
         lock.readLock().lock();
         try {
-            if(pointValueState == null)
-                return null;
             return pointValueState.getNewValue();
         } finally {
             lock.readLock().unlock();
         }
+    }
+
+    @Override
+    public void initialize() {
+        // Get the latest value for the point from the database.
+        PointValueTime lastValue = getPointValueCache().getLatestPointValue();
+        createAndUpdateState(lastValue, getVO());
+        super.initialize();
+    }
+
+    @Override
+    public void resetValues() {
+        getPointValueCache().reset();
+        if (getVO().getLoggingType() != DataPointVO.LoggingTypes.NONE) {
+            PointValueTime lastValue = getPointValueCache().getLatestPointValue();
+            createAndUpdateState(lastValue, getVO());
+        }
+    }
+
+    @Override
+    protected void initializeIntervalLogging() {
+        if(pointValueIntervalLogging != null) {
+            terminateIntervalLogging();
+        }
+        pointValueIntervalLogging = new PointValueIntervalLogging(getVO(), getPointValueCache());
+        pointValueIntervalLogging.initializeIntervalLogging(getPointValue(), this);
+    }
+
+    @Override
+    protected void terminateIntervalLogging() {
+        if(pointValueIntervalLogging != null)
+            pointValueIntervalLogging.terminateIntervalLogging();
+        else
+            LOG.error(POINT_VALUE_INTERVAL_IS_NOT_INITIALIZED);
+    }
+
+    @Override
+    protected void intervalSave(PointValueTime pvt) {
+        if(pointValueIntervalLogging != null)
+            pointValueIntervalLogging.intervalSave(pvt);
+        else
+            LOG.error(POINT_VALUE_INTERVAL_IS_NOT_INITIALIZED);
+    }
+
+    @Override
+    public void scheduleTimeout(long fireTime) {
+        if(pointValueIntervalLogging != null)
+            pointValueIntervalLogging.scheduleTimeout(fireTime, getPointValue());
+        else
+            LOG.error(POINT_VALUE_INTERVAL_IS_NOT_INITIALIZED);
     }
 
     @Override
@@ -146,7 +201,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
             pointValueState = PointValueState.newState(newValue, pointValueState, vo);
             return Optional.of(pointValueState);
         } catch(Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
             return Optional.empty();
         } finally {
             lock.writeLock().unlock();

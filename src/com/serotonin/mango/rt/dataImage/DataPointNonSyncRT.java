@@ -19,27 +19,44 @@
 package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.ShouldNeverHappenException;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
+import com.serotonin.mango.util.timeout.TimeoutTask;
+import com.serotonin.mango.view.stats.AnalogStatistics;
+import com.serotonin.mango.view.stats.IValueTime;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.timer.FixedRateTrigger;
+import com.serotonin.timer.TimerTask;
 import com.serotonin.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
     private static final Log LOG = LogFactory.getLog(DataPointNonSyncRT.class);
 
     // Runtime data.
-    private PointValueTime pointValue;
+    private volatile PointValueTime pointValue;
+
+    // Interval logging data.
+    private PointValueTime intervalValue;
+    private long intervalStartTime = -1;
+    private List<IValueTime> averagingValues;
+    private final Object intervalLoggingLock = new Object();
+    private TimerTask intervalLoggingTask;
 
     /**
      * This is the value around which tolerance decisions will be made when
      * determining whether to log numeric values.
      */
-    private double toleranceOrigin;
+    private volatile double toleranceOrigin;
 
     public DataPointNonSyncRT(DataPointVO vo, PointLocatorRT pointLocator) {
         super(vo, pointLocator);
@@ -191,6 +208,111 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
         } else
             logValue = false;
         return logValue;
+    }
+
+    @Override
+    public void initialize() {
+        // Get the latest value for the point from the database.
+        pointValue = getPointValueCache().getLatestPointValue();
+
+        // Set the tolerance origin if this is a numeric
+        if (pointValue != null && pointValue.getValue() instanceof NumericValue)
+            toleranceOrigin = pointValue.getDoubleValue();
+
+        super.initialize();
+    }
+
+    @Override
+    public void resetValues() {
+        getPointValueCache().reset();
+        if (getVO().getLoggingType() != DataPointVO.LoggingTypes.NONE)
+            pointValue = getPointValueCache().getLatestPointValue();
+    }
+
+    //
+    // / Interval logging
+    //
+    @Override
+    protected void initializeIntervalLogging() {
+        synchronized (intervalLoggingLock) {
+            DataPointVO vo = getVO();
+            if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
+                return;
+
+            intervalLoggingTask = new TimeoutTask(new FixedRateTrigger(0,
+                    Common.getMillis(vo.getIntervalLoggingPeriodType(),
+                            vo.getIntervalLoggingPeriod())), this);
+
+            intervalValue = pointValue;
+            if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE) {
+                intervalStartTime = System.currentTimeMillis();
+                averagingValues = new ArrayList<IValueTime>();
+            }
+        }
+    }
+
+    @Override
+    protected void terminateIntervalLogging() {
+        synchronized (intervalLoggingLock) {
+            DataPointVO vo = getVO();
+            if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
+                return;
+
+            intervalLoggingTask.cancel();
+        }
+    }
+
+    @Override
+    protected void intervalSave(PointValueTime pvt) {
+        synchronized (intervalLoggingLock) {
+            DataPointVO vo = getVO();
+            if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MAXIMUM) {
+                if (intervalValue == null)
+                    intervalValue = pvt;
+                else if (pvt != null) {
+                    if (intervalValue.getDoubleValue() < pvt.getDoubleValue())
+                        intervalValue = pvt;
+                }
+            } else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MINIMUM) {
+                if (intervalValue == null)
+                    intervalValue = pvt;
+                else if (pvt != null) {
+                    if (intervalValue.getDoubleValue() > pvt.getDoubleValue())
+                        intervalValue = pvt;
+                }
+            } else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE)
+                averagingValues.add(pvt);
+        }
+    }
+
+    @Override
+    public void scheduleTimeout(long fireTime) {
+        synchronized (intervalLoggingLock) {
+            DataPointVO vo = getVO();
+            MangoValue value;
+            if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.INSTANT)
+                value = PointValueTime.getValue(pointValue);
+            else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MAXIMUM
+                    || vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MINIMUM) {
+                value = PointValueTime.getValue(intervalValue);
+                intervalValue = pointValue;
+            } else if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.AVERAGE) {
+                AnalogStatistics stats = new AnalogStatistics(intervalValue,
+                        averagingValues, intervalStartTime, fireTime);
+                value = new NumericValue(stats.getAverage());
+
+                intervalValue = pointValue;
+                averagingValues.clear();
+                intervalStartTime = fireTime;
+            } else
+                throw new ShouldNeverHappenException(
+                        "Unknown interval logging type: "
+                                + vo.getIntervalLoggingType());
+
+            if (value != null)
+                getPointValueCache().logPointValueAsync(new PointValueTime(value,
+                        fireTime), null);
+        }
     }
 
     @Override

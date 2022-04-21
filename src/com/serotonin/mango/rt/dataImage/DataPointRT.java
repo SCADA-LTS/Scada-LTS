@@ -312,7 +312,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	//
 	// / Interval logging
 	//
-	private void initializeIntervalLogging() {
+	protected void initializeIntervalLogging() {
 		synchronized (intervalLoggingLock) {
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
@@ -329,7 +329,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 	}
 
-	private void terminateIntervalLogging() {
+	protected void terminateIntervalLogging() {
 		synchronized (intervalLoggingLock) {
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
