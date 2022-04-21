@@ -86,6 +86,11 @@ export default {
 				.catch(() => {
 					this.setData();
 				});
+			if (this.danger) { 
+			   Swal.fire( 'Server is not responding')
+			} else {
+				Swal.close();
+			}
 		},
 	},
 	created() {
@@ -131,4 +136,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+
+</style>
