@@ -51,7 +51,7 @@ const MINIMAL_DATE = 1; // 1 [s] unix time
 
 export default {
 	name: 'is-alive',
-	props: ['plabel', 'ptimeWarning', 'ptimeError', 'ptimeRefresh', 'feedbackUrl'],
+	props: ['plabel', 'ptimeWarning', 'ptimeError', 'ptimeRefresh', 'feedbackUrl', 'pTextWarning'],
 	data() {
 		return {
 			label: '',
@@ -62,6 +62,7 @@ export default {
 			timeWarningEpoch: -1,
 			timeErrorEpoch: -1,
 			feedbackUrl: '',
+			textWarning: 'Server is not responding',
 
 			danger: false,
 			warning: false,
@@ -87,7 +88,7 @@ export default {
 					this.setData();
 				});
 			if (this.danger) { 
-			   Swal.fire( 'Server is not responding')
+			   Swal.fire( this.textWarning )
 			} else {
 				Swal.close();
 			}
@@ -95,6 +96,9 @@ export default {
 	},
 	created() {
 		this.label = this.plabel;
+		if ( !!this.pTextWarning && this.pTextWarning.length > 0 ) {
+			this.textWarning = this.pTextWarning
+		}
 		if (this.ptimeUpdate < REFRESH_NO_LESS_THEN_IS_ALIVE) {
 			this.timeRefresh = DEFAULT_REFRESH_IS_ALIVE;
 		} else {

@@ -113,6 +113,7 @@ if (window.document.getElementById('app-isalive') != undefined) {
 					ptimeWarning: isAliveDom.getAttribute('ptime-warning'),
 					ptimeError: isAliveDom.getAttribute('ptime-error'),
 					ptimeRefresh: isAliveDom.getAttribute('ptime-refresh'),
+					pTextWarning: isAliveDom.getAttribute('ptext-warning'),
 					feedbackUrl: isAliveDom.getAttribute('feedback-url'),
 				},
 			}),
