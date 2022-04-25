@@ -188,7 +188,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			savePointValue(newValue, source, false);
 	}
 
-	private void savePointValue(PointValueTime newValue, SetPointSource source,
+	protected void savePointValue(PointValueTime newValue, SetPointSource source,
 			boolean async) {
 		// Null values are not very nice, and since they don't have a specific
 		// meaning they are hereby ignored.
@@ -303,7 +303,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	//
 	// / Interval logging
 	//
-	private void initializeIntervalLogging() {
+	protected void initializeIntervalLogging() {
 		synchronized (intervalLoggingLock) {
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
@@ -320,7 +320,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 	}
 
-	private void terminateIntervalLogging() {
+	protected void terminateIntervalLogging() {
 		synchronized (intervalLoggingLock) {
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
@@ -329,7 +329,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 	}
 
-	private void intervalSave(PointValueTime pvt) {
+	protected void intervalSave(PointValueTime pvt) {
 		synchronized (intervalLoggingLock) {
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MAXIMUM) {
 				if (intervalValue == null)
@@ -461,7 +461,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	// / Listeners
 	// /
 	//
-	private void fireEvents(PointValueTime oldValue, PointValueTime newValue,
+	protected void fireEvents(PointValueTime oldValue, PointValueTime newValue,
 			boolean set, boolean backdate) {
 		DataPointListener l = rm.getDataPointListeners(vo.getId());
 		if (l != null)
