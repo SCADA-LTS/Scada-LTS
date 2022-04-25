@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -327,17 +329,32 @@ public class ZIPProjectManager {
 		MultipartFile multipartFile = mpRequest.getFile("importFile");
 
 		File projectFile = File.createTempFile("temp", "");
-		try(FileOutputStream fos = new FileOutputStream(projectFile)) {
-			fos.write(multipartFile.getBytes());
-		}
 		projectFile.deleteOnExit();
+		multipartFile.transferTo(projectFile);
 
-		this.zipFile = toZipFile(projectFile);
+		Charset[] charsets = {StandardCharsets.UTF_8, StandardCharsets.UTF_16, StandardCharsets.ISO_8859_1,
+				StandardCharsets.US_ASCII, Charset.forName("windows-1252"), StandardCharsets.UTF_16BE,
+				StandardCharsets.UTF_16LE};
+
+		for (Charset charset: charsets) {
+			if((zipFile = toZipFile(projectFile, charset)) != null) {
+				LOG.info("charset: " + charset);
+				break;
+			}
+		}
+
+		if (zipFile == null) {
+			throw new IllegalStateException("File invalid: " + multipartFile.getOriginalFilename());
+		}
 	}
 
-	private ZipFile toZipFile(File file) throws Exception {
-		ZipFile zipFile = new ZipFile(file);
-		return zipFile;
+	private ZipFile toZipFile(File file, Charset charset) {
+		try {
+			return new ZipFile(file, charset);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage() + ", charset: " + charset);
+			return null;
+		}
 	}
 
 	private FileToPack buildProjectDescriptionFile(String projectName,
