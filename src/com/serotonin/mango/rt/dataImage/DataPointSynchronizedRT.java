@@ -220,7 +220,7 @@ public class DataPointSynchronizedRT extends DataPointRT implements IDataPointRT
         }
 
         if (saveValue) {
-            this.notifyWebSocketListeners(newValue.getValue().toString());
+            notifyWebSocketSubscribers(newValue.getValue());
             getPointValueCache().savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
         }
 
