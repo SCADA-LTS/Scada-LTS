@@ -106,7 +106,7 @@ const storeDataPoint = {
 		async fetchDataPointSimpleList({ state, dispatch }, datapointTypes) {
 			let request = '/datapoint/getAll';
 			if(!!datapointTypes) {
-				request += `?types=${datapointTypes.join(',')}`;
+				request += `?types=${datapointTypes}`;
 			}
 			state.datapointSimpleList = await dispatch('requestGet', request);
 		},
