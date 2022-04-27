@@ -79,6 +79,7 @@
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>);
+            $set("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>);
             httpUseProxyChange();
             
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>);
@@ -237,6 +238,7 @@
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"),
                 function() {
                     stopImageFader("saveHttpSettingsImg");
                     setUserMessage("httpMessage", "<fmt:message key="systemSettings.httpSaved"/>");
@@ -723,6 +725,12 @@
         <td class="formField"><input id="<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>" type="password"/></td>
       </tr>
       <tr>
+        <td colspan="2" align="center"><fmt:message key="systemsettings.http.response.headers"/></td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center"><textarea placeholder="<fmt:message key="systemsettings.http.response.headers"/>" rows="5" cols="60" id="<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"></textarea></td>
+      </tr>
+      <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
@@ -833,6 +841,7 @@
       </table>
     </div>
 
+<%--
    <div class="borderDivPadded marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
@@ -845,7 +854,6 @@
         </td>
       </tr>
       </table>
-      <%--
       <table align="center">
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Derby"/></td>
@@ -872,12 +880,10 @@
           <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
-     --%>
   </div>
 --%>
 
