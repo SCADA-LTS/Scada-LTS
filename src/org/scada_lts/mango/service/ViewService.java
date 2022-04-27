@@ -37,6 +37,7 @@ import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 
+import org.scada_lts.utils.UploadFileUtils;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -54,6 +55,9 @@ import com.serotonin.mango.vo.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+
+import static org.scada_lts.utils.UploadFileUtils.filteringUploadFiles;
+import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 @Service
 public class ViewService {
@@ -270,7 +274,7 @@ public class ViewService {
 	}
 
 	public List<UploadImage> getUploadImages() throws IOException {
-		List<File> files = FileUtil.getFilesOnDirectory(getUploadsPath());
+		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(getUploadsPath()));
 
 		List<UploadImage> images = new ArrayList<>();
 		for (File file : files) {
@@ -281,7 +285,10 @@ public class ViewService {
 	}
 
 	public UploadImage uploadBackgroundImage(MultipartFile multipartFile) throws IOException {
-		File file = new File(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+		if(!isToUploads(multipartFile)) {
+			return null;
+		}
+		File file = new File( getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
 
 		multipartFile.transferTo(file);
 
@@ -290,10 +297,14 @@ public class ViewService {
 
 	private UploadImage createUploadImage(File file) throws IOException {
 		BufferedImage bimg = ImageIO.read(file);
-		int width = bimg.getWidth();
-		int height = bimg.getHeight();
+		int width = -1;
+		int height = -1;
+		if(bimg != null) {
+			width = bimg.getWidth();
+			height = bimg.getHeight();
+		}
 
-		String filePartialPath = "uploads" + fileSeparator + file.getName();
+		String filePartialPath = fileSeparator + "uploads" + fileSeparator + file.getName();
 		return new UploadImage(file.getName(), filePartialPath, width, height);
 	}
 

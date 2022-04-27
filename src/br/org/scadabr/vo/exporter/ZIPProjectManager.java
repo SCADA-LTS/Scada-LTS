@@ -40,6 +40,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 
+import static org.scada_lts.utils.UploadFileUtils.*;
+
 public class ZIPProjectManager {
 	private static final String JSON_FILE_NAME = "json_project.txt";
 	private static final String PROJECT_DESCRIPTION_FILE_NAME = "project_description.txt";
@@ -210,11 +212,11 @@ public class ZIPProjectManager {
 	}
 
 	private List<ZipEntry> getUploadFiles() {
-		return filterZipFiles(uploadsFolder);
+		return filteringUploadFiles(filterZipFiles(uploadsFolder), zipFile);
 	}
 
 	private List<ZipEntry> getGraphicsFiles() {
-		return filterZipFiles(graphicsFolder);
+		return filteringGraphicsFiles(filterZipFiles(graphicsFolder), zipFile);
 	}
 
 	private List<ZipEntry> filterZipFiles(String startsWith) {
@@ -247,7 +249,7 @@ public class ZIPProjectManager {
 				FILE_SEPARATOR)
 				+ "uploads";
 
-		List<File> files = FileUtil.getFilesOnDirectory(uploadFolder);
+		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(uploadFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 		for (File file : files) {
@@ -265,7 +267,7 @@ public class ZIPProjectManager {
 				FILE_SEPARATOR)
 				+ "graphics";
 
-		List<File> files = FileUtil.getFilesOnDirectory(graphicFolder);
+		List<File> files = filteringGraphicsFiles(FileUtil.getFilesOnDirectory(graphicFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 
@@ -327,6 +329,9 @@ public class ZIPProjectManager {
 		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) request;
 
 		MultipartFile multipartFile = mpRequest.getFile("importFile");
+		if(!isZip(multipartFile)) {
+			throw new IllegalArgumentException("Invalid zip file: " + multipartFile.getOriginalFilename());
+		}
 
 		File projectFile = File.createTempFile("temp", "");
 		projectFile.deleteOnExit();

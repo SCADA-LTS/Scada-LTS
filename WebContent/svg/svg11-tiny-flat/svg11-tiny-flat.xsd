@@ -1,0 +1,1904 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ....................................................................... -->
+<!-- SVG 1.1 Tiny DTD ...................................................... -->
+<!-- file: svg11-tiny.dtd -->
+<!--
+  SVG 1.1 Tiny DTD
+  
+  This is SVG Tiny, a proper subset of SVG.
+  
+  The Scalable Vector Graphics (SVG)
+  Copyright 2001, 2002, 2011 World Wide Web Consortium
+     (Massachusetts Institute of Technology, Institut National de
+      Recherche en Informatique et en Automatique, Keio University).
+      All Rights Reserved.
+  
+  Permission to use, copy, modify and distribute the SVG DTD and its
+  accompanying documentation for any purpose and without fee is hereby
+  granted in perpetuity, provided that the above copyright notice and
+  this paragraph appear in all copies.  The copyright holders make no
+  representation about the suitability of the DTD for any purpose.
+  
+  It is provided "as is" without expressed or implied warranty.
+  
+     Author:   Jun Fujisawa <fujisawa.jun@canon.co.jp>
+     Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+  
+-->
+<!--
+  This is the driver file for version 1.1 of the SVG Tiny DTD.
+  
+  This DTD is identified by the PUBLIC and SYSTEM identifiers:
+  
+     PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN"
+     SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd"
+-->
+<!--
+  Use this URI to identify the default namespace:
+  
+     "http://www.w3.org/2000/svg"
+  
+  See the Qualified Names module for information
+  on the use of namespace prefixes in the DTD.
+-->
+<!-- reserved for future use with document profiles -->
+<!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- Pre-Framework Redeclaration Placeholder ..................... -->
+<!-- Document Model Module ....................................... -->
+<!-- Attribute Collection Module ................................. -->
+<!-- Modular Framework Module .................................... -->
+<!-- ....................................................................... -->
+<!-- SVG 1.1 Modular Framework Module ...................................... -->
+<!--
+  file: svg-framework.mod
+  
+  This is SVG, a language for describing two-dimensional graphics in XML.
+  Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+  Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+  
+  This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+  
+     PUBLIC "-//W3C//ENTITIES SVG 1.1 Modular Framework//EN"
+     SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-framework.mod"
+  
+  .......................................................................
+-->
+<!--
+  Modular Framework
+  
+  This module instantiates the modules needed to support the SVG
+  modularization model, including:
+  
+     + Datatypes
+     + Qualified Name
+     + Document Model
+     + Attribute Collection
+-->
+<!-- ....................................................................... -->
+<!-- SVG 1.1 Datatypes Module .............................................. -->
+<!--
+  file: svg-datatypes.mod
+  
+  This is SVG, a language for describing two-dimensional graphics in XML.
+  Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+  Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+  
+  This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+  
+     PUBLIC "-//W3C//ENTITIES SVG 1.1 Datatypes//EN"
+     SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-datatypes.mod"
+  
+  .......................................................................
+-->
+<!--
+  Datatypes
+  
+  This module declares common data types for properties and attributes.
+-->
+<!-- feature specification -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svg="http://www.w3.org/2000/svg">
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:simpleType name="Boolean.datatype">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="false"/>
+      <xs:enumeration value="true"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- 'clip-rule' or 'fill-rule' property/attribute value -->
+  <xs:simpleType name="ClipFillRule.datatype">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="nonzero"/>
+      <xs:enumeration value="evenodd"/>
+      <xs:enumeration value="inherit"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- media type, as per [RFC2045] -->
+  <!-- a <coordinate> -->
+  <xs:simpleType name="Coordinate.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a list of <coordinate>s -->
+  <xs:simpleType name="Coordinates.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a <color> value -->
+  <xs:simpleType name="Color.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a <integer> -->
+  <!-- a language code, as per [BCP47] -->
+  <xs:simpleType name="LanguageCode.datatype">
+    <xs:restriction base="xs:NMTOKEN"/>
+  </xs:simpleType>
+  <!-- comma-separated list of language codes, as per [BCP47] -->
+  <xs:simpleType name="LanguageCodes.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a <length> -->
+  <xs:simpleType name="Length.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a list of <length>s -->
+  <!-- a <number> -->
+  <xs:simpleType name="Number.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a list of <number>s -->
+  <xs:simpleType name="Numbers.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- opacity value (e.g., <number>) -->
+  <xs:simpleType name="OpacityValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a path data specification -->
+  <xs:simpleType name="PathData.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- 'preserveAspectRatio' attribute specification -->
+  <xs:simpleType name="PreserveAspectRatioSpec.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- script expression -->
+  <!-- An SVG color value (RGB plus optional ICC) -->
+  <xs:simpleType name="SVGColor.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- arbitrary text string -->
+  <xs:simpleType name="Text.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- list of transforms -->
+  <xs:simpleType name="TransformList.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- a Uniform Resource Identifier, see [URI] -->
+  <xs:simpleType name="URI.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- 'viewBox' attribute specification -->
+  <xs:simpleType name="ViewBoxSpec.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- end of svg-datatypes.mod -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Qualified Name Module ......................................... -->
+  <!--
+    file: svg-qname.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 Qualified Name//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-qname.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Qualified Name
+    
+    This module is contained in two parts, labeled Section 'A' and 'B':
+    
+       Section A declares parameter entities to support namespace-
+       qualified names, namespace declarations, and name prefixing
+       for SVG and extensions.
+    
+       Section B declares parameter entities used to provide
+       namespace-qualified names for all SVG element types:
+  -->
+  <!-- Section A: SVG XML Namespace Framework :::::::::::::::::::::: -->
+  <!--
+    1. Declare a %SVG.prefixed; conditional section keyword, used
+    to activate namespace prefixing. The default value should
+    inherit '%NS.prefixed;' from the DTD driver, so that unless
+    overridden, the default behaviour follows the overall DTD
+    prefixing scheme.
+  -->
+  <!--
+    2. Declare a parameter entity (eg., %SVG.xmlns;) containing
+    the URI reference used to identify the SVG namespace:
+  -->
+  <!--
+    3. Declare parameter entities (eg., %SVG.prefix;) containing
+    the default namespace prefix string(s) to use when prefixing
+    is enabled. This may be overridden in the DTD driver or the
+    internal subset of an document instance. If no default prefix
+    is desired, this may be declared as an empty string.
+  -->
+  <!--
+    4. Declare parameter entities (eg., %SVG.pfx;) containing the
+    colonized prefix(es) (eg., '%SVG.prefix;:') used when
+    prefixing is active, an empty string when it is not.
+  -->
+  <!--
+    5. The parameter entity %SVG.xmlns.extra.attrib; may be
+    redeclared to contain any non-SVG namespace declaration
+    attributes for namespaces embedded in SVG. The default
+    is an empty string.
+  -->
+  <!--
+    Declare a parameter entity XLINK.xmlns.attrib containing
+    the XML Namespace declarations for XLink.
+  -->
+  <!--
+    Declare a parameter entity %NS.decl.attrib; containing
+    all XML Namespace declarations used in the DTD, plus the
+    xmlns declaration for SVG, its form dependent on whether
+    prefixing is active.
+  -->
+  <!--
+    Declare a parameter entity %SVG.xmlns.attrib; containing
+    all XML namespace declaration attributes used by SVG,
+    including a default xmlns attribute when prefixing is
+    inactive.
+  -->
+  <!-- Section B: SVG Qualified Names :::::::::::::::::::::::::::::: -->
+  <!--
+    6. This section declares parameter entities used to provide
+    namespace-qualified names for all SVG element types.
+  -->
+  <!-- module: svg-structure.mod ......................... -->
+  <!-- module: svg-conditional.mod ....................... -->
+  <!-- module: svg-image.mod ............................. -->
+  <!-- module: svg-style.mod ............................. -->
+  <!-- module: svg-shape.mod ............................. -->
+  <!-- module: svg-text.mod .............................. -->
+  <!-- module: svg-marker.mod ............................ -->
+  <!-- module: svg-profile.mod ........................... -->
+  <!-- module: svg-gradient.mod .......................... -->
+  <!-- module: svg-pattern.mod ........................... -->
+  <!-- module: svg-clip.mod .............................. -->
+  <!-- module: svg-mask.mod .............................. -->
+  <!-- module: svg-filter.mod ............................ -->
+  <!-- module: svg-cursor.mod ............................ -->
+  <!-- module: svg-hyperlink.mod ......................... -->
+  <!-- module: svg-view.mod .............................. -->
+  <!-- module: svg-script.mod ............................ -->
+  <!-- module: svg-animation.mod ......................... -->
+  <!-- module: svg-font.mod .............................. -->
+  <!-- module: svg-extensibility.mod ..................... -->
+  <!-- end of svg-qname.mod -->
+  <!-- instantiate the Document Model declared in the DTD driver -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Tiny Document Model Module .................................... -->
+  <!--
+    file: svg11-tiny-model.mod
+    
+    This is SVG Tiny, a proper subset of SVG.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 Tiny Document Model//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny-model.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    SVG 1.1 Tiny Document Model
+    
+    This module describes the groupings of elements that make up
+    common content models for SVG elements.
+  -->
+  <!-- Content Models (Default) .......................... -->
+  <!-- module: svg-basic-structure.mod ................... -->
+  <xs:element name="SVG.Description.class" abstract="true">
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SVG.Use.class" abstract="true" substitutionGroup="svg:SVG.Structure.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.use.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.XLinkEmbed.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="x" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="y" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="width" type="svg:Length.datatype"/>
+          <xs:attribute name="height" type="svg:Length.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SVG.Structure.class" abstract="true"/>
+  <!-- module: svg-conditional.mod ....................... -->
+  <xs:element name="SVG.Conditional.class" abstract="true">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.switch.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- module: svg-image.mod ............................. -->
+  <xs:element name="SVG.Image.class" abstract="true">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.image.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.XLinkEmbed.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="x" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="y" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="width" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="height" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="preserveAspectRatio" default="xMidYMid meet" type="svg:PreserveAspectRatioSpec.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- module: svg-shape.mod ............................. -->
+  <xs:element name="SVG.Shape.class" abstract="true"/>
+  <!-- module: svg-basic-text.mod ........................ -->
+  <xs:element name="SVG.Text.class" abstract="true">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.text.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="x" type="svg:Coordinates.datatype"/>
+          <xs:attribute name="y" type="svg:Coordinates.datatype"/>
+          <xs:attribute name="rotate" type="svg:Numbers.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- module: svg-hyperlink.mod ......................... -->
+  <xs:element name="SVG.Hyperlink.class" abstract="true">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.a.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.XLinkReplace.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+          <xs:attribute name="target" type="svg:LinkTarget.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- module: svg-animation.mod ......................... -->
+  <xs:element name="SVG.Animation.class" abstract="true"/>
+  <!-- module: svg-basic-font.mod ........................ -->
+  <xs:element name="SVG.Font.class" abstract="true"/>
+  <!-- module: svg-extensibility.mod ..................... -->
+  <xs:element name="SVG.Extensibility.class" abstract="true">
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+      <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+      <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+      <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+      <xs:attribute name="x" type="svg:Coordinate.datatype"/>
+      <xs:attribute name="y" type="svg:Coordinate.datatype"/>
+      <xs:attribute name="width" use="required" type="svg:Length.datatype"/>
+      <xs:attribute name="height" use="required" type="svg:Length.datatype"/>
+      <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of svg11-tiny-model.mod -->
+  <!-- instantiate the Attribute Collection declared in the DTD driver -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Tiny Attribute Collection Module .............................. -->
+  <!--
+    file: svg11-tiny-attribs.mod
+    
+    This is SVG Tiny, a proper subset of SVG.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 Tiny Attribute Collection//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny-attribs.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    SVG 1.1 Tiny Attribute Collection
+    
+    This module defines the set of common attributes that can be present
+    on many SVG elements.
+  -->
+  <!-- module: svg-conditional.mod ....................... -->
+  <xs:simpleType name="ExtensionList.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="FeatureList.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:attributeGroup name="SVG.Conditional.attrib">
+    <xs:attribute name="requiredFeatures" type="svg:FeatureList.datatype"/>
+    <xs:attribute name="requiredExtensions" type="svg:ExtensionList.datatype"/>
+    <xs:attribute name="systemLanguage" type="svg:LanguageCodes.datatype"/>
+  </xs:attributeGroup>
+  <!-- module: svg-basic-text.mod ........................ -->
+  <xs:simpleType name="FontFamilyValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="FontSizeValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:attributeGroup name="SVG.TextContent.attrib">
+    <xs:attribute name="text-anchor">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="start"/>
+          <xs:enumeration value="middle"/>
+          <xs:enumeration value="end"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.Font.attrib">
+    <xs:attribute name="font-family" type="svg:FontFamilyValue.datatype"/>
+    <xs:attribute name="font-size" type="svg:FontSizeValue.datatype"/>
+    <xs:attribute name="font-style">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="normal"/>
+          <xs:enumeration value="italic"/>
+          <xs:enumeration value="oblique"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="font-weight">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="normal"/>
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="bolder"/>
+          <xs:enumeration value="lighter"/>
+          <xs:enumeration value="100"/>
+          <xs:enumeration value="200"/>
+          <xs:enumeration value="300"/>
+          <xs:enumeration value="400"/>
+          <xs:enumeration value="500"/>
+          <xs:enumeration value="600"/>
+          <xs:enumeration value="700"/>
+          <xs:enumeration value="800"/>
+          <xs:enumeration value="900"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <!-- end of svg11-tiny-attribs.mod -->
+  <!-- end of svg-framework.mod -->
+  <!-- Post-Framework Redeclaration Placeholder .................... -->
+  <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+  <!-- Core Attribute Module ....................................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Core Attribute Module ......................................... -->
+  <!--
+    file: svg-core-attrib.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 Core Attribute//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-core-attrib.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Core Attribute
+    
+       id, xml:base, xml:lang, xml:space
+    
+    This module defines the core set of attributes that can be present on
+    any element.
+  -->
+  <xs:attributeGroup name="SVG.id.attrib">
+    <xs:attribute name="id" type="xs:ID"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.base.attrib">
+    <xs:attribute ref="xml:base"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.lang.attrib">
+    <xs:attribute ref="xml:lang"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.space.attrib">
+    <xs:attribute ref="xml:space"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.Core.attrib">
+    <xs:attributeGroup ref="svg:SVG.id.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.base.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.lang.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.space.attrib"/>
+  </xs:attributeGroup>
+  <!-- end of svg-core-attrib.mod -->
+  <!-- Basic Paint Attribute Module ................................ -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Basic Paint Attribute Module .................................. -->
+  <!--
+    file: svg-basic-paint-attrib.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 Basic Paint Attribute//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-basic-paint-attrib.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Basic Paint Attribute
+    
+       fill, fill-rule, stroke, stroke-dasharray, stroke-dashoffset,
+       stroke-linecap, stroke-linejoin, stroke-miterlimit, stroke-width, color,
+       color-rendering
+    
+    This module defines the Paint and Color attribute sets.
+  -->
+  <!-- a 'fill' or 'stroke' property/attribute value: <paint> -->
+  <xs:simpleType name="Paint.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- 'stroke-dasharray' property/attribute value (e.g., 'none', list of <number>s) -->
+  <xs:simpleType name="StrokeDashArrayValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- 'stroke-dashoffset' property/attribute value (e.g., 'none', <legnth>) -->
+  <xs:simpleType name="StrokeDashOffsetValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- 'stroke-miterlimit' property/attribute value (e.g., <number>) -->
+  <xs:simpleType name="StrokeMiterLimitValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- 'stroke-width' property/attribute value (e.g., <length>) -->
+  <xs:simpleType name="StrokeWidthValue.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:attributeGroup name="SVG.fill.attrib">
+    <xs:attribute name="fill" type="svg:Paint.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.fill-rule.attrib">
+    <xs:attribute name="fill-rule" type="svg:ClipFillRule.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke.attrib">
+    <xs:attribute name="stroke" type="svg:Paint.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke-dasharray.attrib">
+    <xs:attribute name="stroke-dasharray" type="svg:StrokeDashArrayValue.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke-dashoffset.attrib">
+    <xs:attribute name="stroke-dashoffset" type="svg:StrokeDashOffsetValue.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke-linecap.attrib">
+    <xs:attribute name="stroke-linecap">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="butt"/>
+          <xs:enumeration value="round"/>
+          <xs:enumeration value="square"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke-linejoin.attrib">
+    <xs:attribute name="stroke-linejoin">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="miter"/>
+          <xs:enumeration value="round"/>
+          <xs:enumeration value="bevel"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke-miterlimit.attrib">
+    <xs:attribute name="stroke-miterlimit" type="svg:StrokeMiterLimitValue.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.stroke-width.attrib">
+    <xs:attribute name="stroke-width" type="svg:StrokeWidthValue.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.Paint.attrib">
+    <xs:attributeGroup ref="svg:SVG.fill.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.fill-rule.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke-dasharray.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke-dashoffset.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke-linecap.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke-linejoin.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke-miterlimit.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.stroke-width.attrib"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.color.attrib">
+    <xs:attribute name="color" type="svg:Color.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.color-rendering.attrib">
+    <xs:attribute name="color-rendering">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="auto"/>
+          <xs:enumeration value="optimizeSpeed"/>
+          <xs:enumeration value="optimizeQuality"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.Color.attrib">
+    <xs:attributeGroup ref="svg:SVG.color.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.color-rendering.attrib"/>
+  </xs:attributeGroup>
+  <!-- end of svg-basic-paint-attrib.mod -->
+  <!-- Basic Graphics Attribute Module ............................. -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Basic Graphics Attribute Module ............................... -->
+  <!--
+    file: svg-basic-graphics-attrib.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 Basic Graphics Attribute//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-basic-graphics-attrib.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Basic Graphics Attribute
+    
+       display, visibility
+    
+    This module defines the Graphics attribute set.
+  -->
+  <xs:attributeGroup name="SVG.display.attrib">
+    <xs:attribute name="display">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="inline"/>
+          <xs:enumeration value="block"/>
+          <xs:enumeration value="list-item"/>
+          <xs:enumeration value="run-in"/>
+          <xs:enumeration value="compact"/>
+          <xs:enumeration value="marker"/>
+          <xs:enumeration value="table"/>
+          <xs:enumeration value="inline-table"/>
+          <xs:enumeration value="table-row-group"/>
+          <xs:enumeration value="table-header-group"/>
+          <xs:enumeration value="table-footer-group"/>
+          <xs:enumeration value="table-row"/>
+          <xs:enumeration value="table-column-group"/>
+          <xs:enumeration value="table-column"/>
+          <xs:enumeration value="table-cell"/>
+          <xs:enumeration value="table-caption"/>
+          <xs:enumeration value="none"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.visibility.attrib">
+    <xs:attribute name="visibility">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="visible"/>
+          <xs:enumeration value="hidden"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.Graphics.attrib">
+    <xs:attributeGroup ref="svg:SVG.display.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.visibility.attrib"/>
+  </xs:attributeGroup>
+  <!-- end of svg-basic-graphics-attrib.mod -->
+  <!-- XLink Attribute Module ...................................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 XLink Attribute Module ........................................ -->
+  <!--
+    file: svg-xlink-attrib.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 XLink Attribute//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-xlink-attrib.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    XLink Attribute
+    
+      type, href, role, arcrole, title, show, actuate
+    
+    This module defines the XLink, XLinkRequired, XLinkEmbed, and
+    XLinkReplace attribute set.
+  -->
+  <xs:attributeGroup name="SVG.XLink.attrib">
+    <xs:attribute ref="xlink:type" default="simple"/>
+    <xs:attribute ref="xlink:href"/>
+    <xs:attribute ref="xlink:role"/>
+    <xs:attribute ref="xlink:arcrole"/>
+    <xs:attribute ref="xlink:title"/>
+    <xs:attributeGroup ref="xlink:show"/>
+    <xs:attributeGroup ref="xlink:actuate"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.XLinkRequired.attrib">
+    <xs:attribute ref="xlink:type" default="simple"/>
+    <xs:attribute ref="xlink:href" use="required"/>
+    <xs:attribute ref="xlink:role"/>
+    <xs:attribute ref="xlink:arcrole"/>
+    <xs:attribute ref="xlink:title"/>
+    <xs:attributeGroup ref="xlink:show"/>
+    <xs:attributeGroup ref="xlink:actuate"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.XLinkEmbed.attrib">
+    <xs:attribute ref="xlink:type" default="simple"/>
+    <xs:attribute ref="xlink:href" use="required"/>
+    <xs:attribute ref="xlink:role"/>
+    <xs:attribute ref="xlink:arcrole"/>
+    <xs:attribute ref="xlink:title"/>
+    <xs:attributeGroup ref="xlink:show1"/>
+    <xs:attributeGroup ref="xlink:actuate"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.XLinkReplace.attrib">
+    <xs:attribute ref="xlink:type" default="simple"/>
+    <xs:attribute ref="xlink:href" use="required"/>
+    <xs:attribute ref="xlink:role"/>
+    <xs:attribute ref="xlink:arcrole"/>
+    <xs:attribute ref="xlink:title"/>
+    <xs:attributeGroup ref="xlink:show2"/>
+    <xs:attributeGroup ref="xlink:actuate1"/>
+  </xs:attributeGroup>
+  <!-- end of svg-xlink-attrib.mod -->
+  <!-- External Resources Attribute Module ......................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 External Resources Attribute Module ........................... -->
+  <!--
+    file: svg-extresources-attrib.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ENTITIES SVG 1.1 External Resources Attribute//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-extresources-attrib.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    External Resources Attribute
+    
+       externalResourcesRequired
+    
+    This module defines the External attribute set.
+  -->
+  <xs:attributeGroup name="SVG.externalResourcesRequired.attrib">
+    <xs:attribute name="externalResourcesRequired" type="svg:Boolean.datatype"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="SVG.External.attrib">
+    <xs:attributeGroup ref="svg:SVG.externalResourcesRequired.attrib"/>
+  </xs:attributeGroup>
+  <!-- end of svg-extresources-attrib.mod -->
+  <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+  <!-- Basic Structure Module ...................................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Basic Structure Module ........................................ -->
+  <!--
+    file: svg-basic-structure.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Basic Structure//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-basic-structure.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Basic Structure
+    
+       svg, g, defs, desc, title, metadata, use
+    
+    This module declares the major structural elements and their attributes.
+  -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Description.class ............................. -->
+  <!-- SVG.Use.class ..................................... -->
+  <!-- SVG.Structure.class ............................... -->
+  <!-- SVG.Presentation.attrib ........................... -->
+  <xs:attributeGroup name="SVG.Presentation.attrib">
+    <xs:attributeGroup ref="svg:SVG.TextContent.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.Font.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.Paint.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.Color.attrib"/>
+    <xs:attributeGroup ref="svg:SVG.Graphics.attrib"/>
+    <xs:attribute name="flood-color" type="svg:SVGColor.datatype"/>
+    <xs:attribute name="flood-opacity" type="svg:OpacityValue.datatype"/>
+    <xs:attribute name="lighting-color" type="svg:SVGColor.datatype"/>
+  </xs:attributeGroup>
+  <!-- svg: SVG Document Element ......................... -->
+  <xs:complexType name="SVG.svg.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+      <xs:element ref="svg:SVG.Structure.class"/>
+      <xs:element ref="svg:SVG.Conditional.class"/>
+      <xs:element ref="svg:SVG.Image.class"/>
+      <xs:element ref="svg:SVG.Shape.class"/>
+      <xs:element ref="svg:SVG.Text.class"/>
+      <xs:element ref="svg:SVG.Hyperlink.class"/>
+      <xs:element ref="svg:SVG.Font.class"/>
+      <xs:element ref="svg:SVG.Extensibility.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="svg">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.svg.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="x" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="y" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="width" type="svg:Length.datatype"/>
+          <xs:attribute name="height" type="svg:Length.datatype"/>
+          <xs:attribute name="viewBox" type="svg:ViewBoxSpec.datatype"/>
+          <xs:attribute name="preserveAspectRatio" default="xMidYMid meet" type="svg:PreserveAspectRatioSpec.datatype"/>
+          <xs:attribute name="zoomAndPan" default="magnify">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="disable"/>
+                <xs:enumeration value="magnify"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="version" default="1.1">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="1.1"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="baseProfile" type="svg:Text.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.svg.element -->
+  <!-- end of SVG.svg.attlist -->
+  <!-- g: Group Element .................................. -->
+  <xs:complexType name="SVG.g.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+      <xs:element ref="svg:SVG.Structure.class"/>
+      <xs:element ref="svg:SVG.Conditional.class"/>
+      <xs:element ref="svg:SVG.Image.class"/>
+      <xs:element ref="svg:SVG.Shape.class"/>
+      <xs:element ref="svg:SVG.Text.class"/>
+      <xs:element ref="svg:SVG.Hyperlink.class"/>
+      <xs:element ref="svg:SVG.Font.class"/>
+      <xs:element ref="svg:SVG.Extensibility.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="g" substitutionGroup="svg:SVG.Structure.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.g.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.g.element -->
+  <!-- end of SVG.g.attlist -->
+  <!-- defs: Definisions Element ......................... -->
+  <xs:complexType name="SVG.defs.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+      <xs:element ref="svg:SVG.Structure.class"/>
+      <xs:element ref="svg:SVG.Conditional.class"/>
+      <xs:element ref="svg:SVG.Image.class"/>
+      <xs:element ref="svg:SVG.Shape.class"/>
+      <xs:element ref="svg:SVG.Text.class"/>
+      <xs:element ref="svg:SVG.Hyperlink.class"/>
+      <xs:element ref="svg:SVG.Font.class"/>
+      <xs:element ref="svg:SVG.Extensibility.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="defs" substitutionGroup="svg:SVG.Structure.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.defs.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.defs.element -->
+  <!-- end of SVG.defs.attlist -->
+  <!-- desc: Description Element ......................... -->
+  <xs:element name="desc" substitutionGroup="svg:SVG.Description.class"/>
+  <!-- end of SVG.desc.element -->
+  <!-- end of SVG.desc.attlist -->
+  <!-- title: Title Element .............................. -->
+  <xs:element name="title" substitutionGroup="svg:SVG.Description.class"/>
+  <!-- end of SVG.title.element -->
+  <!-- end of SVG.title.attlist -->
+  <!-- metadata: Metadata Element ........................ -->
+  <xs:element name="metadata" substitutionGroup="svg:SVG.Description.class"/>
+  <!-- end of SVG.metadata.element -->
+  <!-- end of SVG.metadata.attlist -->
+  <!-- use: Use Element .................................. -->
+  <xs:complexType name="SVG.use.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="use" substitutionGroup="svg:SVG.Use.class"/>
+  <!-- end of SVG.use.element -->
+  <!-- end of SVG.use.attlist -->
+  <!-- end of svg-basic-structure.mod -->
+  <!-- Conditional Processing Module ............................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Conditional Processing Module ................................. -->
+  <!--
+    file: svg-conditional.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Conditional Processing//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-conditional.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Conditional Processing
+    
+       switch
+    
+    This module declares markup to provide support for conditional processing.
+  -->
+  <!-- extension list specification -->
+  <!-- feature list specification -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Conditional.class ............................. -->
+  <!-- SVG.Conditional.attrib ............................ -->
+  <!-- SVG.Presentation.attrib ........................... -->
+  <!-- switch: Switch Element ............................ -->
+  <xs:complexType name="SVG.switch.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:svg"/>
+      <xs:element ref="svg:g"/>
+      <xs:element ref="svg:use"/>
+      <xs:element ref="svg:text"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+      <xs:element ref="svg:SVG.Conditional.class"/>
+      <xs:element ref="svg:SVG.Image.class"/>
+      <xs:element ref="svg:SVG.Shape.class"/>
+      <xs:element ref="svg:SVG.Hyperlink.class"/>
+      <xs:element ref="svg:SVG.Extensibility.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="switch" substitutionGroup="svg:SVG.Conditional.class"/>
+  <!-- end of SVG.switch.element -->
+  <!-- end of SVG.switch.attlist -->
+  <!-- end of svg-conditional.mod -->
+  <!-- Image Module ................................................ -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Image Module .................................................. -->
+  <!--
+    file: svg-image.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Image//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-image.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Image
+    
+       image
+    
+    This module declares markup to provide support for image.
+  -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Image.class ................................... -->
+  <!-- image: Image Element .............................. -->
+  <xs:complexType name="SVG.image.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="image" substitutionGroup="svg:SVG.Image.class"/>
+  <!-- end of SVG.image.element -->
+  <!-- end of SVG.image.attlist -->
+  <!-- end of svg-image.mod -->
+  <!-- Shape Module ................................................ -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Shape Module .................................................. -->
+  <!--
+    file: svg-shape.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Shape//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-shape.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Shape
+    
+       path, rect, circle, line, ellipse, polyline, polygon
+    
+    This module declares markup to provide support for graphical shapes.
+  -->
+  <!-- a list of points -->
+  <xs:simpleType name="Points.datatype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Shape.class ................................... -->
+  <!-- path: Path Element ................................ -->
+  <xs:complexType name="SVG.path.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="path" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.path.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="d" use="required" type="svg:PathData.datatype"/>
+          <xs:attribute name="pathLength" type="svg:Number.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.path.element -->
+  <!-- end of SVG.path.attlist -->
+  <!-- rect: Rectangle Element ........................... -->
+  <xs:complexType name="SVG.rect.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="rect" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.rect.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="x" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="y" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="width" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="height" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="rx" type="svg:Length.datatype"/>
+          <xs:attribute name="ry" type="svg:Length.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.rect.element -->
+  <!-- end of SVG.rect.attlist -->
+  <!-- circle: Circle Element ............................ -->
+  <xs:complexType name="SVG.circle.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="circle" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.circle.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="cx" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="cy" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="r" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.circle.element -->
+  <!-- end of SVG.circle.attlist -->
+  <!-- line: Line Element ................................ -->
+  <xs:complexType name="SVG.line.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="line" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.line.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="x1" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="y1" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="x2" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="y2" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.line.element -->
+  <!-- end of SVG.line.attlist -->
+  <!-- ellipse: Ellipse Element .......................... -->
+  <xs:complexType name="SVG.ellipse.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="ellipse" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.ellipse.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="cx" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="cy" type="svg:Coordinate.datatype"/>
+          <xs:attribute name="rx" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="ry" use="required" type="svg:Length.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.ellipse.element -->
+  <!-- end of SVG.ellipse.attlist -->
+  <!-- polyline: Polyline Element ........................ -->
+  <xs:complexType name="SVG.polyline.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="polyline" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.polyline.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="points" use="required" type="svg:Points.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.polyline.element -->
+  <!-- end of SVG.polyline.attlist -->
+  <!-- polygon: Polygon Element .......................... -->
+  <xs:complexType name="SVG.polygon.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="polygon" substitutionGroup="svg:SVG.Shape.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.polygon.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Presentation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="points" use="required" type="svg:Points.datatype"/>
+          <xs:attribute name="transform" type="svg:TransformList.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.polygon.element -->
+  <!-- end of SVG.polygon.attlist -->
+  <!-- end of svg-shape.mod -->
+  <!-- Basic Text Module ........................................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Basic Text Module ............................................. -->
+  <!--
+    file: svg-basic-text.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Basic Text//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-basic-text.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Basic Text
+    
+       text
+    
+    This module declares markup to provide support for text.
+  -->
+  <!-- 'font-family' property/attribute value (i.e., list of fonts) -->
+  <!-- 'font-size' property/attribute value -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Text.class .................................... -->
+  <!-- SVG.TextContent.attrib ............................ -->
+  <!-- SVG.Font.attrib ................................... -->
+  <!-- text: Text Element ................................ -->
+  <xs:complexType name="SVG.text.content" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+      <xs:element ref="svg:SVG.Hyperlink.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="text" substitutionGroup="svg:SVG.Text.class"/>
+  <!-- end of SVG.text.element -->
+  <!-- end of SVG.text.attlist -->
+  <!-- end of svg-basic-text.mod -->
+  <!-- Hyperlinking Module ......................................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Hyperlinking Module ........................................... -->
+  <!--
+    file: svg-hyperlink.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Hyperlinking//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-hyperlink.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Hyperlinking
+    
+       a
+    
+    This module declares markup to provide support for hyper linking.
+  -->
+  <!-- link to this target -->
+  <xs:simpleType name="LinkTarget.datatype">
+    <xs:restriction base="xs:NMTOKEN"/>
+  </xs:simpleType>
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Hyperlink.class ............................... -->
+  <!-- SVG.Presentation.attrib ........................... -->
+  <!-- a: Anchor Element ................................. -->
+  <xs:complexType name="SVG.a.content" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:SVG.Animation.class"/>
+      <xs:element ref="svg:SVG.Structure.class"/>
+      <xs:element ref="svg:SVG.Conditional.class"/>
+      <xs:element ref="svg:SVG.Image.class"/>
+      <xs:element ref="svg:SVG.Shape.class"/>
+      <xs:element ref="svg:SVG.Text.class"/>
+      <xs:element ref="svg:SVG.Hyperlink.class"/>
+      <xs:element ref="svg:SVG.Font.class"/>
+      <xs:element ref="svg:SVG.Extensibility.class"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="a" substitutionGroup="svg:SVG.Hyperlink.class"/>
+  <!-- end of SVG.a.element -->
+  <!-- end of SVG.a.attlist -->
+  <!-- end of svg-hyperlink.mod -->
+  <!-- Animation Module ............................................ -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Animation Module .............................................. -->
+  <!--
+    file: svg-animation.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Animation//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-animation.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Animation
+    
+       animate, set, animateMotion, animateColor, animateTransform, mpath
+    
+    This module declares markup to provide support for animation.
+  -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Animation.class ............................... -->
+  <!-- SVG.Animation.attrib .............................. -->
+  <xs:attributeGroup name="SVG.Animation.attrib">
+    <xs:attributeGroup ref="svg:SVG.XLink.attrib"/>
+  </xs:attributeGroup>
+  <!-- SVG.AnimationAttribute.attrib ..................... -->
+  <xs:attributeGroup name="SVG.AnimationAttribute.attrib">
+    <xs:attribute name="attributeName" use="required"/>
+    <xs:attribute name="attributeType"/>
+  </xs:attributeGroup>
+  <!-- SVG.AnimationTiming.attrib ........................ -->
+  <xs:attributeGroup name="SVG.AnimationTiming.attrib">
+    <xs:attribute name="begin"/>
+    <xs:attribute name="dur"/>
+    <xs:attribute name="end"/>
+    <xs:attribute name="min"/>
+    <xs:attribute name="max"/>
+    <xs:attribute name="restart" default="always">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="always"/>
+          <xs:enumeration value="never"/>
+          <xs:enumeration value="whenNotActive"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="repeatCount"/>
+    <xs:attribute name="repeatDur"/>
+    <xs:attribute name="fill" default="remove">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="remove"/>
+          <xs:enumeration value="freeze"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <!-- SVG.AnimationValue.attrib ......................... -->
+  <xs:attributeGroup name="SVG.AnimationValue.attrib">
+    <xs:attribute name="calcMode" default="linear">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="discrete"/>
+          <xs:enumeration value="linear"/>
+          <xs:enumeration value="paced"/>
+          <xs:enumeration value="spline"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="values"/>
+    <xs:attribute name="keyTimes"/>
+    <xs:attribute name="keySplines"/>
+    <xs:attribute name="from"/>
+    <xs:attribute name="to"/>
+    <xs:attribute name="by"/>
+  </xs:attributeGroup>
+  <!-- SVG.AnimationAddtion.attrib ....................... -->
+  <xs:attributeGroup name="SVG.AnimationAddtion.attrib">
+    <xs:attribute name="additive" default="replace">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="replace"/>
+          <xs:enumeration value="sum"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="accumulate" default="none">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="none"/>
+          <xs:enumeration value="sum"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <!-- animate: Animate Element .......................... -->
+  <xs:complexType name="SVG.animate.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="animate" substitutionGroup="svg:SVG.Animation.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.animate.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Animation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAttribute.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationTiming.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationValue.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAddtion.attrib"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.animate.element -->
+  <!-- end of SVG.animate.attlist -->
+  <!-- set: Set Element .................................. -->
+  <xs:complexType name="SVG.set.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="set" substitutionGroup="svg:SVG.Animation.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.set.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Animation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAttribute.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationTiming.attrib"/>
+          <xs:attribute name="to"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.set.element -->
+  <!-- end of SVG.set.attlist -->
+  <!-- animateMotion: Animate Motion Element ............. -->
+  <xs:complexType name="SVG.animateMotion.content">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element ref="svg:mpath"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+        <xs:element ref="svg:mpath"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="animateMotion" substitutionGroup="svg:SVG.Animation.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.animateMotion.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Animation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationTiming.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAddtion.attrib"/>
+          <xs:attribute name="calcMode" default="paced">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="discrete"/>
+                <xs:enumeration value="linear"/>
+                <xs:enumeration value="paced"/>
+                <xs:enumeration value="spline"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="values"/>
+          <xs:attribute name="keyTimes"/>
+          <xs:attribute name="keySplines"/>
+          <xs:attribute name="from"/>
+          <xs:attribute name="to"/>
+          <xs:attribute name="by"/>
+          <xs:attribute name="path"/>
+          <xs:attribute name="keyPoints"/>
+          <xs:attribute name="rotate"/>
+          <xs:attribute name="origin"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.animateMotion.element -->
+  <!-- end of SVG.animateMotion.attlist -->
+  <!-- animateColor: Animate Color Element ............... -->
+  <xs:complexType name="SVG.animateColor.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="animateColor" substitutionGroup="svg:SVG.Animation.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.animateColor.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Animation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAttribute.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationTiming.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationValue.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAddtion.attrib"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.animateColor.element -->
+  <!-- end of SVG.animateColor.attlist -->
+  <!-- animateTransform: Animate Transform Element ....... -->
+  <xs:complexType name="SVG.animateTransform.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="animateTransform" substitutionGroup="svg:SVG.Animation.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.animateTransform.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Conditional.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.Animation.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAttribute.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationTiming.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationValue.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.AnimationAddtion.attrib"/>
+          <xs:attribute name="type" default="translate">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="translate"/>
+                <xs:enumeration value="scale"/>
+                <xs:enumeration value="rotate"/>
+                <xs:enumeration value="skewX"/>
+                <xs:enumeration value="skewY"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.animateTransform.element -->
+  <!-- end of SVG.animateTransform.attlist -->
+  <!-- mpath: Motion Path Element ........................ -->
+  <xs:complexType name="SVG.mpath.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="mpath">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.mpath.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.XLinkRequired.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.mpath.element -->
+  <!-- end of SVG.mpath.attlist -->
+  <!-- end of svg-animation.mod -->
+  <!-- Basic Font Module ........................................... -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Basic Font Module ............................................. -->
+  <!--
+    file: svg-basic-font.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Basic Font//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-basic-font.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Basic Font
+    
+       font, font-face, glyph, missing-glyph, hkern, font-face-src,
+       font-face-name
+    
+    This module declares markup to provide support for template.
+  -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Font.class .................................... -->
+  <!-- font: Font Element ................................ -->
+  <xs:complexType name="SVG.font.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="svg:SVG.Description.class"/>
+      <xs:element ref="svg:font-face"/>
+      <xs:element ref="svg:missing-glyph"/>
+      <xs:element ref="svg:glyph"/>
+      <xs:element ref="svg:hkern"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="font" substitutionGroup="svg:SVG.Font.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.font.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attributeGroup ref="svg:SVG.External.attrib"/>
+          <xs:attribute name="horiz-origin-x" type="svg:Number.datatype"/>
+          <xs:attribute name="horiz-adv-x" use="required" type="svg:Number.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.font.element -->
+  <!-- end of SVG.font.attlist -->
+  <!-- font-face: Font Face Element ...................... -->
+  <xs:complexType name="SVG.font-face.content">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element ref="svg:font-face-src"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+        <xs:element ref="svg:font-face-src"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="font-face" substitutionGroup="svg:SVG.Font.class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.font-face.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attribute name="font-family"/>
+          <xs:attribute name="font-style"/>
+          <xs:attribute name="font-variant"/>
+          <xs:attribute name="font-weight"/>
+          <xs:attribute name="font-stretch"/>
+          <xs:attribute name="font-size"/>
+          <xs:attribute name="unicode-range"/>
+          <xs:attribute name="units-per-em" type="svg:Number.datatype"/>
+          <xs:attribute name="panose-1"/>
+          <xs:attribute name="stemv" type="svg:Number.datatype"/>
+          <xs:attribute name="stemh" type="svg:Number.datatype"/>
+          <xs:attribute name="slope" type="svg:Number.datatype"/>
+          <xs:attribute name="cap-height" type="svg:Number.datatype"/>
+          <xs:attribute name="x-height" type="svg:Number.datatype"/>
+          <xs:attribute name="accent-height" type="svg:Number.datatype"/>
+          <xs:attribute name="ascent" type="svg:Number.datatype"/>
+          <xs:attribute name="descent" type="svg:Number.datatype"/>
+          <xs:attribute name="widths"/>
+          <xs:attribute name="bbox"/>
+          <xs:attribute name="ideographic" type="svg:Number.datatype"/>
+          <xs:attribute name="alphabetic" type="svg:Number.datatype"/>
+          <xs:attribute name="mathematical" type="svg:Number.datatype"/>
+          <xs:attribute name="hanging" type="svg:Number.datatype"/>
+          <xs:attribute name="underline-position" type="svg:Number.datatype"/>
+          <xs:attribute name="underline-thickness" type="svg:Number.datatype"/>
+          <xs:attribute name="strikethrough-position" type="svg:Number.datatype"/>
+          <xs:attribute name="strikethrough-thickness" type="svg:Number.datatype"/>
+          <xs:attribute name="overline-position" type="svg:Number.datatype"/>
+          <xs:attribute name="overline-thickness" type="svg:Number.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.font-face.element -->
+  <!-- end of SVG.font-face.attlist -->
+  <!-- glyph: Glyph Element .............................. -->
+  <xs:complexType name="SVG.glyph.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="glyph">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.glyph.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attribute name="unicode"/>
+          <xs:attribute name="glyph-name"/>
+          <xs:attribute name="d" type="svg:PathData.datatype"/>
+          <xs:attribute name="arabic-form"/>
+          <xs:attribute name="lang" type="svg:LanguageCodes.datatype"/>
+          <xs:attribute name="horiz-adv-x" type="svg:Number.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.glyph.element -->
+  <!-- end of SVG.glyph.attlist -->
+  <!-- missing-glyph: Missing Glyph Element .............. -->
+  <xs:complexType name="SVG.missing-glyph.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svg:SVG.Description.class"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="missing-glyph">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.missing-glyph.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+          <xs:attribute name="d" type="svg:PathData.datatype"/>
+          <xs:attribute name="horiz-adv-x" type="svg:Number.datatype"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.missing-glyph.element -->
+  <!-- end of SVG.missing-glyph.attlist -->
+  <!-- hkern: Horizontal Kerning Element ................. -->
+  <xs:element name="hkern">
+    <xs:complexType>
+      <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+      <xs:attribute name="u1"/>
+      <xs:attribute name="g1"/>
+      <xs:attribute name="u2"/>
+      <xs:attribute name="g2"/>
+      <xs:attribute name="k" use="required" type="svg:Number.datatype"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.hkern.element -->
+  <!-- end of SVG.hkern.attlist -->
+  <!-- font-face-src: Font Face Source Element ........... -->
+  <xs:complexType name="SVG.font-face-src.content">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" ref="svg:font-face-name"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="font-face-src">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svg:SVG.font-face-src.content">
+          <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.font-face-src.element -->
+  <!-- end of SVG.font-face-src.attlist -->
+  <!-- font-face-name: Font Face Name Element ............ -->
+  <xs:element name="font-face-name">
+    <xs:complexType>
+      <xs:attributeGroup ref="svg:SVG.Core.attrib"/>
+      <xs:attribute name="name"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- end of SVG.font-face-name.element -->
+  <!-- end of SVG.font-face-name.attlist -->
+  <!-- end of svg-basic-font.mod -->
+  <!-- Extensibility Module ........................................ -->
+  <!-- ....................................................................... -->
+  <!-- SVG 1.1 Extensibility Module .......................................... -->
+  <!--
+    file: svg-extensibility.mod
+    
+    This is SVG, a language for describing two-dimensional graphics in XML.
+    Copyright 2001, 2001, 2011 W3C (MIT, INRIA, Keio), All Rights Reserved.
+    Revision: $Id: svg11-tiny-flat.dtd,v 1.15 2011/07/08 03:20:22 cmccorma Exp $
+    
+    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+    
+       PUBLIC "-//W3C//ELEMENTS SVG 1.1 Extensibility//EN"
+       SYSTEM "http://www.w3.org/Graphics/SVG/1.1/DTD/svg-extensibility.mod"
+    
+    .......................................................................
+  -->
+  <!--
+    Extensibility
+    
+       foreignObject
+    
+    This module declares markup to provide support for extensibility.
+  -->
+  <!-- Qualified Names (Default) ......................... -->
+  <!-- Attribute Collections (Default) ................... -->
+  <!-- SVG.Extensibility.class ........................... -->
+  <!-- SVG.Presentation.attrib ........................... -->
+  <!-- foreignObject: Foreign Object Element ............. -->
+  <xs:element name="foreignObject" substitutionGroup="svg:SVG.Extensibility.class"/>
+</xs:schema>
+<!-- end of SVG.foreignObject.element -->
+<!-- end of SVG.foreignObject.attlist -->
+<!-- end of svg-extensibility.mod -->
+<!-- end of SVG 1.1 Tiny DTD ............................................... -->
+<!-- ....................................................................... -->
