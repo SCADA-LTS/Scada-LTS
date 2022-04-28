@@ -1,5 +1,6 @@
 package org.scada_lts.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
@@ -7,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,21 +49,13 @@ public final class SystemSettingsUtils {
         }
     }
 
-    public static String serializeMap(Map<String, String> map, ObjectMapper objectMapper) {
-        try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public static String serializeMap(Map<String, String> map, ObjectMapper objectMapper) throws JsonProcessingException {
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
     }
 
-    public static Map<String, String> deserializeMap(String value, ObjectMapper objectMapper) {
-        try {
-            if(value == null || "null".equals(value))
-                return Collections.emptyMap();
-            return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public static Map<String, String> deserializeMap(String value, ObjectMapper objectMapper) throws IOException {
+        if(value == null || "null".equals(value))
+            return Collections.emptyMap();
+        return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
     }
 }

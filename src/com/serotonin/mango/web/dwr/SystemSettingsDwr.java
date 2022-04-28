@@ -275,7 +275,7 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void saveHttpSettings(boolean useProxy, String host, int port,
+	public DwrResponseI18n saveHttpSettings(boolean useProxy, String host, int port,
 			String username, String password, String httpStaticHeaders) {
 		Permissions.ensureAdmin();
 
@@ -288,7 +288,13 @@ public class SystemSettingsDwr extends BaseDwr {
 		jsonSettingsHttp.setHttpResponseHeaders(httpStaticHeaders);
 
 		SystemSettingsService systemSettingsService = new SystemSettingsService();
-		systemSettingsService.saveHttpSettings(jsonSettingsHttp);
+		DwrResponseI18n response = new DwrResponseI18n();
+		try {
+			systemSettingsService.saveHttpSettings(jsonSettingsHttp);
+		} catch (Exception ex) {
+			response.addContextualMessage("httpMessage", "validate.invalidValue");
+		}
+		return response;
 	}
 
 	@MethodFilter
