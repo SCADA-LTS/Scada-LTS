@@ -240,10 +240,10 @@
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_RESPONSE_HEADERS %>"/>"),
                 function(a) {
+                    stopImageFader("saveHttpSettingsImg");
                     if(a.messages && a.messages.length > 0) {
                         setUserMessage("httpMessage", a.messages[0].contextualMessage);
                     } else {
-                        stopImageFader("saveHttpSettingsImg");
                         setUserMessage("httpMessage", "<fmt:message key="systemSettings.httpSaved"/>");
                     }
                 });
