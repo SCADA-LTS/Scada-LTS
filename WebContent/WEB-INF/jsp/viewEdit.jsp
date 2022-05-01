@@ -502,7 +502,7 @@
                   <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>" onclick="window.onbeforeunload = null;"/>
                   <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>" onclick="window.onbeforeunload = null;"/>
                 </td>
-                <td></td>
+                <td class="formError">${status.errorMessage}</td>
               </tr>
 
               <spring:bind path="form.view.anonymousAccess">

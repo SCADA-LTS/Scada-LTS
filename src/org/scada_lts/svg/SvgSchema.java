@@ -2,12 +2,12 @@ package org.scada_lts.svg;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.*;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -18,8 +18,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static org.scada_lts.utils.xml.XmlUtils.createDocumentXml;
+import static org.scada_lts.utils.xml.XmlUtils.newValidator;
 
 public enum SvgSchema {
 
@@ -38,14 +42,16 @@ public enum SvgSchema {
      * Incompatible with SVG 1.0/1.1/1.1 Second Edition/1.1 Tiny/1.1 Basic - often found in files;
      * rdf:RDF - https://www.w3.org/TR/SVGTiny12/metadata.html
      */
-    private static final List<Predicate<String>> EXCLUDE_MSGS = Arrays.asList(
+    private static final List<Predicate<String>> IGNORE_MSGS = Arrays.asList(
             msg -> msg.contains(SODIPODI_ATTR) && msg.contains(IS_NOT_ALLOWED_TO_APPEAR_IN),
             msg -> msg.contains(INKSCAPE_ATTR) && msg.contains(IS_NOT_ALLOWED_TO_APPEAR_IN),
             msg -> msg.contains(MUST_APPEAR_ON_ELEMENT),
             msg -> msg.contains("Attribute 'blend' is not allowed to appear in element 'feBlend'.")
     );
 
-    private static final String[] IGNORE_TAGS = {"rdf:RDF", "sodipodi:namedview"};
+    private static final String[] IGNORE_TAGS = {
+            "rdf:RDF", "sodipodi:namedview", "inkscape:perspective"
+    };
 
     private static final Log LOG = LogFactory.getLog(SvgSchema.class);
 
@@ -57,9 +63,34 @@ public enum SvgSchema {
         this.schemaLanguage = schemaLanguage;
     }
 
-    public boolean isSvg(Document document) {
+    public File getSchemaFile() {
+        return schemaFile;
+    }
+
+    public static boolean isSvg(File svg) {
+        return createDocumentXml(svg)
+                .filter(doc -> SvgSchema.SVG_1_1_20110816.isSvg(doc)
+                        || SvgSchema.SVG_1_0_20010904.isSvg(doc))
+                .isPresent();
+    }
+
+    public static boolean isSvg(MultipartFile svg) {
+        return createDocumentXml(svg)
+                .filter(doc -> SvgSchema.SVG_1_1_20110816.isSvg(doc)
+                        || SvgSchema.SVG_1_0_20010904.isSvg(doc))
+                .isPresent();
+    }
+
+    public static boolean isSvg(ZipFile zipFile, ZipEntry entry) {
+        return createDocumentXml(zipFile, entry)
+                .filter(doc -> SvgSchema.SVG_1_1_20110816.isSvg(doc)
+                        || SvgSchema.SVG_1_0_20010904.isSvg(doc))
+                .isPresent();
+    }
+
+    private boolean isSvg(Document document) {
         try {
-            validate(document);
+            preparingAndValidate(document);
             return true;
         } catch (SAXException ex) {
             LOG.warn(ex.getMessage());
@@ -70,40 +101,17 @@ public enum SvgSchema {
         }
     }
 
-    private void validate(Document document) throws SAXException, IOException {
-        Node copy = document.cloneNode(true);
-        removeIgnoreTags(copy, 20);
-        validate(copy);
+    private void preparingAndValidate(Document document) throws SAXException, IOException {
+        Node cloneDocument = document.cloneNode(true);
+        removeIgnoreTags(cloneDocument, 20);
+        validate(cloneDocument);
     }
 
-    private void validate(Node copy) throws SAXException, IOException {
+    private void validate(Node node) throws SAXException, IOException {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(schemaLanguage);
         Schema schema = schemaFactory.newSchema(schemaFile);
-        Validator validator = schema.newValidator();
-        validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-        validator.setErrorHandler(new ErrorHandler() {
-            @Override
-            public void warning(SAXParseException exception) throws SAXException {
-                LOG.warn(exception.getMessage());
-            }
-
-            @Override
-            public void error(SAXParseException exception) throws SAXException {
-                if(isIgnore(exception.getMessage())) {
-                    LOG.warn(exception.getMessage());
-                    return;
-                }
-                throw exception;
-            }
-
-            @Override
-            public void fatalError(SAXParseException exception) throws SAXException {
-                throw exception;
-            }
-        });
-
-        validator.validate(new DOMSource(copy));
+        Validator validator = newValidator(schema, SvgSchema::isIgnoreMsg);
+        validator.validate(new DOMSource(node));
     }
 
     private static void removeIgnoreTags(Node parent, int deepMax) {
@@ -131,10 +139,10 @@ public enum SvgSchema {
         return false;
     }
 
-    private static boolean isIgnore(String msg) {
+    private static boolean isIgnoreMsg(String msg) {
         if(msg == null)
             return false;
-        for(Predicate<String> ignore: EXCLUDE_MSGS) {
+        for(Predicate<String> ignore: IGNORE_MSGS) {
             if(ignore.test(msg))
                 return true;
         }
