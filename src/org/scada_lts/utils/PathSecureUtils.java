@@ -29,7 +29,9 @@ public final class PathSecureUtils {
     }
 
     public static String getPartialPath(File file) {
-        return file.getAbsolutePath().replace(getRealPath(), "");
+        return toSecurePath(file.toPath())
+                .map(securePath -> securePath.getAbsolutePath().replace(getRealPath(), ""))
+                .orElse("");
     }
 
     private static Optional<Path> normalizePath(Path path) {

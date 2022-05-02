@@ -59,7 +59,7 @@ public class UploadGraphicsFileUtilsTest {
     private final boolean expected;
 
     public UploadGraphicsFileUtilsTest(String fileName, boolean expected) {
-        this.filePath = UploadFileTestUtils.getResourcesPath("files", fileName);
+        this.filePath = UploadFileTestUtils.getResourcesPath("svg", fileName);
         this.expected = expected;
     }
 

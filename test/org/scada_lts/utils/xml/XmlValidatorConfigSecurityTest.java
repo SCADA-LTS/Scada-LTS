@@ -2,7 +2,6 @@ package org.scada_lts.utils.xml;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.svg.SvgSchema;
 import org.xml.sax.SAXException;
 
 import javax.xml.validation.Schema;
@@ -18,7 +17,7 @@ public class XmlValidatorConfigSecurityTest {
     @Before
     public void config() throws SAXException {
         SchemaFactory schemaFactory = SchemaFactory.newDefaultInstance();
-        Schema schema = schemaFactory.newSchema(SvgSchema.SVG_1_1_20110816.getSchemaFile());
+        Schema schema = schemaFactory.newSchema();
         subject = XmlUtils.newValidator(schema, msg -> true);
     }
 

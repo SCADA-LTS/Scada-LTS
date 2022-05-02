@@ -105,7 +105,7 @@ public final class XmlUtils {
             LOG.error(ex.getMessage());
             return Optional.empty();
         } catch (Exception ex) {
-            LOG.trace(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return Optional.empty();
         }
     }
@@ -117,7 +117,7 @@ public final class XmlUtils {
             LOG.error(ex.getMessage());
             return Optional.empty();
         } catch (Exception ex) {
-            LOG.trace(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return Optional.empty();
         }
     }
@@ -129,7 +129,7 @@ public final class XmlUtils {
             LOG.error(ex.getMessage());
             return Optional.empty();
         } catch (Exception ex) {
-            LOG.trace(ex.getMessage());
+            LOG.warn(ex.getMessage());
             return Optional.empty();
         }
     }
