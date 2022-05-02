@@ -168,5 +168,6 @@ test {
         includeTestsMatching "com.serotonin.mango.rt.dataImage.DataPointSyncModeTest"
         includeTestsMatching "com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
         includeTestsMatching "org.scada_lts.utils.UploadFileUtilsTestsSuite"
+        includeTestsMatching "org.scada_lts.utils.xml.XmlSecurityTestsSuite"
     }
 }

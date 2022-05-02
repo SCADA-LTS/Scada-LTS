@@ -1,13 +1,20 @@
 package org.scada_lts.utils;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.web.ContextWrapper;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.scada_lts.svg.SvgEnvKeys;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import utils.UploadFileTestUtils;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
@@ -15,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class UploadBackgroundFileUtilsTest {
@@ -64,8 +73,17 @@ public class UploadBackgroundFileUtilsTest {
     private final boolean expected;
 
     public UploadBackgroundFileUtilsTest(String fileName, boolean expected) {
-        this.filePath = UploadFileTestUtils.getResourcesPath("files", fileName);
+        this.filePath = UploadFileTestUtils.getResourcesPath("svg", fileName);
         this.expected = expected;
+    }
+
+    @Before
+    public void config() {
+        ContextWrapper contextWrapper = mock(ContextWrapper.class);
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath(File.separator)).thenReturn("WebContent" + File.separator);
+        when(contextWrapper.getServletContext()).thenReturn(servletContext);
+        Common.ctx = contextWrapper;
     }
 
     @Test

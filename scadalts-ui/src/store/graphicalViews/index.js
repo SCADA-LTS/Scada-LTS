@@ -191,7 +191,7 @@ export const graphicalViewModule = {
         getUploadedBackgrounds({ dispatch }) {
             return new Promise(async (resolve, reject) => {
                 try {
-                    const response = await dispatch('requestGet', '/view/uploads');
+                    const response = await dispatch('requestGet', '/view/uploads/');
                     resolve(response);
                 } catch (e) {
                     reject(e);
@@ -201,7 +201,7 @@ export const graphicalViewModule = {
 
         uploadBackground({dispatch}, payload) {
             return dispatch('requestPostFile', {
-                url: '/view/uploads',
+                url: '/view/uploads/',
                 data: payload
             });
         },

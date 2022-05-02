@@ -1,20 +1,22 @@
 package org.scada_lts.utils;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.io.*;
-import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static org.scada_lts.utils.SvgUtils.*;
+import static org.scada_lts.svg.SvgUtils.isSvg;
+import static org.scada_lts.utils.ScadaMimeTypeUtils.*;
+import static org.scada_lts.utils.xml.XmlUtils.isXml;
 
 public final class UploadFileUtils {
 
@@ -41,7 +43,7 @@ public final class UploadFileUtils {
     }
 
     public static boolean isZip(MultipartFile multipartFile) {
-        return isZipFile(multipartFile.getOriginalFilename()) && !isSvg(multipartFile)
+        return isZipMimeType(Paths.get(multipartFile.getOriginalFilename()))
                 && !isXml(multipartFile) && !isImageBitmap(multipartFile);
     }
 
@@ -53,7 +55,26 @@ public final class UploadFileUtils {
             return false;
         if(isThumbsFile(fileName))
             return false;
-        return isImageByMimetype(fileName) && (isImageBitmap(file) || isSvg(file));
+        return isImageMimeType(Paths.get(fileName)) && (isImageBitmap(file)
+                || (isSvgMimeType(Paths.get(fileName)) && isSvg(file)));
+    }
+
+    public static boolean isToUploads(File file) {
+        if(file == null)
+            return false;
+        if(isThumbsFile(file))
+            return false;
+        return isImageMimeType(file.toPath()) && (isImageBitmap(file) || (isSvgMimeType(file.toPath()) && isSvg(file)));
+    }
+
+    public static boolean isToGraphics(File file) {
+        if(file == null)
+            return false;
+        if(isThumbsFile(file))
+            return false;
+        if(isInfoFile(file) && !isXml(file) && !isImageBitmap(file))
+            return true;
+        return isImageMimeType(file.toPath()) && isImageBitmap(file);
     }
 
     public static boolean isThumbsFile(File file) {
@@ -61,7 +82,7 @@ public final class UploadFileUtils {
     }
 
     public static boolean isInfoFile(File file) {
-        return isInfoFile(file.getName());
+        return isInfoFile(file.toPath());
     }
 
     public static boolean isImageBitmap(File file) {
@@ -71,27 +92,9 @@ public final class UploadFileUtils {
             LOG.error(ex.getMessage());
             return false;
         } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
+            LOG.warn(ex.getMessage());
             return false;
         }
-    }
-
-    public static boolean isToUploads(File file) {
-        if(file == null)
-            return false;
-        if(isThumbsFile(file))
-            return false;
-        return isImageByMimetype(file) && (isImageBitmap(file) || isSvg(file));
-    }
-
-    public static boolean isToGraphics(File file) {
-        if(file == null)
-            return false;
-        if(isThumbsFile(file))
-            return false;
-        if(isInfoFile(file) && !isSvg(file) && !isXml(file) && !isImageBitmap(file))
-            return true;
-        return isImageByMimetype(file) && isImageBitmap(file);
     }
 
     private static boolean isToGraphics(ZipFile zipFile, ZipEntry entry) {
@@ -99,10 +102,10 @@ public final class UploadFileUtils {
             return true;
         if(isThumbsFile(entry.getName()))
             return false;
-        if(isInfoFile(FilenameUtils.getName(entry.getName())) && !isSvg(zipFile, entry)
-                && !isXml(zipFile, entry) && !isImageBitmap(zipFile, entry))
+        if(isInfoFile(Paths.get(entry.getName())) && !isXml(zipFile, entry)
+                && !isImageBitmap(zipFile, entry))
             return true;
-        return isImageByMimetype(entry.getName()) && isImageBitmap(zipFile, entry);
+        return isImageMimeType(Paths.get(entry.getName())) && isImageBitmap(zipFile, entry);
     }
 
     private static boolean isToUploads(ZipFile zipFile, ZipEntry entry) {
@@ -110,7 +113,8 @@ public final class UploadFileUtils {
             return true;
         if(isThumbsFile(entry.getName()))
             return false;
-        return isImageByMimetype(entry.getName()) && (isImageBitmap(zipFile, entry) || isSvg(zipFile, entry));
+        return isImageMimeType(Paths.get(entry.getName())) && (isImageBitmap(zipFile, entry)
+                || (isSvgMimeType(Paths.get(entry.getName())) && isSvg(zipFile, entry)));
     }
 
     private static boolean isImageBitmap(MultipartFile file) {
@@ -120,7 +124,7 @@ public final class UploadFileUtils {
             LOG.error(ex.getMessage());
             return false;
         } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
+            LOG.warn(ex.getMessage());
             return false;
         }
     }
@@ -132,36 +136,14 @@ public final class UploadFileUtils {
             LOG.error(ex.getMessage());
             return false;
         } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
+            LOG.warn(ex.getMessage());
             return false;
         }
     }
 
-    private static boolean isImageByMimetype(String fileName) {
-        if(fileName == null)
-            return false;
-        return isImageByMimetype(new File(fileName));
+    private static boolean isInfoFile(Path path) {
+        return isTxtMimeType(path) && INFO_FILE_NAME.equalsIgnoreCase(path.toFile().getName());
     }
-
-    private static boolean isImageByMimetype(File file) {
-        String mimeType = getMimetype(file);
-        return mimeType != null && mimeType.toLowerCase().contains("image");
-    }
-
-    private static boolean isInfoFile(String fileName) {
-        return isTxtFile(fileName) && INFO_FILE_NAME.equalsIgnoreCase(fileName);
-    }
-
-    private static boolean isTxtFile(String fileName) {
-        String mimeType = getMimetype(new File(fileName));
-        return mimeType != null && mimeType.equalsIgnoreCase("text/plain");
-    }
-
-    private static boolean isZipFile(String fileName) {
-        String mimeType = getMimetype(new File(fileName));
-        return mimeType != null && mimeType.equalsIgnoreCase("application/zip");
-    }
-
 
     private static boolean isThumbsFile(String fileName) {
         return IGNORE_THUMBS.equalsIgnoreCase(fileName);
@@ -171,14 +153,5 @@ public final class UploadFileUtils {
         return files.stream()
                 .filter(predicate)
                 .collect(Collectors.toList());
-    }
-
-    private static String getMimetype(File file) {
-        try {
-            return Files.probeContentType(file.toPath());
-        } catch (IOException ex) {
-            LOG.warn(ex.getMessage());
-            return "";
-        }
     }
 }

@@ -23,6 +23,8 @@ package org.scada_lts.mango.service;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -37,7 +39,6 @@ import org.scada_lts.permissions.service.GetShareUsers;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.permissions.service.ViewGetShareUsers;
 
-import org.scada_lts.utils.UploadFileUtils;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.scada_lts.web.beans.ApplicationBeans;
@@ -56,6 +57,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 
+import static org.scada_lts.utils.PathSecureUtils.getPartialPath;
+import static org.scada_lts.utils.PathSecureUtils.getRealPath;
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.filteringUploadFiles;
 import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
@@ -273,7 +277,7 @@ public class ViewService {
 		return Common.ctx.getImageSet(id);
 	}
 
-	public List<UploadImage> getUploadImages() throws IOException {
+	public List<UploadImage> getUploadImages() {
 		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(getUploadsPath()));
 
 		List<UploadImage> images = new ArrayList<>();
@@ -284,39 +288,50 @@ public class ViewService {
 		return images;
 	}
 
-	public UploadImage uploadBackgroundImage(MultipartFile multipartFile) throws IOException {
+	public Optional<UploadImage> uploadBackgroundImage(MultipartFile multipartFile) {
 		if(!isToUploads(multipartFile)) {
-			return null;
+			return Optional.empty();
 		}
-		File file = new File( getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
-
-		multipartFile.transferTo(file);
-
-		return createUploadImage(file);
+		Path path = Paths.get(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+		return toSecurePath(path)
+				.flatMap(dist -> transferTo(multipartFile, dist))
+				.map(this::createUploadImage);
 	}
 
-	private UploadImage createUploadImage(File file) throws IOException {
-		BufferedImage bimg = ImageIO.read(file);
+	private UploadImage createUploadImage(File file) {
+		BufferedImage bimg = null;
+		try {
+			bimg = ImageIO.read(file);
+		} catch (IOException e) {
+			LOG.warn(e.getMessage());
+		}
 		int width = -1;
 		int height = -1;
 		if(bimg != null) {
 			width = bimg.getWidth();
 			height = bimg.getHeight();
 		}
-
-		String filePartialPath = fileSeparator + "uploads" + fileSeparator + file.getName();
-		return new UploadImage(file.getName(), filePartialPath, width, height);
+		return new UploadImage(file.getName(), getPartialPath(file), width, height);
 	}
 
 	private String getUploadsPath() {
-		return Common.ctx.getServletContext().getRealPath(fileSeparator) + "uploads";
+		return getRealPath(fileSeparator) + fileSeparator + "uploads";
 	}
 
 	private String getBackgroundImagePath(String backgroundFilename) {
-		return Common.ctx.getServletContext().getRealPath(fileSeparator) + fileSeparator + backgroundFilename;
+		return getRealPath(fileSeparator) + fileSeparator + backgroundFilename;
 	}
 
 	public boolean checkUserViewPermissions(User user, View view) {
 		return GetViewsWithAccess.hasViewReadPermission(user, view);
+	}
+
+	private static Optional<File> transferTo(MultipartFile multipartFile, File file) {
+		try {
+			multipartFile.transferTo(file);
+			return Optional.of(file);
+		} catch (IOException e) {
+			return Optional.empty();
+		}
 	}
 }
