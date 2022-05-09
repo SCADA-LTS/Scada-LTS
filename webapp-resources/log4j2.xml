@@ -141,6 +141,10 @@
             <AppenderRef ref="ASYNC_FLYWAY"/>
         </Logger>
 
+        <Logger name="org.flywaydb" level="${startupLoggingLevel}">
+            <AppenderRef ref="ASYNC_FLYWAY"/>
+        </Logger>
+
         <!-- BackgroundProcessing Logging-->
         <Logger name="com.serotonin.mango.rt.maint.BackgroundProcessing" level="${backgroundLoggingLevel}"/>
 
