@@ -17,7 +17,7 @@ public enum DataPointSyncMode {
     }
 
     public String getName() {
-        return name;
+        return name.toUpperCase();
     }
 
     public Class<?> getType() {
@@ -36,5 +36,9 @@ public enum DataPointSyncMode {
                         type.getName().equalsIgnoreCase(value))
                 .findAny()
                 .orElse(DataPointSyncMode.LOW);
+    }
+
+    public static String getName(String name) {
+        return typeOf(name).getName();
     }
 }

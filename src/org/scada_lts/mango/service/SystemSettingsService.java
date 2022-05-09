@@ -122,13 +122,13 @@ public class SystemSettingsService {
     public JsonSettingsMisc getMiscSettings() {
         JsonSettingsMisc json = new JsonSettingsMisc();
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
-        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+        json.setDataPointRuntimeValueSynchronized(getDataPointRtValueSynchronized().getName());
         return json;
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
-        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, json.getDataPointRuntimeValueSynchronized());
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(json.getDataPointRuntimeValueSynchronized()));
     }
 
     public SettingsDataRetention getDataRetentionSettings() {

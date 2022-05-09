@@ -40,7 +40,9 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.mvc.api.json.JsonSettingsMisc;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -144,8 +146,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR));
 
-		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsDAO
-				.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
+				systemSettingsService.getDataPointRtValueSynchronized().getName());
 
 		return settings;
 	}
@@ -289,11 +292,14 @@ public class SystemSettingsDwr extends BaseDwr {
 	@MethodFilter
 	public void saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
-		systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
-				uiPerformance);
-		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
-				String.valueOf(dataPointRtValueSynchronized));
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+
+		JsonSettingsMisc jsonSettingsMisc = new JsonSettingsMisc();
+		jsonSettingsMisc.setUiPerformance(uiPerformance);
+		jsonSettingsMisc.setDataPointRuntimeValueSynchronized(dataPointRtValueSynchronized);
+
+		systemSettingsService.saveMiscSettings(jsonSettingsMisc);
 	}
 
 	@MethodFilter
