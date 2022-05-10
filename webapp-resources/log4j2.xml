@@ -13,26 +13,28 @@
 		<!-- Main Package Logging-->
 		<Property name="scadaltsOrgLoggingLevel">ERROR</Property>
 		<Property name="serotoninComLoggingLevel">ERROR</Property>
+        <Property name="seroUtilsLoggingLevel">ERROR</Property>
 		<Property name="legacyLoggingLevel">ERROR</Property>
 
 		<!-- Lifecycle Logging-->
 		<Property name="startupLoggingLevel">INFO</Property>
 		<Property name="processingBackgroundLoggingLevel">ERROR</Property>
 		<Property name="pollingDataSourceLoggingLevel">ERROR</Property>
+        <Property name="runtimeManagerLoggingLevel">INFO</Property>
 
 		<!-- Architecture Logging-->
 		<Property name="dwrLoggingLevel">ERROR</Property>
 		<Property name="apiLoggingLevel">ERROR</Property>
 		<Property name="springLoggingLevel">ERROR</Property>
 		<Property name="databaseLoggingLevel">ERROR</Property>
-        <Property name="runtimeManagerLoggingLevel">INFO</Property>
 
 		<!-- Functional Logging-->
 		<Property name="scriptLoggingLevel">ERROR</Property>
 		<Property name="eventManagerLoggingLevel">ERROR</Property>
+        <Property name="modbusLoggingLevel">ERROR</Property>
 		
 		<!-- Development Logging-->
-		<Property name="developmentLoggingLevel">DEBUG</Property>
+		<Property name="log4jLoggingLevel">ERROR</Property>
     </Properties>
 
     <Appenders>
@@ -118,12 +120,15 @@
         <Logger name="org.scada_lts" level="${scadaltsOrgLoggingLevel}"/>
 
         <!-- Serotonin Logging-->
-        <Logger name="com.serotonin" level="${serotoninComLoggingLevel}"/>
+        <Logger name="com.serotonin.mango" level="${serotoninComLoggingLevel}"/>
+        <Logger name="com.serotonin.timer" level="${serotoninComLoggingLevel}"/>
 
         <!-- Legacy Logging-->
         <Logger name="br.org.scadabr" level="${legacyLoggingLevel}"/>
         <Logger name="cc.radiuino.scadabr" level="${legacyLoggingLevel}"/>
 
+        <!-- seroUtils.jar Logging-->
+        <Logger name="com.serotonin" level="${seroUtilsLoggingLevel}"/>
 
         <!-- Lifecycle Logging-->
         <!-- Startup Logging-->
@@ -155,6 +160,7 @@
         <!-- Architecture Logging-->
         <!-- Dwr Logging-->
         <Logger name="org.directwebremoting" level="${dwrLoggingLevel}"/>
+        <Logger name="com.serotonin.mango.web.dwr.DataPointEditDwr" level="${dwrLoggingLevel}"/>
 
         <!-- Spring Logging-->
         <Logger name="org.springframework.web.servlet.FrameworkServlet" level="${springLoggingLevel}"/>
@@ -172,6 +178,10 @@
 
         <Logger name="com.serotonin.mango.db.dao" level="${databaseLoggingLevel}">
             <AppenderRef ref="ASYNC_FLYWAY"/>
+        </Logger>
+
+        <Logger name="com.serotonin.mango.db.dao.DataSourceDao" level="${databaseLoggingLevel}">
+            <AppenderRef ref="ASYNC_DAO"/>
         </Logger>
 
         <!-- RuntimeManager Logging-->
@@ -221,21 +231,13 @@
             <AppenderRef ref="ASYNC_SCRIPT"/>
         </Logger>
 
-
-        <!-- Development Logging-->
-        <Logger name="com.serotonin.modbus4j.ip.listener" level="${developmentLoggingLevel}">
+        <!-- Modbus Logging-->
+        <Logger name="com.serotonin.modbus4j.ip.listener" level="${modbusLoggingLevel}">
             <AppenderRef ref="ASYNC_MODBUS"/>
         </Logger>
 
-        <Logger name="com.serotonin.mango.db.dao.DataSourceDao" level="${developmentLoggingLevel}">
-            <AppenderRef ref="ASYNC_DAO"/>
-        </Logger>
-
-        <Logger name="com.serotonin.mango.web.dwr.DataPointEditDwr" level="${developmentLoggingLevel}">
-            <AppenderRef ref="ASYNC_DAO"/>
-        </Logger>
-
-        <Logger name="org.apache.log4j.xml" level="${developmentLoggingLevel}">
+        <!-- Log4j Logging-->
+        <Logger name="org.apache.log4j.xml" level="${log4jLoggingLevel}">
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
