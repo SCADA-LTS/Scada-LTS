@@ -32,8 +32,8 @@
 		<Property name="scriptLoggingLevel">ERROR</Property>
 		<Property name="eventManagerLoggingLevel">ERROR</Property>
         <Property name="modbusLoggingLevel">ERROR</Property>
-		
-		<!-- Development Logging-->
+
+		<!-- Parse log4j2.xml Logging-->
 		<Property name="log4jLoggingLevel">ERROR</Property>
     </Properties>
 
@@ -129,6 +129,7 @@
 
         <!-- seroUtils.jar Logging-->
         <Logger name="com.serotonin" level="${seroUtilsLoggingLevel}"/>
+
 
         <!-- Lifecycle Logging-->
         <!-- Startup Logging-->
@@ -236,7 +237,7 @@
             <AppenderRef ref="ASYNC_MODBUS"/>
         </Logger>
 
-        <!-- Log4j Logging-->
+        <!-- Parse log4j2.xml Logging-->
         <Logger name="org.apache.log4j.xml" level="${log4jLoggingLevel}">
             <AppenderRef ref="ASYNC"/>
         </Logger>
