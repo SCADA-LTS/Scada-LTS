@@ -155,6 +155,9 @@ export default {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;
 		},
 		iconify() {
+		    let defName = this.component.defName;
+		    if(defName == 'analogGraphic' || defName == 'multistateGraphic' || defName == 'binaryGraphic')
+		        return true;
 			return this.$store.state.graphicalViewModule.graphicalPageIconify;
 		},
 	},
