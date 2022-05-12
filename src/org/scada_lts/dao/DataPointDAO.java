@@ -302,7 +302,7 @@ public class DataPointDAO {
 						dataPoint.getName(),
 						dataPoint.getDataSourceId(),
 						new SerializationData().writeObject(dataPoint),
-						PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName())
+						PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint)
 				}).setValues(ps);
 				return ps;
 			}
@@ -329,7 +329,7 @@ public class DataPointDAO {
 					entity.getName(),
 					entity.getDataSourceId(),
 					new SerializationData().writeObject(entity),
-					PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(entity.getName())
+					PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(entity)
 			}).setValues(ps);
 			return ps;
 		}, keyHolder);
@@ -360,7 +360,7 @@ public class DataPointDAO {
 		try {
 			return DAO.getInstance().getJdbcTemp().update(
 					DATA_POINT_UPDATE,
-					PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()),
+					PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
 					dataPoint.getXid(),
 					dataPoint.getName(),
 					new SerializationData().writeObject(dataPoint),
