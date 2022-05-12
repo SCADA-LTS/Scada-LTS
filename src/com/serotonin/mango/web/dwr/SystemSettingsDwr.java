@@ -23,6 +23,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -40,6 +41,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.File;
@@ -144,8 +146,9 @@ public class SystemSettingsDwr extends BaseDwr {
 		settings.put(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR));
 
-		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsDAO
-				.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
+				systemSettingsService.getDataPointRtValueSynchronized().getName());
 
 		return settings;
 	}
@@ -314,9 +317,8 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
-		systemSettingsDAO.setValue(
-				SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
-				String.valueOf(dataPointRtValueSynchronized));
+		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
+				DataPointSyncMode.getName(dataPointRtValueSynchronized));
 	}
 
 	@MethodFilter
