@@ -156,7 +156,7 @@ export default {
 		},
 		iconify() {
 		    let defName = this.component.defName;
-		    if(defName == 'analogGraphic' || defName == 'multistateGraphic' || defName == 'binaryGraphic')
+		    if(this.editMode && (defName == 'analogGraphic' || defName == 'multistateGraphic' || defName == 'binaryGraphic'))
 		        return true;
 			return this.$store.state.graphicalViewModule.graphicalPageIconify;
 		},
