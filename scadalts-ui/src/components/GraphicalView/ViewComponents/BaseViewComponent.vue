@@ -137,6 +137,7 @@ export default {
 			type: Object,
 			required: true,
 		},
+        isGraphic: false
 	},
 
 	data() {
@@ -155,11 +156,11 @@ export default {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;
 		},
 		iconify() {
-		    let defName = this.component.defName;
-		    if(this.editMode && (defName == 'analogGraphic' || defName == 'multistateGraphic' || defName == 'binaryGraphic'))
+		   if(this.isGraphic === true && this.editMode) {
 		        return true;
-			return this.$store.state.graphicalViewModule.graphicalPageIconify;
-		},
+		   }
+		   return this.$store.state.graphicalViewModule.graphicalPageIconify;
+		}
 	},
 
 	methods: {

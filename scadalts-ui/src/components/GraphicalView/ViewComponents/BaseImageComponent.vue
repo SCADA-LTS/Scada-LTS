@@ -2,6 +2,7 @@
 	<BasePointComponent
 		:component="component"
 		:dataTypes="dataTypes"
+		:isGraphic="true"
 		@update="$emit('update')"
 		@value-update="onValueUpdate"
 		@status-update="onStatusUpdate"
@@ -79,11 +80,13 @@ export default {
 
 		async getImageSetDeatils() {
 			try {
-				const res = await this.$store.dispatch(
-					'getImageSetDetails',
-					this.component.imageSetId,
-				);
-				this.$emit('image-update', res);
+			    if(this.component.imageSetId) {
+                    const res = await this.$store.dispatch(
+                        'getImageSetDetails',
+                        this.component.imageSetId,
+                    );
+                    this.$emit('image-update', res);
+				}
 			} catch (e) {
 				console.error(e);
 			}

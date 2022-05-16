@@ -1,6 +1,7 @@
 <template>
 	<BaseViewComponent
 		:component="component"
+		:isGraphic="isGraphic"
 		@update="$emit('update')"
 		@send-value="onSendValue"
 		@click="$emit('click', $event)"
@@ -121,6 +122,7 @@ export default {
 			type: Array,
 			required: false,
 		},
+        isGraphic: false
 	},
 
 	data() {
