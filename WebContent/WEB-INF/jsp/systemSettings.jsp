@@ -832,7 +832,7 @@
         </tr>
       </table>
     </div>
-
+<%--
    <div class="borderDivPadded marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
@@ -845,7 +845,6 @@
         </td>
       </tr>
       </table>
-      <%--
       <table align="center">
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Derby"/></td>
@@ -877,7 +876,6 @@
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
-     --%>
   </div>
 --%>
 
