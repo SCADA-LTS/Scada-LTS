@@ -273,6 +273,14 @@
 			<test name="com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.utils.UploadFileUtilsTestsSuite"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.utils.xml.XmlSecurityTestsSuite"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">

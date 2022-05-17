@@ -137,6 +137,7 @@ export default {
 			type: Object,
 			required: true,
 		},
+        isGraphic: false
 	},
 
 	data() {
@@ -155,8 +156,11 @@ export default {
 			return this.$store.state.graphicalViewModule.graphicalPageEdit;
 		},
 		iconify() {
-			return this.$store.state.graphicalViewModule.graphicalPageIconify;
-		},
+		   if(this.isGraphic === true && this.editMode) {
+		        return true;
+		   }
+		   return this.$store.state.graphicalViewModule.graphicalPageIconify;
+		}
 	},
 
 	methods: {

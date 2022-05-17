@@ -42,7 +42,7 @@ public class AnalogGraphicComponentDTO extends ImageSetComponentDTO {
     public AnalogGraphicComponent createFromBody(User user) {
         AnalogGraphicComponent c = new AnalogGraphicComponent();
         c.setMin(min);
-        c.setMin(max);
+        c.setMax(max);
 
         c.tsetImageSet(getImageSet());
         c.setDisplayText(getDisplayText());

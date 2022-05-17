@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -39,6 +39,10 @@ import br.org.scadabr.web.mvc.controller.ProjectExporterController;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
+
+import static org.scada_lts.utils.PathSecureUtils.getRealPath;
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ZIPProjectManager {
 	private static final String JSON_FILE_NAME = "json_project.txt";
@@ -167,18 +171,13 @@ public class ZIPProjectManager {
 	}
 
 	private void restoreFiles(List<ZipEntry> uploadFiles) {
-		String appPath = Common.ctx.getServletContext().getRealPath(
-				FILE_SEPARATOR);
+		String appPath = getRealPath();
 
 		for (ZipEntry zipEntry : uploadFiles) {
 			String entryName = zipEntry.getName();
 			if(!entryName.isEmpty()) {
-				File file = new File(appPath + entryName);
-				Path path = file.toPath().normalize();
-				if(path.startsWith(appPath))
-					writeToFile(zipEntry, file);
-				else
-					LOG.error("entryName is invalid: " + entryName);
+				toSecurePath(Paths.get(appPath + File.separator + entryName))
+						.ifPresent(file -> writeToFile(zipEntry, file));
 			} else {
 				LOG.error("entryName is empty");
 			}
@@ -210,11 +209,11 @@ public class ZIPProjectManager {
 	}
 
 	private List<ZipEntry> getUploadFiles() {
-		return filterZipFiles(uploadsFolder);
+		return filteringUploadFiles(filterZipFiles(uploadsFolder), zipFile);
 	}
 
 	private List<ZipEntry> getGraphicsFiles() {
-		return filterZipFiles(graphicsFolder);
+		return filteringGraphicsFiles(filterZipFiles(graphicsFolder), zipFile);
 	}
 
 	private List<ZipEntry> filterZipFiles(String startsWith) {
@@ -247,7 +246,7 @@ public class ZIPProjectManager {
 				FILE_SEPARATOR)
 				+ "uploads";
 
-		List<File> files = FileUtil.getFilesOnDirectory(uploadFolder);
+		List<File> files = filteringUploadFiles(FileUtil.getFilesOnDirectory(uploadFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 		for (File file : files) {
@@ -265,7 +264,7 @@ public class ZIPProjectManager {
 				FILE_SEPARATOR)
 				+ "graphics";
 
-		List<File> files = FileUtil.getFilesOnDirectory(graphicFolder);
+		List<File> files = filteringGraphicsFiles(FileUtil.getFilesOnDirectory(graphicFolder));
 
 		List<FileToPack> pack = new ArrayList<FileToPack>();
 
@@ -327,6 +326,9 @@ public class ZIPProjectManager {
 		MultipartHttpServletRequest mpRequest = (MultipartHttpServletRequest) request;
 
 		MultipartFile multipartFile = mpRequest.getFile("importFile");
+		if(!isZip(multipartFile)) {
+			throw new IllegalArgumentException("Invalid zip file: " + multipartFile.getOriginalFilename());
+		}
 
 		File projectFile = File.createTempFile("temp", "");
 		projectFile.deleteOnExit();

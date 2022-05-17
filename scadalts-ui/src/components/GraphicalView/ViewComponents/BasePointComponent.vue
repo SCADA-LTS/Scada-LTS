@@ -1,6 +1,7 @@
 <template>
 	<BaseViewComponent
 		:component="component"
+		:isGraphic="isGraphic"
 		@update="$emit('update')"
 		@send-value="onSendValue"
 		@click="$emit('click', $event)"
@@ -24,11 +25,11 @@
 		<template v-slot:renderer>
 			<v-row>
 				<v-col cols="12" v-if="menuVisible">
-					<DataPointSerachComponent
+					<DataPointSearchComponent
 						v-model="component.dataPointXid"
 						:dataTypes="dataTypes"
 						@change="onPointChange"
-					></DataPointSerachComponent>
+					></DataPointSearchComponent>
 				</v-col>
 				<v-col cols="6">
 					<v-switch v-model="component.displayPointName" label="Display name"></v-switch>
@@ -100,7 +101,7 @@
 	</BaseViewComponent>
 </template>
 <script>
-import DataPointSerachComponent from '@/layout/buttons/DataPointSearchComponent';
+import DataPointSearchComponent from '@/layout/buttons/DataPointSearchComponent';
 import BaseViewComponent from './BaseViewComponent.vue';
 import TextRenderer from '../../../bl/TextRender.js';
 
@@ -108,7 +109,8 @@ import TextRenderer from '../../../bl/TextRender.js';
 export default {
 	components: {
 		BaseViewComponent,
-		DataPointSerachComponent,
+		DataPointSearchComponent,
+		TextRenderer
 	},
 
 	props: {
@@ -120,6 +122,7 @@ export default {
 			type: Array,
 			required: false,
 		},
+        isGraphic: false
 	},
 
 	data() {
@@ -199,6 +202,9 @@ export default {
 
 		async getPointValue() {
 			try {
+			    if(!this.component.dataPointXid) {
+			        return;
+			    }
 				const res = await this.$store.dispatch(
 					'getDataPointValueByXid',
 					this.component.dataPointXid,
@@ -258,6 +264,9 @@ export default {
 
 		async getDataPointType() {
 			try {
+			    if(!this.component.dataPointXid) {
+                    return 0;
+                }
 				const dp = await this.$store.dispatch(
 					'getDataPointValueByXid',
 					this.component.dataPointXid,

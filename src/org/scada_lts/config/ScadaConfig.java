@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -348,9 +350,9 @@ public class ScadaConfig {
 	private ScadaConfig() {
 		try {
 		  conf = new Properties();
-		  FileInputStream fis = null;
-		  fis = new FileInputStream(getPathConfigFile("env.properties"));
-		  conf.load(fis);
+		  try(FileInputStream fis = new FileInputStream(getPathConfigFile("env.properties"))) {
+			  conf.load(fis);
+		  }
 		} catch (Exception e) {
 			LOG.error(e);
 		}
@@ -375,7 +377,7 @@ public class ScadaConfig {
 
 	private static String getPathConfigFile(String fileName) {
 		try {
-			return ScadaConfig.class.getClassLoader().getResources(fileName).nextElement().getFile();
+			return URLDecoder.decode(ScadaConfig.class.getClassLoader().getResources(fileName).nextElement().getFile(), StandardCharsets.UTF_8);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 			return "";

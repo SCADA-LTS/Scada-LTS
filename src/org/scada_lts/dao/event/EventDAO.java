@@ -34,6 +34,7 @@ import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.SerializationData;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import org.scada_lts.utils.QueryUtils;
+import org.scada_lts.utils.SQLPageWithTotal;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -752,7 +753,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 	 *
 	 * @return List of Events
 	 */
-	public List<EventDTO> findEvents(
+	public SQLPageWithTotal<EventDTO> findEvents(
 			JsonEventSearch query,
 			User user) {
 		List<Object> params = new ArrayList<Object>();
@@ -827,7 +828,7 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 			filterCondtions.add(joinOr(keywordConditions));
 		}
 
-		sql.append("SELECT " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
+		sql.append("SELECT SQL_CALC_FOUND_ROWS " + EVENT_FIELDS + ", coalesce(sum(c.comments), 0) as comments ");
 		sql.append(from.toString());
 		sql.append(" LEFT JOIN (SELECT typeKey, count(case when("+joinOr(userCommentKeywordConditions)+") then 1 else null end) AS keywordMatched, count(1) comments FROM userComments uc GROUP BY typeKey) c ON e.id = c.typeKey");
 		sql.append(" WHERE "+joinAnd(filterCondtions));
@@ -858,7 +859,8 @@ public class EventDAO implements GenericDaoCR<EventInstance> {
 		List<EventDTO> page = DAO.getInstance().getJdbcTemp().query(
 						sql.toString()
 				, params.toArray(), new EventDTOSearchRowMapper());
-		return page;
+		int total = DAO.getInstance().getJdbcTemp().queryForObject("SELECT FOUND_ROWS();",  Integer.class);
+		return new SQLPageWithTotal<>(page, total);
 	}
 
 	@Override

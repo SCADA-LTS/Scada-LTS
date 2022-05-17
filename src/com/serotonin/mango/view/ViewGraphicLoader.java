@@ -33,15 +33,12 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.imageio.ImageIO;
+import static org.scada_lts.utils.UploadFileUtils.*;
 
 public class ViewGraphicLoader {
     private static final Log LOG = LogFactory.getLog(ViewGraphicLoader.class);
 
     private static final String GRAPHICS_PATH = "graphics";
-    private static final String INFO_FILE_NAME = "info.txt";
-
-    private static final String IGNORE_THUMBS = "Thumbs.db";
 
     private String path;
     private List<ViewGraphic> viewGraphics;
@@ -80,10 +77,10 @@ public class ViewGraphicLoader {
         for (File file : files) {
             if (file.isDirectory())
                 loadDirectory(file, id + ".");
-            else if (IGNORE_THUMBS.equalsIgnoreCase(file.getName())) {
+            else if (isThumbsFile(file)) {
                 // no op
             }
-            else if (INFO_FILE_NAME.equalsIgnoreCase(file.getName())) {
+            else if (isInfoFile(file)) {
                 // Info file
                 Properties props = new Properties();
                 try (FileInputStream fileInputStream = new FileInputStream(file)) {
@@ -96,7 +93,7 @@ public class ViewGraphicLoader {
                     textY = getIntProperty(props, "text.y", textY);
                 }
             }
-            else if(isGraphic(file)) {
+            else if(isImageBitmap(file)) {
                 // Image file. Subtract the load path from the image path
                 String imagePath = file.getPath().substring(path.length());
                 if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
@@ -138,15 +135,6 @@ public class ViewGraphicLoader {
                 throw new Exception("Invalid type: " + typeStr);
 
             viewGraphics.add(g);
-        }
-    }
-
-    private boolean isGraphic(File file) {
-        try {
-            return ImageIO.read(file) != null;
-        } catch (Exception ex) {
-            LOG.warn(ex.getMessage());
-            return false;
         }
     }
 

@@ -38,7 +38,7 @@ export const viewComponentDefinitions = {
         return {
             classicComponentList: [{
                 title: 'Simple Point',
-                datapointTypes: '',
+                datapointTypes: 'Any type',
                 description: 'Display the current value of any datapoint',
                 definition: ViewComponentSimpleJs,
             }, {
@@ -59,33 +59,33 @@ export const viewComponentDefinitions = {
             },
             {
                 title: 'Html Component',
-                datapointTypes: '',
+                datapointTypes: 'No type',
                 description: 'Create a custom HTML element',
                 definition: ViewComponentHtmlJs,
             }, {
                 title: 'Alarm List',
-                datapointTypes: '',
+                datapointTypes: 'No type',
                 description: 'Display a list of alarms',
                 definition: ViewComponentAlarmListJs
             }, {
-                title: 'Button',
-                datapointTypes: '',
+                title: 'ON/OFF Button',
+                datapointTypes: 'Binary',
                 description: 'Create a button',
                 definition: ViewComponentButtonJs
             }, {
                 title: 'Link',
-                datapointTypes: '',
+                datapointTypes: 'No type',
                 description: 'Create a link',
                 definition: ViewComponentLinkJs
             }, {
                 title: 'Server side Script',
-                datapointTypes: '',
+                datapointTypes: 'No type',
                 description: 'Create a script',
                 definition: ViewComponentScriptJs
             },
             {
                 title: 'Image Chart',
-                datapointTypes: '',
+                datapointTypes: 'Any type',
                 description: 'Display a chart',
                 definition: ViewComponentImageChartJs
             }]

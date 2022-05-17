@@ -20,14 +20,16 @@ package org.scada_lts.web.mvc.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
@@ -51,11 +53,12 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
+import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
+import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
 
 @Controller
 public class ViewEditController {
-    public static final String[] SUPPORTED_EXTENSIONS = new String[]{".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp", ".bmp"};
     private static final Log LOG = LogFactory.getLog(ViewEditController.class);
 
     private static final String SUBMIT_UPLOAD = "upload";
@@ -121,6 +124,8 @@ public class ViewEditController {
     protected ModelAndView handleImage(HttpServletRequest request, HttpServletResponse response, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form)
     throws Exception{
         LOG.debug("ViewEditController:showForm");
+        Map<String, Object> model = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
             View view = user.getView();
@@ -134,10 +139,10 @@ public class ViewEditController {
             View view = user.getView();
 
             form.setView(view);
-            uploadFile(request, form);
+            uploadFile(request, form, errors);
         }
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("status", errors);
         model.put(FORM_OBJECT_NAME, form);
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
@@ -192,13 +197,20 @@ public class ViewEditController {
         return getSuccessRedirectView(null);
     }
 
-    private void uploadFile(HttpServletRequest request, ViewEditForm form)  throws Exception  {
+    private void uploadFile(HttpServletRequest request, ViewEditForm form, Map<String, String> errors)  throws Exception  {
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             MultipartFile file = form.getBackgroundImageMP();
+            String errorMessage = LocalizableMessage.getMessage(Common.getBundle(),"viewEdit.upload.failed");
             if (file != null) {
-                upload(request, form, file);
+                if(isToUploads(file))
+                    upload(request, form, file);
+                else {
+                    LOG.warn("Image file is invalid.");
+                    errors.put("errorMessage", errorMessage);
+                }
             } else {
                 LOG.warn("Image file is not attached.");
+                errors.put("errorMessage", errorMessage);
             }
         }
     }
@@ -224,31 +236,24 @@ public class ViewEditController {
     }
 
     private void saveFile(ViewEditForm form, byte[] bytes,
-                          File dir, String fileName) {
-        Stream.of(SUPPORTED_EXTENSIONS)
-                .filter(fileName::endsWith)
-                .findFirst()
-                .ifPresent(ext -> {
-                    // Valid image! Add it to uploads
-                    int imageId = getNextImageId(dir); // Get an image id.
-                    String filename = imageId + ext; // Create the image file name.
-                    File image = new File(dir, filename);
-                    if(writeFile(bytes, image)) { // Save the file.
-                        form.getView().setBackgroundFilename(uploadDirectory + filename);
-                        LOG.info("Image file has been successfully uploaded: " + image.getName());
-                    } else {
-                        LOG.warn("Failed to save image file: " + image.getName());
-                    }
+                          File dir, String originalFileName) {
+        int imageId = getNextImageId(dir); // Get an image id.
+        String fileName = createFileName(imageId, originalFileName); // Create the image file name.
+        toSecurePath(Paths.get(dir + File.separator + fileName))
+                .flatMap(dest -> writeFile(bytes, dest))
+                .ifPresent(image -> {
+                    form.getView().setBackgroundFilename(uploadDirectory + fileName);
+                    LOG.info("Image file has been successfully uploaded: " + image.getName());
                 });
     }
 
-    private static boolean writeFile(byte[] bytes, File dest) {
+    private static Optional<File> writeFile(byte[] bytes, File dest) {
         try (FileOutputStream fos = new FileOutputStream(dest)) {
             fos.write(bytes);
-            return true;
+            return Optional.of(dest);
         } catch (Exception ex) {
             LOG.warn(ex.getMessage(), ex);
-            return false;
+            return Optional.empty();
         }
     }
 
@@ -299,5 +304,9 @@ public class ViewEditController {
         targetView.setResolution(sourceView.getResolution());
         targetView.setAnonymousAccess(sourceView.getAnonymousAccess());
         targetView.setUserId(sourceView.getUserId());
+    }
+
+    private String createFileName(int imageId, String fileName) {
+        return imageId + "." + FilenameUtils.getExtension(fileName);
     }
 }
