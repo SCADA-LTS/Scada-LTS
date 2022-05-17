@@ -40,7 +40,9 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.web.mvc.api.json.JsonSettingsHttp;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -146,6 +148,9 @@ public class SystemSettingsDwr extends BaseDwr {
 
 		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
+
+		settings.put(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, SystemSettingsDAO
+				.getValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS));
 
 		return settings;
 	}
@@ -270,20 +275,26 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void saveHttpSettings(boolean useProxy, String host, int port,
-			String username, String password) {
+	public DwrResponseI18n saveHttpSettings(boolean useProxy, String host, int port,
+			String username, String password, String httpStaticHeaders) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setBooleanValue(
-				SystemSettingsDAO.HTTP_CLIENT_USE_PROXY, useProxy);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER,
-				host);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT,
-				port);
-		SystemSettingsDAO.setValue(
-				SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME, username);
-		SystemSettingsDAO.setValue(
-				SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD, password);
+
+		JsonSettingsHttp jsonSettingsHttp = new JsonSettingsHttp();
+		jsonSettingsHttp.setUseProxy(useProxy);
+		jsonSettingsHttp.setHost(host);
+		jsonSettingsHttp.setPort(port);
+		jsonSettingsHttp.setUsername(username);
+		jsonSettingsHttp.setPassword(password);
+		jsonSettingsHttp.setHttpResponseHeaders(httpStaticHeaders);
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		DwrResponseI18n response = new DwrResponseI18n();
+		try {
+			systemSettingsService.saveHttpSettings(jsonSettingsHttp);
+		} catch (Exception ex) {
+			response.addContextualMessage("httpMessage", "validate.invalidValue");
+		}
+		return response;
 	}
 
 	@MethodFilter

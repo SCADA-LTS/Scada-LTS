@@ -10,6 +10,7 @@
             <hsts/>
             <frame-options policy="SAMEORIGIN"/>
             <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
         </headers>
         <csrf disabled="true"/>
 
@@ -74,4 +75,9 @@
 
     <b:bean id="defaultHttpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall"/>
 
+    <b:bean id="systemSettingsService" class="org.scada_lts.mango.service.SystemSettingsService" />
+
+    <b:bean id="headersFromSystemSettingsWriter" class="org.scada_lts.web.ws.config.HeadersFromSystemSettingsWriter">
+        <b:constructor-arg ref="systemSettingsService"/>
+    </b:bean>
 </b:beans>

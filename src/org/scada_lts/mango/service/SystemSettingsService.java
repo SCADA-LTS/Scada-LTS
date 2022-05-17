@@ -1,6 +1,7 @@
 package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
@@ -15,10 +16,12 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
+
 /**
  * Based on the WatchListService created by Grzegorz Bylica
  *
@@ -34,6 +39,8 @@ import java.util.*;
  */
 @Service
 public class SystemSettingsService {
+
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);
 
     private SystemSettingsDAO systemSettingsDAO;
 
@@ -108,6 +115,7 @@ public class SystemSettingsService {
         json.setHost(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER));
         json.setUsername(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME));
         json.setPassword(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD));
+        json.setHttpResponseHeaders(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS));
         return json;
     }
 
@@ -117,6 +125,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER, json.getHost());
         systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME, json.getUsername());
         systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD, json.getPassword());
+        systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, getHttpResponseHeaders(json));
     }
 
     public JsonSettingsMisc getMiscSettings() {
@@ -321,7 +330,7 @@ public class SystemSettingsService {
             return json;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
             return null;
         }
 
@@ -337,7 +346,7 @@ public class SystemSettingsService {
             double var = Double.parseDouble(SystemSettingsDAO.getValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR));
             aggregateSettings.setLimitFactor(var);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
             AggregateSettings defaultValue = AggregateSettings.fromEnvProperties();
             aggregateSettings.setLimitFactor(defaultValue.getLimitFactor());
         }
@@ -352,5 +361,33 @@ public class SystemSettingsService {
 
     public DataPointSyncMode getDataPointRtValueSynchronized() {
         return SystemSettingsDAO.getObject(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode::typeOf);
+    }
+
+    public Map<String, String> getHttpResponseHeaders() {
+        try {
+            return SystemSettingsDAO.getObject(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, SystemSettingsService::deserializeMap);
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+            return Collections.emptyMap();
+        }
+    }
+
+    private static String getHttpResponseHeaders(JsonSettingsHttp json) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(json.getHttpResponseHeaders(), objectMapper);
+            return serializeMap(headers, objectMapper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Map<String, String> deserializeMap(String json) {
+        try {
+            return SystemSettingsUtils.deserializeMap(json, new ObjectMapper());
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+            return Collections.emptyMap();
+        }
     }
 }

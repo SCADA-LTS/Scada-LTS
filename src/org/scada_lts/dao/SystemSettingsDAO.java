@@ -81,6 +81,7 @@ public class SystemSettingsDAO {
 	public static final String HTTP_CLIENT_PROXY_PORT = "httpClientProxyPort";
 	public static final String HTTP_CLIENT_PROXY_USERNAME = "httpClientProxyUsername";
 	public static final String HTTP_CLIENT_PROXY_PASSWORD = "httpClientProxyPassword";
+	public static final String HTTP_RESPONSE_HEADERS = "httpResponseHeaders";
 
 	// New Mango version
 	public static final String NEW_VERSION_NOTIFICATION_LEVEL = "newVersionNotificationLevel";
@@ -380,6 +381,7 @@ public class SystemSettingsDAO {
 
 		DEFAULT_VALUES.put(VALUES_LIMIT_FOR_PURGE, 100);
 		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().name());
+		DEFAULT_VALUES.put(HTTP_RESPONSE_HEADERS, SystemSettingsUtils.getHttpResponseHeaders());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

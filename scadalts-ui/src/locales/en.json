@@ -1016,5 +1016,6 @@
 	"systemsettings.misc.dataPointRuntimeValueSynchronized": "Duplicate values reduction",
 	"systemsettings.misc.dataPointRuntimeValueSynchronized.all": "All",
 	"systemsettings.misc.dataPointRuntimeValueSynchronized.partial": "Partial",
-	"systemsettings.misc.dataPointRuntimeValueSynchronized.none": "None"
+	"systemsettings.misc.dataPointRuntimeValueSynchronized.none": "None",
+	"systemsettings.http.response.headers": "HTTP response headers"
 }

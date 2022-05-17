@@ -9,15 +9,17 @@ public class JsonSettingsHttp implements Serializable {
     private String host;
     private String username;
     private String password;
+    private String httpResponseHeaders;
 
     public JsonSettingsHttp() {}
 
-    public JsonSettingsHttp(boolean useProxy, int port, String host, String username, String password) {
+    public JsonSettingsHttp(boolean useProxy, int port, String host, String username, String password, String httpResponseHeaders) {
         this.useProxy = useProxy;
         this.port = port;
         this.host = host;
         this.username = username;
         this.password = password;
+        this.httpResponseHeaders = httpResponseHeaders;
     }
 
     public boolean isUseProxy() {
@@ -58,5 +60,13 @@ public class JsonSettingsHttp implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getHttpResponseHeaders() {
+        return httpResponseHeaders;
+    }
+
+    public void setHttpResponseHeaders(String httpResponseHeaders) {
+        this.httpResponseHeaders = httpResponseHeaders;
     }
 }

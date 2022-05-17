@@ -50,6 +50,14 @@
 							dense
 						></v-text-field>
 					</v-col>
+					<v-col cols="12">
+                        <v-textarea
+                            @change="watchDataChange()"
+                            v-model="httpSettings.httpResponseHeaders"
+                            :label="$t('systemsettings.http.response.headers')"
+                            dense
+                        ></v-textarea>
+                    </v-col>
 				</v-row>
 			</v-card-text>
 		</v-card>
