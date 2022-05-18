@@ -125,6 +125,6 @@ public final class EmailContentUtils {
     }
 
     private static boolean isPlcAlarm(DataPointVO dataPoint) {
-        return PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()) != AlarmLevels.NONE;
+        return PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint) != AlarmLevels.NONE;
     }
 }

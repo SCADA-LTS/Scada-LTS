@@ -23,8 +23,8 @@ public final class SystemSettingsUtils {
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
         try {
-            String mode = ScadaConfig.getInstance().getConf().getProperty(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY, "LOW");
-            return DataPointSyncMode.valueOf(mode.toUpperCase());
+            String mode = ScadaConfig.getInstance().getConf().getProperty(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY, "NONE");
+            return DataPointSyncMode.typeOf(mode.toUpperCase());
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return DataPointSyncMode.LOW;

@@ -279,6 +279,10 @@
 			</test>
 
 			<test name="org.scada_lts.utils.xml.XmlSecurityTestsSuite"
+            haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.utils.SystemSettingsUtilsTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>
