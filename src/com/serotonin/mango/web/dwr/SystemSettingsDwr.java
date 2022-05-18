@@ -334,8 +334,6 @@ public class SystemSettingsDwr extends BaseDwr {
 		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
-		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
-				DataPointSyncMode.getName(dataPointRtValueSynchronized));
 
 	}
 
