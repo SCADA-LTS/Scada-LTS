@@ -1,81 +1,100 @@
 <template>
     <v-app>
-        <v-container :style="{width: (this.pWidth > 140 ? this.pWidth : 140) + 'px'}">
-            <v-card>
-                <v-card-text class="auto-manual--content" :class="{ 'auto-manual--content-small': this.pWidth < 450 }">
-                    <div class="header-container">
-                        <div class="loading-container">
-                            <v-progress-circular
-                                indeterminate
-                                color="primary"
-                                :size="15"
-                                v-if="loading"
-                            ></v-progress-circular>                           
-                        </div>                     
-                        <div class="state-container" :class="{ 'state-container-small': this.pWidth < 700, 'state-container--x-small': this.pWidth < 200 }">
-                            <div>
-                                <div v-if="!!pLabel" class="cmp-label">
-                                    {{ pLabel }}
-                                    <span style="color:red;">{{ err }}</span>
-                                </div>
-                                <transition name="slide-fade" mode="out-in">
-                                    <div class="cmp-state" :key="componentState">
-                                        {{ componentState }}
+        <v-container @mouseover="upErr = true" @mouseleave="upErr = false" :style="{width: (this.pWidth > 120 ? this.pWidth : 120) + 'px'}">
+            <v-row>
+                <v-card v-if="err.length > 0">
+                        <svg width="20" height="50">
+                            <rect width="20" height="50" style="fill:rgb(255,10,10);" />
+                        </svg>
+                    </v-card>
+                <v-column>
+                    <v-card>
+                        <v-card-text class="auto-manual--content" :class="{ 'auto-manual--content-small': this.pWidth < 450 }">
+                            <div class="header-container">
+                                <div class="loading-container">
+                                    <v-progress-circular
+                                        indeterminate
+                                        color="primary"
+                                        :size="15"
+                                        v-if="loading"
+                                    ></v-progress-circular>
+                                     <!-- <v-alert v-if="err.length >0" 
+                                        dense
+                                        outlined
+                                        type="error"
+                                    ></v-alert>  -->
+                                    
+                                </div>                     
+                                <div class="state-container" :class="{ 'state-container-small': this.pWidth < 700, 'state-container--x-small': this.pWidth < 200 }">
+                                    <div>
+                                        <div v-if="!!pLabel" class="cmp-label">
+                                            {{ pLabel }}
+                                        </div>
+                                        <transition name="slide-fade" mode="out-in">
+                                            <div class="cmp-state" :key="componentState">
+                                                {{ componentState }}
+                                            </div>
+                                        </transition>
                                     </div>
-                                </transition>
+                                                        
+
+                                </div>
                             </div>
-                                                  
 
-                        </div>
-                    </div>
-
-                    <div class="header-actions" :class="{'actions-hidden': !!disableChange || !!pHideControls, 'header-actions--x-small': this.pWidth < 200 }">
-                        <v-menu ref="menu-errors"
-                            :close-on-content-click="false"
-                            offset-y
-                            attach
-                        >
-                            <template v-slot:activator="{on, attrs}">
-                                <v-btn fab x-small elevation="1"                                     
-                                    v-bind="attrs" v-on="on"
-                                    :color="!!errorActive ? 'error' : ''" 
-                                    @click="errorActive = '';" 
-                                    :class="{'error-active-anim': !!errorActive}"
+                            <div class="header-actions" :class="{'actions-hidden': !!disableChange || !!pHideControls, 'header-actions--x-small': this.pWidth < 200 }">
+                                <v-menu ref="menu-errors"
+                                    :close-on-content-click="false"
+                                    offset-y
+                                    attach
                                 >
-                                    <v-icon>mdi-alert</v-icon>
-                                </v-btn>                                
-                            </template>
+                                    <template v-slot:activator="{on, attrs}">
+                                        <v-btn fab x-small elevation="1"                                     
+                                            v-bind="attrs" v-on="on"
+                                            :color="!!errorActive ? 'error' : ''" 
+                                            @click="errorActive = '';" 
+                                            :class="{'error-active-anim': !!errorActive}"
+                                        >
+                                            <v-icon>mdi-alert</v-icon>
+                                        </v-btn>                                
+                                    </template>
 
-                            <AutoManualErrors
-                                :errorHandler="errorHandlers"
-                            ></AutoManualErrors>
-                        </v-menu>
+                                    <AutoManualErrors
+                                        :errorHandler="errorHandlers"
+                                    ></AutoManualErrors>
+                                </v-menu>
 
-                        <v-menu ref="menu-config" v-if="(!disableChange && !pHideControls)"
-                            :close-on-content-click="false"
-                            offset-y
-                            attach
-                        >
-                            <template v-slot:activator="{on, attrs}">
-                                <v-btn fab x-small elevation="1" v-bind="attrs" v-on="on">
-                                    <v-icon>mdi-cog</v-icon>
-                                </v-btn>
-                            </template>
+                                <v-menu ref="menu-config" v-if="(!disableChange && !pHideControls)"
+                                    :close-on-content-click="false"
+                                    offset-y
+                                    attach
+                                >
+                                    <template v-slot:activator="{on, attrs}">
+                                        <v-btn fab x-small elevation="1" v-bind="attrs" v-on="on">
+                                            <v-icon>mdi-cog</v-icon>
+                                        </v-btn>
+                                    </template>
 
-                            <div>
-                                <AutoManualControls
-                                    :controls="pConfig.control">
-                                </AutoManualControls>
-                                <AutoManualHistory
-                                    :cmpId="pxIdViewAndIdCmp"
-                                ></AutoManualHistory>
+                                    <div>
+                                        <AutoManualControls
+                                            :controls="pConfig.control">
+                                        </AutoManualControls>
+                                        <AutoManualHistory
+                                            :cmpId="pxIdViewAndIdCmp"
+                                        ></AutoManualHistory>
+                                    </div>
+                                </v-menu>
+                                
                             </div>
-                        </v-menu>
-                        
-                    </div>
-                    
-                </v-card-text>
-            </v-card>
+                            
+                        </v-card-text>
+                    </v-card>
+                </v-column>
+            </v-row>
+            <v-row>
+                <v-card v-if="upErr && this.err.length > 0">
+                        {{this.msg_err}}
+                </v-card>
+            </v-row>
 
         </v-container>
     </v-app>
@@ -176,6 +195,7 @@ export default {
             errorHandlers: new Map(),
             componentState:'NOT-CHECKED',
             err: '',
+            msg_err: '',
         }
     },
 
@@ -252,6 +272,7 @@ export default {
                 } catch (e) {
                     console.error(`${this.label}, status: ${conditions[i].name}, Exception occured: ${e}`)
                     this.err = 'err'
+                    this.msg_err = e.message
                 }
             }
             this.disableChange = this.disableComponent;
