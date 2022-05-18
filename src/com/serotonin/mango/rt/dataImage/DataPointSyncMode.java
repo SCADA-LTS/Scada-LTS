@@ -8,8 +8,8 @@ public enum DataPointSyncMode {
     MEDIUM("partial", DataPointNonSyncRT.class),
     HIGH("all", DataPointSynchronizedRT.class);
 
-    private String name;
-    private Class<?> type;
+    private final String name;
+    private final Class<?> type;
 
     DataPointSyncMode(String name, Class<?> type) {
         this.name = name;
@@ -17,7 +17,7 @@ public enum DataPointSyncMode {
     }
 
     public String getName() {
-        return name;
+        return name.toUpperCase();
     }
 
     public Class<?> getType() {
@@ -32,9 +32,12 @@ public enum DataPointSyncMode {
         if("false".equalsIgnoreCase(value))
             return DataPointSyncMode.LOW;
         return Stream.of(DataPointSyncMode.values())
-                .filter(type -> type.name().equalsIgnoreCase(value) ||
-                        type.getName().equalsIgnoreCase(value))
+                .filter(type -> type.getName().equalsIgnoreCase(value))
                 .findAny()
                 .orElse(DataPointSyncMode.LOW);
+    }
+
+    public static String getName(String name) {
+        return typeOf(name).getName();
     }
 }
