@@ -243,7 +243,7 @@
 		>
 			<component
 				v-for="(cmp, index) in viewComponents"
-				:key="key(cmp)"
+				:key="calculateKey(cmp)"
 				:is="cmp.defName.toUpperCase()"
 				:component="cmp"
 				@update="updateComponents"
@@ -269,7 +269,7 @@ export default {
 			changes: 0,
 			hiddenComponents: [],
 			viewComponents: [],
-			graphicViewId: 0
+			graphicalViewId: 0
 		};
 	},
 
@@ -317,7 +317,7 @@ export default {
 					if (this.editMode && this.userAccess < 2) {
 						this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
 					}
-					this.graphicViewId = graphicalViewId;
+					this.graphicalViewId = graphicalViewId;
 					this.viewComponents = this.$store.getters.viewComponentsGetter;
 				} catch (e) {
 					console.error(e);
@@ -382,8 +382,8 @@ export default {
 		deleteComponent() {
 			this.activeComponent.deleteComponent();
 		},
-        key(cmp) {
-            return this.graphicViewId + "_" + cmp.index;
+        calculateKey(cmp) {
+            return this.graphicalViewId + "_" + cmp.index;
         },
 	},
 
