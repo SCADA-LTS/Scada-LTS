@@ -226,7 +226,6 @@ export default {
 		async changeToCreateMode() {
 			this.changeToEditMode();
 			this.createMode = true;
-			this.$router.push({ path: `/graphical-view/-1` });
 			const view = new GraphicalViewItem(this.$store.state.loggedUser.id);
 			try {
 				view.xid = await this.$store.dispatch('getUniqeGraphicalViewXid');
@@ -234,6 +233,7 @@ export default {
 				console.log(e);
 			}
 			this.$store.commit('SET_GRAPHICAL_PAGE', view);
+			this.$router.push({ path: `/graphical-view/-1` });
 		},
 
 		removeGraphicalView() {

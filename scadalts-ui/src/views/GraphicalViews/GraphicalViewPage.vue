@@ -310,22 +310,22 @@ export default {
 
 	methods: {
 		async fetchGraphicalView(graphicalViewId) {
-			if (graphicalViewId > 0) {
-				try {
-					await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
-					this.$emit('routeChanged', Number(graphicalViewId));
-					if (this.editMode && this.userAccess < 2) {
-						this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
-					}
-					this.graphicalViewId = graphicalViewId;
-					this.viewComponents = this.$store.getters.viewComponentsGetter;
-				} catch (e) {
-					console.error(e);
-					if (e.status === 401) {
-						this.$router.push({ name: '401' });
-					}
-				}
-			}
+            try {
+                if (graphicalViewId > 0) {
+                    await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
+                    this.$emit('routeChanged', Number(graphicalViewId));
+                    if (this.editMode && this.userAccess < 2) {
+                        this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
+                    }
+                }
+                this.graphicalViewId = graphicalViewId;
+                this.viewComponents = this.getViewComponents();
+            } catch (e) {
+                console.error(e);
+                if (e.status === 401) {
+                    this.$router.push({ name: '401' });
+                }
+            }
 		},
 
 		getImageSets() {
@@ -383,8 +383,14 @@ export default {
 			this.activeComponent.deleteComponent();
 		},
         calculateKey(cmp) {
-            return this.graphicalViewId + "_" + cmp.index;
+            return this.graphicalViewId + "-" + cmp.index;
         },
+        getViewComponents() {
+            if (!!this.$store.state.graphicalViewModule.graphicalPage) {
+                return this.$store.getters.viewComponentsGetter;
+            }
+            return [];
+        }
 	},
 
 	watch: {
