@@ -313,6 +313,7 @@ export default {
             try {
                 if (graphicalViewId > 0) {
                     await this.$store.dispatch('getGraphicalViewById', graphicalViewId);
+                    this.$emit('routeChanged', Number(graphicalViewId));
                     if (this.editMode && this.userAccess < 2) {
                         this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
                     }
