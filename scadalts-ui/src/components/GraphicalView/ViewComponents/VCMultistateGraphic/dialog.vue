@@ -21,6 +21,13 @@
                     </v-col>
                 </v-row>
             </v-card-text>
+            <v-card-text v-if="errors">
+                <v-row>
+                    <v-col cols="12">
+                        <p id="errors">{{errors}}</p>
+                    </v-col>
+                </v-row>
+            </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn text @click="reset">
@@ -44,6 +51,7 @@ export default {
 			dialog: false,
             image: null,
             state: 0,
+            errors: ''
 		};
 	},
 
@@ -55,9 +63,14 @@ export default {
 		},
 		closeDialog() {
 			this.dialog = false;
+			this.errors = '';
 		},
 
         accept() {
+            if(!this.isInteger(this.state)) {
+                this.errors = 'Invalid state. State must be an integer.';
+                return;
+            }
             this.$emit('result', {
                 image: this.image,
                 state: Number(this.state),
@@ -78,9 +91,17 @@ export default {
         cancel() {
             this.closeDialog();
         },
+
+        isInteger(state) {
+            return /^([+-]?[1-9]\d*|0).[0]$/.test(state) || /^([+-]?[1-9]\d*|0)$/.test(state);
+        }
 	},
     
     
 };
 </script>
-<style></style>
+<style>
+    #errors {
+        color: red
+    }
+</style>
