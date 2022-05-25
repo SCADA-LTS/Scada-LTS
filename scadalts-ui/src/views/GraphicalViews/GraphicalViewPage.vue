@@ -251,7 +251,9 @@
 				@mousedown="draggingStart"
 			>
 			</component>
+		
 		</div>
+			<IsAlive />
 	</div>
 </template>
 <script>
