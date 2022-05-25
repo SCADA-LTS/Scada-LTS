@@ -8,7 +8,7 @@
 					<v-list-item-title class="title"> Scada-LTS
 						<v-icon  v-if="!wsLive" title="Offline">mdi-access-point-network-off</v-icon></v-list-item-title>
 					<v-list-item-subtitle>
-						version {{ $store.getters.appMilestone }}
+						version: {{ $store.getters.appMilestone }} - ui: {{ $store.getters.appVersion }}
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
