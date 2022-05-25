@@ -67,7 +67,7 @@ export default {
 		},
 
         accept() {
-            if(!this.isInteger(this.state)) {
+            if(!this.isInt32(this.state)) {
                 this.errors = 'Invalid state. State must be an integer.';
                 return;
             }
@@ -92,8 +92,14 @@ export default {
             this.closeDialog();
         },
 
-        isInteger(state) {
-            return /^([+-]?[1-9]\d*|0).[0]$/.test(state) || /^([+-]?[1-9]\d*|0)$/.test(state);
+        isInt32(state) {
+            if(!(/^([+-]?[1-9]\d*|0).[0]$/.test(state))
+                && !(/^([+-]?[1-9]\d*|0)$/.test(state))) {
+                return false;
+            }
+            const view = new DataView(new ArrayBuffer(32));
+            view.setInt32(1, state);
+            return Number.parseInt(state) === view.getInt32(1);
         }
 	},
     
