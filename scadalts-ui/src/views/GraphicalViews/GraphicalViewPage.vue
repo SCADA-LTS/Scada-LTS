@@ -268,6 +268,7 @@ export default {
 		return {
 			changes: 0,
 			hiddenComponents: [],
+			viewComponents: [],
 			graphicalViewId: 0
 		};
 	},
@@ -284,12 +285,6 @@ export default {
 	computed: {
 		viewPage() {
 			return this.$store.state.graphicalViewModule.graphicalPage;
-		},
-		viewComponents() {
-	        if (!!this.$store.state.graphicalViewModule.graphicalPage) {
-                return this.$store.getters.viewComponentsGetter;
-            }
-            return [];
 		},
 		viewSize() {
 			return this.$store.state.graphicalViewModule.resolution;
@@ -323,6 +318,7 @@ export default {
                         this.$store.commit('SET_GRAPHICAL_PAGE_EDIT', false);
                     }
                 }
+                this.viewComponents = this.getViewComponents();
                 this.graphicalViewId = graphicalViewId;
             } catch (e) {
                 console.error(e);
@@ -388,7 +384,13 @@ export default {
 		},
         calculateKey(cmp) {
             return this.graphicalViewId + "-" + cmp.index;
-        }
+        },
+        getViewComponents() {
+            if (!!this.$store.state.graphicalViewModule.graphicalPage) {
+                return this.$store.getters.viewComponentsGetter;
+            }
+            return [];
+        },
 	},
 
 	watch: {
