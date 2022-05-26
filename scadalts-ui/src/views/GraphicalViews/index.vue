@@ -283,7 +283,6 @@ export default {
 						this.activeGraphicalView = res.id;
 						this.moveToGraphicalView();
 						this.showCrudSnackbar('add');
-						this.moveToGraphicalView();
 					}
 				} else {
 					res = await this.$store.dispatch('saveGraphicalView');
