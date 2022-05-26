@@ -60,7 +60,7 @@ export default {
 
 	data() {
 		return {
-			imageSet: {imageFilenames:[]},
+			imageSet: null,
 			activeGraphic: null,
 			imageArray: [],
 			rendering: 0,

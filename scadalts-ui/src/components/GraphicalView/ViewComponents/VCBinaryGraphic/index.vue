@@ -47,7 +47,7 @@ export default {
 	data() {
 		return {
 			content: '(n/a)',
-			imageSet: {imageFilenames:[]},
+			imageSet: null,
 			activeGraphic: null,
 			imageArray: [],
 			rendering: 0,

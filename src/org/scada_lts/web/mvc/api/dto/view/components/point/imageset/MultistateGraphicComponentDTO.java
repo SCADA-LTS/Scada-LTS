@@ -35,14 +35,6 @@ public class MultistateGraphicComponentDTO extends ImageSetComponentDTO {
         this.defaultImage = defaultImage;
     }
 
-    public List<IntValuePair> getImageStateList() {
-        return imageStateList;
-    }
-
-    public void setImageStateList(List<IntValuePair> imageStateList) {
-        this.imageStateList = imageStateList;
-    }
-
     @Override
     public MultistateGraphicComponent createFromBody(User user) {
         MultistateGraphicComponent c = new MultistateGraphicComponent();
