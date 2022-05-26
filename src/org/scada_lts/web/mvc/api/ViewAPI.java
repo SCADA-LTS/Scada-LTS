@@ -340,8 +340,8 @@ public class ViewAPI {
 
     @GetMapping(value = "")
     public ResponseEntity<View> getView(@RequestParam(required = false) Integer id,
-                                        @RequestParam(required = false) String xid,
-                                        HttpServletRequest request) {
+                                          @RequestParam(required = false) String xid,
+                                          HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
@@ -417,8 +417,8 @@ public class ViewAPI {
 
     @DeleteMapping(value = "")
     public ResponseEntity<String> deleteView(@RequestParam(required = false) Integer id,
-                                             @RequestParam(required = false) String xid,
-                                             HttpServletRequest request) {
+                                        @RequestParam(required = false) String xid,
+                                        HttpServletRequest request) {
         LOG.info("/api/view");
         try {
             User user = Common.getUser(request);
@@ -467,9 +467,7 @@ public class ViewAPI {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 ImageSet imageSet = viewService.getImageSet(id);
-                if(imageSet.isAvailable())
-                    return new ResponseEntity<>(imageSet, HttpStatus.OK);
-                return new ResponseEntity<>(imageSet, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(imageSet, HttpStatus.OK);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
