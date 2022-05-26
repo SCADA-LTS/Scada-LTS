@@ -467,9 +467,7 @@ public class ViewAPI {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 ImageSet imageSet = viewService.getImageSet(id);
-                if(imageSet.isAvailable())
-                    return new ResponseEntity<>(imageSet, HttpStatus.OK);
-                return new ResponseEntity<>(imageSet, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(imageSet, HttpStatus.OK);
 
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
