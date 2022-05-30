@@ -27,7 +27,11 @@
 		<pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
 	</path>
 
-	<target name="init-core" description="Prepare project before build">
+	<target name="clear" >
+		<delete dir="${web.classes.dir}"/>
+	</target>
+
+	<target name="init-core" description="Prepare project before build" depends="clear">
 		<delete dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.src.dir}"/>
@@ -262,6 +266,10 @@
 			</test>
 
 			<test name="org.scada_lts.utils.SystemSettingsUtilsTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="br.org.scadabr.view.component.GenerateAlarmListComponentTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,7 +55,7 @@ public class AlarmListComponent extends CustomComponent {
 		int max = events.size() > maxListSize ? maxListSize : events.size();
 
 		model.put("nome", "marlon");
-		model.put("events", events.subList(0, max));
+		model.put("events", new CopyOnWriteArrayList<>(events.subList(0, max)));
 		model.put("width", width > 0 ? width : 500);
 		model.put("hideIdColumn", hideIdColumn);
 		model.put("hideAlarmLevelColumn", hideAlarmLevelColumn);
