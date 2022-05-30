@@ -16,7 +16,7 @@ Code released under [the GPL license](https://github.com/SCADA-LTS/Scada-LTS/blo
 
 See our [GitHub Wiki](https://github.com/SCADA-LTS/Scada-LTS/wiki) page to take the first steps inside
 Scada-LTS project. There you can find **QuickStart Guide** how to run or build this application. Follow the latest changes and share your contribution with [our team](https://github.com/SCADA-LTS/Scada-LTS/wiki/The-Team)!
-There is also a Scada-LTS users community so if you had a problem feel free to ask questions on StackOverflow or our GitHub Discussions.
+There is also a Scada-LTS users community so if you have a problem feel free to ask questions on StackOverflow or our GitHub Discussions.
 For the developers we are preparing a complete code documentation that will contain all the REST API interfaces
 described with example usage. To do that we use Open API specification in version 3 that is compatible with
 most of the modern API tools like Swagger or Postman. Documentation file can be found in [Scada-LTS/doc](https://github.com/SCADA-LTS/Scada-LTS/tree/develop/doc/RESTAPI) directory.
@@ -31,9 +31,16 @@ If you need support for deployment please contact us and find more information o
 
 ## Issues and ideas
 Have you found a bug? Do you have idea for a new feature? Open a new [Issue](https://github.com/SCADA-LTS/Scada-LTS/issues) on our GitHub project site!
-Please follow the [issue guidelines](https://github.com/twbs/bootstrap/blob/master/CONTRIBUTING.md#using-the-issue-tracker)
-and make sure that your issue is not already reported. Try to write in english and explain what do you think in clear and understandable way.
+Please follow the [issue guidelines](https://github.com/twbs/bootstrap/blob/main/.github/CONTRIBUTING.md#using-the-issue-tracker)
+and make sure that your issue is not already reported. Try to write in english and explain what you think in a clear and understandable way.
 
+Special templates have been prepared:
+- "Bug report" - detailed bug report (including a scenario that allows you to repeat the error);
+- "Feature" - new feature, or an extension of the old ones;
+- "Feature request" - proposal for a new feature, or an extension of the old one;
+- "Report a security vulnerability" - application security vulnerability reports;
+
+We recommend using them;
 
 ---
 
