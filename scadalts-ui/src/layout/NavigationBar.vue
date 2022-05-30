@@ -35,11 +35,12 @@
 					</v-list-item-icon>
 					<v-list-item-title>{{ $t('watchlist.title') }} </v-list-item-title>
 				</v-list-item>
-				<v-list-item link href="#/graphical-view">
+				<v-list-item link href="#/graphical-view" disabled>
 					<v-list-item-icon>
 						<v-icon>mdi-image</v-icon>
 					</v-list-item-icon>
 					<v-list-item-title> Graphical Views </v-list-item-title>
+					<v-chip class="v-chip-display-flex-justify-center" color="primary" x-small> +2.7.2 </v-chip>
 				</v-list-item>
 				<v-list-item link href="#/synoptic-panel" v-if="isUserRoleAdmin">
 					<v-list-item-icon>
@@ -261,5 +262,12 @@ a:hover {
 <style>
 .v-list-group--active  .v-list-group__items {
     margin-left: 10px;
+}
+.v-list-item--disabled {
+    background-color:#8FBC8F
+}
+.v-chip-display-flex-justify-center span {
+    display: flex;
+    justify-content: center;
 }
 </style>
