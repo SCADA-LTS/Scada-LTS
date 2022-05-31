@@ -21,11 +21,15 @@ public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
 
     @Override
     public List<View> getObjectsWithAccess(User user) {
+        if(user.isAdmin())
+            return viewDAO.findAll();
         return viewDAO.selectViewWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
     public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        if(user.isAdmin())
+            return viewDAO.selectViewIdentifiers();
         return viewDAO.selectViewIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 }
