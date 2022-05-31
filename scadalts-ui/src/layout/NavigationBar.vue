@@ -189,7 +189,6 @@
 							<v-icon>mdi-tune</v-icon>
 						</v-list-item-icon>
 						<v-list-item-title>{{ $t('systemsettings.title') }}</v-list-item-title>
-						<v-chip class="v-chip-display-flex-justify-center" color="info" x-small> Beta </v-chip>
 					</v-list-item>
 
 					<v-list-item link href="#/import-export">
