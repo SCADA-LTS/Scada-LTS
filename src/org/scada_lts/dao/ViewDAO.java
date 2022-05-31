@@ -231,6 +231,10 @@ public class ViewDAO implements GenericDAO<View> {
 			"where " +
 			"vup." + COLUMN_NAME_UP_VIEW_ID + "=?;";
 
+	private static final String VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME = ""
+			+ VIEW_IDENTIFIER_SELECT + " "
+			+ "order by "+COLUMN_NAME_NAME;
+
 	// @formatter:on
 	
 	// RowMapper
@@ -490,7 +494,7 @@ public class ViewDAO implements GenericDAO<View> {
 	}
 
     public List<ScadaObjectIdentifier> selectViewIdentifiers() {
-        return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT, new Object[]{},
+        return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
 						.xidColumnName(COLUMN_NAME_XID)

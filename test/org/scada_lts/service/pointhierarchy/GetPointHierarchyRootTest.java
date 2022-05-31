@@ -15,7 +15,11 @@ import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 import org.scada_lts.utils.PointHierarchyUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.generateDataPointAccess;
@@ -90,22 +94,22 @@ public class GetPointHierarchyRootTest {
 
         folder1.getChildren().add(folder2);
         folder1.getChildren().add(point6);
+
         folder2.getChildren().add(folder4);
         folder2.getChildren().add(point5);
+
         folder3.getChildren().add(point4);
         folder4.getChildren().add(folder5);
         folder5.getChildren().add(folder6);
+
         folder6.getChildren().add(point2);
         folder6.getChildren().add(point3);
 
         PointHierarchyNode adminRootExpected = PointHierarchyNode.rootNode();
 
-        adminRootExpected.getChildren().add(point1);
         adminRootExpected.getChildren().add(folder1);
         adminRootExpected.getChildren().add(folder3);
-
-        PointHierarchyUtils.sort(Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6, emptyFolder, fakeFolder,
-                point1, point2, point3, point4, point5, point6, adminRootExpected));
+        adminRootExpected.getChildren().add(point1);
 
         //when:
         PointHierarchyNode rootResult = service.getPointHierarchyRoot(user);
@@ -137,23 +141,27 @@ public class GetPointHierarchyRootTest {
 
         folder1.getChildren().add(folder2);
         folder1.getChildren().add(point6);
+
         folder2.getChildren().add(folder4);
         folder2.getChildren().add(point5);
+
         folder3.getChildren().add(point4);
         folder4.getChildren().add(folder5);
         folder5.getChildren().add(folder6);
+
         folder6.getChildren().add(point2);
         folder6.getChildren().add(point3);
 
         PointHierarchyNode adminRootExpected = PointHierarchyNode.rootNode();
 
-        adminRootExpected.getChildren().add(point1);
-        adminRootExpected.getChildren().add(folder1);
-        adminRootExpected.getChildren().add(folder3);
-        adminRootExpected.getChildren().add(emptyFolder);
+        List<PointHierarchyNode> folders = new ArrayList<>();
+        folders.add(folder1);
+        folders.add(folder3);
+        folders.add(emptyFolder);
+        folders.sort(Comparator.comparing(PointHierarchyNode::getTitle));
 
-        PointHierarchyUtils.sort(Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6, emptyFolder, fakeFolder,
-                point1, point2, point3, point4, point5, point6, adminRootExpected));
+        adminRootExpected.getChildren().addAll(folders);
+        adminRootExpected.getChildren().add(point1);
 
         //when:
         PointHierarchyNode rootResult = service.getPointHierarchyWithEmptyRoot(user);
@@ -178,10 +186,9 @@ public class GetPointHierarchyRootTest {
         PointHierarchyNode nonadminRootExpected = PointHierarchyNode.rootNode();
 
         folder1.getChildren().add(point6);
-        nonadminRootExpected.getChildren().add(point1);
-        nonadminRootExpected.getChildren().add(folder1);
 
-        PointHierarchyUtils.sort(Arrays.asList(folder1, emptyFolder, fakeFolder, point1, point6, nonadminRootExpected));
+        nonadminRootExpected.getChildren().add(folder1);
+        nonadminRootExpected.getChildren().add(point1);
 
         DataPointAccess result1 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_READ), dataPoint1);
         DataPointAccess result6 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_SET), dataPoint6);
@@ -214,17 +221,21 @@ public class GetPointHierarchyRootTest {
 
         PointHierarchyNode nonadminRootExpected = PointHierarchyNode.rootNode();
 
-        folder1.getChildren().add(point6);
         folder1.getChildren().add(folder2);
+        folder1.getChildren().add(point6);
+
         folder2.getChildren().add(folder4);
         folder4.getChildren().add(folder5);
         folder5.getChildren().add(folder6);
-        nonadminRootExpected.getChildren().add(point1);
-        nonadminRootExpected.getChildren().add(folder1);
-        nonadminRootExpected.getChildren().add(folder3);
-        nonadminRootExpected.getChildren().add(emptyFolder);
 
-        PointHierarchyUtils.sort(Arrays.asList(folder1, folder3, emptyFolder, fakeFolder, point1, point6, nonadminRootExpected));
+        List<PointHierarchyNode> folders = new ArrayList<>();
+        folders.add(folder1);
+        folders.add(folder3);
+        folders.add(emptyFolder);
+        folders.sort(Comparator.comparing(PointHierarchyNode::getTitle));
+
+        nonadminRootExpected.getChildren().addAll(folders);
+        nonadminRootExpected.getChildren().add(point1);
 
         DataPointAccess result1 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_READ), dataPoint1);
         DataPointAccess result6 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_SET), dataPoint6);
