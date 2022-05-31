@@ -47,15 +47,16 @@ public class AlarmListComponent extends CustomComponent {
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<EventInstance> events = new EventDao().getPendingEvents(Common
+		List<EventInstance> toViewEvents = new EventDao().getPendingEvents(Common
 				.getUser().getId());
 
+		List<EventInstance> events = new ArrayList<>(toViewEvents);
 		filter(events, minAlarmLevel);
 
 		int max = events.size() > maxListSize ? maxListSize : events.size();
 
 		model.put("nome", "marlon");
-		model.put("events", new CopyOnWriteArrayList<>(events.subList(0, max)));
+		model.put("events", events.subList(0, max));
 		model.put("width", width > 0 ? width : 500);
 		model.put("hideIdColumn", hideIdColumn);
 		model.put("hideAlarmLevelColumn", hideAlarmLevelColumn);
