@@ -1,5 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.api.json.ThreadInfo;
@@ -10,7 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.ThreadInfoApiUtils.*;
@@ -23,7 +28,11 @@ public class StateThreadInfoAPI {
     private static final Log LOG = LogFactory.getLog(StateThreadInfoAPI.class);
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<Value>> getStates() {
+    public ResponseEntity<List<Value>> getStates(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             return new ResponseEntity<>(getThreadStack().keySet().stream()
                     .map(Thread::getState)
@@ -38,7 +47,12 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/state/{state}/")
-    public ResponseEntity<List<ThreadInfo>> getThreadsForState(@PathVariable(value = "state", required = true) Thread.State state) {
+    public ResponseEntity<List<ThreadInfo>> getThreadsForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                               HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             Map<Value, List<ThreadInfo>> map = groupByAndSort(getThreadStack(), groupByStates(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
@@ -50,7 +64,12 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/state/{state}/count/")
-    public ResponseEntity<Long> getThreadsCountForState(@PathVariable(value = "state", required = true) Thread.State state) {
+    public ResponseEntity<Long> getThreadsCountForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                        HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             Map<Value, Long> map = groupByAndSort(getThreadStack(), groupByStatesCounting(),
                     Map.Entry.comparingByValue(Comparator.reverseOrder()));
@@ -63,7 +82,12 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/state/{state}/classes/")
-    public ResponseEntity<List<Value>> getThreadClassesForState(@PathVariable(value = "state", required = true) Thread.State state) {
+    public ResponseEntity<List<Value>> getThreadClassesForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                                HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             Map<Value, List<Value>> map = groupByAndSort(getThreadStack(), groupByStatesClass(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
@@ -75,7 +99,12 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/state/{state}/names/")
-    public ResponseEntity<List<Value>> getThreadNamesForState(@PathVariable(value = "state", required = true) Thread.State state) {
+    public ResponseEntity<List<Value>> getThreadNamesForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                              HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             Map<Value, List<Value>> map = groupByAndSort(getThreadStack(), groupByStatesName(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
@@ -87,7 +116,11 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/")
-    public ResponseEntity<Map<Value, List<ThreadInfo>>> getThreadsGroupByState() {
+    public ResponseEntity<Map<Value, List<ThreadInfo>>> getThreadsGroupByState(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStates(),
                             Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -99,7 +132,11 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/classes/")
-    public ResponseEntity<Map<Value, List<Value>>> getThreadClassesGroupByState() {
+    public ResponseEntity<Map<Value, List<Value>>> getThreadClassesGroupByState(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesClass(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -111,7 +148,11 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/names/")
-    public ResponseEntity<Map<Value, List<Value>>> getThreadNamesGroupByState() {
+    public ResponseEntity<Map<Value, List<Value>>> getThreadNamesGroupByState(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesName(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -123,7 +164,11 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/count/")
-    public ResponseEntity<Map<Value, Long>> getThreadsCountGroupByState() {
+    public ResponseEntity<Map<Value, Long>> getThreadsCountGroupByState(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if(user == null || !user.isAdmin()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesCounting(),
                     Map.Entry.comparingByValue(Comparator.reverseOrder())

@@ -14,36 +14,21 @@ info:
   license:
     name: 'GPL-2.0'
 paths:
-  /work-items/:
+  /work-items/all:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get all work items'
+      description: 'Get work items executed and not executed'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/group-by/:
+  /work-items/group-by/all:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items by class'
+      description: 'Grouping work items executed and not executed by class'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/limit/{limit}/:
-    get:
-      tags:
-        - WorkItemInfoAPI
-      description: 'Set limit for work items map'
-      responses:
-        '200':
-          description: 'Get successful'
-          headers: { }
-      parameters:
-        - name: 'limit'
-          in: 'path'
-          required: true
-          schema:
-            type: 'integer'
