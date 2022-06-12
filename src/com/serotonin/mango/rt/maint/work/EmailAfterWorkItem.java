@@ -1,37 +1,31 @@
 package com.serotonin.mango.rt.maint.work;
 
 import com.serotonin.mango.util.SendEmailConfig;
+import com.serotonin.mango.util.SendEmailData;
 import com.serotonin.mango.web.email.EmailTimeoutSender;
-import com.serotonin.mango.web.email.IMsgSubjectContent;
-
-import javax.mail.internet.InternetAddress;
 
 public class EmailAfterWorkItem extends AbstractBeforeAfterWorkItem {
 
-    private final InternetAddress fromAddress;
-    private final InternetAddress[] toAddresses;
-    private final IMsgSubjectContent content;
+    private final SendEmailData sendEmailData;
     private final SendEmailConfig sendEmailConfig;
     private final AfterWork afterWork;
 
-    protected EmailAfterWorkItem(InternetAddress fromAddress, InternetAddress[] toAddresses, IMsgSubjectContent content,
-                                 SendEmailConfig sendEmailConfig, AfterWork afterWork) {
+    protected EmailAfterWorkItem(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig, AfterWork afterWork) {
         this.afterWork = afterWork;
-        this.fromAddress = fromAddress;
-        this.toAddresses = toAddresses;
-        this.content = content;
+        this.sendEmailData = sendEmailData;
         this.sendEmailConfig = sendEmailConfig;
     }
 
-    public static WorkItem newInstance(InternetAddress fromAddress, InternetAddress[] toAddresses, IMsgSubjectContent content,
-                                       SendEmailConfig sendEmailConfig, AfterWork afterWork) {
-        return new EmailAfterWorkItem(fromAddress, toAddresses, content, sendEmailConfig, afterWork);
+    public static WorkItem newInstance(SendEmailData sendEmailData, SendEmailConfig sendEmailConfig,
+                                       AfterWork afterWork) {
+        return new EmailAfterWorkItem(sendEmailData, sendEmailConfig, afterWork);
     }
 
     @Override
     public void work() {
         EmailTimeoutSender emailSender = new EmailTimeoutSender(sendEmailConfig);
-        emailSender.send(fromAddress, toAddresses, content.getSubject(), content);
+        emailSender.send(sendEmailData.getFromAddress(), sendEmailData.getToAddresses(),
+                sendEmailData.getContent().getSubject(), sendEmailData.getContent());
     }
 
     @Override

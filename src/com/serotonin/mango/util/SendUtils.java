@@ -10,12 +10,14 @@ import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import freemarker.template.TemplateException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -32,7 +34,7 @@ public final class SendUtils {
         sendMsg(evt, notificationType, addresses, alias, afterWork, new BeforeWork.NotExecuted() {
             @Override
             public void workNotExecuted(String msg) {
-                LOG.info(msg);
+                LOG.warn(msg);
             }
 
             @Override
@@ -130,6 +132,8 @@ public final class SendUtils {
                                 String alias, AfterWork afterWork, BeforeWork.NotExecuted notExecuted) {
         try {
 
+            validateEmail(evt, notificationType, addresses, alias);
+
             if (evt.getEventType().isSystemMessage()
                     && ((SystemEventType) evt.getEventType()).getSystemEventTypeId() == SystemEventType.TYPE_EMAIL_SEND_FAILURE) {
                 // Don't send email notifications about email send failures.
@@ -138,19 +142,10 @@ public final class SendUtils {
             }
 
             SendEmailConfig.validateSystemSettings();
-            validateEmail(evt, notificationType, addresses, alias);
-
-            String[] toAddresses = addresses.toArray(new String[0]);
-            InternetAddress[] toInternetAddresses = SendUtils.convertToInternetAddresses(toAddresses);
-
-            validateAddresses(evt, notificationType, toInternetAddresses, alias);
-
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
-            IMsgSubjectContent content = notificationType.createContent(evt, alias);
-            InternetAddress fromAddress = getFromAddress(sendEmailConfig);
 
-            WorkItem workItem = EmailAfterWorkItem.newInstance(fromAddress, toInternetAddresses, content,
-                    sendEmailConfig, afterWork);
+            SendEmailData sendEmailData = toSendEmailData(evt, notificationType, addresses, alias, sendEmailConfig);
+            WorkItem workItem = EmailAfterWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork);
 
             // Send the email.
             queueMsg(workItem);
@@ -170,16 +165,10 @@ public final class SendUtils {
         try {
 
             SendEmailConfig.validateSystemSettings();
-
-            InternetAddress[] toInternetAddresses = SendUtils.convertToInternetAddresses(toAddresses);
-            validateAddresses(toInternetAddresses);
-
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
-            IMsgSubjectContent content = MsgContentUtils.createContent(msgContent, subject);
-            InternetAddress fromAddress = getFromAddress(sendEmailConfig);
 
-            WorkItem workItem = EmailFinallyWorkItem.newInstance(fromAddress, toInternetAddresses, content,
-                    sendEmailConfig, afterWork, workFinally);
+            SendEmailData sendEmailData = toSendEmailData(toAddresses, subject, msgContent, sendEmailConfig);
+            WorkItem workItem = EmailFinallyWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork, workFinally);
 
             // Send the email.
             queueMsg(workItem);
@@ -211,13 +200,14 @@ public final class SendUtils {
                                             BiConsumer<T, Exception> handleException, T object,
                                             BeforeWork.NotExecuted notExecuted) {
         try {
+
             SendEmailConfig.validateSystemSettings();
             SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
-            InternetAddress[] internetAddresses = SendUtils.convertToInternetAddresses(toAddresses);
-            validateAddresses(internetAddresses);
+
+            SendEmailData sendEmailData = toSendEmailData(toAddresses, content, sendEmailConfig);
+            WorkItem workItem = EmailAfterWorkItem.newInstance(sendEmailData, sendEmailConfig, afterWork);
 
             // Send the email.
-            WorkItem workItem = EmailAfterWorkItem.newInstance(getFromAddress(sendEmailConfig), internetAddresses, content, sendEmailConfig, afterWork);
             workItem.execute();
         } catch (Exception e) {
             try {
@@ -332,6 +322,27 @@ public final class SendUtils {
         if (!messages.isEmpty()) {
             throw new IllegalArgumentException(messages);
         }
+    }
+
+    private static SendEmailData toSendEmailData(EventInstance evt, NotificationType notificationType,
+                                                 Set<String> addresses, String alias,
+                                                 SendEmailConfig sendEmailConfig) throws TemplateException, IOException {
+        String[] toAddresses = addresses.toArray(new String[0]);
+        IMsgSubjectContent content = notificationType.createContent(evt, alias);
+        return toSendEmailData(toAddresses, content, sendEmailConfig);
+    }
+
+    private static SendEmailData toSendEmailData(String[] toAddresses, String subject, IMsgContent msgContent,
+                                                 SendEmailConfig sendEmailConfig) throws TemplateException, IOException {
+        IMsgSubjectContent content = MsgContentUtils.createContent(msgContent, subject);
+        return toSendEmailData(toAddresses, content, sendEmailConfig);
+    }
+
+    private static SendEmailData toSendEmailData(String[] toAddresses, IMsgSubjectContent content, SendEmailConfig sendEmailConfig) throws UnsupportedEncodingException {
+        InternetAddress[] toInternetAddresses = SendUtils.convertToInternetAddresses(toAddresses);
+        validateAddresses(toInternetAddresses);
+        InternetAddress fromAddress = getFromAddress(sendEmailConfig);
+        return new SendEmailData(fromAddress, toInternetAddresses, content);
     }
 
     private static void queueMsg(WorkItem workItem) {
