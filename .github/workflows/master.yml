@@ -111,7 +111,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
-        id: load-cache
         uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-slts-${{ github.run_id }}
@@ -135,8 +134,7 @@ jobs:
         run: npm install
       - name: Build Scada Application
         run: gradle -PskipUi=true war
-      - if: ${{ steps.load-cache.outputs.cache-hit != 'false' }}
-        name: Save WAR file to cache
+      - name: Save WAR file to cache
         uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
