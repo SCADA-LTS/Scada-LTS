@@ -26,7 +26,7 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Cache Tomcat
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-tomcat-${{ github.run_id }}
           path: /home/runner/tomcat
@@ -41,7 +41,7 @@ jobs:
       - name: Build Scada-LTS WAR Application
         run: gradle -PskipUi=true compileJava
       - name: Cache Scada-LTS application
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-slts-${{ github.run_id }}
           path: ./build/
@@ -57,7 +57,7 @@ jobs:
           node-version: 12.x
       - name: Cache node modules
         id: nodeCache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./scadalts-ui/node_modules
           key: ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
@@ -83,7 +83,7 @@ jobs:
         working-directory: ./scadalts-ui
         run: npm run-script build
       - name: Cache Frontend
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-frontend-${{ github.run_id }}
           path: ./scadalts-ui/dist
@@ -104,19 +104,19 @@ jobs:
           java-version: 11
           distribution: 'adopt'
       - name: Load Cached node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./scadalts-ui/node_modules
           key: ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ github.run_id }}-${{ hashFiles('**/package-lock.json') }}
       - name: Load Cached Scada-LTS application
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-slts-${{ github.run_id }}
           path: ./build/
       - name: Load Cached Frontend
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-frontend-${{ github.run_id }}
           path: ./scadalts-ui/dist
@@ -135,7 +135,7 @@ jobs:
       - name: Build Scada Application
         run: gradle -PskipUi=true war
       - name: Save WAR file to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
@@ -146,7 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Load WAR file to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
@@ -163,7 +163,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Load WAR file to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ runner.os }}-war-${{ github.run_id }}
           path: ./build/libs/Scada-LTS.war
