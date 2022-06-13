@@ -17,7 +17,7 @@ jobs:
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.53
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Set up JDK 11
@@ -50,7 +50,7 @@ jobs:
     name: Test and Build Scada-LTS new User Interface
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
@@ -95,7 +95,7 @@ jobs:
     env:
       CATALINA_HOME: /home/runner/tomcat/apache-tomcat-9.0.53
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Set up JDK
@@ -161,7 +161,7 @@ jobs:
     needs: [ war ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Load WAR file to cache
         uses: actions/cache@v3
         with:
