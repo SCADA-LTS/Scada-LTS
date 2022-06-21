@@ -8,7 +8,7 @@ import org.scada_lts.config.ScadaConfig;
 import java.io.IOException;
 
 
-class SerialPortUtils {
+public class SerialPortUtils {
 
     private static final String TIMEOUT_READ_KEY = "comm.serial.timeout.read";
     private static final String TIMEOUT_WRITE_KEY = "comm.serial.timeout.write";
@@ -17,7 +17,11 @@ class SerialPortUtils {
 
     private SerialPortUtils() {}
 
-    static SerialPort openSerialPort(SerialPortParameters serialPortParameters) throws SerialPortException {
+    public static SerialPort[] getCommPorts() {
+        return SerialPort.getCommPorts();
+    }
+
+    public static SerialPort openSerialPort(SerialPortParameters serialPortParameters) throws SerialPortException {
         SerialPort serialPort = null;
         try {
             serialPort = getCommPort(serialPortParameters.getCommPortId());
@@ -35,7 +39,7 @@ class SerialPortUtils {
         }
     }
 
-    static void close(SerialPort serialPort) {
+    public static void close(SerialPort serialPort) {
         if (serialPort != null) {
             serialPort.closePort();
         }

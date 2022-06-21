@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango;
 
-import com.fazecast.jSerialComm.SerialPort;
 import gnu.io.CommPortIdentifier;
 
 import java.io.File;
@@ -33,6 +32,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -66,6 +67,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
+import org.scada_lts.serial.SerialPortUtils;
 
 public class Common {
 	
@@ -424,21 +426,14 @@ public class Common {
 		}
 	}
 
-	public static List<CommPortProxy> getSerialPorts()
-			throws CommPortConfigException {
+	public static List<CommPortProxy> getSerialPorts() throws CommPortConfigException {
 		try {
-			List<CommPortProxy> ports = new LinkedList<>();
-			SerialPort[] commPorts = SerialPort.getCommPorts();
-			for(SerialPort commPort: commPorts) {
-				ports.add(new CommPortProxy(commPort.getSystemPortName(), "Serial",
-						commPort.isOpen(), commPort.isOpen() ? commPort.getPortDescription() : null));
-			}
-			return ports;
-		} catch (UnsatisfiedLinkError e) {
+			return Arrays.stream(SerialPortUtils.getCommPorts())
+					.map(commPort -> new CommPortProxy(commPort.getSystemPortName(), "Serial",
+							commPort.isOpen(), commPort.isOpen() ? commPort.getPortDescription() : null))
+					.collect(Collectors.toList());
+		} catch (Exception e) {
 			throw new CommPortConfigException(e.getMessage());
-		} catch (NoClassDefFoundError e) {
-			throw new CommPortConfigException(
-					"Comm configuration error. Check that rxtx DLL or libraries have been correctly installed.");
 		}
 	}
 

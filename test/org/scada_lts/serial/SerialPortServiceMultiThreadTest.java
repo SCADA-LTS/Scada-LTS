@@ -35,7 +35,7 @@ public class SerialPortServiceMultiThreadTest {
     }
 
     @Test
-    public void when_open_close_numberOfLaunches_10_then_counter_get_10() {
+    public void when_open_close_two_ports_numberOfLaunches_100_then_not_exception() {
 
         //given:
         int numberOfLaunches = 100;
@@ -44,18 +44,11 @@ public class SerialPortServiceMultiThreadTest {
         //when:
         TestConcurrentUtils.biConsumer(numberOfLaunches, (serialPort1, serialPort2) -> {
             try {
-                counter.incrementAndGet();
-                serialPort1.open();
                 serialPort1.open();
                 serialPort2.open();
-                serialPort1.close();
-                serialPort1.close();
-                serialPort2.close();
-                serialPort2.open();
-                serialPort1.open();
-                serialPort1.close();
             } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
+                counter.incrementAndGet();
             } finally {
                 serialPort1.close();
                 serialPort2.close();
@@ -63,6 +56,29 @@ public class SerialPortServiceMultiThreadTest {
         }, subject1, subject2);
 
         //then:
-        Assert.assertEquals(numberOfLaunches, counter.get());
+        Assert.assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void when_open_close_one_port_numberOfLaunches_100_then_not_exception() {
+
+        //given:
+        int numberOfLaunches = 100;
+        AtomicInteger counter = new AtomicInteger(0);
+
+        //when:
+        TestConcurrentUtils.consumer(numberOfLaunches, (serialPort1) -> {
+            try {
+                serialPort1.open();
+            } catch (Exception e) {
+                LOG.error(e.getMessage(), e);
+                counter.incrementAndGet();
+            } finally {
+                serialPort1.close();
+            }
+        }, subject1);
+
+        //then:
+        Assert.assertEquals(0, counter.get());
     }
 }
