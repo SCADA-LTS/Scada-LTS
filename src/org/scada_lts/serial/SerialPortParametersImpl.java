@@ -1,12 +1,6 @@
-package org.scada_lts.modbus;
+package org.scada_lts.serial;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import com.serotonin.modbus4j.serial.SerialPortWrapper;
-
-@Deprecated
-public class SerialParameters implements SerialPortWrapper {
+class SerialPortParametersImpl implements SerialPortParameters {
 
 	private String commPortId;
     private String portOwnerName;
@@ -16,21 +10,17 @@ public class SerialParameters implements SerialPortWrapper {
     private int dataBits;
     private int stopBits;
     private int parity;
-    
-    public SerialParameters() {
+    private int timeout;
+
+    SerialPortParametersImpl() {
         this.baudRate = -1;
         this.flowControlIn = 0;
         this.flowControlOut = 0;
         this.dataBits = 8;
         this.stopBits = 1;
         this.parity = 0;
+        this.timeout = 0;
     }
-    
-    @Override
-	public void close() throws Exception {
-    	// not have in old version
-		// no op ?		
-	}
 
 	@Override
 	public int getBaudRate() {
@@ -102,22 +92,28 @@ public class SerialParameters implements SerialPortWrapper {
     public void setPortOwnerName(final String portOwnerName) {
         this.portOwnerName = portOwnerName;
     }
-	
-	@Override
-	public InputStream getInputStream() {
-		// TODO Auto-generated method stub (not have in old version)
-		return null;
-	}
 
-	@Override
-	public OutputStream getOutputStream() {
-		// TODO Auto-generated method stub (not have in old version)
-		return null;
-	}
+    @Override
+    public int getTimeout() {
+        return timeout;
+    }
 
-	@Override
-	public void open() throws Exception {
-		// TODO Auto-generated method stub (not have in old version)	
-	}
-	
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    @Override
+    public String toString() {
+        return "SerialPortParametersImpl{" +
+                "commPortId='" + commPortId + '\'' +
+                ", portOwnerName='" + portOwnerName + '\'' +
+                ", baudRate=" + baudRate +
+                ", flowControlIn=" + flowControlIn +
+                ", flowControlOut=" + flowControlOut +
+                ", dataBits=" + dataBits +
+                ", stopBits=" + stopBits +
+                ", parity=" + parity +
+                ", timeout=" + timeout +
+                '}';
+    }
 }

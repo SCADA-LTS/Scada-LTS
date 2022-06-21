@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango;
 
+import com.fazecast.jSerialComm.SerialPort;
 import gnu.io.CommPortIdentifier;
 
 import java.io.File;
@@ -402,6 +403,7 @@ public class Common {
 
 	//
 	// Misc
+	@Deprecated
 	public static List<CommPortProxy> getCommPorts()
 			throws CommPortConfigException {
 		try {
@@ -412,6 +414,24 @@ public class Common {
 				cpid = (CommPortIdentifier) portEnum.nextElement();
 				if (cpid.getPortType() == CommPortIdentifier.PORT_SERIAL)
 					ports.add(new CommPortProxy(cpid));
+			}
+			return ports;
+		} catch (UnsatisfiedLinkError e) {
+			throw new CommPortConfigException(e.getMessage());
+		} catch (NoClassDefFoundError e) {
+			throw new CommPortConfigException(
+					"Comm configuration error. Check that rxtx DLL or libraries have been correctly installed.");
+		}
+	}
+
+	public static List<CommPortProxy> getSerialPorts()
+			throws CommPortConfigException {
+		try {
+			List<CommPortProxy> ports = new LinkedList<>();
+			SerialPort[] commPorts = SerialPort.getCommPorts();
+			for(SerialPort commPort: commPorts) {
+				ports.add(new CommPortProxy(commPort.getSystemPortName(), "Serial",
+						commPort.isOpen(), commPort.isOpen() ? commPort.getPortDescription() : null));
 			}
 			return ports;
 		} catch (UnsatisfiedLinkError e) {
