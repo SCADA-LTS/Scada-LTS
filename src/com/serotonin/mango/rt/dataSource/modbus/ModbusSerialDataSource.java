@@ -30,6 +30,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
+import org.scada_lts.serial.SerialPortWrapperAdapter;
 
 import javax.comm.NoSuchPortException;
 
@@ -57,9 +58,9 @@ public class ModbusSerialDataSource extends ModbusDataSource {
 	@Override
 	public void initialize() {
 		if (configuration.getEncoding() == EncodingType.ASCII)
-			modbusMaster = new ModbusFactory().createAsciiMaster(this.serialPortService);
+			modbusMaster = new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(this.serialPortService));
 		else
-			modbusMaster = new ModbusFactory().createRtuMaster(this.serialPortService);
+			modbusMaster = new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(this.serialPortService));
 
 		super.initialize(modbusMaster);
 	}

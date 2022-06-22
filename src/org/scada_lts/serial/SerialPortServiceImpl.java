@@ -109,48 +109,8 @@ class SerialPortServiceImpl implements SerialPortService {
     }
 
     @Override
-    public int getBaudRate() {
-        return serialPortParameters.getBaudRate();
-    }
-
-    @Override
-    public String getCommPortId() {
-        return serialPortParameters.getCommPortId();
-    }
-
-    @Override
-    public int getDataBits() {
-        return serialPortParameters.getDataBits();
-    }
-
-    @Override
-    public int getFlowControlIn() {
-        return serialPortParameters.getFlowControlIn();
-    }
-
-    @Override
-    public int getFlowControlOut() {
-        return serialPortParameters.getFlowControlOut();
-    }
-
-    @Override
-    public int getParity() {
-        return serialPortParameters.getParity();
-    }
-
-    @Override
-    public int getStopBits() {
-        return serialPortParameters.getStopBits();
-    }
-
-    @Override
-    public String getPortOwnerName() {
-        return serialPortParameters.getPortOwnerName();
-    }
-
-    @Override
-    public int getTimeout() {
-        return serialPortParameters.getTimeout();
+    public SerialPortParameters getParameters() {
+        return serialPortParameters;
     }
 
     private void setSerialPort(SerialPort serialPort) {

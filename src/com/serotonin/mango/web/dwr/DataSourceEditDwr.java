@@ -218,6 +218,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
+import org.scada_lts.serial.SerialPortWrapperAdapter;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
@@ -680,9 +681,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
         ModbusMaster modbusMaster;
         if (encodingType == EncodingType.ASCII)
-            modbusMaster = new ModbusFactory().createAsciiMaster(serialPortService);
+            modbusMaster = new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(serialPortService));
         else
-            modbusMaster = new ModbusFactory().createRtuMaster(serialPortService);
+            modbusMaster = new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(serialPortService));
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
