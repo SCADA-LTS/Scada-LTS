@@ -51,19 +51,19 @@ public class ViewHierarchyServiceMoveViewToRootTest extends TestDAO{
 		v1.setName("view_1");
 		v1.setXid("XID_view1");
 		v1.setUserId(user.getId());
-		vDAO.create(v1);
+		vDAO.insertView(v1);
 		
 		View v2 = new View();
 		v2.setName("view_2");
 		v2.setXid("XID_view2");
 		v2.setUserId(user.getId());
-		vDAO.create(v2);
+		vDAO.insertView(v2);
 		
 		View v3 = new View();
 		v3.setName("view_3");
 		v3.setXid("XID_view3");
 		v3.setUserId(user.getId());
-		vDAO.create(v3);
+		vDAO.insertView(v3);
 	
 		vhs.moveView(v1.getId(), vhn2.getId());
 		vhs.moveView(v2.getId(), vhn2.getId());

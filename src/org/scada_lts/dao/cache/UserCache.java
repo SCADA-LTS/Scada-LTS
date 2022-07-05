@@ -39,16 +39,6 @@ public class UserCache implements UserCachable {
     }
 
     @Override
-    public void updateHideMenu(User user) {
-        userDAO.update(user);
-    }
-
-    @Override
-    public void updateScadaTheme(User user) {
-        userDAO.update(user);
-    }
-
-    @Override
     public void delete(int userId) {
         userDAO.delete(userId);
     }

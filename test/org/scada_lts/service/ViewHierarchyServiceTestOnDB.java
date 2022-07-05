@@ -64,7 +64,7 @@ public class ViewHierarchyServiceTestOnDB extends TestDAO {
 		v1.setName("view_1");
 		v1.setXid("XID_view1");
 		v1.setUserId(user.getId());
-		vDAO.create(v1);
+		vDAO.insertView(v1);
 		
 		assertTrue(v1.getId()>0);
 		
@@ -72,7 +72,7 @@ public class ViewHierarchyServiceTestOnDB extends TestDAO {
 		v2.setName("view_2");
 		v2.setXid("XID_view2");
 		v2.setUserId(user.getId());
-		vDAO.create(v2);
+		vDAO.insertView(v2);
 		
 		assertTrue(v2.getId()>0);
 		
@@ -80,7 +80,7 @@ public class ViewHierarchyServiceTestOnDB extends TestDAO {
 		v3.setName("view_3");
 		v3.setXid("XID_view3");
 		v3.setUserId(user.getId());
-		vDAO.create(v3);
+		vDAO.insertView(v3);
 		
 		assertTrue(v3.getId()>0);
 		

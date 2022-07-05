@@ -51,7 +51,7 @@ import com.serotonin.mango.view.View;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 @Repository
-public class ViewDAO implements GenericDAO<View> {
+public class ViewDAO implements GenericDAO<View>, IViewDAO {
 	
 	private Log LOG = LogFactory.getLog(ViewDAO.class);
 
@@ -174,7 +174,7 @@ public class ViewDAO implements GenericDAO<View> {
 			+ "mangoViewUsers "
 			+ "where "
 			+ COLUMN_NAME_MVU_USER_ID+"=?";
-	
+
 	public static final String VIEW_FILTERED_BASE_ON_ID = ""
 			+ COLUMN_NAME_USER_ID+"=? or "
 			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
@@ -282,16 +282,21 @@ public class ViewDAO implements GenericDAO<View> {
 			return idName;
 		}
 	}
+
+
 	@Override
+	@Deprecated
 	public List<View> findAllWithUserName(){
 		return null;
 	}
 	@Override
+	@Deprecated
 	public List<View> findAll() {
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper() );
 	}
 
 	@Override
+	@Deprecated
 	public View findById(Object[] pk) {
 		try {
 			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
@@ -299,7 +304,8 @@ public class ViewDAO implements GenericDAO<View> {
 			return null;
 		}
 	}
-	
+
+	@Deprecated
 	public View findByXId(Object[] pk) {
 		try { 
 			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
@@ -309,6 +315,7 @@ public class ViewDAO implements GenericDAO<View> {
 	}
 
 	//TO rewrite order for example Object[] with column to order.
+	@Deprecated
 	public List<View> filtered(String filter, String order, Object[] argsFilter, long limit) {
 		
 		String myLimit="";
@@ -325,6 +332,7 @@ public class ViewDAO implements GenericDAO<View> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
+	@Deprecated
 	public Object[] create(final View entity) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -357,6 +365,7 @@ public class ViewDAO implements GenericDAO<View> {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
+	@Deprecated
 	public void update(View entity) {
 		
 		DAO.getInstance().getJdbcTemp().update(VIEW_UPDATE, new Object[]{
@@ -373,34 +382,41 @@ public class ViewDAO implements GenericDAO<View> {
 	}
 
 	@Override
+	@Deprecated
 	public void delete(View entity) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });		
 	}
 
+	@Deprecated
 	public List<ShareUser> getShareUsers(int mangoViewId) {
 		return (List<ShareUser>) DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_VIEW_ID, new Object[] {mangoViewId}, new ViewUserRowMapper());
 	}
-	
+
+	@Deprecated
 	public List<IdName> getViewNames(int userId, int userProfileId) {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME + " where " + VIEW_FILTERED_BASE_ON_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE, userProfileId },new IdNameRowMapper());
 	}
-	
+
+	@Deprecated
 	public List<IdName> getAllViewNames() {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME , new Object[] {  },new IdNameRowMapper());
 	}
 
+	@Deprecated
 	public List<ScadaObjectIdentifier> getSimpleList() {
 		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
 		return DAO.getInstance().getJdbcTemp()
 				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME),mapper);
 	}
-	
+
+	@Deprecated
 	public View getView(String name) {
 		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
 	}
 
 	//TODO rewrite
 	@Override
+	@Deprecated
 	public List<View> filtered(String filter, Object[] argsFilter, long limit) {
 		// TODO Auto-generated method stub
 		return null;
@@ -409,7 +425,7 @@ public class ViewDAO implements GenericDAO<View> {
 	public void deleteViewForUser(int viewId) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_USER_DELETE, new Object[]{viewId});
 	}
-	
+
 	public void batchUpdateInfoUsers(final View view) {
 		DAO.getInstance().getJdbcTemp().batchUpdate(VIEW_USER_INSERT, new BatchPreparedStatementSetter() {
 			@Override
@@ -427,11 +443,12 @@ public class ViewDAO implements GenericDAO<View> {
 			}
 		});
 	}
-	
+
 	public void deleteViewForUser(int viewId, int userId) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_USER_DELETE_BASE_ON_VIEW_ID_USER_ID, new Object[]{viewId, userId});
 	}
 
+	@Override
 	public List<ViewAccess> selectViewPermissions(final int userId) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("selectViewPermissions(final int userId) userId:" + userId);
@@ -446,6 +463,7 @@ public class ViewDAO implements GenericDAO<View> {
 
 	}
 
+	@Override
 	public int[] insertPermissions(final int userId, final List<ViewAccess> toInsert) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("insertPermissions(final User user, final List<WatchListAccess> toInsert) user:" + userId + "");
@@ -461,6 +479,7 @@ public class ViewDAO implements GenericDAO<View> {
 				.batchUpdate(VIEW_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
 	}
 
+	@Override
 	public int[] deletePermissions(final int userId, final List<ViewAccess> toDelete) {
 
 		if (LOG.isTraceEnabled()) {
@@ -477,12 +496,14 @@ public class ViewDAO implements GenericDAO<View> {
 				.batchUpdate(VIEW_USER_DELETE_BASE_ON_VIEW_ID_USER_ID, batchArgs, argTypes);
 	}
 
+	@Override
 	public List<View> selectViewWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
 				new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE},
 				new ViewRowMapper());
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId, int profileId) {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
                 new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE},
@@ -493,7 +514,8 @@ public class ViewDAO implements GenericDAO<View> {
 						.build());
 	}
 
-    public List<ScadaObjectIdentifier> selectViewIdentifiers() {
+    @Override
+	public List<ScadaObjectIdentifier> selectViewIdentifiers() {
         return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
@@ -502,7 +524,107 @@ public class ViewDAO implements GenericDAO<View> {
 						.build());
     }
 
+	@Deprecated
 	public List<ShareUser> selectViewShareUsers(int viewId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
+					new Object[]{viewId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public int insertView(View entity) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(entity);
+		}
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement(VIEW_INSERT, Statement.RETURN_GENERATED_KEYS);
+				new ArgumentPreparedStatementSetter( new Object[] {
+						entity.getXid(),
+						entity.getName(),
+						entity.getBackgroundFilename(),
+						entity.getUserId(),
+						entity.getAnonymousAccess(),
+						new SerializationData().writeObject(entity),
+						entity.getHeight(),
+						entity.getWidth()
+				}).setValues(ps);
+				return ps;
+			}
+		}, keyHolder);
+
+		entity.setId(keyHolder.getKey().intValue());
+		return keyHolder.getKey().intValue();
+	}
+
+	@Override
+	public void updateView(View entity) {
+		DAO.getInstance().getJdbcTemp().update(VIEW_UPDATE, new Object[]{
+				entity.getXid(),
+				entity.getName(),
+				entity.getBackgroundFilename(),
+				entity.getAnonymousAccess(),
+				new SerializationData().writeObject(entity),
+				entity.getHeight(),
+				entity.getWidth(),
+				entity.getId()
+		});
+	}
+
+	@Override
+	public void deleteView(View entity) {
+		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });
+	}
+
+	@Override
+	public View selectView(int id) {
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, new Object[] {id}, new ViewRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public View selectViewByName(String name) {
+		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
+	}
+
+	@Override
+	public View selectViewByXid(String xid) {
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, new Object[]{xid}, new ViewRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public List<View> selectViews() {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper());
+	}
+
+	@Override
+	public List<ShareUser> selectShareUsers(int viewId) {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_VIEW_ID, new Object[] {viewId}, new ViewUserRowMapper());
+	}
+
+	@Override
+	public List<ShareUser> selectShareUsersFromProfile(int viewId) {
 		if (LOG.isTraceEnabled())
 			LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
 		try {

@@ -48,7 +48,6 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
@@ -82,6 +81,7 @@ import com.serotonin.web.i18n.I18NUtils;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.ReportService;
+import org.scada_lts.mango.service.ViewService;
 
 /**
  * @author Matthew Lohbihler
@@ -94,7 +94,7 @@ public class ImportTask extends ProgressiveTask {
 	private final UserDao userDao = new UserDao();
 	private final DataSourceDao dataSourceDao = new DataSourceDao();
 	private final DataPointDao dataPointDao = new DataPointDao();
-	private final ViewDao viewDao = new ViewDao();
+	private final ViewService viewDao = new ViewService();
 	private final PointLinkDao pointLinkDao = new PointLinkDao();
 	private final ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
 	private final CompoundEventDetectorDao compoundEventDetectorDao = new CompoundEventDetectorDao();

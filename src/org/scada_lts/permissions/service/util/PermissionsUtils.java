@@ -55,6 +55,11 @@ public final class PermissionsUtils {
         update(user, permissionsFromUser, service, Integer::compareTo);
     }
 
+    public static void updateViewPermissions(User user, PermissionsService<ViewAccess, User> service) {
+        List<ViewAccess> permissionsFromUser = user.getViewProfilePermissions();
+        update(user, permissionsFromUser, service, Comparator.comparing(ViewAccess::getId));
+    }
+
     public static <T extends Permission> Set<T> merge(Set<T> accesses1, Set<T> accesses2) {
         return mergeToSet(accesses1, accesses2, Permission::getPermission, Permission::getId, a -> true);
     }
