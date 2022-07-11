@@ -89,7 +89,6 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
-import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
@@ -97,6 +96,7 @@ import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 
@@ -141,7 +141,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess(new ViewDAO());
+		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess(ApplicationBeans.getViewDaoBean());
 		User user = Common.getUser();
 		return viewPermissionsService.getObjectIdentifiersWithAccess(user).stream()
 				.map(a -> new IntValuePair(a.getId(), a.getName()))

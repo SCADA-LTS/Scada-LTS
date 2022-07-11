@@ -1,11 +1,12 @@
 package org.scada_lts.dao.cache;
 
-import br.org.scadabr.vo.permission.Permission;
 import br.org.scadabr.vo.permission.ViewAccess;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.vo.User;
 import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,10 +96,8 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public List<View> selectViewWithAccess(int userId, int profileId) {
-        List<Integer> viewAccesses = selectViewPermissions(userId).stream()
-                .map(Permission::getId)
-                .collect(Collectors.toList());
-        return selectViews().stream().filter(a -> viewAccesses.contains(a.getId()))
+        return selectViews().stream()
+                .filter(view -> GetViewsWithAccess.hasViewReadPermission(User.onlyIdAndProfile(userId, profileId), view))
                 .collect(Collectors.toList());
     }
 

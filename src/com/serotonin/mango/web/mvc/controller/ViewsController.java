@@ -31,6 +31,7 @@ import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -46,10 +47,10 @@ import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
 
-	private IViewDAO viewDAO;
+	private final IViewDAO viewDAO;
 
-	public ViewsController(IViewDAO viewDAO) {
-		this.viewDAO = viewDAO;
+	public ViewsController() {
+		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
 
 	@Override

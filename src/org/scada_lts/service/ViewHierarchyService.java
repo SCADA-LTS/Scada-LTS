@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.GenericHierarchyDAO;
 import org.scada_lts.dao.IViewDAO;
-import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.ViewHierarchyDAO;
 import org.scada_lts.dao.model.viewshierarchy.ViewHierarchyNode;
 import org.scada_lts.dao.model.viewshierarchy.ViewInViewHierarchyNode;
@@ -55,13 +54,13 @@ public class ViewHierarchyService {
 	
 	private ViewHierarchyDAO vhDAO = new ViewHierarchyDAO();
 	
-	private IViewDAO viewDAO;
+	private final IViewDAO viewDAO;
 	
 	public ViewHierarchyService(){
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
 	
-	public ViewHierarchyService(ViewHierarchyDAO vhDAO, ViewDAO viewDAO){
+	public ViewHierarchyService(ViewHierarchyDAO vhDAO, IViewDAO viewDAO){
 		this.vhDAO = vhDAO;
 		this.viewDAO = viewDAO;
 	}

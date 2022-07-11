@@ -15,7 +15,7 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "view_list", allEntries = true),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
     })
     int insertView(View view);
 
@@ -23,7 +23,7 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "view_list", allEntries = true),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
     })
     void deleteView(View view);
 
@@ -31,7 +31,7 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "view_list", allEntries = true),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
     })
     void updateView(View view);
 
@@ -39,34 +39,38 @@ public interface ViewCachable {
     List<View> selectViews();
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#userId"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id"),
-            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true)
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId")
     })
     void deleteViewForUser(int viewId);
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#userId"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId"),
-            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true)
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId")
     })
     void deleteViewForUser(int viewId, int userId);
 
-    @Cacheable(cacheNames = "permission_view_list_by_user", key = "#userId", condition = "#object != null")
+    @Cacheable(cacheNames = "permission_view_list_by_user", key = "#userId", condition = "#userId != 0")
     List<ViewAccess> selectViewPermissions(int userId);
 
-    @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#userId", condition = "#object != null")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#userId"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
+    })
     int[] insertPermissions(int userId, List<ViewAccess> toAddOrUpdate);
 
-    @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#userId", condition = "#object != null")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "permission_view_list_by_user", key = "#userId"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
+    })
     int[] deletePermissions(int userId, List<ViewAccess> toRemove);
 
 
-    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId", condition = "#object != null")
+    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId", condition = "#viewId != 0")
     List<ShareUser> selectShareUsers(int viewId);
 
-    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId", condition = "#object != null")
+    @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId", condition = "#viewId != 0")
     List<ShareUser> selectShareUsersFromProfile(int viewId);
 }

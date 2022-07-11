@@ -73,7 +73,7 @@ public class ViewService {
 	private final GetShareUsers<View> viewGetShareUsers;
 	private final GetObjectsWithAccess<View, User> getViewsWithAccess;
 
-	private String fileSeparator = System.getProperty("file.separator");
+	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
 	public ViewService() {
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
@@ -282,7 +282,7 @@ public class ViewService {
 		if(!isToUploads(multipartFile)) {
 			return Optional.empty();
 		}
-		Path path = Paths.get(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+		Path path = Paths.get(getUploadsPath() + FILE_SEPARATOR + multipartFile.getOriginalFilename());
 		return toSecurePath(path)
 				.flatMap(dist -> transferTo(multipartFile, dist))
 				.map(this::createUploadImage);
@@ -305,11 +305,11 @@ public class ViewService {
 	}
 
 	private String getUploadsPath() {
-		return getRealPath(fileSeparator) + fileSeparator + "uploads";
+		return getRealPath(FILE_SEPARATOR) + FILE_SEPARATOR + "uploads";
 	}
 
 	private String getBackgroundImagePath(String backgroundFilename) {
-		return getRealPath(fileSeparator) + fileSeparator + backgroundFilename;
+		return getRealPath(FILE_SEPARATOR) + FILE_SEPARATOR + backgroundFilename;
 	}
 
 	public boolean checkUserViewPermissions(User user, View view) {
