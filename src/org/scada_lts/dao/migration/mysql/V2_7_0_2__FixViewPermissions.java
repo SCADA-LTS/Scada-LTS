@@ -43,12 +43,12 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
     }
 
     private void migratePermissions() {
-        UserDAO userDAO = new OnlyMigrationUserDAO();
+        IUserDAO userDAO = new OnlyMigrationUserDAO();
         UsersProfileDAO usersProfileDAO = new OnlyMigrationUsersProfileDAO();
         WatchListDAO watchListDAO = new OnlyMigrationWatchListDAO();
         DataPointDAO dataPointDAO = new OnlyMigrationDataPointDAO();
         DataSourceDAO dataSourceDAO = new OnlyMigrationDataSourceDAO();
-        ViewDAO viewDAO = new OnlyMigrationViewDAO();
+        IViewDAO viewDAO = new OnlyMigrationViewDAO();
         DataPointUserDAO dataPointUserDAO = new OnlyMigrationDataPointUserDAO();
         UserCommentDAO userCommentDAO = new OnlyMigrationUserCommentDAO();
 
@@ -88,7 +88,7 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
 
             Map<Integer, DataPointVO>  dataPoints = dataPointDAO.getDataPoints().stream().collect(Collectors.toMap(DataPointVO::getId, a -> a));
             Map<Integer, DataSourceVO<?>> dataSources = dataSourceDAO.getDataSources().stream().collect(Collectors.toMap(DataSourceVO::getId, a -> a));
-            Map<Integer, View> views = viewDAO.selectViews().stream().collect(Collectors.toMap(View::getId, a -> a));
+            Map<Integer, View> views = viewDAO.findAll().stream().collect(Collectors.toMap(View::getId, a -> a));
             Map<Integer, WatchList> watchLists = watchListDAO.findAll().stream().collect(Collectors.toMap(WatchList::getId, a -> a));
 
             MigrationDataService migrationDataService = new MigrationDataService(dataPoints, dataSources, views, watchLists, usersProfileService);

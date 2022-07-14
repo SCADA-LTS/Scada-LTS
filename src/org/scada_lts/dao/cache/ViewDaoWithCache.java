@@ -15,28 +15,28 @@ public class ViewDaoWithCache implements IViewDAO {
 
     private final ViewCachable viewCache;
 
-    public ViewDaoWithCache(ViewCachable viewDAO) {
-        this.viewCache = viewDAO;
+    public ViewDaoWithCache(ViewCachable viewCache) {
+        this.viewCache = viewCache;
     }
 
     @Override
-    public int insertView(View view) {
-        return viewCache.insertView(view);
+    public View save(View view) {
+        return viewCache.save(view);
     }
 
     @Override
-    public void updateView(View view) {
-        viewCache.updateView(view);
+    public void update(View view) {
+        viewCache.update(view);
     }
 
     @Override
-    public void deleteView(View view) {
-        viewCache.deleteView(view);
+    public void delete(Integer id) {
+        viewCache.delete(id);
     }
 
     @Override
-    public List<View> selectViews() {
-        return viewCache.selectViews();
+    public List<View> findAll() {
+        return viewCache.findAll();
     }
 
     @Override
@@ -65,23 +65,23 @@ public class ViewDaoWithCache implements IViewDAO {
     }
 
     @Override
-    public View selectView(int id) {
-        return selectViews().stream().filter(a -> a.getId() == id).findAny().orElse(null);
+    public View findById(Integer id) {
+        return findAll().stream().filter(a -> a.getId() == id).findAny().orElse(null);
     }
 
     @Override
-    public View selectViewByName(String name) {
-        return selectViews().stream().filter(a -> a.getName().equals(name)).findAny().orElse(null);
+    public View findByName(String name) {
+        return findAll().stream().filter(a -> a.getName().equals(name)).findAny().orElse(null);
     }
 
     @Override
-    public View selectViewByXid(String xid) {
-        return selectViews().stream().filter(a -> a.getXid().equals(xid)).findAny().orElse(null);
+    public View findByXid(String xid) {
+        return findAll().stream().filter(a -> a.getXid().equals(xid)).findAny().orElse(null);
     }
 
     @Override
-    public List<ScadaObjectIdentifier> selectViewIdentifiers() {
-        return selectViews().stream()
+    public List<ScadaObjectIdentifier> findIdentifiers() {
+        return findAll().stream()
                 .map(a -> new ScadaObjectIdentifier(a.getId(), a.getXid(), a.getName()))
                 .collect(Collectors.toList());
     }
@@ -96,7 +96,7 @@ public class ViewDaoWithCache implements IViewDAO {
 
     @Override
     public List<View> selectViewWithAccess(int userId, int profileId) {
-        return selectViews().stream()
+        return findAll().stream()
                 .filter(view -> GetViewsWithAccess.hasViewReadPermission(User.onlyIdAndProfile(userId, profileId), view))
                 .collect(Collectors.toList());
     }

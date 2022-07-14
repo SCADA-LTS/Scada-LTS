@@ -7,30 +7,15 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
 
-public interface IViewDAO {
+public interface IViewDAO extends ScadaRepository<View, Integer> {
+
+    View findByName(String name);
 
     void deleteViewForUser(int viewId);
 
     void deleteViewForUser(int viewId, int userId);
 
-    int insertView(View entity);
-
-    void updateView(View entity);
-
-    void deleteView(View entity);
-
-    List<View> selectViews();
-
-    View selectView(int id);
-
-    View selectViewByName(String name);
-
-    View selectViewByXid(String xid);
-
     List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId, int profileId);
-
-    List<ScadaObjectIdentifier> selectViewIdentifiers();
-
 
     List<View> selectViewWithAccess(int userId, int profileId);
 

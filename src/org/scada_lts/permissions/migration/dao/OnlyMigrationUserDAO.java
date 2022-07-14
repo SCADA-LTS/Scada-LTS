@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.*;
 import java.util.List;
 
-public final class OnlyMigrationUserDAO extends UserDAO {
+public final class OnlyMigrationUserDAO implements IUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationUserDAO.class);
 
@@ -285,6 +285,11 @@ public final class OnlyMigrationUserDAO extends UserDAO {
 
 	@Override
 	public void updateScadaTheme(User user) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void updateUserPassword(int userId, String newPassword) {
 		throw new UnsupportedOperationException();
 	}
 }

@@ -16,8 +16,23 @@ public class ViewCache implements ViewCachable {
     }
 
     @Override
-    public List<View> selectViews() {
-        return viewDAO.selectViews();
+    public List<View> findAll() {
+        return viewDAO.findAll();
+    }
+
+    @Override
+    public View save(View view) {
+        return viewDAO.save(view);
+    }
+
+    @Override
+    public void update(View view) {
+        viewDAO.update(view);
+    }
+
+    @Override
+    public void delete(int id) {
+        viewDAO.delete(id);
     }
 
     @Override
@@ -43,21 +58,6 @@ public class ViewCache implements ViewCachable {
     @Override
     public int[] deletePermissions(int userId, List<ViewAccess> toRemove) {
         return viewDAO.deletePermissions(userId, toRemove);
-    }
-
-    @Override
-    public int insertView(View view) {
-        return viewDAO.insertView(view);
-    }
-
-    @Override
-    public void updateView(View view) {
-        viewDAO.updateView(view);
-    }
-
-    @Override
-    public void deleteView(View view) {
-        viewDAO.deleteView(view);
     }
 
     @Override

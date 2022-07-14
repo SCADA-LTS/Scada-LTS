@@ -25,7 +25,7 @@ public class ViewDaoMockito {
 		
 		vl.add(v1);
 		vl.add(v2);
-		when(vDAO.selectViews()).thenReturn(vl);
+		when(vDAO.findAll()).thenReturn(vl);
 		
 		return vDAO;
 	}

@@ -100,7 +100,7 @@ public class ViewHierarchyService {
 					vhJSON.setChildren(null);
 					vhJSON.setFolder(false);
 					profiler.start("Get info view");
-					vhJSON.setTitle(viewDAO.selectView((int)vhJSON.getKey()).getName());
+					vhJSON.setTitle(viewDAO.findById((int)vhJSON.getKey()).getName());
 					profiler.stop();
 					LOG.info("Started "+getClass().getSimpleName()+" in "+ getClass().getSimpleName() +"ms "+ profiler.elapsedTime() / 1000 / 1000);
 					tmpViewsInFolder.put(vhJSON.getKey(), new Boolean(true));
@@ -186,7 +186,7 @@ public class ViewHierarchyService {
 		}
 		
 		// add views with not have folder
-		List<View> lstView= viewDAO.selectViews();
+		List<View> lstView= viewDAO.findAll();
 		for (View view: lstView) {
 			addViewInNotInViewHierarchy(lst, view, tmpViewInFolders);
 		}
@@ -202,7 +202,7 @@ public class ViewHierarchyService {
 	
 	public ViewHierarchyJSON getFirstViewId(){
 		
-		List<View> lstView= viewDAO.selectViews();
+		List<View> lstView= viewDAO.findAll();
 		if (lstView != null) {
 			if (lstView.get(0) != null ) {
 				ViewHierarchyJSON vhJSON = new ViewHierarchyJSON();

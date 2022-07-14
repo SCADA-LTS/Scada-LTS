@@ -88,7 +88,7 @@ public class ViewService {
 	}
 
 	public List<View> getViews() {
-		List<View> views = viewDAO.selectViews();
+		List<View> views = viewDAO.findAll();
 		for (View view: views) {
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		}
@@ -104,12 +104,12 @@ public class ViewService {
 	}
 
 	public List<ScadaObjectIdentifier> getAllViews() {
-		return viewDAO.selectViewIdentifiers();
+		return viewDAO.findIdentifiers();
 	}
 
 	public List<ScadaObjectIdentifier> getAllViewsForUser(User user) {
 		if (user.isAdmin())
-			return viewDAO.selectViewIdentifiers();
+			return viewDAO.findIdentifiers();
 		List<View> views = getViews(user.getId(), user.getUserProfile());
 		List<ScadaObjectIdentifier> simpleList = new ArrayList<>();
 		for (View view : views) {
@@ -123,9 +123,10 @@ public class ViewService {
 	}
 	
 	public List<IdName> getAllViewNames() {
-		return toIdNames(viewDAO.selectViewIdentifiers());
+		return toIdNames(viewDAO.findIdentifiers());
 	}
-	
+
+	@Deprecated
 	private List<IdName> updateViewUsersPermissions(int userId,
 			int userProfileId) {
 
@@ -137,7 +138,7 @@ public class ViewService {
 
 			IdName idDaViewComView = (IdName) iterator.next();
 
-			View view = viewDAO.selectView(idDaViewComView.getId());
+			View view = viewDAO.findById(idDaViewComView.getId());
 
 			if (view.getUserAccess(user) == ShareUser.ACCESS_NONE) {
 				iterator.remove();
@@ -148,18 +149,18 @@ public class ViewService {
 	}
 
 	public View getView(int id) {
-		View view = viewDAO.selectView(id);
+		View view = viewDAO.findById(id);
 		if(view != null)
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		return view;
 	}
 	
 	public View getViewByXid(String xid) {
-		return viewDAO.selectViewByXid(xid);
+		return viewDAO.findByXid(xid);
 	}
 	
 	public View getView(String name) {
-		View view = viewDAO.selectViewByName(name);
+		View view = viewDAO.findByName(name);
 		
 		if (view == null) {
 			return null;
@@ -183,9 +184,9 @@ public class ViewService {
 	public void saveView(final View view) {
 		LOG.debug("View name: " + view.getName());
 		if (view.getId() == Common.NEW_ID) {
-			viewDAO.insertView(view);
+			viewDAO.save(view);
 		} else {
-			viewDAO.updateView(view);
+			viewDAO.update(view);
 		}
 
 		//sharing an object doesn't work
@@ -201,9 +202,9 @@ public class ViewService {
 		setWidthAndHeight(view, backgroundFilename);
 		int id = -1;
 		if (view.getId() == Common.NEW_ID) {
-			id = viewDAO.insertView(view);
+			id = viewDAO.save(view).getId();
 		} else {
-			viewDAO.updateView(view);
+			viewDAO.update(view);
 		}
 
 		//usersPermissions.clear();
@@ -220,13 +221,12 @@ public class ViewService {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void removeView(final int viewId) {
-		viewDAO.deleteViewForUser(viewId);
-		View v = new View();
-		v.setId(viewId);
-		viewDAO.deleteView(v);
+		//viewDAO.deleteViewForUser(viewId);
+		viewDAO.delete(viewId);
 		//usersProfileService.updateViewPermissions();
 	}
 
+	@Deprecated
 	private void saveViewUsers(final View view) {
 		// Delete anything that is currently there.
 		viewDAO.deleteViewForUser(view.getId());
@@ -249,7 +249,7 @@ public class ViewService {
 
 
 	public List<ScadaObjectIdentifier> getSimpleViews() {
-		return viewDAO.selectViewIdentifiers();
+		return viewDAO.findIdentifiers();
 	}
 
 	public List<ImageSetIdentifier> getImageSets() {

@@ -51,12 +51,14 @@ import com.serotonin.mango.view.View;
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu
  */
 @Repository
-public class ViewDAO implements GenericDAO<View>, IViewDAO {
+public class ViewDAO implements IViewDAO {
 	
 	private Log LOG = LogFactory.getLog(ViewDAO.class);
 
 	private static final String TABLE_NAME = "mangoViews";
-	
+	private static final String LIMIT = " LIMIT ";
+	private static final int NO_LIMIT = 0;
+
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
 	private static final String COLUMN_NAME_DATA = "data";
@@ -284,18 +286,15 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 	}
 
 
-	@Override
 	@Deprecated
 	public List<View> findAllWithUserName(){
 		return null;
 	}
 	@Override
-	@Deprecated
 	public List<View> findAll() {
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper() );
 	}
 
-	@Override
 	@Deprecated
 	public View findById(Object[] pk) {
 		try {
@@ -331,7 +330,6 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	@Override
 	@Deprecated
 	public Object[] create(final View entity) {
 		
@@ -365,7 +363,6 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	@Override
-	@Deprecated
 	public void update(View entity) {
 		
 		DAO.getInstance().getJdbcTemp().update(VIEW_UPDATE, new Object[]{
@@ -381,8 +378,6 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 			
 	}
 
-	@Override
-	@Deprecated
 	public void delete(View entity) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });		
 	}
@@ -415,7 +410,6 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 	}
 
 	//TODO rewrite
-	@Override
 	@Deprecated
 	public List<View> filtered(String filter, Object[] argsFilter, long limit) {
 		// TODO Auto-generated method stub
@@ -515,7 +509,7 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 	}
 
     @Override
-	public List<ScadaObjectIdentifier> selectViewIdentifiers() {
+	public List<ScadaObjectIdentifier> findIdentifiers() {
         return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
@@ -542,7 +536,7 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 
 	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public int insertView(View entity) {
+	public View save(View entity) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(entity);
 		}
@@ -568,30 +562,16 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 		}, keyHolder);
 
 		entity.setId(keyHolder.getKey().intValue());
-		return keyHolder.getKey().intValue();
+		return entity;
 	}
 
 	@Override
-	public void updateView(View entity) {
-		DAO.getInstance().getJdbcTemp().update(VIEW_UPDATE, new Object[]{
-				entity.getXid(),
-				entity.getName(),
-				entity.getBackgroundFilename(),
-				entity.getAnonymousAccess(),
-				new SerializationData().writeObject(entity),
-				entity.getHeight(),
-				entity.getWidth(),
-				entity.getId()
-		});
+	public void delete(Integer id) {
+		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { id });
 	}
 
 	@Override
-	public void deleteView(View entity) {
-		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });
-	}
-
-	@Override
-	public View selectView(int id) {
+	public View findById(Integer id) {
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, new Object[] {id}, new ViewRowMapper());
 		} catch (EmptyResultDataAccessException e) {
@@ -600,22 +580,17 @@ public class ViewDAO implements GenericDAO<View>, IViewDAO {
 	}
 
 	@Override
-	public View selectViewByName(String name) {
+	public View findByName(String name) {
 		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
 	}
 
 	@Override
-	public View selectViewByXid(String xid) {
+	public View findByXid(String xid) {
 		try {
 			return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, new Object[]{xid}, new ViewRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
-	}
-
-	@Override
-	public List<View> selectViews() {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper());
 	}
 
 	@Override

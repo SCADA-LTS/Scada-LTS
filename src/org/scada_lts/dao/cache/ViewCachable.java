@@ -17,7 +17,15 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
     })
-    int insertView(View view);
+    View save(View view);
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "view_list", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId")
+    })
+    void delete(int viewId);
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "view_list", allEntries = true),
@@ -25,18 +33,10 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
     })
-    void deleteView(View view);
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "view_list", allEntries = true),
-            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #view.id"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #view.id")
-    })
-    void updateView(View view);
+    void update(View view);
 
     @Cacheable(cacheNames = "view_list", key = "'views'")
-    List<View> selectViews();
+    List<View> findAll();
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
