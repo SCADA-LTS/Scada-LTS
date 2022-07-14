@@ -127,6 +127,16 @@ public class ViewService {
 	}
 
 	@Deprecated
+	public List<IdName> getViewNamesWithReadOrWritePermissions(
+			int userId, int userProfileId) {
+		List<IdName> allPermissions = usersPermissions.get(userId);
+		if (allPermissions == null) {
+			allPermissions = updateViewUsersPermissions(userId, userProfileId);
+		}
+		return allPermissions;
+	}
+
+	@Deprecated
 	private List<IdName> updateViewUsersPermissions(int userId,
 			int userProfileId) {
 
