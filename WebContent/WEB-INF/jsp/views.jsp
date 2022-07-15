@@ -84,6 +84,7 @@
     var fullVersion  = ''+parseFloat(navigator.appVersion); 
     var majorVersion = parseInt(navigator.appVersion,10);
     var nameOffset,verOffset,ix;
+    var viewId = ${currentView.id};
 
     // In Opera, the true version is after "Opera" or after "Version"
     if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
@@ -137,7 +138,7 @@
     }
     
     function unshare() {
-        ViewDwr.deleteViewShare(function() { window.location = 'views.shtm'; });
+        ViewDwr.deleteViewShare(viewId, function() { window.location = 'views.shtm'; });
     }
     
     function setCookie(c_name,value)

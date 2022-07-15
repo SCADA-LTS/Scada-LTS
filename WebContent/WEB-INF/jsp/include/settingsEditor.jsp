@@ -67,6 +67,7 @@
   </td></tr></table>
   
   <script type="text/javascript">
+    var viewId = mango.longPoll.pollRequest.viewId;
     // Script requires
     //  - Drag and Drop library for locating objects and positioning the window.
     //  - DWR utils for using $() prototype.
@@ -79,7 +80,7 @@
             document.getElementById("settingsEditorPopup").firstElementChild.setAttribute("id", "settings" + compId);
             settingsEditor.componentId = compId;
             
-            ViewDwr.getViewComponent(compId, function(comp) {
+            ViewDwr.getViewComponent(compId, viewId, function(comp) {
             	
                 $set("settingsComponentName", comp.displayName);
                 
@@ -125,7 +126,7 @@
             );
             ViewDwr.setPointComponentSettings(settingsEditor.componentId, $get("settingsPointList"),
                     $get("settingsPointName"), $get("settingsSettable"), $get("settingsBkgdColor"),
-                    $get("settingsControls"), posX, posY, function(response) {
+                    $get("settingsControls"), posX, posY, viewId, function(response) {
                 if (response.hasMessages) {
                     showDwrMessages(response.messages);
                 }

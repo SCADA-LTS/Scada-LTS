@@ -130,6 +130,7 @@
 	</table>
 
 	<script type="text/javascript">
+	var viewId = mango.longPoll.pollRequest.viewId;
 	class CompoundEditor {
 		constructor() {
 			this.component = null;
@@ -138,7 +139,7 @@
 
 		open(compId) {
 			document.getElementById("compoundEditorPopup").firstElementChild.setAttribute("id", "compound" + compId);
-			ViewDwr.getViewComponent(compId, (comp) => {
+			ViewDwr.getViewComponent(compId, viewId, (comp) => {
                 this.component = comp;
                 $set("compoundComponentName", comp.displayName);
 				$set("compoundPositionX", comp.x);
@@ -206,7 +207,7 @@
 				case 'simpleCompound':
 					ViewDwr.saveSimpleCompoundComponent(this.component.id, 
 						$get("compoundName"), $get("compoundBackgroundColour"), 
-						childPointIds, posX, posY,
+						childPointIds, posX, posY, viewId,
 						this.saveCB
 					);
 					break;
@@ -215,7 +216,7 @@
 						$get("compoundName"), $get("imageChartWidth"), 
 						$get("imageChartHeight"), $get("imageChartDurationType"),
                         $get("imageChartDurationPeriods"), childPointIds, 
-						posX, posY,
+						posX, posY, viewId,
 						this.saveCB
 					);
 					break;
@@ -227,14 +228,14 @@
                         $get("imageChartDurationPeriods"), 
 						jQuery("input:radio[name='enhancedImageChartType']:checked").val(),
                         childPointIds, pointsPropsList, 
-						posX, posY,
+						posX, posY, viewId,
 						this.saveCB
 					);
 					break;
 				default:
 					ViewDwr.saveCompoundComponent(this.component.id, 
 						$get("compoundName"), childPointIds,
-						posX, posY,
+						posX, posY, viewId,
                         this.saveCB);
 			}
         }

@@ -4,7 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class HttpParameterUtils {
+public final class HttpParameterUtils {
+
+    private HttpParameterUtils() {}
 
     public static <R> Optional<R> getValue(String key, HttpServletRequest request, Function<String, R> parser) {
         String parameter = request.getParameter(key);
