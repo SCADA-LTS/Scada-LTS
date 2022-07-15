@@ -31,20 +31,21 @@
 
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
-    
+    var viewId = mango.longPoll.pollRequest.viewId;
+
     function doOnload() {
         hide("sharedUsersDiv");
         <c:forEach items="${form.view.viewComponents}" var="vc">
           <c:set var="compContent"><sst:convert obj="${vc}"/></c:set>
           createViewComponent(${mango:escapeScripts(compContent)}, false);
         </c:forEach>
-        
-        ViewDwr.editInit(function(result) {
+
+        ViewDwr.editInit(viewId, function(result) {
             mango.share.users = result.shareUsers;
             //mango.share.writeSharedUsers(result.viewUsers);
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
             settingsEditor.setPointList(result.pointList);
-            compoundEditor.setPointList(result.pointList);
+            compoundEditor.setPointList(result.pointList, viewId);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
         
@@ -58,7 +59,7 @@
     }
     
     function addViewComponent() {
-        ViewDwr.addComponent($get("componentList"), function(viewComponent) {
+        ViewDwr.addComponent($get("componentList"), viewId, function(viewComponent) {
             createViewComponent(viewComponent, true);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
@@ -190,7 +191,7 @@
         if(div.style.zIndex < 99) {
            div.style.zIndex = Number(div.style.zIndex) + 1;
         }
-        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex), viewId);
         updateZIndexLabel(viewComponentId, div.style.zIndex);
     }
 
@@ -199,7 +200,7 @@
         if(div.style.zIndex > 1) {
             div.style.zIndex = div.style.zIndex - 1;
         }
-        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex), viewId);
         updateZIndexLabel(viewComponentId, div.style.zIndex);
     }
 
@@ -254,7 +255,7 @@
         tp = tp.substring(0, tp.length-2);
 
         // Save the new location.
-        ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
+        ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp, viewId);
     }
 
     function addDnD(divId) {
@@ -273,7 +274,7 @@
     function deleteViewComponent(viewComponentId) {
         closeEditors();
         if(confirm('<fmt:message key="common.confirmDelete"/>')) {
-            ViewDwr.deleteViewComponent(viewComponentId);
+            ViewDwr.deleteViewComponent(viewComponentId, viewId);
 
             var div = $("c"+ viewComponentId);
 
@@ -291,7 +292,7 @@
     }
 
     function iconizeClicked() {
-        ViewDwr.getViewComponentIds(function(ids) {
+        ViewDwr.getViewComponentIds(viewId, function(ids) {
             var i, comp, content;
             if ($get("iconifyCB")) {
                 mango.view.edit.iconize = true;

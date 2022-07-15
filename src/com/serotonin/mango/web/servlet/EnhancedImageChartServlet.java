@@ -29,7 +29,7 @@ public class EnhancedImageChartServlet extends BaseInfoServlet {
         User user = Common.getUser(request);
         View view = viewDao.getView(viewId);
         if (view == null) {
-            view = user.getView();
+            //view = user.getView();
         }
         /*if (view != null) {
             Permissions.ensureViewPermission(user, view);

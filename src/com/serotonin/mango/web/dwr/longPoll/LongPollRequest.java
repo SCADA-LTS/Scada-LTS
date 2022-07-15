@@ -36,6 +36,7 @@ public class LongPollRequest implements Serializable {
     private boolean customView;
 
     private int anonViewId;
+    private int viewId;
 
     public boolean isTerminated() {
         return terminated;
@@ -107,5 +108,13 @@ public class LongPollRequest implements Serializable {
 
     public void setCustomView(boolean customView) {
         this.customView = customView;
+    }
+
+    public int getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(int viewId) {
+        this.viewId = viewId;
     }
 }

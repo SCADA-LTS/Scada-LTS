@@ -352,10 +352,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.username = username;
 	}
 
+	@Deprecated
 	public View getView() {
 		return view;
 	}
 
+	@Deprecated
 	public void setView(View view) {
 		this.view = view;
 	}
