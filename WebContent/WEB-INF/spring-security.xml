@@ -37,6 +37,7 @@
         <intercept-url pattern="/resources/**" access="permitAll" />
         <intercept-url pattern="/static/**" access="permitAll" />
         <intercept-url pattern="/audio/**" access="permitAll" />
+        <intercept-url pattern="/uploads/**" access="permitAll" />
 
         <!-- Anonymous -->
         <intercept-url pattern="/public_view.htm" access="permitAll" />
