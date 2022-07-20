@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
@@ -65,8 +66,13 @@ abstract public class CompoundComponent extends ViewComponent {
         this.name = name;
     }
 
+    @JsonIgnore
     public List<CompoundChild> getChildComponents() {
         return children;
+    }
+
+    public void setChildren(List<CompoundChild> children) {
+        this.children = children;
     }
 
     protected void addChild(String id, String descriptionKey, HtmlComponent htmlComponent) {
@@ -280,12 +286,17 @@ abstract public class CompoundComponent extends ViewComponent {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
 
+        Map<String, Object> jsonChildren = getSerializedChildren();
+        map.put("children", jsonChildren);
+    }
+
+    private Map<String, Object> getSerializedChildren() {
         Map<String, Object> jsonChildren = new HashMap<String, Object>();
         for (CompoundChild child : children) {
             if (child.getViewComponent().isPointComponent())
                 jsonSerializeDataPoint(jsonChildren, child.getId(), (PointComponent) child.getViewComponent());
         }
-        map.put("children", jsonChildren);
+        return jsonChildren;
     }
 
     private Optional<DataPointVO> getDataPoint(int dataPointId) {
@@ -298,5 +309,9 @@ abstract public class CompoundComponent extends ViewComponent {
 
     private DataPointVO readDataPoint(int id) {
         return new DataPointDao().getDataPoint(id);
+    }
+
+    public Map<String, Object> getChildren() {
+        return getSerializedChildren();
     }
 }

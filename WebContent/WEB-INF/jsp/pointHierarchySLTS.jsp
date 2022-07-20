@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
+<%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -432,6 +433,7 @@ thead th {
 			</tr>
 		</table>
 	</div>
+	<tag:newPageNotification href="./app.shtm#/point-hierarchy" ref="pointHierarchyNotification"/>
 </body>
 
 <script src="resources/node_modules/jquery/dist/jquery.min.js"></script>
@@ -465,25 +467,17 @@ header.onLoad = function() {
         //header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
 };
 
- var headers = {
-		 login: 'admin',
-		 passcode: 'passcode',
-		 client_id: '564389'
- } ;
-
 var stompClient = null;
 
 var connectCallback = function(frame) {
     	console.log('Connected: ' + frame);
-    	stompClient.subscribe('/topic/alarmLevel', function(message) {
-        	console.log("message[/topic/alarmLevel]:" + message.body);
-    	});
-    	stompClient.subscribe("/ws/alarmLevel/register", function(message) {
-    		console.log("message[/ws/alarmLevel/register]:" + message.body);
+
+    	stompClient.subscribe("/app/alarmLevel/register", function(message) {
+    		//console.log("message[/app/alarmLevel/register]:" + message.body);
     		stompClient.subscribe("/topic/alarmLevel/"+message.body, function(message) {
     			var response = JSON.parse(message.body);
     			var alarmLevel = parseInt(response.alarmlevel);
-    			console.log("response.alarmLevel: "+response.alarmlevel);
+    			//console.log("response.alarmLevel: "+response.alarmlevel);
    		        if (alarmLevel > 0) {
    		            document.getElementById("__header__alarmLevelText").innerHTML = response.alarmlevel;
    		            setAlarmLevelImg(alarmLevel, "__header__alarmLevelImg");
@@ -497,32 +491,23 @@ var connectCallback = function(frame) {
    		            document.getElementById("__header__alarmLevelDiv").style.visibility =  "hidden";
    		        }
     		})
-    		stompClient.send("/ws/alarmLevel", {priority: 1}, "Hello, Spring STOMP - gimme my alarmLevel");
-    	} );
-    	stompClient.send("/ws/alarmLevel", {priority: 9}, "Hello, Spring STOMP");
-
-    	stompClient.subscribe("/ws/listusers", function(message) {
-    		console.log("message[/ws/listusers]:" + message.body);
-    	} );
-
-    	stompClient.subscribe("/ws/session", function(message) {
-    		console.log("message[/ws/session]:" + message.body);
-    	} );
-
+    		stompClient.send("/app/alarmLevel", {priority: 1}, "STOMP");
+    	});
+    	stompClient.send("/app/alarmLevel", {priority: 9}, "STOMP");
 };
 
 
 function setAlarmLevelImg(alarmLevel, imgNode) {
     if (alarmLevel == 0)
-        updateImg(imgNode, "images/flag_green.png", "undef", false, "none");
+        updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
     else if (alarmLevel == 1)
-        updateImg(imgNode, "images/flag_blue.png", "undef", true, "visisble");
+        updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visisble");
     else if (alarmLevel == 2)
-        updateImg(imgNode, "images/flag_yellow.png", "undef", true, "visisble");
+        updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visisble");
     else if (alarmLevel == 3)
-        updateImg(imgNode, "images/flag_orange.png", "undef", true, "visisble");
+        updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visisble");
     else if (alarmLevel == 4)
-        updateImg(imgNode, "images/flag_red.png", "undef", true, "visisble");
+        updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visisble");
     else
         updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
 }
@@ -532,13 +517,13 @@ function setAlarmLevelText(alarmLevel, textNode) {
     if (alarmLevel == 0)
         textNode.innerHTML = "";
     else if (alarmLevel == 1)
-        textNode.innerHTML = "info";
+        textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
     else if (alarmLevel == 2)
-        textNode.innerHTML = "urgent";
+        textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
     else if (alarmLevel == 3)
-        textNode.innerHTML = "critical";
+        textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
     else if (alarmLevel == 4)
-        textNode.innerHTML = "lifeSafety";
+        textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
     else
         textNode.innerHTML = "Unknown: "+ alarmLevel;
 }
@@ -562,20 +547,21 @@ var errorCallback = function(error) {
 	alert("Connect error:" + error);
 }
 
-function connect(url) {
+function connect(url, headers, errorCallback, connectCallback) {
     var socket = new SockJS(url);
-    stompClient = Stomp.over(socket);
+    var stompClient = Stomp.over(socket);
     stompClient.heartbeat.outgoing = 20000;
     stompClient.heartbeat.incoming = 0;
-    stompClient.connect(headers,  connectCallback, errorCallback);
+    stompClient.debug = null;
+    stompClient.connect(headers, connectCallback, errorCallback);
+    return stompClient;
 }
 
-function disconnect() {
+function disconnect(stompClient) {
     if(stompClient != null) {
     	console.log("Disconnecting...");
         stompClient.disconnect(function(){
         	console.log("Disconnected");
-        	alert("Disconnected");
         	stompClient = null;
         });
     }
@@ -583,20 +569,20 @@ function disconnect() {
 
 
 function OnListUserSessions() {
-	stompClient.subscribe("/ws/listusers", function(message) {
-		console.log("message[/ws/listusers]:\n" + message.body);
+	stompClient.subscribe("/app/listusers", function(message) {
+		console.log("message[/app/listusers]:\n" + message.body);
 	} );
 }
 
 function OnListSessionsAttributes() {
-	stompClient.subscribe("/ws/session", function(message) {
-		console.log("message[/ws/session]:\n" + message.body);
+	stompClient.subscribe("/app/session", function(message) {
+		console.log("message[/app/session]:\n" + message.body);
 	} );
 }
 
 function OnListWebsocketStats() {
-	stompClient.send("/ws/websocketStats", function(message) {
-		console.log("message[/ws/websocketStats]:\n" + message.body);
+	stompClient.subscribe("/app/websocketStats", function(message) {
+		console.log("message[/app/websocketStats]:\n" + message.body);
 	} );
 }
 
@@ -674,14 +660,13 @@ var messages = {
  	   myLocation = location.protocol + "//" + location.host + "" + appScada + "/";
     }
 
-
     function onloadHandler() {
     	// connecting to server websocket endpoint...
-       connect(myLocation + '/ws/alarmLevel');
+       stompClient = connect(myLocation + 'ws-scada/alarmLevel', {}, errorCallback, connectCallback);
     }
 
     function onunloadHandler() {
-   	   disconnect();
+   	   disconnect(stompClient);
    	}
 
 

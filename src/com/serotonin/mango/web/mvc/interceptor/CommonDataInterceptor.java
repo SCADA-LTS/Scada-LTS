@@ -21,6 +21,7 @@ package com.serotonin.mango.web.mvc.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.scada_lts.config.ScadaVersion;
 import org.joda.time.DateTime;
 import org.scada_lts.config.ScadaVersion;
 import org.springframework.web.servlet.HandlerInterceptor;

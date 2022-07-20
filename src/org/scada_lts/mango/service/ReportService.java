@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.report.*;
 import com.serotonin.util.StringUtils;
@@ -33,11 +34,13 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -45,6 +48,7 @@ import java.util.ResourceBundle;
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class ReportService implements MangoReport {
 
 	//	@Autowired
@@ -92,8 +96,20 @@ public class ReportService implements MangoReport {
 	}
 
 	@Override
+	public List<ReportVO> search(User user, Map<String, String> query) {
+		if(user.isAdmin())
+			return reportDAO.search(query);
+		return reportDAO.search(user.getId(), query);
+	}
+
+	@Override
 	public ReportVO getReport(int id) {
 		return reportDAO.getReport(id);
+	}
+
+	@Override
+	public ReportVO getReport(String xid) {
+		return reportDAO.getReport(xid);
 	}
 
 	@Override
@@ -103,6 +119,7 @@ public class ReportService implements MangoReport {
 			report.setToNone(false);
 		}
 		if (report.getId() == Common.NEW_ID) {
+			report.setXid(ReportVO.generateXid());
 			report.setId(reportDAO.insert(report));
 		} else {
 			reportDAO.update(report);

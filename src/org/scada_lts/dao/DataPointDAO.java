@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -53,6 +54,8 @@ import com.serotonin.mango.vo.DataPointVO;
 public class DataPointDAO {
 	
 	private static final Log LOG = LogFactory.getLog(DataPointDAO.class);
+
+	private static final String TABLE_NAME = "dataPoints";
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -251,6 +254,19 @@ public class DataPointDAO {
 		return dataPointList;
 	}
 
+	public List<DataPointVO> getDataPointByKeyword(String[] keywords) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPointByKeyword(String search) search:" + keywords.toString());
+		}
+		String templateSelectWhereSearch = DATA_POINT_SELECT + " WHERE true ";
+		List<String> args = new ArrayList<String>();
+		for (String keyword : keywords) {
+			templateSelectWhereSearch += " AND dp." + COLUMN_NAME_DATAPOINT_NAME + " LIKE ? ";
+			args.add("%"+keyword+"%");
+		}
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereSearch, new DataPointRowMapper(), args.toArray());
+	}
+
 	public List<DataPointVO> getPlcDataPoints(int dataSourceId) {
 
 		String templateSelectPlcWhereId = DATA_POINT_SELECT_PLC + " where (dp." + COLUMN_NAME_DATA_SOURCE_ID + "=? AND dp.plcAlarmLevel>0)";
@@ -295,24 +311,71 @@ public class DataPointDAO {
 		return keyHolder.getKey().intValue();
 	}
 
+	/**
+	 * Create DataPoint method v2
+	 *
+	 * DataPoint creation is the same but instead of
+	 * basic version this one returns DataPointVO object.
+	 *
+	 * @param entity Object to create
+	 * @return DataPointVO entity with unique ID number
+	 */
+	public DataPointVO create(DataPointVO entity) {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_POINT_INSERT, Statement.RETURN_GENERATED_KEYS);
+			new ArgumentPreparedStatementSetter(new Object[]{
+					entity.getXid(),
+					entity.getName(),
+					entity.getDataSourceId(),
+					new SerializationData().writeObject(entity),
+					PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(entity.getName())
+			}).setValues(ps);
+			return ps;
+		}, keyHolder);
+		entity.setId(keyHolder.getKey().intValue());
+		return entity;
+	}
+
+	public List<ScadaObjectIdentifier> getSimpleList() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
+	public List<DataPointVO> getAll() {
+		return null;
+	}
+
+	public DataPointVO getById(int id) throws EmptyResultDataAccessException {
+		return getDataPoint(id);
+	}
+
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void update(DataPointVO dataPoint) {
+	public int update(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(DataPointVO dataPoint) dataPoint:" + dataPoint);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
-				PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
-				dataPoint.getXid(),
-				dataPoint.getName(),
-				new SerializationData().writeObject(dataPoint),
-				dataPoint.getId()
-		});
+		try {
+			return DAO.getInstance().getJdbcTemp().update(
+					DATA_POINT_UPDATE,
+					PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
+					dataPoint.getXid(),
+					dataPoint.getName(),
+					new SerializationData().writeObject(dataPoint),
+					dataPoint.getId());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.error("Data Point entity with id= " + dataPoint.getId() + " does not exists!");
+			return 0;
+		} catch (Exception e) {
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public void delete(int id) {
+	public int delete(int id) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int id) id:" + id);
@@ -320,7 +383,15 @@ public class DataPointDAO {
 
 		String templateDeleteIn = DATA_POINT_DELETE + "=?";
 
-		DAO.getInstance().getJdbcTemp().update(templateDeleteIn, new Object[] {id});
+		try {
+			DAO.getInstance().getJdbcTemp().update(templateDeleteIn, id);
+			return 0;
+		} catch (Exception e) {
+			String message = "FAILED ON DELETING DataPoint witj ID: ";
+			LOG.error(message + id);
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -365,11 +436,11 @@ public class DataPointDAO {
 
 	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
 		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
-                new Object[] { userId },
-                new ScadaObjectIdentifierRowMapper.Builder()
-                        .idColumnName(COLUMN_NAME_ID)
-                        .xidColumnName(COLUMN_NAME_XID)
-                        .nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
-                        .build());
+		new Object[] { userId },
+		new ScadaObjectIdentifierRowMapper.Builder()
+			.idColumnName(COLUMN_NAME_ID)
+			.xidColumnName(COLUMN_NAME_XID)
+			.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+			.build());
 	}
 }

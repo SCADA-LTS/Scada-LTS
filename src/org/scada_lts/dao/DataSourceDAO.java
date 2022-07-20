@@ -24,6 +24,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -51,6 +53,8 @@ import java.util.stream.Collectors;
 public class DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
+
+	private static final String TABLE_NAME = "dataSources";
 
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -250,6 +254,12 @@ public class DataSourceDAO {
 		return objList;
 	}
 
+	public List<ScadaObjectIdentifier> getAllDataSources() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
 	public List<DataSourceVO<?>> getDataSourcesPlc() {
 		List<DataSourceVO<?>> list = DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_PLC_SELECT, new DataSourceRowMapper());
 		return list;
@@ -378,33 +388,80 @@ public class DataSourceDAO {
 
 	}
 
+	public DataSourceVO<?> create(DataSourceVO<?> entity) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + entity.toString());
+		}
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		DAO.getInstance().getJdbcTemp().update(connection -> {
+			PreparedStatement ps = connection.prepareStatement(DATA_SOURCE_INSERT, Statement.RETURN_GENERATED_KEYS);
+			new ArgumentPreparedStatementSetter(new Object[]{
+					entity.getXid(),
+					entity.getName(),
+					entity.getType().getId(),
+					new SerializationData().writeObject(entity)
+			}).setValues(ps);
+			return ps;
+		}, keyHolder);
+		entity.setId(keyHolder.getKey().intValue());
+		return entity;
+	}
+
+	public List<ScadaObjectIdentifier> getSimpleList() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+	}
+
+	public List<DataSourceVO<?>> getAll() {
+		return getDataSources();
+	}
+
+	public DataSourceVO<?> getById(int id) throws EmptyResultDataAccessException {
+		return getDataSource(id);
+	}
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void update(final DataSourceVO<?> dataSource) {
+	public int update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
 		}
 
-		DataSourceVO<?> oldDataSource = getDataSource(dataSource.getId());
-
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_UPDATE, new Object[]{
-				dataSource.getXid(),
-				dataSource.getName(),
-				new SerializationData().writeObject(dataSource),
-				dataSource.getId()}
-		);
+		try {
+			return DAO.getInstance().getJdbcTemp().update(
+					DATA_SOURCE_UPDATE,
+					dataSource.getXid(),
+					dataSource.getName(),
+					new SerializationData().writeObject(dataSource),
+					dataSource.getId());
+		} catch (EmptyResultDataAccessException e) {
+			LOG.error("DataSource entity with id= " + dataSource.getId() + " does not exists!");
+			return 0;
+		} catch (Exception e) {
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void delete(int dataSourceId) {
+	public int delete(int dataSourceId) {
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("delete(int dataSourceId): dataSourceId" + dataSourceId);
 		}
-
-		DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, new Object[]{dataSourceId});
-		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, new Object[]{dataSourceId});
+		try {
+			DAO.getInstance().getJdbcTemp().update(EVENT_HANDLER_DELETE, dataSourceId);
+			DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_DS_ID, dataSourceId);
+			DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_DELETE_WHERE_ID, dataSourceId);
+			return 0;
+		} catch (Exception e) {
+			String message = "FAILED ON DELETING Data Source with ID: ";
+			LOG.error(message + dataSourceId);
+			LOG.error(e);
+			return -1;
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)

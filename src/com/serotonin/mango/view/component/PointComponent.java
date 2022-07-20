@@ -39,6 +39,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
  * @author Matthew Lohbihler
  */
 abstract public class PointComponent extends ViewComponent {
+
     private DataPointVO dataPoint;
     @JsonRemoteProperty
     private String nameOverride;
@@ -139,6 +140,12 @@ abstract public class PointComponent extends ViewComponent {
         if (dataPoint == null)
             return 0;
         return dataPoint.getId();
+    }
+
+    public String getDataPointXid() {
+        if (dataPoint == null)
+            return "";
+        return dataPoint.getXid();
     }
 
     public String getNameOverride() {

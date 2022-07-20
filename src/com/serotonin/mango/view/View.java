@@ -46,7 +46,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 @JsonRemoteEntity
 public class View implements Serializable, JsonSerializable {
@@ -91,6 +91,10 @@ public class View implements Serializable, JsonSerializable {
 				return vc;
 		}
 		return null;
+	}
+
+	public void setViewComponents(List<ViewComponent> viewComponents) {
+		this.viewComponents = viewComponents;
 	}
 
 	public void removeViewComponent(ViewComponent vc) {

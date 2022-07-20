@@ -59,8 +59,6 @@ public class DataSourceEditController extends ParameterizableViewController {
                 // Adding a new data source? Get the type id.
                 int typeId = Integer.parseInt(request.getParameter("typeId"));
 
-                Permissions.ensureAdmin(user);
-
                 // A new data source
                 dataSourceVO = DataSourceVO.createDataSourceVO(typeId);
                 dataSourceVO.setId(Common.NEW_ID);
@@ -82,7 +80,6 @@ public class DataSourceEditController extends ParameterizableViewController {
             dataSourceVO = Common.ctx.getRuntimeManager().getDataSource(id);
             if (dataSourceVO == null)
                 throw new ShouldNeverHappenException("DataSource not found with id " + id);
-            Permissions.ensureDataSourcePermission(user, id);
         }
 
         // Set the id of the data source in the user object for the DWR.

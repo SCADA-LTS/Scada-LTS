@@ -11,10 +11,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.permissions.service.util.PermissionsUtils;
 import org.scada_lts.serorepl.utils.StringUtils;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -67,6 +68,12 @@ public class UsersProfileService {
                 .sorted(comparator)
                 .map(this::populateUserProfilePermissions)
                 .collect(Collectors.toList());
+    }
+
+    public List<ScadaObjectIdentifier> getAllUserProfiles() {
+        List<ScadaObjectIdentifier> userProfiles = new ArrayList<>();
+        getUsersProfiles().forEach(up -> userProfiles.add(new ScadaObjectIdentifier(up.getId(), up.getXid(), up.getName())));
+        return userProfiles;
     }
 
     public String generateUniqueXid() {
@@ -145,9 +152,10 @@ public class UsersProfileService {
     }
 
     public void updateUsersProfile(User user, UsersProfileVO profile) {
-        if (user != null) {
+        if (user != null && profile != null) {
             getProfileByUser(user).ifPresent(a -> removeUserProfile(user));
             createUserProfile(user, profile);
+            profile.apply(user);
         }
     }
 

@@ -1,5 +1,6 @@
 package org.scada_lts.service;
 
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SynopticPanelDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.model.SynopticPanel;
@@ -33,12 +34,14 @@ public class SynopticPanelService {
         return (SynopticPanel) synopticPanelDAO.create(synopticPanel);
     }
 
-    public int updateSynopticPanel(SynopticPanel synopticPanel) throws EmptyResultDataAccessException {
+    public SynopticPanel updateSynopticPanel(SynopticPanel synopticPanel) throws EmptyResultDataAccessException {
         return (synopticPanelDAO.update(synopticPanel));
     }
 
     public int deleteSynopticPanel(int id) {
         return (Integer) synopticPanelDAO.delete(id);
     }
+
+    public String generateXid() { return DAO.getInstance().generateUniqueXid(SynopticPanel.XID_PREFIX, "synopticPanels");}
 
 }

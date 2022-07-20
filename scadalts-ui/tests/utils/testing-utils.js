@@ -10,7 +10,7 @@ import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import Vuetify from '@/plugins/vuetify';
 import i18n from '@/i18n';
-import router from '@/router.js';
+import router from '@/router/index.js';
 import * as uiv from 'uiv';
 
 import mainStore from '../mocks/store/index';
@@ -43,6 +43,7 @@ export function prepareMountWrapper(component, storeModules, propsData = {}, ...
 		store,
 		i18n,
 		propsData,
+		router,
 		...options,
 	});
 }

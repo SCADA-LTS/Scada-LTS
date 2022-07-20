@@ -413,3 +413,23 @@ form.view-edit-form {
     max-width: 100vw;
     overflow-x: auto;
 }
+
+.notification-alert--reset {
+	  position: fixed;
+    top: 0;
+    right: 0;
+    padding: 10px;
+	  margin: 15px;
+    border: 1px solid var(--slts-color-primary);
+	  animation: slideIn 0.4s;
+    animation-timing-function: cubic-bezier(0, 0, 0.36, 1.38);
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+    z-index: 99;
+}
+.notification-alert--reset > .clickable {
+    cursor: pointer;
+}
+textarea#cssEditor {
+    white-space: pre-wrap !important;
+}

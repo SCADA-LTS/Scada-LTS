@@ -20,7 +20,6 @@ package com.serotonin.mango.web.dwr;
 
 import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.*;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -35,6 +34,8 @@ import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.adapter.MangoReport;
+import org.scada_lts.mango.service.*;
 import org.scada_lts.utils.ColorUtils;
 
 import java.util.List;
@@ -46,12 +47,12 @@ import java.util.ResourceBundle;
 public class ReportsDwr extends BaseDwr {
     public DwrResponseI18n init() {
         DwrResponseI18n response = new DwrResponseI18n();
-        ReportDao reportDao = new ReportDao();
+        MangoReport reportDao = new ReportService();
         User user = Common.getUser();
 
         response.addData("points", getReadablePoints());
-        response.addData("mailingLists", new MailingListDao().getMailingLists());
-        response.addData("users", new UserDao().getUsers());
+        response.addData("mailingLists", new MailingListService().getMailingLists());
+        response.addData("users", new UserService().getUsers());
         response.addData("reports", reportDao.getReports(user.getId()));
         response.addData("instances", getReportInstances(user));
 
@@ -65,7 +66,7 @@ public class ReportsDwr extends BaseDwr {
             report.setName(getMessage("common.newName"));
         }
         else {
-            report = new ReportDao().getReport(id);
+            report = new ReportService().getReport(id);
 
             if (copy) {
                 report.setId(Common.NEW_ID);
@@ -115,11 +116,12 @@ public class ReportsDwr extends BaseDwr {
             return response;
 
         User user = Common.getUser();
-        ReportDao reportDao = new ReportDao();
+        MangoReport reportDao = new ReportService();
         ReportVO report;
         if (id == Common.NEW_ID) {
             report = new ReportVO();
             report.setUserId(user.getId());
+            report.setUsername(user.getUsername());
         }
         else
             report = reportDao.getReport(id);
@@ -127,6 +129,7 @@ public class ReportsDwr extends BaseDwr {
         Permissions.ensureReportPermission(user, report);
 
         // Update the new values.
+        report.setUserId(user.getId());
         report.setName(name);
         report.setPoints(points);
         report.setIncludeEvents(includeEvents);
@@ -181,9 +184,12 @@ public class ReportsDwr extends BaseDwr {
         validateData(response, name, points, dateRangeType, relativeDateType, previousPeriodCount, pastPeriodCount);
 
         if (!response.getHasMessages()) {
+            User user = Common.getUser();
+
             ReportVO report = new ReportVO();
             report.setName(name);
-            report.setUserId(Common.getUser().getId());
+            report.setUserId(user.getId());
+            report.setUsername(user.getUsername());
             report.setPoints(points);
             report.setIncludeEvents(includeEvents);
             report.setIncludeUserComments(includeUserComments);
@@ -217,7 +223,7 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void deleteReport(int id) {
-        ReportDao reportDao = new ReportDao();
+        MangoReport reportDao = new ReportService();
 
         ReportVO report = reportDao.getReport(id);
         if (report != null) {
@@ -246,7 +252,7 @@ public class ReportsDwr extends BaseDwr {
             response.addContextualMessage("pastPeriodCount", "reports.validate.periodCountLessThan1");
 
         User user = Common.getUser();
-        DataPointDao dataPointDao = new DataPointDao();
+        DataPointService dataPointDao = new DataPointService();
         for (ReportPointVO point : points) {
             Permissions.ensureDataPointReadPermission(user, dataPointDao.getDataPoint(point.getPointId()));
 
@@ -262,7 +268,7 @@ public class ReportsDwr extends BaseDwr {
 
     public List<ReportInstance> deleteReportInstance(int instanceId) {
         User user = Common.getUser();
-        ReportDao reportDao = new ReportDao();
+        MangoReport reportDao = new ReportService();
         reportDao.deleteReportInstance(instanceId, user.getId());
         return getReportInstances(user);
     }
@@ -272,7 +278,7 @@ public class ReportsDwr extends BaseDwr {
     }
 
     private List<ReportInstance> getReportInstances(User user) {
-        List<ReportInstance> result = new ReportDao().getReportInstances(user.getId());
+        List<ReportInstance> result = new ReportService().getReportInstances(user.getId());
         ResourceBundle bundle = getResourceBundle();
         for (ReportInstance i : result)
             i.setBundle(bundle);
@@ -280,11 +286,11 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public void setPreventPurge(int instanceId, boolean value) {
-        new ReportDao().setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
+        new ReportService().setReportInstancePreventPurge(instanceId, value, Common.getUser().getId());
     }
 
     public ReportVO createReportFromWatchlist(int watchListId) {
-        WatchList watchList = new WatchListDao().getWatchList(watchListId);
+        WatchList watchList = new WatchListService().getWatchList(watchListId);
         if (watchList == null)
             return null;
 

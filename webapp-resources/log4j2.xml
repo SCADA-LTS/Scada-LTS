@@ -114,7 +114,6 @@
     </Appenders>
 
     <Loggers>
-
         <!-- Main Package Logging-->
         <!-- Scada-LTS Logging-->
         <Logger name="org.scada_lts" level="${scadaltsOrgLoggingLevel}"/>

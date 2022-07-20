@@ -106,13 +106,13 @@ public class AuditEventType extends EventType {
         dao.setIntValue(AUDIT_SETTINGS_PREFIX + type, alarmLevel);
     }
 
-    public static void raiseAddedEvent(int auditEventTypeId, ChangeComparable<?> o) {
+    static void raiseAddedEvent(int auditEventTypeId, ChangeComparable<?> o) {
         List<LocalizableMessage> list = new ArrayList<LocalizableMessage>();
         o.addProperties(list);
         raiseEvent(auditEventTypeId, o, "event.audit.added", list.toArray());
     }
 
-    public static <T> void raiseChangedEvent(int auditEventTypeId, T from, ChangeComparable<T> to) {
+    static <T> void raiseChangedEvent(int auditEventTypeId, T from, ChangeComparable<T> to) {
         List<LocalizableMessage> changes = new ArrayList<LocalizableMessage>();
         to.addPropertyChanges(changes, from);
         if (changes.size() == 0)
@@ -121,7 +121,7 @@ public class AuditEventType extends EventType {
         raiseEvent(auditEventTypeId, to, "event.audit.changed", changes.toArray());
     }
 
-    public static void raiseDeletedEvent(int auditEventTypeId, ChangeComparable<?> o) {
+    static void raiseDeletedEvent(int auditEventTypeId, ChangeComparable<?> o) {
         List<LocalizableMessage> list = new ArrayList<LocalizableMessage>();
         o.addProperties(list);
         raiseEvent(auditEventTypeId, o, "event.audit.deleted", list.toArray());

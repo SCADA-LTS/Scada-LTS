@@ -46,7 +46,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if (user != null) {
-                if(ids.isEmpty())
+                if(ids.isEmpty() || startTs > endTs)
                     return ResponseEntity.badRequest().build();
                 if (configFromSystem) {
                     aggregateSettings = systemSettingsService.getAggregateSettings();
@@ -85,7 +85,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(ids.isEmpty()) {
+                if(ids.isEmpty() || startTs > endTs) {
                     return ResponseEntity.badRequest().build();
                 }
                 if(configFromSystem) {
@@ -118,7 +118,7 @@ public class AmChartValuesAPI {
         try {
             User user = Common.getUser(request);
             if(user != null) {
-                if(ids.isEmpty()) {
+                if(ids.isEmpty() || startTs > endTs) {
                     return ResponseEntity.badRequest().build();
                 }
                 if(configFromSystem) {

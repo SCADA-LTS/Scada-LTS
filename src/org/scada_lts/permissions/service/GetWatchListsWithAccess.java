@@ -1,5 +1,6 @@
 package org.scada_lts.permissions.service;
 
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -31,5 +32,17 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
         if(user.isAdmin())
             return watchListDAO.selectWatchListIdentifiers();
         return watchListDAO.selectWatchListIdentifiersWithAccess(user.getId(), user.getUserProfile());
+    }
+
+    public static boolean hasWatchListReadPermission(User user, WatchList watchList) {
+        return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_READ;
+    }
+
+    public static boolean hasWatchListSetPermission(User user, WatchList watchList) {
+        return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_SET;
+    }
+
+    public static boolean hasWatchListOwnerPermission(User user, WatchList watchList) {
+        return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_OWNER;
     }
 }

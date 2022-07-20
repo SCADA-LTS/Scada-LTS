@@ -1,6 +1,7 @@
 package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
@@ -15,10 +16,12 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
 import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static org.scada_lts.utils.SystemSettingsUtils.serializeMap;
+
 /**
  * Based on the WatchListService created by Grzegorz Bylica
  *
@@ -34,6 +39,8 @@ import java.util.*;
  */
 @Service
 public class SystemSettingsService {
+
+    private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsService.class);
 
     private SystemSettingsDAO systemSettingsDAO;
 
@@ -108,6 +115,7 @@ public class SystemSettingsService {
         json.setHost(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER));
         json.setUsername(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME));
         json.setPassword(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD));
+        json.setHttpResponseHeaders(SystemSettingsDAO.getValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS));
         return json;
     }
 
@@ -117,32 +125,43 @@ public class SystemSettingsService {
         systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER, json.getHost());
         systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME, json.getUsername());
         systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD, json.getPassword());
+        systemSettingsDAO.setValue(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, getHttpResponseHeaders(json));
     }
 
     public JsonSettingsMisc getMiscSettings() {
         JsonSettingsMisc json = new JsonSettingsMisc();
-        json.setGroveLogging(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.GROVE_LOGGING));
-        json.setEventPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE));
-        json.setEventPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
-        json.setReportPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE));
-        json.setReportPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
-        json.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
-        json.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
         json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
         return json;
     }
 
     public void saveMiscSettings(JsonSettingsMisc json) {
-        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING, json.isGroveLogging());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, json.getEventPurgePeriodType());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS, json.getEventPurgePeriods());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE, json.getReportPurgePeriodType());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS, json.getReportPurgePeriods());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, json.getFutureDateLimitPeriodType());
-        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, json.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
         systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(json.getDataPointRuntimeValueSynchronized()));
+    }
+
+    public SettingsDataRetention getDataRetentionSettings() {
+        SettingsDataRetention settings = new SettingsDataRetention();
+        settings.setGroveLogging(SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.GROVE_LOGGING));
+        settings.setEventPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE));
+        settings.setEventPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS));
+        settings.setReportPurgePeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE));
+        settings.setReportPurgePeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS));
+        settings.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
+        settings.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
+        settings.setValuesLimitForPurge(SystemSettingsDAO.getIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE));
+        return settings;
+    }
+
+    public void saveDataRetentionSettings(SettingsDataRetention settings) {
+        systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING, settings.isGroveLogging());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE, settings.getEventPurgePeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS, settings.getEventPurgePeriods());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE, settings.getReportPurgePeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS, settings.getReportPurgePeriods());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, settings.getFutureDateLimitPeriodType());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, settings.getFutureDateLimitPeriods());
+        systemSettingsDAO.setIntValue(SystemSettingsDAO.VALUES_LIMIT_FOR_PURGE, settings.getValuesLimitForPurge());
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {
@@ -265,7 +284,11 @@ public class SystemSettingsService {
         return "{\"recipient\":\""+user.getEmail()+ "\"}";
     }
 
-    public void purgeData() {
+    public void purgeAllData() {
+        Common.ctx.getRuntimeManager().purgeDataPointValues();
+    }
+
+    public void purgeNow() {
         DataPurge dataPurge = new DataPurge();
         dataPurge.execute(System.currentTimeMillis());
     }
@@ -307,7 +330,7 @@ public class SystemSettingsService {
             return json;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
             return null;
         }
 
@@ -323,7 +346,7 @@ public class SystemSettingsService {
             double var = Double.parseDouble(SystemSettingsDAO.getValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR));
             aggregateSettings.setLimitFactor(var);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
             AggregateSettings defaultValue = AggregateSettings.fromEnvProperties();
             aggregateSettings.setLimitFactor(defaultValue.getLimitFactor());
         }
@@ -338,5 +361,33 @@ public class SystemSettingsService {
 
     public DataPointSyncMode getDataPointRtValueSynchronized() {
         return SystemSettingsDAO.getObject(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode::typeOf);
+    }
+
+    public Map<String, String> getHttpResponseHeaders() {
+        try {
+            return SystemSettingsDAO.getObject(SystemSettingsDAO.HTTP_RESPONSE_HEADERS, SystemSettingsService::deserializeMap);
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+            return Collections.emptyMap();
+        }
+    }
+
+    private static String getHttpResponseHeaders(JsonSettingsHttp json) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> headers = SystemSettingsUtils.deserializeMap(json.getHttpResponseHeaders(), objectMapper);
+            return serializeMap(headers, objectMapper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Map<String, String> deserializeMap(String json) {
+        try {
+            return SystemSettingsUtils.deserializeMap(json, new ObjectMapper());
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+            return Collections.emptyMap();
+        }
     }
 }

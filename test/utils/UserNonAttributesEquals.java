@@ -159,6 +159,14 @@ public class UserNonAttributesEquals {
         return user.getViewProfilePermissions();
     }
 
+    public String getFirstName() {
+        return user.getFirstName();
+    }
+
+    public String getLastName() {
+        return user.getLastName();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -195,7 +203,9 @@ public class UserNonAttributesEquals {
                 Objects.equals(this.user.getImportTask(), user.getImportTask()) &&
                 Objects.equals(this.user.getDataExportDefinition(), user.getDataExportDefinition()) &&
                 Objects.equals(this.user.getEventExportDefinition(), user.getEventExportDefinition()) &&
-                Objects.equals(this.user.getUploadedProject(), user.getUploadedProject());
+                Objects.equals(this.user.getUploadedProject(), user.getUploadedProject()) &&
+                Objects.equals(this.user.getFirstName(), user.getFirstName()) &&
+                Objects.equals(this.user.getLastName(), user.getLastName());
     }
 
     @Override
@@ -209,7 +219,8 @@ public class UserNonAttributesEquals {
                 this.user.getTheme(), this.user.isHideMenu(), this.user.getUserProfile(), this.user.getView(),
                 this.user.getWatchList(), this.user.getEditPoint(), this.user.getEditDataSource(),
                 this.user.getReportImageData(), this.user.getEditPublisher(), this.user.getImportTask(), this.user.isMuted(),
-                this.user.getDataExportDefinition(), this.user.getEventExportDefinition(), this.user.getUploadedProject());
+                this.user.getDataExportDefinition(), this.user.getEventExportDefinition(), this.user.getUploadedProject(),
+                this.user.getFirstName(), this.user.getLastName());
     }
 
     @Override

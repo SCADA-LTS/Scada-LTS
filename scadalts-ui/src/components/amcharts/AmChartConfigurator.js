@@ -43,7 +43,10 @@ export class AmChartConfigurator {
     }
 
     getSeriesConfiguration() {
-        return this.configuration.series;
+        if(!!this.configuration && !!this.configuration.series) {
+            return this.configuration.series;
+        }
+        
     }
 
     saveChartConfiguration() {

@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -339,7 +341,7 @@ public class ScadaConfig {
 	
 	public static void copyConfig() {
 		try {
-			Files.copy(Paths.get(getPathConfigFile() + System.getProperty("file.separator") + "env.properties"), Paths.get(getPathCustomConfig()+FILE_NAME_PROPERTIES));
+			Files.copy(Paths.get(getPathConfigFile("env.properties")), Paths.get(getPathCustomConfig()+FILE_NAME_PROPERTIES));
 		} catch (IOException e) {
 			LOG.error(e);
 		}
@@ -348,10 +350,10 @@ public class ScadaConfig {
 	private ScadaConfig() {
 		try {
 		  conf = new Properties();
-		  FileInputStream fis = null;
-		  fis = new FileInputStream(getPathConfigFile() + System.getProperty("file.separator") + "env.properties");
-		  conf.load(fis);
-		} catch (IOException e) {
+		  try(FileInputStream fis = new FileInputStream(getPathConfigFile("env.properties"))) {
+			  conf.load(fis);
+		  }
+		} catch (Exception e) {
 			LOG.error(e);
 		}
 	}
@@ -371,6 +373,15 @@ public class ScadaConfig {
 			path = path + "/" + "WEB-INF" + "/" + "classes" + "/";
 		}
 		return path;
+	}
+
+	private static String getPathConfigFile(String fileName) {
+		try {
+			return URLDecoder.decode(ScadaConfig.class.getClassLoader().getResources(fileName).nextElement().getFile(), StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return "";
+		}
 	}
 	
 	private static String getPathExistingLogo() {

@@ -52,6 +52,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.web.ws.beans.ScadaPrincipal;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
@@ -62,6 +63,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private String username;
 	@JsonRemoteProperty
 	private String password;
+	@JsonRemoteProperty
+	private String firstName;
+	@JsonRemoteProperty
+	private String lastName;
 	@JsonRemoteProperty
 	private String email;
 	@JsonRemoteProperty
@@ -92,6 +97,8 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private boolean hideMenu;
 
+
+
 	//
 	// Session data. The user object is stored in session, and some other
 	// session-based information is cached here
@@ -112,12 +119,26 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+	private transient boolean hideHeader = false;
 
 	public User() { }
 
 	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
 		this.id = id;
 		this.username = username;
+		this.email = email;
+		this.phone = phone;
+		this.admin = admin;
+		this.disabled = disabled;
+		this.homeUrl = homeUrl;
+		this.lastLogin = lastLogin;
+	}
+
+	public User(int id, String username, String firstName, String lastName, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+		this.id = id;
+		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.phone = phone;
 		this.admin = admin;
@@ -161,6 +182,16 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = user.eventExportDefinition;
 		this.attributes = user.attributes;
 		this.uploadedProject = user.uploadedProject;
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
+	}
+
+	public static User onlyId(int userId) {
+		return new User(userId, null, null, null, null, null, false, false, null, 0L);
+	}
+
+	public static User onlyIdUsername(ScadaPrincipal principal) {
+		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
 	}
 
 	/**
@@ -248,6 +279,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void cancelTestingUtility() {
 		setTestingUtility(null);
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	// Properties
@@ -462,6 +509,14 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setHideMenu(boolean hideMenu) {
 		this.hideMenu = hideMenu;
+	}
+
+	public boolean isHideHeader() {
+		return hideHeader;
+	}
+
+	public void setHideHeader(boolean hideHeader) {
+		this.hideHeader = hideHeader;
 	}
 
 	public void setAttribute(String key, Object value) {

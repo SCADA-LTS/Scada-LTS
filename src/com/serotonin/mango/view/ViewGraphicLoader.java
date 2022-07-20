@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
@@ -34,13 +33,12 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static org.scada_lts.utils.UploadFileUtils.*;
+
 public class ViewGraphicLoader {
     private static final Log LOG = LogFactory.getLog(ViewGraphicLoader.class);
 
     private static final String GRAPHICS_PATH = "graphics";
-    private static final String INFO_FILE_NAME = "info.txt";
-
-    private static final String IGNORE_THUMBS = "Thumbs.db";
 
     private String path;
     private List<ViewGraphic> viewGraphics;
@@ -60,7 +58,7 @@ public class ViewGraphicLoader {
                 LOG.warn("Failed to load image set at " + dir, e);
             }
         }
-
+        viewGraphics.sort(Comparator.comparing(ViewGraphic::getName));
         return viewGraphics;
     }
 
@@ -79,22 +77,23 @@ public class ViewGraphicLoader {
         for (File file : files) {
             if (file.isDirectory())
                 loadDirectory(file, id + ".");
-            else if (IGNORE_THUMBS.equalsIgnoreCase(file.getName())) {
+            else if (isThumbsFile(file)) {
                 // no op
             }
-            else if (INFO_FILE_NAME.equalsIgnoreCase(file.getName())) {
+            else if (isInfoFile(file)) {
                 // Info file
                 Properties props = new Properties();
-                props.load(new FileInputStream(file));
-
-                name = getProperty(props, "name", name);
-                typeStr = getProperty(props, "type", "imageSet");
-                width = getIntProperty(props, "width", width);
-                height = getIntProperty(props, "height", height);
-                textX = getIntProperty(props, "text.x", textX);
-                textY = getIntProperty(props, "text.y", textY);
+                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                    props.load(fileInputStream);
+                    name = getProperty(props, "name", name);
+                    typeStr = getProperty(props, "type", "imageSet");
+                    width = getIntProperty(props, "width", width);
+                    height = getIntProperty(props, "height", height);
+                    textX = getIntProperty(props, "text.x", textX);
+                    textY = getIntProperty(props, "text.y", textY);
+                }
             }
-            else {
+            else if(isImageBitmap(file)) {
                 // Image file. Subtract the load path from the image path
                 String imagePath = file.getPath().substring(path.length());
                 if(imagePath.startsWith("/") || imagePath.startsWith("\\")) {
@@ -104,11 +103,14 @@ public class ViewGraphicLoader {
                 imagePath = imagePath.replaceAll("\\\\", "/");
                 imageFiles.add(imagePath);
             }
+            else {
+                LOG.warn("File is not supported type: " + file);
+            }
         }
 
         if (!imageFiles.isEmpty()) {
             if (width == -1 || height == -1) {
-                String imagePath = path + "/" + imageFiles.get(0);
+                String imagePath = path + File.separator + imageFiles.get(0);
                 Image image = Toolkit.getDefaultToolkit().getImage(imagePath);
                 MediaTracker tracker = new MediaTracker(new Container());
                 tracker.addImage(image, 0);
@@ -134,12 +136,6 @@ public class ViewGraphicLoader {
 
             viewGraphics.add(g);
         }
-        Collections.sort(viewGraphics, new Comparator<ViewGraphic>() {
-		      @Override
-		      public int compare(final ViewGraphic prev, final ViewGraphic next) {
-		          return prev.getName().compareTo(next.getName());
-		      }
-		  });
     }
 
     private String getProperty(Properties props, String key, String defaultValue) {

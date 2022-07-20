@@ -12,9 +12,12 @@ public interface IUserDAO {
     User getUser(String username);
     User getUser(int id);
     void update(User user);
+    @Deprecated
     void updateHideMenu(User user);
+    @Deprecated
     void updateScadaTheme(User user);
     void updateHomeUrl(int userId, String homeUrl);
+    void updateUserPassword(int userId, String newPassword);
     void updateLogin(int userId);
     void delete(int userId);
     int insert(User user);

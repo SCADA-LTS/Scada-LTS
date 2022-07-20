@@ -77,13 +77,45 @@ const storeDataPoint = {
 			{ id: 3, label: i18n.t('pointEdit.logging.value.minimum') },
 			{ id: 4, label: i18n.t('pointEdit.logging.value.average') },
 		],
+
+		purgeStrategyList: [
+			{
+				id: 1,
+				type: 'PERIOD',
+				label: i18n.t('pointEdit.logging.purge.type.period'),
+			},
+			{
+				id: 2,
+				type: 'LIMIT',
+				label: i18n.t('pointEdit.logging.purge.type.limit'),
+			},
+		],
 	},
 
 	mutations: {},
 
 	actions: {
-		async fetchDataPointSimpleList({ state, dispatch }) {
-			state.datapointSimpleList = await dispatch('requestGet', `/datapoint/getAll`);
+		/**
+		 * Fetch DataPoint List
+		 * 
+		 * Additionaly user can filter list by specific datapoint type.
+		 * 
+		 * @param {*} param0 
+		 * @param {Array} datapointTypes - Array of datapoint types to download.
+		 */
+		async fetchDataPointSimpleList({ state, dispatch }, datapointTypes) {
+			let request = '/datapoint/getAll';
+			if(!!datapointTypes) {
+				request += `?types=${datapointTypes}`;
+			}
+			state.datapointSimpleList = await dispatch('requestGet', request);
+		},
+
+		async searchDatapoints({ state, dispatch }, keywords) {
+			return (state.datapointSimpleList = await dispatch(
+				'requestGet',
+				`/datapoints?keywordSearch=${keywords}`,
+			));
 		},
 
 		getDataPointSimpleFilteredList({ state }, value) {
@@ -102,12 +134,19 @@ const storeDataPoint = {
 			return dispatch('requestGet', `/datapoints`);
 		},
 
+		getUniqueDataPointXid({ dispatch }) {
+			return dispatch('requestGet', '/datapoint/generateUniqueXid');
+		},
+
 		getDataPointDetails({ dispatch }, datapointId) {
 			return dispatch('requestGet', `/datapoint?id=${datapointId}`);
 		},
 
 		getDataPointValue({ dispatch }, datapointId) {
-			return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+			if(!!datapointId) {
+				return dispatch('requestGet', `/point_value/getValue/id/${datapointId}`);
+			}
+			return null;
 		},
 
 		getDataPointValueByXid({ dispatch }, datapointXid) {
@@ -121,10 +160,10 @@ const storeDataPoint = {
 			});
 		},
 
-		setCmpValue({dispatch}, payload) {
+		setCmpValue({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/cmp/set/${payload.id}/${payload.name}`,
-				data: payload.requestData
+				data: payload.requestData,
 			});
 		},
 
@@ -145,6 +184,27 @@ const storeDataPoint = {
 		clearDataPointCache({ dispatch }, datapointId) {
 			return dispatch('requestPatch', {
 				url: `/point_properties/${datapointId}/clearcache`,
+				data: null,
+			});
+		},
+
+		purgeNowPeriod({dispatch}, {datapointId, type, period}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowPeriod?type=${type}&period=${period}`,
+				data: null,
+			});
+		},
+
+		purgeNowLimit({dispatch}, {datapointId, limit}) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowLimit?limit=${limit}`,
+				data: null,
+			});
+		},
+
+		purgeNowAll({dispatch}, datapointId) {
+			return dispatch('requestPatch', {
+				url: `/point_properties/${datapointId}/purgeNowAll`,
 				data: null,
 			});
 		},
@@ -177,7 +237,7 @@ const storeDataPoint = {
 		addUserComment({ dispatch }, payload) {
 			return dispatch('requestPost', {
 				url: `/userComment/${payload.typeId}/${payload.refId}`,
-				data: payload.comment,
+				data: { commentText: payload.comment.comment },
 			});
 		},
 
@@ -186,6 +246,14 @@ const storeDataPoint = {
 				'requestDelete',
 				`/userComment/${payload.typeId}/${payload.refId}/${payload.userId}/${payload.ts}`,
 			);
+		},
+
+		fetchDataPointsFromDataSource({ dispatch }, dataSourceId) {
+			return dispatch('requestGet', `/datapoints/datasource?id=${dataSourceId}`);
+		},
+
+		getDatasourceByXid({ dispatch }, xid) {
+			return dispatch('requestGet', `/datasource?xid=${xid}`);
 		},
 	},
 

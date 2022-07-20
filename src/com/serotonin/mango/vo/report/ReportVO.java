@@ -24,18 +24,30 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.serotonin.json.*;
+import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.User;
+import com.serotonin.util.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.SerializationHelper;
+import org.scada_lts.mango.adapter.MangoUser;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.dto.ReportDTO;
 
 /**
  * @author Matthew Lohbihler
  */
-public class ReportVO implements Serializable {
+
+@JsonRemoteEntity
+public class ReportVO implements Serializable, JsonSerializable {
     public static final int DATE_RANGE_TYPE_RELATIVE = 1;
     public static final int DATE_RANGE_TYPE_SPECIFIC = 2;
 
@@ -48,43 +60,80 @@ public class ReportVO implements Serializable {
 
     public static final int SCHEDULE_CRON = 0;
 
+    @JsonRemoteProperty
     private int id = Common.NEW_ID;
+    @JsonRemoteProperty
+    private String xid;
+
     private int userId;
+    private String username;
+    @JsonRemoteProperty
     private String name;
+
     private List<ReportPointVO> points = new ArrayList<ReportPointVO>();
+    @JsonRemoteProperty
     private int includeEvents = EVENTS_ALARMS;
+    @JsonRemoteProperty
     private boolean includeUserComments = true;
+    @JsonRemoteProperty
     private int dateRangeType = DATE_RANGE_TYPE_RELATIVE;
+    @JsonRemoteProperty
     private int relativeDateType = RELATIVE_DATE_TYPE_PREVIOUS;
 
+    @JsonRemoteProperty
     private int previousPeriodCount = 1;
+    @JsonRemoteProperty
     private int previousPeriodType = Common.TimePeriods.DAYS;
+    @JsonRemoteProperty
     private int pastPeriodCount = 1;
+    @JsonRemoteProperty
     private int pastPeriodType = Common.TimePeriods.DAYS;
 
+    @JsonRemoteProperty
     private boolean fromNone;
+    @JsonRemoteProperty
     private int fromYear;
+    @JsonRemoteProperty
     private int fromMonth;
+    @JsonRemoteProperty
     private int fromDay;
+    @JsonRemoteProperty
     private int fromHour;
+    @JsonRemoteProperty
     private int fromMinute;
 
+    @JsonRemoteProperty
     private boolean toNone;
+    @JsonRemoteProperty
     private int toYear;
+    @JsonRemoteProperty
     private int toMonth;
+    @JsonRemoteProperty
     private int toDay;
+    @JsonRemoteProperty
     private int toHour;
+    @JsonRemoteProperty
     private int toMinute;
 
+    @JsonRemoteProperty
     private boolean schedule;
+    @JsonRemoteProperty
     private int schedulePeriod = Common.TimePeriods.DAYS;
+    @JsonRemoteProperty
     private int runDelayMinutes;
+    @JsonRemoteProperty
     private String scheduleCron;
 
+    @JsonRemoteProperty
     private boolean email;
+
     private List<RecipientListEntryBean> recipients = new ArrayList<RecipientListEntryBean>();
+    @JsonRemoteProperty
     private boolean includeData = true;
+    @JsonRemoteProperty
     private boolean zipData = false;
+
+    private static final Log LOG = LogFactory.getLog(ReportVO.class);
 
     public ReportVO() {
         // Default the specific date fields.
@@ -101,6 +150,43 @@ public class ReportVO implements Serializable {
         fromDay = dt.getDayOfMonth();
         fromHour = dt.getHourOfDay();
         fromMinute = dt.getMinuteOfHour();
+    }
+
+    public static ReportVO createReport(ReportDTO query, User user, List<ReportPointVO> reportPoints) {
+        ReportVO report = new ReportVO();
+        report.setUserId(user.getId());
+        report.setId(query.getId());
+        report.setName(query.getName());
+        report.setPoints(reportPoints);
+        report.setIncludeEvents(query.getIncludeEvents());
+        report.setIncludeUserComments(query.isIncludeUserComments());
+        report.setDateRangeType(query.getDateRangeType());
+        report.setRelativeDateType(query.getRelativeDateType());
+        report.setPreviousPeriodCount(query.getPreviousPeriodCount());
+        report.setPreviousPeriodType(query.getPreviousPeriodType());
+        report.setPastPeriodCount(query.getPastPeriodCount());
+        report.setPastPeriodType(query.getPastPeriodType());
+        report.setFromNone(query.isFromNone());
+        report.setFromYear(query.getFromYear());
+        report.setFromMonth(query.getFromMonth());
+        report.setFromDay(query.getFromDay());
+        report.setFromHour(query.getFromHour());
+        report.setFromMinute(query.getFromMinute());
+        report.setToNone(query.isToNone());
+        report.setToYear(query.getToYear());
+        report.setToMonth(query.getToMonth());
+        report.setToDay(query.getToDay());
+        report.setToHour(query.getToHour());
+        report.setToMinute(query.getToMinute());
+        report.setSchedule(query.isSchedule());
+        report.setSchedulePeriod(query.getSchedulePeriod());
+        report.setRunDelayMinutes(query.getRunDelayMinutes());
+        report.setScheduleCron(query.getScheduleCron());
+        report.setEmail(query.isEmail());
+        report.setIncludeData(query.isIncludeData());
+        report.setZipData(query.isZipData());
+        report.setRecipients(query.getRecipients());
+        return report;
     }
 
     public int getId() {
@@ -359,12 +445,28 @@ public class ReportVO implements Serializable {
         this.runDelayMinutes = runDelayMinutes;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
+    }
+
     //
     //
     // Serialization
     //
     private static final long serialVersionUID = -1;
-    private static final int version = 6;
+    private static final int version = 7;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -401,6 +503,7 @@ public class ReportVO implements Serializable {
         out.writeObject(recipients);
         out.writeBoolean(includeData);
         out.writeBoolean(zipData);
+        SerializationHelper.writeSafeUTF(out, username);
     }
 
     @SuppressWarnings("unchecked")
@@ -612,6 +715,42 @@ public class ReportVO implements Serializable {
             includeData = in.readBoolean();
             zipData = in.readBoolean();
         }
+
+        if(ver == 7) {
+            points = (List<ReportPointVO>) in.readObject();
+            includeEvents = in.readInt();
+            includeUserComments = in.readBoolean();
+            dateRangeType = in.readInt();
+            relativeDateType = in.readInt();
+
+            previousPeriodCount = in.readInt();
+            previousPeriodType = in.readInt();
+            pastPeriodCount = in.readInt();
+            pastPeriodType = in.readInt();
+
+            fromNone = in.readBoolean();
+            fromYear = in.readInt();
+            fromMonth = in.readInt();
+            fromDay = in.readInt();
+            fromHour = in.readInt();
+            fromMinute = in.readInt();
+            toNone = in.readBoolean();
+            toYear = in.readInt();
+            toMonth = in.readInt();
+            toDay = in.readInt();
+            toHour = in.readInt();
+            toMinute = in.readInt();
+
+            schedule = in.readBoolean();
+            schedulePeriod = in.readInt();
+            runDelayMinutes = in.readInt();
+            scheduleCron = SerializationHelper.readSafeUTF(in);
+            email = in.readBoolean();
+            recipients = (List<RecipientListEntryBean>) in.readObject();
+            includeData = in.readBoolean();
+            zipData = in.readBoolean();
+            username = SerializationHelper.readSafeUTF(in);
+        }
     }
 
     private static List<ReportPointVO> convertToReportPointVOs(List<Integer> ids) {
@@ -622,5 +761,77 @@ public class ReportVO implements Serializable {
             result.add(vo);
         }
         return result;
+    }
+
+    @Override
+    public void jsonSerialize(Map<String, Object> map) {
+        map.put("points", points);
+        map.put("recipients", recipients);
+        map.put("userId", userId);
+        map.put("username", username);
+    }
+
+    @Override
+    public void jsonDeserialize(JsonReader jsonReader, JsonObject jsonObject) throws JsonException {
+        JsonArray jsonPoints = jsonObject.getJsonArray("points");
+        if (jsonPoints != null) {
+            points.clear();
+            for (JsonValue jv : jsonPoints.getElements()) {
+                JsonObject jsonPoint = jv.toJsonObject();
+                ReportPointVO reportPoint = new ReportPointVO();
+                jsonReader.populateObject(reportPoint, jsonPoint);
+                points.add(reportPoint);
+            }
+        }
+
+        JsonArray jsonRecipients = jsonObject.getJsonArray("recipients");
+        if (jsonRecipients != null) {
+            recipients.clear();
+            for (JsonValue jv : jsonRecipients.getElements()) {
+                JsonObject jsonRecipient = jv.toJsonObject();
+                RecipientListEntryBean recipient = new RecipientListEntryBean();
+                jsonReader.populateObject(recipient, jsonRecipient);
+                recipients.add(recipient);
+            }
+        }
+
+        MangoUser userService = new UserService();
+        String owner = jsonObject.getString("username");
+        if (!StringUtils.isEmpty(owner)) {
+            try {
+                User user;
+                if((user = userService.getUser(owner)) == null) {
+                    throw new LocalizableJsonException("emport.error.missingUser", owner);
+                }
+                this.userId = user.getId();
+                this.username = user.getUsername();
+            } catch (LocalizableJsonException ex) {
+                LOG.warn(ex.getMessage(), ex);
+                throw ex;
+            } catch (Exception ex) {
+                LOG.warn(ex.getMessage(), ex);
+                throw new LocalizableJsonException("emport.error.invalid", "owner", owner, "");
+            }
+        } else {
+            Integer ownerId = jsonObject.getInt("userId");
+            try {
+                User user;
+                if(ownerId == null || (user = userService.getUser(ownerId)) == null) {
+                    throw new LocalizableJsonException("emport.error.invalid", "ownerId", ownerId, "");
+                }
+                this.userId = user.getId();
+                this.username = user.getUsername();
+            } catch (LocalizableJsonException ex) {
+                LOG.warn(ex.getMessage(), ex);
+                throw ex;
+            } catch (Exception ex) {
+                LOG.warn(ex.getMessage(), ex);
+                throw new LocalizableJsonException("emport.error.invalid", "ownerId", ownerId, "");
+            }
+        }
+    }
+
+    public static String generateXid() {
+        return Common.generateXid("REP_");
     }
 }

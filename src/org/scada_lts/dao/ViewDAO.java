@@ -54,6 +54,8 @@ import com.serotonin.mango.view.View;
 public class ViewDAO implements GenericDAO<View> {
 	
 	private Log LOG = LogFactory.getLog(ViewDAO.class);
+
+	private static final String TABLE_NAME = "mangoViews";
 	
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -385,6 +387,12 @@ public class ViewDAO implements GenericDAO<View> {
 	
 	public List<IdName> getAllViewNames() {
 		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME , new Object[] {  },new IdNameRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> getSimpleList() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME),mapper);
 	}
 	
 	public View getView(String name) {

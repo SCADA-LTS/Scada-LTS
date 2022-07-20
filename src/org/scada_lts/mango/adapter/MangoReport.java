@@ -18,6 +18,7 @@
 package org.scada_lts.mango.adapter;
 
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.ReportDataStreamHandler;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportUserComment;
@@ -25,6 +26,7 @@ import com.serotonin.mango.vo.report.ReportVO;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -39,6 +41,8 @@ public interface MangoReport {
 	List<ReportVO> getReports(int userId);
 
 	ReportVO getReport(int id);
+
+	ReportVO getReport(String xid);
 
 	void saveReport(ReportVO report);
 
@@ -63,4 +67,7 @@ public interface MangoReport {
 	List<EventInstance> getReportInstanceEvents(int instanceId);
 
 	List<ReportUserComment> getReportInstanceUserComments(int instanceId);
+
+	List<ReportVO> search(User user, Map<String, String> query);
+
 }

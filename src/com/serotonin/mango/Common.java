@@ -374,7 +374,8 @@ public class Common {
 			case TimePeriods.SECONDS:
 				return new CronTimerTrigger("* * * * * ?");
 			case TimePeriods.MINUTES:
-				return new CronTimerTrigger(delaySeconds + " * * * * ?");
+				return new CronTimerTrigger(delaySeconds + " 0/" + delayMinutes
+						+ " * * * ?");
 			case TimePeriods.HOURS:
 				return new CronTimerTrigger(delaySeconds + " " + delayMinutes
 						+ " * * * ?");

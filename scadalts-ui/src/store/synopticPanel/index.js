@@ -9,10 +9,14 @@ const storeSynopticPanel = {
 		fetchSynopticPanelList({ dispatch }) {
 			return dispatch('requestGet', `/synoptic-panels/`);
 		},
-
+		
 		fetchSynopticPanel({ dispatch }, id) {
 			return dispatch('requestGet', `/synoptic-panels/${id}`);
 		},
+
+		getSynopticPanelUniqueXid({ dispatch }) {
+            return dispatch('requestGet', `/synoptic-panels/generateXid`);
+        },
 
 		createSynopticPanel({ dispatch }, synopticPanel) {
 			return dispatch('requestPost', {

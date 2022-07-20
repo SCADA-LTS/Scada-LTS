@@ -164,6 +164,10 @@
                        jQuery("#purgeType").val(prop.purgeType);
                        jQuery("#defaultCacheSize").val(prop.defaultCacheSize);
 
+                       jQuery("#purgeStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeNowStrategy").val(prop.purgeStrategy);
+                       jQuery("#purgeValuesLimit").val(prop.purgeValuesLimit);
+
                    }
 
                    function setConfig(properties) {

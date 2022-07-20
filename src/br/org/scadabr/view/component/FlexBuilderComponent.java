@@ -45,7 +45,12 @@ public class FlexBuilderComponent extends HtmlComponent {
 		return DEFINITION;
 	}
 
-	private void createContent() {
+	public void createContent() {
+		String content = createFlexBuilderContent();
+		setContent(content);
+	}
+
+	public String createFlexBuilderContent() {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' ");
@@ -77,7 +82,7 @@ public class FlexBuilderComponent extends HtmlComponent {
 		sb.append("</embed>");
 		sb.append("</object>");
 
-		setContent(sb.toString());
+		return sb.toString();
 	}
 
 	private String encodeURL(String string) {

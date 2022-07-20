@@ -2,13 +2,15 @@ import { expect } from 'chai';
 
 import dataPoint from '../../mocks/store/dataPointMock';
 
-import PointPropChartRenderer from '@/views/DataPointDetails/PointProperties/PointPropChartRenderer';
+import PointPropChartRenderer from '@/views/DataObjects/DataPointDetails/PointProperties/PointPropChartRenderer';
 import dataPointMock from '../../mocks/objects/DataPointMock';
+import eventDetectorModule from '../../mocks/store/dataPointDetailsMock'
 
 import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	dataPoint,
+	eventDetectorModule
 };
 
 /**

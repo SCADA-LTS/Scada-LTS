@@ -18,18 +18,21 @@
 package org.scada_lts.mango.service;
 
 
-import com.serotonin.mango.Common;
+import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.UserComment;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.IUserDAO;
+import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.error.EntityNotUniqueException;
+import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
-import org.scada_lts.permissions.service.*;
-import org.scada_lts.utils.ApplicationBeans;
+import org.scada_lts.permissions.service.PermissionsService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,7 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataPointPermissions;
+import static org.scada_lts.permissions.service.util.PermissionsUtils.updateDataSourcePermissions;
 
 /**
  * UserService
@@ -51,16 +55,16 @@ public class UserService implements MangoUser {
 
 	private static final Log LOG = LogFactory.getLog(UserService.class);
 
-	private IUserDAO userDAO;
+	private final IUserDAO userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
-	private UsersProfileService usersProfileService;
+	private final UsersProfileService usersProfileService;
 
-	private PermissionsService<DataPointAccess, User> dataPointPermissionsService;
-	private PermissionsService<Integer, User> dataSourcePermissionsService;
+	private final PermissionsService<DataPointAccess, User> dataPointPermissionsService;
+	private final PermissionsService<Integer, User> dataSourcePermissionsService;
 
 	public UserService() {
 		userDAO = ApplicationBeans.getUserDaoBean();
@@ -167,16 +171,19 @@ public class UserService implements MangoUser {
 
 	@Override
 	public void updateHideMenu(User user) {
-		userDAO.updateHideMenu(user);
+		updateUser(user);
 	}
 
 	@Override
 	public void updateScadaTheme(User user) {
-		userDAO.updateScadaTheme(user);
+		updateUser(user);
 	}
 
 	@Override
 	public void insertUser(User user) {
+		if(!isUsernameUnique(user.getUsername())) {
+			throw new EntityNotUniqueException("That username already exists!");
+		}
 		try {
 			int id = userDAO.insert(user);
 			user.setId(id);
@@ -228,10 +235,42 @@ public class UserService implements MangoUser {
 		userCommentDAO.insert(comment, typeId, referenceId);
 	}
 
+	@Override
+	public boolean isUsernameUnique(String username) {
+		return (userDAO.getUser(username) == null);
+	}
+
+	@Override
+	public void updateUserProfile(User user) {
+		if (user.getUserProfile() == Common.NEW_ID) {
+			usersProfileService.resetUserProfile(user);
+		} else {
+			UsersProfileVO profile = usersProfileService.getUserProfileById(user.getUserProfile());
+			usersProfileService.updateUsersProfile(user, profile);
+		}
+	}
+
+	@Override
+	public void updateUserPassword(int userId, String newPassword) {
+		userDAO.updateUserPassword(userId, Common.encrypt(newPassword));
+	}
+
+
+	@Override
+	public void updateUserPassword(int userId, String newPassword, String oldPassword) throws PasswordMismatchException {
+		oldPassword = Common.encrypt(oldPassword);
+		if(oldPassword.equals(userDAO.getUser(userId).getPassword())) {
+			updateUserPassword(userId, newPassword);
+		} else {
+			throw new PasswordMismatchException();
+		}
+	}
+
 	private void updatePermissions(User user) {
 		updateDataSourcePermissions(user, dataSourcePermissionsService);
 		updateDataPointPermissions(user, dataPointPermissionsService);
 		usersProfileService.updateDataPointPermissions();
 		usersProfileService.updateDataSourcePermissions();
+		updateUserProfile(user);
 	}
 }

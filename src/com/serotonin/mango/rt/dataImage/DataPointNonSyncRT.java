@@ -38,7 +38,6 @@ import org.scada_lts.dao.SystemSettingsDAO;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
     private static final Log LOG = LogFactory.getLog(DataPointNonSyncRT.class);
 
@@ -161,7 +160,7 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
         }
 
         if (saveValue){
-            this.notifyWebSocketListeners(newValue.getValue().toString());
+            notifyWebSocketSubscribers(newValue.getValue());
             getPointValueCache().savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
         }
 

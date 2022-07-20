@@ -1,5 +1,7 @@
 package org.scada_lts.web.mvc.api.json;
 
+import com.serotonin.mango.vo.DataPointVO;
+
 public class JsonDataPoint {
 
     private int id;
@@ -9,8 +11,11 @@ public class JsonDataPoint {
     private String description;
     private String datasourceName;
     private int typeId;
+    private boolean settable;
 
-    public JsonDataPoint(int id, String name, String xid, boolean enabled, String description, String datasourceName, int typeId) {
+    public JsonDataPoint() { }
+
+    public JsonDataPoint(int id, String name, String xid, boolean enabled, String description, String datasourceName, int typeId, boolean settable) {
         this.id = id;
         this.name = name;
         this.xid = xid;
@@ -18,6 +23,19 @@ public class JsonDataPoint {
         this.description = description;
         this.datasourceName = datasourceName;
         this.typeId = typeId;
+        this.settable = settable;
+    }
+
+    public static JsonDataPoint newInstance(DataPointVO point) {
+        return new JsonDataPoint(
+                point.getId(),
+                point.getName(),
+                point.getXid(),
+                point.isEnabled(),
+                point.getDescription(),
+                point.getDataSourceName(),
+                point.getPointLocator().getDataTypeId(),
+                point.getPointLocator().isSettable());
     }
 
     public int getId() {
@@ -76,4 +94,11 @@ public class JsonDataPoint {
         this.typeId = typeId;
     }
 
+    public boolean isSettable() {
+        return settable;
+    }
+
+    public void setSettable(boolean settable) {
+        this.settable = settable;
+    }
 }
