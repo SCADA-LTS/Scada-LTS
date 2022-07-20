@@ -17,6 +17,6 @@
     "vue": "^2.5.16",
     "vue-axios": "^2.1.1",
     "vue-jsoneditor": "^1.0.13",
-    "sockjs-client": "1.6.1"
+    "sockjs-client": "1.6.0"
   }
 }
