@@ -41,12 +41,10 @@ public class CrowdUtils {
             String password) {
         long start = System.currentTimeMillis();
 
-        ensureAuthenticator();
-
         boolean authenticated = false;
 
         try {
-            authenticator.authenticate(request, response, username, password);
+            getAuthenticator().authenticate(request, response, username, password);
             authenticated = true;
         }
         catch (ApplicationPermissionException e) {
@@ -78,10 +76,9 @@ public class CrowdUtils {
     }
 
     public static boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response) {
-        ensureAuthenticator();
 
         try {
-            return authenticator.isAuthenticated(request, response);
+            return getAuthenticator().isAuthenticated(request, response);
         }
         catch (OperationFailedException e) {
             LOG.warn("Exception during Crowd authentication attempt", e);
@@ -91,10 +88,9 @@ public class CrowdUtils {
     }
 
     public static String getCrowdUsername(HttpServletRequest request) {
-        ensureAuthenticator();
 
         try {
-            User user = authenticator.getUser(request);
+            User user = getAuthenticator().getUser(request);
             if (user != null)
                 return user.getName();
         }
@@ -115,10 +111,9 @@ public class CrowdUtils {
     }
 
     public static void logout(HttpServletRequest request, HttpServletResponse response) {
-        ensureAuthenticator();
 
         try {
-            authenticator.logout(request, response);
+            getAuthenticator().logout(request, response);
         }
         catch (ApplicationPermissionException e) {
             LOG.warn("Exception during Crowd authentication attempt", e);
@@ -140,19 +135,23 @@ public class CrowdUtils {
         return b == null ? false : b;
     }
 
-    private static void ensureAuthenticator() {
-        if (authenticator == null) {
+    private static CrowdHttpAuthenticator getAuthenticator() {
+        CrowdHttpAuthenticator auth = authenticator;
+        if (auth == null) {
             synchronized (CrowdUtils.class) {
-                if (authenticator == null) {
+                auth = authenticator;
+                if (auth == null) {
                     ClientResourceLocator clientResourceLocator = new ClientResourceLocator("crowd.properties");
                     ClientProperties props = ClientPropertiesImpl.newInstanceFromResourceLocator(clientResourceLocator);
                     CrowdClientFactory clientFactory = new RestCrowdClientFactory();
                     CrowdClient client = clientFactory.newInstance(props);
                     CrowdHttpTokenHelper tokenHelper = CrowdHttpTokenHelperImpl
                             .getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance());
-                    authenticator = new CrowdHttpAuthenticatorImpl(client, props, tokenHelper);
+                    auth = new CrowdHttpAuthenticatorImpl(client, props, tokenHelper);
+                    authenticator = auth;
                 }
             }
         }
+        return auth;
     }
 }
