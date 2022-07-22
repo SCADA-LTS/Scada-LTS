@@ -31,7 +31,7 @@ public class CrowdUtils {
     private static final Log LOG = LogFactory.getLog(CrowdUtils.class);
     private static final String CROWD_AUTHENTICATED_KEY = CrowdUtils.class.getName() + "CROWD_AUTHENTICATED_KEY";
 
-    private static CrowdHttpAuthenticator authenticator;
+    private volatile static CrowdHttpAuthenticator authenticator;
 
     public static boolean isCrowdEnabled() {
         return Common.getEnvironmentProfile().getBoolean("auth.crowd.on", false);
