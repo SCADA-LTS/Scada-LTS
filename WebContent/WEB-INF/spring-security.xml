@@ -42,11 +42,15 @@
         <!-- Anonymous -->
         <intercept-url pattern="/public_view.htm" access="permitAll" />
 
+        <!-- Monitoring -->
+        <intercept-url pattern="/monitoring" access="permitAll" />
+
         <intercept-url pattern="/**" access="isAuthenticated()" />
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
-                    password-parameter="password" username-parameter="username"/>
+                    password-parameter="password" username-parameter="username"
+                    login-processing-url="/login.htm" />
 
         <logout logout-url="/logout.htm" invalidate-session="true" />
     </http>

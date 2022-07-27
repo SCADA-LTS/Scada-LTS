@@ -54,7 +54,7 @@
     </div>
 
     <div class="login-box">
-      <form name="f" action="login" method="post" onclick="nag()">
+      <form name="f" action="login.htm" method="post" onclick="nag()">
 
         <div class="form-box">
           <div class="formLabelRequired"><fmt:message key="login.userId"/></div>
