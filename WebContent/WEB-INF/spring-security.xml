@@ -52,7 +52,7 @@
                     password-parameter="password" username-parameter="username"
                     login-processing-url="/login.htm" />
 
-        <logout logout-url="/logout.htm" invalidate-session="true" />
+        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="true" />
     </http>
     <http-firewall ref="defaultHttpFirewall"/>
 
