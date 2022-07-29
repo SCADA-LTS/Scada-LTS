@@ -10,11 +10,14 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
 import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
 import org.scada_lts.dao.cache.UserCachable;
+import org.scada_lts.dao.cache.UserCommentCachable;
 import org.scada_lts.dao.cache.UsersProfileCachable;
+import org.scada_lts.mango.service.UserCommentService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -104,6 +107,19 @@ public class ApplicationBeans {
         boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCachable.CACHE_ENABLED_KEY, true);
         return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
                 getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
+    }
+
+    public static UserCommentService getUserCommentServiceBean() {
+        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCachable.CACHE_ENABLED_KEY, true);
+        return userCommentCacheEnabled ? getBeanFromContext("userCommentServiceWithCache", UserCommentService.class) :
+                getBeanFromContext("userCommentService", UserCommentService.class);
+    }
+
+    public static IUserCommentDAO getUserCommentDaoBean() {
+        boolean userCommentCacheEnabled = Common.getEnvironmentProfile().getBoolean(UserCommentCachable.CACHE_ENABLED_KEY, true);
+        return userCommentCacheEnabled ?
+                getBeanFromContext("userCommentDaoWithCache", IUserCommentDAO.class) :
+                getBeanFromContext("userCommentDAO", IUserCommentDAO.class);
     }
 
     public static class Lazy {

@@ -20,6 +20,8 @@ package com.serotonin.mango.vo;
 
 import com.serotonin.web.taglib.DateFunctions;
 
+import java.util.Objects;
+
 public class UserComment {
     public static final int TYPE_EVENT = 1;
     public static final int TYPE_POINT = 2;
@@ -31,6 +33,16 @@ public class UserComment {
 
     // Relational fields
     private String username;
+
+    public UserComment() {
+    }
+
+    public UserComment(int userId, long ts, String comment, String username) {
+        this.userId = userId;
+        this.ts = ts;
+        this.comment = comment;
+        this.username = username;
+    }
 
     public String getPrettyTime() {
         return DateFunctions.getTime(ts);
@@ -70,5 +82,18 @@ public class UserComment {
 
     public static boolean validUserCommentType(Integer typeId) {
         return typeId == UserComment.TYPE_EVENT || typeId == UserComment.TYPE_POINT;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserComment)) return false;
+        UserComment that = (UserComment) o;
+        return getUserId() == that.getUserId() && getTs() == that.getTs() && Objects.equals(getComment(), that.getComment()) && Objects.equals(getUsername(), that.getUsername());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUserId(), getTs(), getComment(), getUsername());
     }
 }
