@@ -130,18 +130,25 @@ export default new Vuex.Store({
 			});
 		},
 
-		loginUser({dispatch}, userdata) {
+		async loginUser({dispatch}, userdata) {
 			axios.defaults.withCredentials = true;
-			dispatch('requestGet', `/auth/${userdata.username}/${userdata.password}`)
-			.then((resp) => {
-				if(resp) {
-					dispatch('getUserInfo');
-				}
+			let logged = false;
+			let res = await dispatch('requestPostNonApi', {
+			    url: `/login.htm` + `?username=` + userdata.username + `&password=` + userdata.password + `&submit=Login`,
+			    data: null
 			});
+			if(res != null && res != '') {
+                let userInfo = await dispatch('getUserInfo');
+                logged = userInfo != null && userInfo.username === userdata.username;
+            }
+			return logged;
 		},
 
-		logoutUser({ state }) {
-			state.loggedUser = null;
+		logoutUser({ state, dispatch }) {
+			dispatch('requestGetNonApi', `/logout.htm`)
+			.then((resp) => {
+                state.loggedUser = null;
+            });
 		},
 
 		/**
@@ -154,6 +161,7 @@ export default new Vuex.Store({
 			commit('updateWebSocketUrl');
 			commit('INIT_WEBSOCKET_URL');
 			commit('INIT_WEBSOCKET');
+			return state.loggedUser;
 		},
 
 		/**
@@ -348,6 +356,48 @@ export default new Vuex.Store({
 
 			return false;
 		},
+
+        /**
+         * HTTP Request GET method to fetch data from the REST API
+         *
+         * @param {*} param0 - Vuex Store variables
+         * @param {*} requestUrl - URL to specific resource of the Application
+         */
+        requestGetNonApi({ state, dispatch }, requestUrl) {
+            return new Promise((resolve, reject) => {
+                axios
+                    .get("./"+requestUrl, state.requestConfig)
+                    .then(async (r) => {
+                        (await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+                    })
+                    .catch(async (error) => {
+                        (await dispatch('validateResponse', error.response))
+                            ? console.warn('Request Exception...')
+                            : reject(error.response);
+                    });
+            });
+        },
+
+        /**
+         * HTTP Request POST method to push data to the REST API
+         *
+         * @param {*} param0 - Vuex Store variables
+         * @param {*} payload - {url, data} JS object with request data.
+         */
+        requestPostNonApi({ state, dispatch }, payload) {
+            return new Promise((resolve, reject) => {
+                axios
+                    .post("./"+payload.url, payload.data, state.requestConfig)
+                    .then(async (r) => {
+                        (await dispatch('validateResponse', r)) ? resolve(r.data) : reject(r.data);
+                    })
+                    .catch(async (error) => {
+                        (await dispatch('validateResponse', error.response))
+                            ? console.warn('Request Exception...')
+                            : reject(error.response);
+                    });
+            });
+        },
 	},
 	getters: {
 		appVersion: (state) => {
