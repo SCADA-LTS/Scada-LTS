@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-@Deprecated
-public class MangoTextContent extends MangoEmailContent {
+class MangoTextContentImpl extends MangoEmailContentImpl implements ITextContent {
 
-    public MangoTextContent(String templateName, Map<String, Object> model, ResourceBundle bundle, String defaultSubject, String encoding) throws TemplateException, IOException {
+    protected MangoTextContentImpl(String templateName, Map<String, Object> model, ResourceBundle bundle,
+                                   String defaultSubject, String encoding) throws TemplateException, IOException {
         super(templateName, model, bundle, defaultSubject, encoding);
     }
 
@@ -28,7 +28,7 @@ public class MangoTextContent extends MangoEmailContent {
     }
 
     @Override
-    protected int getType() {
-        return MangoEmailContent.CONTENT_TYPE_TEXT;
+    public int getType() {
+        return CONTENT_TYPE_TEXT;
     }
 }

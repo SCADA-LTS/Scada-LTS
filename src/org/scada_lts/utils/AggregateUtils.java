@@ -20,6 +20,8 @@ public final class AggregateUtils {
     private AggregateUtils() {}
 
     public static long calculateIntervalMs(long startTs, long endTs, int numberOfPoints, AggregateSettings aggregateSettings) {
+        if(startTs > endTs)
+            throw new IllegalArgumentException("startTs > endTs");
         if(numberOfPoints == 0)
             return calculate(startTs, endTs, 1, aggregateSettings);
         return calculate(startTs, endTs, numberOfPoints, aggregateSettings);

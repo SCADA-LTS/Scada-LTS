@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <b:beans xmlns="http://www.springframework.org/schema/security"
          xmlns:b="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
     <http use-expressions="true">
         <headers>
             <cache-control/>
@@ -36,6 +37,7 @@
         <intercept-url pattern="/resources/**" access="permitAll" />
         <intercept-url pattern="/static/**" access="permitAll" />
         <intercept-url pattern="/audio/**" access="permitAll" />
+        <intercept-url pattern="/uploads/**" access="permitAll" />
 
         <!-- Anonymous -->
         <intercept-url pattern="/public_view.htm" access="permitAll" />

@@ -7,11 +7,8 @@ import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.web.email.MangoEmailContent;
-import com.serotonin.mango.web.email.MangoTextContent;
-import com.serotonin.mango.web.email.UsedImagesDirective;
+import com.serotonin.mango.web.email.*;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import freemarker.template.TemplateException;
@@ -23,47 +20,49 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.serotonin.mango.util.SendMsgUtils.getDataPointMessage;
+public final class MsgContentUtils {
 
-@Deprecated
-public final class EmailContentUtils {
+    private MsgContentUtils() {}
 
-    private EmailContentUtils(){}
-
-    public static MangoTextContent createSmsContent(EventInstance evt, NotificationType notificationType, String alias) throws TemplateException, IOException {
+    public static IMsgSubjectContent createSms(EventInstance evt, NotificationType notificationType, String alias) throws TemplateException, IOException {
         ResourceBundle bundle = Common.getBundle();
         String subject = getSubject(evt, notificationType, alias, bundle);
         Map<String, Object> model = createSmsModel(evt);
-        return new MangoTextContent(notificationType.getFile(), model, bundle, subject, Common.UTF8);
+        return ITextContent.newInstance(notificationType.getFile(), model, bundle, subject, Common.UTF8);
     }
 
-    public static MangoEmailContent createContent(EventInstance evt, NotificationType notificationType, String alias) throws TemplateException, IOException {
+    public static IMsgSubjectContent createEmail(EventInstance evt, NotificationType notificationType, String alias) throws TemplateException, IOException {
         ResourceBundle bundle = Common.getBundle();
         String subject = getSubject(evt, notificationType, alias, bundle);
         UsedImagesDirective inlineImages = new UsedImagesDirective();
 
         Map<String, Object> model = createModel(evt, inlineImages);
-        MangoEmailContent content = new MangoEmailContent(notificationType.getFile(), model, bundle, subject,
+        IMsgSubjectContent content = IMsgSubjectContent.newInstance(notificationType.getFile(), model, bundle, subject,
                 Common.UTF8);
 
         addInLineToContent(inlineImages, content);
         return content;
     }
 
-    public static MangoEmailContent createEmailTest() throws TemplateException, IOException {
+    public static IMsgSubjectContent createContent(IMsgContent msgContent, String subject) throws TemplateException, IOException {
+        ResourceBundle bundle = Common.getBundle();
+        return IMsgSubjectContent.withContentSubject(msgContent, bundle, subject, Common.UTF8);
+    }
+
+    public static IMsgSubjectContent createEmailTest() throws TemplateException, IOException {
         ResourceBundle bundle = Common.getBundle();
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("user", Common.getUser());
         model.put("message", new LocalizableMessage(
                 "reports.recipTestEmailMessage"));
-        return new MangoEmailContent("testEmail",
+        return IMsgSubjectContent.newInstance("testEmail",
                 model, bundle, I18NUtils.getMessage(bundle,
-                "ftl.testEmail"), Common.UTF8);
+                        "ftl.testEmail"), Common.UTF8);
     }
 
-    private static void addInLineToContent(UsedImagesDirective inlineImages, MangoEmailContent content) {
+    private static void addInLineToContent(UsedImagesDirective inlineImages, IMsgContent content) {
         for (String s : inlineImages.getImageList())
-            content.addInline(new EmailInline.FileInline(s, Common.ctx.getServletContext().getRealPath(s)));
+            content.addInline(new AbstractEmailInline.FileInline(s, Common.ctx.getServletContext().getRealPath(s)));
     }
 
     private static Map<String, Object> createModel(EventInstance evt, UsedImagesDirective inlineImages) {
@@ -127,5 +126,14 @@ public final class EmailContentUtils {
 
     private static boolean isPlcAlarm(DataPointVO dataPoint) {
         return PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint) != AlarmLevels.NONE;
+    }
+
+    private static String getDataPointMessage(DataPointVO dataPoint, LocalizableMessage shortMsg) {
+        if (shortMsg.getKey().equals("event.detector.shortMessage") && shortMsg.getArgs().length == 2) {
+            return " " + dataPoint.getName() + " " + shortMsg.getArgs()[1];
+        } else if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
+            return " " + dataPoint.getName() + " " + dataPoint.getDescription();
+        else
+            return " " + dataPoint.getName();
     }
 }

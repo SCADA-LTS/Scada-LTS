@@ -4,7 +4,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.maint.work.AfterWork;
-import com.serotonin.mango.util.SendMsgUtils;
+import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 
 import java.util.Set;
@@ -19,12 +19,14 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
 
         @Override
         public boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
-            return SendMsgUtils.sendEmail(event, EmailHandlerRT.EmailNotificationType.ACTIVE, addresses, alias, afterWork);
+            SendUtils.sendMsg(event, EmailHandlerRT.EmailNotificationType.ACTIVE, addresses, alias, afterWork);
+            return true;
         }
 
         @Override
         public boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
-            return sendMsg(event, addresses, alias, afterWork);
+            sendMsg(event, addresses, alias, afterWork);
+            return true;
         }
 
         @Override
@@ -54,12 +56,14 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
 
         @Override
         public boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
-            return SendMsgUtils.sendSms(event, EmailToSmsHandlerRT.SmsNotificationType.MSG_FROM_EVENT, addresses, alias, afterWork);
+            SendUtils.sendMsg(event, EmailToSmsHandlerRT.SmsNotificationType.MSG_FROM_EVENT, addresses, alias, afterWork);
+            return true;
         }
 
         @Override
         public boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
-            return SendMsgUtils.sendSms(event, EmailToSmsHandlerRT.SmsNotificationType.LIMIT, addresses, alias, afterWork);
+            SendUtils.sendMsg(event, EmailToSmsHandlerRT.SmsNotificationType.LIMIT, addresses, alias, afterWork);
+            return true;
         }
 
         @Override

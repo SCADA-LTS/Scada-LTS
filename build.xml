@@ -784,7 +784,7 @@
 		<!-- disruptor is required for that purpose. Set system property: -->
 		<!-- -Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector -->
      	<!-- to make all loggers asynchronous https://logging.apache.org/log4j/2.x/manual/async.html -->
-        <pathelement location="WebContent/WEB-INF/lib/mail.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/javax.mail-1.6.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/modbus4j-3.0.2.jar"/>
