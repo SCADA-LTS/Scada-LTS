@@ -27,18 +27,18 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
@@ -127,10 +127,10 @@ public class MailingListsDwr extends BaseDwr {
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("message",
 					new LocalizableMessage("ftl.userTestEmail", ml.getName()));
-			MangoEmailContent cnt = new MangoEmailContent("ftl.testEmail",
+			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail",
 					model, bundle,
 					I18NUtils.getMessage(bundle, "ftl.testEmail"), Common.UTF8);
-			EmailWorkItem.queueEmail(toAddrs, cnt);
+			SendUtils.sendMsgTestSync(toAddrs, cnt, response);
 		} catch (Exception e) {
 			response.addGenericMessage("mailingLists.testerror", e.getMessage());
 			log.warn("", e);
