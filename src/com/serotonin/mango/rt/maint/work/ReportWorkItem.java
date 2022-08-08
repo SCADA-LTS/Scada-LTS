@@ -22,15 +22,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.mail.internet.AddressException;
 
+import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.web.email.AbstractEmailAttachment;
+import com.serotonin.mango.web.email.AbstractEmailInline;
+import com.serotonin.mango.web.email.IMsgContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -53,16 +53,13 @@ import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.util.ColorUtils;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.email.EmailAttachment;
-import com.serotonin.web.email.EmailContent;
-import com.serotonin.web.email.EmailInline;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 
 /**
  * @author Matthew Lohbihler
  */
-public class ReportWorkItem implements WorkItem {
+public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	static final Log LOG = LogFactory.getLog(ReportWorkItem.class);
 
 	public int getPriority() {
@@ -102,7 +99,8 @@ public class ReportWorkItem implements WorkItem {
 	private ReportInstance reportInstance;
 	List<File> filesToDelete = new ArrayList<File>();
 
-	public void execute() {
+	@Override
+	public void work() {
 		LOG.info("Running report with id " + reportConfig.getId()
 				+ ", instance id " + reportInstance.getId());
 
@@ -151,94 +149,15 @@ public class ReportWorkItem implements WorkItem {
 			reportInstance.setRecordCount(recordCount);
 			reportDao.saveReportInstance(reportInstance);
 		}
-
-		if (reportConfig.isEmail()) {
-			String inlinePrefix = "R" + System.currentTimeMillis() + "-"
-					+ reportInstance.getId() + "-";
-
-			// We are creating an email from the result. Create the content.
-			final ReportChartCreator creator = new ReportChartCreator(bundle);
-			creator.createContent(reportInstance, reportDao, inlinePrefix,
-					reportConfig.isIncludeData());
-
-			// Create the to list
-			Set<String> addresses = new MailingListDao().getRecipientAddresses(
-					reportConfig.getRecipients(),
-					new DateTime(reportInstance.getReportStartTime()));
-			String[] toAddrs = addresses.toArray(new String[0]);
-
-			// Create the email content object.
-			EmailContent emailContent = new EmailContent(null,
-					creator.getHtml(), Common.UTF8);
-
-			// Add the consolidated chart
-			if (creator.getImageData() != null)
-				emailContent.addInline(new EmailInline.ByteArrayInline(
-						inlinePrefix + ReportChartCreator.IMAGE_CONTENT_ID,
-						creator.getImageData(), ImageChartUtils
-								.getContentType()));
-
-			// Add the point charts
-			for (PointStatistics pointStatistics : creator.getPointStatistics()) {
-				if (pointStatistics.getImageData() != null)
-					emailContent.addInline(new EmailInline.ByteArrayInline(
-							inlinePrefix + pointStatistics.getChartName(),
-							pointStatistics.getImageData(), ImageChartUtils
-									.getContentType()));
-			}
-
-			// Add optional images used by the template.
-			for (String s : creator.getInlineImageList())
-				addImage(emailContent, s);
-
-			// Check if we need to attach the data.
-			if (reportConfig.isIncludeData()) {
-				addFileAttachment(emailContent, reportInstance.getName()
-						+ ".csv", creator.getExportFile());
-				addFileAttachment(emailContent, reportInstance.getName()
-						+ "Events.csv", creator.getEventFile());
-				addFileAttachment(emailContent, reportInstance.getName()
-						+ "Comments.csv", creator.getCommentFile());
-			}
-
-			Runnable[] postEmail = null;
-			if (reportConfig.isIncludeData()) {
-				// See that the temp file(s) gets deleted after the email is
-				// sent.
-				Runnable deleteTempFile = new Runnable() {
-					public void run() {
-						for (File file : filesToDelete) {
-							if (!file.delete())
-								LOG.warn("Temp file " + file.getPath()
-										+ " not deleted");
-						}
-					}
-				};
-				postEmail = new Runnable[] { deleteTempFile };
-			}
-
-			LocalizableMessage lm = new LocalizableMessage(
-					"ftl.scheduledReport", reportConfig.getName());
-			EmailWorkItem
-					.queueEmail(toAddrs, lm.getLocalizedMessage(bundle),
-							emailContent, postEmail);
-
-			// Delete the report instance.
-			// reportDao.deleteReportInstance(reportInstance.getId(),
-			// user.getId());
-		}
-
-		LOG.info("Finished running report with id " + reportConfig.getId()
-				+ ", instance id " + reportInstance.getId());
 	}
 
-	private void addImage(EmailContent emailContent, String imagePath) {
-		emailContent.addInline(new EmailInline.FileInline(imagePath, Common.ctx
+	private void addImage(IMsgContent emailContent, String imagePath) {
+		emailContent.addInline(new AbstractEmailInline.FileInline(imagePath, Common.ctx
 				.getServletContext().getRealPath(imagePath)));
 	}
 
-	private void addFileAttachment(EmailContent emailContent, String name,
-			File file) {
+	private void addFileAttachment(IMsgContent emailContent, String name,
+								   File file) {
 		if (file != null) {
 			if (reportConfig.isZipData()) {
 				try {
@@ -255,7 +174,7 @@ public class ReportWorkItem implements WorkItem {
 					zipOut.close();
 
 					emailContent
-							.addAttachment(new EmailAttachment.FileAttachment(
+							.addAttachment(new AbstractEmailAttachment.FileAttachment(
 									name + ".zip", zipFile));
 
 					filesToDelete.add(zipFile);
@@ -263,10 +182,115 @@ public class ReportWorkItem implements WorkItem {
 					LOG.error("Failed to create zip file", e);
 				}
 			} else
-				emailContent.addAttachment(new EmailAttachment.FileAttachment(
+				emailContent.addAttachment(new AbstractEmailAttachment.FileAttachment(
 						name, file));
 
 			filesToDelete.add(file);
 		}
+	}
+
+	@Override
+	public void workFail(Exception exception) {
+		LOG.error("Failed generate report with id " + reportConfig.getId()
+				+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
+	}
+
+	@Override
+	public void workSuccess() {
+		if (reportConfig.isEmail()) {
+			ResourceBundle bundle = Common.getBundle();
+			String inlinePrefix = "R" + System.currentTimeMillis() + "-"
+					+ reportInstance.getId() + "-";
+
+			// We are creating an email from the result. Create the content.
+			final ReportChartCreator creator = new ReportChartCreator(bundle);
+			creator.createContent(reportInstance, reportDao, inlinePrefix,
+					reportConfig.isIncludeData());
+
+			// Create the to list
+			Set<String> addresses = new MailingListDao().getRecipientAddresses(
+					reportConfig.getRecipients(),
+					new DateTime(reportInstance.getReportStartTime()));
+			String[] toAddrs = addresses.toArray(new String[0]);
+
+			// Create the email content object.
+			IMsgContent emailContent = IMsgContent.newInstance(null,
+					creator.getHtml(), Common.UTF8);
+
+			// Add the consolidated chart
+			if (creator.getImageData() != null)
+				emailContent.addInline(new AbstractEmailInline.ByteArrayInline(
+						inlinePrefix + ReportChartCreator.IMAGE_CONTENT_ID,
+						creator.getImageData(), ImageChartUtils
+						.getContentType()));
+
+			// Add the point charts
+			for (PointStatistics pointStatistics : creator.getPointStatistics()) {
+				if (pointStatistics.getImageData() != null)
+					emailContent.addInline(new AbstractEmailInline.ByteArrayInline(
+							inlinePrefix + pointStatistics.getChartName(),
+							pointStatistics.getImageData(), ImageChartUtils
+							.getContentType()));
+			}
+
+			// Add optional images used by the template.
+			for (String s : creator.getInlineImageList())
+				addImage(emailContent, s);
+
+			// Check if we need to attach the data.
+			if (reportConfig.isIncludeData()) {
+				addFileAttachment(emailContent, reportInstance.getName()
+						+ ".csv", creator.getExportFile());
+				addFileAttachment(emailContent, reportInstance.getName()
+						+ "Events.csv", creator.getEventFile());
+				addFileAttachment(emailContent, reportInstance.getName()
+						+ "Comments.csv", creator.getCommentFile());
+			}
+
+			AfterWork.WorkFinally workFinally = new AfterWork.WorkFinally() {};
+			if (reportConfig.isIncludeData()) {
+				// See that the temp file(s) gets deleted after the email is
+				// sent.
+				workFinally = new AfterWork.WorkFinally() {
+					@Override
+					public void workFinally(Map<String, Exception> exceptions) {
+						for (File file : filesToDelete) {
+							if (!file.delete())
+								LOG.warn("Temp file " + file.getPath()
+										+ " not deleted");
+						}
+					}
+
+					@Override
+					public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
+						LOG.error("Failed deleting temp file for report with id " + reportConfig.getId()
+								+ ", instance id " + reportInstance.getId() + ", error: " + finallyException.getMessage(), finallyException);
+					}
+				};
+			}
+
+			LocalizableMessage lm = new LocalizableMessage(
+					"ftl.scheduledReport", reportConfig.getName());
+
+			SendUtils.sendMsg(toAddrs, lm.getLocalizedMessage(bundle),
+					emailContent, new AfterWork() {
+						@Override
+						public void workFail(Exception exception) {
+							LOG.error("Failed sending report with id " + reportConfig.getId()
+									+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
+						}
+					}, workFinally);
+			// Delete the report instance.
+			// reportDao.deleteReportInstance(reportInstance.getId(),
+			// user.getId());
+		}
+		LOG.info("Finished running report with id " + reportConfig.getId()
+				+ ", instance id " + reportInstance.getId());
+	}
+
+	@Override
+	public void workSuccessFail(Exception exception) {
+		LOG.error("Failed sending report with id " + reportConfig.getId()
+				+ ", instance id " + reportInstance.getId() + ", error: " +exception.getMessage(), exception);
 	}
 }
