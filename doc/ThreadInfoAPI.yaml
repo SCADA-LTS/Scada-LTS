@@ -1,0 +1,106 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080/ScadaBR/api'
+    description: 'Scada development Server'
+    variables: {}
+info:
+  version: 2.6.0
+  title: Scada-LTS API
+  description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
+  termsOfService: ''
+  contact:
+    name: 'Kamil Jarmusik - SoftQ Developer'
+    email: 'kamil.jarmusik@softq.pl'
+  license:
+    name: 'GPL-2.0'
+paths:
+  /threads/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all threads'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/stack/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all stacks from threads'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/names/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all threads names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Group threads by name'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/thread-stack/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all thread names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/thread-stack-class/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all thread names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/thread-stack-count/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all thread names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/stack-thread/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all thread names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/stack-thread-class/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all thread names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /threads/group-by/stack-thread-count/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get all thread names'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }

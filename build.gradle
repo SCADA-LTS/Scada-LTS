@@ -83,7 +83,7 @@ task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
 
 task installWebDependency(type: Exec) {
     workingDir "./WebContent/resources"
-    commandLine "npm", "install"
+    commandLine "cmd", "npm", "install"
 }
 
 task clearTomcat(type: Delete) {
