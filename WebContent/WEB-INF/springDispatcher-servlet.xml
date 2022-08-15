@@ -17,7 +17,14 @@
         https://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
 	<context:component-scan base-package="org.scada_lts" />
-	<mvc:annotation-driven />
+    <mvc:annotation-driven>
+      <mvc:message-converters>
+        <bean id="jacksonHttpMessageConverter"
+              class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+          <property name="prettyPrint" value="true" />
+        </bean>
+      </mvc:message-converters>
+    </mvc:annotation-driven>
 
 	<context:annotation-config />
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

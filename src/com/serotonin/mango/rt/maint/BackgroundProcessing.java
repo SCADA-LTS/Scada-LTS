@@ -20,11 +20,8 @@ package com.serotonin.mango.rt.maint;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.concurrent.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
+import com.serotonin.mango.rt.maint.work.WorkItems;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.
@@ -49,7 +47,10 @@ public class BackgroundProcessing implements ILifecycle {
 	private ThreadPoolExecutor mediumPriorityService;
 	private ExecutorService lowPriorityService;
 
+	private final WorkItems workItems = new WorkItems();
+
 	public void addWorkItem(final WorkItem item) {
+		workItems.add(item);
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
@@ -60,6 +61,8 @@ public class BackgroundProcessing implements ILifecycle {
 					} catch (RuntimeException e) {
 						t.printStackTrace();
 					}
+				} finally {
+					workItems.remove(item);
 				}
 			}
 		};
@@ -85,6 +88,7 @@ public class BackgroundProcessing implements ILifecycle {
 							}
 						}
 					} finally {
+						workItems.remove(item);
 						mediumPriorityService.remove(this);
 					}
 				}
@@ -111,6 +115,10 @@ public class BackgroundProcessing implements ILifecycle {
 		// Close the executor services.
 		mediumPriorityService.shutdown();
 		lowPriorityService.shutdown();
+	}
+
+	public List<WorkItem> getWorkItems() {
+		return workItems.get();
 	}
 
 	public void joinTermination() {
