@@ -433,6 +433,9 @@
   <listener>
     <listener-class>com.serotonin.mango.MangoContextListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+  </listener>
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>
