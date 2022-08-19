@@ -2,13 +2,13 @@ package org.scada_lts.ds.amqp;
 
 
 import com.rabbitmq.client.*;
-import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.util.LoggingUtils;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,39 +49,26 @@ public class AmqpDataSourceRT extends PollingDataSource {
 
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
+        if(dataPoint == null || dataPoint.getVO() == null) {
+            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
+                    new LocalizableMessage("event.exception2", "", " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source)));
+            LOG.error(LoggingUtils.dataSourceInfo(vo) + " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source));
+            return;
+        }
+        DataPointVO dataPointVO = dataPoint.getVO();
         if (channel == null) {
-            raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    new LocalizableMessage("event.ds.writeFailed", dataPoint.getVO().getName()));
-            LOG.warn(LoggingUtils.dataPointInfo(dataPoint.getVO()));
+            raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
+                    new LocalizableMessage("event.ds.writeFailed", dataPointVO.getName()));
+            LOG.warn(LoggingUtils.dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - write failed.");
             return;
         }
-        AmqpPointLocatorRT locator = dataPoint.getPointLocator();
-        String message;
-        if (locator.getVO().getDataTypeId() == DataTypes.ALPHANUMERIC) {
-            message = valueTime.getStringValue();
-        } else if (locator.getVO().getDataTypeId() == DataTypes.NUMERIC) {
-            message = String.valueOf(valueTime.getDoubleValue());
-        } else if (locator.getVO().getDataTypeId() == DataTypes.BINARY) {
-            message = String.valueOf(valueTime.getBooleanValue());
-        } else if (locator.getVO().getDataTypeId() == DataTypes.MULTISTATE) {
-            message = String.valueOf(valueTime.getIntegerValue());
-        } else {
-            LOG.error("AMQP DataPoint - Unsupported data type! - " + LoggingUtils.dataPointInfo(dataPoint.getVO()));
-            return;
-        }
+        AmqpPointLocatorRT locator = dataPointVO.getPointLocator();
+        AmqpPointLocatorVO locatorVO = locator.getVO();
+        String message = valueTime.getStringValue();
         try {
-            switch (locator.getVO().getExchangeType()) {
-                case DIRECT:
-                case TOPIC:
-                    channel.basicPublish(locator.getExchangeName(), locator.getRoutingKey(), null, message.getBytes());
-                    break;
-                case FANOUT:
-                    channel.basicPublish(locator.getExchangeName(), "", null, message.getBytes());
-                    break;
-                default:
-                    channel.basicPublish("", locator.getQueueName(), null, message.getBytes());
-                    break;
-            }
+            initDataPoint(dataPoint, channel);
+            ExchangeType exchangeType = locatorVO.getExchangeType();
+            exchangeType.basicPublish(channel, locatorVO, message);
         } catch (IOException e) {
             LOG.error(e.getMessage() + " - " + LoggingUtils.dataPointInfo(dataPoint.getVO()), e);
         }
@@ -204,7 +191,7 @@ public class AmqpDataSourceRT extends PollingDataSource {
         if (channel != null) {
             if(exchangeType != ExchangeType.NONE) {
                 setQueueName(channel, vo, exchangeType, durable);
-                queueBind(channel, vo, exchangeType);
+                exchangeType.queueBind(channel, vo);
             }
         }
     }
@@ -213,15 +200,7 @@ public class AmqpDataSourceRT extends PollingDataSource {
         AmqpPointLocatorRT locator = dp.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
         boolean noAck = vo.getMessageAck().ordinal() == 1;
-        channel.basicConsume(vo.getQueueName(), noAck, new ScadaConsumer(channel, dp));
-    }
-
-    private static void queueBind(Channel channel, AmqpPointLocatorVO vo, ExchangeType exchangeType) throws IOException {
-        if (exchangeType == ExchangeType.FANOUT) {
-            channel.queueBind(vo.getQueueName(), vo.getExchangeName(), "");
-        } else {
-            channel.queueBind(vo.getQueueName(), vo.getExchangeName(), vo.getRoutingKey());
-        }
+        channel.basicConsume(vo.getQueueName(), noAck, new ScadaConsumer(channel, dp, vo));
     }
 
     private static void setQueueName(Channel channel, AmqpPointLocatorVO vo, ExchangeType exchangeType, boolean durable) throws IOException {
@@ -232,19 +211,19 @@ public class AmqpDataSourceRT extends PollingDataSource {
     static class ScadaConsumer extends DefaultConsumer {
 
         private final DataPointRT dataPoint;
-        private final AmqpPointLocatorRT locator;
+        private final AmqpPointLocatorVO locator;
 
-        ScadaConsumer(Channel channel, DataPointRT dataPoint) {
+        ScadaConsumer(Channel channel, DataPointRT dataPoint, AmqpPointLocatorVO locator) {
             super(channel);
             this.dataPoint = dataPoint;
-            this.locator = dataPoint.getPointLocator();
+            this.locator = locator;
         }
 
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
             super.handleDelivery(consumerTag, envelope, properties, body);
 
-            if (locator.getVO().isWritable()) {
+            if (locator.isWritable()) {
                 String message = new String(body, StandardCharsets.UTF_8);
                 dataPoint.updatePointValue(message);
             }

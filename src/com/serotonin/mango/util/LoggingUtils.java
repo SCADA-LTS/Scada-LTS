@@ -2,10 +2,14 @@ package com.serotonin.mango.util;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.view.component.ScriptComponent;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -24,6 +28,13 @@ public final class LoggingUtils {
     }
 
     public static String dataSourceInfo(DataSourceRT dataSource) {
+        if(dataSource == null)
+            return "";
+        String dataSourceInfo = "datasource: {0} (id: {1})";
+        return MessageFormat.format(dataSourceInfo, dataSource.getName(), String.valueOf(dataSource.getId()));
+    }
+
+    public static String dataSourceInfo(DataSourceVO<?> dataSource) {
         if(dataSource == null)
             return "";
         String dataSourceInfo = "datasource: {0} (id: {1})";
@@ -82,5 +93,18 @@ public final class LoggingUtils {
         String viewInfo =  "eventHandler: {0} (id: {1}, xid: {2}, type: {3}, script active id: {4}, script inactive id: {5})";
         return MessageFormat.format(viewInfo, eventHandler.getAlias(), eventHandler.getId(), eventHandler.getXid(), eventHandler.getHandlerType(),
                 eventHandler.getActiveScriptCommand(), eventHandler.getInactiveScriptCommand());
+    }
+
+    public static String pointValueTimeInfo(PointValueTime pointValueTime, SetPointSource source) {
+        String dataPointInfo = "pointValueTime: {0} (source: {1})";
+        return MessageFormat.format(dataPointInfo, pointValueTime, source);
+    }
+
+    public static String dataSourcePointInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint) {
+        return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint);
+    }
+
+    public static String dataSourcePointValueTimeInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint, PointValueTime valueTime, SetPointSource source) {
+        return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.pointValueTimeInfo(valueTime, source);
     }
 }
