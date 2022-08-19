@@ -36,8 +36,8 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private DurabilityType queueDurability = DurabilityType.DURABLE;
     @JsonRemoteProperty
     private MessageAckType messageAck = MessageAckType.NO_ACK;
-
-    private int     dataTypeId;
+    @JsonRemoteProperty
+    private int dataTypeId;
 
     @Override
     public LocalizableMessage getConfigurationDescription() {
@@ -175,6 +175,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.messageAck = messageAck;
     }
 
+    private static final long serialVersionUID = -1;
     private static final int VERSION = 1;
     // Serialization //
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -193,15 +194,15 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private void readObject(ObjectInputStream in) throws IOException {
         int ver = in.readInt();
         if(ver == 1) {
-            settable        = in.readBoolean();
-            writable        = in.readBoolean();
-            dataTypeId      = in.readInt();
-            exchangeType    = ExchangeType.valueOf(SerializationHelper.readSafeUTF(in));
-            exchangeName    = SerializationHelper.readSafeUTF(in);
-            queueName       = SerializationHelper.readSafeUTF(in);
+            settable = in.readBoolean();
+            writable = in.readBoolean();
+            dataTypeId = in.readInt();
+            exchangeType = ExchangeType.valueOf(SerializationHelper.readSafeUTF(in));
+            exchangeName = SerializationHelper.readSafeUTF(in);
+            queueName = SerializationHelper.readSafeUTF(in);
             queueDurability = DurabilityType.valueOf(SerializationHelper.readSafeUTF(in));
-            routingKey      = SerializationHelper.readSafeUTF(in);
-            messageAck      = MessageAckType.valueOf(SerializationHelper.readSafeUTF(in));
+            routingKey = SerializationHelper.readSafeUTF(in);
+            messageAck = MessageAckType.valueOf(SerializationHelper.readSafeUTF(in));
         }
     }
 

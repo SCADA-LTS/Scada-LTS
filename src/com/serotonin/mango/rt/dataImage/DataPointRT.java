@@ -166,6 +166,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		savePointValue(newValue, null, true);
 	}
 
+	public void updatePointValue(String newValue) {
+		PointValueTime pointValueTime =
+				new PointValueTime(MangoValue.stringToValue(newValue, getDataTypeId()),
+						System.currentTimeMillis());
+		savePointValue(pointValueTime, null, true);
+	}
+
 	public void updatePointValue(PointValueTime newValue, boolean async) {
 		savePointValue(newValue, null, async);
 	}

@@ -32,10 +32,11 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     static {
         EVENT_CODES.addElement(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
+        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
     }
 
     private static final String DEFAULT_HOST = "localhost";
-    private static final String DEFAULT_PORT = "5672";
+    private static final int DEFAULT_PORT = 5672;
     private static final String DEFAULT_NOT_SET = "";
 
     private int updatePeriodType = Common.TimePeriods.MINUTES;
@@ -48,13 +49,21 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     @JsonRemoteProperty
     private String serverIpAddress = DEFAULT_HOST;
     @JsonRemoteProperty
-    private String serverPortNumber = DEFAULT_PORT;
+    private int serverPortNumber = DEFAULT_PORT;
     @JsonRemoteProperty
     private String serverVirtualHost = DEFAULT_NOT_SET;
     @JsonRemoteProperty
     private String serverUsername = DEFAULT_NOT_SET;
     @JsonRemoteProperty
     private String serverPassword = DEFAULT_NOT_SET;
+    @JsonRemoteProperty
+    private int connectionTimeout = 10000;
+    @JsonRemoteProperty
+    private int networkRecoveryInterval = 5000;
+    @JsonRemoteProperty
+    private int channelRpcTimeout = 10000;
+    @JsonRemoteProperty
+    private boolean automaticRecoveryEnabled = true;
 
     @Override
     public DataSourceRT createDataSourceRT() {
@@ -68,7 +77,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        if (serverIpAddress.length() == 0 || serverPortNumber.length() == 0)
+        if (serverIpAddress.length() == 0 || serverPortNumber == 0)
             return new LocalizableMessage("dsEdit.amqp");
         return null;
     }
@@ -94,7 +103,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         } catch (UnknownHostException e) {
             response.addContextualMessage("serverIpAddress","validate.invalidValue");
         }
-        if (serverPortNumber.isBlank() || Integer.parseInt(serverPortNumber) < 0) {
+        if (serverPortNumber < 0) {
             response.addContextualMessage("serverPortNumber","validate.invalidValue");
         }
         if (updateAttempts < 0 || updateAttempts > 10) {
@@ -107,18 +116,22 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
         eventTypes.add(createEventType(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
         eventTypes.add(createEventType(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
-
+        eventTypes.add(createEventType(AmqpDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointWrite") ));
     }
 
     @Override
     protected void addPropertiesImpl(List<LocalizableMessage> list) {
         AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverIpAddress" , serverIpAddress);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPortNumber" , serverPortNumber);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverVirtualHost" , serverVirtualHost);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverUsername" , serverUsername);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPassword" , serverPassword);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverIpAddress", serverIpAddress);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPortNumber", serverPortNumber);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverVirtualHost", serverVirtualHost);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverUsername", serverUsername);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPassword", serverPassword);
 
+        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.channelRpcTimeout", channelRpcTimeout);
+        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.automaticRecoveryEnabled", automaticRecoveryEnabled);
+        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.connectionTimeout", connectionTimeout);
+        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.networkRecoveryInterval", networkRecoveryInterval);
     }
 
     @Override
@@ -129,8 +142,14 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverUsername",from.serverUsername,serverUsername);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPassword",from.serverPassword,serverPassword);
+
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.channelRpcTimeout",from.channelRpcTimeout,channelRpcTimeout);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.automaticRecoveryEnabled",from.automaticRecoveryEnabled,automaticRecoveryEnabled);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.connectionTimeout",from.connectionTimeout,connectionTimeout);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.networkRecoveryInterval",from.networkRecoveryInterval,networkRecoveryInterval);
     }
 
+    private static final long serialVersionUID = -1;
     private static final int VERSION = 1;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -140,24 +159,31 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         out.writeInt(updatePeriods);
         out.writeInt(updateAttempts);
         SerializationHelper.writeSafeUTF(out, serverIpAddress);
-        SerializationHelper.writeSafeUTF(out, serverPortNumber);
+        out.writeInt(serverPortNumber);
         SerializationHelper.writeSafeUTF(out, serverVirtualHost);
         SerializationHelper.writeSafeUTF(out, serverUsername);
         SerializationHelper.writeSafeUTF(out, serverPassword);
-
+        out.writeInt(connectionTimeout);
+        out.writeInt(networkRecoveryInterval);
+        out.writeInt(channelRpcTimeout);
+        out.writeBoolean(automaticRecoveryEnabled);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
         int ver = in.readInt();
         if (ver == 1) {
-            updatePeriodType    = in.readInt();
-            updatePeriods       = in.readInt();
-            updateAttempts      = in.readInt();
-            serverIpAddress     = SerializationHelper.readSafeUTF(in);
-            serverPortNumber    = SerializationHelper.readSafeUTF(in);
-            serverVirtualHost   = SerializationHelper.readSafeUTF(in);
-            serverUsername      = SerializationHelper.readSafeUTF(in);
-            serverPassword      = SerializationHelper.readSafeUTF(in);
+            updatePeriodType = in.readInt();
+            updatePeriods = in.readInt();
+            updateAttempts = in.readInt();
+            serverIpAddress = SerializationHelper.readSafeUTF(in);
+            serverPortNumber = in.readInt();
+            serverVirtualHost = SerializationHelper.readSafeUTF(in);
+            serverUsername = SerializationHelper.readSafeUTF(in);
+            serverPassword = SerializationHelper.readSafeUTF(in);
+            connectionTimeout = in.readInt();
+            networkRecoveryInterval  = in.readInt();
+            channelRpcTimeout  = in.readInt();
+            automaticRecoveryEnabled  = in.readBoolean();
 
         }
     }
@@ -208,11 +234,11 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         this.serverIpAddress = serverIpAddress;
     }
 
-    public String getServerPortNumber() {
+    public int getServerPortNumber() {
         return serverPortNumber;
     }
 
-    public void setServerPortNumber(String serverPortNumber) {
+    public void setServerPortNumber(int serverPortNumber) {
         this.serverPortNumber = serverPortNumber;
     }
 
@@ -238,5 +264,37 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     public void setServerPassword(String serverPassword) {
         this.serverPassword = serverPassword;
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public int getNetworkRecoveryInterval() {
+        return networkRecoveryInterval;
+    }
+
+    public void setNetworkRecoveryInterval(int networkRecoveryInterval) {
+        this.networkRecoveryInterval = networkRecoveryInterval;
+    }
+
+    public int getChannelRpcTimeout() {
+        return channelRpcTimeout;
+    }
+
+    public void setChannelRpcTimeout(int channelRpcTimeout) {
+        this.channelRpcTimeout = channelRpcTimeout;
+    }
+
+    public boolean isAutomaticRecoveryEnabled() {
+        return automaticRecoveryEnabled;
+    }
+
+    public void setAutomaticRecoveryEnabled(boolean automaticRecoveryEnabled) {
+        this.automaticRecoveryEnabled = automaticRecoveryEnabled;
     }
 }

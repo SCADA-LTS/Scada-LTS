@@ -452,7 +452,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     // AMQP Receiver //
     @MethodFilter
     public DwrResponseI18n saveAmqpDataSource(String name, String xid, int updatePeriods, int updatePeriodType, int updateAttempts,
-                                              String serverIpAddress, String serverPortNumber, String serverUsername, String serverPassword, String serverVirtualHost) {
+                                              String serverIpAddress, int serverPortNumber, String serverUsername, String serverPassword, String serverVirtualHost) {
         AmqpDataSourceVO ds = (AmqpDataSourceVO) Common.getUser().getEditDataSource();
 
         ds.setXid(xid);
