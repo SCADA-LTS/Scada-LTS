@@ -143,7 +143,7 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().raiseEvent(dset, new Date().getTime(), true, dset.getAlarmLevel(), message, context);
     }
 
-    protected void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
+    public void raiseEvent(int eventId, long time, boolean rtn, LocalizableMessage message) {
         message = new LocalizableMessage("event.ds", vo.getName(), message);
         DataSourceEventType type = getEventType(eventId);
 
@@ -153,7 +153,7 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().raiseEvent(type, time, rtn, type.getAlarmLevel(), message, context);
     }
 
-    protected void returnToNormal(int eventId, long time) {
+    public void returnToNormal(int eventId, long time) {
         DataSourceEventType type = getEventType(eventId);
         Common.ctx.getEventManager().returnToNormal(type, time);
     }
@@ -174,7 +174,7 @@ abstract public class DataSourceRT implements ILifecycle {
         return getExceptionMessage(e);
     }
 
-    protected static LocalizableMessage getExceptionMessage(Exception e) {
+    public static LocalizableMessage getExceptionMessage(Exception e) {
         return new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage());
     }
 
@@ -200,5 +200,9 @@ abstract public class DataSourceRT implements ILifecycle {
     // Additional lifecycle.
     public void beginPolling() {
         // no op
+    }
+
+    public DataSourceVO<?> getVO() {
+        return vo;
     }
 }

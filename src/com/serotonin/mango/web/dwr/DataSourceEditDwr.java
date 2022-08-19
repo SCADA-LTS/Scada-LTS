@@ -44,7 +44,6 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -91,8 +90,8 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
-import org.scada_lts.ds.amqp.AmqpDataSourceVO;
-import org.scada_lts.ds.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.mango.service.EventService;

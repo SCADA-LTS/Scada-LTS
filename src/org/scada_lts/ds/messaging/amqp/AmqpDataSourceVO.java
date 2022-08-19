@@ -1,4 +1,4 @@
-package org.scada_lts.ds.amqp;
+package org.scada_lts.ds.messaging.amqp;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -14,6 +14,7 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.messaging.MessagingDataSourceRT;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,9 +31,9 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     private static final ExportCodes EVENT_CODES = new ExportCodes();
 
     static {
-        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
-        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
-        EVENT_CODES.addElement(AmqpDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
     }
 
     private static final String DEFAULT_HOST = "localhost";
@@ -67,7 +68,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     @Override
     public DataSourceRT createDataSourceRT() {
-        return new AmqpDataSourceRT(this);
+        return new MessagingDataSourceRT(this);
     }
 
     @Override
@@ -114,9 +115,9 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     @Override
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
-        eventTypes.add(createEventType(AmqpDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
-        eventTypes.add(createEventType(AmqpDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
-        eventTypes.add(createEventType(AmqpDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointWrite") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointWrite") ));
     }
 
     @Override

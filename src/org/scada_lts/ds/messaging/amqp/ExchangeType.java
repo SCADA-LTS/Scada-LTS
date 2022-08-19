@@ -1,4 +1,4 @@
-package org.scada_lts.ds.amqp;
+package org.scada_lts.ds.messaging.amqp;
 
 import com.rabbitmq.client.Channel;
 

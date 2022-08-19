@@ -5,10 +5,10 @@
 --%>
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<%@page import="org.scada_lts.ds.amqp.AmqpPointLocatorVO"%>
-<%@page import="org.scada_lts.ds.amqp.ExchangeType"%>
-<%@page import="org.scada_lts.ds.amqp.MessageAckType"%>
-<%@page import="org.scada_lts.ds.amqp.DurabilityType"%>
+<%@page import="org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO"%>
+<%@page import="org.scada_lts.ds.messaging.amqp.ExchangeType"%>
+<%@page import="org.scada_lts.ds.messaging.amqp.MessageAckType"%>
+<%@page import="org.scada_lts.ds.messaging.amqp.DurabilityType"%>
 <script type="text/javascript">
     function exchangeTypeChange() {
         var exType = $get("exchangeType");
