@@ -2,16 +2,23 @@ package org.scada_lts.ds.messaging.amqp;
 
 import com.rabbitmq.client.*;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.MessagingService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
 public class AmqpMessagingService implements MessagingService {
 
+    private static final Log LOG = LogFactory.getLog(AmqpMessagingService.class);
+
     private Connection connection;
-    private Channel channel;
+    private final Map<Integer, Channel> channels = new ConcurrentHashMap<>();
     private final AmqpDataSourceVO vo;
     private volatile boolean amqpBindEstablished = false;
 
@@ -21,24 +28,26 @@ public class AmqpMessagingService implements MessagingService {
 
     @Override
     public void publish(DataPointRT dataPoint, String message) throws IOException {
-        initDataPoint(dataPoint, channel);
-        AmqpPointLocatorRT locatorVO = dataPoint.getPointLocator();
-        ExchangeType exchangeType = locatorVO.getVO().getExchangeType();
-        exchangeType.basicPublish(channel, locatorVO.getVO(), message);
+        Channel channel = getChannel(dataPoint);
+        if (isOpenChannel(channel)) {
+            AmqpPointLocatorRT locatorVO = dataPoint.getPointLocator();
+            ExchangeType exchangeType = locatorVO.getVO().getExchangeType();
+            exchangeType.basicPublish(channel, locatorVO.getVO(), message);
+        }
     }
 
     @Override
-    public void consume(DataPointRT dp) throws IOException {
-        if (channel != null && channel.isOpen() && !amqpBindEstablished) {
-            initDataPoint(dp, channel);
-            basicConsume(dp, channel);
+    public void consume(DataPointRT dataPoint) throws IOException {
+        Channel channel = getChannel(dataPoint);
+        if (isOpenChannel(channel)) {
+            basicConsume(dataPoint, channel);
             amqpBindEstablished = true;
         }
     }
 
     @Override
-    public boolean isOpened() {
-        return channel != null;
+    public boolean isOpen() {
+        return connection != null && connection.isOpen();
     }
 
     @Override
@@ -52,6 +61,7 @@ public class AmqpMessagingService implements MessagingService {
         rabbitFactory.setNetworkRecoveryInterval(vo.getNetworkRecoveryInterval());
         rabbitFactory.setChannelRpcTimeout(vo.getChannelRpcTimeout());
         rabbitFactory.setAutomaticRecoveryEnabled(vo.isAutomaticRecoveryEnabled());
+        rabbitFactory.setWorkPoolTimeout(10000);
 
         if (!vo.getServerUsername().isBlank()) {
             rabbitFactory.setUsername(vo.getServerUsername());
@@ -66,19 +76,44 @@ public class AmqpMessagingService implements MessagingService {
         }
 
         connection = rabbitFactory.newConnection();
-        channel = connection.createChannel();
     }
 
     @Override
-    public void close() throws IOException, TimeoutException {
-        if(channel != null) {
-            try {
-                channel.close();
-            } finally {
-                if(connection != null)
-                    connection.close();
-                amqpBindEstablished = false;
+    public void close() throws IOException {
+        try {
+            for (Channel channel : channels.values()) {
+                if (channel != null) {
+                    try {
+                        channel.close();
+                    } catch (Exception ex) {
+                        LOG.warn(ex.getMessage(), ex);
+                    }
+                }
             }
+        } finally {
+            if (connection != null)
+                connection.close();
+            amqpBindEstablished = false;
+        }
+    }
+
+    private boolean isOpenChannel(Channel channel) {
+        return channel != null && channel.isOpen() && !amqpBindEstablished;
+    }
+
+    private Channel getChannel(DataPointRT dataPoint) {
+        return channels.computeIfAbsent(dataPoint.getId(), a -> createChannel(dataPoint, connection).orElse(null));
+    }
+
+    private static Optional<Channel> createChannel(DataPointRT dataPointRT, Connection connection) {
+        if(dataPointRT == null || connection == null)
+            return Optional.empty();
+        try {
+            Channel channel = connection.createChannel();
+            initDataPoint(dataPointRT, channel);
+            return Optional.of(channel);
+        } catch (Exception ex) {
+            return Optional.empty();
         }
     }
 
@@ -100,7 +135,7 @@ public class AmqpMessagingService implements MessagingService {
         AmqpPointLocatorVO vo = locator.getVO();
         ExchangeType exchangeType = vo.getExchangeType();
 
-        boolean durable = vo.getQueueDurability().ordinal() == 1;
+        boolean durable = vo.getQueueDurability() == DurabilityType.DURABLE;
 
         if (channel != null) {
             if(exchangeType != ExchangeType.NONE) {
@@ -113,7 +148,7 @@ public class AmqpMessagingService implements MessagingService {
     private static void basicConsume(DataPointRT dp, Channel channel) throws IOException {
         AmqpPointLocatorRT locator = dp.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
-        boolean noAck = vo.getMessageAck() == MessageAckType.ACK;
+        boolean noAck = vo.getMessageAck() == MessageAckType.NO_ACK;
         channel.basicConsume(vo.getQueueName(), noAck, new ScadaConsumer(channel, dp, vo));
     }
 

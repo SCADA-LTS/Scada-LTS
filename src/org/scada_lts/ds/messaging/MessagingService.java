@@ -7,9 +7,9 @@ import java.util.concurrent.TimeoutException;
 
 public interface MessagingService {
 
-    boolean isOpened();
+    boolean isOpen();
     void open() throws IOException, TimeoutException;
-    void close() throws IOException, TimeoutException;
+    void close() throws IOException;
 
     void publish(DataPointRT dataPoint, String message) throws IOException;
     void consume(DataPointRT dataPoint) throws IOException;

@@ -7,29 +7,28 @@ import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
 import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
 
-import java.io.IOException;
 
 public class MessagingDataSourceRT extends PollingDataSource {
 
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
-    public static final int DATA_POINT_EXCEPTION_EVENT = 2;
-    public static final int DATA_POINT_WRITE_EXCEPTION_EVENT = 3;
-    public static final int DATA_POINT_READ_EXCEPTION_EVENT = 4;
+    public static final int DATA_POINT_WRITE_EXCEPTION_EVENT = 2;
+    public static final int DATA_POINT_READ_EXCEPTION_EVENT = 3;
 
     private static final Log LOG = LogFactory.getLog(MessagingDataSourceRT.class);
 
-    private final AmqpDataSourceVO vo;
+    private final DataSourceVO<?> vo;
     private final MessagingService messagingService;
 
     public MessagingDataSourceRT(AmqpDataSourceVO vo) {
         super(vo);
         this.vo = vo;
-        this.messagingService = MessagingServiceFactory.amqp(vo);
+        this.messagingService = MessagingServiceFactory.newService(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
     }
 
@@ -42,7 +41,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             return;
         }
         DataPointVO dataPointVO = dataPoint.getVO();
-        if (!messagingService.isOpened()) {
+        if (!messagingService.isOpen()) {
             raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
                     new LocalizableMessage("event.ds.writeFailed", dataPointVO.getName()));
             LOG.warn(LoggingUtils.dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - write failed.");
@@ -51,7 +50,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
         String message = valueTime.getStringValue();
         try {
             messagingService.publish(dataPoint, message);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error(e.getMessage() + " - " + LoggingUtils.dataPointInfo(dataPoint.getVO()), e);
         }
     }
@@ -90,9 +89,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
         for (DataPointRT dp : dataPoints) {
             try {
                 messagingService.consume(dp);
-                returnToNormal(DATA_POINT_EXCEPTION_EVENT, time);
-            } catch (IOException e) {
-                raiseEvent(DATA_POINT_EXCEPTION_EVENT, time, false,
+                returnToNormal(DATA_POINT_READ_EXCEPTION_EVENT, time);
+            } catch (Exception e) {
+                raiseEvent(DATA_POINT_READ_EXCEPTION_EVENT, time, false,
                         new LocalizableMessage("event.amqp.bindError", dp.getVO().getXid()));
             }
         }

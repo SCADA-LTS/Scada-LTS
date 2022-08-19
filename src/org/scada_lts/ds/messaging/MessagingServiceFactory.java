@@ -7,7 +7,7 @@ public final class MessagingServiceFactory {
 
     private MessagingServiceFactory() {}
 
-    public static MessagingService amqp(AmqpDataSourceVO vo) {
+    public static MessagingService newService(AmqpDataSourceVO vo) {
         return new AmqpMessagingService(vo);
     }
 }

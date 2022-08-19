@@ -32,7 +32,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     static {
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
-        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_EXCEPTION_EVENT, "DATA_POINT_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_READ_EXCEPTION_EVENT, "DATA_POINT_READ_EXCEPTION");
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
     }
 
@@ -116,7 +116,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     @Override
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
-        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_READ_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointWrite") ));
     }
 
