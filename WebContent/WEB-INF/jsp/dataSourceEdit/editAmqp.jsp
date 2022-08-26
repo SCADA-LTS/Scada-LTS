@@ -10,32 +10,31 @@
 <%@page import="org.scada_lts.ds.messaging.amqp.MessageAckType"%>
 <%@page import="org.scada_lts.ds.messaging.amqp.DurabilityType"%>
 <script type="text/javascript">
-    function exchangeTypeChange() {
-        var exType = $get("exchangeType");
-        if (exType === "<%= ExchangeType.NONE %>" ) {
-            hide("exchangeFields");
-            hide("routingFields");
-            show("queueFields");
-        } else if ( exType === "<%= ExchangeType.DIRECT %>" ) {
-            hide("queueFields");
-            show("exchangeFields");
-            show("routingFields");
-        } else if ( exType === "<%= ExchangeType.TOPIC %>" ) {
-            hide("queueFields");
-            show("exchangeFields");
-            show("routingFields");
-        } else if ( exType === "<%= ExchangeType.FANOUT %>" ) {
-            hide("queueFields");
-            show("exchangeFields");
-            hide("routingFields");
-        }
-    }
+
   function initImpl() {
-    exchangeTypeChange()
+
   }
   function saveDataSourceImpl() {
-        DataSourceEditDwr.saveAmqpDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
-                      $get("updatePeriodType"),$get("updateAttempts"),$get("serverIpAddress"), $get("serverPortNumber"),$get("serverUsername"), $get("serverPassword"), $get("serverVirtualHost"), saveDataSourceCB);
+        let dataSourceToSave = new Object();
+        dataSourceToSave.id=${dataSource.id};
+        dataSourceToSave.enabled=${dataSource.enabled};
+        dataSourceToSave.name=$get("dataSourceName");
+        dataSourceToSave.xid=$get("dataSourceXid");
+        dataSourceToSave.updatePeriods=$get("updatePeriods");
+        dataSourceToSave.updatePeriodType=$get("updatePeriodType");
+        dataSourceToSave.updateAttempts=$get("updateAttempts");
+        dataSourceToSave.serverIpAddress=$get("serverIpAddress");
+        dataSourceToSave.serverPortNumber=$get("serverPortNumber");
+        dataSourceToSave.serverUsername=$get("serverUsername");
+        dataSourceToSave.serverPassword=$get("serverPassword");
+        dataSourceToSave.serverVirtualHost=$get("serverVirtualHost");
+        dataSourceToSave.connectionTimeout=$get("connectionTimeout");
+        dataSourceToSave.networkRecoveryInterval=$get("networkRecoveryInterval");
+        dataSourceToSave.channelRpcTimeout=$get("channelRpcTimeout");
+        dataSourceToSave.automaticRecoveryEnabled=$get("automaticRecoveryEnabled");
+        dataSourceToSave.resetBrokerConfig=$get("resetBrokerConfig");
+
+        DataSourceEditDwr.saveAmqpDataSource(dataSourceToSave, saveDataSourceCB);
     }
   function editPointCBImpl(locator) {
         $set("settable", locator.settable);
@@ -47,6 +46,9 @@
         $set("queueDurability", locator.queueDurability);
         $set("routingKey", locator.routingKey);
         $set("messageAck", locator.messageAck);
+        $set("qos", locator.qos);
+        $set("autoDelete", locator.autoDelete);
+        $set("internal", locator.internal);
     }
   function savePointImpl(locator) {
     delete locator.relinquishable;
@@ -59,6 +61,10 @@
     locator.queueDurability = $get("queueDurability");
     locator.routingKey = $get("routingKey");
     locator.messageAck = $get("messageAck");
+    locator.qos = $get("qos");
+    locator.autoDelete = $get("autoDelete");
+    locator.internal = $get("internal");
+
     DataSourceEditDwr.saveAmqpPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);
     }
@@ -91,7 +97,7 @@
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.port"/></td>
-    <td class="formField"><input type="text" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
+    <td class="formField"><input type="number" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
   </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.username"/></td>
@@ -105,6 +111,27 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.virtualhost"/></td>
     <td class="formField"><input type="text" id="serverVirtualHost" value="${dataSource.serverVirtualHost}"/></td>
   </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.connectionTimeout"/></td>
+    <td class="formField"><input type="number" id="connectionTimeout" value="${dataSource.connectionTimeout}"/></td>
+  </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.channelRpcTimeout"/></td>
+    <td class="formField"><input type="number" id="channelRpcTimeout" value="${dataSource.channelRpcTimeout}"/></td>
+  </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.automaticRecoveryEnabled"/></td>
+    <td class="formField"><input type="checkbox" id="automaticRecoveryEnabled" ${dataSource.automaticRecoveryEnabled ? 'checked' : 'unchecked'} /></td>
+  </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.networkRecoveryInterval"/></td>
+    <td class="formField"><input type="number" id="networkRecoveryInterval" value="${dataSource.networkRecoveryInterval}"/></td>
+  </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.resetBrokerConfig"/></td>
+    <td class="formField"><input type="checkbox" id="resetBrokerConfig" ${dataSource.resetBrokerConfig ? 'checked' : 'unchecked'} /></td>
+  </tr>
+
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="amqpPP">
@@ -138,12 +165,30 @@
         </select>
     </td>
   </tr>
-  <tbody id="queueFields" style="display:none;">
-    <tr>
+  <tr>
       <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.queueName"/></td>
       <td class="formField"><input type="text" id="queueName"/></td>
-    </tr>
-  </tbody>
+  </tr>
+  <tr>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.exchangeName"/></td>
+      <td class="formField"><input type="text" id="exchangeName"/></td>
+  </tr>
+  <tr>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.routingKey"/></td>
+      <td class="formField"><input type="text" id="routingKey"/></td>
+  </tr>
+  <tr>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.qos"/></td>
+      <td class="formField"><input type="number" id="qos"/></td>
+  </tr>
+  <tr>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.autoDelete"/></td>
+      <td class="formField"><input type="checkbox" id="autoDelete"/></td>
+  </tr>
+  <tr>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.internal"/></td>
+      <td class="formField"><input type="checkbox" id="internal"/></td>
+  </tr>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.queueDurability"/></td>
     <td class="formField">
@@ -153,18 +198,6 @@
         </select>
     </td>
   </tr>
-  <tbody id="exchangeFields" style="display:none;">
-    <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.exchangeName"/></td>
-      <td class="formField"><input type="text" id="exchangeName"/></td>
-    </tr>
-  </tbody>
-  <tbody id="routingFields" style="display:none;">
-    <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.routingKey"/></td>
-      <td class="formField"><input type="text" id="routingKey"/></td>
-    </tr>
-  </tbody>
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.messageAck"/></td>
     <td class="formField">
@@ -174,5 +207,4 @@
         </select>
     </td>
   </tr>
-
 </tag:pointList>

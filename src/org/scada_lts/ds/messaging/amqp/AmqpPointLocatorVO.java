@@ -17,27 +17,30 @@ import java.util.Map;
 
 public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
-    private static final String DEFAULT_NOT_SET = "";
-    private static final boolean DEFAULT_WRITABLE = true;
-
     @JsonRemoteProperty
     private boolean settable;
     @JsonRemoteProperty
-    private boolean writable = DEFAULT_WRITABLE;
+    private boolean writable = true;
     @JsonRemoteProperty
     private ExchangeType exchangeType = ExchangeType.NONE;
     @JsonRemoteProperty
     private String exchangeName = "";
     @JsonRemoteProperty
-    private String  queueName = DEFAULT_NOT_SET;
+    private String queueName = "";
     @JsonRemoteProperty
-    private String  routingKey = DEFAULT_NOT_SET;
+    private String routingKey = "";
     @JsonRemoteProperty
-    private DurabilityType queueDurability = DurabilityType.DURABLE;
+    private DurabilityType durability = DurabilityType.DURABLE;
     @JsonRemoteProperty
     private MessageAckType messageAck = MessageAckType.NO_ACK;
     @JsonRemoteProperty
     private int dataTypeId;
+    @JsonRemoteProperty
+    private int qos = 0;
+    @JsonRemoteProperty
+    private boolean autoDelete;
+    @JsonRemoteProperty
+    private boolean internal;
 
     @Override
     public LocalizableMessage getConfigurationDescription() {
@@ -51,15 +54,15 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
     @Override
     public void validate(DwrResponseI18n response) {
+        if (queueName.isBlank()) {
+            response.addContextualMessage("queueName", "validate.invalidValue");
+        }
         if (exchangeType == ExchangeType.NONE) {
-            routingKey = "";
-            exchangeName = "";
             if (queueName.isBlank()) {
                 response.addContextualMessage("queueName", "validate.invalidValue");
             }
         }
-        if (exchangeType == ExchangeType.DIRECT || exchangeType == ExchangeType.TOPIC){
-            queueName = "";
+        if (exchangeType == ExchangeType.DIRECT || exchangeType == ExchangeType.TOPIC) {
             if (exchangeName.isBlank()) {
                 response.addContextualMessage("exchangeName", "validate.invalidValue");
             }
@@ -69,10 +72,13 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         }
 
         if (exchangeType == ExchangeType.FANOUT) {
-            routingKey = "";
             if (exchangeName.isBlank()) {
                 response.addContextualMessage("exchangeName", "validate.invalidValue");
             }
+        }
+
+        if(qos < 0) {
+            response.addContextualMessage("qos", "validate.invalidValue");
         }
 
     }
@@ -80,24 +86,32 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     @Override
     public void addProperties(List<LocalizableMessage> list) {
         AuditEventType.addPropertyMessage(list, "dsEdit.settable", settable);
+        AuditEventType.addPropertyMessage(list, "dsEdit.writable", writable);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeType", exchangeType);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeName", exchangeName);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueName", queueName);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueDurability", queueDurability);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueDurability", durability);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.routingKey", routingKey);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.messageAck", messageAck);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.qos", qos);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.autoDelete", autoDelete);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.internal", internal);
     }
 
     @Override
     public void addPropertyChanges(List<LocalizableMessage> list, Object o) {
         AmqpPointLocatorVO from = (AmqpPointLocatorVO) o;
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.settable", from.settable, settable);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.writable", from.writable, writable);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeType", from.exchangeType, exchangeType);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeName", from.exchangeName, exchangeName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueName", from.queueName, queueName);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueDurability", from.queueDurability, queueDurability);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueDurability", from.durability, durability);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.messageAck", from.messageAck, routingKey);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.qos", from.qos, qos);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.autoDelete", from.autoDelete, autoDelete);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.internal", from.internal, internal);
     }
 
     // Getters and Setters //
@@ -147,12 +161,12 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.queueName = queueName;
     }
 
-    public DurabilityType getQueueDurability() {
-        return queueDurability;
+    public DurabilityType getDurability() {
+        return durability;
     }
 
-    public void setQueueDurability(DurabilityType queueDurability) {
-        this.queueDurability = queueDurability;
+    public void setDurability(DurabilityType durability) {
+        this.durability = durability;
     }
 
     public String getRoutingKey() {
@@ -175,6 +189,30 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.messageAck = messageAck;
     }
 
+    public int getQos() {
+        return qos;
+    }
+
+    public void setQos(int qos) {
+        this.qos = qos;
+    }
+
+    public boolean isAutoDelete() {
+        return autoDelete;
+    }
+
+    public void setAutoDelete(boolean autoDelete) {
+        this.autoDelete = autoDelete;
+    }
+
+    public boolean isInternal() {
+        return internal;
+    }
+
+    public void setInternal(boolean internal) {
+        this.internal = internal;
+    }
+
     private static final long serialVersionUID = -1;
     private static final int VERSION = 1;
     // Serialization //
@@ -186,9 +224,12 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         SerializationHelper.writeSafeUTF(out, exchangeType.name());
         SerializationHelper.writeSafeUTF(out, exchangeName);
         SerializationHelper.writeSafeUTF(out, queueName);
-        SerializationHelper.writeSafeUTF(out, queueDurability.name());
+        SerializationHelper.writeSafeUTF(out, durability.name());
         SerializationHelper.writeSafeUTF(out, routingKey);
         SerializationHelper.writeSafeUTF(out, messageAck.name());
+        out.writeInt(qos);
+        out.writeBoolean(autoDelete);
+        out.writeBoolean(internal);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -200,9 +241,12 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             exchangeType = ExchangeType.valueOf(SerializationHelper.readSafeUTF(in));
             exchangeName = SerializationHelper.readSafeUTF(in);
             queueName = SerializationHelper.readSafeUTF(in);
-            queueDurability = DurabilityType.valueOf(SerializationHelper.readSafeUTF(in));
+            durability = DurabilityType.valueOf(SerializationHelper.readSafeUTF(in));
             routingKey = SerializationHelper.readSafeUTF(in);
             messageAck = MessageAckType.valueOf(SerializationHelper.readSafeUTF(in));
+            qos = in.readInt();
+            autoDelete = in.readBoolean();
+            internal = in.readBoolean();
         }
     }
 

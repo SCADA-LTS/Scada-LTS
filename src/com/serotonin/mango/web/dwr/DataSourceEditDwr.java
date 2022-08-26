@@ -92,6 +92,7 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.amqp.ExchangeType;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.mango.service.EventService;
@@ -357,6 +358,10 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             Common.ctx.getRuntimeManager().saveDataPoint(dp);
             response.addData("id", dp.getId());
             response.addData("points", getPoints());
+            if(locator instanceof AmqpPointLocatorVO) {
+                DataSourceVO<?> dataSource = Common.ctx.getRuntimeManager().getDataSource(dp.getDataSourceId());
+                Common.ctx.getRuntimeManager().saveDataSource(dataSource);
+            }
         }
 
         return response;
@@ -450,26 +455,22 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     // AMQP Receiver //
     @MethodFilter
-    public DwrResponseI18n saveAmqpDataSource(String name, String xid, int updatePeriods, int updatePeriodType, int updateAttempts,
-                                              String serverIpAddress, int serverPortNumber, String serverUsername, String serverPassword, String serverVirtualHost) {
-        AmqpDataSourceVO ds = (AmqpDataSourceVO) Common.getUser().getEditDataSource();
-
-        ds.setXid(xid);
-        ds.setName(name);
-        ds.setUpdatePeriods(updatePeriods);
-        ds.setUpdatePeriodType(updatePeriodType);
-        ds.setUpdateAttempts(updateAttempts);
-        ds.setServerIpAddress(serverIpAddress);
-        ds.setServerPortNumber(serverPortNumber);
-        ds.setServerVirtualHost(serverVirtualHost);
-        ds.setServerUsername(serverUsername);
-        ds.setServerPassword(serverPassword);
-
-        return tryDataSourceSave(ds);
+    public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO dataSource) {
+        DwrResponseI18n response = tryDataSourceSave(dataSource);
+        Common.getUser().setEditDataSource(dataSource);
+        response.addData("dataSource", dataSource);
+        return response;
     }
 
     @MethodFilter
     public DwrResponseI18n saveAmqpPointLocator(int id, String xid, String name, AmqpPointLocatorVO locator){
+        if (locator.getExchangeType() == ExchangeType.NONE) {
+            locator.setRoutingKey("");
+            locator.setExchangeName("");
+        }
+        if (locator.getExchangeType() == ExchangeType.FANOUT) {
+            locator.setRoutingKey("");
+        }
         return validatePoint(id, xid, name, locator, null);
     }
 

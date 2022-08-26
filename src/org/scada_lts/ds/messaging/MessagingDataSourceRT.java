@@ -55,26 +55,29 @@ public class MessagingDataSourceRT extends PollingDataSource {
         }
     }
 
-    // Enable DataSource //
     @Override
     public void initialize() {
-
         try {
             messagingService.open();
         } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, DataSourceRT.getExceptionMessage(e));
         }
-
         super.initialize();
     }
 
-    // Disable DataSource //
     @Override
     public void terminate() {
+        if(vo instanceof AmqpDataSourceVO) {
+            if(((AmqpDataSourceVO)vo).isResetBrokerConfig()) {
+                messagingService.resetBrokerConfig();
+            }
+        }
         try {
             messagingService.close();
         } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
         }
@@ -84,13 +87,12 @@ public class MessagingDataSourceRT extends PollingDataSource {
 
     @Override
     protected void doPoll(long time) {
-
-        //If not amqpBindEstablished initialize DataPoints
         for (DataPointRT dp : dataPoints) {
             try {
-                messagingService.consume(dp);
+                messagingService.initReceiver(dp);
                 returnToNormal(DATA_POINT_READ_EXCEPTION_EVENT, time);
             } catch (Exception e) {
+                LOG.warn(e.getMessage(), e);
                 raiseEvent(DATA_POINT_READ_EXCEPTION_EVENT, time, false,
                         new LocalizableMessage("event.amqp.bindError", dp.getVO().getXid()));
             }

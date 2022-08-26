@@ -12,9 +12,11 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.SerializationHelper;
+import com.serotonin.util.ValidationUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
+import org.scada_lts.utils.UrlValidatorUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -65,6 +67,8 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     private int channelRpcTimeout = 10000;
     @JsonRemoteProperty
     private boolean automaticRecoveryEnabled = true;
+    @JsonRemoteProperty
+    private boolean resetBrokerConfig = false;
 
     @Override
     public DataSourceRT createDataSourceRT() {
@@ -101,7 +105,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         }
         try {
             InetAddress.getByName(serverIpAddress);
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             response.addContextualMessage("serverIpAddress","validate.invalidValue");
         }
         if (serverPortNumber < 0) {
@@ -111,6 +115,17 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
             response.addContextualMessage("updateAttempts", "validate.updateAttempts");
         }
 
+        if (networkRecoveryInterval < 0) {
+            response.addContextualMessage("networkRecoveryInterval","validate.invalidValue");
+        }
+
+        if (channelRpcTimeout < 0) {
+            response.addContextualMessage("channelRpcTimeout","validate.invalidValue");
+        }
+
+        if (connectionTimeout < 0) {
+            response.addContextualMessage("connectionTimeout","validate.invalidValue");
+        }
     }
 
     @Override
@@ -128,11 +143,11 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverVirtualHost", serverVirtualHost);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverUsername", serverUsername);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPassword", serverPassword);
-
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.channelRpcTimeout", channelRpcTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.automaticRecoveryEnabled", automaticRecoveryEnabled);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.connectionTimeout", connectionTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.networkRecoveryInterval", networkRecoveryInterval);
+        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.resetBrokerConfig", resetBrokerConfig);
     }
 
     @Override
@@ -143,11 +158,12 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverUsername",from.serverUsername,serverUsername);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPassword",from.serverPassword,serverPassword);
-
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.channelRpcTimeout",from.channelRpcTimeout,channelRpcTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.automaticRecoveryEnabled",from.automaticRecoveryEnabled,automaticRecoveryEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.connectionTimeout",from.connectionTimeout,connectionTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.networkRecoveryInterval",from.networkRecoveryInterval,networkRecoveryInterval);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.resetBrokerConfig",from.resetBrokerConfig,resetBrokerConfig);
+
     }
 
     private static final long serialVersionUID = -1;
@@ -168,6 +184,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         out.writeInt(networkRecoveryInterval);
         out.writeInt(channelRpcTimeout);
         out.writeBoolean(automaticRecoveryEnabled);
+        out.writeBoolean(resetBrokerConfig);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -185,7 +202,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
             networkRecoveryInterval  = in.readInt();
             channelRpcTimeout  = in.readInt();
             automaticRecoveryEnabled  = in.readBoolean();
-
+            resetBrokerConfig  = in.readBoolean();
         }
     }
 
@@ -297,5 +314,13 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     public void setAutomaticRecoveryEnabled(boolean automaticRecoveryEnabled) {
         this.automaticRecoveryEnabled = automaticRecoveryEnabled;
+    }
+
+    public boolean isResetBrokerConfig() {
+        return resetBrokerConfig;
+    }
+
+    public void setResetBrokerConfig(boolean resetBrokerConfig) {
+        this.resetBrokerConfig = resetBrokerConfig;
     }
 }
