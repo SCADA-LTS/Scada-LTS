@@ -35,16 +35,16 @@ public class MessagingDataSourceRT extends PollingDataSource {
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
         if(dataPoint == null || dataPoint.getVO() == null) {
+            LOG.error(LoggingUtils.dataSourceInfo(vo) + " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source));
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
                     new LocalizableMessage("event.exception2", "", " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source)));
-            LOG.error(LoggingUtils.dataSourceInfo(vo) + " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source));
             return;
         }
         DataPointVO dataPointVO = dataPoint.getVO();
         if (!messagingService.isOpen()) {
+            LOG.warn(LoggingUtils.dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - write failed.");
             raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
                     new LocalizableMessage("event.ds.writeFailed", dataPointVO.getName()));
-            LOG.warn(LoggingUtils.dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - write failed.");
             return;
         }
         String message = valueTime.getStringValue();
@@ -52,6 +52,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.publish(dataPoint, message);
         } catch (Exception e) {
             LOG.error(e.getMessage() + " - " + LoggingUtils.dataPointInfo(dataPoint.getVO()), e);
+            raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
+                    new LocalizableMessage("event.ds.writeFailed", dataPointVO.getName()));
         }
     }
 

@@ -10,8 +10,9 @@ public interface MessagingService {
     boolean isOpen();
     void open() throws IOException, TimeoutException;
     void close() throws IOException;
+
+    void initReceiver(DataPointRT dataPoint);
     void publish(DataPointRT dataPoint, String message) throws IOException;
 
     void resetBrokerConfig();
-    void initReceiver(DataPointRT dataPoint);
 }
