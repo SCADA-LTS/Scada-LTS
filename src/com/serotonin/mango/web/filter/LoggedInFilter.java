@@ -40,6 +40,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
 
+@Deprecated
 abstract public class LoggedInFilter implements Filter {
     private final Log LOGGER = LogFactory.getLog(LoggedInFilter.class);
 

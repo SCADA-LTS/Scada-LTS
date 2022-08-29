@@ -142,7 +142,8 @@ public class EventManager implements ILifecycle, ScadaWebSockets<String> {
 		}
 
 		if (eventUserIds.size() > 0) {
-			eventService.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
+			if(evt.getAlarmLevel() != AlarmLevels.NONE)
+				eventService.insertUserEvents(evt.getId(), eventUserIds, evt.isAlarm());
 			if (!suppressed && evt.isAlarm())
 				setLastAlarmTimestamp(System.currentTimeMillis());
 		}

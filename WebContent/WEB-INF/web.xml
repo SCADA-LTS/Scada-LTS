@@ -113,7 +113,8 @@
       <param-value>UTF-8</param-value>
     </init-param>
   </filter>
-  <filter>
+  <!-- Kamil Jarmusik 2022/07/21-->
+  <!--filter>
     <filter-name>IsLoggedIn</filter-name>
     <filter-class>com.serotonin.mango.web.filter.NormalLoggedInFilter</filter-class>
     <async-supported>true</async-supported>
@@ -121,7 +122,7 @@
       <param-name>forwardUrl</param-name>
       <param-value>/login.htm</param-value>
     </init-param>
-  </filter>
+  </filter-->
   
   <filter>
     <filter-name>WebContext</filter-name>
@@ -178,10 +179,11 @@
     <filter-name>CharacterSet</filter-name>
     <url-pattern>*.shtm</url-pattern>
   </filter-mapping>
-  <filter-mapping>
+  <!-- Kamil Jarmusik 2022/07/21-->
+  <!--filter-mapping>
     <filter-name>IsLoggedIn</filter-name>
     <url-pattern>*.shtm</url-pattern>
-  </filter-mapping>
+  </filter-mapping-->
   <filter-mapping>
     <filter-name>WebContext</filter-name>
     <url-pattern>*.shtm</url-pattern>
@@ -430,6 +432,9 @@
   </listener>
   <listener>
     <listener-class>com.serotonin.mango.MangoContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
   </listener>
   <session-config>
     <session-timeout>30</session-timeout>
