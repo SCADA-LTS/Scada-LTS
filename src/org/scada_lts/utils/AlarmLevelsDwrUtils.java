@@ -1,8 +1,12 @@
 package org.scada_lts.utils;
 
+import com.serotonin.db.IntValuePair;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.util.ExportCodes;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
-import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
+import org.scada_lts.mango.service.DataSourceService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,8 +16,24 @@ public final class AlarmLevelsDwrUtils {
 
     private AlarmLevelsDwrUtils() {}
 
-    public static void setAlarmLists(AmqpDataSourceVO dataSource) {
-        getAlarmLevels("AlarmLevels_" + dataSource.getXid()).forEach(dataSource::setAlarmLevel);
+    public static void setAlarmLists(DataSourceVO<?> form, DataSourceService dataSourceService) {
+        if(form.getId() == Common.NEW_ID) {
+            setAlarmLists(form);
+        } else {
+            DataSourceVO<?> fromDatabase = dataSourceService.getDataSource(form.getXid());
+            if(fromDatabase != null) {
+                ExportCodes exportCodes = fromDatabase.getEventCodes();
+                if (exportCodes != null) {
+                    for (IntValuePair id : exportCodes.getIdKeys()) {
+                        form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey(), -1));
+                    }
+                }
+            }
+            Map<Integer, Integer> alarmLevels = getAlarmLevels("AlarmLevels_" + form.getXid());
+            if(!alarmLevels.isEmpty()) {
+                alarmLevels.forEach(form::setAlarmLevel);
+            }
+        }
     }
 
     public static void putAlarmLevels(String key, int eventId, int alarmLevel) {
@@ -29,7 +49,7 @@ public final class AlarmLevelsDwrUtils {
         }
     }
 
-    public static Map<Integer, Integer> getAlarmLevels(String key) {
+    private static Map<Integer, Integer> getAlarmLevels(String key) {
         WebContext webContext = WebContextFactory.get();
         if(webContext != null) {
             String realKey = createKey(key, webContext.getCurrentPage());
@@ -40,6 +60,10 @@ public final class AlarmLevelsDwrUtils {
             return  alarmLevels;
         }
         return Collections.emptyMap();
+    }
+
+    private static void setAlarmLists(DataSourceVO<?> dataSource) {
+        getAlarmLevels("AlarmLevels_" + dataSource.getXid()).forEach(dataSource::setAlarmLevel);
     }
 
     private static String createKey(String key, String currentPage) {

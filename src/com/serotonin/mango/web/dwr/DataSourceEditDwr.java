@@ -222,6 +222,7 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.utils.AlarmLevelsDwrUtils;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
@@ -456,23 +457,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     // AMQP Receiver //
     @MethodFilter
     public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO form) {
-        if(form.getId() == Common.NEW_ID) {
-            setAlarmLists(form);
-        } else {
-            DataSourceService sourceService = new DataSourceService();
-            DataSourceVO<?> fromDatabase = sourceService.getDataSource(form.getId());
-
-            ExportCodes exportCodes = fromDatabase.getEventCodes();
-            if(exportCodes != null) {
-                for (IntValuePair id : exportCodes.getIdKeys()) {
-                    form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey(), -1));
-                }
-            }
-            Map<Integer, Integer> alarmLevels = getAlarmLevels("AlarmLevels_" + fromDatabase.getXid());
-            if(!alarmLevels.isEmpty()) {
-                alarmLevels.forEach(form::setAlarmLevel);
-            }
-        }
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
         DwrResponseI18n response = tryDataSourceSave(form);
         Common.getUser().setEditDataSource(form);
         return response;
