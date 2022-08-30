@@ -5,101 +5,105 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import org.scada_lts.ds.messaging.MessagingService;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static org.scada_lts.ds.messaging.amqp.ChannelsFactory.createChannels;
+import static org.scada_lts.ds.messaging.amqp.ChannelsFactory.createChannel;
 
 public class AmqpMessagingService implements MessagingService {
 
-    private Connection connection;
-    private final Map<Integer, ChannelsFactory.ChannelLocator> channels = new ConcurrentHashMap<>();
+    private final Map<Integer, Channel> channels;
+    private final ReentrantReadWriteLock lock;
     private final AmqpDataSourceVO vo;
-    private volatile boolean closed = true;
+
+    private Connection connection;
 
     public AmqpMessagingService(AmqpDataSourceVO vo) {
         this.vo = vo;
+        this.channels = new ConcurrentHashMap<>();
+        this.lock = new ReentrantReadWriteLock();
     }
 
     @Override
     public void publish(DataPointRT dataPoint, String message) throws IOException {
-        Channel channel = getChannels(dataPoint).getChannel();
-        if (isOpenChannel(channel) && !closed) {
+        Channel channel = initChannel(dataPoint);
+        if (isOpenChannel(channel)) {
             basicPublish(dataPoint, channel, message);
         }
     }
 
     @Override
-    public void initReceiver(DataPointRT dataPoint) {
-        if(!closed)
-            getChannels(dataPoint);
+    public void initReceiver(DataPointRT dataPoint) throws IOException, TimeoutException {
+        if(isOpen()) {
+            initChannel(dataPoint);
+        } else {
+            open();
+        }
+    }
+
+    @Override
+    public void removeReceiver(DataPointRT dataPoint) throws IOException, TimeoutException {
+        Channel channel = channels.get(dataPoint.getId());
+        if(channel != null) {
+            channels.remove(dataPoint.getId());
+            channel.close();
+        }
     }
 
     @Override
     public boolean isOpen() {
-        return connection != null && connection.isOpen();
+        this.lock.readLock().lock();
+        try {
+            return connection != null && connection.isOpen();
+        } finally {
+            this.lock.readLock().unlock();
+        }
     }
 
     @Override
     public void open() throws IOException, TimeoutException {
+        if(!isOpen()) {
+            ConnectionFactory rabbitFactory = new ConnectionFactory();
+            rabbitFactory.setHost(vo.getServerIpAddress());
+            rabbitFactory.setPort(vo.getServerPortNumber());
 
-        ConnectionFactory rabbitFactory = new ConnectionFactory();
-        rabbitFactory.setHost(vo.getServerIpAddress());
-        rabbitFactory.setPort(vo.getServerPortNumber());
+            rabbitFactory.setChannelRpcTimeout(vo.getChannelRpcTimeout());
+            rabbitFactory.setAutomaticRecoveryEnabled(vo.isAutomaticRecoveryEnabled());
+            rabbitFactory.setNetworkRecoveryInterval(vo.getNetworkRecoveryInterval());
 
-        rabbitFactory.setConnectionTimeout(vo.getConnectionTimeout());
-        rabbitFactory.setNetworkRecoveryInterval(vo.getNetworkRecoveryInterval());
-        rabbitFactory.setChannelRpcTimeout(vo.getChannelRpcTimeout());
-        rabbitFactory.setAutomaticRecoveryEnabled(vo.isAutomaticRecoveryEnabled());
-        //rabbitFactory.setWorkPoolTimeout(vo.getConnectionTimeout());
-        //rabbitFactory.setShutdownTimeout(vo.getConnectionTimeout());
-        //rabbitFactory.setHandshakeTimeout(vo.getConnectionTimeout());
+            rabbitFactory.setConnectionTimeout(vo.getConnectionTimeout());
+            rabbitFactory.setShutdownTimeout(vo.getConnectionTimeout());
+            rabbitFactory.setHandshakeTimeout(vo.getConnectionTimeout());
 
-        if (!vo.getServerUsername().isBlank()) {
-            rabbitFactory.setUsername(vo.getServerUsername());
+            if (!vo.getServerUsername().isBlank()) {
+                rabbitFactory.setUsername(vo.getServerUsername());
+            }
+
+            if (!vo.getServerPassword().isBlank()) {
+                rabbitFactory.setPassword(vo.getServerPassword());
+            }
+
+            if (!vo.getServerVirtualHost().isBlank()) {
+                rabbitFactory.setVirtualHost(vo.getServerVirtualHost());
+            }
+
+            setConnection(rabbitFactory);
         }
-
-        if (!vo.getServerPassword().isBlank()) {
-            rabbitFactory.setPassword(vo.getServerPassword());
-        }
-
-        if (!vo.getServerVirtualHost().isBlank()) {
-            rabbitFactory.setVirtualHost(vo.getServerVirtualHost());
-        }
-
-        connection = rabbitFactory.newConnection();
-        closed = false;
     }
 
     @Override
     public void close() throws IOException {
+        this.lock.writeLock().lock();
         try {
-            closed = true;
-            Map<Integer, ChannelsFactory.ChannelLocator> temp = new HashMap<>(this.channels);
-            for (ChannelsFactory.ChannelLocator channel : temp.values()) {
-                if (channel != null) {
-                    channel.close();
-                }
-            }
-            temp.clear();
-        } finally {
-            channels.clear();
-            if (connection != null)
+            if (connection != null) {
                 connection.close();
-        }
-    }
-
-    @Override
-    public void resetBrokerConfig() {
-        Map<Integer, ChannelsFactory.ChannelLocator> temp = new HashMap<>(this.channels);
-        for (ChannelsFactory.ChannelLocator channel : temp.values()) {
-            if (channel != null) {
-                channel.resetBrokerConfig();
             }
+            channels.clear();
+        } finally {
+            this.lock.writeLock().unlock();
         }
-        temp.clear();
     }
 
     private static void basicPublish(DataPointRT dataPoint, Channel channel, String message) throws IOException {
@@ -114,7 +118,32 @@ public class AmqpMessagingService implements MessagingService {
         return channel != null && channel.isOpen();
     }
 
-    private ChannelsFactory.ChannelLocator getChannels(DataPointRT dataPoint) {
-        return channels.computeIfAbsent(dataPoint.getId(), a -> createChannels(dataPoint, connection).orElse(null));
+    private Channel initChannel(DataPointRT dataPoint) {
+        Connection conn = getConnection();
+        return channels.computeIfAbsent(dataPoint.getId(), a -> {
+            try {
+                return createChannel(dataPoint, conn);
+            } catch (Exception e) {
+                throw new RuntimeException(e.getCause());
+            }
+        });
+    }
+
+    private void setConnection(ConnectionFactory rabbitFactory) throws IOException, TimeoutException {
+        this.lock.writeLock().lock();
+        try {
+            this.connection = rabbitFactory.newConnection();
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+    }
+
+    private Connection getConnection() {
+        this.lock.readLock().lock();
+        try {
+            return connection;
+        } finally {
+            this.lock.readLock().unlock();
+        }
     }
 }

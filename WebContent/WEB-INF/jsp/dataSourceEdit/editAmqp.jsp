@@ -32,7 +32,6 @@
         dataSourceToSave.networkRecoveryInterval=$get("networkRecoveryInterval");
         dataSourceToSave.channelRpcTimeout=$get("channelRpcTimeout");
         dataSourceToSave.automaticRecoveryEnabled=$get("automaticRecoveryEnabled");
-        dataSourceToSave.resetBrokerConfig=$get("resetBrokerConfig");
 
         DataSourceEditDwr.saveAmqpDataSource(dataSourceToSave, saveDataSourceCB);
     }
@@ -127,11 +126,6 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.networkRecoveryInterval"/></td>
     <td class="formField"><input type="number" id="networkRecoveryInterval" value="${dataSource.networkRecoveryInterval}"/></td>
   </tr>
-  <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.resetBrokerConfig"/></td>
-    <td class="formField"><input type="checkbox" id="resetBrokerConfig" ${dataSource.resetBrokerConfig ? 'checked' : 'unchecked'} /></td>
-  </tr>
-
 <%@ include file="/WEB-INF/jsp/dataSourceEdit/dsEventsFoot.jspf" %>
 
 <tag:pointList pointHelpId="amqpPP">
@@ -190,7 +184,7 @@
       <td class="formField"><input type="checkbox" id="internal"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.queueDurability"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.durability"/></td>
     <td class="formField">
         <select id="queueDurability">
             <option value="<c:out value="<%= DurabilityType.DURABLE %>"/>">Durable</option>

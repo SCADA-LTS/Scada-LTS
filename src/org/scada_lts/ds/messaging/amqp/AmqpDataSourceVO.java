@@ -12,17 +12,14 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.SerializationHelper;
-import com.serotonin.util.ValidationUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
-import org.scada_lts.utils.UrlValidatorUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,13 +31,9 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     static {
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
-        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_READ_EXCEPTION_EVENT, "DATA_POINT_READ_EXCEPTION");
-        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_INIT_EXCEPTION_EVENT, "DATA_POINT_READ_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_PUBLISH_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
     }
-
-    private static final String DEFAULT_HOST = "localhost";
-    private static final int DEFAULT_PORT = 5672;
-    private static final String DEFAULT_NOT_SET = "";
 
     private int updatePeriodType = Common.TimePeriods.MINUTES;
 
@@ -50,15 +43,15 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     @JsonRemoteProperty
     private int updateAttempts = 5;
     @JsonRemoteProperty
-    private String serverIpAddress = DEFAULT_HOST;
+    private String serverIpAddress = "localhost";
     @JsonRemoteProperty
-    private int serverPortNumber = DEFAULT_PORT;
+    private int serverPortNumber = 5672;
     @JsonRemoteProperty
-    private String serverVirtualHost = DEFAULT_NOT_SET;
+    private String serverVirtualHost = "";
     @JsonRemoteProperty
-    private String serverUsername = DEFAULT_NOT_SET;
+    private String serverUsername = "";
     @JsonRemoteProperty
-    private String serverPassword = DEFAULT_NOT_SET;
+    private String serverPassword = "";
     @JsonRemoteProperty
     private int connectionTimeout = 10000;
     @JsonRemoteProperty
@@ -67,8 +60,6 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     private int channelRpcTimeout = 10000;
     @JsonRemoteProperty
     private boolean automaticRecoveryEnabled = true;
-    @JsonRemoteProperty
-    private boolean resetBrokerConfig = false;
 
     @Override
     public DataSourceRT createDataSourceRT() {
@@ -131,8 +122,8 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
     @Override
     protected void addEventTypes(List<EventTypeVO> eventTypes) {
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
-        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_READ_EXCEPTION_EVENT, new LocalizableMessage("event.ds.amqpReceiver") ));
-        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_WRITE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointWrite") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_INIT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.initReceiver") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_PUBLISH_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointPublish") ));
     }
 
     @Override
@@ -147,7 +138,6 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.automaticRecoveryEnabled", automaticRecoveryEnabled);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.connectionTimeout", connectionTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.networkRecoveryInterval", networkRecoveryInterval);
-        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.resetBrokerConfig", resetBrokerConfig);
     }
 
     @Override
@@ -162,8 +152,6 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.automaticRecoveryEnabled",from.automaticRecoveryEnabled,automaticRecoveryEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.connectionTimeout",from.connectionTimeout,connectionTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.networkRecoveryInterval",from.networkRecoveryInterval,networkRecoveryInterval);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.resetBrokerConfig",from.resetBrokerConfig,resetBrokerConfig);
-
     }
 
     private static final long serialVersionUID = -1;
@@ -184,7 +172,6 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         out.writeInt(networkRecoveryInterval);
         out.writeInt(channelRpcTimeout);
         out.writeBoolean(automaticRecoveryEnabled);
-        out.writeBoolean(resetBrokerConfig);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -202,7 +189,6 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
             networkRecoveryInterval  = in.readInt();
             channelRpcTimeout  = in.readInt();
             automaticRecoveryEnabled  = in.readBoolean();
-            resetBrokerConfig  = in.readBoolean();
         }
     }
 
@@ -316,11 +302,5 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         this.automaticRecoveryEnabled = automaticRecoveryEnabled;
     }
 
-    public boolean isResetBrokerConfig() {
-        return resetBrokerConfig;
-    }
 
-    public void setResetBrokerConfig(boolean resetBrokerConfig) {
-        this.resetBrokerConfig = resetBrokerConfig;
-    }
 }

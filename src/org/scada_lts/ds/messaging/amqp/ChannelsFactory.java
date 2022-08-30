@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public final class ChannelsFactory {
 
@@ -17,52 +16,28 @@ public final class ChannelsFactory {
 
     private static final Log LOG = LogFactory.getLog(ChannelsFactory.class);
 
-    public static Optional<ChannelLocator> createChannels(DataPointRT dataPoint, Connection connection) {
-        Channel receive = configReceiver(dataPoint, connection);
-        AmqpPointLocatorRT locator = dataPoint.getPointLocator();
-        try {
-            return Optional.of(new ChannelLocator(receive, locator.getVO()));
-
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return Optional.empty();
-        }
+    public static Channel createChannel(DataPointRT dataPoint, Connection connection) throws IOException {
+        return configReceiver(dataPoint, connection);
     }
 
-    private static Channel configReceiver(DataPointRT dataPoint, Connection connection) {
+    private static Channel configReceiver(DataPointRT dataPoint, Connection connection) throws IOException {
         Channel receive = configChannel(dataPoint, connection);
         if(receive == null)
             return null;
-        try {
-            basicConsume(dataPoint, receive);
-            return receive;
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            close(receive);
-            return null;
-        }
+        basicConsume(dataPoint, receive);
+        return receive;
     }
 
-    private static Channel createChannel(Connection connection) {
+    private static Channel createChannel(Connection connection) throws IOException {
         if(connection == null)
             return null;
-        try {
-            return connection.createChannel();
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return null;
-        }
+        return connection.createChannel();
     }
 
-    private static Channel configChannel(DataPointRT dataPointRT, Connection connection) {
+    private static Channel configChannel(DataPointRT dataPointRT, Connection connection) throws IOException {
         Channel channel = createChannel(connection);
-        try {
-            initDataPoint(dataPointRT, channel);
-            return channel;
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            return null;
-        }
+        initDataPoint(dataPointRT, channel);
+        return channel;
     }
 
     /**
@@ -76,7 +51,7 @@ public final class ChannelsFactory {
      * @param dataPoint - single DataPoint
      * @param channel - channel (with prepared connection)
      */
-    private static void initDataPoint(DataPointRT dataPoint, Channel channel) {
+    private static void initDataPoint(DataPointRT dataPoint, Channel channel) throws IOException {
 
         AmqpPointLocatorRT locator = dataPoint.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
@@ -87,43 +62,26 @@ public final class ChannelsFactory {
         }
     }
 
-    private static void basicQos(Channel channel, AmqpPointLocatorVO vo) {
-        try {
-            channel.basicQos(vo.getQos());
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    private static void basicQos(Channel channel, AmqpPointLocatorVO vo) throws IOException {
+        channel.basicQos(vo.getQos());
     }
 
-    private static void basicConsume(DataPointRT dataPoint, Channel channel) {
+    private static void basicConsume(DataPointRT dataPoint, Channel channel) throws IOException {
         AmqpPointLocatorRT locator = dataPoint.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
         boolean noAck = vo.getMessageAck() == MessageAckType.NO_ACK;
-        try {
-            channel.basicConsume(vo.getQueueName(), noAck, new ScadaConsumer(channel, dataPoint, vo));
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
+        channel.basicConsume(vo.getQueueName(), noAck, new ScadaConsumer(channel, dataPoint, vo));
     }
 
-    private static void declare(Channel channel, AmqpPointLocatorVO vo) {
+    private static void declare(Channel channel, AmqpPointLocatorVO vo) throws IOException {
         ExchangeType exchangeType = vo.getExchangeType();
-        try {
-
-            Map<String, Object> arguments = new HashMap<>();
-            exchangeType.declare(channel, vo, arguments);
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
+        Map<String, Object> arguments = new HashMap<>();
+        exchangeType.declare(channel, vo, arguments);
     }
 
-    private static void bind(Channel channel, AmqpPointLocatorVO vo) {
+    private static void bind(Channel channel, AmqpPointLocatorVO vo) throws IOException {
         ExchangeType exchangeType = vo.getExchangeType();
-        try {
-            exchangeType.queueBind(channel, vo);
-        } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
+        exchangeType.queueBind(channel, vo);
     }
 
     private static void close(Channel channel) {
@@ -157,32 +115,6 @@ public final class ChannelsFactory {
                     LOG.error(ex1.getMessage(), ex1);
                 }
             }
-        }
-    }
-
-    public static class ChannelLocator {
-        private final Channel channel;
-        private final AmqpPointLocatorVO locator;
-
-        public ChannelLocator(Channel channel, AmqpPointLocatorVO locator) {
-            this.channel = channel;
-            this.locator = locator;
-        }
-
-        public Channel getChannel() {
-            return channel;
-        }
-
-        public void resetBrokerConfig() {
-            try {
-                locator.getExchangeType().resetBrokerConfig(channel, locator);
-            } catch (Exception e) {
-                LOG.warn(e.getMessage(), e);
-            }
-        }
-
-        public void close()  {
-            ChannelsFactory.close(channel);
         }
     }
 }

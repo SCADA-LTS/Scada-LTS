@@ -25,11 +25,6 @@ public enum ExchangeType {
             boolean durable = durabilityType == DurabilityType.DURABLE;
             channel.queueDeclare(locator.getQueueName(), durable, false, locator.isAutoDelete(), props);
         }
-
-        @Override
-        public void resetBrokerConfig(Channel channel, AmqpPointLocatorVO locator) throws IOException {
-            channel.queueDelete(locator.getQueueName());
-        }
     },
     DIRECT(BuiltinExchangeType.DIRECT) {
         @Override
@@ -40,13 +35,6 @@ public enum ExchangeType {
         @Override
         public void queueBind(Channel channel, AmqpPointLocatorVO locator) throws IOException {
             channel.queueBind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
-        }
-
-        @Override
-        public void resetBrokerConfig(Channel channel, AmqpPointLocatorVO locator) throws IOException  {
-            channel.queueUnbind(locator.getQueueName(), locator.getExchangeName(), locator.getRoutingKey());
-            channel.exchangeDelete(locator.getExchangeName());
-            channel.queueDelete(locator.getQueueName());
         }
     },
     TOPIC(BuiltinExchangeType.TOPIC) {
@@ -59,11 +47,6 @@ public enum ExchangeType {
         public void queueBind(Channel channel, AmqpPointLocatorVO locator) throws IOException {
             DIRECT.queueBind(channel, locator);
         }
-
-        @Override
-        public void resetBrokerConfig(Channel channel, AmqpPointLocatorVO locator) throws IOException  {
-            DIRECT.resetBrokerConfig(channel, locator);
-        }
     },
     FANOUT(BuiltinExchangeType.FANOUT) {
         @Override
@@ -75,20 +58,11 @@ public enum ExchangeType {
         public void queueBind(Channel channel, AmqpPointLocatorVO locator) throws IOException {
             channel.queueBind(locator.getQueueName(), locator.getExchangeName(), "");
         }
-
-        @Override
-        public void resetBrokerConfig(Channel channel, AmqpPointLocatorVO locator) throws IOException  {
-            channel.queueUnbind(locator.getQueueName(), locator.getExchangeName(), "");
-            channel.exchangeDelete(locator.getExchangeName());
-            channel.queueDelete(locator.getQueueName());
-        }
     };
 
     public abstract void basicPublish(Channel channel, AmqpPointLocatorVO locator, String message, AMQP.BasicProperties basicProperties) throws IOException;
 
     public abstract void queueBind(Channel channel, AmqpPointLocatorVO locator) throws IOException;
-
-    public abstract void resetBrokerConfig(Channel channel, AmqpPointLocatorVO locator) throws IOException;
 
     public void declare(Channel channel, AmqpPointLocatorVO locator, Map<String, Object> props) throws IOException {
         DurabilityType durabilityType = locator.getDurability();

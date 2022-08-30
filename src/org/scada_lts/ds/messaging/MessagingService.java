@@ -11,8 +11,7 @@ public interface MessagingService {
     void open() throws IOException, TimeoutException;
     void close() throws IOException;
 
-    void initReceiver(DataPointRT dataPoint);
+    void initReceiver(DataPointRT dataPoint) throws IOException, TimeoutException;
+    void removeReceiver(DataPointRT dataPoint) throws IOException, TimeoutException;
     void publish(DataPointRT dataPoint, String message) throws IOException;
-
-    void resetBrokerConfig();
 }

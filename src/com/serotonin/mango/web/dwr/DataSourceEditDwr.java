@@ -57,6 +57,8 @@ import net.sf.openv4j.Protocol;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContext;
+import org.directwebremoting.WebContextFactory;
 import org.jinterop.dcom.common.JISystem;
 
 import br.org.scadabr.OPCItem;
@@ -95,6 +97,7 @@ import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
 import org.scada_lts.ds.messaging.amqp.ExchangeType;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
@@ -358,10 +361,6 @@ public class DataSourceEditDwr extends DataSourceListDwr {
             Common.ctx.getRuntimeManager().saveDataPoint(dp);
             response.addData("id", dp.getId());
             response.addData("points", getPoints());
-            if(locator instanceof AmqpPointLocatorVO) {
-                DataSourceVO<?> dataSource = Common.ctx.getRuntimeManager().getDataSource(dp.getDataSourceId());
-                Common.ctx.getRuntimeManager().saveDataSource(dataSource);
-            }
         }
 
         return response;
@@ -421,6 +420,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         ds.setAlarmLevel(eventId, alarmLevel);
+        putAlarmLevels("AlarmLevels_" + ds.getXid(), eventId, alarmLevel);
     }
 
     //
@@ -455,10 +455,20 @@ public class DataSourceEditDwr extends DataSourceListDwr {
 
     // AMQP Receiver //
     @MethodFilter
-    public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO dataSource) {
-        DwrResponseI18n response = tryDataSourceSave(dataSource);
-        Common.getUser().setEditDataSource(dataSource);
-        response.addData("dataSource", dataSource);
+    public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO form) {
+        if(form.getId() == Common.NEW_ID) {
+            setAlarmLists(form);
+        } else {
+            DataSourceService sourceService = new DataSourceService();
+            DataSourceVO<?> fromDatabase = sourceService.getDataSource(form.getId());
+            fromDatabase.getAlarmLevels().forEach(form::setAlarmLevel);
+            Map<Integer, Integer> alarmLevels = getAlarmLevels("AlarmLevels_" + fromDatabase.getXid());
+            if(!alarmLevels.isEmpty()) {
+                alarmLevels.forEach(form::setAlarmLevel);
+            }
+        }
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
         return response;
     }
 
@@ -2966,6 +2976,40 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveRadiuinoPointLocator(int id, String xid,
                                                     String name, RadiuinoPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
+    }
+
+    private void setAlarmLists(AmqpDataSourceVO dataSource) {
+        getAlarmLevels("AlarmLevels_" + dataSource.getXid()).forEach(dataSource::setAlarmLevel);
+    }
+
+    private void putAlarmLevels(String key, int eventId, int alarmLevel) {
+        WebContext webContext = WebContextFactory.get();
+        if(webContext!= null) {
+            String realKey = createKey(key, webContext.getCurrentPage());
+            Map<Integer, Integer> alarmLevels = (Map<Integer, Integer>)webContext.getSession().getAttribute(realKey);
+            if(alarmLevels == null) {
+                alarmLevels = new HashMap<>();
+            }
+            alarmLevels.put(eventId, alarmLevel);
+            webContext.getSession().setAttribute(realKey, alarmLevels);
+        }
+    }
+
+    private Map<Integer, Integer> getAlarmLevels(String key) {
+        WebContext webContext = WebContextFactory.get();
+        if(webContext != null) {
+            String realKey = createKey(key, webContext.getCurrentPage());
+            Map<Integer, Integer> alarmLevels = (Map<Integer, Integer>)webContext.getSession().getAttribute(realKey);
+            if(alarmLevels == null) {
+                alarmLevels = new HashMap<>();
+            }
+            return  alarmLevels;
+        }
+        return Collections.emptyMap();
+    }
+
+    private String createKey(String key, String currentPage) {
+        return currentPage + "_" + key;
     }
 
 }

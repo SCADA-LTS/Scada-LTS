@@ -646,4 +646,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		return value;
 	}
 
+	public Map<Integer, Integer> getAlarmLevels() {
+		return alarmLevels;
+	}
 }

@@ -13,47 +13,55 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class MessagingDataSourceRT extends PollingDataSource {
 
+    public static final String ATTR_UNRELIABLE_KEY = "UNRELIABLE";
+
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
-    public static final int DATA_POINT_WRITE_EXCEPTION_EVENT = 2;
-    public static final int DATA_POINT_READ_EXCEPTION_EVENT = 3;
+    public static final int DATA_POINT_PUBLISH_EXCEPTION_EVENT = 2;
+    public static final int DATA_POINT_INIT_EXCEPTION_EVENT = 3;
 
     private static final Log LOG = LogFactory.getLog(MessagingDataSourceRT.class);
 
     private final DataSourceVO<?> vo;
     private final MessagingService messagingService;
+    private final Map<Integer, AtomicInteger> updateAttemptsCounters;
+    private final int updateAttempts;
 
     public MessagingDataSourceRT(AmqpDataSourceVO vo) {
         super(vo);
         this.vo = vo;
         this.messagingService = MessagingServiceFactory.newService(vo);
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
+        this.updateAttemptsCounters = new ConcurrentHashMap<>();
+        this.updateAttempts = vo.getUpdateAttempts();
     }
 
     @Override
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
-        if(dataPoint == null || dataPoint.getVO() == null) {
-            LOG.error(LoggingUtils.dataSourceInfo(vo) + " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source));
-            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
-                    new LocalizableMessage("event.exception2", "", " - write failed: " + LoggingUtils.pointValueTimeInfo(valueTime, source)));
-            return;
-        }
         DataPointVO dataPointVO = dataPoint.getVO();
         if (!messagingService.isOpen()) {
             LOG.warn(LoggingUtils.dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - write failed.");
-            raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
-                    new LocalizableMessage("event.ds.writeFailed", dataPointVO.getName()));
+            raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                    new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()));
+            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
             return;
         }
         String message = valueTime.getStringValue();
         try {
             messagingService.publish(dataPoint, message);
+            returnToNormal(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis());
+            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
         } catch (Exception e) {
             LOG.error(e.getMessage() + " - " + LoggingUtils.dataPointInfo(dataPoint.getVO()), e);
-            raiseEvent(DATA_POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), false,
-                    new LocalizableMessage("event.ds.writeFailed", dataPointVO.getName()));
+            raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
+                    new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()));
+            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
         }
     }
 
@@ -61,6 +69,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
     public void initialize() {
         try {
             messagingService.open();
+            returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
@@ -71,32 +80,64 @@ public class MessagingDataSourceRT extends PollingDataSource {
 
     @Override
     public void terminate() {
-        if(vo instanceof AmqpDataSourceVO) {
-            if(((AmqpDataSourceVO)vo).isResetBrokerConfig()) {
-                messagingService.resetBrokerConfig();
-            }
-        }
         try {
             messagingService.close();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    new LocalizableMessage("event.exception2", e.getClass().getName(), e.getMessage()));
+            raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
+                    true, DataSourceRT.getExceptionMessage(e));
         }
         this.vo.setEnabled(false);
         super.terminate();
+        updateAttemptsCounters.clear();
+    }
+
+    @Override
+    public void addDataPoint(DataPointRT dataPoint) {
+        try {
+            updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
+            messagingService.initReceiver(dataPoint);
+            returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis());
+            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+            raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
+                    true, DataSourceRT.getExceptionMessage(e));
+            dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
+        }
+        super.addDataPoint(dataPoint);
+    }
+
+    @Override
+    public void removeDataPoint(DataPointRT dataPoint) {
+        try {
+            updateAttemptsCounters.remove(dataPoint.getId());
+            messagingService.removeReceiver(dataPoint);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
+                    true, DataSourceRT.getExceptionMessage(e));
+        }
+        super.removeDataPoint(dataPoint);
     }
 
     @Override
     protected void doPoll(long time) {
-        for (DataPointRT dp : dataPoints) {
+        for (DataPointRT dataPoint : dataPoints) {
             try {
-                messagingService.initReceiver(dp);
-                returnToNormal(DATA_POINT_READ_EXCEPTION_EVENT, time);
+                updateAttemptsCounters.putIfAbsent(dataPoint.getId(), new AtomicInteger());
+                if(updateAttemptsCounters.get(dataPoint.getId()).get() < updateAttempts) {
+                    messagingService.initReceiver(dataPoint);
+                    updateAttemptsCounters.get(dataPoint.getId()).set(0);
+                    returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, time);
+                    dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
+                }
             } catch (Exception e) {
+                updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
                 LOG.warn(e.getMessage(), e);
-                raiseEvent(DATA_POINT_READ_EXCEPTION_EVENT, time, false,
-                        new LocalizableMessage("event.amqp.bindError", dp.getVO().getXid()));
+                raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
+                        true, DataSourceRT.getExceptionMessage(e));
+                dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
             }
         }
     }
