@@ -89,13 +89,14 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.addPropertyMessage(list, "dsEdit.writable", writable);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeType", exchangeType);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.exchangeName", exchangeName);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueName", queueName);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.queueDurability", durability);
+        AuditEventType.addPropertyMessage(list, "dsEdit.messaging.queueName", queueName);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.durability", durability);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.routingKey", routingKey);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.messageAck", messageAck);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.qos", qos);
+        AuditEventType.addPropertyMessage(list, "dsEdit.qos", qos);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.autoDelete", autoDelete);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.internal", internal);
+        AuditEventType.addPropertyMessage(list, "dsEdit.dataTypeId", dataTypeId);
     }
 
     @Override
@@ -105,13 +106,14 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.writable", from.writable, writable);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeType", from.exchangeType, exchangeType);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.exchangeName", from.exchangeName, exchangeName);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueName", from.queueName, queueName);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.queueDurability", from.durability, durability);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.messaging.queueName", from.queueName, queueName);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.durability", from.durability, durability);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.messageAck", from.messageAck, routingKey);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.qos", from.qos, qos);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.qos", from.qos, qos);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.autoDelete", from.autoDelete, autoDelete);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.internal", from.internal, internal);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.dataTypeId", from.dataTypeId, dataTypeId);
     }
 
     // Getters and Setters //

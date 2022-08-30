@@ -42,7 +42,7 @@
         $set("exchangeType", locator.exchangeType);
         $set("exchangeName", locator.exchangeName);
         $set("queueName", locator.queueName);
-        $set("queueDurability", locator.queueDurability);
+        $set("durability", locator.durability);
         $set("routingKey", locator.routingKey);
         $set("messageAck", locator.messageAck);
         $set("qos", locator.qos);
@@ -57,7 +57,7 @@
     locator.exchangeType = $get("exchangeType");
     locator.exchangeName = $get("exchangeName");
     locator.queueName = $get("queueName");
-    locator.queueDurability = $get("queueDurability");
+    locator.durability = $get("durability");
     locator.routingKey = $get("routingKey");
     locator.messageAck = $get("messageAck");
     locator.qos = $get("qos");
@@ -87,7 +87,7 @@
     </td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.updateAttempts"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.updateAttempts"/></td>
     <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
@@ -111,7 +111,7 @@
     <td class="formField"><input type="text" id="serverVirtualHost" value="${dataSource.serverVirtualHost}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.connectionTimeout"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.connectionTimeout"/></td>
     <td class="formField"><input type="number" id="connectionTimeout" value="${dataSource.connectionTimeout}"/></td>
   </tr>
   <tr>
@@ -160,7 +160,7 @@
     </td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.queueName"/></td>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.queueName"/></td>
       <td class="formField"><input type="text" id="queueName"/></td>
   </tr>
   <tr>
@@ -172,7 +172,7 @@
       <td class="formField"><input type="text" id="routingKey"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.qos"/></td>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.qos"/></td>
       <td class="formField"><input type="number" id="qos"/></td>
   </tr>
   <tr>
@@ -186,7 +186,7 @@
   <tr>
     <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.durability"/></td>
     <td class="formField">
-        <select id="queueDurability">
+        <select id="durability">
             <option value="<c:out value="<%= DurabilityType.DURABLE %>"/>">Durable</option>
             <option value="<c:out value="<%= DurabilityType.TRANSIENT %>"/>">Transient</option>
         </select>

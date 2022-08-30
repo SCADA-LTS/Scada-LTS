@@ -14,7 +14,9 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
+import org.scada_lts.ds.messaging.MessagingServiceFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,7 +25,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
-public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
+public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements DataSourceUpdatable {
 
     public static final Type TYPE = Type.AMQP;
 
@@ -63,7 +65,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
 
     @Override
     public DataSourceRT createDataSourceRT() {
-        return new MessagingDataSourceRT(this);
+        return new MessagingDataSourceRT(this, MessagingServiceFactory.newService(this));
     }
 
     @Override
@@ -136,7 +138,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPassword", serverPassword);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.channelRpcTimeout", channelRpcTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.automaticRecoveryEnabled", automaticRecoveryEnabled);
-        AuditEventType.addPropertyMessage(list,"dsEdit.amqp.connectionTimeout", connectionTimeout);
+        AuditEventType.addPropertyMessage(list,"dsEdit.connectionTimeout", connectionTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.networkRecoveryInterval", networkRecoveryInterval);
     }
 
@@ -150,7 +152,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPassword",from.serverPassword,serverPassword);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.channelRpcTimeout",from.channelRpcTimeout,channelRpcTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.automaticRecoveryEnabled",from.automaticRecoveryEnabled,automaticRecoveryEnabled);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.connectionTimeout",from.connectionTimeout,connectionTimeout);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.connectionTimeout",from.connectionTimeout,connectionTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.networkRecoveryInterval",from.networkRecoveryInterval,networkRecoveryInterval);
     }
 
@@ -302,5 +304,8 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> {
         this.automaticRecoveryEnabled = automaticRecoveryEnabled;
     }
 
-
+    @Override
+    public DataSourceVO<AmqpDataSourceVO> toDataSource() {
+        return this;
+    }
 }

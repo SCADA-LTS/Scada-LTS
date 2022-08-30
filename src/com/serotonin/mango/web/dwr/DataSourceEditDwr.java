@@ -44,6 +44,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.util.ExportCodes;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -57,8 +58,6 @@ import net.sf.openv4j.Protocol;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.WebContext;
-import org.directwebremoting.WebContextFactory;
 import org.jinterop.dcom.common.JISystem;
 
 import br.org.scadabr.OPCItem;
@@ -225,6 +224,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
 
 /**
  * @author Matthew Lohbihler
@@ -461,7 +461,13 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         } else {
             DataSourceService sourceService = new DataSourceService();
             DataSourceVO<?> fromDatabase = sourceService.getDataSource(form.getId());
-            fromDatabase.getAlarmLevels().forEach(form::setAlarmLevel);
+
+            ExportCodes exportCodes = fromDatabase.getEventCodes();
+            if(exportCodes != null) {
+                for (IntValuePair id : exportCodes.getIdKeys()) {
+                    form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey(), -1));
+                }
+            }
             Map<Integer, Integer> alarmLevels = getAlarmLevels("AlarmLevels_" + fromDatabase.getXid());
             if(!alarmLevels.isEmpty()) {
                 alarmLevels.forEach(form::setAlarmLevel);
@@ -2977,39 +2983,4 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                     String name, RadiuinoPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
-
-    private void setAlarmLists(AmqpDataSourceVO dataSource) {
-        getAlarmLevels("AlarmLevels_" + dataSource.getXid()).forEach(dataSource::setAlarmLevel);
-    }
-
-    private void putAlarmLevels(String key, int eventId, int alarmLevel) {
-        WebContext webContext = WebContextFactory.get();
-        if(webContext!= null) {
-            String realKey = createKey(key, webContext.getCurrentPage());
-            Map<Integer, Integer> alarmLevels = (Map<Integer, Integer>)webContext.getSession().getAttribute(realKey);
-            if(alarmLevels == null) {
-                alarmLevels = new HashMap<>();
-            }
-            alarmLevels.put(eventId, alarmLevel);
-            webContext.getSession().setAttribute(realKey, alarmLevels);
-        }
-    }
-
-    private Map<Integer, Integer> getAlarmLevels(String key) {
-        WebContext webContext = WebContextFactory.get();
-        if(webContext != null) {
-            String realKey = createKey(key, webContext.getCurrentPage());
-            Map<Integer, Integer> alarmLevels = (Map<Integer, Integer>)webContext.getSession().getAttribute(realKey);
-            if(alarmLevels == null) {
-                alarmLevels = new HashMap<>();
-            }
-            return  alarmLevels;
-        }
-        return Collections.emptyMap();
-    }
-
-    private String createKey(String key, String currentPage) {
-        return currentPage + "_" + key;
-    }
-
 }

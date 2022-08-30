@@ -11,7 +11,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.DataSourceUpdatable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,10 +33,10 @@ public class MessagingDataSourceRT extends PollingDataSource {
     private final Map<Integer, AtomicInteger> updateAttemptsCounters;
     private final int updateAttempts;
 
-    public MessagingDataSourceRT(AmqpDataSourceVO vo) {
-        super(vo);
-        this.vo = vo;
-        this.messagingService = MessagingServiceFactory.newService(vo);
+    public MessagingDataSourceRT(DataSourceUpdatable<?> vo, MessagingService messagingService) {
+        super(vo.toDataSource());
+        this.vo = vo.toDataSource();
+        this.messagingService = messagingService;
         setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.updateAttemptsCounters = new ConcurrentHashMap<>();
         this.updateAttempts = vo.getUpdateAttempts();
