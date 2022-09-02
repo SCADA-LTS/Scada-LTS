@@ -91,19 +91,19 @@
     <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.address"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.address"/></td>
     <td class="formField"><input type="text" id="serverIpAddress" value="${dataSource.serverIpAddress}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.port"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.port"/></td>
     <td class="formField"><input type="number" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.username"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.username"/></td>
     <td class="formField"><input type="text" id="serverUsername" value="${dataSource.serverUsername}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.password"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.password"/></td>
     <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
   <tr>
@@ -172,7 +172,7 @@
       <td class="formField"><input type="text" id="routingKey"/></td>
   </tr>
   <tr>
-      <td class="formLabelRequired"><fmt:message key="dsEdit.qos"/></td>
+      <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.qos"/></td>
       <td class="formField"><input type="number" id="qos"/></td>
   </tr>
   <tr>

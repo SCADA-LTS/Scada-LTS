@@ -25,7 +25,7 @@ public final class AlarmLevelsDwrUtils {
                 ExportCodes exportCodes = fromDatabase.getEventCodes();
                 if (exportCodes != null) {
                     for (IntValuePair id : exportCodes.getIdKeys()) {
-                        form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey(), -1));
+                        form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey(), 0));
                     }
                 }
             }

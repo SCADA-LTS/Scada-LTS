@@ -80,6 +80,8 @@ public class MessagingDataSourceRT extends PollingDataSource {
 
     @Override
     public void terminate() {
+        this.vo.setEnabled(false);
+        super.terminate();
         try {
             messagingService.close();
         } catch (Exception e) {
@@ -87,8 +89,6 @@ public class MessagingDataSourceRT extends PollingDataSource {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
                     true, DataSourceRT.getExceptionMessage(e));
         }
-        this.vo.setEnabled(false);
-        super.terminate();
         updateAttemptsCounters.clear();
     }
 
