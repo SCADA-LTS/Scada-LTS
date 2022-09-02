@@ -17,12 +17,16 @@ import java.util.Map;
 
 public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
+    private static final ExchangeType exchangeTypeDefault = ExchangeType.NONE;
+    private static final DurabilityType durabilityDefault = DurabilityType.DURABLE;
+    private static final MessageAckType messageAckDefault = MessageAckType.NO_ACK;
+
     @JsonRemoteProperty
     private boolean settable;
     @JsonRemoteProperty
     private boolean writable = true;
     @JsonRemoteProperty
-    private ExchangeType exchangeType = ExchangeType.NONE;
+    private ExchangeType exchangeType = exchangeTypeDefault;
     @JsonRemoteProperty
     private String exchangeName = "";
     @JsonRemoteProperty
@@ -30,9 +34,9 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     @JsonRemoteProperty
     private String routingKey = "";
     @JsonRemoteProperty
-    private DurabilityType durability = DurabilityType.DURABLE;
+    private DurabilityType durability = durabilityDefault;
     @JsonRemoteProperty
-    private MessageAckType messageAck = MessageAckType.NO_ACK;
+    private MessageAckType messageAck = messageAckDefault;
     @JsonRemoteProperty
     private int dataTypeId;
     @JsonRemoteProperty
@@ -223,12 +227,12 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         out.writeBoolean(settable);
         out.writeBoolean(writable);
         out.writeInt(dataTypeId);
-        SerializationHelper.writeSafeUTF(out, exchangeType.name());
+        out.writeObject(exchangeType);
         SerializationHelper.writeSafeUTF(out, exchangeName);
         SerializationHelper.writeSafeUTF(out, queueName);
-        SerializationHelper.writeSafeUTF(out, durability.name());
+        out.writeObject(durability);
         SerializationHelper.writeSafeUTF(out, routingKey);
-        SerializationHelper.writeSafeUTF(out, messageAck.name());
+        out.writeObject(messageAck);
         out.writeInt(qos);
         out.writeBoolean(autoDelete);
         out.writeBoolean(internal);
@@ -240,12 +244,24 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             settable = in.readBoolean();
             writable = in.readBoolean();
             dataTypeId = in.readInt();
-            exchangeType = ExchangeType.valueOf(SerializationHelper.readSafeUTF(in));
+            try {
+                exchangeType = (ExchangeType)in.readObject();
+            } catch (ClassNotFoundException e) {
+                exchangeType = exchangeTypeDefault;
+            }
             exchangeName = SerializationHelper.readSafeUTF(in);
             queueName = SerializationHelper.readSafeUTF(in);
-            durability = DurabilityType.valueOf(SerializationHelper.readSafeUTF(in));
+            try {
+                durability = (DurabilityType) in.readObject();
+            } catch (ClassNotFoundException e) {
+                durability = durabilityDefault;
+            }
             routingKey = SerializationHelper.readSafeUTF(in);
-            messageAck = MessageAckType.valueOf(SerializationHelper.readSafeUTF(in));
+            try {
+                messageAck = (MessageAckType) in.readObject();
+            } catch (ClassNotFoundException e) {
+                messageAck = messageAckDefault;
+            }
             qos = in.readInt();
             autoDelete = in.readBoolean();
             internal = in.readBoolean();
