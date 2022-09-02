@@ -113,7 +113,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.messaging.queueName", from.queueName, queueName);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.durability", from.durability, durability);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.messageAck", from.messageAck, routingKey);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.messageAck", from.messageAck, messageAck);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.messaging.qos", from.qos, qos);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.autoDelete", from.autoDelete, autoDelete);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.internal", from.internal, internal);

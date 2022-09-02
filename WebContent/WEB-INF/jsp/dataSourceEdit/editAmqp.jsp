@@ -9,6 +9,9 @@
 <%@page import="org.scada_lts.ds.messaging.amqp.ExchangeType"%>
 <%@page import="org.scada_lts.ds.messaging.amqp.MessageAckType"%>
 <%@page import="org.scada_lts.ds.messaging.amqp.DurabilityType"%>
+<%@page import="org.scada_lts.ds.messaging.amqp.AmqpVersion"%>
+<%@page import="org.scada_lts.ds.messaging.BrokerMode"%>
+
 <script type="text/javascript">
 
   function initImpl() {
@@ -23,7 +26,7 @@
         dataSourceToSave.updatePeriods=$get("updatePeriods");
         dataSourceToSave.updatePeriodType=$get("updatePeriodType");
         dataSourceToSave.updateAttempts=$get("updateAttempts");
-        dataSourceToSave.serverIpAddress=$get("serverIpAddress");
+        dataSourceToSave.serverHost=$get("serverHost");
         dataSourceToSave.serverPortNumber=$get("serverPortNumber");
         dataSourceToSave.serverUsername=$get("serverUsername");
         dataSourceToSave.serverPassword=$get("serverPassword");
@@ -32,6 +35,8 @@
         dataSourceToSave.networkRecoveryInterval=$get("networkRecoveryInterval");
         dataSourceToSave.channelRpcTimeout=$get("channelRpcTimeout");
         dataSourceToSave.automaticRecoveryEnabled=$get("automaticRecoveryEnabled");
+        dataSourceToSave.protocolVersion=$get("protocolVersion");
+        dataSourceToSave.brokerMode=$get("brokerMode");
 
         DataSourceEditDwr.saveAmqpDataSource(dataSourceToSave, saveDataSourceCB);
     }
@@ -91,23 +96,39 @@
     <td class="formField"><input type="text" id="updateAttempts" value="${dataSource.updateAttempts}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.address"/></td>
-    <td class="formField"><input type="text" id="serverIpAddress" value="${dataSource.serverIpAddress}"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.serverHost"/></td>
+    <td class="formField"><input type="text" id="serverHost" value="${dataSource.serverHost}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.port"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.serverPortNumber"/></td>
     <td class="formField"><input type="number" id="serverPortNumber" value="${dataSource.serverPortNumber}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.username"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.serverUsername"/></td>
     <td class="formField"><input type="text" id="serverUsername" value="${dataSource.serverUsername}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.password"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.serverPassword"/></td>
     <td class="formField"><input type="text" id="serverPassword" value="${dataSource.serverPassword}"/></td>
   </tr>
   <tr>
-    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.virtualhost"/></td>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.protocolVersion"/></td>
+    <td class="formField">
+        <select id="protocolVersion">
+            <option value="<c:out value="<%= AmqpVersion.V0_9_1_EXT %>"/>" ${dataSource.protocolVersion == 'V0_9_1_EXT' ? 'selected' : ''} >v0.9.1 (incl. ext)</option>
+        </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.brokerMode"/></td>
+    <td class="formField">
+        <select id="brokerMode">
+            <option value="<c:out value="<%= BrokerMode.NATIVE %>"/>" ${dataSource.brokerMode == 'NATIVE' ? 'selected' : ''} >Native</option>
+        </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="formLabelRequired"><fmt:message key="dsEdit.amqp.serverVirtualhost"/></td>
     <td class="formField"><input type="text" id="serverVirtualHost" value="${dataSource.serverVirtualHost}"/></td>
   </tr>
   <tr>

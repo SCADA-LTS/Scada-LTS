@@ -231,7 +231,10 @@
     <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.ExchangeType" />
     <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.DurabilityType" />
     <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.MessageAckType" />
-    
+    <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.AmqpVersion" />
+
+    <convert converter="enum" match="org.scada_lts.ds.messaging.BrokerMode" />
+
     <!-- EnhancedImageChart -->
     <convert converter="enum" match="com.serotonin.mango.view.component.EnhancedImageChartType"/>
     <convert converter="enum" match="com.serotonin.mango.view.component.EnhancedPointLineType"/>

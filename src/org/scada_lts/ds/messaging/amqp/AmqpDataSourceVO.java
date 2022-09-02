@@ -15,6 +15,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.DataSourceUpdatable;
+import org.scada_lts.ds.messaging.BrokerMode;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
 import org.scada_lts.ds.messaging.MessagingServiceFactory;
 
@@ -45,7 +46,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @JsonRemoteProperty
     private int updateAttempts = 5;
     @JsonRemoteProperty
-    private String serverIpAddress = "localhost";
+    private String serverHost = "localhost";
     @JsonRemoteProperty
     private int serverPortNumber = 5672;
     @JsonRemoteProperty
@@ -63,6 +64,9 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @JsonRemoteProperty
     private boolean automaticRecoveryEnabled = true;
 
+    private AmqpVersion protocolVersion = AmqpVersion.V0_9_1_EXT;
+    private BrokerMode brokerMode = BrokerMode.NATIVE;
+
     @Override
     public DataSourceRT createDataSourceRT() {
         return new MessagingDataSourceRT(this, MessagingServiceFactory.newService(this));
@@ -75,7 +79,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
 
     @Override
     public LocalizableMessage getConnectionDescription() {
-        if (serverIpAddress.length() == 0 || serverPortNumber == 0)
+        if (serverHost.length() == 0 || serverPortNumber == 0)
             return new LocalizableMessage("dsEdit.amqp");
         return null;
     }
@@ -93,13 +97,13 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @Override
     public void validate(DwrResponseI18n response) {
         super.validate(response);
-        if (serverIpAddress.isBlank()) {
-            response.addContextualMessage("serverIpAddress","validate.required");
+        if (serverHost.isBlank()) {
+            response.addContextualMessage("serverHost","validate.required");
         }
         try {
-            InetAddress.getByName(serverIpAddress);
+            InetAddress.getByName(serverHost);
         } catch (Exception e) {
-            response.addContextualMessage("serverIpAddress","validate.invalidValue");
+            response.addContextualMessage("serverHost","validate.invalidValue");
         }
         if (serverPortNumber < 0) {
             response.addContextualMessage("serverPortNumber","validate.invalidValue");
@@ -131,29 +135,35 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @Override
     protected void addPropertiesImpl(List<LocalizableMessage> list) {
         AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
-        AuditEventType.addPropertyMessage(list, "dsEdit.serverIpAddress", serverIpAddress);
+        AuditEventType.addPropertyMessage(list, "dsEdit.serverHost", serverHost);
         AuditEventType.addPropertyMessage(list, "dsEdit.serverPortNumber", serverPortNumber);
-        AuditEventType.addPropertyMessage(list, "dsEdit.serverVirtualHost", serverVirtualHost);
+        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverVirtualhost", serverVirtualHost);
         AuditEventType.addPropertyMessage(list, "dsEdit.serverUsername", serverUsername);
         AuditEventType.addPropertyMessage(list, "dsEdit.serverPassword", serverPassword);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.channelRpcTimeout", channelRpcTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.automaticRecoveryEnabled", automaticRecoveryEnabled);
         AuditEventType.addPropertyMessage(list,"dsEdit.connectionTimeout", connectionTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.networkRecoveryInterval", networkRecoveryInterval);
+        AuditEventType.addPropertyMessage(list,"dsEdit.messaging.protocolVersion", protocolVersion);
+        AuditEventType.addPropertyMessage(list,"dsEdit.messaging.brokerMode", brokerMode);
+        AuditEventType.addPropertyMessage(list,"dsEdit.messaging.updateAttempts", updateAttempts);
     }
 
     @Override
     protected void addPropertyChangesImpl(List<LocalizableMessage> list, AmqpDataSourceVO from) {
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType, from.updatePeriods ,updatePeriodType, updatePeriods);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverIpAddress",from.serverIpAddress,serverIpAddress);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverHost",from.serverHost,serverHost);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverPortNumber",from.serverPortNumber,serverPortNumber);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverVirtualhost",from.serverVirtualHost,serverVirtualHost);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverUsername",from.serverUsername,serverUsername);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverPassword",from.serverPassword,serverPassword);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.channelRpcTimeout",from.channelRpcTimeout,channelRpcTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.automaticRecoveryEnabled",from.automaticRecoveryEnabled,automaticRecoveryEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.connectionTimeout",from.connectionTimeout,connectionTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.networkRecoveryInterval",from.networkRecoveryInterval,networkRecoveryInterval);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.messaging.protocolVersion",from.protocolVersion, protocolVersion);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.messaging.brokerMode",from.brokerMode,brokerMode);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.messaging.updateAttempts",from.updateAttempts,updateAttempts);
     }
 
     private static final long serialVersionUID = -1;
@@ -165,7 +175,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         out.writeInt(updatePeriodType);
         out.writeInt(updatePeriods);
         out.writeInt(updateAttempts);
-        SerializationHelper.writeSafeUTF(out, serverIpAddress);
+        SerializationHelper.writeSafeUTF(out, serverHost);
         out.writeInt(serverPortNumber);
         SerializationHelper.writeSafeUTF(out, serverVirtualHost);
         SerializationHelper.writeSafeUTF(out, serverUsername);
@@ -174,6 +184,8 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         out.writeInt(networkRecoveryInterval);
         out.writeInt(channelRpcTimeout);
         out.writeBoolean(automaticRecoveryEnabled);
+        out.writeObject(protocolVersion);
+        out.writeObject(brokerMode);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -182,7 +194,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
             updatePeriodType = in.readInt();
             updatePeriods = in.readInt();
             updateAttempts = in.readInt();
-            serverIpAddress = SerializationHelper.readSafeUTF(in);
+            serverHost = SerializationHelper.readSafeUTF(in);
             serverPortNumber = in.readInt();
             serverVirtualHost = SerializationHelper.readSafeUTF(in);
             serverUsername = SerializationHelper.readSafeUTF(in);
@@ -191,6 +203,16 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
             networkRecoveryInterval  = in.readInt();
             channelRpcTimeout  = in.readInt();
             automaticRecoveryEnabled  = in.readBoolean();
+            try {
+                protocolVersion = (AmqpVersion) in.readObject();
+            } catch (ClassNotFoundException e) {
+                protocolVersion = AmqpVersion.V0_9_1_EXT;
+            }
+            try {
+                brokerMode = (BrokerMode) in.readObject();
+            } catch (ClassNotFoundException e) {
+                brokerMode = BrokerMode.NATIVE;
+            }
         }
     }
 
@@ -198,6 +220,8 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     public void jsonSerialize(Map<String, Object> map){
         super.jsonSerialize(map);
         serializeUpdatePeriodType(map, updatePeriodType);
+        map.put("protocolVersion", protocolVersion.name());
+        map.put("brokerMode", brokerMode.name());
     }
 
     @Override
@@ -206,6 +230,22 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         Integer value = deserializeUpdatePeriodType(json);
         if (value != null)
             updatePeriodType = value;
+        String protocolVersionJson = json.getString("protocolVersion");
+        if(protocolVersionJson != null) {
+            try {
+                protocolVersion = AmqpVersion.valueOf(protocolVersionJson);
+            } catch (Exception ex) {
+                protocolVersion = AmqpVersion.V0_9_1_EXT;
+            }
+        }
+        String brokerModeJson = json.getString("brokerMode");
+        if(brokerModeJson != null) {
+            try {
+                brokerMode = BrokerMode.valueOf(brokerModeJson);
+            } catch (Exception ex) {
+                brokerMode = BrokerMode.NATIVE;
+            }
+        }
     }
 
     public int getUpdatePeriodType() {
@@ -232,12 +272,12 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         this.updateAttempts = updateAttempts;
     }
 
-    public String getServerIpAddress() {
-        return serverIpAddress;
+    public String getServerHost() {
+        return serverHost;
     }
 
-    public void setServerIpAddress(String serverIpAddress) {
-        this.serverIpAddress = serverIpAddress;
+    public void setServerHost(String serverHost) {
+        this.serverHost = serverHost;
     }
 
     public int getServerPortNumber() {
@@ -302,6 +342,22 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
 
     public void setAutomaticRecoveryEnabled(boolean automaticRecoveryEnabled) {
         this.automaticRecoveryEnabled = automaticRecoveryEnabled;
+    }
+
+    public AmqpVersion getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(AmqpVersion protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public BrokerMode getBrokerMode() {
+        return brokerMode;
+    }
+
+    public void setBrokerMode(BrokerMode brokerMode) {
+        this.brokerMode = brokerMode;
     }
 
     @Override

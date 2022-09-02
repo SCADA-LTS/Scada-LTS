@@ -1,20 +1,24 @@
-package org.scada_lts.ds.messaging.amqp;
+package org.scada_lts.ds.messaging.amqp.impl;
 
 import com.rabbitmq.client.*;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorRT;
+import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.amqp.ExchangeType;
+import org.scada_lts.ds.messaging.amqp.MessageAckType;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ChannelsFactory {
+public final class AmqpV091ChannelsFactory {
 
-    private ChannelsFactory() {}
+    private AmqpV091ChannelsFactory() {}
 
-    private static final Log LOG = LogFactory.getLog(ChannelsFactory.class);
+    private static final Log LOG = LogFactory.getLog(AmqpV091ChannelsFactory.class);
 
     public static Channel createChannel(DataPointRT dataPoint, Connection connection) throws IOException {
         return configReceiver(dataPoint, connection);
@@ -82,15 +86,6 @@ public final class ChannelsFactory {
     private static void bind(Channel channel, AmqpPointLocatorVO vo) throws IOException {
         ExchangeType exchangeType = vo.getExchangeType();
         exchangeType.queueBind(channel, vo);
-    }
-
-    private static void close(Channel channel) {
-        try {
-            if(channel != null)
-                channel.close();
-        } catch (Exception ex) {
-            LOG.warn(ex.getMessage(), ex);
-        }
     }
 
     static class ScadaConsumer extends DefaultConsumer {

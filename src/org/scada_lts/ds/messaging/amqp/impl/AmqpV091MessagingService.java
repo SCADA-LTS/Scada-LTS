@@ -1,8 +1,12 @@
-package org.scada_lts.ds.messaging.amqp;
+package org.scada_lts.ds.messaging.amqp.impl;
 
 import com.rabbitmq.client.*;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import org.scada_lts.ds.messaging.MessagingService;
+import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorRT;
+import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.amqp.ExchangeType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static org.scada_lts.ds.messaging.amqp.ChannelsFactory.createChannel;
+import static org.scada_lts.ds.messaging.amqp.impl.AmqpV091ChannelsFactory.createChannel;
 
-public class AmqpMessagingService implements MessagingService {
+public class AmqpV091MessagingService implements MessagingService {
 
     private final Map<Integer, Channel> channels;
     private final ReentrantReadWriteLock lock;
@@ -20,7 +24,7 @@ public class AmqpMessagingService implements MessagingService {
 
     private Connection connection;
 
-    public AmqpMessagingService(AmqpDataSourceVO vo) {
+    public AmqpV091MessagingService(AmqpDataSourceVO vo) {
         this.vo = vo;
         this.channels = new ConcurrentHashMap<>();
         this.lock = new ReentrantReadWriteLock();
@@ -66,7 +70,7 @@ public class AmqpMessagingService implements MessagingService {
     public void open() throws IOException, TimeoutException {
         if(!isOpen()) {
             ConnectionFactory rabbitFactory = new ConnectionFactory();
-            rabbitFactory.setHost(vo.getServerIpAddress());
+            rabbitFactory.setHost(vo.getServerHost());
             rabbitFactory.setPort(vo.getServerPortNumber());
 
             rabbitFactory.setChannelRpcTimeout(vo.getChannelRpcTimeout());
