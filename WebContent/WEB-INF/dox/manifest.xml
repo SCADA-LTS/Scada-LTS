@@ -391,6 +391,14 @@
     <relation id="amqpDS"/>
   </item>
 
+  <item id="mqttPP">
+    <relation id="mqttPP"/>
+  </item>
+
+  <item id="mqttDS">
+    <relation id="mqttDS"/>
+  </item>
+
     <item id="collectInactiveMsg">
         <relation id="emailSettings"/>
         <relation id="eventHandlers"/>

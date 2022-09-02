@@ -94,6 +94,8 @@ import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
 import org.scada_lts.ds.messaging.amqp.ExchangeType;
+import org.scada_lts.ds.messaging.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.mango.service.DataSourceService;
@@ -475,6 +477,21 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return validatePoint(id, xid, name, locator, null);
     }
 
+    // MQTT Receiver //
+    @MethodFilter
+    public DwrResponseI18n saveMqttDataSource(MqttDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+
+
+    @MethodFilter
+    public DwrResponseI18n saveMqttPointLocator(int id, String xid, String name, MqttPointLocatorVO locator){
+        return validatePoint(id, xid, name, locator, null);
+    }
     //
     //
     // Modbus common stuff
