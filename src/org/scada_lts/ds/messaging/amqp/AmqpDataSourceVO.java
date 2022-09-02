@@ -131,11 +131,11 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @Override
     protected void addPropertiesImpl(List<LocalizableMessage> list) {
         AuditEventType.addPeriodMessage(list, "dsEdit.updatePeriod", updatePeriodType, updatePeriods);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverIpAddress", serverIpAddress);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPortNumber", serverPortNumber);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverVirtualHost", serverVirtualHost);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverUsername", serverUsername);
-        AuditEventType.addPropertyMessage(list, "dsEdit.amqp.serverPassword", serverPassword);
+        AuditEventType.addPropertyMessage(list, "dsEdit.serverIpAddress", serverIpAddress);
+        AuditEventType.addPropertyMessage(list, "dsEdit.serverPortNumber", serverPortNumber);
+        AuditEventType.addPropertyMessage(list, "dsEdit.serverVirtualHost", serverVirtualHost);
+        AuditEventType.addPropertyMessage(list, "dsEdit.serverUsername", serverUsername);
+        AuditEventType.addPropertyMessage(list, "dsEdit.serverPassword", serverPassword);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.channelRpcTimeout", channelRpcTimeout);
         AuditEventType.addPropertyMessage(list,"dsEdit.amqp.automaticRecoveryEnabled", automaticRecoveryEnabled);
         AuditEventType.addPropertyMessage(list,"dsEdit.connectionTimeout", connectionTimeout);
@@ -145,11 +145,11 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @Override
     protected void addPropertyChangesImpl(List<LocalizableMessage> list, AmqpDataSourceVO from) {
         AuditEventType.maybeAddPeriodChangeMessage(list, "dsEdit.updatePeriod", from.updatePeriodType, from.updatePeriods ,updatePeriodType, updatePeriods);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverIpAddress",from.serverIpAddress,serverIpAddress);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPortNumber",from.serverPortNumber,serverPortNumber);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverUsername",from.serverUsername,serverUsername);
-        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.serverPassword",from.serverPassword,serverPassword);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverIpAddress",from.serverIpAddress,serverIpAddress);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverPortNumber",from.serverPortNumber,serverPortNumber);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverVirtualHost",from.serverVirtualHost,serverVirtualHost);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverUsername",from.serverUsername,serverUsername);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.serverPassword",from.serverPassword,serverPassword);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.channelRpcTimeout",from.channelRpcTimeout,channelRpcTimeout);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.amqp.automaticRecoveryEnabled",from.automaticRecoveryEnabled,automaticRecoveryEnabled);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.connectionTimeout",from.connectionTimeout,connectionTimeout);

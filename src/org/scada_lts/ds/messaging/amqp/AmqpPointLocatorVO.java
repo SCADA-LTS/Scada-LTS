@@ -93,7 +93,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.durability", durability);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.routingKey", routingKey);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.messageAck", messageAck);
-        AuditEventType.addPropertyMessage(list, "dsEdit.qos", qos);
+        AuditEventType.addPropertyMessage(list, "dsEdit.messaging.qos", qos);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.autoDelete", autoDelete);
         AuditEventType.addPropertyMessage(list, "dsEdit.amqp.internal", internal);
         AuditEventType.addPropertyMessage(list, "dsEdit.dataTypeId", dataTypeId);
@@ -110,7 +110,7 @@ public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.durability", from.durability, durability);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.routingKey", from.routingKey, routingKey);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.messageAck", from.messageAck, routingKey);
-        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.qos", from.qos, qos);
+        AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.messaging.qos", from.qos, qos);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.autoDelete", from.autoDelete, autoDelete);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.amqp.internal", from.internal, internal);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.dataTypeId", from.dataTypeId, dataTypeId);
