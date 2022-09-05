@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%><%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE}">
+<c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
   <table width="200" cellspacing="0" cellpadding="0">
     <c:choose>
       <c:when test="${!empty invalid}">
@@ -32,7 +32,7 @@
         </tr>
       </c:when>
     </c:choose>
-    <c:if test="${pointRT.attributes.UNRELIABLE}">
+    <c:if test="${pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
       <tr>
         <td><tag:img png="exclamation" title="common.valueUnreliable"/></td>
         <td style="white-space:nowrap;" colspan="3">

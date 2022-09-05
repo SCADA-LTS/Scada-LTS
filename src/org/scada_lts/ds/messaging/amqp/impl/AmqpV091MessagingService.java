@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static org.scada_lts.ds.messaging.amqp.impl.AmqpV091ChannelsFactory.createChannel;
+import static org.scada_lts.ds.messaging.amqp.impl.AmqpV091ChannelFactory.createChannel;
 
 public class AmqpV091MessagingService implements MessagingService {
 
