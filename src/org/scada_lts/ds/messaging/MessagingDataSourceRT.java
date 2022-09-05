@@ -37,9 +37,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
         super(vo.toDataSource());
         this.vo = vo.toDataSource();
         this.messagingService = messagingService;
-        setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
         this.updateAttemptsCounters = new ConcurrentHashMap<>();
         this.updateAttempts = vo.getUpdateAttempts();
+        setPollingPeriod(vo.getUpdatePeriodType(), vo.getUpdatePeriods(), false);
     }
 
     @Override
@@ -58,8 +58,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             returnToNormal(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis());
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
         } catch (Exception e) {
-            Throwable handle = e.getCause() != null ? e.getCause() : e;
-            LOG.error(handle.getMessage() + " - " + LoggingUtils.dataPointInfo(dataPoint.getVO()), handle);
+            LOG.error(e.getMessage() + " - " + LoggingUtils.dataPointInfo(dataPoint.getVO()), e);
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()));
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
@@ -72,10 +71,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.open();
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (Exception e) {
-            Throwable handle = e.getCause() != null ? e.getCause() : e;
-            LOG.error(handle.getMessage(), handle);
+            LOG.error(e.getMessage(), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    true, DataSourceRT.getExceptionMessage((Exception) handle));
+                    true, DataSourceRT.getExceptionMessage(e));
         }
         super.initialize();
     }
@@ -87,10 +85,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.close();
         } catch (Exception e) {
-            Throwable handle = e.getCause() != null ? e.getCause() : e;
-            LOG.error(handle.getMessage(), handle);
+            LOG.error(e.getMessage(), e);
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage((Exception) handle));
+                    false, DataSourceRT.getExceptionMessage(e));
         }
         updateAttemptsCounters.clear();
     }
@@ -103,10 +100,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
             returnToNormal(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis());
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
         } catch (Exception e) {
-            Throwable handle = e.getCause() != null ? e.getCause() : e;
-            LOG.error(handle.getMessage(), handle);
+            LOG.error(e.getMessage(), e);
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    true, DataSourceRT.getExceptionMessage((Exception) handle));
+                    true, DataSourceRT.getExceptionMessage(e));
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
         }
         super.addDataPoint(dataPoint);
@@ -118,10 +114,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
             updateAttemptsCounters.remove(dataPoint.getId());
             messagingService.removeReceiver(dataPoint);
         } catch (Exception e) {
-            Throwable handle = e.getCause() != null ? e.getCause() : e;
-            LOG.error(handle.getMessage(), handle);
+            LOG.error(e.getMessage(), e);
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage((Exception) handle));
+                    false, DataSourceRT.getExceptionMessage(e));
         }
         super.removeDataPoint(dataPoint);
     }
@@ -139,10 +134,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
                 }
             } catch (Exception e) {
                 updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
-                Throwable handle = e.getCause() != null ? e.getCause() : e;
-                LOG.error(handle.getMessage(), handle);
+                LOG.error(e.getMessage(), e);
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
-                        true, DataSourceRT.getExceptionMessage((Exception) handle));
+                        true, DataSourceRT.getExceptionMessage(e));
                 dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
             }
         }
