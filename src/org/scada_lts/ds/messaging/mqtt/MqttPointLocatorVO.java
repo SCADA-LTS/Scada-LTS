@@ -7,7 +7,11 @@ import com.serotonin.mango.vo.dataSource.AbstractPointLocatorVO;
 import com.serotonin.util.SerializationHelper;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.utils.MqttValidationUtils;
 
+import java.beans.Transient;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -32,6 +36,8 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     @JsonRemoteProperty
     private String clientId = UUID.randomUUID().toString();
 
+    private transient String xid;
+
     @Override
     public LocalizableMessage getConfigurationDescription() {
         return new LocalizableMessage("common.default", clientId);
@@ -45,16 +51,23 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     @Override
     public void validate(DwrResponseI18n response) {
 
+        if (clientId.isBlank()) {
+            response.addContextualMessage("clientId", "validate.invalidValue");
+        } else {
+            DataSourceService dataSourceService = new DataSourceService();
+            DataPointService dataPointService = new DataPointService();
+            boolean existsClientId = MqttValidationUtils.isExistsClientId(clientId, dataPointService, xid, dataSourceService);
+            if(existsClientId) {
+                response.addContextualMessage("clientId", "validate.clientIdUsed");
+            }
+        }
+
         if(topicFilter.isBlank()) {
             response.addContextualMessage("topicFilter", "validate.invalidValue");
         }
 
         if(settable && (topicFilter.contains("#") || topicFilter.contains("+") || topicFilter.contains("$"))) {
             response.addContextualMessage("topicFilter", "validate.wildcardNotAllowedForSettable");
-        }
-
-        if (clientId.isBlank()) {
-            response.addContextualMessage("clientId", "validate.invalidValue");
         }
 
         if(qos < 0 || qos > 2) {
@@ -141,6 +154,14 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public String getXid() {
+        return xid;
+    }
+
+    public void setXid(String xid) {
+        this.xid = xid;
     }
 
     private static final long serialVersionUID = -1;

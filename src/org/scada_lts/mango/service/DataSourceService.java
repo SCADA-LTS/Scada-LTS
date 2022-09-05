@@ -24,6 +24,7 @@ import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -31,6 +32,8 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.ds.messaging.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
@@ -251,4 +254,10 @@ public class DataSourceService implements MangoDataSource {
 		});
 		return pointList;
 	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
+		return dataSourceDAO.getDataSources(type.getId());
+	}
+
 }
