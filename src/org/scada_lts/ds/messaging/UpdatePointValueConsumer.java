@@ -10,16 +10,17 @@ import java.util.function.Consumer;
 
 public class UpdatePointValueConsumer implements Consumer<byte[]> {
 
-    private static final Log LOG = LogFactory.getLog(UpdatePointValueConsumer.class);
-
     private final DataPointRT dataPoint;
     private final Writable writable;
     private final String updateErrorKey;
+    private final Consumer<Exception> exceptionHandler;
 
-    public UpdatePointValueConsumer(DataPointRT dataPoint, Writable writable, String updateErrorKey) {
+    public UpdatePointValueConsumer(DataPointRT dataPoint, Writable writable,
+                                    String updateErrorKey, Consumer<Exception> exceptionHandler) {
         this.dataPoint = dataPoint;
         this.writable = writable;
         this.updateErrorKey = updateErrorKey;
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class UpdatePointValueConsumer implements Consumer<byte[]> {
                 dataPoint.updatePointValue(message);
                 dataPoint.setAttribute(updateErrorKey, false);
             } catch (Exception ex) {
-                LOG.warn("Error Update Data Point: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Message: " + ex.getMessage(), ex);
+                exceptionHandler.accept(ex);
                 dataPoint.setAttribute(updateErrorKey, true);
             }
         }
