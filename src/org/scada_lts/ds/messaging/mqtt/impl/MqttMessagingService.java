@@ -45,7 +45,9 @@ public class MqttMessagingService implements MessagingService {
     }
 
     @Override
-    public void open() throws Exception {}
+    public void open() throws Exception {
+        blocked = false;
+    }
 
     @Override
     public void close() throws Exception {
@@ -54,7 +56,6 @@ public class MqttMessagingService implements MessagingService {
             close(client);
         }
         clients.clear();
-        blocked = false;
     }
 
     @Override
