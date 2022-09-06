@@ -74,8 +74,8 @@ public class MqttMessagingService implements MessagingService {
         }
         MqttVClient client = clients.get(dataPoint.getId());
         if(client != null) {
-            MqttPointLocatorRT mqttV3PointLocatorRT = dataPoint.getPointLocator();
-            MqttPointLocatorVO locator = mqttV3PointLocatorRT.getVO();
+            MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
+            MqttPointLocatorVO locator = pointLocator.getVO();
             try {
                 client.unsubscribe(locator.getTopicFilter());
             } catch (Exception ex){
@@ -98,8 +98,8 @@ public class MqttMessagingService implements MessagingService {
         }
         MqttVClient client = clients.get(dataPoint.getId());
         if(client != null) {
-            MqttPointLocatorRT mqttV3PointLocatorRT = dataPoint.getPointLocator();
-            MqttPointLocatorVO locator = mqttV3PointLocatorRT.getVO();
+            MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
+            MqttPointLocatorVO locator = pointLocator.getVO();
             client.publish(locator.getTopicFilter(), message.getBytes(StandardCharsets.UTF_8),
                     locator.getQos(), locator.isRetained());
         } else {

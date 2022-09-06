@@ -9,15 +9,13 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.utils.MqttValidationUtils;
+import org.scada_lts.utils.MqttUtils;
 
-import java.beans.Transient;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
@@ -34,7 +32,7 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     @JsonRemoteProperty
     private int qos = 0;
     @JsonRemoteProperty
-    private String clientId = UUID.randomUUID().toString();
+    private String clientId = MqttUtils.generateUniqueClientId();
 
     private transient String xid;
 
@@ -56,7 +54,7 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         } else {
             DataSourceService dataSourceService = new DataSourceService();
             DataPointService dataPointService = new DataPointService();
-            boolean existsClientId = MqttValidationUtils.isExistsClientId(clientId, dataPointService, xid, dataSourceService);
+            boolean existsClientId = MqttUtils.isExistsClientId(clientId, dataPointService, xid, dataSourceService);
             if(existsClientId) {
                 response.addContextualMessage("clientId", "validate.clientIdUsed");
             }

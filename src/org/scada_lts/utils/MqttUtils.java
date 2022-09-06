@@ -9,10 +9,11 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 
 import java.util.List;
+import java.util.UUID;
 
-public final class MqttValidationUtils {
+public final class MqttUtils {
 
-    private MqttValidationUtils() {}
+    private MqttUtils() {}
 
     public static boolean isExistsClientId(String clientId, DataPointService dataPointService,
                                            String dataPointXid, DataSourceService dataSourceService) {
@@ -36,5 +37,9 @@ public final class MqttValidationUtils {
             }
         }
         return false;
+    }
+
+    public static String generateUniqueClientId() {
+        return UUID.randomUUID().toString();
     }
 }
