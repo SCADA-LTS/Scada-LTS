@@ -12,33 +12,31 @@ import org.scada_lts.ds.messaging.amqp.MessageAckType;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public final class AmqpV091ChannelFactory {
 
     private AmqpV091ChannelFactory() {}
 
-    public static Channel createChannel(DataPointRT dataPoint, Connection connection) throws IOException {
-        return configReceiver(dataPoint, connection);
-    }
-
-    private static Channel configReceiver(DataPointRT dataPoint, Connection connection) throws IOException {
+    public static Channel createReceiver(DataPointRT dataPoint, Connection connection,
+                                         Consumer<Exception> exceptionHandler, String updateErrorKey) throws IOException {
         Channel receive = configChannel(dataPoint, connection);
         if(receive == null)
             return null;
-        basicConsume(dataPoint, receive);
+        basicConsume(dataPoint, receive, exceptionHandler, updateErrorKey);
         return receive;
-    }
-
-    private static Channel createChannel(Connection connection) throws IOException {
-        if(connection == null)
-            return null;
-        return connection.createChannel();
     }
 
     private static Channel configChannel(DataPointRT dataPointRT, Connection connection) throws IOException {
         Channel channel = createChannel(connection);
         initDataPoint(dataPointRT, channel);
         return channel;
+    }
+
+    private static Channel createChannel(Connection connection) throws IOException {
+        if(connection == null)
+            return null;
+        return connection.createChannel();
     }
 
     /**
@@ -67,12 +65,14 @@ public final class AmqpV091ChannelFactory {
         channel.basicQos(vo.getQos());
     }
 
-    private static void basicConsume(DataPointRT dataPoint, Channel channel) throws IOException {
+    private static void basicConsume(DataPointRT dataPoint, Channel channel, Consumer<Exception> exceptionHandler,
+                                     String updateErrorKey) throws IOException {
         AmqpPointLocatorRT locator = dataPoint.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
         boolean noAck = vo.getMessageAck() == MessageAckType.NO_ACK;
         channel.basicConsume(vo.getQueueName(), noAck, new ScadaConsumer(channel,
-                new UpdatePointValueConsumer(dataPoint, vo::isWritable, MessagingService.ATTR_UPDATE_ERROR_KEY)));
+                new UpdatePointValueConsumer(dataPoint, vo::isWritable, updateErrorKey,
+                        exceptionHandler)));
     }
 
     private static void declare(Channel channel, AmqpPointLocatorVO vo) throws IOException {

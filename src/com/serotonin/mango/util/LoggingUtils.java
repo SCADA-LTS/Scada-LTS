@@ -2,7 +2,6 @@ package com.serotonin.mango.util;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
@@ -30,15 +29,15 @@ public final class LoggingUtils {
     public static String dataSourceInfo(DataSourceRT dataSource) {
         if(dataSource == null)
             return "";
-        String dataSourceInfo = "datasource: {0} (id: {1})";
-        return MessageFormat.format(dataSourceInfo, dataSource.getName(), String.valueOf(dataSource.getId()));
+        DataSourceVO<?> dataSourceVO = dataSource.getVO();
+        return dataSourceInfo(dataSourceVO);
     }
 
     public static String dataSourceInfo(DataSourceVO<?> dataSource) {
         if(dataSource == null)
             return "";
-        String dataSourceInfo = "datasource: {0} (id: {1})";
-        return MessageFormat.format(dataSourceInfo, dataSource.getName(), String.valueOf(dataSource.getId()));
+        String dataSourceInfo = "datasource: {0} (id: {1}, xid: {2}, type: {3})";
+        return MessageFormat.format(dataSourceInfo, dataSource.getName(), String.valueOf(dataSource.getId()), dataSource.getXid(), dataSource.getType());
     }
 
     public static String pointLinkInfo(PointLinkVO pointLink) {
@@ -106,5 +105,13 @@ public final class LoggingUtils {
 
     public static String dataSourcePointValueTimeInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint, PointValueTime valueTime, SetPointSource source) {
         return LoggingUtils.dataSourceInfo(dataSource) + ", " + LoggingUtils.dataPointInfo(dataPoint) + ", " + LoggingUtils.pointValueTimeInfo(valueTime, source);
+    }
+
+    public static String causeInfo(Exception e) {
+        Throwable cause = e.getCause();
+        if(cause != null) {
+            return ", " + exceptionInfo((Exception) cause);
+        }
+        return ", " + exceptionInfo(e);
     }
 }
