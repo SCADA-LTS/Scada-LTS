@@ -36,6 +36,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_INIT_EXCEPTION_EVENT, "DATA_POINT_READ_EXCEPTION");
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_PUBLISH_EXCEPTION_EVENT, "DATA_POINT_WRITE_EXCEPTION");
+        EVENT_CODES.addElement(MessagingDataSourceRT.DATA_POINT_UPDATE_EXCEPTION_EVENT, "DATA_POINT_UPDATE_EXCEPTION");
     }
 
     private int updatePeriodType = Common.TimePeriods.MINUTES;
@@ -132,6 +133,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.dataSource") ));
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_INIT_EXCEPTION_EVENT, new LocalizableMessage("event.ds.initReceiver") ));
         eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_PUBLISH_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointPublish") ));
+        eventTypes.add(createEventType(MessagingDataSourceRT.DATA_POINT_UPDATE_EXCEPTION_EVENT, new LocalizableMessage("event.ds.pointUpdate") ));
     }
 
     @Override

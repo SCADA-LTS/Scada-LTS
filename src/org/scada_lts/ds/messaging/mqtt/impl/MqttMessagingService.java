@@ -13,11 +13,11 @@ import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class MqttMessagingService implements MessagingService {
 
     private static final Log LOG = LogFactory.getLog(MqttMessagingService.class);
-    public static final String ATTR_UPDATE_ERROR_KEY = "DP_UPDATE_ERROR";
 
     private final MqttDataSourceVO vo;
     private final Map<Integer, MqttVClient> clients;
@@ -37,6 +37,14 @@ public class MqttMessagingService implements MessagingService {
     }
 
     @Override
+    public boolean isOpen(DataPointRT dataPoint) {
+        if(!isOpen())
+            return false;
+        MqttVClient client = clients.get(dataPoint.getId());
+        return client != null && client.isConnected();
+    }
+
+    @Override
     public void open() throws Exception {}
 
     @Override
@@ -50,12 +58,12 @@ public class MqttMessagingService implements MessagingService {
     }
 
     @Override
-    public void initReceiver(DataPointRT dataPoint) throws Exception {
+    public void initReceiver(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws Exception {
         if(blocked) {
             LOG.warn("Stop init Receiver: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", MQTT Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
             return;
         }
-        clients.computeIfAbsent(dataPoint.getId(), a -> createClient(dataPoint));
+        clients.computeIfAbsent(dataPoint.getId(), a -> createClient(dataPoint, exceptionHandler, updateErrorKey));
     }
 
     @Override
@@ -95,11 +103,11 @@ public class MqttMessagingService implements MessagingService {
             client.publish(locator.getTopicFilter(), message.getBytes(StandardCharsets.UTF_8),
                     locator.getQos(), locator.isRetained());
         } else {
-            throw new IllegalStateException("Error publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", MQTT Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo) + ", message: " + message);
+            throw new IllegalStateException("Error publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", message: " + message);
         }
     }
 
-    private MqttVClient createClient(DataPointRT dataPoint) throws RuntimeException {
+    private MqttVClient createClient(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws RuntimeException {
         MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
         MqttPointLocatorVO locator = pointLocator.getVO();
         MqttVClient client;
@@ -115,8 +123,7 @@ public class MqttMessagingService implements MessagingService {
         }
         try {
             client.subscribe(locator.getTopicFilter(), locator.getQos(), (topic, mqttMessage) ->
-                    new UpdatePointValueConsumer(dataPoint, locator::isWritable, ATTR_UPDATE_ERROR_KEY)
-                            .accept(mqttMessage.getPayload()));
+                    new UpdatePointValueConsumer(dataPoint, locator::isWritable, updateErrorKey, exceptionHandler).accept(mqttMessage.getPayload()));
         } catch (Exception e) {
             try {
                 close(client);
