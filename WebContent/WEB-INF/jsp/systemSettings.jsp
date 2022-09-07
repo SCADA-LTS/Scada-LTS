@@ -761,18 +761,6 @@
       </tr>
     </table>
     <table>
-      <tr>
-        <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
-        <td class="formField">
-          <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
-          <select id="uiPerformanceId" onchange="toUiPerformanceId()">
-            <option value=""></option>
-            <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
-            <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
-            <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
-          </select>
-        </td>
-      </tr>
       <%--
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.groveLogging"/></td>
@@ -842,7 +830,9 @@
         <tr>
           <td class="formLabelRequired"><fmt:message key="systemSettings.uiPerformance"/></td>
           <td class="formField">
-            <select id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>">
+            <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
+            <select id="uiPerformanceId" onchange="toUiPerformanceId()">
+              <option value=""></option>
               <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
               <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
               <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>
