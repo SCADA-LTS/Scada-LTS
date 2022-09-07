@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+/*@Service
 @CacheConfig(cacheNames = "permission_view_list_by_user")
+*/
+@Deprecated
 public class ViewUserPermissionsServiceWithCache implements PermissionsService<ViewAccess, User> {
 
     private final ViewUserPermissionsService service;
@@ -23,19 +25,19 @@ public class ViewUserPermissionsServiceWithCache implements PermissionsService<V
     }
 
     @Override
-    @Cacheable(key = "#object.id", condition = "#object != null")
+    //@Cacheable(cacheNames = "permission_view_list_by_user", key = "#object.id", condition = "#object != null")
     public List<ViewAccess> getPermissions(User object) {
         return service.getPermissions(object);
     }
 
     @Override
-    @CacheEvict(key = "#object.id", condition = "#object != null")
+    //@CacheEvict(cacheNames = "permission_view_list_by_user", key = "#object.id", condition = "#object != null")
     public void addOrUpdatePermissions(User object, List<ViewAccess> toAddOrUpdate) {
         service.addOrUpdatePermissions(object, toAddOrUpdate);
     }
 
     @Override
-    @CacheEvict(key = "#object.id", condition = "#object != null")
+    //@CacheEvict(cacheNames = "permission_view_list_by_user", key = "#object.id", condition = "#object != null")
     public void removePermissions(User object, List<ViewAccess> toRemove) {
         service.removePermissions(object, toRemove);
     }

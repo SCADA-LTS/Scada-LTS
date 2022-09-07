@@ -12,9 +12,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
+import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
 import org.scada_lts.dao.cache.UserCachable;
 import org.scada_lts.dao.cache.UsersProfileCachable;
+import org.scada_lts.dao.cache.ViewCachable;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -65,10 +67,7 @@ public class ApplicationBeans {
     }
 
     public static GetShareUsers<View> getViewGetShareUsersBean() {
-        boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(GetShareUsers.CACHE_ENABLED_KEY, true);
-        return (GetShareUsers<View>) (permissionsCacheEnabled ?
-                getBeanFromContext("viewGetShareUsersWithCache", GetShareUsers.class) :
-                getBeanFromContext("viewGetShareUsers", GetShareUsers.class));
+        return new ViewGetShareUsers(getViewDaoBean());
     }
 
     public static GetShareUsers<WatchList> getWatchListGetShareUsersBean() {
@@ -104,6 +103,13 @@ public class ApplicationBeans {
         boolean highestAlarmLevelCacheEnabled = Common.getEnvironmentProfile().getBoolean(HighestAlarmLevelCachable.CACHE_ENABLED_KEY, true);
         return highestAlarmLevelCacheEnabled ? getBeanFromContext("highestAlarmLevelServiceWithCache", IHighestAlarmLevelService.class) :
                 getBeanFromContext("highestAlarmLevelService", IHighestAlarmLevelService.class);
+    }
+
+    public static IViewDAO getViewDaoBean() {
+        boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(ViewCachable.CACHE_ENABLED_KEY, true);
+        return viewCacheEnabled ?
+                getBeanFromContext("viewDaoWithCache", IViewDAO.class) :
+                getBeanFromContext("viewDAO", IViewDAO.class);
     }
 
     public static class Lazy {
