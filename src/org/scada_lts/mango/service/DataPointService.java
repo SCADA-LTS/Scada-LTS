@@ -51,7 +51,6 @@ import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
@@ -86,7 +85,7 @@ public class DataPointService implements MangoDataPoint {
 
 	private final DataSourceDAO dataSourceDAO;
 
-	private static final UserCommentDAO userCommentDAO = new UserCommentDAO();
+	private final IUserCommentDAO userCommentDAO;
 
 	private static final PointEventDetectorDAO pointEventDetectorDAO = new PointEventDetectorDAO();
 
@@ -113,6 +112,7 @@ public class DataPointService implements MangoDataPoint {
 		this.dataPointUserDAO = ApplicationBeans.getBean("dataPointUserDAO", DataPointUserDAO.class);
 		this.watchListDAO = ApplicationBeans.getBean("watchListDAO", WatchListDAO.class);
 		this.pointHierarchyService = ApplicationBeans.getBean("pointHierarchyService", PointHierarchyService.class);
+		this.userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 		this.getDataPointsWithAccess = new GetDataPointsWithAccess(dataPointDAO);
 	}
 

@@ -26,8 +26,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.IUserDAO;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.error.EntityNotUniqueException;
 import org.scada_lts.exception.PasswordMismatchException;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -56,7 +56,7 @@ public class UserService implements MangoUser {
 	private static final Log LOG = LogFactory.getLog(UserService.class);
 
 	private final IUserDAO userDAO;
-	private UserCommentDAO userCommentDAO = new UserCommentDAO();
+	private final IUserCommentDAO userCommentDAO;
 
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
@@ -71,9 +71,10 @@ public class UserService implements MangoUser {
 		dataPointPermissionsService = ApplicationBeans.getDataPointUserPermissionsServiceBean();
 		dataSourcePermissionsService = ApplicationBeans.getDataSourceUserPermissionsServiceBean();
 		usersProfileService = ApplicationBeans.getUsersProfileService();
+		userCommentDAO = ApplicationBeans.getUserCommentDaoBean();
 	}
 
-	public UserService(IUserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
+	public UserService(IUserDAO userDAO, IUserCommentDAO userCommentDAO, MailingListService mailingListService,
 					   EventService eventService, PointValueService pointValueService,
 					   UsersProfileService usersProfileService,
 					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,

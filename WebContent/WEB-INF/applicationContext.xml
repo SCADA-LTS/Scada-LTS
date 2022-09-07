@@ -200,4 +200,25 @@
     <constructor-arg ref="hierarchyDAO"/>
   </bean>
   <!-- -->
+
+  <!-- UserComment Cachable -->
+  <bean id="userCommentDAO" class="org.scada_lts.dao.UserCommentDAO" />
+
+  <bean id="userCommentCache" class="org.scada_lts.dao.cache.UserCommentCache">
+    <constructor-arg ref="userCommentDAO"/>
+  </bean>
+
+  <bean id="userCommentDaoWithCache" class="org.scada_lts.dao.cache.UserCommentDaoWithCache" >
+    <constructor-arg ref="userCommentCache"/>
+    <constructor-arg ref="userCommentDAO"/>
+  </bean>
+
+  <bean id="userCommentService" class="org.scada_lts.mango.service.UserCommentService">
+    <constructor-arg ref="userCommentDAO"/>
+  </bean>
+
+  <bean id="userCommentServiceWithCache" class="org.scada_lts.mango.service.UserCommentService">
+    <constructor-arg ref="userCommentDaoWithCache"/>
+  </bean>
+  <!-- -->
 </beans>
