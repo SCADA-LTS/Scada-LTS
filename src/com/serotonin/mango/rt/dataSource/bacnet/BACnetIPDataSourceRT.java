@@ -446,10 +446,6 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
     }
 
-    Boolean getPointListChangeLock() {
-        return pointListChangeLock;
-    }
-
     List<DataPointRT> getDataPoints() {
         return dataPoints;
     }
@@ -463,7 +459,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
 
         @Override
         public void run(long fireTime) {
-            synchronized (getPointListChangeLock()) {
+            synchronized (pointListChangeLock) {
                 for (DataPointRT dp : getDataPoints()) {
                     BACnetIPPointLocatorRT locator = dp.getPointLocator();
                     if (locator.isUseCovSubscription())
