@@ -121,6 +121,7 @@ public class ApplicationBeans {
         return userCommentCacheEnabled ?
                 getBeanFromContext("userCommentDaoWithCache", IUserCommentDAO.class) :
                 getBeanFromContext("userCommentDAO", IUserCommentDAO.class);
+    }
 
     public static IViewDAO getViewDaoBean() {
         boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(ViewCachable.CACHE_ENABLED_KEY, true);
