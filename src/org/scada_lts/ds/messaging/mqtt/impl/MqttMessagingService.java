@@ -1,9 +1,10 @@
 package org.scada_lts.ds.messaging.mqtt.impl;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.ds.messaging.MessagingChannel;
+import org.scada_lts.ds.messaging.MessagingChannels;
 import org.scada_lts.ds.messaging.MessagingService;
 import org.scada_lts.ds.messaging.UpdatePointValueConsumer;
 import org.scada_lts.ds.messaging.mqtt.MqttDataSourceVO;
@@ -11,37 +12,35 @@ import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorRT;
 import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 import java.util.function.Consumer;
+
+import static com.serotonin.mango.util.LoggingUtils.*;
 
 public class MqttMessagingService implements MessagingService {
 
     private static final Log LOG = LogFactory.getLog(MqttMessagingService.class);
 
     private final MqttDataSourceVO vo;
-    private final Map<Integer, MqttVClient> clients;
+    private final MessagingChannels<MqttVClient> channels;
     private volatile boolean blocked;
 
     public MqttMessagingService(MqttDataSourceVO vo) {
         this.vo = vo;
-        this.clients = new ConcurrentHashMap<>();
+        this.channels = new MessagingChannels<>(new HashMap<>());
+        this.blocked = false;
     }
 
     @Override
     public boolean isOpen() {
-        if(clients.isEmpty())
+        if(blocked)
             return false;
-        return clients.entrySet().stream()
-                .anyMatch(a -> a.getValue().isConnected());
+        return channels.isOpen();
     }
 
     @Override
     public boolean isOpen(DataPointRT dataPoint) {
-        if(!isOpen())
-            return false;
-        MqttVClient client = clients.get(dataPoint.getId());
-        return client != null && client.isConnected();
+        return isOpen() && channels.isOpenChannel(dataPoint);
     }
 
     @Override
@@ -52,59 +51,43 @@ public class MqttMessagingService implements MessagingService {
     @Override
     public void close() throws Exception {
         blocked = true;
-        for(MqttVClient client: clients.values()) {
-            close(client);
-        }
-        clients.clear();
+        channels.closeChannels(vo.getConnectionTimeout());
     }
 
     @Override
     public void initReceiver(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws Exception {
         if(blocked) {
-            LOG.warn("Stop init Receiver: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", MQTT Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
+            LOG.warn("Stop Init Client: " + dataPointInfo(dataPoint.getVO()) + ", Service of shutting down: "  + dataSourceInfo(vo));
             return;
         }
-        clients.computeIfAbsent(dataPoint.getId(), a -> createClient(dataPoint, exceptionHandler, updateErrorKey));
+        channels.initChannel(dataPoint, () -> new MqttChannel(createClient(dataPoint, exceptionHandler, updateErrorKey)));
     }
 
     @Override
     public void removeReceiver(DataPointRT dataPoint) throws Exception {
         if(blocked) {
-            LOG.warn("Stop remove Receiver: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", MQTT Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
+            LOG.warn("Stop Remove Client: " + dataPointInfo(dataPoint.getVO()) + ", Service of shutting down: "  + dataSourceInfo(vo));
             return;
         }
-        MqttVClient client = clients.get(dataPoint.getId());
-        if(client != null) {
-            MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
-            MqttPointLocatorVO locator = pointLocator.getVO();
-            try {
-                client.unsubscribe(locator.getTopicFilter());
-            } catch (Exception ex){
-                LOG.warn(ex.getMessage(), ex);
-            }
-            try {
-                close(client);
-            } finally {
-                clients.remove(dataPoint.getId());
-            }
-        } else {
-            LOG.warn("Client is closed. Data Source: " + LoggingUtils.dataSourceInfo(vo) + ", Data Point: " + LoggingUtils.dataPointInfo(dataPoint.getVO()));
-        }
+        channels.removeChannel(dataPoint, vo.getConnectionTimeout());
     }
 
     @Override
     public void publish(DataPointRT dataPoint, String message) throws Exception {
         if(blocked) {
-            throw new IllegalStateException("Stop publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", MQTT Service of shutting down:  "  + LoggingUtils.dataSourceInfo(vo) + ", message: " + message);
+            throw new IllegalStateException("Stop Publish: " + dataPointInfo(dataPoint.getVO()) + ", Service of shutting down:  "  + dataSourceInfo(vo) + ", Value: " + message);
         }
-        MqttVClient client = clients.get(dataPoint.getId());
-        if(client != null) {
-            MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
-            MqttPointLocatorVO locator = pointLocator.getVO();
-            client.publish(locator.getTopicFilter(), message.getBytes(StandardCharsets.UTF_8),
+        MessagingChannel<MqttVClient> channel = channels.getChannel(dataPoint)
+                .orElseThrow(() -> new RuntimeException("Error Publish: " + dataSourcePointInfo(vo, dataPoint.getVO())
+                        + ", Value: " + message));
+
+        MqttPointLocatorRT pointLocator = dataPoint.getPointLocator();
+        MqttPointLocatorVO locator = pointLocator.getVO();
+        try {
+            channel.toOrigin().publish(locator.getTopicFilter(), message.getBytes(StandardCharsets.UTF_8),
                     locator.getQos(), locator.isRetained());
-        } else {
-            throw new IllegalStateException("Error publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", message: " + message);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error Publish: " + dataSourcePointInfo(vo, dataPoint.getVO())+ ", Value: " + message + ", " + exceptionInfo(ex), ex);
         }
     }
 
@@ -115,12 +98,12 @@ public class MqttMessagingService implements MessagingService {
         try {
             client = vo.getProtocolVersion().newClient(vo, locator);
         } catch (Exception e) {
-            throw new RuntimeException("Error Create MQTT Client: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", Message: " + e.getMessage(), e);
+            throw new RuntimeException("Error Create Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
         try {
             client.connect();
         } catch (Exception e) {
-            throw new RuntimeException("Error Connect MQTT Client: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", Message: " + e.getMessage(), e);
+            throw new RuntimeException("Error Connect Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
         try {
             client.subscribe(locator.getTopicFilter(), locator.getQos(), (topic, mqttMessage) ->
@@ -129,12 +112,10 @@ public class MqttMessagingService implements MessagingService {
             try {
                 close(client);
             } catch (Exception ex) {
-                LOG.warn("Error Close MQTT Client: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", Message: " + ex.getMessage(), ex);
+                LOG.warn("Error Close Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(ex), ex);
             }
-            throw new RuntimeException("Error Subscribe MQTT Client: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", Message: " + e.getMessage(), e);
+            throw new RuntimeException("Error Subscribe Client: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
-        if(!client.isConnected())
-            throw new RuntimeException("Error Connect MQTT Client: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo));
         return client;
     }
 
