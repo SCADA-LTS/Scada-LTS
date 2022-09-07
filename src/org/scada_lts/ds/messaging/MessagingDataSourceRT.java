@@ -3,9 +3,7 @@ package org.scada_lts.ds.messaging;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
-import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.PollingDataSource;
-import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -50,10 +48,10 @@ public class MessagingDataSourceRT extends PollingDataSource {
     public void setPointValue(DataPointRT dataPoint, PointValueTime valueTime, SetPointSource source) {
         DataPointVO dataPointVO = dataPoint.getVO();
         if (!messagingService.isOpen(dataPoint)) {
-            LOG.warn(LoggingUtils.dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - Publish failed.");
+            LOG.warn(dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + " - Publish failed.");
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
-                    DataSourceRT.getExceptionMessage(new RuntimeException("Error Publish: "
-                            + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Message: Connection Closed. ")));
+                    getExceptionMessage(new RuntimeException("Error Publish: " + dataPointInfo(dataPoint.getVO())
+                            + ", Value: " + valueTime + ", Message: Connection Closed. ")));
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
             return;
         }
@@ -63,7 +61,7 @@ public class MessagingDataSourceRT extends PollingDataSource {
             returnToNormal(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis());
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
         } catch (Exception e) {
-            LOG.error(e.getMessage() + " - " + dataPointInfo(dataPoint.getVO())
+            LOG.error(dataSourcePointValueTimeInfo(vo, dataPointVO, valueTime, source) + ", "
                     + causeInfo(getCause(e)), e);
             raiseEvent(DATA_POINT_PUBLISH_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     new LocalizableMessage("event.ds.publishFailed", dataPointVO.getName()));
@@ -76,9 +74,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.open();
         } catch (Exception e) {
-            LOG.error(e.getMessage() + causeInfo(getCause(e)), getCause(e));
+            LOG.error(dataSourceInfo(vo)  + ", " + causeInfo(getCause(e)), getCause(e));
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage(getCause(getCause(e))));
+                    false, getExceptionMessage(getCause(getCause(e))));
         }
         super.initialize();
     }
@@ -90,9 +88,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.close();
         } catch (Exception e) {
-            LOG.error(e.getMessage() + causeInfo(getCause(e)), getCause(e));
+            LOG.error(dataSourceInfo(vo)  + ", " + causeInfo(getCause(e)), getCause(e));
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage(getCause(getCause(e))));
+                    false, getExceptionMessage(getCause(getCause(e))));
         } finally {
             updateAttemptsCounters.clear();
         }
@@ -105,9 +103,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
             messagingService.initReceiver(dataPoint, getPointUpdateExceptionHandler(dataPoint), ATTR_UPDATE_ERROR_KEY);
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, false);
         } catch (Exception e) {
-            LOG.error(e.getMessage() + causeInfo(getCause(e)), getCause(e));
+            LOG.error(dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + causeInfo(getCause(e)), getCause(e));
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage(getCause(getCause(e))));
+                    false, getExceptionMessage(getCause(getCause(e))));
             dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
         }
         super.addDataPoint(dataPoint);
@@ -118,9 +116,9 @@ public class MessagingDataSourceRT extends PollingDataSource {
         try {
             messagingService.removeReceiver(dataPoint);
         } catch (Exception e) {
-            LOG.error(e.getMessage() + causeInfo(getCause(e)), getCause(e));
+            LOG.error(dataSourcePointInfo(vo, dataPoint.getVO())  + ", " + causeInfo(getCause(e)), getCause(e));
             raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage(getCause(getCause(e))));
+                    false, getExceptionMessage(getCause(getCause(e))));
         } finally {
             updateAttemptsCounters.remove(dataPoint.getId());
         }
@@ -140,27 +138,25 @@ public class MessagingDataSourceRT extends PollingDataSource {
                 }
             } catch (Exception e) {
                 updateAttemptsCounters.get(dataPoint.getId()).incrementAndGet();
-                LOG.warn(e.getMessage() + causeInfo(getCause(e)), getCause(e));
+                LOG.warn(dataSourcePointInfo(vo, dataPoint.getVO())  + ", " + causeInfo(getCause(e)), getCause(e));
                 raiseEvent(DATA_POINT_INIT_EXCEPTION_EVENT, System.currentTimeMillis(),
-                        true, DataSourceRT.getExceptionMessage(getCause(getCause(e))));
+                        true, getExceptionMessage(getCause(getCause(e))));
                 dataPoint.setAttribute(ATTR_UNRELIABLE_KEY, true);
             }
         }
     }
 
-    private Exception getCause(Exception e) {
+    private static Exception getCause(Exception e) {
         return e.getCause() != null ? (Exception) e.getCause() : e;
     }
 
     private java.util.function.Consumer<Exception> getPointUpdateExceptionHandler(DataPointRT dataPoint) {
         return ex -> {
-            LOG.warn("Error Update Data Point: " + dataPointInfo(dataPoint.getVO())
-                    + ", Data Source: " + dataSourceInfo(vo)
+            LOG.warn("Error Update: " + dataPointInfo(dataPoint.getVO()) + ", " + dataSourceInfo(vo) + ", "
                     + causeInfo(getCause(ex)), getCause(getCause(ex)));
             raiseEvent(DATA_POINT_UPDATE_EXCEPTION_EVENT, System.currentTimeMillis(),
-                    false, DataSourceRT.getExceptionMessage(
-                            new RuntimeException("Error Update Data Point: " + dataPointInfo(dataPoint.getVO())
-                                    + causeInfo(getCause(ex)), getCause(getCause(ex)))
+                    false, getExceptionMessage(new Exception("Error Update Data Point: " + dataPointInfo(dataPoint.getVO())
+                            + ", " + causeInfo(getCause(ex)), getCause(getCause(ex)))
                     ));
         };
     }

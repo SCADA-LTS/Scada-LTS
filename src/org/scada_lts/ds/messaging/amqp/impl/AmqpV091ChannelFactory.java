@@ -2,7 +2,6 @@ package org.scada_lts.ds.messaging.amqp.impl;
 
 import com.rabbitmq.client.*;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import org.scada_lts.ds.messaging.MessagingService;
 import org.scada_lts.ds.messaging.UpdatePointValueConsumer;
 import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorRT;
 import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
