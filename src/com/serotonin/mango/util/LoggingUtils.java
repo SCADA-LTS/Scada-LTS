@@ -108,10 +108,10 @@ public final class LoggingUtils {
     }
 
     public static String causeInfo(Exception e) {
-        Throwable cause = e.getCause();
-        if(cause != null) {
-            return exceptionInfo((Exception) cause);
-        }
-        return exceptionInfo(e);
+        return exceptionInfo(getCause(e));
+    }
+
+    public static Exception getCause(Exception e) {
+        return e.getCause() != null ? (Exception) e.getCause() : e;
     }
 }

@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
+import static com.serotonin.mango.util.LoggingUtils.*;
+
 
 public class AmqpV091MessagingService implements MessagingService {
 
@@ -43,17 +45,18 @@ public class AmqpV091MessagingService implements MessagingService {
     @Override
     public void publish(DataPointRT dataPoint, String message) throws Exception {
         if(blocked) {
-            throw new IllegalStateException("Stop publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Service of shutting down:  "  + LoggingUtils.dataSourceInfo(vo) + ", message: " + message);
+            throw new IllegalStateException("Stop publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Service of shutting down:  "  + LoggingUtils.dataSourceInfo(vo) + ", Value: " + message);
         }
         getConnectionIfOpen().ifPresent(conn -> {
             MessagingChannel<Channel> channel = channels.getChannel(dataPoint)
-                    .orElseThrow(() -> new RuntimeException("Error publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO())
-                    + ", Data Source: " + LoggingUtils.dataSourceInfo(vo) + ", Message: channel is disconnect"));
+                    .orElseThrow(() -> new RuntimeException("Error Publish: " + dataSourcePointInfo(vo, dataPoint.getVO())
+                            + ", Value: " + message + ", Message: channel is disconnect"));
             try {
                 basicPublish(dataPoint, channel.toOrigin(), message);
+            } catch (IOException e) {
+                throw new RuntimeException("Error Publish: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", Value: " + message + ", " + causeInfo(e), e.getCause());
             } catch (Exception e) {
-                throw new RuntimeException("Error publish: " + LoggingUtils.dataPointInfo(dataPoint.getVO())
-                        + ", Data Source: " + LoggingUtils.dataSourceInfo(vo) + LoggingUtils.causeInfo(e), e);
+                throw new RuntimeException("Error Publish: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", Value: " + message + ", " + exceptionInfo(e), e);
             }
         });
     }
@@ -61,7 +64,7 @@ public class AmqpV091MessagingService implements MessagingService {
     @Override
     public void initReceiver(DataPointRT dataPoint, Consumer<Exception> exceptionHandler, String updateErrorKey) throws Exception {
         if(blocked) {
-            LOG.warn("Stop init Receiver: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
+            LOG.warn("Stop Init Channel: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
             return;
         }
         Connection openedConnection = getConnectionIfOpen().orElseGet(() -> {
@@ -69,18 +72,20 @@ public class AmqpV091MessagingService implements MessagingService {
                 Connection conn = openConnection();
                 setConnection(conn);
                 return conn;
+            } catch (IOException e) {
+                throw new RuntimeException("Error Open Connection: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
             } catch (Exception e) {
-                throw new RuntimeException("Error Connect AMQP Client: " + LoggingUtils.dataPointInfo(dataPoint.getVO())
-                        + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + LoggingUtils.causeInfo(e), e);
+                throw new RuntimeException("Error Open Connection: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
             }
         });
         if(openedConnection != null && openedConnection.isOpen()) {
             channels.initChannel(dataPoint, () -> {
                 try {
                     return new AmqpV091Channel(AmqpV091ChannelFactory.createReceiver(dataPoint, connection, exceptionHandler, updateErrorKey));
+                } catch (IOException e) {
+                    throw new RuntimeException("Error Create Channel: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
                 } catch (Exception e) {
-                    throw new RuntimeException("Error Create AMQP Channel: " + LoggingUtils.dataPointInfo(dataPoint.getVO())
-                            + ", Data Source: "  + LoggingUtils.dataSourceInfo(vo) + ", Message: " + e.getMessage(), e);
+                    throw new RuntimeException("Error Create Channel: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
                 }
             });
         }
@@ -89,10 +94,16 @@ public class AmqpV091MessagingService implements MessagingService {
     @Override
     public void removeReceiver(DataPointRT dataPoint) throws Exception {
         if(blocked) {
-            LOG.warn("Stop remove Receiver: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
+            LOG.warn("Stop Remove Channel: " + LoggingUtils.dataPointInfo(dataPoint.getVO()) + ", Service of shutting down: "  + LoggingUtils.dataSourceInfo(vo));
             return;
         }
-        channels.removeChannel(dataPoint, vo.getConnectionTimeout());
+        try {
+            channels.removeChannel(dataPoint, vo.getConnectionTimeout());
+        } catch (IOException e) {
+            throw new RuntimeException("Error Remove Channel: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
+        } catch (Exception e) {
+            throw new RuntimeException("Error Remove Channel: " + dataSourcePointInfo(vo, dataPoint.getVO()) + ", " + exceptionInfo(e), e);
+        }
     }
 
     @Override
@@ -112,9 +123,15 @@ public class AmqpV091MessagingService implements MessagingService {
 
     @Override
     public void open() throws Exception {
-        if(!isOpen())
-            setConnection(openConnection());
-        blocked = false;
+        try {
+            if (!isOpen())
+                setConnection(openConnection());
+            blocked = false;
+        } catch (IOException e) {
+            throw new RuntimeException("Error Open Connection: " + dataSourceInfo(vo) + ", " + causeInfo(e), e.getCause());
+        } catch (Exception e) {
+            throw new RuntimeException("Error Open Connection: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
+        }
     }
 
     @Override
@@ -123,9 +140,15 @@ public class AmqpV091MessagingService implements MessagingService {
         try {
             channels.closeChannels(vo.getConnectionTimeout());
         } catch (Exception ex) {
-            LOG.warn("Error closeChannels: " + LoggingUtils.dataSourceInfo(vo) + ", message: " + ex.getMessage(), ex);
+            LOG.warn("Error closeChannels: " + dataSourceInfo(vo) + ", " + exceptionInfo(ex), ex);
         }
-        closeConnection();
+        try {
+            closeConnection();
+        } catch (IOException e) {
+            throw new RuntimeException("Error Close Connection: " + dataSourceInfo(vo) + ", " + causeInfo(e), e.getCause());
+        } catch (Exception e) {
+            throw new RuntimeException("Error Close Connection: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
+        }
     }
 
     private void closeConnection() throws IOException {
@@ -166,11 +189,10 @@ public class AmqpV091MessagingService implements MessagingService {
         return rabbitFactory.newConnection();
     }
 
-    private static void basicPublish(DataPointRT dataPoint, Channel channel, String message) throws IOException {
+    private static void basicPublish(DataPointRT dataPoint, Channel channel, String message) throws Exception {
         AmqpPointLocatorRT locatorRT = dataPoint.getPointLocator();
         AmqpPointLocatorVO locator = locatorRT.getVO();
         ExchangeType exchangeType = locator.getExchangeType();
-
         exchangeType.basicPublish(channel, locator, message, new AMQP.BasicProperties());
     }
 
