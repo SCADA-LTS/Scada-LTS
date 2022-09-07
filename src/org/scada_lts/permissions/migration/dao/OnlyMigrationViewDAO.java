@@ -23,10 +23,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.GenericDAO;
-import org.scada_lts.dao.SerializationData;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
@@ -45,9 +42,12 @@ import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<View> {
+public final class OnlyMigrationViewDAO implements IViewDAO {
 	
 	private Log LOG = LogFactory.getLog(OnlyMigrationViewDAO.class);
+
+	private static final String LIMIT = " LIMIT ";
+	private static final int NO_LIMIT = 0;
 	
 	private static final String COLUMN_NAME_ID = "id";
 	private static final String COLUMN_NAME_XID = "xid";
@@ -266,7 +266,7 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 			return idName;
 		}
 	}
-	@Override
+
 	public List<View> findAllWithUserName(){
 		return null;
 	}
@@ -275,7 +275,7 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper() );
 	}
 
-	@Override
+
 	public View findById(Object[] pk) {
 		try {
 			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
@@ -308,7 +308,6 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	@Override
 	public Object[] create(final View entity) {
 		
 		if (LOG.isTraceEnabled()) {
@@ -340,7 +339,6 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	@Override
 	public void update(View entity) {
 		
 		DAO.getInstance().getJdbcTemp().update(VIEW_UPDATE, new Object[]{
@@ -356,9 +354,8 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 			
 	}
 
-	@Override
 	public void delete(View entity) {
-		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });		
+		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });
 	}
 
 	public List<ShareUser> getShareUsers(int mangoViewId) {
@@ -378,7 +375,6 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 	}
 
 	//TODO rewrite
-	@Override
 	public List<View> filtered(String filter, Object[] argsFilter, long limit) {
 		// TODO Auto-generated method stub
 		return null;
@@ -484,7 +480,7 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 						.build());
 	}
 
-    public List<ScadaObjectIdentifier> selectViewIdentifiers() {
+    public List<ScadaObjectIdentifier> findIdentifiers() {
         return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)
@@ -492,4 +488,39 @@ public final class OnlyMigrationViewDAO extends ViewDAO implements GenericDAO<Vi
 						.nameColumnName(COLUMN_NAME_NAME)
 						.build());
     }
+
+	@Override
+	public View save(View entity) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void delete(Integer integer) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ShareUser> selectShareUsers(int viewId) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ShareUser> selectShareUsersFromProfile(int viewId) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findById(Integer integer) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findByXid(String xid) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findByName(String name) {
+		throw new UnsupportedOperationException();
+	}
 }

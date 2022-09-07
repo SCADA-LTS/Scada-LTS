@@ -294,7 +294,7 @@ thead th {
 						<div class="btn-group pull-right menu">
 							<c:if test="${!empty sessionUser}">
 								<a href="" class="btn btn-xs"><span><fmt:message
-											key="header.user" />: <b>${sessionUser.username}</b>
+											key="header.user" />: <b><c:out value="${sessionUser.username}"/></b>
 									</mark></span></a>
 
 								<!-- TODO REST MiscDwr.toggleUserMuted(setUserMuted)
@@ -441,8 +441,8 @@ thead th {
 <script	src="resources/node_modules/jquery.fancytree/dist/jquery.fancytree-all.min.js"></script>
 <script	src="resources/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script	src="resources/node_modules/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
-<script src="resources/node_modules/stompjs/lib/stomp.js"></script>
-<script src="resources/sockjs-0.3.4.js"></script>
+<script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
+<script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>
 
 <!-- <script src="resources/node_modules/axios/dist/axios.min.js"></script>
 <script src="resources/node_modules/vue/dist/vue.min.js"></script>

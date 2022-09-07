@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
   <!-- Is not use Kamil Jarmusik 2021/12/01-->
@@ -92,7 +92,8 @@
   <!-- end secure javamelody -->
   <filter>  
     <filter-name>encodingFilter</filter-name>  
-    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>  
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>  
        <param-name>encoding</param-name>  
        <param-value>UTF-8</param-value>  
@@ -106,27 +107,32 @@
   <filter>
     <filter-name>CharacterSet</filter-name>
     <filter-class>com.serotonin.web.filter.CharacterSetFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>charset</param-name>
       <param-value>UTF-8</param-value>
     </init-param>
   </filter>
-  <filter>
+  <!-- Kamil Jarmusik 2022/07/21-->
+  <!--filter>
     <filter-name>IsLoggedIn</filter-name>
     <filter-class>com.serotonin.mango.web.filter.NormalLoggedInFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>forwardUrl</param-name>
       <param-value>/login.htm</param-value>
     </init-param>
-  </filter>
+  </filter-->
   
   <filter>
     <filter-name>WebContext</filter-name>
     <filter-class>com.serotonin.mango.web.filter.WebContextFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <filter-name>CacheHeaders</filter-name>
     <filter-class>com.serotonin.mango.web.filter.HttpResponseHeaderFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
       <param-name>Cache-Control</param-name>
       <param-value>max-age=5184000</param-value>
@@ -142,6 +148,7 @@
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <async-supported>true</async-supported>
   </filter>
 
   <filter-mapping>
@@ -172,10 +179,11 @@
     <filter-name>CharacterSet</filter-name>
     <url-pattern>*.shtm</url-pattern>
   </filter-mapping>
-  <filter-mapping>
+  <!-- Kamil Jarmusik 2022/07/21-->
+  <!--filter-mapping>
     <filter-name>IsLoggedIn</filter-name>
     <url-pattern>*.shtm</url-pattern>
-  </filter-mapping>
+  </filter-mapping-->
   <filter-mapping>
     <filter-name>WebContext</filter-name>
     <url-pattern>*.shtm</url-pattern>
@@ -225,6 +233,7 @@
     <servlet-name>springDispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>dwr-invoker</servlet-name>
@@ -242,42 +251,52 @@
       <param-value>false</param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>imageChart</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ImageChartServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
      <servlet-name>enhancedImageChart</servlet-name>
      <servlet-class>com.serotonin.mango.web.servlet.EnhancedImageChartServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>asyncImageChart</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.AsyncImageChartServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>reportExport</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ReportExportServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>reportEventExport</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ReportEventExportServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>reportUserCommentExport</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ReportUserCommentExportServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>reportChart</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ReportChartServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>httpDataSource</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.HttpDataSourceServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet>
     <servlet-name>imageValue</servlet-name>
     <servlet-class>com.serotonin.mango.web.servlet.ImageValueServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
  
   <servlet-mapping>
@@ -414,6 +433,9 @@
   <listener>
     <listener-class>com.serotonin.mango.MangoContextListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+  </listener>
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>
@@ -425,6 +447,7 @@
     <display-name>Apache-Axis Servlet</display-name>
     <servlet-name>AxisServlet</servlet-name>
     <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet-mapping>
     <servlet-name>AxisServlet</servlet-name>
@@ -443,6 +466,7 @@
     <servlet-name>AdminServlet</servlet-name>
     <servlet-class>org.apache.axis.transport.http.AdminServlet</servlet-class>
     <load-on-startup>100</load-on-startup>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet-mapping>
     <servlet-name>AdminServlet</servlet-name>

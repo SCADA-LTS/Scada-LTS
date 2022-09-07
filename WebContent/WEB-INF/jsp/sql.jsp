@@ -39,10 +39,10 @@
                   <fmt:message key="sql.sql"/>
                   <tag:help id="directQuerying"/>
                 </td>
-                <td><textarea id="sqlString" name="sqlString" rows="8" cols="80">${status.value}</textarea></td>
+                <td><textarea id="sqlString" name="sqlString" rows="8" cols="80"><c:out value="${status.value}"/></textarea></td>
               </tr>
               <tr>
-                <c:if test="${form.error != null}"><td colspan="2" class="formError">${form.error}</td></c:if>
+                <c:if test="${form.error != null}"><td colspan="2" class="formError"><c:out value="${form.error}"/></td></c:if>
               </tr>
             </spring:bind>
             
@@ -67,7 +67,7 @@
             <c:forEach items="${form.data}" var="row">
               <tr class="row">
                 <c:forEach items="${row}" var="col">
-                  <td>${col}</td>
+                  <td><c:out value="${col}"/></td>
                 </c:forEach>
               </tr>
             </c:forEach>

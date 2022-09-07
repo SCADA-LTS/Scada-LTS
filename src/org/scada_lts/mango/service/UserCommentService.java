@@ -2,7 +2,7 @@ package org.scada_lts.mango.service;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
-import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.IUserCommentDAO;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,7 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserCommentService {
 
-    private final UserCommentDAO userCommentDAO = new UserCommentDAO();
+    private final IUserCommentDAO userCommentDAO;
+
+    public UserCommentService(IUserCommentDAO userCommentDAO) {
+        this.userCommentDAO = userCommentDAO;
+    }
 
     /**
      * Save user comment to database.

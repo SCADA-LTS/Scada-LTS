@@ -55,6 +55,7 @@ public final class PointHierarchyUtils {
                 pointNodes.add(PointHierarchyNode.pointNode(point));
             }
         }
+        sort(pointNodes);
         return pointNodes;
     }
 
@@ -83,7 +84,6 @@ public final class PointHierarchyUtils {
                 }
             }
         }
-        sort(root);
     }
 
     private static void cleanTree(PointHierarchyNode root) {
@@ -146,6 +146,7 @@ public final class PointHierarchyUtils {
         for(PointHierarchyNode node: folderNodes) {
             node.setChildren(new ArrayList<>());
         }
+        sort(folderNodes);
         return folderNodes;
     }
 
@@ -154,9 +155,8 @@ public final class PointHierarchyUtils {
                                                                    List<PointHierarchyNode> folderNodes,
                                                                    boolean withEmpty) {
         List<PointHierarchyNode> pointAndFolderNodes = new ArrayList<>();
-        pointAndFolderNodes.addAll(pointNodes);
         pointAndFolderNodes.addAll(folderNodes);
-        sort(pointAndFolderNodes);
+        pointAndFolderNodes.addAll(pointNodes);
         return pointAndFolderNodes.stream()
                 .filter(node -> node.getParentId() == key)
                 .filter(node -> filter(withEmpty, pointAndFolderNodes, node))
@@ -168,11 +168,11 @@ public final class PointHierarchyUtils {
     }
 
     private static PointHierarchyNode getRootNode(User user, HierarchyDAO hierarchyDAO, DataPointDAO dataPointDAO) {
-        List<PointHierarchyNode> pointNodes = getPointNodesWithAccess(user, dataPointDAO);
         List<PointHierarchyNode> folderNodes = getFolderNodes(hierarchyDAO);
+        List<PointHierarchyNode> pointNodes = getPointNodesWithAccess(user, dataPointDAO);
         List<PointHierarchyNode> pointAndFolderNodes = new ArrayList<>();
-        pointAndFolderNodes.addAll(pointNodes);
         pointAndFolderNodes.addAll(folderNodes);
+        pointAndFolderNodes.addAll(pointNodes);
         PointHierarchyNode root = PointHierarchyNode.rootNode();
         createTree(root, pointAndFolderNodes, TREE_DEPTH);
         return root;

@@ -95,14 +95,15 @@ public class GetPointHierarchyByKeyTest {
         User user = TestUtils.newUser(123);
         user.setAdmin(true);
 
-        List<PointHierarchyNode> expected = Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6, fakeFolder,
-                point1, point2, point3, point4, point5, point6, PointHierarchyNode.rootNode());
-        sort(expected);
+        PointHierarchyNode root = PointHierarchyNode.rootNode();
+
+        List<PointHierarchyNode> foldersExpected = Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6, fakeFolder, root);
+        List<PointHierarchyNode> pointsExpected = Arrays.asList(point1, point2, point3, point4, point5, point6, root);
 
         for(int i = 0 ; i < 8 ; i++) {
             //when:
             List<PointHierarchyNode> rootResult = service.getPointHierarchyByKey(user, i);
-            List<PointHierarchyNode> exp = getExp(expected, i);
+            List<PointHierarchyNode> exp = getFoldersExp(foldersExpected, pointsExpected, i);
 
             //then:
             Assert.assertEquals(exp, rootResult);
@@ -116,14 +117,15 @@ public class GetPointHierarchyByKeyTest {
         User user = TestUtils.newUser(123);
         user.setAdmin(true);
 
-        List<PointHierarchyNode> expected = Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6, emptyFolder,
-                fakeFolder, point1, point2, point3, point4, point5, point6, PointHierarchyNode.rootNode());
-        sort(expected);
+        PointHierarchyNode root = PointHierarchyNode.rootNode();
+
+        List<PointHierarchyNode> foldersExpected = Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6, fakeFolder, emptyFolder, root);
+        List<PointHierarchyNode> pointsExpected = Arrays.asList(point1, point2, point3, point4, point5, point6, root);
 
         for(int i = 0 ; i < 8 ; i++) {
             //when:
             List<PointHierarchyNode> rootResult = service.getPointHierarchyWithEmptyByKey(user, i);
-            List<PointHierarchyNode> exp = getExp(expected, i);
+            List<PointHierarchyNode> exp = getFoldersExp(foldersExpected, pointsExpected, i);
 
             //then:
             Assert.assertEquals(exp, rootResult);
@@ -136,8 +138,11 @@ public class GetPointHierarchyByKeyTest {
         //given:
         User user = TestUtils.newUser(123);
         user.setAdmin(false);
-        List<PointHierarchyNode> expected = Arrays.asList(folder1, fakeFolder, point1, point6, PointHierarchyNode.rootNode());
-        sort(expected);
+
+        PointHierarchyNode root = PointHierarchyNode.rootNode();
+
+        List<PointHierarchyNode> foldersExpected = Arrays.asList(folder1, fakeFolder, root);
+        List<PointHierarchyNode> pointsExpected = Arrays.asList(point1, point6, root);
 
         DataPointAccess result1 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_READ), dataPoint1);
         DataPointAccess result6 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_SET), dataPoint6);
@@ -146,7 +151,7 @@ public class GetPointHierarchyByKeyTest {
         for(int i = 0 ; i < 8 ; i++) {
             //when:
             List<PointHierarchyNode> rootResult = service.getPointHierarchyByKey(user, i);
-            List<PointHierarchyNode> exp = getExp(expected, i);
+            List<PointHierarchyNode> exp = getFoldersExp(foldersExpected, pointsExpected, i);
 
             //then:
             Assert.assertEquals(exp, rootResult);
@@ -159,9 +164,11 @@ public class GetPointHierarchyByKeyTest {
         User user = TestUtils.newUser(123);
         user.setAdmin(false);
 
-        List<PointHierarchyNode> expected = Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6,
-                emptyFolder, fakeFolder, point1, point6, PointHierarchyNode.rootNode());
-        sort(expected);
+        PointHierarchyNode root = PointHierarchyNode.rootNode();
+
+        List<PointHierarchyNode> foldersExpected = Arrays.asList(folder1, folder2, folder3, folder4, folder5, folder6,
+                emptyFolder, fakeFolder, root);
+        List<PointHierarchyNode> pointsExpected = Arrays.asList(point1, point6, root);
 
         DataPointAccess result1 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_READ), dataPoint1);
         DataPointAccess result6 = generateDataPointAccess(new ShareUser(user.getId(), ShareUser.ACCESS_SET), dataPoint6);
@@ -170,13 +177,19 @@ public class GetPointHierarchyByKeyTest {
         for(int i = 0 ; i < 8 ; i++) {
             //when:
             List<PointHierarchyNode> rootResult = service.getPointHierarchyWithEmptyByKey(user, i);
-            List<PointHierarchyNode> exp = getExp(expected, i);
+            List<PointHierarchyNode> exp = getFoldersExp(foldersExpected, pointsExpected, i);
 
             //then:
             Assert.assertEquals(exp, rootResult);
         }
     }
 
+    private List<PointHierarchyNode> getFoldersExp(List<PointHierarchyNode> foldersExpected, List<PointHierarchyNode> pointsExpected, int i) {
+        List<PointHierarchyNode> foldersResult = getExp(foldersExpected, i);
+        List<PointHierarchyNode> pointsResult = getExp(pointsExpected, i);
+        foldersResult.addAll(pointsResult);
+        return foldersResult;
+    }
 
     private List<PointHierarchyNode> getExp(List<PointHierarchyNode> expected, int i) {
         return expected.stream().filter(a -> a.getParentId() == i)

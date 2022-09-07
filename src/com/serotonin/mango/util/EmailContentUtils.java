@@ -25,6 +25,7 @@ import java.util.ResourceBundle;
 
 import static com.serotonin.mango.util.SendMsgUtils.getDataPointMessage;
 
+@Deprecated
 public final class EmailContentUtils {
 
     private EmailContentUtils(){}

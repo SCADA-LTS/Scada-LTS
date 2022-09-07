@@ -2,7 +2,7 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.IViewDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,20 +12,20 @@ import static org.scada_lts.permissions.service.util.PermissionsUtils.merge;
 @Service
 public class ViewGetShareUsers implements GetShareUsers<View> {
 
-    private final ViewDAO viewDAO;
+    private final IViewDAO viewDAO;
 
-    public ViewGetShareUsers(ViewDAO viewDAO) {
+    public ViewGetShareUsers(IViewDAO viewDAO) {
         this.viewDAO = viewDAO;
     }
 
     @Override
     public List<ShareUser> getShareUsers(View object) {
-        return viewDAO.getShareUsers(object.getId());
+        return viewDAO.selectShareUsers(object.getId());
     }
 
     @Override
     public List<ShareUser> getShareUsersFromProfile(View object) {
-        return viewDAO.selectViewShareUsers(object.getId());
+        return viewDAO.selectShareUsersFromProfile(object.getId());
     }
 
     @Override

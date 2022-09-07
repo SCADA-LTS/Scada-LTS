@@ -111,6 +111,7 @@
   </td></tr></table>
 
   <script type="text/javascript">
+    var viewId = mango.longPoll.pollRequest.viewId;
     function StaticEditor() {
         this.componentId = null;
         this.component = null;
@@ -125,7 +126,7 @@
             hide('flexEditor');
 
             staticEditor.componentId = compId;
-            ViewDwr.getViewComponent(compId, function(comp) {
+            ViewDwr.getViewComponent(compId, viewId, function(comp) {
                 // Update the data in the form.
                 staticEditor.component = comp;
 
@@ -218,7 +219,7 @@
             case 'html':
               ViewDwr.saveHtmlComponent(staticEditor.componentId,
                 $get("staticPointContent"),
-                posX, posY,
+                posX, posY, viewId,
                 function() {
 	                staticEditor.close();
 	                updateHtmlComponentContent("c"+ staticEditor.componentId, $get("staticPointContent"));
@@ -228,7 +229,7 @@
             case 'link':
               ViewDwr.saveLinkComponent(staticEditor.componentId,
                 $get("linkText"), $get("linkLink"),
-                posX, posY,
+                posX, posY, viewId,
                 function(response) {
 	                if (response.hasMessages)
 			        	    showDwrMessages(response.messages);
@@ -243,7 +244,7 @@
             case 'scriptButton':
               ViewDwr.saveScriptButtonComponent(staticEditor.componentId,
                 $get("scriptButtonText"), $get("scriptsList"),
-                posX, posY,
+                posX, posY, viewId,
                 function(response) {
 					        if (response.hasMessages)
 			        	    showDwrMessages(response.messages);
@@ -257,7 +258,7 @@
             case 'chartComparator':
               ViewDwr.saveChartComparatorComponent(staticEditor.componentId,
                 $get("chartComparatorWidth"), $get("chartComparatorHeight"),
-                posX, posY,
+                posX, posY, viewId,
                 function(response) {
 						      if (response.hasMessages)
 				        	  showDwrMessages(response.messages);
@@ -280,7 +281,7 @@
                 $get("flexWidth"), $get("flexHeight"),
 						    $get("flexProjectDefined"),$get("flexProjectsSource"),
                 $get("flexProjectsList"),$get("flexRuntimeMode"),
-                posX, posY,
+                posX, posY, viewId,
 					      function(response) {
 						      if (response.hasMessages)
 				        	  showDwrMessages(response.messages);

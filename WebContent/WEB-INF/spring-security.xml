@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <b:beans xmlns="http://www.springframework.org/schema/security"
          xmlns:b="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
-    <http use-expressions="true">
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+    <http use-expressions="true" disable-url-rewriting="true">
         <headers>
             <cache-control/>
             <content-type-options disabled="true"/>
@@ -36,17 +37,25 @@
         <intercept-url pattern="/resources/**" access="permitAll" />
         <intercept-url pattern="/static/**" access="permitAll" />
         <intercept-url pattern="/audio/**" access="permitAll" />
+        <intercept-url pattern="/uploads/**" access="permitAll" />
 
         <!-- Anonymous -->
         <intercept-url pattern="/public_view.htm" access="permitAll" />
+
+        <!-- Monitoring -->
+        <intercept-url pattern="/monitoring" access="permitAll" />
 
         <intercept-url pattern="/**" access="isAuthenticated()" />
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
-                    password-parameter="password" username-parameter="username"/>
+                    password-parameter="password" username-parameter="username"
+                    login-processing-url="/login.htm" />
 
-        <logout logout-url="/logout.htm" invalidate-session="true" />
+        <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
+        <session-management session-fixation-protection="newSession" />
+
+        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID" />
     </http>
     <http-firewall ref="defaultHttpFirewall"/>
 
@@ -80,4 +89,6 @@
     <b:bean id="headersFromSystemSettingsWriter" class="org.scada_lts.web.ws.config.HeadersFromSystemSettingsWriter">
         <b:constructor-arg ref="systemSettingsService"/>
     </b:bean>
+
+    <b:bean id="setDataSessionFilter" class="org.scada_lts.session.SetDataSessionFilter"/>
 </b:beans>
