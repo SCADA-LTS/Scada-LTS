@@ -77,13 +77,13 @@ public class ViewService {
 
 	public ViewService() {
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
-		this.viewGetShareUsers = ApplicationBeans.getViewGetShareUsersBean();
+		this.viewGetShareUsers = new ViewGetShareUsers(this.viewDAO);
 		this.getViewsWithAccess = new GetViewsWithAccess(this.viewDAO);
 	}
 
-	public ViewService(IViewDAO viewDAO, ViewGetShareUsers viewGetShareUsers) {
+	public ViewService(IViewDAO viewDAO) {
 		this.viewDAO = viewDAO;
-		this.viewGetShareUsers = viewGetShareUsers;
+		this.viewGetShareUsers = new ViewGetShareUsers(viewDAO);
 		this.getViewsWithAccess = new GetViewsWithAccess(viewDAO);
 	}
 
