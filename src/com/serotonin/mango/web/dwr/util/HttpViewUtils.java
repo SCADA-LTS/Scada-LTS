@@ -17,14 +17,17 @@ public final class HttpViewUtils {
             return viewService.getView(viewId);
         }
         String viewXid = getViewXid(request);
+        if(viewXid.isBlank()) {
+            return null;
+        }
         return viewService.getViewByXid(viewXid);
     }
 
     private static int getViewId(HttpServletRequest request) {
-        return HttpParameterUtils.getValue("viewId", request, Integer::valueOf).orElse(-1);
+        return HttpParameterUtils.getValueOnlyRequest("viewId", request, Integer::valueOf).orElse(-1);
     }
 
     private static String getViewXid(HttpServletRequest request) {
-        return HttpParameterUtils.getValue("viewXid", request, a -> a).orElse("");
+        return HttpParameterUtils.getValueOnlyRequest("viewXid", request, a -> a).orElse("");
     }
 }
