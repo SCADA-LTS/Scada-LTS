@@ -44,7 +44,6 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
-import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -95,7 +94,6 @@ import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -218,6 +216,9 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.serial.SerialPortParameters;
+import org.scada_lts.serial.SerialPortService;
+import org.scada_lts.serial.SerialPortWrapperAdapter;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
@@ -671,23 +672,18 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (StringUtils.isEmpty(commPortId))
             throw new Exception();
 
-        SerialParameters params = new SerialParameters();
-        params.setCommPortId(commPortId);
-        params.setPortOwnerName("Mango Modbus Serial Data Source Scan");
-        params.setBaudRate(baudRate);
-        params.setFlowControlIn(flowControlIn);
-        params.setFlowControlOut(flowControlOut);
-        params.setDataBits(dataBits);
-        params.setStopBits(stopBits);
-        params.setParity(parity);
+        SerialPortParameters serialPortParameters = SerialPortParameters
+                .newParameters("Mango Modbus Serial Data Source Scan", commPortId, baudRate,
+                        flowControlIn, flowControlOut, dataBits, stopBits, parity, timeout);
+        SerialPortService serialPortService = SerialPortService.newService(serialPortParameters);
 
         EncodingType encodingType = EncodingType.valueOf(encoding);
 
         ModbusMaster modbusMaster;
         if (encodingType == EncodingType.ASCII)
-            modbusMaster = new ModbusFactory().createAsciiMaster(params);
+            modbusMaster = new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(serialPortService));
         else
-            modbusMaster = new ModbusFactory().createRtuMaster(params);
+            modbusMaster = new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(serialPortService));
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
