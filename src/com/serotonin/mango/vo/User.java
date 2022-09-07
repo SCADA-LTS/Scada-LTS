@@ -190,6 +190,12 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		return new User(userId, null, null, null, null, null, false, false, null, 0L);
 	}
 
+	public static User onlyIdAndProfile(int userId, int profileId) {
+		User user = new User(userId, null, null, null, null, null, false, false, null, 0L);
+		user.setUserProfileId(profileId);
+		return user;
+	}
+
 	public static User onlyIdUsername(ScadaPrincipal principal) {
 		return new User(principal.getId(), principal.getName(), null, null, null, null, false, false, null, 0L);
 	}

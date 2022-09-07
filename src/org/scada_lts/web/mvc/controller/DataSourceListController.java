@@ -54,7 +54,7 @@ public class DataSourceListController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView showList(HttpServletRequest request){
 		LOG.trace("/data_sources.shtm");
-        Permissions.ensureAdmin();
+        Permissions.ensureAdmin(request);
 		
 		//PagingDataForm paging = new PagingDataForm();
 		List<ListParent<DataSourceVO<?>, DataPointVO>> data = getData(request, "Name", true);

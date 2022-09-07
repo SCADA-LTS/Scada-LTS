@@ -11,6 +11,7 @@ import com.serotonin.web.email.TemplateEmailContent;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
+@Deprecated
 public class MangoEmailContent extends TemplateEmailContent {
     public static final int CONTENT_TYPE_BOTH = 0;
     public static final int CONTENT_TYPE_HTML = 1;

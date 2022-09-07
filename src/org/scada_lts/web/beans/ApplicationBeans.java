@@ -13,11 +13,14 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.IUsersProfileDAO;
+import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.cache.HighestAlarmLevelCachable;
 import org.scada_lts.dao.cache.UserCachable;
 import org.scada_lts.dao.cache.UserCommentCachable;
 import org.scada_lts.dao.cache.UsersProfileCachable;
 import org.scada_lts.mango.service.UserCommentService;
+import org.scada_lts.dao.cache.ViewCachable;
+
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.permissions.service.*;
 import org.scada_lts.service.IHighestAlarmLevelService;
@@ -68,10 +71,7 @@ public class ApplicationBeans {
     }
 
     public static GetShareUsers<View> getViewGetShareUsersBean() {
-        boolean permissionsCacheEnabled = Common.getEnvironmentProfile().getBoolean(GetShareUsers.CACHE_ENABLED_KEY, true);
-        return (GetShareUsers<View>) (permissionsCacheEnabled ?
-                getBeanFromContext("viewGetShareUsersWithCache", GetShareUsers.class) :
-                getBeanFromContext("viewGetShareUsers", GetShareUsers.class));
+        return new ViewGetShareUsers(getViewDaoBean());
     }
 
     public static GetShareUsers<WatchList> getWatchListGetShareUsersBean() {
@@ -120,6 +120,13 @@ public class ApplicationBeans {
         return userCommentCacheEnabled ?
                 getBeanFromContext("userCommentDaoWithCache", IUserCommentDAO.class) :
                 getBeanFromContext("userCommentDAO", IUserCommentDAO.class);
+
+    public static IViewDAO getViewDaoBean() {
+        boolean viewCacheEnabled = Common.getEnvironmentProfile().getBoolean(ViewCachable.CACHE_ENABLED_KEY, true);
+        return viewCacheEnabled ?
+                getBeanFromContext("viewDaoWithCache", IViewDAO.class) :
+                getBeanFromContext("viewDAO", IViewDAO.class);
+
     }
 
     public static class Lazy {

@@ -86,4 +86,8 @@
     <!-- user comment -->
     <cache alias="comment_list_by_pointid" uses-template="integer_list_exp_ttl_heap_max_bytes_cache_template"/>
     <cache alias="comment_list_by_eventid" uses-template="long_list_exp_ttl_heap_max_bytes_cache_template"/>
+
+    <!-- view -->
+    <cache alias="view_list" uses-template="string_list_cache_template"/>
+
 </config>

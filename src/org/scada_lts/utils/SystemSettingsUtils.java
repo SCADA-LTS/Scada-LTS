@@ -19,6 +19,7 @@ public final class SystemSettingsUtils {
 
     private static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY = "datapoint.runtime.value.synchronized";
     private static final String HTTP_RESPONSE_HEADERS_KEY = "systemsettings.http.response.headers";
+    private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -57,5 +58,14 @@ public final class SystemSettingsUtils {
         if(value == null || "null".equals(value))
             return Collections.emptyMap();
         return objectMapper.readValue(value, new TypeReference<HashMap<String, String>>() {});
+    }
+
+    public static int getEmailTimeout() {
+        try {
+            return Integer.parseInt(ScadaConfig.getInstance().getConf().getProperty(EMAIL_TIMEOUT_KEY, "10001"));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return -1;
+        }
     }
 }

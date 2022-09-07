@@ -58,8 +58,8 @@
           else if (commentTypeId == <%= UserComment.TYPE_POINT %>)
               commentsNode = $("pointComments"+ commentReferenceId);
           commentsNode.appendChild(content);
-          $("comment"+ comment.ts +"UserTime").innerHTML = comment.prettyTime +" <fmt:message key="notes.by"/> "+ comment.username;
-          $("comment"+ comment.ts +"Text").innerHTML = comment.comment;
+          $("comment"+ comment.ts +"UserTime").textContent = comment.prettyTime + ' <fmt:message key="notes.by"/> ' + comment.username;
+          $("comment"+ comment.ts +"Text").textContent = comment.comment;
       }
   }
   

@@ -26,10 +26,13 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
@@ -40,8 +43,15 @@ import java.util.stream.Collectors;
 
 import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
 
+@Controller
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
+
+	private final IViewDAO viewDAO;
+
+	public ViewsController() {
+		this.viewDAO = ApplicationBeans.getViewDaoBean();
+	}
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -60,7 +70,7 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-		    GetObjectsWithAccess<View, User> service = new GetViewsWithAccess();
+		    GetObjectsWithAccess<View, User> service = new GetViewsWithAccess(viewDAO);
 			views = service.getObjectIdentifiersWithAccess(user).stream()
 					.map(a -> new IntValuePair(a.getId(), a.getName()))
 					.collect(Collectors.toList());

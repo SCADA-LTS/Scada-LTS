@@ -17,14 +17,6 @@ public interface UserCachable {
     @Caching(evict = {@CacheEvict(cacheNames = "user_list", allEntries = true)})
     void update(User user);
 
-    @Deprecated
-    @Caching(evict = {@CacheEvict(cacheNames = "user_list", allEntries = true)})
-    void updateHideMenu(User user);
-
-    @Deprecated
-    @Caching(evict = {@CacheEvict(cacheNames = "user_list", allEntries = true)})
-    void updateScadaTheme(User user);
-
     @Caching(evict = {@CacheEvict(cacheNames = "user_list", allEntries = true)})
     void updateHomeUrl(int userId, String homeUrl);
 

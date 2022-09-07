@@ -43,12 +43,12 @@ public class V2_7_0_2__FixViewPermissions extends BaseJavaMigration {
     }
 
     private void migratePermissions() {
-        UserDAO userDAO = new OnlyMigrationUserDAO();
+        IUserDAO userDAO = new OnlyMigrationUserDAO();
         UsersProfileDAO usersProfileDAO = new OnlyMigrationUsersProfileDAO();
         WatchListDAO watchListDAO = new OnlyMigrationWatchListDAO();
         DataPointDAO dataPointDAO = new OnlyMigrationDataPointDAO();
         DataSourceDAO dataSourceDAO = new OnlyMigrationDataSourceDAO();
-        ViewDAO viewDAO = new OnlyMigrationViewDAO();
+        IViewDAO viewDAO = new OnlyMigrationViewDAO();
         DataPointUserDAO dataPointUserDAO = new OnlyMigrationDataPointUserDAO();
         IUserCommentDAO userCommentDAO = new OnlyMigrationUserCommentDAO();
 

@@ -51,7 +51,6 @@ import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -94,8 +93,10 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 
@@ -140,7 +141,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess();
+		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess(ApplicationBeans.getViewDaoBean());
 		User user = Common.getUser();
 		return viewPermissionsService.getObjectIdentifiersWithAccess(user).stream()
 				.map(a -> new IntValuePair(a.getId(), a.getName()))
@@ -355,7 +356,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public void deleteViewShare() {
 		User user = Common.getUser();
-		new ViewDao().removeUserFromView(user.getView().getId(), user.getId());
+		new ViewService().removeUserFromView(user.getView().getId(), user.getId());
 	}
 
 	@MethodFilter
