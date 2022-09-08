@@ -123,7 +123,11 @@ public class ViewsController extends ParameterizableViewController {
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
 			//user.setView(currentView);
 		}
-		request.getSession().setAttribute("viewId", currentView.getId());
+		if(currentView == null) {
+			request.getSession().setAttribute("viewId", -1);
+		} else {
+			request.getSession().setAttribute("viewId", currentView.getId());
+		}
 		return new ModelAndView(getViewName(), model);
 	}
 }

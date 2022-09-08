@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import com.serotonin.mango.util.LoggingScriptUtils;
+import com.serotonin.mango.web.dwr.util.HttpViewUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
@@ -170,7 +171,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<ViewComponentState> getViewPointData(boolean edit, int viewId) {
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		return getViewPointData(user, view, edit);
 	}
 
@@ -322,7 +323,7 @@ public class ViewDwr extends BaseDwr {
 	//
 	@MethodFilter
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType, int viewId) {
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -344,7 +345,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<ShareUser> removeSharedUser(int userId, int viewId) {
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -359,7 +360,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public void deleteViewShare(int viewId) {
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		new ViewService().removeUserFromView(view.getId(), user.getId());
 	}
 
@@ -381,7 +382,7 @@ public class ViewDwr extends BaseDwr {
 		// Users with which to share.
 		result.put("shareUsers", getShareUsers(user));
 
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		// Users already sharing with.
 		result.put("viewUsers", view.getViewUsers());
 
@@ -410,7 +411,7 @@ public class ViewDwr extends BaseDwr {
 		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
@@ -434,7 +435,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public void deleteViewComponent(String viewComponentId, int viewId) {
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -464,7 +465,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<String> getViewComponentIds(int viewId) {
 		List<String> result = new ArrayList<String>();
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		for (ViewComponent vc : view.getViewComponents())
 			result.add(vc.getId());
 		return result;
@@ -481,7 +482,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public String setViewPoint(String viewComponentId, String valueStr, int viewId) {
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = HttpViewUtils.getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		DataPointVO point = view.findDataPoint(viewComponentId);
 
 		if (point != null) {

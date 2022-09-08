@@ -113,6 +113,7 @@ public class ViewEditController {
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
             view.setXid(new ViewService().generateUniqueXid());
+            request.getSession().setAttribute("emptyView", view);
             //TODO view.setHeight(?) and view.setWidth(?)
         }
         //user.setView(view);

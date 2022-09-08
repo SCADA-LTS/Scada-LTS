@@ -379,7 +379,7 @@ public class MiscDwr extends BaseDwr {
 							.getAnonViewId());
 				else {
 					int viewId = pollRequest.getViewId();
-					if(viewId == 0) {
+					if(viewId == Common.NEW_ID) {
 						viewId = HttpParameterUtils.getValue("viewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
 					}
 					if(viewId != Common.NEW_ID) {

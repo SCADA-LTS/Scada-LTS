@@ -204,7 +204,7 @@ mango.view.initNormalView = function() {
     mango.longPoll.pollRequest.view = true;
 
     // Specify view Id
-    mango.longPoll.pollRequest.viewId = 0;
+    mango.longPoll.pollRequest.viewId = -1;
     if (window.location.href.includes("viewId="))
         mango.longPoll.pollRequest.viewId = parseInt(window.location.href.match(/viewId=(\d*)[^\d]?/)[1]);
 };

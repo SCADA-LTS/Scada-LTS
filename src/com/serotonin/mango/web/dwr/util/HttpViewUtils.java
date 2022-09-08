@@ -30,4 +30,15 @@ public final class HttpViewUtils {
     private static String getViewXid(HttpServletRequest request) {
         return HttpParameterUtils.getValueOnlyRequest("viewXid", request, a -> a).orElse("");
     }
+
+    public static View getView(int viewId, HttpServletRequest servletRequest, ViewService viewService) {
+        View view;
+        if(viewId != Common.NEW_ID) {
+            view = viewService.getView(viewId);
+        } else {
+            view = HttpParameterUtils.getObject("emptyView", servletRequest, View.class)
+                    .orElseGet(View::new);
+        }
+        return view;
+    }
 }
