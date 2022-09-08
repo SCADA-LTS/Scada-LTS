@@ -31,6 +31,7 @@ import org.scada_lts.mango.convert.IdNameToIntValuePair;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
+import org.scada_lts.utils.HttpParameterUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,7 +49,6 @@ public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
 
 	private final IViewDAO viewDAO;
-	private String successUrl = "views.shtm";
 
 	public ViewsController() {
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
@@ -119,10 +119,13 @@ public class ViewsController extends ParameterizableViewController {
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
 			//user.setView(currentView);
 		}
-		if(currentView == null) {
-			request.getSession().setAttribute("viewId", -1);
-		} else {
-			request.getSession().setAttribute("viewId", currentView.getId());
+		int viewId = HttpParameterUtils.getValueOnlyRequest("viewId", request, Integer::valueOf).orElse(Common.NEW_ID);
+		if(viewId == Common.NEW_ID) {
+			if (currentView == null) {
+				request.getSession().setAttribute("mainViewId", viewId);
+			} else {
+				request.getSession().setAttribute("mainViewId", currentView.getId());
+			}
 		}
 		return new ModelAndView(getViewName(), model);
 	}

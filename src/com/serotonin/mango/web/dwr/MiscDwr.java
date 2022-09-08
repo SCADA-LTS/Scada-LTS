@@ -382,10 +382,11 @@ public class MiscDwr extends BaseDwr {
 				else {
 					int viewId = pollRequest.getViewId();
 					if(viewId == Common.NEW_ID) {
-						viewId = HttpParameterUtils.getValue("viewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
+						viewId = HttpParameterUtils.getValue("mainViewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
 					}
 					if(viewId != Common.NEW_ID) {
 						View view = new ViewService().getView(viewId);
+						view.validateViewComponents(user);
 						newStates = viewDwr.getViewPointData(user, view, pollRequest
 								.isViewEdit());
 					}

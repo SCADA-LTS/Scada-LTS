@@ -228,7 +228,7 @@ mango.view.initEditView = function() {
     mango.longPoll.pollRequest.viewEdit = true;
     mango.view.setData = mango.view.edit.setData;
 
-    mango.longPoll.pollRequest.viewId = 0;
+    mango.longPoll.pollRequest.viewId = -1;
     if (window.location.href.includes("viewId="))
         mango.longPoll.pollRequest.viewId = parseInt(window.location.href.match(/viewId=(\d*)[^\d]?/)[1]);
 };
