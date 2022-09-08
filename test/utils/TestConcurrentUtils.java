@@ -48,6 +48,7 @@ public class TestConcurrentUtils {
         ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = fun::get;
         MultiThreadEngine.execute(executor, numberOfLaunches, action);
+        executor.shutdownNow();
     }
 
     public static <R> List<R> supplierWithResult(int numberOfLaunches, Supplier<R> fun) {

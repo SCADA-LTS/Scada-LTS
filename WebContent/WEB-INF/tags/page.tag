@@ -88,8 +88,8 @@
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
   <c:if test="${!empty sessionUser}">
-      <script src="resources/node_modules/stompjs/lib/stomp.js"></script>
-      <script src="resources/sockjs-0.3.4.js"></script>
+      <script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
+      <script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>
   </c:if>
   <c:forEach items="${dwr}" var="dwrname">
     <script type="text/javascript" src="dwr/interface/${dwrname}.js"></script></c:forEach>
@@ -358,7 +358,7 @@
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
         <c:choose>
             <c:when test="${!empty sessionUser.firstName}">
-              <span class="userName">${sessionUser.firstName} ${sessionUser.lastName}</span>
+              <span class="userName"><c:out value="${sessionUser.firstName} ${sessionUser.lastName}"/></span>
             </c:when>
             <c:otherwise>
               <span class="userName">${sessionUser.username}</span>

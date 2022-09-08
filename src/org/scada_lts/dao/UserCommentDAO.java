@@ -45,7 +45,7 @@ import java.util.List;
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
 @Repository
-public class UserCommentDAO {
+public class UserCommentDAO implements IUserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserCommentDAO.class);
 
@@ -129,6 +129,7 @@ public class UserCommentDAO {
 		}
 	}
 
+	@Override
 	public List<UserComment> getEventComments(EventInstance event) {
 
 		if (LOG.isTraceEnabled()) {
@@ -139,6 +140,7 @@ public class UserCommentDAO {
 
 	}
 
+	@Override
 	public List<UserComment> getPointComments(DataPointVO dataPoint) {
 
 		if (LOG.isTraceEnabled()) {
@@ -148,6 +150,7 @@ public class UserCommentDAO {
 		return DAO.getInstance().getJdbcTemp().query(POINT_COMMENT_SELECT, new Object[] {dataPoint.getId()}, new UserCommentRowMapper());
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public int insert(final UserComment userComment, final int typeId, final int referenceId) {
 
@@ -173,6 +176,7 @@ public class UserCommentDAO {
 		return userComment.getUserId();
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void update(int userId) {
 
@@ -183,6 +187,7 @@ public class UserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_COMMENT_UPDATE_ID_TO_NULL, new Object[] {userId});
 	}
 
+	@Deprecated
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteUserCommentEvent() {
 
@@ -195,6 +200,7 @@ public class UserCommentDAO {
 		DAO.getInstance().getJdbcTemp().update(templateDeleteTypeEvent, new Object[] {UserComment.TYPE_EVENT});
 	}
 
+	@Override
 	public int deleteUserComment(int userId, int typeId, int referenceId, long ts) {
 		if(LOG.isTraceEnabled()) {
 			LOG.trace("deleteUserComment(UserComment::"+userId+"::"+ts);
@@ -203,6 +209,7 @@ public class UserCommentDAO {
 		return DAO.getInstance().getJdbcTemp().update(USER_COMMENT_DELETE_ONE, new Object[] {userId, typeId, referenceId, ts});
 	}
 
+	@Override
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void deleteUserCommentPoint(String dataPointIdList) {
 

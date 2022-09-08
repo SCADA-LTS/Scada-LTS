@@ -1,6 +1,7 @@
 package com.serotonin.mango.util;
 
 import org.scada_lts.dao.SystemSettingsDAO;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 public class SendEmailConfig {
 
@@ -12,9 +13,10 @@ public class SendEmailConfig {
     private final String username;
     private final String password;
     private final boolean tls;
+    private final int timeout;
 
     public SendEmailConfig(String fromAddr, String pretty, String host, int port, boolean authorization,
-                           String username, String password, boolean tls) {
+                           String username, String password, boolean tls, int timeout) {
         this.fromAddr = fromAddr;
         this.pretty = pretty;
         this.host = host;
@@ -23,6 +25,7 @@ public class SendEmailConfig {
         this.username = username;
         this.password = password;
         this.tls = tls;
+        this.timeout = timeout;
     }
 
     public static SendEmailConfig newConfigFromSystemSettings() throws Exception {
@@ -35,13 +38,14 @@ public class SendEmailConfig {
         String username = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME);
         String password = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD);
         boolean tls = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_TLS);
+        int timeout = Integer.parseInt(SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_TIMEOUT));
 
         validateConfig(SystemSettingsDAO.EMAIL_FROM_ADDRESS, fromAddr);
         validateConfig(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
         if(authorization) {
             validateAuthorizationConfig(username, password);
         }
-        return new SendEmailConfig(fromAddr, pretty, host, port, authorization, username, password, tls);
+        return new SendEmailConfig(fromAddr, pretty, host, port, authorization, username, password, tls, timeout);
     }
 
     public String getFromAddr() {
@@ -74,6 +78,10 @@ public class SendEmailConfig {
 
     public boolean isTls() {
         return tls;
+    }
+
+    public int getTimeout() {
+        return timeout;
     }
 
     public static void validateSystemSettings() throws Exception {

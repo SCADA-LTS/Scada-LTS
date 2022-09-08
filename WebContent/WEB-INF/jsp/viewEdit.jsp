@@ -42,7 +42,7 @@
 
         ViewDwr.editInit(viewId, function(result) {
             mango.share.users = result.shareUsers;
-            mango.share.writeSharedUsers(result.viewUsers);
+            //mango.share.writeSharedUsers(result.viewUsers);
             dwr.util.addOptions($("componentList"), result.componentTypes, "key", "value");
             settingsEditor.setPointList(result.pointList);
             compoundEditor.setPointList(result.pointList, viewId);

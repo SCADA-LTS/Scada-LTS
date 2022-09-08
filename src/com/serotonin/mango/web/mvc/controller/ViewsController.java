@@ -24,7 +24,6 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.IViewDAO;
@@ -36,7 +35,6 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,8 +53,6 @@ public class ViewsController extends ParameterizableViewController {
 	public ViewsController() {
 		this.viewDAO = ApplicationBeans.getViewDaoBean();
 	}
-
-
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,

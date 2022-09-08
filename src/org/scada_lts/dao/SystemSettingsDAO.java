@@ -66,6 +66,7 @@ public class SystemSettingsDAO {
 	public static final String EMAIL_SMTP_PASSWORD = "emailSmtpPassword";
 	public static final String EMAIL_TLS = "emailTls";
 	public static final String EMAIL_CONTENT_TYPE = "emailContentType";
+	public static final String EMAIL_TIMEOUT = "emailTimeout";
 
 	// Event purging
 	public static final String EVENT_PURGE_PERIOD_TYPE = "eventPurgePeriodType";
@@ -381,6 +382,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(VALUES_LIMIT_FOR_PURGE, 100);
 		DEFAULT_VALUES.put(HTTP_RESPONSE_HEADERS, SystemSettingsUtils.getHttpResponseHeaders());
 		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().getName());
+		DEFAULT_VALUES.put(EMAIL_TIMEOUT, String.valueOf(SystemSettingsUtils.getEmailTimeout()));
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
