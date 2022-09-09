@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.view.View;
 import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
@@ -44,6 +45,9 @@ import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.utils.HttpParameterUtils;
 import org.springframework.beans.propertyeditors.LocaleEditor;
@@ -377,11 +381,12 @@ public class MiscDwr extends BaseDwr {
 							.getAnonViewId());
 				else {
 					int viewId = pollRequest.getViewId();
-					if(viewId == 0) {
-						viewId = HttpParameterUtils.getValue("viewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
+					if(viewId == Common.NEW_ID) {
+						viewId = HttpParameterUtils.getValue("mainViewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
 					}
 					if(viewId != Common.NEW_ID) {
 						View view = new ViewService().getView(viewId);
+						view.validateViewComponents(user);
 						newStates = viewDwr.getViewPointData(user, view, pollRequest
 								.isViewEdit());
 					}

@@ -96,11 +96,10 @@ import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.permissions.service.GetViewsWithAccess;
-import org.scada_lts.utils.HttpParameterUtils;
 import org.scada_lts.web.beans.ApplicationBeans;
 
+import static com.serotonin.mango.util.ViewControllerUtils.getView;
 import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
-import static com.serotonin.mango.web.dwr.util.HttpViewUtils.getView;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -170,7 +169,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<ViewComponentState> getViewPointData(boolean edit, int viewId) {
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		return getViewPointData(user, view, edit);
 	}
 
@@ -322,7 +321,7 @@ public class ViewDwr extends BaseDwr {
 	//
 	@MethodFilter
 	public List<ShareUser> addUpdateSharedUser(int userId, int accessType, int viewId) {
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		boolean found = false;
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -344,7 +343,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<ShareUser> removeSharedUser(int userId, int viewId) {
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 
 		for (ShareUser su : view.getViewUsers()) {
 			if (su.getUserId() == userId) {
@@ -359,7 +358,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public void deleteViewShare(int viewId) {
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		new ViewService().removeUserFromView(view.getId(), user.getId());
 	}
 
@@ -381,7 +380,7 @@ public class ViewDwr extends BaseDwr {
 		// Users with which to share.
 		result.put("shareUsers", getShareUsers(user));
 
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		// Users already sharing with.
 		result.put("viewUsers", view.getViewUsers());
 
@@ -410,7 +409,7 @@ public class ViewDwr extends BaseDwr {
 		// System.out.println(viewComponent);
 
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 
 		view.addViewComponent(viewComponent);
 		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
@@ -434,7 +433,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public void deleteViewComponent(String viewComponentId, int viewId) {
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
@@ -464,7 +463,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public List<String> getViewComponentIds(int viewId) {
 		List<String> result = new ArrayList<String>();
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		for (ViewComponent vc : view.getViewComponents())
 			result.add(vc.getId());
 		return result;
@@ -481,7 +480,7 @@ public class ViewDwr extends BaseDwr {
 	@MethodFilter
 	public String setViewPoint(String viewComponentId, String valueStr, int viewId) {
 		User user = Common.getUser();
-		View view = new ViewService().getView(viewId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
 		DataPointVO point = view.findDataPoint(viewComponentId);
 
 		if (point != null) {
@@ -950,7 +949,8 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public ViewComponent getViewComponent(String viewComponentId, int viewId) {
-		return getViewComponent(new ViewService().getView(viewId), viewComponentId);
+		View view = getView(viewId, WebContextFactory.get().getHttpServletRequest(), new ViewService());
+		return getViewComponent(view, viewComponentId);
 	}
 
 	private ViewComponent getViewComponent(View view, String viewComponentId) {
