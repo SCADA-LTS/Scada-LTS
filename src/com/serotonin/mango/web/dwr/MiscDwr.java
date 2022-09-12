@@ -297,7 +297,9 @@ public class MiscDwr extends BaseDwr {
 			LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
 		data.setRequest(request);
-		return doLongPoll(pollSessionId);
+		Map<String, Object> response = doLongPoll(pollSessionId);
+		response.put("waitTime", SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
+		return response;
 	}
 
 	public Map<String, Object> doLongPoll(int pollSessionId) {
@@ -316,8 +318,6 @@ public class MiscDwr extends BaseDwr {
 		response.put("runtime",runTime);
 		long expireTime = runTime + 60000; // One minute
 		LongPollState state = data.getState();
-		int waitTime = SystemSettingsDAO
-				.getIntValue(SystemSettingsDAO.UI_PERFORMANCE);
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always
@@ -325,7 +325,7 @@ public class MiscDwr extends BaseDwr {
 		// user-specific event change tracking code.
 		state.setLastAlarmLevelChange(0);
 
-		while (!pollRequest.isTerminated()
+		if (!pollRequest.isTerminated()
 				&& System.currentTimeMillis() < expireTime) {
 
 			if (pollRequest.isWatchList() && user != null) {
@@ -452,20 +452,6 @@ public class MiscDwr extends BaseDwr {
 					state.setPendingAlarmsContent(currentContent);
 				}
 			}
-
-			if (waitTime == 0)
-				break;
-
-			synchronized (pollRequest) {
-				try {
-					pollRequest.wait(waitTime);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
-
-			break;
-
 		}
 
 		if (pollRequest.isTerminated())

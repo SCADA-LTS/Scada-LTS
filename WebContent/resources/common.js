@@ -77,10 +77,24 @@ function defaultIfBlank(str, defaultStr) {
 mango.longPoll = {};
 mango.longPoll.pollRequest = {};
 mango.longPoll.pollSessionId = Math.round(Math.random() * 1000000000);
+mango.longPoll.intervalId = -1;
+
+window.addEventListener('beforeunload', (event) => {
+  if(mango.longPoll.intervalId != -1) {
+      clearInterval(mango.longPoll.intervalId);
+  }
+  MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
+});
+
+mango.longPoll.setInterval = function(response) {
+    if(response.waitTime > 1000) {
+        setTimeout(mango.longPoll.poll, 1000);
+    }
+    mango.longPoll.intervalId = setInterval(mango.longPoll.poll, response.waitTime);
+}
 
 mango.longPoll.start = function() {
-    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.pollCB);
-    dojo.addOnUnload(function() { MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId); });
+    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.setInterval);
 };
 
 mango.longPoll.poll = function() {
@@ -130,7 +144,7 @@ mango.longPoll.pollCB = function(response) {
         mango.view.setData(response.customViewStates);
 
     // Poll again immediately.
-    mango.longPoll.poll();
+    //mango.longPoll.poll();
 }
 
 
