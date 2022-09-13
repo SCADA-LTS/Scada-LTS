@@ -263,9 +263,13 @@
         SystemSettingsDwr.saveMiscSettings(
                 $get("<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
-                function() {
+                function(response) {
                     stopImageFader("saveMiscSettingsImg");
-                    setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
+                    if (response.hasMessages)
+                        setUserMessage("miscMessage", response.messages[0].contextualMessage);
+                    else {
+                        setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
+                    }
                 });
         setUserMessage("miscMessage");
         startImageFader("saveMiscSettingsImg");
@@ -833,6 +837,7 @@
             <input id="<c:out value="<%= SystemSettingsDAO.UI_PERFORMANCE %>"/>" type="number" class="formShort"/>
             <select id="uiPerformanceId" onchange="toUiPerformanceId()">
               <option value=""></option>
+              <option value="1000"><fmt:message key="systemSettings.uiPerformance.veryHigh"/></option>
               <option value="2000"><fmt:message key="systemSettings.uiPerformance.high"/></option>
               <option value="5000"><fmt:message key="systemSettings.uiPerformance.med"/></option>
               <option value="10000"><fmt:message key="systemSettings.uiPerformance.low"/></option>

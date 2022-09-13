@@ -90,7 +90,11 @@ mango.longPoll.setInterval = function(response) {
     if(response.waitTime > 1000) {
         setTimeout(mango.longPoll.poll, 1000);
     }
-    mango.longPoll.intervalId = setInterval(mango.longPoll.poll, response.waitTime);
+    if(response.waitTime < 0) {
+        mango.longPoll.intervalId = setInterval(mango.longPoll.poll, 1000);
+    } else {
+        mango.longPoll.intervalId = setInterval(mango.longPoll.poll, response.waitTime);
+    }
 }
 
 mango.longPoll.start = function() {
