@@ -83,7 +83,11 @@ task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
 
 task installWebDependency(type: Exec) {
     workingDir "./WebContent/resources"
-    commandLine "npm", "install"
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', 'npm', "install"
+    } else {
+        commandLine 'npm', "install"
+    }
 }
 
 task clearTomcat(type: Delete) {
