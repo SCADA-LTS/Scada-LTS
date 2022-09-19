@@ -87,7 +87,7 @@
     <td class="formField">
       <input type="text" id="updatePeriods" value="${dataSource.updatePeriods}" class="formShort" />
       <sst:select id="updatePeriodType" value="${dataSource.updatePeriodType}">
-        <tag:timePeriodOptions sst="false" ms="false" s="true" min="true" h="true"/>
+        <tag:timePeriodOptions sst="true" ms="false" s="true" min="true" h="true"/>
       </sst:select>
     </td>
   </tr>

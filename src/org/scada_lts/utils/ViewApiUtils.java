@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import br.org.scadabr.view.component.*;
+import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.view.DynamicImage;
 import com.serotonin.mango.view.ImageSet;
@@ -30,6 +31,7 @@ import org.scada_lts.web.mvc.api.dto.view.components.point.ThumbnailComponentDTO
 import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.AnalogGraphicComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.BinaryGraphicComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.ImageSetComponentDTO;
+import org.scada_lts.web.mvc.api.dto.view.components.point.imageset.MultistateGraphicComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.script.ButtonComponentDTO;
 import org.scada_lts.web.mvc.api.dto.view.components.point.script.ScriptComponentDTO;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -118,6 +120,8 @@ public final class ViewApiUtils {
                                 msg.append(validateAnalogGraphicComponent((AnalogGraphicComponentDTO) component));
                             if (def == BinaryGraphicComponent.DEFINITION)
                                 msg.append(validateBinaryGraphicComponent((BinaryGraphicComponentDTO) component));
+                            if (def == MultistateGraphicComponent.DEFINITION)
+                                msg.append(validateMultiGraphicComponent((MultistateGraphicComponentDTO) component));
                         }
                         if (def == DynamicGraphicComponent.DEFINITION)
                             msg.append(validateDynamicGraphicComponent((DynamicGraphicComponentDTO) component));
@@ -319,5 +323,23 @@ public final class ViewApiUtils {
     public static void setViewComponents(View toUpdate, GraphicalViewDTO source, User user) {
         View view = source.createViewFromBody(user);
         setIf(view.getViewComponents(), toUpdate::setViewComponents, Objects::nonNull);
+    }
+
+    private static String validateMultiGraphicComponent(MultistateGraphicComponentDTO body) {
+        StringBuilder errors = new StringBuilder();
+        for(IntValuePair state: body.getImageStateList()) {
+            errors.append(msgIfNullOrInvalid("Invalid state for index: " + state.getKey() + ";",
+                    state.getValue(), a -> !isInteger(a)));
+        }
+        return errors.toString();
+    }
+
+    private static boolean isInteger(String a) {
+        try {
+            Integer.parseInt(a);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

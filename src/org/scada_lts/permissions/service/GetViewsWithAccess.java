@@ -3,20 +3,16 @@ package org.scada_lts.permissions.service;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
-import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.IViewDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
 
 public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
 
-    private final ViewDAO viewDAO;
+    private final IViewDAO viewDAO;
 
-    public GetViewsWithAccess() {
-        this.viewDAO = new ViewDAO();
-    }
-
-    public GetViewsWithAccess(ViewDAO viewDAO) {
+    public GetViewsWithAccess(IViewDAO viewDAO) {
         this.viewDAO = viewDAO;
     }
 
@@ -30,7 +26,7 @@ public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
     @Override
     public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
         if(user.isAdmin())
-            return viewDAO.selectViewIdentifiers();
+            return viewDAO.findIdentifiers();
         return viewDAO.selectViewIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 

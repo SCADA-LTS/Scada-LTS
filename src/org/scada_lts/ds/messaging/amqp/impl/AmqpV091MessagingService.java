@@ -11,14 +11,15 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.MessagingChannel;
 import org.scada_lts.ds.messaging.MessagingChannels;
 import org.scada_lts.ds.messaging.MessagingService;
+import org.scada_lts.ds.messaging.NonSyncMessagingChannels;
 import org.scada_lts.ds.messaging.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorRT;
 import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
 import org.scada_lts.ds.messaging.amqp.ExchangeType;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
@@ -37,7 +38,7 @@ public class AmqpV091MessagingService implements MessagingService {
 
     public AmqpV091MessagingService(AmqpDataSourceVO vo) {
         this.vo = vo;
-        this.channels = new MessagingChannels<>(new HashMap<>());
+        this.channels = new NonSyncMessagingChannels<>(new ConcurrentHashMap<>());
         this.lock = new ReentrantReadWriteLock();
         this.blocked = false;
     }

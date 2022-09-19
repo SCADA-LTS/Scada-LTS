@@ -1,14 +1,13 @@
 package com.serotonin.mango.util;
 
+import com.serotonin.mango.Common;
 import com.serotonin.mango.view.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.utils.HttpParameterUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class ViewControllerUtils {
 
@@ -16,29 +15,41 @@ public final class ViewControllerUtils {
 
     private static final Log LOG = LogFactory.getLog(ViewControllerUtils.class);
 
-    public static View getViewCurrent(HttpServletRequest request, ViewService viewService) {
-        String id = request.getParameter("viewId");
-        Optional<View> result = Optional.empty();
-        if(id != null) {
-            result = getView(viewService::getView, () -> Integer.valueOf(id));
+    public static View getOrEmptyView(HttpServletRequest request, ViewService viewService) {
+        View view = getViewCurrent(request, viewService);
+        if(view == null) {
+            view = HttpParameterUtils.getObject("emptyView", request, View.class).orElseGet(View::new);
         }
-        if(!result.isPresent()) {
-            String xid = request.getParameter("viewXid");
-            return getView(viewService::getViewByXid, () -> xid)
-                    .orElse(null);
-        }
-        return result.get();
+        return view;
     }
 
-    private static <A> Optional<View> getView(Function<A, View> identifier, Supplier<A> convert) {
-        try {
-            View currentView = identifier.apply(convert.get());
-            return Optional.ofNullable(currentView);
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            return Optional.empty();
+    public static View getViewCurrent(HttpServletRequest request, ViewService viewService) {
+        int viewId = getViewId(request);
+        if(viewId != Common.NEW_ID) {
+            return viewService.getView(viewId);
         }
+        String viewXid = getViewXid(request);
+        if(viewXid.isBlank()) {
+            return null;
+        }
+        return viewService.getViewByXid(viewXid);
+    }
+
+    public static View getView(int viewId, HttpServletRequest request, ViewService viewService) {
+        View view;
+        if(viewId != Common.NEW_ID) {
+            view = viewService.getView(viewId);
+        } else {
+            view = getOrEmptyView(request, viewService);
+        }
+        return view;
+    }
+
+    private static int getViewId(HttpServletRequest request) {
+        return HttpParameterUtils.getValueOnlyRequest("viewId", request, Integer::valueOf).orElse(Common.NEW_ID);
+    }
+
+    private static String getViewXid(HttpServletRequest request) {
+        return HttpParameterUtils.getValueOnlyRequest("viewXid", request, a -> a).orElse("");
     }
 }

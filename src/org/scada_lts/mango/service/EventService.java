@@ -34,11 +34,11 @@ import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.UserCommentDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.utils.SQLPageWithTotal;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.dto.EventCommentDTO;
 import org.scada_lts.web.mvc.api.dto.EventDTO;
 import org.scada_lts.web.mvc.api.dto.eventHandler.EventHandlerPlcDTO;
@@ -277,7 +277,7 @@ public class EventService implements MangoEvent {
 
 	@Override
 	public EventInstance insertEventComment(int eventId, UserComment comment) {
-		new UserCommentDAO().insert(comment, UserComment.TYPE_EVENT, eventId);
+		ApplicationBeans.getUserCommentDaoBean().insert(comment, UserComment.TYPE_EVENT, eventId);
 		return eventDAO.findById(new Object[]{eventId});
 	}
 	
