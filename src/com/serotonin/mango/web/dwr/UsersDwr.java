@@ -153,7 +153,11 @@ public class UsersDwr extends BaseDwr {
 			user.setDataSourcePermissions(new ArrayList<>());
 			user.setDataPointPermissions(new ArrayList<>());
 		}
-		user.setUserProfileId(usersProfileId);
+		if(admin) {
+			user.setUserProfileId(Common.NEW_ID);
+		} else {
+			user.setUserProfileId(usersProfileId);
+		}
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);

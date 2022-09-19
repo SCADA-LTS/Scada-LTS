@@ -93,7 +93,7 @@ public class DataSourceEditController extends ParameterizableViewController {
 
         // Reference data
         try {
-            model.put("commPorts", Common.getCommPorts());
+            model.put("commPorts", Common.getSerialPorts());
         }
         catch (CommPortConfigException e) {
             model.put("commPortError", e.getMessage());

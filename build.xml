@@ -845,6 +845,7 @@
 		<pathelement location="WebContent/WEB-INF/lib/spring-security-messaging-4.2.5.RELEASE.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/spring-security-web-4.2.5.RELEASE.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/spring-session-1.3.5.RELEASE.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/jSerialComm-2.9.2.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/amqp-client-5.15.0.jar"/>
         <pathelement location="WebContent/WEB-INF/classes"/>
     </path>
@@ -899,7 +900,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
 </project>

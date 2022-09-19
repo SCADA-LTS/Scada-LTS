@@ -33,6 +33,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.form.ViewEditForm;
 import org.scada_lts.web.mvc.validator.ViewEditValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +44,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.WebUtils;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 
+import static com.serotonin.mango.util.ViewControllerUtils.getOrEmptyView;
+import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
 import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 
@@ -79,8 +82,15 @@ public class ViewEditController {
 
     private int nextImageId = -1;
 
+    private final ViewService viewService;
+
     @Autowired
-    ViewEditValidator validator;
+    private ViewEditValidator validator;
+
+    public ViewEditController() {
+        this.viewService = new ViewService();
+        //this.validator = ApplicationBeans.getBean("viewEditValidator", ViewEditValidator.class);
+    }
 
     public void setSuccessUrl(String successUrl) {
         this.successUrl = successUrl;
@@ -91,23 +101,23 @@ public class ViewEditController {
     }
 
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.GET)
-    protected ModelAndView showForm(HttpServletRequest request, @RequestParam(value="viewId", required=false) String viewIdStr) throws Exception {
-        View view;
+    protected ModelAndView showForm(HttpServletRequest request) throws Exception {
         User user = Common.getUser(request);
+        View view = getViewCurrent(request, viewService);
 
-        if (viewIdStr != null) {
+        if (view != null) {
             // An existing view.
-            view = new ViewDao().getView(Integer.parseInt(viewIdStr));
             Permissions.ensureViewEditPermission(user, view);
         } else {
             // A new view.
             view = new View();
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
-            view.setXid(new ViewDao().generateUniqueXid());
+            view.setXid(new ViewService().generateUniqueXid());
+            request.getSession().setAttribute("emptyView", view);
             //TODO view.setHeight(?) and view.setWidth(?)
         }
-        user.setView(view);
+        //user.setView(view);
         view.validateViewComponents(false);
 
         ViewEditForm form = new ViewEditForm();
@@ -128,7 +138,8 @@ public class ViewEditController {
         Map<String, String> errors = new HashMap<>();
         if (WebUtils.hasSubmitParameter(request, SUBMIT_CLEAR_IMAGE)) {
             User user = Common.getUser(request);
-            View view = user.getView();
+            View view = getOrEmptyView(request, viewService);
+            Permissions.ensureViewPermission(user, view);
 
             form.setView(view);
             view.setBackgroundFilename(null);
@@ -136,7 +147,8 @@ public class ViewEditController {
 
         if (WebUtils.hasSubmitParameter(request, SUBMIT_UPLOAD)) {
             User user = Common.getUser(request);
-            View view = user.getView();
+            View view = getOrEmptyView(request, viewService);
+            Permissions.ensureViewPermission(user, view);
 
             form.setView(view);
             uploadFile(request, form, errors);
@@ -152,8 +164,9 @@ public class ViewEditController {
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_SAVE })
     protected ModelAndView save(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form, BindingResult result) {
         LOG.debug("ViewEditController:save");
-        User user = Common.getUser(request);
-        View view = user.getView();
+        User user = Common.getUser();
+        View view = getOrEmptyView(request, viewService);
+        Permissions.ensureViewPermission(user, view);
         copyViewProperties(view, form.getView());
         form.setView(view);
 
@@ -169,28 +182,30 @@ public class ViewEditController {
         }
 
         view.setUserId(Common.getUser(request).getId());
-        new ViewDao().saveView(view);
-        return getSuccessRedirectView("viewId=" + form.getView().getId());
+        new ViewService().saveView(view);
+        return getSuccessRedirectView("viewId=" + view.getId());
     }
 
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_CANCEL })
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
-        View view = user.getView();
+        View view = getOrEmptyView(request, viewService);
+        Permissions.ensureViewPermission(user, view);
         form.setView(view);
 
-        return getSuccessRedirectView("viewId=" + form.getView().getId());
+        return getSuccessRedirectView("viewId=" + view.getId());
     }
 
     @RequestMapping(value = "/view_edit.shtm", method = RequestMethod.POST, params = { SUBMIT_DELETE })
     protected ModelAndView delete(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:delete");
         User user = Common.getUser(request);
-        View view = user.getView();
+        View view = getOrEmptyView(request, viewService);
+        Permissions.ensureViewPermission(user, view);
         form.setView(view);
 
-        new ViewDao().removeView(form.getView().getId());
+        new ViewService().removeView(form.getView().getId());
 
         UsersProfileService usersProfileService = new UsersProfileService();
         usersProfileService.updateViewPermissions();

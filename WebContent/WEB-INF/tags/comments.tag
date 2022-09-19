@@ -26,10 +26,10 @@
         ${comment.prettyTime} <fmt:message key="notes.by"/>
         <c:choose>
           <c:when test="${empty comment.username}"><fmt:message key="common.deleted"/></c:when>
-          <c:otherwise>${comment.username}</c:otherwise>
+          <c:otherwise><c:out value="${comment.username}"/></c:otherwise>
         </c:choose>
       </span><br/>
-      ${comment.comment}
+      <c:out value="${comment.comment}"/>
     </td>
   </tr>
 </c:forEach>

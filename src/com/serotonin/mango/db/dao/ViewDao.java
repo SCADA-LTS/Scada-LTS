@@ -27,6 +27,7 @@ import org.scada_lts.mango.service.ViewService;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.view.View;
 
+@Deprecated
 public class ViewDao {
 	
 	private ViewService viewService;
@@ -49,12 +50,6 @@ public class ViewDao {
 
 	public List<IntValuePair> getAllViewNames() {
 		return IdNameToIntValuePair.convert(viewService.getAllViewNames());
-	}
-
-	@Deprecated
-	public List<IntValuePair> getViewNamesWithReadOrWritePermissions(
-			int userId, int userProfileId) {
-		return IdNameToIntValuePair.convert(viewService.getViewNamesWithReadOrWritePermissions(userId, userProfileId));
 	}
 
 	public View getView(int id) {

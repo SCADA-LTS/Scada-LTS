@@ -5,6 +5,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserCommentService;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.api.json.JsonEventComment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,11 @@ public class UserCommentAPI {
 
     private static final Log LOG = LogFactory.getLog(UserCommentAPI.class);
 
-    @Resource
-    private UserCommentService userCommentService;
+    private final UserCommentService userCommentService;
+
+    public UserCommentAPI() {
+        this.userCommentService = ApplicationBeans.getUserCommentServiceBean();
+    }
 
     /**
      * Create User Comment
