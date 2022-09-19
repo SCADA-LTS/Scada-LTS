@@ -3,16 +3,13 @@ package org.scada_lts.ds.messaging.mqtt.impl;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.ds.messaging.MessagingChannel;
-import org.scada_lts.ds.messaging.MessagingChannels;
-import org.scada_lts.ds.messaging.MessagingService;
-import org.scada_lts.ds.messaging.UpdatePointValueConsumer;
+import org.scada_lts.ds.messaging.*;
 import org.scada_lts.ds.messaging.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorRT;
 import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static com.serotonin.mango.util.LoggingUtils.*;
@@ -27,7 +24,7 @@ public class MqttMessagingService implements MessagingService {
 
     public MqttMessagingService(MqttDataSourceVO vo) {
         this.vo = vo;
-        this.channels = new MessagingChannels<>(new HashMap<>());
+        this.channels = new NonSyncMessagingChannels<>(new ConcurrentHashMap<>());
         this.blocked = false;
     }
 

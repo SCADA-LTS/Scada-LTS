@@ -84,7 +84,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
     public LocalizableMessage getConnectionDescription() {
         if (serverHost.length() == 0 || serverPortNumber == 0)
             return new LocalizableMessage("dsEdit.mqtt");
-        return null;
+        return new LocalizableMessage("common.default", "tcp://" + serverHost + ":" + serverPortNumber);
     }
 
     @Override
