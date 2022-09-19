@@ -83,7 +83,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     public LocalizableMessage getConnectionDescription() {
         if (serverHost.length() == 0 || serverPortNumber == 0)
             return new LocalizableMessage("dsEdit.amqp");
-        return null;
+        return new LocalizableMessage("common.default", "amqp://" + serverHost + ":" + serverPortNumber + "/" + serverVirtualHost);
     }
 
     @Override

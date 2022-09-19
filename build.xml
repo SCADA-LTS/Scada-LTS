@@ -293,6 +293,10 @@
 			<test name="br.org.scadabr.view.component.GenerateAlarmListComponentTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.ds.messaging.MessagingChannelsTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">

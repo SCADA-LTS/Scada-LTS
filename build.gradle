@@ -171,5 +171,6 @@ test {
         includeTestsMatching "org.scada_lts.utils.xml.XmlSecurityTestsSuite"
         includeTestsMatching "org.scada_lts.utils.SystemSettingsUtilsTest"
         includeTestsMatching "br.org.scadabr.view.component.GenerateAlarmListComponentTest"
+        includeTestsMatching "org.scada_lts.ds.messaging.MessagingChannelsTest"
     }
 }
