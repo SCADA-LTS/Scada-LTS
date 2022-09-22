@@ -21,6 +21,7 @@
 <dwr>
   <init>
     <converter id="localizableMessage" class="com.serotonin.web.dwr.LocalizableMessageConverter"/>
+    <converter id="protocolVersionConverter" class="com.serotonin.mango.web.dwr.ProtocolVersionConverter"/>
   </init>
   
   <allow>
@@ -228,10 +229,11 @@
     <!-- End MBus4J stuff-->
 
     <!-- AMQP stuff -->
-    <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.ExchangeType" />
-    <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.DurabilityType" />
-    <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.MessageAckType" />
-    <convert converter="enum" match="org.scada_lts.ds.messaging.amqp.AmqpVersion" />
+    <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.ExchangeType" />
+    <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.DurabilityType" />
+    <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.MessageAckType" />
+    <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.amqp.AmqpVersion" />
+    <convert converter="protocolVersionConverter" match="org.scada_lts.ds.messaging.protocol.ProtocolVersion" />
 
     <!-- MQTT stuff -->
     <convert converter="enum" match="org.scada_lts.ds.messaging.mqtt.MqttVersion" />

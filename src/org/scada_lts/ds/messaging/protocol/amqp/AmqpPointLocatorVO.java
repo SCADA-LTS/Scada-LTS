@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.amqp;
+package org.scada_lts.ds.messaging.protocol.amqp;
 
 import com.serotonin.json.*;
 import com.serotonin.json.JsonRemoteProperty;
@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 
+@JsonRemoteEntity
 public class AmqpPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
     private static final ExchangeType exchangeTypeDefault = ExchangeType.NONE;

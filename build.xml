@@ -294,7 +294,7 @@
 				  haltonfailure="yes">
 			</test>
 
-			<test name="org.scada_lts.ds.messaging.MessagingChannelsTest"
+			<test name="org.scada_lts.ds.messaging.channel.MessagingChannelsTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>

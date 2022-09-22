@@ -1,9 +1,6 @@
-package org.scada_lts.ds.messaging;
+package org.scada_lts.ds.messaging.channel;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.util.LoggingUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
