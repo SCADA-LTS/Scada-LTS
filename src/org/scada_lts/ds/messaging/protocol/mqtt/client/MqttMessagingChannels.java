@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.protocol.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.client;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import org.apache.commons.logging.Log;
@@ -50,7 +50,7 @@ public class MqttMessagingChannels implements InitMessagingChannels {
         try {
             channels.initChannel(dataPoint, () -> {
                 try {
-                    return new MqttChannel(createClient(dataPoint, exceptionHandler, updateErrorKey), dataPoint);
+                    return new MqttMessagingChannel(createClient(dataPoint, exceptionHandler, updateErrorKey), dataPoint);
                 } catch (Exception e) {
                     throw new MessagingChannelException("Error Create Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + causeInfo(e), e.getCause());
                 }

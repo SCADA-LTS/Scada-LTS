@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.protocol.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.client;
 
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import org.apache.commons.logging.Log;
@@ -13,14 +13,14 @@ import java.nio.charset.StandardCharsets;
 
 import static com.serotonin.mango.util.LoggingUtils.*;
 
-public class MqttChannel implements MessagingChannel {
+public class MqttMessagingChannel implements MessagingChannel {
 
-    private static final Log LOG = LogFactory.getLog(MqttChannel.class);
+    private static final Log LOG = LogFactory.getLog(MqttMessagingChannel.class);
 
     private final MqttVClient client;
     private final DataPointRT dataPointRT;
 
-    public MqttChannel(MqttVClient client, DataPointRT dataPointRT) {
+    public MqttMessagingChannel(MqttVClient client, DataPointRT dataPointRT) {
         this.client = client;
         this.dataPointRT = dataPointRT;
     }

@@ -1,7 +1,7 @@
 package org.scada_lts.ds.messaging.protocol.mqtt;
 
-import org.scada_lts.ds.messaging.protocol.mqtt.impl.MqttVClient;
-import org.scada_lts.ds.messaging.protocol.mqtt.impl.MqttClientFactory;
+import org.scada_lts.ds.messaging.protocol.mqtt.client.MqttVClient;
+import org.scada_lts.ds.messaging.protocol.mqtt.client.impl.MqttClientFactory;
 import org.scada_lts.ds.messaging.protocol.ProtocolVersion;
 
 public enum MqttVersion implements ProtocolVersion {

@@ -1,6 +1,7 @@
-package org.scada_lts.ds.messaging.protocol.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.client.impl;
 
 import org.eclipse.paho.mqttv5.common.MqttMessage;
+import org.scada_lts.ds.messaging.protocol.mqtt.client.MqttVMessage;
 
 class MqttV5Message implements MqttVMessage {
 

@@ -1,10 +1,12 @@
-package org.scada_lts.ds.messaging.protocol.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.client.impl;
 
 import org.eclipse.paho.mqttv5.client.IMqttMessageListener;
 import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.client.MqttVClient;
+import org.scada_lts.ds.messaging.protocol.mqtt.client.MqttVMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;

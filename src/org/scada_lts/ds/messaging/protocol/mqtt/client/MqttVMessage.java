@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.protocol.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.client;
 
 public interface MqttVMessage {
     byte[] getPayload();
