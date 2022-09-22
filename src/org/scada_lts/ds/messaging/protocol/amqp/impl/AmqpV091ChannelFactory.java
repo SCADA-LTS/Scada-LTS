@@ -1,12 +1,12 @@
-package org.scada_lts.ds.messaging.amqp.impl;
+package org.scada_lts.ds.messaging.protocol.amqp.impl;
 
 import com.rabbitmq.client.*;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
-import org.scada_lts.ds.messaging.UpdatePointValueConsumer;
-import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorRT;
-import org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO;
-import org.scada_lts.ds.messaging.amqp.ExchangeType;
-import org.scada_lts.ds.messaging.amqp.MessageAckType;
+import org.scada_lts.ds.messaging.channel.UpdatePointValueConsumer;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpPointLocatorRT;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.protocol.amqp.ExchangeType;
+import org.scada_lts.ds.messaging.protocol.amqp.MessageAckType;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -5,11 +5,11 @@
 --%>
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<%@page import="org.scada_lts.ds.messaging.amqp.AmqpPointLocatorVO"%>
-<%@page import="org.scada_lts.ds.messaging.amqp.ExchangeType"%>
-<%@page import="org.scada_lts.ds.messaging.amqp.MessageAckType"%>
-<%@page import="org.scada_lts.ds.messaging.amqp.DurabilityType"%>
-<%@page import="org.scada_lts.ds.messaging.amqp.AmqpVersion"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.amqp.AmqpPointLocatorVO"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.amqp.ExchangeType"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.amqp.MessageAckType"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.amqp.DurabilityType"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.amqp.AmqpVersion"%>
 <%@page import="org.scada_lts.ds.messaging.BrokerMode"%>
 
 <script type="text/javascript">
@@ -115,7 +115,7 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.protocolVersion"/></td>
     <td class="formField">
         <select id="protocolVersion">
-            <option value="<c:out value="<%= AmqpVersion.V0_9_1_EXT %>"/>" ${dataSource.protocolVersion == 'V0_9_1_EXT' ? 'selected' : ''} >v0.9.1 (incl. ext)</option>
+            <option value="<c:out value="<%= AmqpVersion.V0_9_1_EXT_AMQP %>"/>" ${dataSource.protocolVersion.name == 'V0_9_1_EXT_AMQP' ? 'selected' : ''} >${dataSource.protocolVersion.version}</option>
         </select>
     </td>
   </tr>

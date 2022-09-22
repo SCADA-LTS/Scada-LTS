@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.amqp;
+package org.scada_lts.ds.messaging.protocol.amqp;
 
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;

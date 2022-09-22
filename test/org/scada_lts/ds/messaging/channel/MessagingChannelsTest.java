@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging;
+package org.scada_lts.ds.messaging.channel;
 
 import br.org.scadabr.db.utils.TestUtils;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
@@ -16,25 +16,25 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessagingChannelsTest {
 
     @Parameterized.Parameters(name= "{index}: messagingChannels: {0}")
-    public static MessagingChannels<?>[] messagingChannels() {
-        return new MessagingChannels<?>[] {
-                new SyncMessagingChannels<>(new ConcurrentHashMap<>()),
-                new NonSyncMessagingChannels<>(new HashMap<>()),
-                new NonSyncMessagingChannels<>(new ConcurrentHashMap<>()),
-                new SyncMessagingChannels<>(new HashMap<>())
+    public static MessagingChannels[] messagingChannels() {
+        return new MessagingChannels[] {
+                MessagingChannels.nonSync(new ConcurrentHashMap<>(), 1000),
+                MessagingChannels.nonSync(new HashMap<>(), 1000),
+                MessagingChannels.sync(new ConcurrentHashMap<>(), 1000),
+                MessagingChannels.sync(new HashMap<>(), 1000),
         };
     }
 
-    private final MessagingChannels<Object> messagingChannels;
+    private final MessagingChannels messagingChannels;
 
-    public MessagingChannelsTest(MessagingChannels<Object> messagingChannels) {
+    public MessagingChannelsTest(MessagingChannels messagingChannels) {
         this.messagingChannels = messagingChannels;
     }
 
-    private MessagingChannel<Object> messagingChannelOpenned1;
-    private MessagingChannel<Object> messagingChannelClosed;
-    private MessagingChannel<Object> messagingChannelOpenned2;
-    private MessagingChannel<Object> messagingChannelOpenned3;
+    private MessagingChannel messagingChannelOpenned1;
+    private MessagingChannel messagingChannelClosed;
+    private MessagingChannel messagingChannelOpenned2;
+    private MessagingChannel messagingChannelOpenned3;
 
     private DataPointRT dataPointRT1;
     private DataPointRT dataPointRT2;
@@ -42,7 +42,7 @@ public class MessagingChannelsTest {
 
     @Before
     public void config() {
-        this.messagingChannelOpenned1 = new MessagingChannel<>() {
+        this.messagingChannelOpenned1 = new MessagingChannel() {
 
             @Override
             public boolean isOpen() {
@@ -50,56 +50,48 @@ public class MessagingChannelsTest {
             }
 
             @Override
-            public void close(int timeout) throws Exception {}
+            public void close(int timeout) {}
 
             @Override
-            public Object toOrigin() {
-                return null;
-            }
+            public void publish(String message) {}
         };
-        this.messagingChannelClosed = new MessagingChannel<>() {
+        this.messagingChannelClosed = new MessagingChannel() {
             @Override
             public boolean isOpen() {
                 return false;
             }
 
             @Override
-            public void close(int timeout) throws Exception {}
+            public void close(int timeout) {}
 
             @Override
-            public Object toOrigin() {
-                return null;
-            }
+            public void publish(String message) {}
         };
 
-        this.messagingChannelOpenned2 = new MessagingChannel<>() {
+        this.messagingChannelOpenned2 = new MessagingChannel() {
             @Override
             public boolean isOpen() {
                 return true;
             }
 
             @Override
-            public void close(int timeout) throws Exception {}
+            public void close(int timeout) {}
 
             @Override
-            public Object toOrigin() {
-                return null;
-            }
+            public void publish(String message) {}
         };
 
-        this.messagingChannelOpenned3 = new MessagingChannel<>() {
+        this.messagingChannelOpenned3 = new MessagingChannel() {
             @Override
             public boolean isOpen() {
                 return true;
             }
 
             @Override
-            public void close(int timeout) throws Exception {}
+            public void close(int timeout) {}
 
             @Override
-            public Object toOrigin() {
-                return null;
-            }
+            public void publish(String message) {}
         };
 
         DataPointVO dataPoint1 = TestUtils.newPointSettable(1, -1);
@@ -113,7 +105,7 @@ public class MessagingChannelsTest {
 
     @Before
     public void reset() throws Exception {
-        messagingChannels.closeChannels(100);
+        messagingChannels.closeChannels();
     }
 
     @Test
@@ -123,7 +115,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
         //when:
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(0, messagingChannels.size());
@@ -137,7 +129,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
         //when:
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(false, messagingChannels.isOpenChannel(dataPointRT1));
@@ -152,7 +144,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned2);
 
         //when:
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(true, messagingChannels.isOpenChannel(dataPointRT2));
@@ -166,7 +158,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned2);
 
         //when:
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(false, messagingChannels.isOpenChannel(dataPointRT1));
@@ -180,7 +172,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT2, () -> messagingChannelOpenned2);
 
         //when:
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(1, messagingChannels.size());
@@ -194,7 +186,7 @@ public class MessagingChannelsTest {
 
         //when:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(1, messagingChannels.size());
@@ -209,7 +201,7 @@ public class MessagingChannelsTest {
 
         //when:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
-        messagingChannels.removeChannel(dataPointRT1, 1000);
+        messagingChannels.removeChannel(dataPointRT1);
 
         //when:
         Assert.assertEquals(true, messagingChannels.isOpenChannel(dataPointRT2));
@@ -217,7 +209,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_isOpenChannel_after_initChannel_then_true() {
+    public void when_isOpenChannel_after_initChannel_then_true() throws Exception {
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
@@ -239,7 +231,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_initChannel_with_three_dataPoints_then_size_three() {
+    public void when_initChannel_with_three_dataPoints_then_size_three() throws Exception {
 
         //when:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -251,7 +243,7 @@ public class MessagingChannelsTest {
     }
 
     @Test
-    public void when_initChannel_same_dataPoint_then_size_one() {
+    public void when_initChannel_same_dataPoint_then_size_one() throws Exception {
 
         //when:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
@@ -259,7 +251,7 @@ public class MessagingChannelsTest {
         //then:
         Assert.assertEquals(1, messagingChannels.size());
     }
-
+/*
     @Test
     public void when_getChannel_after_initChannel_then_channel() {
 
@@ -267,7 +259,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
         //when:
-        MessagingChannel<?> result = messagingChannels.getChannel(dataPointRT1).orElse(null);
+        MessagingChannel result = messagingChannels.getChannel(dataPointRT1).orElse(null);
 
         //when:
         Assert.assertEquals(messagingChannelOpenned1, result);
@@ -277,19 +269,19 @@ public class MessagingChannelsTest {
     public void when_getChannel_without_initChannel_then_channel_null() {
 
         //when:
-        MessagingChannel<?> result = messagingChannels.getChannel(dataPointRT1).orElse(null);
+        MessagingChannel result = messagingChannels.getChannel(dataPointRT1).orElse(null);
 
         //when:
         Assert.assertEquals(null, result);
     }
-
+*/
     @Test
-    public void when_isOpen_after_initChannel_then_true() {
+    public void when_isOpen_after_initChannel_then_true() throws Exception {
         //given:
         messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
 
         //when:
-        boolean result = messagingChannels.isOpen();
+        boolean result = messagingChannels.isOpenConnection();
 
         //then:
         Assert.assertEquals(true, result);
@@ -303,7 +295,7 @@ public class MessagingChannelsTest {
         messagingChannels.initChannel(dataPointRT3, () -> messagingChannelOpenned3);
 
         //when:
-        messagingChannels.closeChannels(1000);
+        messagingChannels.closeChannels();
 
         //when:
         Assert.assertEquals(0, messagingChannels.size());

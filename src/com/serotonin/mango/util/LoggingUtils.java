@@ -96,7 +96,9 @@ public final class LoggingUtils {
 
     public static String pointValueTimeInfo(PointValueTime pointValueTime, SetPointSource source) {
         String dataPointInfo = "pointValueTime: {0} (source: {1})";
-        return MessageFormat.format(dataPointInfo, pointValueTime, source);
+        if(source != null)
+            return MessageFormat.format(dataPointInfo, pointValueTime, source.getClass().getSimpleName());
+        return MessageFormat.format(dataPointInfo, pointValueTime, "unknown");
     }
 
     public static String dataSourcePointInfo(DataSourceVO<?> dataSource, DataPointVO dataPoint) {

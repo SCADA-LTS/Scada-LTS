@@ -1,9 +1,6 @@
-package org.scada_lts.ds.messaging.amqp;
+package org.scada_lts.ds.messaging.protocol.amqp;
 
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteProperty;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -17,7 +14,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.messaging.BrokerMode;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
-import org.scada_lts.ds.messaging.MessagingServiceFactory;
+import org.scada_lts.ds.messaging.protocol.ProtocolVersion;
+import org.scada_lts.ds.messaging.service.MessagingServiceFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,7 +24,8 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
-public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements DataSourceUpdatable {
+@JsonRemoteEntity
+public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements DataSourceUpdatable<AmqpDataSourceVO> {
 
     public static final Type TYPE = Type.AMQP;
 
@@ -66,7 +65,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @JsonRemoteProperty
     private boolean automaticRecoveryEnabled = true;
 
-    private AmqpVersion protocolVersion = AmqpVersion.V0_9_1_EXT;
+    private ProtocolVersion protocolVersion = AmqpVersion.V0_9_1_EXT_AMQP;
     private BrokerMode brokerMode = BrokerMode.NATIVE;
 
     @Override
@@ -209,7 +208,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
             try {
                 protocolVersion = (AmqpVersion) in.readObject();
             } catch (ClassNotFoundException e) {
-                protocolVersion = AmqpVersion.V0_9_1_EXT;
+                protocolVersion = AmqpVersion.V0_9_1_EXT_AMQP;
             }
             try {
                 brokerMode = (BrokerMode) in.readObject();
@@ -220,10 +219,10 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     }
 
     @Override
-    public void jsonSerialize(Map<String, Object> map){
+    public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         serializeUpdatePeriodType(map, updatePeriodType);
-        map.put("protocolVersion", protocolVersion.name());
+        map.put("protocolVersion", protocolVersion.getName());
         map.put("brokerMode", brokerMode.name());
     }
 
@@ -238,7 +237,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
             try {
                 protocolVersion = AmqpVersion.valueOf(protocolVersionJson);
             } catch (Exception ex) {
-                protocolVersion = AmqpVersion.V0_9_1_EXT;
+                protocolVersion = AmqpVersion.V0_9_1_EXT_AMQP;
             }
         }
         String brokerModeJson = json.getString("brokerMode");
@@ -347,7 +346,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         this.automaticRecoveryEnabled = automaticRecoveryEnabled;
     }
 
-    public AmqpVersion getProtocolVersion() {
+    public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
     }
 

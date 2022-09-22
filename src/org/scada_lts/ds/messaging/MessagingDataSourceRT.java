@@ -10,6 +10,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.DataSourceUpdatable;
+import org.scada_lts.ds.messaging.service.MessagingService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

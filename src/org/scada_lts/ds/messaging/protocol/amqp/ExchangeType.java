@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.amqp;
+package org.scada_lts.ds.messaging.protocol.amqp;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.BuiltinExchangeType;
