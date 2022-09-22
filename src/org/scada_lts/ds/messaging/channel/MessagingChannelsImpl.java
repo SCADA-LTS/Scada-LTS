@@ -44,6 +44,8 @@ class MessagingChannelsImpl implements MessagingChannels {
     public void initChannel(DataPointRT dataPoint, Supplier<MessagingChannel> create) {
         try {
             getChannel(dataPoint).orElseGet(() -> operationChannels.createChannelIfNotExists(dataPoint.getId(), a -> create.get()));
+        } catch (MessagingChannelException e) {
+            throw e;
         } catch (Exception e) {
             throw new MessagingChannelException("Error Init Channel: " + dataPointInfo(dataPoint.getVO()) + ", " + exceptionInfo(e), e);
         }
@@ -55,9 +57,9 @@ class MessagingChannelsImpl implements MessagingChannels {
             try {
                 channel.publish(message);
             } catch (MessagingChannelException e) {
-                throw new RuntimeException("Error Publish: " + dataPointInfo(dataPoint.getVO()) + ", Value: " + message + ", " + causeInfo(e), e.getCause());
+                throw e;
             } catch (Exception e) {
-                throw new RuntimeException("Error Publish: " + dataPointInfo(dataPoint.getVO()) + ", Value: " + message + ", " + exceptionInfo(e), e);
+                throw new MessagingChannelException("Error Publish: " + dataPointInfo(dataPoint.getVO()) + ", Value: " + message + ", " + exceptionInfo(e), e);
             }
         });
     }
