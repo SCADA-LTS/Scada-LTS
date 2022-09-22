@@ -451,6 +451,10 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		return level;
 	}
 
+	public Integer getAlarmLevel(int eventId) {
+		return alarmLevels.get(eventId);
+	}
+
 	public EventTypeVO getEventType(int eventId) {
 		for (EventTypeVO vo : getEventTypes()) {
 			if (vo.getTypeRef2() == eventId)
