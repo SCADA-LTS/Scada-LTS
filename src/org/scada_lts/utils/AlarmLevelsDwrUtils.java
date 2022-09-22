@@ -17,15 +17,14 @@ public final class AlarmLevelsDwrUtils {
     private AlarmLevelsDwrUtils() {}
 
     public static void setAlarmLists(DataSourceVO<?> form, DataSourceService dataSourceService) {
-        if(form.getId() == Common.NEW_ID) {
-            setAlarmLists(form);
-        } else {
+        if(form.getId() != Common.NEW_ID) {
             DataSourceVO<?> fromDatabase = dataSourceService.getDataSource(form.getXid());
             if(fromDatabase != null) {
                 ExportCodes exportCodes = fromDatabase.getEventCodes();
                 if (exportCodes != null) {
                     for (IntValuePair id : exportCodes.getIdKeys()) {
-                        form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey(), 0));
+                        if(fromDatabase.getAlarmLevel(id.getKey()) != null)
+                            form.setAlarmLevel(id.getKey(), fromDatabase.getAlarmLevel(id.getKey()));
                     }
                 }
             }

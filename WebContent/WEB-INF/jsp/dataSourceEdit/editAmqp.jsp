@@ -115,7 +115,7 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.protocolVersion"/></td>
     <td class="formField">
         <select id="protocolVersion">
-            <option value="<c:out value="<%= AmqpVersion.V0_9_1_EXT_AMQP %>"/>" ${dataSource.protocolVersion.name == 'V0_9_1_EXT_AMQP' ? 'selected' : ''} >${dataSource.protocolVersion.version}</option>
+            <option value="<c:out value="<%= AmqpVersion.V0_9_1_EXT_AMQP %>"/>" ${dataSource.protocolVersion.name == 'V0_9_1_EXT_AMQP' ? 'selected' : ''} ><c:out value='<%= AmqpVersion.V0_9_1_EXT_AMQP.getVersion() %>'/></option>
         </select>
     </td>
   </tr>
