@@ -5,7 +5,6 @@ import org.directwebremoting.extend.*;
 import org.directwebremoting.util.LocalUtil;
 import org.scada_lts.ds.messaging.protocol.ProtocolVersion;
 
-import java.lang.reflect.Method;
 
 public class ProtocolVersionConverter extends EnumConverter {
 
@@ -13,10 +12,7 @@ public class ProtocolVersionConverter extends EnumConverter {
     public Object convertInbound(Class paramType, InboundVariable iv, InboundContext inctx) throws MarshallException {
         String value = LocalUtil.decode(iv.getValue());
         try {
-            Method getter = paramType.getMethod("protocolVersion", String.class);
-            return getter.invoke(paramType, value);
-        } catch (NoSuchMethodException var8) {
-            throw new MarshallException(paramType);
+            return ProtocolVersion.protocolVersion(value);
         } catch (Exception var9) {
             throw new MarshallException(paramType, var9);
         }
@@ -24,8 +20,8 @@ public class ProtocolVersionConverter extends EnumConverter {
 
     @Override
     public OutboundVariable convertOutbound(Object data, OutboundContext outctx) {
-        ProtocolVersion lm = (ProtocolVersion)data;
-        String s = lm.getName();
-        return super.convertOutbound(s, outctx);
+        ProtocolVersion protocolVersion = (ProtocolVersion)data;
+        String protocolVersionName = protocolVersion.getName();
+        return super.convertOutbound(protocolVersionName, outctx);
     }
 }
