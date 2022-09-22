@@ -10,9 +10,6 @@ import java.util.stream.Stream;
 public interface ProtocolVersion extends Serializable {
     String getVersion();
     String getName();
-    default String abc() {
-        return "";
-    }
 
     static ProtocolVersion protocolVersion(String value) {
         return Stream.concat(Stream.of(AmqpVersion.values()), Stream.of(MqttVersion.values()))
