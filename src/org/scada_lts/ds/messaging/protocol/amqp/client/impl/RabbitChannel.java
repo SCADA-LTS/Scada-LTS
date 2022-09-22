@@ -59,12 +59,7 @@ class RabbitChannel implements AmqpChannel {
     }
 
     @Override
-    public String basicConsume(String s, boolean b, Consumer consumer) throws IOException {
-        return channel.basicConsume(s, b, consumer);
-    }
-
-    @Override
-    public ScadaConsumer consumer(UpdatePointValueConsumer updatePointValueConsumer) {
-        return new ScadaConsumer(channel, updatePointValueConsumer);
+    public void basicConsume(String s, boolean b, UpdatePointValueConsumer updatePointValueConsumer) throws IOException {
+        channel.basicConsume(s, b, new ScadaConsumer(channel, updatePointValueConsumer));
     }
 }

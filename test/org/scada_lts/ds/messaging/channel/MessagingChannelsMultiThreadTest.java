@@ -348,30 +348,7 @@ public class MessagingChannelsMultiThreadTest {
         //then:
         Assert.assertEquals(1, messagingChannels.size());
     }
-/*
-    @Test
-    public void when_getChannel_after_initChannel_then_channel() {
 
-        //given:
-        messagingChannels.initChannel(dataPointRT1, () -> messagingChannelOpenned1);
-
-        //when:
-        MessagingChannel result = messagingChannels.getChannel(dataPointRT1).orElse(null);
-
-        //when:
-        Assert.assertEquals(messagingChannelOpenned1, result);
-    }
-
-    @Test
-    public void when_getChannel_without_initChannel_then_channel_null() {
-
-        //when:
-        MessagingChannel result = messagingChannels.getChannel(dataPointRT1).orElse(null);
-
-        //when:
-        Assert.assertEquals(null, result);
-    }
-*/
     @Test
     public void when_isOpen_after_initChannel_then_true() throws Exception{
         //given:

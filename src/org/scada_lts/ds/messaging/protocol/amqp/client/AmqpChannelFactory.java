@@ -64,8 +64,8 @@ final class AmqpChannelFactory {
         AmqpPointLocatorRT locator = dataPoint.getPointLocator();
         AmqpPointLocatorVO vo = locator.getVO();
         boolean noAck = vo.getMessageAck() == MessageAckType.NO_ACK;
-        channel.basicConsume(vo.getQueueName(), noAck, channel.consumer(new UpdatePointValueConsumer(dataPoint,
-                vo::isWritable, updateErrorKey, exceptionHandler)));
+        channel.basicConsume(vo.getQueueName(), noAck, new UpdatePointValueConsumer(dataPoint, vo::isWritable,
+                updateErrorKey, exceptionHandler));
     }
 
     private static void declare(AmqpChannel channel, AmqpPointLocatorVO vo) throws IOException {

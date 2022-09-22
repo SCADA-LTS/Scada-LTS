@@ -30,8 +30,8 @@ public final class LoggingUtils {
     public static String dataSourceInfo(DataSourceRT dataSource) {
         if(dataSource == null)
             return "";
-        DataSourceVO<?> dataSourceVO = dataSource.getVO();
-        return dataSourceInfo(dataSourceVO);
+        String dataSourceInfo = "datasource: {0} (id: {1})";
+        return MessageFormat.format(dataSourceInfo, dataSource.getName(), String.valueOf(dataSource.getId()));
     }
 
     public static String dataSourceInfo(DataSourceVO<?> dataSource) {
