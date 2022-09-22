@@ -1,7 +1,7 @@
-package org.scada_lts.ds.messaging.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.impl;
 
 import org.eclipse.paho.client.mqttv3.*;
-import org.scada_lts.ds.messaging.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 
 import java.util.function.BiConsumer;
 

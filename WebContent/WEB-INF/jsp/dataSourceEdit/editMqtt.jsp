@@ -5,8 +5,8 @@
 --%>
 
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<%@page import="org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO"%>
-<%@page import="org.scada_lts.ds.messaging.mqtt.MqttVersion"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO"%>
+<%@page import="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion"%>
 <%@page import="org.scada_lts.ds.messaging.BrokerMode"%>
 <script type="text/javascript">
 
@@ -99,8 +99,8 @@
     <td class="formLabelRequired"><fmt:message key="dsEdit.messaging.protocolVersion"/></td>
     <td class="formField">
         <select id="protocolVersion">
-            <option value="<c:out value="<%= MqttVersion.V3_1_1 %>"/>" ${dataSource.protocolVersion == 'V3_1_1' ? 'selected' : ''} >v3.1.1</option>
-            <option value="<c:out value="<%= MqttVersion.V5_0 %>"/>" ${dataSource.protocolVersion == 'V5_0' ? 'selected' : ''} >v5.0</option>
+            <option value="<c:out value="<%= MqttVersion.V3_1_1_MQTT %>"/>" ${dataSource.protocolVersion.name == 'V3_1_1_MQTT' ? 'selected' : ''} ><c:out value='<%= MqttVersion.V3_1_1_MQTT.getVersion() %>'/></option>
+            <option value="<c:out value="<%= MqttVersion.V5_0_MQTT %>"/>" ${dataSource.protocolVersion.name == 'V5_0_MQTT' ? 'selected' : ''} ><c:out value='<%= MqttVersion.V5_0_MQTT.getVersion() %>'/></option>
         </select>
     </td>
   </tr>

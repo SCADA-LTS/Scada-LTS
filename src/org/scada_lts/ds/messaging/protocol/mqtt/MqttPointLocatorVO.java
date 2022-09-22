@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.mqtt;
+package org.scada_lts.ds.messaging.protocol.mqtt;
 
 import com.serotonin.json.*;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
@@ -17,6 +17,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 
+@JsonRemoteEntity
 public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSerializable {
 
     @JsonRemoteProperty

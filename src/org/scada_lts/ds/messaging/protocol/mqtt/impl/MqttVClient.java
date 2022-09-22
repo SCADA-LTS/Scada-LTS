@@ -1,4 +1,4 @@
-package org.scada_lts.ds.messaging.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.impl;
 
 import java.util.function.BiConsumer;
 

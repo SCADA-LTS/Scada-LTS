@@ -236,7 +236,7 @@
     <convert converter="protocolVersionConverter" match="org.scada_lts.ds.messaging.protocol.ProtocolVersion" />
 
     <!-- MQTT stuff -->
-    <convert converter="enum" match="org.scada_lts.ds.messaging.mqtt.MqttVersion" />
+    <convert converter="enum" match="org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion" />
 
     <convert converter="enum" match="org.scada_lts.ds.messaging.BrokerMode" />
 

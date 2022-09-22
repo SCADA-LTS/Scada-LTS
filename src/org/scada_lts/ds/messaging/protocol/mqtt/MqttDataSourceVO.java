@@ -1,9 +1,6 @@
-package org.scada_lts.ds.messaging.mqtt;
+package org.scada_lts.ds.messaging.protocol.mqtt;
 
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteProperty;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -17,7 +14,8 @@ import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.DataSourceUpdatable;
 import org.scada_lts.ds.messaging.BrokerMode;
 import org.scada_lts.ds.messaging.MessagingDataSourceRT;
-import org.scada_lts.ds.messaging.MessagingServiceFactory;
+import org.scada_lts.ds.messaging.protocol.ProtocolVersion;
+import org.scada_lts.ds.messaging.service.MessagingServiceFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,6 +24,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
+@JsonRemoteEntity
 public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements DataSourceUpdatable<MqttDataSourceVO> {
 
     public static final Type TYPE = Type.MQTT;
@@ -67,7 +66,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
     @JsonRemoteProperty
     private boolean cleanSession = true;
 
-    private MqttVersion protocolVersion = MqttVersion.V3_1_1;
+    private ProtocolVersion protocolVersion = MqttVersion.V3_1_1_MQTT;
     private BrokerMode brokerMode = BrokerMode.NATIVE;
 
     @Override
@@ -213,7 +212,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
             try {
                 protocolVersion = (MqttVersion) in.readObject();
             } catch (Exception e) {
-                protocolVersion = MqttVersion.V3_1_1;
+                protocolVersion = MqttVersion.V3_1_1_MQTT;
             }
             keepAliveInterval = in.readInt();
             cleanSession = in.readBoolean();
@@ -229,7 +228,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
     public void jsonSerialize(Map<String, Object> map){
         super.jsonSerialize(map);
         serializeUpdatePeriodType(map, updatePeriodType);
-        map.put("protocolVersion", protocolVersion.name());
+        map.put("protocolVersion", protocolVersion.getName());
         map.put("brokerMode", brokerMode.name());
     }
 
@@ -244,7 +243,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
             try {
                 protocolVersion = MqttVersion.valueOf(protocolVersionJson);
             } catch (Exception ex) {
-                protocolVersion = MqttVersion.V3_1_1;
+                protocolVersion = MqttVersion.V3_1_1_MQTT;
             }
         }
         String brokerModeJson = json.getString("brokerMode");
@@ -345,11 +344,11 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
         this.automaticReconnect = automaticReconnect;
     }
 
-    public MqttVersion getProtocolVersion() {
+    public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
     }
 
-    public void setProtocolVersion(MqttVersion protocolVersion) {
+    public void setProtocolVersion(ProtocolVersion protocolVersion) {
         this.protocolVersion = protocolVersion;
     }
 

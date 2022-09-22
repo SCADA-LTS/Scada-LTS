@@ -1,8 +1,8 @@
-package org.scada_lts.ds.messaging.mqtt.impl;
+package org.scada_lts.ds.messaging.protocol.mqtt.impl;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.scada_lts.ds.messaging.mqtt.MqttDataSourceVO;
-import org.scada_lts.ds.messaging.mqtt.MqttPointLocatorVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 
 public final class MqttClientFactory {
 
