@@ -45,6 +45,7 @@ import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.ws.ScadaWebSockets;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSockets<MangoValue> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
@@ -59,7 +60,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	private final PointValueCache valueCache;
 	private RuntimeManager rm;
 	private List<PointEventDetectorRT> detectors;
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
 	// Interval logging data.
 	private PointValueTime intervalValue;
@@ -164,6 +165,13 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 	 */
 	public void updatePointValue(PointValueTime newValue) {
 		savePointValue(newValue, null, true);
+	}
+
+	public void updatePointValue(String newValue) {
+		PointValueTime pointValueTime =
+				new PointValueTime(MangoValue.stringToValue(newValue, getDataTypeId()),
+						System.currentTimeMillis());
+		savePointValue(pointValueTime, null, true);
 	}
 
 	public void updatePointValue(PointValueTime newValue, boolean async) {

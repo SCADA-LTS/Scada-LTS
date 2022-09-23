@@ -5,18 +5,18 @@
   "author": "SoftQ development team",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
-    "bootstrap": "~3.4.1",
-    "bootstrap3-dialog": "~1.35.1",
-    "jquery": "~3.6.0",
+    "axios": "0.21.4",
+    "bootstrap": "3.4.1",
+    "bootstrap3-dialog": "1.35.4",
+    "jquery": "3.6.1",
     "jquery-ui-dist": "1.12.1",
-    "jquery.fancytree": "~2.18.0",
-    "json-lint": "~0.1.0",
+    "jquery.fancytree": "2.18.0",
+    "json-lint": "0.1.0",
     "stompjs": "2.3.3",
-    "sweetalert2": "^7.19.1",
-    "vue": "^2.5.16",
-    "vue-axios": "^2.1.1",
-    "vue-jsoneditor": "^1.0.13",
+    "sweetalert2": "7.33.1",
+    "vue": "2.7.10",
+    "vue-axios": "2.1.5",
+    "vue-jsoneditor": "1.0.13",
     "sockjs-client": "1.6.0"
   }
 }
