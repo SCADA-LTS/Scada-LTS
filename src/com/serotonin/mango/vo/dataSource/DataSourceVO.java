@@ -68,6 +68,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.change.ChangeStatus;
@@ -303,7 +304,13 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			public DataSourceVO<?> createDataSourceVO() {
 		 		return new AmqpDataSourceVO();
 			}
-		};
+		},
+		MQTT(47, "dsEdit.mqtt", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new MqttDataSourceVO();
+			}
+		},;
 
 		private Type(int id, String key, boolean display) {
 			this.id = id;

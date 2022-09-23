@@ -1,0 +1,34 @@
+<!--
+SoftQ - http://www.softq.pl/
+Copyright (C) 2022 Softq
+-->
+<p>MQTT (Message Queuing Telemetry Transport) - providing a lightweight publish/subscribe reliable messaging transport
+    protocol suitable for communication in M2M/IoT contexts where a small code footprint is required and/or network bandwidth is at a premium.</p>
+<p>Some technical information:
+<ul>
+    <li><b>Protocol version:</b> 3.1.1, 5.0</li>
+</ul>
+</p>
+
+<p>
+    Data Source implementation based on: Eclipse Paho 1.2.5;
+</p>
+
+<h2>Configuration</h2>
+<p>Each MQTT Receiver Data Source require some parameters:
+<ul>
+    <li><b>Name</b> - Data Source unique display name</li>
+    <li><b>Server Host</b> - Host of the broker to which we want to connect</li>
+    <li><b>Server Port</b> - Port on which the broker listen to (default = 1883)</li>
+</ul>
+</p>
+<p>There are also some optional parameters:
+<ul>
+    <li><b>Username</b> - username required to login into the broker</li>
+    <li><b>Password</b> - username password required to authenticate the user</li>
+</ul>
+</p>
+<p>
+    ScadaLTS can also send a messages to related queue. It is as simple as it was for other DataPoint. Just open "watch list" menu
+    select wrench button, type a new message which you want to send, and press link [send]. You can check your message on the other device.
+</p>

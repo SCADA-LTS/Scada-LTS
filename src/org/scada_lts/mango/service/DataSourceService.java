@@ -31,10 +31,12 @@ import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.utils.MqttUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -203,6 +205,11 @@ public class DataSourceService implements MangoDataSource {
 			dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
 			dataPointCopy.getComments().clear();
 
+			if(dataPointCopy.getPointLocator() instanceof MqttPointLocatorVO) {
+				MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
+				pointLocator.setClientId(MqttUtils.generateUniqueClientId());
+			}
+
 			//Copy event detectors
 			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
 				pointEventDetector.setId(Common.NEW_ID);
@@ -251,4 +258,10 @@ public class DataSourceService implements MangoDataSource {
 		});
 		return pointList;
 	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
+		return dataSourceDAO.getDataSources(type.getId());
+	}
+
 }
