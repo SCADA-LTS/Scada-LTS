@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.utils.ReflectionUtils;
 
 import static org.junit.Assert.*;
@@ -17,6 +18,9 @@ public class CopyDataSourceVOTest {
         return new Object[][] {
                 {
                     new AmqpDataSourceVO(), AmqpDataSourceVO.class.getName()
+                },
+                {
+                    new MqttDataSourceVO(), MqttDataSourceVO.class.getName()
                 }
         };
     }

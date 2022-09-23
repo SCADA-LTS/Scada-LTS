@@ -23,6 +23,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @JsonRemoteEntity
 public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements DataSourceUpdatable<MqttDataSourceVO> {
@@ -348,7 +349,7 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
         return protocolVersion;
     }
 
-    public void setProtocolVersion(ProtocolVersion protocolVersion) {
+    public void setProtocolVersion(MqttVersion protocolVersion) {
         this.protocolVersion = protocolVersion;
     }
 
@@ -379,5 +380,70 @@ public class MqttDataSourceVO extends DataSourceVO<MqttDataSourceVO> implements 
     @Override
     public DataSourceVO<MqttDataSourceVO> toDataSource() {
         return this;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.copy();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MqttDataSourceVO)) return false;
+        MqttDataSourceVO that = (MqttDataSourceVO) o;
+        return getUpdatePeriodType() == that.getUpdatePeriodType()
+                && getUpdatePeriods() == that.getUpdatePeriods()
+                && getUpdateAttempts() == that.getUpdateAttempts()
+                && getServerPortNumber() == that.getServerPortNumber()
+                && getConnectionTimeout() == that.getConnectionTimeout()
+                && getMaxReconnectDelay() == that.getMaxReconnectDelay()
+                && getExecutorServiceTimeout() == that.getExecutorServiceTimeout()
+                && isAutomaticReconnect() == that.isAutomaticReconnect()
+                && getKeepAliveInterval() == that.getKeepAliveInterval()
+                && isCleanSession() == that.isCleanSession()
+                && Objects.equals(getServerHost(), that.getServerHost())
+                && Objects.equals(getServerUsername(), that.getServerUsername())
+                && Objects.equals(getServerPassword(), that.getServerPassword())
+                && Objects.equals(getProtocolVersion(), that.getProtocolVersion())
+                && getBrokerMode() == that.getBrokerMode()
+                && getId() == that.getId()
+                && isEnabled() == that.isEnabled()
+                && Objects.equals(getXid(), that.getXid())
+                && Objects.equals(getName(), that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUpdatePeriodType(), getUpdatePeriods(), getUpdateAttempts(), getServerHost(),
+                getServerPortNumber(), getServerUsername(), getServerPassword(), getConnectionTimeout(),
+                getMaxReconnectDelay(), getExecutorServiceTimeout(), isAutomaticReconnect(), getKeepAliveInterval(),
+                isCleanSession(), getProtocolVersion(), getBrokerMode(),
+                getId(), getXid(), getName(), isEnabled());
+    }
+
+    @Override
+    public String toString() {
+        return "MqttDataSourceVO{" +
+                "updatePeriodType=" + updatePeriodType +
+                ", updatePeriods=" + updatePeriods +
+                ", updateAttempts=" + updateAttempts +
+                ", serverHost='" + serverHost + '\'' +
+                ", serverPortNumber=" + serverPortNumber +
+                ", serverUsername='" + serverUsername + '\'' +
+                ", serverPassword='" + serverPassword + '\'' +
+                ", connectionTimeout=" + connectionTimeout +
+                ", maxReconnectDelay=" + maxReconnectDelay +
+                ", executorServiceTimeout=" + executorServiceTimeout +
+                ", automaticReconnect=" + automaticReconnect +
+                ", keepAliveInterval=" + keepAliveInterval +
+                ", cleanSession=" + cleanSession +
+                ", protocolVersion=" + protocolVersion +
+                ", brokerMode=" + brokerMode +
+                ", id=" + getId() +
+                ", xid=" + getXid() +
+                ", name=" + getName() +
+                ", enabled=" + isEnabled() +
+                '}';
     }
 }
