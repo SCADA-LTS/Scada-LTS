@@ -2,6 +2,7 @@ package org.scada_lts.utils;
 
 import org.scada_lts.ds.messaging.BrokerMode;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpVersion;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttVersion;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.StartSleepStateDs;
 
@@ -27,6 +28,7 @@ public final class ReflectionUtils {
         objectGenerators.put(AmqpVersion.class, () -> AmqpVersion.V0_9_1_EXT_AMQP);
         objectGenerators.put(BrokerMode.class, () -> BrokerMode.NATIVE);
         objectGenerators.put(List.class, ArrayList::new);
+        objectGenerators.put(MqttVersion.class, () -> MqttVersion.V5_0_MQTT);
     }
 
     private ReflectionUtils() {}
