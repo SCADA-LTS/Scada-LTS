@@ -90,8 +90,14 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.protocol.amqp.ExchangeType;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
 import com.serotonin.mango.Common;
@@ -216,11 +222,13 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.utils.AlarmLevelsDwrUtils;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
 import org.scada_lts.serial.SerialPortWrapperAdapter;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
 
 /**
  * @author Matthew Lohbihler
@@ -416,6 +424,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         ds.setAlarmLevel(eventId, alarmLevel);
+        putAlarmLevels("AlarmLevels_" + ds.getXid(), eventId, alarmLevel);
     }
 
     //
@@ -448,6 +457,42 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return validatePoint(id, xid, name, locator, null);
     }
 
+    // AMQP Receiver //
+    @MethodFilter
+    public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+    @MethodFilter
+    public DwrResponseI18n saveAmqpPointLocator(int id, String xid, String name, AmqpPointLocatorVO locator){
+        if (locator.getExchangeType() == ExchangeType.NONE) {
+            locator.setRoutingKey("");
+            locator.setExchangeName("");
+        }
+        if (locator.getExchangeType() == ExchangeType.FANOUT) {
+            locator.setRoutingKey("");
+        }
+        return validatePoint(id, xid, name, locator, null);
+    }
+
+    // MQTT Receiver //
+    @MethodFilter
+    public DwrResponseI18n saveMqttDataSource(MqttDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+
+
+    @MethodFilter
+    public DwrResponseI18n saveMqttPointLocator(int id, String xid, String name, MqttPointLocatorVO locator){
+        return validatePoint(id, xid, name, locator, null);
+    }
     //
     //
     // Modbus common stuff
@@ -2936,5 +2981,4 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                                                     String name, RadiuinoPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
-
 }

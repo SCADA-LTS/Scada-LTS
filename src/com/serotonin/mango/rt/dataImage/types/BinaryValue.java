@@ -54,7 +54,7 @@ public class BinaryValue extends MangoValue implements Comparable<BinaryValue> {
 
     @Override
     public String getStringValue() {
-        return null;
+        return String.valueOf(value);
     }
 
     @Override

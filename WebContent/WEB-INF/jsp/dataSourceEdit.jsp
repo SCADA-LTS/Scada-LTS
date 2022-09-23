@@ -360,6 +360,10 @@
 			<jsp:include page="dataSourceEdit/editVirtual.jsp" />
 		</c:when>
 		<c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.AMQP']}">
+            <jsp:include page="dataSourceEdit/editAmqp.jsp"/>
+        </c:when>
+		<c:when
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MODBUS_SERIAL']}">
 			<jsp:include page="dataSourceEdit/editModbus.jsp" />
 		</c:when>
@@ -367,6 +371,10 @@
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MODBUS_IP']}">
 			<jsp:include page="dataSourceEdit/editModbus.jsp" />
 		</c:when>
+        <c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.MQTT']}">
+            <jsp:include page="dataSourceEdit/editMqtt.jsp"/>
+        </c:when>
 		<c:when
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.SNMP']}">
 			<jsp:include page="dataSourceEdit/editSnmp.jsp" />

@@ -74,6 +74,11 @@ public final class OnlyMigrationDataSourceService implements MangoDataSource {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
+		throw new UnsupportedOperationException();
+	}
+
 	@Deprecated
 	public List<Integer> getDataSourceId(int userId) {
 		throw new UnsupportedOperationException();

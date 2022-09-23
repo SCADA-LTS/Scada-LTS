@@ -218,6 +218,11 @@ public class DataSourceDAO {
 			"where " +
 			"dsup." + COLUMN_NAME_DS_USER_ID + "=?;";
 
+	private static final String DATA_SOURCE_SELECT_WHERE_TYPE = ""
+			+ DATA_SOURCE_SELECT
+			+ "where "
+			+ COLUMN_NAME_DS_TYPE + "=? ";
+
 	// @formatter:on
 
 	private class DataSourceRowMapper implements RowMapper<DataSourceVO<?>> {
@@ -528,5 +533,14 @@ public class DataSourceDAO {
 			LOG.error(ex.getMessage(), ex);
 			return Collections.emptyList();
 		}
+	}
+
+	public List<DataSourceVO<?>> getDataSources(int type) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataSources(int type)");
+		}
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT_WHERE_TYPE,
+				new Object[]{type}, new DataSourceRowMapper());
 	}
 }

@@ -67,6 +67,8 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.change.ChangeStatus;
@@ -296,7 +298,19 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			public DataSourceVO<?> createDataSourceVO() {
 				return new RadiuinoDataSourceVO();
 			}
-		};
+		},
+		AMQP(45, "dsEdit.amqp", true) {
+		 	@Override
+			public DataSourceVO<?> createDataSourceVO() {
+		 		return new AmqpDataSourceVO();
+			}
+		},
+		MQTT(47, "dsEdit.mqtt", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new MqttDataSourceVO();
+			}
+		},;
 
 		private Type(int id, String key, boolean display) {
 			this.id = id;
@@ -442,6 +456,10 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		if (level == null)
 			return defaultLevel;
 		return level;
+	}
+
+	public Integer getAlarmLevel(int eventId) {
+		return alarmLevels.get(eventId);
 	}
 
 	public EventTypeVO getEventType(int eventId) {

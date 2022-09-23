@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -26,6 +27,16 @@ public class TestConcurrentUtils {
         ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = () -> fun.accept(keyA, keyB);
         MultiThreadEngine.execute(executor, numberOfLaunches, action);
+        executor.shutdownNow();
+    }
+
+    public static void biConsumer(int numberOfLaunches, List<Action<?, ?>> actions) {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches * actions.size());
+        List<Runnable> runnables = new ArrayList<>();
+        for(Action<?, ?> action: actions) {
+            runnables.add(action::execute);
+        }
+        MultiThreadEngine.execute(executor, numberOfLaunches, runnables);
         executor.shutdownNow();
     }
 
@@ -69,5 +80,21 @@ public class TestConcurrentUtils {
     @FunctionalInterface
     public interface SupplierVoid {
         void execute();
+    }
+
+    public static class Action<A, B> {
+        private BiConsumer<A, B> fun;
+        A keyA;
+        B keyB;
+
+        public Action(BiConsumer<A, B> fun, A keyA, B keyB) {
+            this.fun = fun;
+            this.keyA = keyA;
+            this.keyB = keyB;
+        }
+
+        public void execute() {
+            fun.accept(keyA, keyB);
+        }
     }
 }
