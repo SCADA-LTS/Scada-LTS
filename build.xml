@@ -297,6 +297,10 @@
 			<test name="org.scada_lts.ds.messaging.channel.MessagingChannelsTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="com.serotonin.mango.vo.dataSource.CopyDataSourceVOTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">

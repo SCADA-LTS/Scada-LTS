@@ -67,6 +67,8 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
@@ -77,6 +79,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
@@ -360,6 +363,8 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		}
 	}
 
+	private static final Log LOG = LogFactory.getLog(DataSourceVO.class);
+
 	public static final String XID_PREFIX = "DS_";
 
 	public static DataSourceVO<?> createDataSourceVO(int typeId) {
@@ -506,11 +511,26 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	}
 
 	public DataSourceVO<?> copy() {
+		DataSourceVO<?> dataSource;
 		try {
-			return (DataSourceVO<?>) super.clone();
+			dataSource = (DataSourceVO<?>) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new ShouldNeverHappenException(e);
 		}
+		dataSource.alarmLevels = new HashMap<>(alarmLevels);
+		dataSource.resetListeners();
+		if(state != null) {
+			try {
+				Constructor<? extends IStateDs> constructor = state.getClass().getConstructor();
+				if(constructor != null) {
+					IStateDs newState = constructor.newInstance();
+					dataSource.setState(newState);
+				}
+			} catch (Exception e) {
+				LOG.warn(e.getMessage(), e);
+			}
+		}
+		return dataSource;
 	}
 
 	@Override

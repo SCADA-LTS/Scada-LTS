@@ -23,6 +23,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @JsonRemoteEntity
 public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements DataSourceUpdatable<AmqpDataSourceVO> {
@@ -30,6 +31,7 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     public static final Type TYPE = Type.AMQP;
 
     private static final ExportCodes EVENT_CODES = new ExportCodes();
+    public static final String VALIDATE_INVALID_VALUE = "validate.invalidValue";
 
     static {
         EVENT_CODES.addElement(MessagingDataSourceRT.DATA_SOURCE_EXCEPTION_EVENT, "DATA_SOURCE_EXCEPTION");
@@ -104,25 +106,25 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
         try {
             InetAddress.getByName(serverHost);
         } catch (Exception e) {
-            response.addContextualMessage("serverHost","validate.invalidValue");
+            response.addContextualMessage("serverHost", VALIDATE_INVALID_VALUE);
         }
         if (serverPortNumber < 0) {
-            response.addContextualMessage("serverPortNumber","validate.invalidValue");
+            response.addContextualMessage("serverPortNumber",VALIDATE_INVALID_VALUE);
         }
         if (updateAttempts < 0 || updateAttempts > 10) {
             response.addContextualMessage("updateAttempts", "validate.updateAttempts");
         }
 
         if (networkRecoveryInterval < 0) {
-            response.addContextualMessage("networkRecoveryInterval","validate.invalidValue");
+            response.addContextualMessage("networkRecoveryInterval",VALIDATE_INVALID_VALUE);
         }
 
         if (channelRpcTimeout < 0) {
-            response.addContextualMessage("channelRpcTimeout","validate.invalidValue");
+            response.addContextualMessage("channelRpcTimeout",VALIDATE_INVALID_VALUE);
         }
 
         if (connectionTimeout < 0) {
-            response.addContextualMessage("connectionTimeout","validate.invalidValue");
+            response.addContextualMessage("connectionTimeout",VALIDATE_INVALID_VALUE);
         }
     }
 
@@ -207,12 +209,12 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
             automaticRecoveryEnabled  = in.readBoolean();
             try {
                 protocolVersion = (AmqpVersion) in.readObject();
-            } catch (ClassNotFoundException e) {
+            } catch (Exception e) {
                 protocolVersion = AmqpVersion.V0_9_1_EXT_AMQP;
             }
             try {
                 brokerMode = (BrokerMode) in.readObject();
-            } catch (ClassNotFoundException e) {
+            } catch (Exception e) {
                 brokerMode = BrokerMode.NATIVE;
             }
         }
@@ -365,5 +367,70 @@ public class AmqpDataSourceVO extends DataSourceVO<AmqpDataSourceVO> implements 
     @Override
     public DataSourceVO<AmqpDataSourceVO> toDataSource() {
         return this;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.copy();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AmqpDataSourceVO)) return false;
+        AmqpDataSourceVO that = (AmqpDataSourceVO) o;
+        return getUpdatePeriodType() == that.getUpdatePeriodType()
+                && getUpdatePeriods() == that.getUpdatePeriods()
+                && getUpdateAttempts() == that.getUpdateAttempts()
+                && getServerPortNumber() == that.getServerPortNumber()
+                && getConnectionTimeout() == that.getConnectionTimeout()
+                && getNetworkRecoveryInterval() == that.getNetworkRecoveryInterval()
+                && getChannelRpcTimeout() == that.getChannelRpcTimeout()
+                && isAutomaticRecoveryEnabled() == that.isAutomaticRecoveryEnabled()
+                && Objects.equals(getServerHost(), that.getServerHost())
+                && Objects.equals(getServerVirtualHost(), that.getServerVirtualHost())
+                && Objects.equals(getServerUsername(), that.getServerUsername())
+                && Objects.equals(getServerPassword(), that.getServerPassword())
+                && Objects.equals(getProtocolVersion(), that.getProtocolVersion())
+                && getBrokerMode() == that.getBrokerMode()
+                && getId() == that.getId()
+                && isEnabled() == that.isEnabled()
+                && Objects.equals(getXid(), that.getXid())
+                && Objects.equals(getName(), that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUpdatePeriodType(), getUpdatePeriods(),
+                getUpdateAttempts(), getServerHost(),
+                getServerPortNumber(), getServerVirtualHost(),
+                getServerUsername(), getServerPassword(), getConnectionTimeout(),
+                getNetworkRecoveryInterval(), getChannelRpcTimeout(),
+                isAutomaticRecoveryEnabled(), getProtocolVersion(), getBrokerMode(),
+                getId(), getXid(), getName(), isEnabled());
+    }
+
+    @Override
+    public String toString() {
+        return "AmqpDataSourceVO{" +
+                "updatePeriodType=" + updatePeriodType +
+                ", updatePeriods=" + updatePeriods +
+                ", updateAttempts=" + updateAttempts +
+                ", serverHost='" + serverHost + '\'' +
+                ", serverPortNumber=" + serverPortNumber +
+                ", serverVirtualHost='" + serverVirtualHost + '\'' +
+                ", serverUsername='" + serverUsername + '\'' +
+                ", serverPassword='" + serverPassword + '\'' +
+                ", connectionTimeout=" + connectionTimeout +
+                ", networkRecoveryInterval=" + networkRecoveryInterval +
+                ", channelRpcTimeout=" + channelRpcTimeout +
+                ", automaticRecoveryEnabled=" + automaticRecoveryEnabled +
+                ", protocolVersion=" + protocolVersion +
+                ", brokerMode=" + brokerMode +
+                ", id=" + getId() +
+                ", xid=" + getXid() +
+                ", name=" + getName() +
+                ", enabled=" + isEnabled() +
+                '}';
     }
 }
