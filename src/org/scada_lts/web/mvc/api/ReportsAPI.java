@@ -3,7 +3,7 @@ package org.scada_lts.web.mvc.api;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
-import com.serotonin.mango.util.SendMsgUtils;
+import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.ReportInstance;
@@ -133,18 +133,14 @@ public class ReportsAPI {
                     return new ResponseEntity<>(LocalizableMessage.getMessage(Common.getBundle(),"js.email.noRecipForEmail"), HttpStatus.BAD_REQUEST);
                 else {
                     List<String> errors = new ArrayList<>();
-                    boolean sent = SendMsgUtils.sendEmailTestSync(new HashSet<>(addresses), new AfterWork() {
+                    SendUtils.sendMsgTestSync(new HashSet<>(addresses), new AfterWork() {
                         @Override
                         public void workFail(Exception exception) {
                             errors.add(LocalizableMessage.getMessage(Common.getBundle(),"common.default", exception.getMessage()));
                         }
-                        @Override
-                        public void workSuccess() {}
                     });
-                    if(sent && errors.isEmpty())
+                    if(errors.isEmpty())
                         return new ResponseEntity<>("OK", HttpStatus.OK);
-                    if(!sent)
-                        return new ResponseEntity<>("Email has not been sent.", HttpStatus.BAD_REQUEST);
                     return new ResponseEntity<>(errors.get(0), HttpStatus.BAD_REQUEST);
                 }
             } else {

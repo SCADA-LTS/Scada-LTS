@@ -74,6 +74,11 @@ abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
     public abstract void work();
 
     @Override
+    public void workFail(Exception exception) {
+        LOG.error(exception.getMessage(), exception);
+    }
+
+    @Override
     public void workSuccessFail(Exception exception) {
         LOG.error(exception.getMessage(), exception);
     }

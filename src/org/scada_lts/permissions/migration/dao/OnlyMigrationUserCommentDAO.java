@@ -24,7 +24,7 @@ import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.IUserCommentDAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class OnlyMigrationUserCommentDAO extends UserCommentDAO {
+public final class OnlyMigrationUserCommentDAO implements IUserCommentDAO {
 
 	private static final Log LOG = LogFactory.getLog(OnlyMigrationUserCommentDAO.class);
 

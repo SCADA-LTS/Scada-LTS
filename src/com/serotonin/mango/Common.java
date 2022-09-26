@@ -32,6 +32,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -65,6 +67,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
+import org.scada_lts.serial.SerialPortUtils;
 
 public class Common {
 	
@@ -402,6 +405,7 @@ public class Common {
 
 	//
 	// Misc
+	@Deprecated
 	public static List<CommPortProxy> getCommPorts()
 			throws CommPortConfigException {
 		try {
@@ -419,6 +423,17 @@ public class Common {
 		} catch (NoClassDefFoundError e) {
 			throw new CommPortConfigException(
 					"Comm configuration error. Check that rxtx DLL or libraries have been correctly installed.");
+		}
+	}
+
+	public static List<CommPortProxy> getSerialPorts() throws CommPortConfigException {
+		try {
+			return Arrays.stream(SerialPortUtils.getCommPorts())
+					.map(commPort -> new CommPortProxy(commPort.getSystemPortName(), "Serial",
+							commPort.isOpen(), commPort.isOpen() ? commPort.getPortDescription() : null))
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			throw new CommPortConfigException(e.getMessage());
 		}
 	}
 

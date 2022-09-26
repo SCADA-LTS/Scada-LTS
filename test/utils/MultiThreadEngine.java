@@ -71,4 +71,34 @@ public class MultiThreadEngine {
         }
         return results;
     }
+
+    public static void execute(final Executor executor, int concurrency, final List<Runnable> actions) {
+        final CountDownLatch ready = new CountDownLatch(concurrency * actions.size());
+        final CountDownLatch start = new CountDownLatch(1);
+        final CountDownLatch done = new CountDownLatch(concurrency * actions.size());
+        for (int i = 0; i < concurrency; i++) {
+            for (Runnable runnable : actions) {
+                executor.execute(() -> {
+                    ready.countDown();
+                    try {
+                        start.await();
+                        runnable.run();
+                    } catch (InterruptedException ex) {
+                        logger.error(ex.getMessage(), ex);
+                    } finally {
+                        done.countDown();
+                    }
+                });
+            }
+        }
+        try {
+            ready.await();
+            long startNanos = System.nanoTime();
+            start.countDown();
+            done.await();
+            logger.info("time: {}", (System.nanoTime() - startNanos)/1000000000.0);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+        }
+    }
 }

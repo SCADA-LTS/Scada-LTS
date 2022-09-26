@@ -1,0 +1,35 @@
+<!--
+SoftQ - http://www.softq.pl/
+Copyright (C) 2018 Softq
+@author Radek Jajko
+-->
+<h1>Overview</h1>
+<p>Attributes common to all MQTT data point are:
+<ul>
+    <li><b>Name: </b>the name of the point for use as an identifier in lists of points.</li>
+    <li><b>Data type: </b>the data type of the point. See below for details.</li>
+    <li><b>Topic filter: </b>addressing subscribers to receive messages from the broker</li>
+    <li><b>Client ID: </b>unique identifier of a given client, there cannot be two clients with the same id. This value is automatically generated.</li>
+</ul></p>
+
+<h2>Topic filter</h2>
+<h4>About:</h4>
+<p>
+    You can define a topic matching filter, thanks to which we will associate a message with a topic,
+    which in turn will allow sending a message to the subscribers of a given topic.</p>
+<p>
+<h4>Basic example:</h4>
+<p>/clientId/rooms/living/temperature/</p>
+<ul>
+    <li>+ (plus) Single level wildcard: /a/+/b then: /a/c/b ok, /a/c/d/b no ok, /a/b/ no ok</li>
+    <li># (hash) Multi level wildcard: /a/b/# then: /a/b/c ok, /a/b/c/d ok, /c no ok, /a/c/d no ok.
+        You can only use one such character in an expression, and you can only use it at the end of an expression.</li>
+    <li>$ (dollar) you cannot publish to topics that start with $, they are readable.</li>
+</ul>
+
+<p>
+    <b>Filter points containing wildcards cannot publish values(no settable), they can only read.</b>
+</p>
+
+
+

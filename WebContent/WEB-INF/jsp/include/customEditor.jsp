@@ -76,6 +76,7 @@
   </td></tr></table>
   
   <script type="text/javascript">
+    var viewId = mango.longPoll.pollRequest.viewId;
     function CustomEditor() {
         this.componentId = null;
         this.typeName = null;
@@ -84,7 +85,7 @@
             customEditor.componentId = compId;
             
             // Set the renderers for the data type of this point view.
-            ViewDwr.getViewComponent(compId, customEditor.setViewComponent);
+            ViewDwr.getViewComponent(compId, viewId, customEditor.setViewComponent);
             
         };
 
@@ -124,8 +125,8 @@
                     	$get("customEditorAlarmListMinAlarmLevel"), $get("customEditorAlarmListMaxListSize"),
                         $get("customEditorAlarmListWidth"),$get("customEditorAlarmListIdColumn"),
                         $get("customEditorAlarmListAlarmLevelColumn"),$get("customEditorAlarmListTimestampColumn"),
-                        $get("customEditorAlarmListInactivityColumn"),$get("customEditorAlarmListAckColumn"), 
-                        customEditor.saveCB);
+                        $get("customEditorAlarmListInactivityColumn"),$get("customEditorAlarmListAckColumn"),
+                        viewId, customEditor.saveCB);
             else if (customEditor.typeName == "yourCustomComponent")
             	alert('save your custom component component!');
             

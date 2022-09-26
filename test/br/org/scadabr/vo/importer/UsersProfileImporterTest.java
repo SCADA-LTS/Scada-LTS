@@ -28,7 +28,6 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonWriter;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
@@ -41,6 +40,7 @@ import com.serotonin.mango.web.dwr.EmportDwr;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
 
 public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 
@@ -385,7 +385,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 				response, reader, task);
 
 		User retrievedUser = new UserDao().getUser(user.getId());
-		View retrievedView = new ViewDao().getViews().get(FIRST);
+		View retrievedView = new ViewService().getViews().get(FIRST);
 
 		assertEquals(retrievedUser.getId(),
 				retrievedView.getViewUsers().get(FIRST).getUserId());
@@ -487,7 +487,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 				response, reader, task);
 
 		User retrievedUser = new UserDao().getUser(user.getId());
-		View retrievedView = new ViewDao().getViews().get(FIRST);
+		View retrievedView = new ViewService().getViews().get(FIRST);
 
 		assertEquals(retrievedUser.getId(),
 				retrievedView.getViewUsers().get(FIRST).getUserId());
@@ -544,8 +544,8 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 				response, reader, task);
 
 		User retrievedUser = new UserDao().getUser(user.getId());
-		View retrievedView1 = new ViewDao().getViews().get(FIRST);
-		View retrievedView2 = new ViewDao().getViews().get(SECOND);
+		View retrievedView1 = new ViewService().getViews().get(FIRST);
+		View retrievedView2 = new ViewService().getViews().get(SECOND);
 
 		assertEquals(retrievedUser.getId(),
 				retrievedView1.getViewUsers().get(FIRST).getUserId());
@@ -816,7 +816,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 				response, reader, task);
 
 		User retrievedUser = new UserDao().getUser(user.getId());
-		View retrievedView = new ViewDao().getViews().get(FIRST);
+		View retrievedView = new ViewService().getViews().get(FIRST);
 
 		assertEquals(retrievedUser.getId(),
 				retrievedView.getViewUsers().get(FIRST).getUserId());
@@ -917,7 +917,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 
 		User retrievedUser = new UserDao().getUser(user.getId());
 		User retrievedUser2 = new UserDao().getUser(user2.getId());
-		View retrievedView = new ViewDao().getViews().get(FIRST);
+		View retrievedView = new ViewService().getViews().get(FIRST);
 		WatchList retrievedWatchlist = mockWatchlistDao.getWatchList(watchlist
 				.getId());
 		UsersProfileVO retrievedProfile = usersProfileService

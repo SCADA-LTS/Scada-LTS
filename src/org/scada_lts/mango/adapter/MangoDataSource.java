@@ -44,4 +44,7 @@ public interface MangoDataSource {
 	void deleteDataSource(final int dataSourceId);
 
 	int copyDataSource(final int dataSourceId, final ResourceBundle bundle);
+
+    List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type);
+
 }

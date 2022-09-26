@@ -162,7 +162,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 AlarmLevels.INFORMATION, dailyLimitExceededMsg, Collections.emptyMap());
         CommunicationChannelTypable type = channel.getType();
 
-        boolean sent = type.sendLimit(event, addresses,"Limit", new AfterWork() {
+        type.sendLimit(event, addresses,"Limit", new AfterWork() {
 
             @Override
             public void workSuccess() {
@@ -176,10 +176,6 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                 communicateLimitLock.set(0);
             }
         });
-
-        if(!sent) {
-            communicateLimitLock.set(0);
-        }
     }
 
     private void send(ScheduledEvent scheduledEvent, Set<String> addresses) {
@@ -195,7 +191,7 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
 
             String eventHandlerAlias = eventHandler.getAlias();
             String alias = eventHandlerAlias == null || eventHandlerAlias.isEmpty() ? "Delay msg" : eventHandlerAlias;
-            boolean sent = type.sendMsg(toSend, addresses, alias, new AfterWork() {
+            type.sendMsg(toSend, addresses, alias, new AfterWork() {
 
                 @Override
                 public void workSuccess() {
@@ -210,11 +206,6 @@ public class ScheduledExecuteInactiveEventRT implements ModelTimeoutClient<Boole
                     failsCounter.incrementAndGet();
                 }
             });
-
-            if(!sent) {
-                inactiveEventsProvider.repeat(scheduledEvent);
-                failsCounter.incrementAndGet();
-            }
         } else {
             service.unscheduleEvent(scheduledEvent, communicationChannel);
             inactiveEventsProvider.confirm(scheduledEvent);
