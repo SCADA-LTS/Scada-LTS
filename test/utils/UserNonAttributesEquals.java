@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class UserNonAttributesEquals {
 
-    private User user;
+    private final User user;
 
     public UserNonAttributesEquals(User user) {
         this.user = user;
@@ -53,10 +53,6 @@ public class UserNonAttributesEquals {
 
     public String getUsername() {
         return user.getUsername();
-    }
-
-    public View getView() {
-        return user.getView();
     }
 
     public WatchList getWatchList() {
