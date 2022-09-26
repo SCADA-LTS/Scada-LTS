@@ -18,15 +18,13 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         private String replaceRegex = "\\s";
 
         @Override
-        public boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+        public void sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
             SendUtils.sendMsg(event, EmailHandlerRT.EmailNotificationType.ACTIVE, addresses, alias, afterWork);
-            return true;
         }
 
         @Override
-        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+        public void sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
             sendMsg(event, addresses, alias, afterWork);
-            return true;
         }
 
         @Override
@@ -55,15 +53,13 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         }
 
         @Override
-        public boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+        public void sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
             SendUtils.sendMsg(event, EmailToSmsHandlerRT.SmsNotificationType.MSG_FROM_EVENT, addresses, alias, afterWork);
-            return true;
         }
 
         @Override
-        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+        public void sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
             SendUtils.sendMsg(event, EmailToSmsHandlerRT.SmsNotificationType.LIMIT, addresses, alias, afterWork);
-            return true;
         }
 
         @Override
