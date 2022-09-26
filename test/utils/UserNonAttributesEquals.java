@@ -194,7 +194,6 @@ public class UserNonAttributesEquals {
                 Objects.equals(this.user.getViewProfilePermissions(), user.getViewProfilePermissions()) &&
                 Objects.equals(this.user.getHomeUrl(), user.getHomeUrl()) &&
                 Objects.equals(this.user.getTheme(), user.getTheme()) &&
-                Objects.equals(this.user.getView(), user.getView()) &&
                 Objects.equals(this.user.getWatchList(), user.getWatchList()) &&
                 Objects.equals(this.user.getEditPoint(), user.getEditPoint()) &&
                 Objects.equals(this.user.getEditDataSource(), user.getEditDataSource()) &&
@@ -216,7 +215,7 @@ public class UserNonAttributesEquals {
                 this.user.getDataPointProfilePermissions(), this.user.getWatchListProfilePermissions(),
                 this.user.getViewProfilePermissions(), this.user.getSelectedWatchList(), this.user.getHomeUrl(),
                 this.user.getLastLogin(), this.user.getReceiveAlarmEmails(), this.user.isReceiveOwnAuditEvents(),
-                this.user.getTheme(), this.user.isHideMenu(), this.user.getUserProfile(), this.user.getView(),
+                this.user.getTheme(), this.user.isHideMenu(), this.user.getUserProfile(),
                 this.user.getWatchList(), this.user.getEditPoint(), this.user.getEditDataSource(),
                 this.user.getReportImageData(), this.user.getEditPublisher(), this.user.getImportTask(), this.user.isMuted(),
                 this.user.getDataExportDefinition(), this.user.getEventExportDefinition(), this.user.getUploadedProject(),
