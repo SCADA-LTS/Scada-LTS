@@ -47,7 +47,7 @@ public class BackgroundProcessing implements ILifecycle {
 	private ThreadPoolExecutor mediumPriorityService;
 	private ExecutorService lowPriorityService;
 
-	private final WorkItems workItems = new WorkItems();
+	private final WorkItems workItems = new WorkItems(1000);
 
 	public void addWorkItem(final WorkItem item) {
 		workItems.add(item);
@@ -88,8 +88,8 @@ public class BackgroundProcessing implements ILifecycle {
 							}
 						}
 					} finally {
-						workItems.remove(item);
 						mediumPriorityService.remove(this);
+						workItems.remove(item);
 					}
 				}
 			});
@@ -117,8 +117,8 @@ public class BackgroundProcessing implements ILifecycle {
 		lowPriorityService.shutdown();
 	}
 
-	public List<WorkItem> getWorkItems() {
-		return workItems.get();
+	public WorkItems getWorkItems() {
+		return workItems;
 	}
 
 	public void joinTermination() {

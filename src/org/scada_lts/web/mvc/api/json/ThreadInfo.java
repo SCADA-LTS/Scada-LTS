@@ -13,8 +13,9 @@ public class ThreadInfo {
     private boolean daemon;
     private int priority;
     private String name;
-    private List<StackInfo> stackTrace;
     private Thread.State state;
+    private String className;
+    private List<StackInfo> stackTrace;
 
     public ThreadInfo(Thread thread) {
         this.id = thread.getId();
@@ -25,6 +26,7 @@ public class ThreadInfo {
         this.name = thread.getName();
         this.stackTrace = Stream.of(thread.getStackTrace()).map(ThreadInfo.StackInfo::new).collect(Collectors.toList());
         this.state = thread.getState();
+        this.className = thread.getClass().getName();
     }
 
     public long getId() {
@@ -91,9 +93,17 @@ public class ThreadInfo {
         this.state = state;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     @Override
     public String toString() {
-        return "[" + id + ", " + priority + ", " + name + ", " + state + ']';
+        return "[" + id + ", " + priority + ", " + name + ", " + state + ", " + className + ']';
     }
 
     public static class StackInfo {

@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.scada_lts.utils.ThreadInfoApiUtils.*;
 
 
 @RestController
@@ -40,6 +41,7 @@ public class ThreadInfoAPI {
             return new ResponseEntity<>(getThreadStack().values().stream()
                     .map(stackTrace -> Stream.of(stackTrace)
                             .map(ThreadInfo.StackInfo::new)
+                            .sorted(Comparator.comparing(ThreadInfo.StackInfo::getClassName))
                             .toArray(ThreadInfo.StackInfo[]::new))
                     .collect(Collectors.toList()), HttpStatus.OK);
         } catch (Exception e) {
@@ -49,24 +51,38 @@ public class ThreadInfoAPI {
     }
 
     @GetMapping(value = "/names/")
-    public ResponseEntity<List<Value>> getNames() {
+    public ResponseEntity<List<Value>> getThreadNames() {
         try {
             return new ResponseEntity<>(getThreadStack().keySet().stream()
                     .map(Thread::getName)
                     .map(Value::new)
+                    .sorted(Comparator.comparing(Value::getValue))
                     .collect(Collectors.toList()), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @GetMapping(value = "/group-by/")
-    public ResponseEntity<Map<String, Long>> getGroupByThreadTypeCount() {
+/*
+    @GetMapping(value = "/group-by/name/")
+    public ResponseEntity<Map<Value, List<Value>>> getThreadsGroupByName() {
         try {
-            Map<String, Long> threadTypeCount = groupByAndSort(getThreadStack(), Collectors
-                    .groupingBy(thread -> thread.getClass().getName(), Collectors.counting()), Map.Entry
-                    .comparingByValue(Comparator.reverseOrder()));
+            Map<Value, List<Value>> threadTypeCount = groupByAndSort(getThreadStack(),
+                    Collectors.groupingBy(thread -> new Value(thread.getKey().getClass().getName()), Collectors.toList()),
+                    Comparator.comparingInt(a -> a.getValue().size()));
+            return new ResponseEntity<>(threadTypeCount, HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }*/
+
+    @GetMapping(value = "/group-by/count/")
+    public ResponseEntity<Map<Value, Long>> getThreadsGroupByCount() {
+        try {
+            Map<Value, Long> threadTypeCount = groupByAndSort(getThreadStack(),
+                    Collectors.groupingBy(thread -> new Value(thread.getKey().getClass().getName()), Collectors.counting()),
+                    Map.Entry.comparingByValue(Comparator.reverseOrder()));
             return new ResponseEntity<>(threadTypeCount, HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
@@ -75,45 +91,63 @@ public class ThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/thread-stack/")
-    public ResponseEntity<Map<ThreadInfo, ThreadInfo.StackInfo[]>> getGroupByThreadStack() {
+    public ResponseEntity<Map<ThreadInfo, ThreadInfo.StackInfo[]>> getThreadsGroupByThreadStack() {
         try {
-            return new ResponseEntity<>(getThreadStack().entrySet().stream()
+            return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream()
                             .collect(Collectors
                                     .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
                                             Stream.of(entry.getValue())
                                                     .map(ThreadInfo.StackInfo::new)
                                                     .toArray(ThreadInfo.StackInfo[]::new))
-                            ), HttpStatus.OK);
+                            ), Comparator.comparing(entry -> entry.getValue().length, Comparator.reverseOrder())), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping(value = "/group-by/thread-stack-class/")
-    public ResponseEntity<Map<ThreadInfo, List<Value>>> getGroupByThreadStackClass() {
+    @GetMapping(value = "/group-by/thread-stack/name/")
+    public ResponseEntity<Map<ThreadInfo, String[]>> getThreadsGroupByThreadStackName() {
         try {
-            return new ResponseEntity<>(getThreadStack().entrySet().stream()
+            return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream()
+                    .collect(Collectors
+                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
+                                    Stream.of(entry.getValue())
+                                            .map(ThreadInfo.StackInfo::new)
+                                            .map(ThreadInfo.StackInfo::getClassName)
+                                            .toArray(String[]::new))
+                    ), Comparator.comparing(entry -> entry.getValue().length, Comparator.reverseOrder())), HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/group-by/thread-stack/class/")
+    public ResponseEntity<Map<ThreadInfo, List<Value>>> getThreadsGroupByThreadStackClass() {
+        try {
+            return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream()
                     .collect(Collectors
                             .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
                                     Stream.of(entry.getValue())
                                             .map(StackTraceElement::getClassName)
                                             .map(Value::new)
                                             .collect(Collectors.toList()))
-                    ), HttpStatus.OK);
+                    ), Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
+            ), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping(value = "/group-by/thread-stack-count/")
-    public ResponseEntity<Map<ThreadInfo, Integer>> getGroupByThreadStackCount() {
+    @GetMapping(value = "/group-by/thread-stack/count/")
+    public ResponseEntity<Map<ThreadInfo, Integer>> getThreadsGroupByThreadStackCounting() {
         try {
-            return new ResponseEntity<>(getThreadStack().entrySet().stream()
-                    .collect(Collectors
-                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry -> entry.getValue().length)
-                    ), HttpStatus.OK);
+            return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream().collect(Collectors
+                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry -> entry.getValue().length)),
+                    Comparator.comparing(entry -> entry.getValue(), Comparator.reverseOrder())
+            ), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -121,7 +155,7 @@ public class ThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/stack-thread/")
-    public ResponseEntity<Map<List<Value>, List<ThreadInfo>>> getGroupByStackThread() {
+    public ResponseEntity<Map<List<Value>, List<ThreadInfo>>> getThreadsGroupByStackThread() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByThreadInfo(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -132,8 +166,8 @@ public class ThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/stack-thread-class/")
-    public ResponseEntity<Map<List<Value>, List<Value>>> getGroupByStackThreadClass() {
+    @GetMapping(value = "/group-by/stack-thread/class/")
+    public ResponseEntity<Map<List<Value>, List<Value>>> getThreadsGroupByStackThreadClass() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupBy(), Comparator
                     .comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -144,8 +178,20 @@ public class ThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/stack-thread-count/")
-    public ResponseEntity<Map<List<Value>, Long>> getGroupByStackThreadCount() {
+    @GetMapping(value = "/group-by/stack-thread/name/")
+    public ResponseEntity<Map<List<Value>, List<Value>>> getThreadsGroupByStackThreadName() {
+        try {
+            return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByName(), Comparator
+                    .comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
+            ), HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/group-by/stack-thread/count/")
+    public ResponseEntity<Map<List<Value>, Long>> getThreadsGroupByStackThreadCounting() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByWithCounting(), Map.Entry
                     .comparingByValue(Comparator.reverseOrder())), HttpStatus.OK);
@@ -154,87 +200,4 @@ public class ThreadInfoAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private <K,V> Map<K, V> groupByAndSort(Map<Thread, StackTraceElement[]> threads,
-                                           Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<K, V>> groupBy,
-                                           Comparator<Map.Entry<K, V>> comparator) {
-        return sorted(threads.entrySet().stream()
-                .collect(groupBy), comparator);
-    }
-
-    private <K, V> Map<K, V> sorted(Map<K, V> map, Comparator<Map.Entry<K, V>> comparator) {
-        return map.entrySet().stream()
-                .sorted(comparator)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> {
-                    throw new IllegalStateException();
-                }, LinkedHashMap::new));
-    }
-
-    private Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, List<Value>>> groupBy() {
-        return Collectors.groupingBy(
-                entry -> Stream.of(entry.getValue())
-                        .map(StackTraceElement::getClassName)
-                        .map(Value::new)
-                        .collect(Collectors.toList()),
-                Collectors.mapping(entry -> new Value(entry.getKey().getName()), Collectors.toList()));
-    }
-
-    private Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, Long>> groupByWithCounting() {
-       return Collectors.groupingBy(
-                entry -> Stream.of(entry.getValue())
-                        .map(StackTraceElement::getClassName)
-                        .map(Value::new)
-                        .collect(Collectors.toList()),
-                Collectors.counting());
-    }
-
-    private Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, List<ThreadInfo>>> groupByThreadInfo() {
-        return Collectors.groupingBy(
-                entry -> Stream.of(entry.getValue())
-                        .map(StackTraceElement::getClassName)
-                        .map(Value::new)
-                        .collect(Collectors.toList()),
-                Collectors.mapping(entry -> new ThreadInfo(entry.getKey()), Collectors.toList()));
-    }
-
-    private Map<Thread, StackTraceElement[]> getThreadStack() {
-        return Thread.getAllStackTraces();
-    }
-
-    static class Value {
-        private String value;
-
-        public Value(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Value)) return false;
-            Value value = (Value) o;
-            return Objects.equals(getValue(), value.getValue());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(getValue());
-        }
-
-        @Override
-        public String toString() {
-            return "Name{" +
-                    "name='" + value + '\'' +
-                    '}';
-        }
-    }
-
 }

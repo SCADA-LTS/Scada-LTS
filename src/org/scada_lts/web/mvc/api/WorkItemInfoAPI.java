@@ -6,9 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.api.json.WorkItemInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +21,7 @@ public class WorkItemInfoAPI {
     @GetMapping(value = "/")
     public ResponseEntity<List<WorkItemInfo>> getWorkItems() {
         try {
-            return new ResponseEntity<>(Common.ctx.getBackgroundProcessing().getWorkItems().stream()
+            return new ResponseEntity<>(Common.ctx.getBackgroundProcessing().getWorkItems().get().stream()
                     .map(WorkItemInfo::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
         } catch (Exception e) {
@@ -33,11 +31,25 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/group-by/")
-    public ResponseEntity<Map<String, Long>> getGroupByWorkItemCount() {
+    public ResponseEntity<Map<String, Long>> getWorkItemsGroupBy() {
         try {
-            return new ResponseEntity<>(Common.ctx.getBackgroundProcessing().getWorkItems().stream()
+            return new ResponseEntity<>(Common.ctx.getBackgroundProcessing().getWorkItems().get().stream()
                     .map(WorkItemInfo::new)
                     .collect(Collectors.groupingBy(WorkItemInfo::getClassName, Collectors.counting())), HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/limit/{limit}/")
+    public ResponseEntity<List<WorkItemInfo>> setWorkItemsLimit(@PathVariable("limit") Integer limit) {
+        try {
+            if(limit != null && limit > 0) {
+                Common.ctx.getBackgroundProcessing().getWorkItems().setLimit(limit);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
