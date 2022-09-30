@@ -18,7 +18,7 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items'
+      description: 'Get all work items'
       responses:
         '200':
           description: "Get successful"
@@ -27,8 +27,23 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items'
+      description: 'Grouping work items by class'
       responses:
         '200':
           description: "Get successful"
           headers: { }
+  /work-items/limit/{limit}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Set limit for work items map'
+      responses:
+        '200':
+          description: 'Get successful'
+          headers: { }
+      parameters:
+        - name: 'limit'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'

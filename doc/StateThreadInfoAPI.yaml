@@ -14,16 +14,31 @@ info:
   license:
     name: 'GPL-2.0'
 paths:
-  /threads/:
+  /threads/states/:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Get all threads'
+      description: 'Get all states'
       responses:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/stack/:
+  /threads/states/state/{state}/:
+    get:
+      tags:
+        - ThreadInfoAPI
+      description: 'Get threads from threads'
+      responses:
+        '200':
+          description: 'Get successful'
+          headers: { }
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+  /threads/states/state/{state}/count/:
     get:
       tags:
         - ThreadInfoAPI
@@ -32,34 +47,43 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/names/:
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+  /threads/states/state/{state}/class/:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Get all threads names'
+      description: 'Get all stacks from threads'
       responses:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/count/:
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+  /threads/states/state/{state}/name/:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Group threads by thread class then count'
+      description: 'Get all stacks from threads'
       responses:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/thread-stack/:
-    get:
-      tags:
-        - ThreadInfoAPI
-      description: 'Group stacks by thread'
-      responses:
-        '200':
-          description: 'Get successful'
-          headers: { }
-  /threads/group-by/thread-stack/class/:
+      parameters:
+        - name: 'state'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+  /threads/states/group-by/:
     get:
       tags:
         - ThreadInfoAPI
@@ -68,7 +92,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/thread-stack/count/:
+  /threads/states/group-by/count/:
     get:
       tags:
         - ThreadInfoAPI
@@ -77,7 +101,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/thread-stack/names/:
+  /threads/states/group-by/class/:
     get:
       tags:
         - ThreadInfoAPI
@@ -86,38 +110,11 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack-thread/:
+  /threads/states/group-by/name/:
     get:
       tags:
         - ThreadInfoAPI
       description: 'Group threads by stack'
-      responses:
-        '200':
-          description: 'Get successful'
-          headers: { }
-  /threads/group-by/stack-thread/class/:
-    get:
-      tags:
-        - ThreadInfoAPI
-      description: 'Group threads by stack then classes'
-      responses:
-        '200':
-          description: 'Get successful'
-          headers: { }
-  /threads/group-by/stack-thread/count/:
-    get:
-      tags:
-        - ThreadInfoAPI
-      description: 'Group threads by stack then count'
-      responses:
-        '200':
-          description: 'Get successful'
-          headers: { }
-  /threads/group-by/stack-thread/name/:
-    get:
-      tags:
-        - ThreadInfoAPI
-      description: 'Group threads by stack then names'
       responses:
         '200':
           description: 'Get successful'
