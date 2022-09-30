@@ -38,18 +38,11 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/state/{state}/")
-    public ResponseEntity<List<ThreadInfo>> getStatesGroupByState(@PathVariable("state") String state) {
+    public ResponseEntity<List<ThreadInfo>> getThreadsForState(@PathVariable(value = "state", required = true) Thread.State state) {
         try {
-            if(state != null && state.isEmpty())
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            try {
-                Thread.State.valueOf(state);
-            } catch (Exception ex) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
             Map<Value, List<ThreadInfo>> map = groupByAndSort(getThreadStack(), groupByStates(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
-            return new ResponseEntity<>(map.get(new Value(state)), HttpStatus.OK);
+            return new ResponseEntity<>(map.get(new Value(state.name())), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -57,18 +50,11 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/state/{state}/count/")
-    public ResponseEntity<Long> getStatesGroupByStateCount(@PathVariable("state") String state) {
+    public ResponseEntity<Long> getThreadsCountForState(@PathVariable(value = "state", required = true) Thread.State state) {
         try {
-            if(state != null && state.isEmpty())
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            try {
-                Thread.State.valueOf(state);
-            } catch (Exception ex) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
             Map<Value, Long> map = groupByAndSort(getThreadStack(), groupByStatesCounting(),
                     Map.Entry.comparingByValue(Comparator.reverseOrder()));
-            Long result = map.get(new Value(state));
+            Long result = map.get(new Value(state.name()));
             return new ResponseEntity<>((result == null ? 0 : result), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
@@ -76,38 +62,24 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/state/{state}/class/")
-    public ResponseEntity<List<Value>> getStatesGroupByStateClass(@PathVariable("state") String state) {
+    @GetMapping(value = "/state/{state}/classes/")
+    public ResponseEntity<List<Value>> getThreadClassesForState(@PathVariable(value = "state", required = true) Thread.State state) {
         try {
-            if(state != null && state.isEmpty())
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            try {
-                Thread.State.valueOf(state);
-            } catch (Exception ex) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
             Map<Value, List<Value>> map = groupByAndSort(getThreadStack(), groupByStatesClass(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
-            return new ResponseEntity<>(map.get(new Value(state)), HttpStatus.OK);
+            return new ResponseEntity<>(map.get(new Value(state.name())), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping(value = "/state/{state}/name/")
-    public ResponseEntity<List<Value>> getStatesGroupByStateName(@PathVariable("state") String state) {
+    @GetMapping(value = "/state/{state}/names/")
+    public ResponseEntity<List<Value>> getThreadNamesForState(@PathVariable(value = "state", required = true) Thread.State state) {
         try {
-            if(state != null && state.isEmpty())
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            try {
-                Thread.State.valueOf(state);
-            } catch (Exception ex) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
             Map<Value, List<Value>> map = groupByAndSort(getThreadStack(), groupByStatesName(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder()));
-            return new ResponseEntity<>(map.get(new Value(state)), HttpStatus.OK);
+            return new ResponseEntity<>(map.get(new Value(state.name())), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -115,7 +87,7 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/")
-    public ResponseEntity<Map<Value, List<ThreadInfo>>> getStatesGroupBy() {
+    public ResponseEntity<Map<Value, List<ThreadInfo>>> getThreadsGroupByState() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStates(),
                             Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -126,8 +98,8 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/class/")
-    public ResponseEntity<Map<Value, List<Value>>> getStatesGroupByClass() {
+    @GetMapping(value = "/group-by/classes/")
+    public ResponseEntity<Map<Value, List<Value>>> getThreadClassesGroupByState() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesClass(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -138,8 +110,8 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/name/")
-    public ResponseEntity<Map<Value, List<Value>>> getStatesGroupByName() {
+    @GetMapping(value = "/group-by/names/")
+    public ResponseEntity<Map<Value, List<Value>>> getThreadNamesGroupByState() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesName(),
                     Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -151,7 +123,7 @@ public class StateThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/count/")
-    public ResponseEntity<Map<Value, Long>> getStatesGroupByCount() {
+    public ResponseEntity<Map<Value, Long>> getThreadsCountGroupByState() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesCounting(),
                     Map.Entry.comparingByValue(Comparator.reverseOrder())
