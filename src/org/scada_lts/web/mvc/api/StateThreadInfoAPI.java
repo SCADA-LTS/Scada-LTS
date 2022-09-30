@@ -17,18 +17,18 @@ import static org.scada_lts.utils.ThreadInfoApiUtils.*;
 
 
 @RestController
-@RequestMapping(path = "/api/threads")
+@RequestMapping(path = "/api/threads/states/")
 public class StateThreadInfoAPI {
 
     private static final Log LOG = LogFactory.getLog(StateThreadInfoAPI.class);
 
-    @GetMapping(value = "/states/")
+    @GetMapping(value = "/")
     public ResponseEntity<List<Value>> getStates() {
         try {
             return new ResponseEntity<>(getThreadStack().keySet().stream()
-                    .sorted(Comparator.comparing(Thread::getState))
                     .map(Thread::getState)
                     .map(Thread.State::toString)
+                    .sorted()
                     .map(Value::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/state/{state}/")
+    @GetMapping(value = "/state/{state}/")
     public ResponseEntity<List<ThreadInfo>> getStatesGroupByState(@PathVariable("state") String state) {
         try {
             if(state != null && state.isEmpty())
@@ -56,7 +56,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/state/{state}/count/")
+    @GetMapping(value = "/state/{state}/count/")
     public ResponseEntity<Long> getStatesGroupByStateCount(@PathVariable("state") String state) {
         try {
             if(state != null && state.isEmpty())
@@ -76,7 +76,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/state/{state}/class/")
+    @GetMapping(value = "/state/{state}/class/")
     public ResponseEntity<List<Value>> getStatesGroupByStateClass(@PathVariable("state") String state) {
         try {
             if(state != null && state.isEmpty())
@@ -95,7 +95,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/state/{state}/name/")
+    @GetMapping(value = "/state/{state}/name/")
     public ResponseEntity<List<Value>> getStatesGroupByStateName(@PathVariable("state") String state) {
         try {
             if(state != null && state.isEmpty())
@@ -114,7 +114,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/group-by/")
+    @GetMapping(value = "/group-by/")
     public ResponseEntity<Map<Value, List<ThreadInfo>>> getStatesGroupBy() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStates(),
@@ -126,7 +126,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/group-by/class/")
+    @GetMapping(value = "/group-by/class/")
     public ResponseEntity<Map<Value, List<Value>>> getStatesGroupByClass() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesClass(),
@@ -138,7 +138,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/group-by/name/")
+    @GetMapping(value = "/group-by/name/")
     public ResponseEntity<Map<Value, List<Value>>> getStatesGroupByName() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesName(),
@@ -150,7 +150,7 @@ public class StateThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/states/group-by/count/")
+    @GetMapping(value = "/group-by/count/")
     public ResponseEntity<Map<Value, Long>> getStatesGroupByCount() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByStatesCounting(),

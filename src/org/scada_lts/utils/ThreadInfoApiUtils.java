@@ -70,7 +70,7 @@ public final class ThreadInfoApiUtils {
                 Collectors.mapping(entry -> new Value(entry.getKey().getName()), Collectors.counting()));
     }
 
-    public static Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, Long>> groupByWithCounting() {
+    public static Collector<Map.Entry<Thread, StackTraceElement[]>, ?, Map<List<Value>, Long>> groupByCounting() {
         return Collectors.groupingBy(
                 entry -> Stream.of(entry.getValue())
                         .map(StackTraceElement::getClassName)

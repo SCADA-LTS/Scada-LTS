@@ -4,6 +4,7 @@ import com.serotonin.mango.Common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.web.mvc.api.json.WorkItemInfo;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/limit/{limit}/")
-    public ResponseEntity<List<WorkItemInfo>> setWorkItemsLimit(@PathVariable("limit") Integer limit) {
+    public ResponseEntity<List<WorkItemInfo>> setWorkItemsLimit(@PathVariable(value = "limit", required = true) Integer limit) {
         try {
             if(limit != null && limit > 0) {
                 Common.ctx.getBackgroundProcessing().getWorkItems().setLimit(limit);

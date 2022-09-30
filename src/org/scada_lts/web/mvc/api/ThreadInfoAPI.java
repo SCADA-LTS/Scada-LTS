@@ -6,6 +6,7 @@ import org.scada_lts.web.mvc.api.json.ThreadInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +37,7 @@ public class ThreadInfoAPI {
     }
 
     @GetMapping(value = "/stack/")
-    public ResponseEntity<Collection<ThreadInfo.StackInfo[]>> getStackTraceElements() {
+    public ResponseEntity<List<ThreadInfo.StackInfo[]>> getStackTraceElements() {
         try {
             return new ResponseEntity<>(getThreadStack().values().stream()
                     .map(stackTrace -> Stream.of(stackTrace)
@@ -63,19 +64,6 @@ public class ThreadInfoAPI {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-/*
-    @GetMapping(value = "/group-by/name/")
-    public ResponseEntity<Map<Value, List<Value>>> getThreadsGroupByName() {
-        try {
-            Map<Value, List<Value>> threadTypeCount = groupByAndSort(getThreadStack(),
-                    Collectors.groupingBy(thread -> new Value(thread.getKey().getClass().getName()), Collectors.toList()),
-                    Comparator.comparingInt(a -> a.getValue().size()));
-            return new ResponseEntity<>(threadTypeCount, HttpStatus.OK);
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }*/
 
     @GetMapping(value = "/group-by/count/")
     public ResponseEntity<Map<Value, Long>> getThreadsGroupByCount() {
@@ -94,12 +82,12 @@ public class ThreadInfoAPI {
     public ResponseEntity<Map<ThreadInfo, ThreadInfo.StackInfo[]>> getThreadsGroupByThreadStack() {
         try {
             return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream()
-                            .collect(Collectors
-                                    .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
-                                            Stream.of(entry.getValue())
-                                                    .map(ThreadInfo.StackInfo::new)
-                                                    .toArray(ThreadInfo.StackInfo[]::new))
-                            ), Comparator.comparing(entry -> entry.getValue().length, Comparator.reverseOrder())), HttpStatus.OK);
+                    .collect(Collectors
+                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
+                                    Stream.of(entry.getValue())
+                                            .map(ThreadInfo.StackInfo::new)
+                                            .toArray(ThreadInfo.StackInfo[]::new))
+                    ), Comparator.comparing(entry -> entry.getValue().length, Comparator.reverseOrder())), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -193,7 +181,7 @@ public class ThreadInfoAPI {
     @GetMapping(value = "/group-by/stack-thread/count/")
     public ResponseEntity<Map<List<Value>, Long>> getThreadsGroupByStackThreadCounting() {
         try {
-            return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByWithCounting(), Map.Entry
+            return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByCounting(), Map.Entry
                     .comparingByValue(Comparator.reverseOrder())), HttpStatus.OK);
         } catch (Exception e) {
             LOG.error(e);
