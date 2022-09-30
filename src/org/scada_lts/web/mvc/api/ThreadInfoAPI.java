@@ -6,7 +6,6 @@ import org.scada_lts.web.mvc.api.json.ThreadInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,7 +65,7 @@ public class ThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/count/")
-    public ResponseEntity<Map<Value, Long>> getThreadsGroupByCount() {
+    public ResponseEntity<Map<Value, Long>> getThreadsGroupByClassCount() {
         try {
             Map<Value, Long> threadTypeCount = groupByAndSort(getThreadStack(),
                     Collectors.groupingBy(thread -> new Value(thread.getKey().getClass().getName()), Collectors.counting()),
@@ -94,8 +93,8 @@ public class ThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/thread-stack/name/")
-    public ResponseEntity<Map<ThreadInfo, String[]>> getThreadsGroupByThreadStackName() {
+    @GetMapping(value = "/group-by/thread-stack/classes/")
+    public ResponseEntity<Map<ThreadInfo, String[]>> getThreadsGroupByThreadStackClasses() {
         try {
             return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream()
                     .collect(Collectors
@@ -111,26 +110,8 @@ public class ThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/thread-stack/class/")
-    public ResponseEntity<Map<ThreadInfo, List<Value>>> getThreadsGroupByThreadStackClass() {
-        try {
-            return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream()
-                    .collect(Collectors
-                            .toMap(entry -> new ThreadInfo(entry.getKey()), entry ->
-                                    Stream.of(entry.getValue())
-                                            .map(StackTraceElement::getClassName)
-                                            .map(Value::new)
-                                            .collect(Collectors.toList()))
-                    ), Comparator.comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
-            ), HttpStatus.OK);
-        } catch (Exception e) {
-            LOG.error(e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping(value = "/group-by/thread-stack/count/")
-    public ResponseEntity<Map<ThreadInfo, Integer>> getThreadsGroupByThreadStackCounting() {
+    public ResponseEntity<Map<ThreadInfo, Integer>> getThreadsGroupByThreadStackCount() {
         try {
             return new ResponseEntity<>(sorted(getThreadStack().entrySet().stream().collect(Collectors
                             .toMap(entry -> new ThreadInfo(entry.getKey()), entry -> entry.getValue().length)),
@@ -154,8 +135,8 @@ public class ThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/stack-thread/class/")
-    public ResponseEntity<Map<List<Value>, List<Value>>> getThreadsGroupByStackThreadClass() {
+    @GetMapping(value = "/group-by/stack-thread/classes/")
+    public ResponseEntity<Map<List<Value>, List<Value>>> getThreadsGroupByStackThreadClasses() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupBy(), Comparator
                     .comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -166,8 +147,8 @@ public class ThreadInfoAPI {
         }
     }
 
-    @GetMapping(value = "/group-by/stack-thread/name/")
-    public ResponseEntity<Map<List<Value>, List<Value>>> getThreadsGroupByStackThreadName() {
+    @GetMapping(value = "/group-by/stack-thread/names/")
+    public ResponseEntity<Map<List<Value>, List<Value>>> getThreadsGroupByStackThreadNames() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByName(), Comparator
                     .comparing(entry -> entry.getValue().size(), Comparator.reverseOrder())
@@ -179,7 +160,7 @@ public class ThreadInfoAPI {
     }
 
     @GetMapping(value = "/group-by/stack-thread/count/")
-    public ResponseEntity<Map<List<Value>, Long>> getThreadsGroupByStackThreadCounting() {
+    public ResponseEntity<Map<List<Value>, Long>> getThreadsGroupByStackThreadCount() {
         try {
             return new ResponseEntity<>(groupByAndSort(getThreadStack(), groupByCounting(), Map.Entry
                     .comparingByValue(Comparator.reverseOrder())), HttpStatus.OK);

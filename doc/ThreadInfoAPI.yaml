@@ -4,7 +4,7 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.6.0
+  version: 2.7.2
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
@@ -36,7 +36,7 @@ paths:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Get all threads names'
+      description: 'Get all thread names'
       responses:
         '200':
           description: 'Get successful'
@@ -45,7 +45,7 @@ paths:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Group threads by thread class then count'
+      description: 'Group threads count by thread'
       responses:
         '200':
           description: 'Get successful'
@@ -59,11 +59,11 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/thread-stack/class/:
+  /threads/group-by/thread-stack/classes/:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Group stacks by thread then classes'
+      description: 'Group stack classes by thread'
       responses:
         '200':
           description: 'Get successful'
@@ -72,16 +72,7 @@ paths:
     get:
       tags:
         - ThreadInfoAPI
-      description: 'Group stacks by thread then count'
-      responses:
-        '200':
-          description: 'Get successful'
-          headers: { }
-  /threads/group-by/thread-stack/names/:
-    get:
-      tags:
-        - ThreadInfoAPI
-      description: 'Group stacks by thread then names'
+      description: 'Group stacks count by thread'
       responses:
         '200':
           description: 'Get successful'
@@ -95,7 +86,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack-thread/class/:
+  /threads/group-by/stack-thread/classes/:
     get:
       tags:
         - ThreadInfoAPI
@@ -113,7 +104,7 @@ paths:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/group-by/stack-thread/name/:
+  /threads/group-by/stack-thread/names/:
     get:
       tags:
         - ThreadInfoAPI

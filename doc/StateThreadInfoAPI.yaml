@@ -4,7 +4,7 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.6.0
+  version: 2.7.2
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
@@ -17,7 +17,7 @@ paths:
   /threads/states/:
     get:
       tags:
-        - ThreadInfoAPI
+        - StateThreadInfoAPI
       description: 'Get all states'
       responses:
         '200':
@@ -26,8 +26,8 @@ paths:
   /threads/states/state/{state}/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Get threads from threads'
+        - StateThreadInfoAPI
+      description: 'Get threads for state'
       responses:
         '200':
           description: 'Get successful'
@@ -38,11 +38,12 @@ paths:
           required: true
           schema:
             type: 'string'
+            enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
   /threads/states/state/{state}/count/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Get all stacks from threads'
+        - StateThreadInfoAPI
+      description: 'Get threads count for state'
       responses:
         '200':
           description: 'Get successful'
@@ -53,11 +54,12 @@ paths:
           required: true
           schema:
             type: 'string'
-  /threads/states/state/{state}/class/:
+            enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
+  /threads/states/state/{state}/classes/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Get all stacks from threads'
+        - StateThreadInfoAPI
+      description: 'Get threads class for state'
       responses:
         '200':
           description: 'Get successful'
@@ -68,11 +70,12 @@ paths:
           required: true
           schema:
             type: 'string'
-  /threads/states/state/{state}/name/:
+            enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
+  /threads/states/state/{state}/names/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Get all stacks from threads'
+        - StateThreadInfoAPI
+      description: 'Get threads name for state'
       responses:
         '200':
           description: 'Get successful'
@@ -83,11 +86,12 @@ paths:
           required: true
           schema:
             type: 'string'
+            enum: [NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED]
   /threads/states/group-by/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Group stacks by thread then classes'
+        - StateThreadInfoAPI
+      description: 'Group threads by state'
       responses:
         '200':
           description: 'Get successful'
@@ -95,26 +99,26 @@ paths:
   /threads/states/group-by/count/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Group stacks by thread then count'
+        - StateThreadInfoAPI
+      description: 'Group threads count by state'
       responses:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/states/group-by/class/:
+  /threads/states/group-by/classes/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Group stacks by thread then names'
+        - StateThreadInfoAPI
+      description: 'Group thread classes by state'
       responses:
         '200':
           description: 'Get successful'
           headers: { }
-  /threads/states/group-by/name/:
+  /threads/states/group-by/names/:
     get:
       tags:
-        - ThreadInfoAPI
-      description: 'Group threads by stack'
+        - StateThreadInfoAPI
+      description: 'Group thread namew by state'
       responses:
         '200':
           description: 'Get successful'
