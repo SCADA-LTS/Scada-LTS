@@ -1,0 +1,49 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080/ScadaBR/api'
+    description: 'Scada development Server'
+    variables: {}
+info:
+  version: 2.7.2
+  title: Scada-LTS API
+  description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
+  termsOfService: ''
+  contact:
+    name: 'Kamil Jarmusik - SoftQ Developer'
+    email: 'kamil.jarmusik@softq.pl'
+  license:
+    name: 'GPL-2.0'
+paths:
+  /work-items/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get all work items'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/limit/{limit}/:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Set limit for work items map'
+      responses:
+        '200':
+          description: 'Get successful'
+          headers: { }
+      parameters:
+        - name: 'limit'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
