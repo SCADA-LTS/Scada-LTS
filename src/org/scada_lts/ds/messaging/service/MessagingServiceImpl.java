@@ -5,7 +5,6 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.ds.messaging.channel.InitMessagingChannels;
-import org.scada_lts.ds.messaging.exception.MessagingChannelException;
 import org.scada_lts.ds.messaging.exception.MessagingServiceException;
 
 import java.util.function.Consumer;
@@ -35,8 +34,6 @@ class MessagingServiceImpl implements MessagingService {
         }
         try {
             channels.publish(dataPoint, message);
-        } catch (MessagingChannelException e) {
-            throw new MessagingServiceException("Error Publish: " + dataSourceInfo(vo) + ", Value: " + message + ", " + causeInfo(e), e.getCause());
         } catch (Exception e) {
             throw new MessagingServiceException("Error Publish: " + dataSourceInfo(vo) + ", Value: " + message + ", " + exceptionInfo(e), e);
         }
@@ -53,8 +50,6 @@ class MessagingServiceImpl implements MessagingService {
         }
         try {
             channels.initChannel(dataPoint, exceptionHandler, updateErrorKey);
-        } catch (MessagingChannelException e) {
-            throw new MessagingServiceException("Error Init Receiver: " + dataSourceInfo(vo) + ", " + causeInfo(e), e.getCause());
         } catch (Exception e) {
             throw new MessagingServiceException("Error Init Receiver: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }
@@ -68,8 +63,6 @@ class MessagingServiceImpl implements MessagingService {
         }
         try {
             channels.removeChannel(dataPoint);
-        } catch (MessagingChannelException e) {
-            throw new MessagingServiceException("Error Remove Receiver: " + dataSourceInfo(vo) + ", " + causeInfo(e), e.getCause());
         } catch (Exception e) {
             throw new MessagingServiceException("Error Remove Receiver: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }
@@ -88,7 +81,7 @@ class MessagingServiceImpl implements MessagingService {
     @Override
     public void open() throws MessagingServiceException {
         if(blocked) {
-            throw new IllegalStateException("Stop Open Connection: Service of shutting down:  "  + dataSourceInfo(vo));
+            throw new MessagingServiceException("Stop Open Connection: Service of shutting down:  "  + dataSourceInfo(vo));
         }
         if(channels.isOpenConnection()) {
             LOG.warn("Stop Open Connection: Connection is opened:  "  + dataSourceInfo(vo));
@@ -96,8 +89,6 @@ class MessagingServiceImpl implements MessagingService {
         }
         try {
             channels.openConnection();
-        } catch (MessagingChannelException e) {
-            throw new MessagingServiceException("Error Open Connection: " + dataSourceInfo(vo) + ", " + causeInfo(e), e.getCause());
         } catch (Exception e) {
             throw new MessagingServiceException("Error Open Connection: " + dataSourceInfo(vo) + ", " + exceptionInfo(e), e);
         }
