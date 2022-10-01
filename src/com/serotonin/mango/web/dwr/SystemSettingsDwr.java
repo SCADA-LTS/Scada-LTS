@@ -298,13 +298,19 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized) {
+	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
-		systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
-				uiPerformance);
+        DwrResponseI18n response = new DwrResponseI18n();
+        if(uiPerformance < 0) {
+            response.addContextualMessage(SystemSettingsDAO.UI_PERFORMANCE, "validate.invalidValue");
+            return response;
+        } else {
+            systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, uiPerformance);
+        }
 		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
 				String.valueOf(dataPointRtValueSynchronized));
+		return response;
 	}
 
 	@MethodFilter

@@ -77,14 +77,31 @@ function defaultIfBlank(str, defaultStr) {
 mango.longPoll = {};
 mango.longPoll.pollRequest = {};
 mango.longPoll.pollSessionId = Math.round(Math.random() * 1000000000);
+mango.longPoll.intervalId = -1;
+
+window.addEventListener('beforeunload', (event) => {
+  if(mango.longPoll.intervalId != -1) {
+      clearInterval(mango.longPoll.intervalId);
+  }
+  MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
+});
+
+mango.longPoll.setInterval = function(response) {
+    if(response.waitTime > 1000) {
+        setTimeout(mango.longPoll.poll, 1000);
+    }
+    if(response.waitTime < 0) {
+        mango.longPoll.intervalId = setInterval(mango.longPoll.poll, 1000);
+    } else {
+        mango.longPoll.intervalId = setInterval(mango.longPoll.poll, response.waitTime);
+    }
+}
 
 mango.longPoll.start = function() {
-    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.pollCB);
-    dojo.addOnUnload(function() { MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId); });
+    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.setInterval);
 };
 
 mango.longPoll.poll = function() {
-    mango.longPoll.lastPoll = new Date().getTime();
     MiscDwr.doLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollCB);
 }
 
@@ -129,18 +146,9 @@ mango.longPoll.pollCB = function(response) {
     
     if (response.customViewStates)
         mango.view.setData(response.customViewStates);
-    
-    if (mango.longPoll.lastPoll) {
-        var duration = new Date().getTime() - mango.longPoll.lastPoll;
-        if (duration < 300) {
-            // The response happened too quick. This may indicate a problem, 
-            // so just wait a bit before polling again. 
-            setTimeout(mango.longPoll.poll, 1000);
-            return;
-        }
-    }
+
     // Poll again immediately.
-    mango.longPoll.poll();
+    //mango.longPoll.poll();
 }
 
 

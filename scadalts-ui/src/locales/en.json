@@ -866,6 +866,7 @@
 	"systemsettings.misc.eventPurgePeriods": "Purge event time",
 	"systemsettings.misc.futureDateLimitPeriodType": "Future date limit period type",
 	"systemsettings.misc.futureDateLimitPeriods": "Future date limit",
+	"systemsettings.misc.performance.veryHigh": "Very high",
 	"systemsettings.misc.performance.high": "High",
 	"systemsettings.misc.performance.low": "Low",
 	"systemsettings.misc.performance.medium": "Medium",
