@@ -87,8 +87,10 @@ window.addEventListener('beforeunload', (event) => {
 });
 
 mango.longPoll.setInterval = function(response) {
-    if(response.waitTime > 1000) {
-        setTimeout(mango.longPoll.poll, 1000);
+    if(response.watchListStates) {
+        setTimeout(mango.longPoll.poll, 0);
+    } else {
+        setTimeout(mango.longPoll.pollCB(response), 0);
     }
     if(response.waitTime < 0) {
         mango.longPoll.intervalId = setInterval(mango.longPoll.poll, 1000);
