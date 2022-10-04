@@ -75,11 +75,13 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
                     .getServletContext().getAttribute(
                             HttpSessionListenerImpl.SERVLET_CONTEXT_MAP);
 
-            SessionInfo sessionInfo = (SessionInfo) map.get(session.getId());
-            if (!sessionInfo.haveLogOnIPAddr()) {
+            if(map != null) {
+                SessionInfo sessionInfo = (SessionInfo) map.get(session.getId());
+                if (sessionInfo != null && !sessionInfo.haveLogOnIPAddr()) {
 
-                final String logOnIpAddr = httpRequest.getRemoteHost();
-                sessionInfo.setLogOnIpAddr(logOnIpAddr);
+                    final String logOnIpAddr = httpRequest.getRemoteHost();
+                    sessionInfo.setLogOnIpAddr(logOnIpAddr);
+                }
             }
         } catch (Exception e) {
             // no info on tomcat
