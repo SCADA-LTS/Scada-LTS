@@ -237,6 +237,12 @@
             else
                 updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
         }
+
+        window.addEventListener('beforeunload', (event) => {
+            try {
+                disconnect();
+            } catch(error) {}
+        });
     </c:if>
     </script>
   </c:if>
