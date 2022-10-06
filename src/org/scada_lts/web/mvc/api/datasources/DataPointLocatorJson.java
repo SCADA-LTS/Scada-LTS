@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.datasources;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import org.scada_lts.web.mvc.api.datasources.meta.MetaPointLocatorJson;
 import org.scada_lts.web.mvc.api.datasources.modbusip.ModbusIpPointLocatorJson;
 import org.scada_lts.web.mvc.api.datasources.snmp.SnmpPointLocatorJson;
 import org.scada_lts.web.mvc.api.datasources.virtual.VirtualPointLocatorJson;
@@ -15,7 +16,8 @@ import org.scada_lts.web.mvc.api.datasources.virtual.VirtualPointLocatorJson;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = VirtualPointLocatorJson.class, name = "1"),
         @JsonSubTypes.Type(value = ModbusIpPointLocatorJson.class, name = "3"),
-        @JsonSubTypes.Type(value = SnmpPointLocatorJson.class, name = "5")
+        @JsonSubTypes.Type(value = SnmpPointLocatorJson.class, name = "5"),
+        @JsonSubTypes.Type(value = MetaPointLocatorJson.class, name = "9"),
 })
 public abstract class DataPointLocatorJson {
 

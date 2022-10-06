@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.json.JsonDataPoint;
@@ -240,6 +241,27 @@ public class DataPointAPI {
         }
     }
 
+    @GetMapping(value = "/api/datapoints/identifiers")
+    public ResponseEntity<List<ScadaObjectIdentifier>> getDataPointUserIdentifiers(
+            @RequestParam() Integer dataSourceId,
+            HttpServletRequest request
+    ) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                List<ScadaObjectIdentifier> result = filteringByAccess(user, dataPointService.getDataPoints(dataSourceId, null))
+                        .stream()
+                        .map(DataPointVO::toIdentifier)
+                        .collect(Collectors.toList());
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getConfigurationByXid(
             @PathVariable String xid,
@@ -316,7 +338,7 @@ public class DataPointAPI {
         }
     }
 
-    public class DatapointJSON implements Serializable {
+    public static class DatapointJSON implements Serializable {
         private long id;
         private String name;
         private String xid;
