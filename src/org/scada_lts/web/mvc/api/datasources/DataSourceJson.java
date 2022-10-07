@@ -41,7 +41,7 @@ public class DataSourceJson {
     }
 
     public DataSourceVO<?> createDataSourceVO() {
-        throw new RuntimeException("Method not overwritten");
+        throw new UnsupportedOperationException("Method not overwritten");
     }
 
     public int getId() {

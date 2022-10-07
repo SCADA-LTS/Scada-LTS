@@ -307,9 +307,6 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         if (port <= 0 || port > 65535)
             response.addContextualMessage("port", "validate.invalidValue");
 
-        if (trapPort <= 0 || trapPort > 65535)
-            response.addContextualMessage("trapPort", "validate.invalidValue");
-
         if (StringUtils.isEmpty(host))
             response.addContextualMessage("host", "validate.required");
 
@@ -323,6 +320,8 @@ public class SnmpDataSourceVO extends DataSourceVO<SnmpDataSourceVO> {
         if (snmpVersion != SnmpConstants.version1 && snmpVersion != SnmpConstants.version2c
                 && snmpVersion != SnmpConstants.version3)
             response.addContextualMessage("snmpVersion", "validate.invalidValue");
+        if (snmpVersion != SnmpConstants.version1 && (trapEnabled && (trapPort <= 0 || trapPort > 65535)))
+            response.addContextualMessage("trapPort", "validate.invalidValue");
         if (timeout <= 0)
             response.addContextualMessage("timeout", "validate.greaterThanZero");
         if (retries < 0)

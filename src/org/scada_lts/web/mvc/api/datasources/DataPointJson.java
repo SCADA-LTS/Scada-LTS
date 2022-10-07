@@ -2,7 +2,6 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 import java.util.ArrayList;
 

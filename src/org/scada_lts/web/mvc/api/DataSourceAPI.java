@@ -20,6 +20,7 @@ package org.scada_lts.web.mvc.api;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -61,7 +62,7 @@ public class DataSourceAPI {
                 List<DataSourceJson> list;
                 List<DataSourceVO<?>> dataSources = dataSourceService.getDataSources();
 
-                list = dataSources.stream().map(DataSourceJson::new).collect(Collectors.toList());
+                list = dataSources.stream().map(DataSourcePointJsonFactory::getDataSourceJson).collect(Collectors.toList());
 
                 return new ResponseEntity<>(list, HttpStatus.OK);
             }
@@ -184,18 +185,17 @@ public class DataSourceAPI {
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
 
                 if(dataSource != null) {
                     DataSourceVO<?> vo = dataSource.createDataSourceVO();
-                    if(vo != null) {
-                        return new ResponseEntity<>(
-                                new DataSourceJson(dataSourceService.createDataSource(vo)),
-                                HttpStatus.CREATED);
-                    } else {
-                        LOG.error("DataSource JSON Type Not recoginized!");
+                    DwrResponseI18n responseI18n = new DwrResponseI18n();
+                    vo.validate(responseI18n);
+                    if(responseI18n.getHasMessages()) {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     }
+                    DataSourceVO<?> result = dataSourceService.createDataSource(vo);
+                    return new ResponseEntity<>(DataSourcePointJsonFactory.getDataSourceJson(result), HttpStatus.CREATED);
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
@@ -213,17 +213,17 @@ public class DataSourceAPI {
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
 
                 if(dataSource != null) {
                     DataSourceVO<?> vo = dataSource.createDataSourceVO();
-                    if(vo != null) {
-                        dataSourceService.updateAndInitializeDataSource(vo);
-                        return new ResponseEntity<>(HttpStatus.CREATED);
-                    } else {
-                        LOG.error("DataSource JSON Type Not recoginized!");
+                    DwrResponseI18n responseI18n = new DwrResponseI18n();
+                    vo.validate(responseI18n);
+                    if(responseI18n.getHasMessages()) {
                         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                     }
+                    dataSourceService.updateAndInitializeDataSource(vo);
+                    return new ResponseEntity<>(dataSource, HttpStatus.CREATED);
                 } else {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
@@ -241,7 +241,7 @@ public class DataSourceAPI {
             HttpServletRequest request) {
         try {
             User user = Common.getUser(request);
-            if(user != null) {
+            if(user != null && user.isAdmin()) {
                 if(id != null) {
                     dataSourceService.deleteDataSource(id);
                     return new ResponseEntity<>(HttpStatus.OK);
@@ -295,27 +295,6 @@ public class DataSourceAPI {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-//    @GetMapping(value = "/api/datasource")
-//    public ResponseEntity<DataSourceSimpleJSON> getDataSource(
-//            @RequestParam(required = false) String xid,
-//            HttpServletRequest request) {
-//        try {
-//            User user = Common.getUser(request);
-//            if(user != null) {
-//                if (xid != null){
-//                    DataSourceVO ds = dataSourceService.getDataSource(xid);
-//                    DataSourceSimpleJSON json = new DataSourceSimpleJSON(ds.getId(), ds.getXid(), ds.getName(), ds.isEnabled());
-//                    return new ResponseEntity<>(json,HttpStatus.OK);
-//                }
-//            } else {
-//                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//            }
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
 
     private class DataSourceSimpleJSON {
         private long id;
