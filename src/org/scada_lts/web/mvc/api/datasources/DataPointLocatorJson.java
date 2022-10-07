@@ -19,7 +19,7 @@ import org.scada_lts.web.mvc.api.datasources.virtual.VirtualPointLocatorJson;
         @JsonSubTypes.Type(value = SnmpPointLocatorJson.class, name = "5"),
         @JsonSubTypes.Type(value = MetaPointLocatorJson.class, name = "9"),
 })
-public abstract class DataPointLocatorJson {
+public class DataPointLocatorJson {
 
     private int dataTypeId;
     private int dataSourceTypeId;

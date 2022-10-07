@@ -1,5 +1,6 @@
 package org.scada_lts.web.mvc.api.datasources;
 
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
@@ -33,7 +34,7 @@ public class DataSourcePointJsonFactory {
         } else if (vo instanceof MetaPointLocatorVO) {
             return new MetaPointLocatorJson((MetaPointLocatorVO) vo);
         }
-        return null;
+        return new DataPointLocatorJson(vo);
     }
 
     public static DataSourceJson getDataSourceJson(DataSourceVO<?> ds) {
@@ -47,5 +48,9 @@ public class DataSourcePointJsonFactory {
             return new MetaDataSourceJson((MetaDataSourceVO) ds);
         }
         return new DataSourceJson(ds);
+    }
+
+    public static DataPointJson getDataPointJson(DataPointVO vo) {
+        return new DataPointJson(vo);
     }
 }

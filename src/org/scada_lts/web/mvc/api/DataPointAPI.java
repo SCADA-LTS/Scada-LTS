@@ -21,11 +21,13 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.dwr.EmportDwr;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
+import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.json.JsonDataPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,7 +90,7 @@ public class DataPointAPI {
                 if(id != null) {
                     List<DataPointJson> result = filteringByAccess(user, dataPointService.getDataPoints(id, null))
                             .stream()
-                            .map(DataPointJson::new)
+                            .map(DataSourcePointJsonFactory::getDataPointJson)
                             .collect(Collectors.toList());
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
@@ -145,8 +147,15 @@ public class DataPointAPI {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
+                DataPointVO dataPointVO = datapoint.createDataPointVO();
+                DwrResponseI18n responseI18n = new DwrResponseI18n();
+                dataPointVO.validate(responseI18n);
+                if(responseI18n.getHasMessages()) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                DataPointVO result = dataPointService.createDataPoint(dataPointVO);
                 return new ResponseEntity<>(
-                        new DataPointJson(dataPointService.createDataPoint(datapoint.createDataPointVO())),
+                        DataSourcePointJsonFactory.getDataPointJson(result),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -157,15 +166,21 @@ public class DataPointAPI {
     }
 
     @PutMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointVO> updateDataPoint(
+    public ResponseEntity<DataPointJson> updateDataPoint(
             @RequestBody DataPointJson datapoint,
             HttpServletRequest request
     ) {
         try {
             User user = Common.getUser(request);
             if(user != null && user.isAdmin()) {
-                dataPointService.updateDataPointConfiguration(datapoint.createDataPointVO());
-                return new ResponseEntity<>(HttpStatus.OK);
+                DataPointVO dataPointVO = datapoint.createDataPointVO();
+                DwrResponseI18n responseI18n = new DwrResponseI18n();
+                dataPointVO.validate(responseI18n);
+                if(responseI18n.getHasMessages()) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                dataPointService.updateDataPointConfiguration(dataPointVO);
+                return new ResponseEntity<>(datapoint, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
