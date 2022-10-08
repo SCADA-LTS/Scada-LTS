@@ -81,6 +81,8 @@ public class DataSourceService implements MangoDataSource {
 	public boolean toggleDataSource(int id) {
 
 		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
+		if(vo == null)
+			return false;
 		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(id);
 		if(vo.isEnabled()) {
 			if(rt != null) {
