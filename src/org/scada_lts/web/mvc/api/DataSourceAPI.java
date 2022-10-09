@@ -58,10 +58,9 @@ public class DataSourceAPI {
     }
 
     @GetMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceJson> getDataSource(
-            @RequestParam(required = false) Integer id,
-            @RequestParam(required = false) String xid,
-            HttpServletRequest request) {
+    public ResponseEntity<DataSourceJson> getDataSource(@RequestParam(required = false) Integer id,
+                                                        @RequestParam(required = false) String xid,
+                                                        HttpServletRequest request) {
         LOG.info(  "/api/datasource");
 
         DataSourceJson response = dataSourceService.getDataSource(request, xid, id);
@@ -69,10 +68,9 @@ public class DataSourceAPI {
     }
 
     @GetMapping(value = "/api/datasource/toggle")
-    public ResponseEntity<Map<String, Object>> toggleDataSource(
-            @RequestParam(required = false) Integer id,
-            @RequestParam(required = false) String xid,
-            HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> toggleDataSource(@RequestParam(required = false) Integer id,
+                                                                @RequestParam(required = false) String xid,
+                                                                HttpServletRequest request) {
         LOG.info( "/api/datasource/toggle");
 
         Map<String, Object> response = dataSourceService.toggleDataSource(request, id);
@@ -80,10 +78,9 @@ public class DataSourceAPI {
     }
 
     @GetMapping(value = "/api/datasource/validate")
-    public ResponseEntity<Map<String, Object>> isUniqueXid(
-            @RequestParam String xid,
-            @RequestParam Integer id,
-            HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> isUniqueXid(@RequestParam(required = false) Integer id,
+                                                           @RequestParam(required = false) String xid,
+                                                           HttpServletRequest request) {
         LOG.info("/api/datasource/validate");
 
         Map<String, Object> response = dataSourceService.isUniqueXid(request, xid, id);
@@ -91,9 +88,8 @@ public class DataSourceAPI {
     }
 
     @GetMapping(value = "/api/datasource/datapoints/enable")
-    public ResponseEntity<List<DataPointJson>> enableAllPointsInDataSource(
-            @RequestParam Integer id,
-            HttpServletRequest request) {
+    public ResponseEntity<List<DataPointJson>> enableAllPointsInDataSource(@RequestParam(required = false) Integer id,
+                                                                           HttpServletRequest request) {
         LOG.info("/api/datasource/datapoints/enable");
 
         List<DataPointJson> response = dataSourceService.enableAllPointsInDataSource(request, id);
@@ -109,7 +105,7 @@ public class DataSourceAPI {
     }
 
     @PostMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceJson> createDataSource(@RequestBody DataSourceJson dataSource,
+    public ResponseEntity<DataSourceJson> createDataSource(@RequestBody(required = false) DataSourceJson dataSource,
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource");
 
@@ -118,7 +114,7 @@ public class DataSourceAPI {
     }
 
     @PutMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceJson> updateDataSource(@RequestBody DataSourceJson dataSource,
+    public ResponseEntity<DataSourceJson> updateDataSource(@RequestBody(required = false) DataSourceJson dataSource,
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource");
 
@@ -127,7 +123,8 @@ public class DataSourceAPI {
     }
 
     @DeleteMapping(value = "/api/datasource")
-    public ResponseEntity<DataSourceJson> deleteDataSource(@RequestParam Integer id, HttpServletRequest request) {
+    public ResponseEntity<DataSourceJson> deleteDataSource(@RequestParam(required = false) Integer id,
+                                                           HttpServletRequest request) {
         LOG.info("/api/datasource");
 
         dataSourceService.delete(request, null, id);

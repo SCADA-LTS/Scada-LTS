@@ -11,10 +11,8 @@ import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
-import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
-import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
-import org.scada_lts.web.mvc.api.exceptions.ScadaApiException;
-import org.scada_lts.web.mvc.api.exceptions.ScadaErrorMessage;
+import org.scada_lts.web.mvc.api.exceptions.*;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,11 +81,15 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
 
     @Override
     public DataPointJson update(HttpServletRequest request, DataPointJson datapoint) {
-        checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
-        DataPointVO dataPointVO = toDataPointVO(request, datapoint);
+
+        User user = Common.getUser(request);
+        DataPointVO vo = toDataPointVO(request, datapoint);
+        if(!GetDataPointsWithAccess.hasDataPointSetPermission(user, vo)) {
+            throw new UnauthorizedException(request.getRequestURI());
+        }
         try {
-            dataPointService.updateDataPointConfiguration(dataPointVO);
+            dataPointService.updateDataPointConfiguration(vo);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -97,13 +99,15 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     @Override
     public void delete(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
-        checkArgsIfEmptyThenBadRequest(request, "Data Point id or xid cannot be null.", id, xid);
+        checkArgsIfTwoEmptyThenBadRequest(request, "Data Point id or xid cannot be null.", id, xid);
         try {
             if(id != null) {
                 dataPointService.deleteDataPoint(id);
             } else {
                 dataPointService.deleteDataPoint(xid);
             }
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException("Data Point not found, id: " + id + ", xid: " + xid, request.getRequestURI());
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }

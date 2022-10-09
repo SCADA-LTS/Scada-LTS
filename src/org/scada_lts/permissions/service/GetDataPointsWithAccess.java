@@ -1,5 +1,6 @@
 package org.scada_lts.permissions.service;
 
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -44,6 +45,10 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     }
 
     public static boolean hasDataPointReadPermission(User user, DataPointVO dataPoint) {
-        return Permissions.getDataPointAccessType(user, dataPoint) > 0;
+        return Permissions.getDataPointAccessType(user, dataPoint) > ShareUser.ACCESS_NONE;
+    }
+
+    public static boolean hasDataPointSetPermission(User user, DataPointVO dataPoint) {
+        return Permissions.getDataPointAccessType(user, dataPoint) > ShareUser.ACCESS_READ;
     }
 }

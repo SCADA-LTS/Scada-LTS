@@ -55,7 +55,8 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) Integer id, @RequestParam(required = false) String xid,
+    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) String xid,
+                                                    @RequestParam(required = false) Integer id,
                                                     HttpServletRequest request) {
         LOG.info("/api/datapoint");
 
@@ -64,8 +65,8 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoint/datasource")
-    public ResponseEntity<List<DataPointJson>> getDataPointsByDataSourceId(@RequestParam(required = false) Integer id,
-                                                                           @RequestParam(required = false) String xid,
+    public ResponseEntity<List<DataPointJson>> getDataPointsByDataSourceId(@RequestParam(required = false) String xid,
+                                                                           @RequestParam(required = false) Integer id,
                                                                            HttpServletRequest request) {
         LOG.info("/api/datapoint/datasource");
 
@@ -74,7 +75,8 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoint/validate")
-    public ResponseEntity<Map<String, Object>> isDataPointXidUnique(@RequestParam String xid, @RequestParam Integer id,
+    public ResponseEntity<Map<String, Object>> isDataPointXidUnique(@RequestParam(required = false) String xid,
+                                                                    @RequestParam(required = false) Integer id,
                                                                     HttpServletRequest request) {
         LOG.info(  "/api/datapoint/validate");
 
@@ -91,7 +93,7 @@ public class DataPointAPI {
     }
 
     @PostMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody DataPointJson datapoint, HttpServletRequest request) {
+    public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) DataPointJson datapoint, HttpServletRequest request) {
         LOG.info( "/api/datapoint");
 
         DataPointJson response = dataPointApiService.create(request, datapoint);
@@ -99,14 +101,15 @@ public class DataPointAPI {
     }
 
     @PutMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody DataPointJson datapoint, HttpServletRequest request) {
+    public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) DataPointJson datapoint, HttpServletRequest request) {
 
         DataPointJson response = dataPointApiService.update(request, datapoint);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/api/datapoint")
-    public ResponseEntity<DataPointJson> deleteDataPoint(@RequestParam(required = false) Integer id, @RequestParam(required = false) String xid,
+    public ResponseEntity<DataPointJson> deleteDataPoint(@RequestParam(required = false) String xid,
+                                                         @RequestParam(required = false) Integer id,
                                                          HttpServletRequest request) {
         LOG.info( "/api/datapoint");
 
@@ -115,7 +118,7 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoints/datasource")
-    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersByDataSourceId(@RequestParam() Integer id,
+    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersByDataSourceId(@RequestParam(required = false) Integer id,
                                                                                            HttpServletRequest request) {
         LOG.info( "/api/datapoints/datasource");
 
@@ -133,7 +136,7 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoint/getConfigurationByXid/{xid}")
-    public ResponseEntity<String> getConfigurationByXid(@PathVariable String xid, HttpServletRequest request) {
+    public ResponseEntity<String> getConfigurationByXid(@PathVariable(required = false) String xid, HttpServletRequest request) {
         LOG.info("/api/datapoint/getConfigurationByXid/{xid}");
 
         String response = dataPointApiService.getConfigurationByXid(request, xid);
@@ -150,7 +153,7 @@ public class DataPointAPI {
     }
 
     @GetMapping(value = "/api/datapoint/{datasourceId}/getAllPlc", produces = "application/json")
-    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersPlcByDataSourceId(@PathVariable("datasourceId") Integer datasourceId,
+    public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersPlcByDataSourceId(@PathVariable(value = "datasourceId", required = false) Integer datasourceId,
                                                                                               HttpServletRequest request) {
         LOG.info("/api/datapoint/datasourceId/getAllPlc");
 

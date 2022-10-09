@@ -13,7 +13,9 @@ import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
+import org.scada_lts.web.mvc.api.exceptions.NotFoundException;
 import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -51,6 +53,7 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
 
     @Override
     public String generateUniqueXid(HttpServletRequest request) {
+        checkIfNonAdminThenUnauthorized(request);
         String response;
         try {
             response = dataSourceService.generateUniqueXid();
@@ -99,6 +102,8 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
 
         try {
             dataSourceService.deleteDataSource(id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException("Data Source not found, id: " + id, request.getRequestURI());
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -138,18 +143,14 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
         User user = Common.getUser(request);
         DataSourceJson response;
-        try {
-            if(id != null) {
-                response = toObject(id, user, request, dataSourceService::getDataSource,
-                        GetDataSourcesWithAccess::hasDataSourceReadPermission,
-                        DataSourcePointJsonFactory::getDataSourceJson);
-            } else {
-                response = toObject(xid, user, request, dataSourceService::getDataSource,
-                        GetDataSourcesWithAccess::hasDataSourceReadPermission,
-                        DataSourcePointJsonFactory::getDataSourceJson);
-            }
-        } catch (Exception ex) {
-            throw new InternalServerErrorException(ex, request.getRequestURI());
+        if(id != null) {
+            response = toObject(id, user, request, dataSourceService::getDataSource,
+                    GetDataSourcesWithAccess::hasDataSourceReadPermission,
+                    DataSourcePointJsonFactory::getDataSourceJson);
+        } else {
+            response = toObject(xid, user, request, dataSourceService::getDataSource,
+                    GetDataSourcesWithAccess::hasDataSourceReadPermission,
+                    DataSourcePointJsonFactory::getDataSourceJson);
         }
         return response;
     }
