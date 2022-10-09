@@ -26,6 +26,7 @@ import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
@@ -135,6 +136,10 @@ public class Permissions {
             return true;
         return user.getDataSourcePermissions().contains(dataSourceId)
                 || user.getDataSourceProfilePermissions().contains(dataSourceId);
+    }
+
+    public static boolean hasDataSourcePermission(User user, DataSourceVO<?> dataSource) throws PermissionException {
+        return hasDataSourcePermission(user, dataSource.getId());
     }
 
     public static boolean hasDataSourcePermission(User user) throws PermissionException {

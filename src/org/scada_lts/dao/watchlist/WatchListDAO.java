@@ -567,9 +567,9 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 		DAO.getInstance().getJdbcTemp()
 				.batchUpdate(WATCH_LIST_POINTS_INSERT, batchArgs);
     
-  }
-  
-	public List<ScadaObjectIdentifier> selectWatchListIdentifiers() {
+  	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
 		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT_ORDER_BY_NAME, new Object[]{},
 				new ScadaObjectIdentifierRowMapper.Builder()
 						.idColumnName(COLUMN_NAME_ID)

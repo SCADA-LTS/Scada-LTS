@@ -27,9 +27,10 @@ public class DataPointLocatorJson {
 
     public DataPointLocatorJson() {}
 
-    public DataPointLocatorJson(PointLocatorVO pointLocatorVO) {
+    public DataPointLocatorJson(PointLocatorVO pointLocatorVO, int dataSourceTypeId) {
         this.dataTypeId = pointLocatorVO.getDataTypeId();
         this.settable = pointLocatorVO.isSettable();
+        this.dataSourceTypeId = dataSourceTypeId;
     }
 
     public PointLocatorVO parsePointLocatorData() {

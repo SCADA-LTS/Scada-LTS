@@ -24,17 +24,17 @@ public class DataSourcePointJsonFactory {
 
     private DataSourcePointJsonFactory() {}
 
-    public static DataPointLocatorJson getDataPointLocatorJson(PointLocatorVO vo) {
+    public static DataPointLocatorJson getDataPointLocatorJson(PointLocatorVO vo, int dataSourceTypeId) {
         if(vo instanceof VirtualPointLocatorVO) {
-            return new VirtualPointLocatorJson((VirtualPointLocatorVO) vo);
+            return new VirtualPointLocatorJson((VirtualPointLocatorVO) vo, dataSourceTypeId);
         } else if (vo instanceof SnmpPointLocatorVO) {
-            return new SnmpPointLocatorJson((SnmpPointLocatorVO) vo);
+            return new SnmpPointLocatorJson((SnmpPointLocatorVO) vo, dataSourceTypeId);
         } else if (vo instanceof ModbusPointLocatorVO) {
-            return new ModbusIpPointLocatorJson((ModbusPointLocatorVO) vo);
+            return new ModbusIpPointLocatorJson((ModbusPointLocatorVO) vo, dataSourceTypeId);
         } else if (vo instanceof MetaPointLocatorVO) {
-            return new MetaPointLocatorJson((MetaPointLocatorVO) vo);
+            return new MetaPointLocatorJson((MetaPointLocatorVO) vo, dataSourceTypeId);
         }
-        return new DataPointLocatorJson(vo);
+        return new DataPointLocatorJson(vo, dataSourceTypeId);
     }
 
     public static DataSourceJson getDataSourceJson(DataSourceVO<?> ds) {

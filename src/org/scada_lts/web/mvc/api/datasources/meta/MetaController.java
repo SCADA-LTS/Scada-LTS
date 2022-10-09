@@ -25,27 +25,21 @@ import java.util.List;
 import java.util.Map;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static org.scada_lts.utils.ValidationUtils.checkIfNonAdminThenUnauthorized;
 
 @Controller
-@RequestMapping(value = "/api/datasources/meta")
+@RequestMapping(value = "/api/datapoint/meta")
 public class MetaController {
 
     private static final Log LOG = LogFactory.getLog(MetaController.class);
 
-    @PostMapping(value = "/testMeta")
-    public ResponseEntity<Map<Object, Object>> testMeta(
-            @RequestBody MetaPointLocatorJson data,
-            HttpServletRequest request
-    ) {
-        User user = Common.getUser(request);
-        if (user != null && user.isAdmin()) {
-            Map<Object, Object> response = new HashMap<>();
-            validateScript(data.getScript(), data.getContext(), data.getDataTypeId(), response);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    @PostMapping(value = "/test")
+    public ResponseEntity<Map<Object, Object>> testMeta(@RequestBody MetaPointLocatorJson data, HttpServletRequest request) {
 
+        checkIfNonAdminThenUnauthorized(request);
+        Map<Object, Object> response = new HashMap<>();
+        validateScript(data.getScript(), data.getContext(), data.getDataTypeId(), response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     public void validateScript(String script, List<IntValuePair> context, int dataTypeId, Map<Object, Object> response) {
@@ -56,15 +50,23 @@ public class MetaController {
             PointValueTime pvt = executor.execute(script, convertedContext,
                     System.currentTimeMillis(), dataTypeId, -1);
             if(pvt.getTime() == -1) {
-                response.put("response", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.success", pvt.getValue()));
+                response.put("success", true);
+                response.put("result", pvt.getStringValue());
+                response.put("message", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.success", pvt.getValue()));
             } else {
-                response.put("response", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.successTs", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
+                response.put("success", true);
+                response.put("result", pvt.getStringValue());
+                response.put("message", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.successTs", pvt.getValue(), DateFunctions.getTime(pvt.getTime())));
             }
         } catch (DataPointStateException | ResultTypeException e) {
-            response.put("response", e.getLocalizableMessage());
+            response.put("success", false);
+            response.put("result", "failed");
+            response.put("message", e.getLocalizableMessage() != null ? e.getLocalizableMessage().getLocalizedMessage(Common.getBundle()) : e.getMessage());
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (Exception e) {
-            response.put("response", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.scriptError", e.getMessage()));
+            response.put("success", false);
+            response.put("result", "failed");
+            response.put("message", LocalizableMessage.getMessage(Common.getBundle(), "dsEdit.meta.test.scriptError", e.getMessage()));
             LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         }
     }
