@@ -3,6 +3,7 @@ package org.scada_lts.web.mvc.api.datasources.meta;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.vo.TimePeriodType;
+import com.serotonin.mango.vo.UpdateEventType;
 import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
@@ -14,10 +15,9 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
     private List<IntValuePair> context = new ArrayList<>();
     @JsonRemoteProperty
     private String script;
-    private int dataTypeId;
     @JsonRemoteProperty
     private boolean settable;
-    private int updateEvent = MetaPointLocatorVO.UPDATE_EVENT_CONTEXT_CHANGE;
+    private UpdateEventType updateEvent = UpdateEventType.CONTEXT_CHANGE;
     @JsonRemoteProperty
     private String updateCronPattern;
     @JsonRemoteProperty
@@ -26,11 +26,11 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
 
     public MetaPointLocatorJson() {}
 
-    public MetaPointLocatorJson(MetaPointLocatorVO pointLocatorVO) {
-        super(pointLocatorVO);
+    public MetaPointLocatorJson(MetaPointLocatorVO pointLocatorVO, int dataSourceTypeId) {
+        super(pointLocatorVO, dataSourceTypeId);
         this.context = new ArrayList<>(pointLocatorVO.getContext());
         this.script = pointLocatorVO.getScript();
-        this.updateEvent = pointLocatorVO.getUpdateEvent();
+        this.updateEvent = UpdateEventType.byCode(pointLocatorVO.getUpdateEvent());
         this.updateCronPattern = pointLocatorVO.getUpdateCronPattern();
         this.executionDelaySeconds = pointLocatorVO.getExecutionDelaySeconds();
         this.executionDelayPeriodType = pointLocatorVO.getExecutionDelayPeriodType();
@@ -53,16 +53,6 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
     }
 
     @Override
-    public int getDataTypeId() {
-        return dataTypeId;
-    }
-
-    @Override
-    public void setDataTypeId(int dataTypeId) {
-        this.dataTypeId = dataTypeId;
-    }
-
-    @Override
     public boolean isSettable() {
         return settable;
     }
@@ -72,11 +62,11 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
         this.settable = settable;
     }
 
-    public int getUpdateEvent() {
+    public UpdateEventType getUpdateEvent() {
         return updateEvent;
     }
 
-    public void setUpdateEvent(int updateEvent) {
+    public void setUpdateEvent(UpdateEventType updateEvent) {
         this.updateEvent = updateEvent;
     }
 
@@ -113,7 +103,7 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
         plVO.setScript(this.getScript());
         plVO.setExecutionDelayPeriodType(this.getExecutionDelayPeriodType());
         plVO.setExecutionDelaySeconds(this.getExecutionDelaySeconds());
-        plVO.setUpdateEvent(this.getUpdateEvent());
+        plVO.setUpdateEvent(this.getUpdateEvent().getCode());
         plVO.setUpdateCronPattern(this.getUpdateCronPattern());
         return plVO;
     }

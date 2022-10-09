@@ -40,6 +40,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.PointDataType;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -69,6 +70,8 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.DataPointIdentifier;
+import org.scada_lts.dao.model.DataSourceIdentifier;
 import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
 import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
@@ -677,4 +680,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		return value;
 	}
 
+	public DataSourceIdentifier toIdentifier() {
+		return new DataSourceIdentifier(getId(), getXid(), getName(), getType(), isEnabled());
+	}
 }

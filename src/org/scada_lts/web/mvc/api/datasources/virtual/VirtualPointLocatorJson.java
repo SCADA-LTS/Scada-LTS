@@ -5,21 +5,21 @@ import org.scada_lts.web.mvc.api.datasources.DataPointLocatorJson;
 
 public class VirtualPointLocatorJson extends DataPointLocatorJson {
 
-    int changeTypeId;
-    AlternateBooleanChangeVO alternateBooleanChange;
-    BrownianChangeVO brownianChange;
-    IncrementAnalogChangeVO incrementAnalogChange;
-    IncrementMultistateChangeVO incrementMultistateChange;
-    NoChangeVO noChange;
-    RandomAnalogChangeVO randomAnalogChange;
-    RandomBooleanChangeVO randomBooleanChange;
-    RandomMultistateChangeVO randomMultistateChange;
-    AnalogAttractorChangeVO analogAttractorChange;
+    private int changeTypeId;
+    private AlternateBooleanChangeVO alternateBooleanChange;
+    private BrownianChangeVO brownianChange;
+    private IncrementAnalogChangeVO incrementAnalogChange;
+    private IncrementMultistateChangeVO incrementMultistateChange;
+    private NoChangeVO noChange;
+    private RandomAnalogChangeVO randomAnalogChange;
+    private RandomBooleanChangeVO randomBooleanChange;
+    private RandomMultistateChangeVO randomMultistateChange;
+    private AnalogAttractorChangeVO analogAttractorChange;
 
     public VirtualPointLocatorJson() {}
 
-    public VirtualPointLocatorJson(VirtualPointLocatorVO pointLocatorVO) {
-        super(pointLocatorVO);
+    public VirtualPointLocatorJson(VirtualPointLocatorVO pointLocatorVO, int dataSourceTypeId) {
+        super(pointLocatorVO, dataSourceTypeId);
         this.changeTypeId = pointLocatorVO.getChangeTypeId();
         this.alternateBooleanChange = pointLocatorVO.getAlternateBooleanChange();
         this.brownianChange = pointLocatorVO.getBrownianChange();

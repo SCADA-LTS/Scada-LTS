@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -76,6 +77,16 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_PERMISSION = "permission";
 	private static final String COLUMN_NAME_USER_ID = "userId";
 
+	//dataPointUsers
+	private static final String COLUMN_NAME_DPU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DPU_ACCESS_TYPE = "accessType";
+	private static final String COLUMN_NAME_DPU_DATA_POINT_ID = "dataPointId";
+
+	//userProfile
+	private static final String COLUMN_NAME_UP_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
+	private static final String COLUMN_NAME_UP_PERMISSION = "permission";
+
 	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
 			+ "select "
@@ -95,9 +106,7 @@ public class DataPointDAO {
             + "dp." + COLUMN_NAME_ID + ", "
             + "dp." + COLUMN_NAME_XID + ", "
             + "dp." + COLUMN_NAME_DATAPOINT_NAME + " "
-            + "from dataPoints dp join dataSources ds on "
-            + "ds." + COLUMN_NAME_DS_ID + "="
-            + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
+            + "from dataPoints dp ";
 
 	private static final String DATA_POINT_SELECT_PLC = "" +
 			"SELECT " +
@@ -148,6 +157,11 @@ public class DataPointDAO {
 	private static final String DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
 			+ "dp." + COLUMN_NAME_ID + " in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">0) "
 			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
+
+	public static final String DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID = ""
+			+ COLUMN_NAME_USER_ID+"=? or "
+			+ "id in (select "+ COLUMN_NAME_DPU_DATA_POINT_ID +" from dataPointUsers where "+ COLUMN_NAME_DPU_USER_ID +"=? and "+ COLUMN_NAME_DPU_ACCESS_TYPE +">?) or "
+			+ "id in (select "+COLUMN_NAME_UP_DATA_POINT_ID+" from dataPointUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=? and "+COLUMN_NAME_UP_PERMISSION+">?)";
 
 	// @formatter:on
 
@@ -337,10 +351,9 @@ public class DataPointDAO {
 		return entity;
 	}
 
+	@Deprecated
 	public List<ScadaObjectIdentifier> getSimpleList() {
-		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
-		return DAO.getInstance().getJdbcTemp()
-				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
+		return findIdentifiers();
 	}
 
 	public List<DataPointVO> getAll() {
@@ -442,5 +455,27 @@ public class DataPointDAO {
 			.xidColumnName(COLUMN_NAME_XID)
 			.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
 			.build());
+	}
+
+	public List<DataPointVO> selectDataPointsWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE},
+				new DataPointRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_SELECT + " where " + DATA_POINT_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE},
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+						.build());
+	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 }

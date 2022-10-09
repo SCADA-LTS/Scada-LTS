@@ -79,6 +79,7 @@ public class ScadaErrorMessage implements Serializable {
         public Builder(HttpStatus status) {
             this.status = status;
             this.title = status.getReasonPhrase();
+            this.type = "/api/exceptions/" + ScadaApiException.class.getSimpleName();
         }
 
         public Builder type(String type) {

@@ -38,6 +38,7 @@ public class DataSourceJson {
         this.type = dataSourceVO.getType().getId();
         this.enabled = dataSourceVO.isEnabled();
         this.connectionDescription = dataSourceVO.getConnectionDescription().getKey();
+
     }
 
     public DataSourceVO<?> createDataSourceVO() {
