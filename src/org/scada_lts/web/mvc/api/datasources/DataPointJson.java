@@ -32,7 +32,7 @@ public class DataPointJson {
         this.dataSourceTypeId = dpVO.getDataSourceTypeId();
         this.dataSourceId = dpVO.getDataSourceId();
         this.deviceName = dpVO.getDeviceName();
-        this.pointLocator = DataSourcePointJsonFactory.getDataPointLocatorJson(dpVO.getPointLocator(), dpVO.getDataSourceTypeId());
+        this.pointLocator = DataSourcePointJsonFactory.getDataPointLocatorJson(dpVO.getPointLocator());
         this.datasourceName = dpVO.getDataSourceName();
         this.dataSourceXid = dpVO.getDataSourceXid();
         this.typeId = this.pointLocator.getDataTypeId();

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.DataPointIdentifier;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class DataPointAPI {
     private final DataPointApiService dataPointApiService;
 
     public DataPointAPI() {
-        dataPointApiService = new DataPointApiService(new DataPointService());
+        dataPointApiService = new DataPointApiService(new DataPointService(), new DataSourceApiService(new DataSourceService()));
     }
 
     public DataPointAPI(DataPointApiService dataPointApiService) {
@@ -60,7 +61,7 @@ public class DataPointAPI {
                                                     HttpServletRequest request) {
         LOG.info("/api/datapoint");
 
-        DataPointVO response = dataPointApiService.getDataPoint(request, xid, id);
+        DataPointVO response = dataPointApiService.getDataPointFromDatabase(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -113,8 +114,8 @@ public class DataPointAPI {
                                                          HttpServletRequest request) {
         LOG.info( "/api/datapoint");
 
-        dataPointApiService.delete(request, xid, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        DataPointJson response = dataPointApiService.delete(request, xid, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datapoints/datasource")

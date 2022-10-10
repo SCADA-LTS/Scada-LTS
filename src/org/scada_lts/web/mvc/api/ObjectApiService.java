@@ -10,6 +10,6 @@ public interface ObjectApiService<T, I> {
     String generateUniqueXid(HttpServletRequest request);
     T create(HttpServletRequest request, T datapoint);
     T update(HttpServletRequest request, T datapoint);
-    void delete(HttpServletRequest request, String xid, Integer id);
+    T delete(HttpServletRequest request, String xid, Integer id);
     List<I> getIdentifiers(HttpServletRequest request);
 }

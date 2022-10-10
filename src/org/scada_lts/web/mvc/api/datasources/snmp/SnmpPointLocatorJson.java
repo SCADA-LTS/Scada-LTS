@@ -13,8 +13,8 @@ public class SnmpPointLocatorJson extends DataPointLocatorJson {
 
     public SnmpPointLocatorJson() {}
 
-    public SnmpPointLocatorJson(SnmpPointLocatorVO pointLocatorVO, int dataSourceTypeId) {
-        super(pointLocatorVO, dataSourceTypeId);
+    public SnmpPointLocatorJson(SnmpPointLocatorVO pointLocatorVO) {
+        super(pointLocatorVO);
         this.oid = pointLocatorVO.getOid();
         this.binary0Value = pointLocatorVO.getBinary0Value();
         this.setType = pointLocatorVO.getSetType();

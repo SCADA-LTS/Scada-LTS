@@ -127,8 +127,8 @@ public class DataSourceAPI {
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource");
 
-        dataSourceService.delete(request, null, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        DataSourceJson response = dataSourceService.delete(request, null, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datasource/getAll")

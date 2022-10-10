@@ -21,8 +21,8 @@ public class ModbusIpPointLocatorJson extends DataPointLocatorJson {
 
     public ModbusIpPointLocatorJson() {}
 
-    public ModbusIpPointLocatorJson(ModbusPointLocatorVO pointLocatorVO, int dataSourceTypeId) {
-        super(pointLocatorVO, dataSourceTypeId);
+    public ModbusIpPointLocatorJson(ModbusPointLocatorVO pointLocatorVO) {
+        super(pointLocatorVO);
         this.range = pointLocatorVO.getRange();
         this.modbusDataType = pointLocatorVO.getModbusDataType();
         this.slaveId = pointLocatorVO.getSlaveId();
