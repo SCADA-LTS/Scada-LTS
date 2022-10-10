@@ -26,8 +26,8 @@ public class MetaPointLocatorJson extends DataPointLocatorJson {
 
     public MetaPointLocatorJson() {}
 
-    public MetaPointLocatorJson(MetaPointLocatorVO pointLocatorVO, int dataSourceTypeId) {
-        super(pointLocatorVO, dataSourceTypeId);
+    public MetaPointLocatorJson(MetaPointLocatorVO pointLocatorVO) {
+        super(pointLocatorVO);
         this.context = new ArrayList<>(pointLocatorVO.getContext());
         this.script = pointLocatorVO.getScript();
         this.updateEvent = UpdateEventType.byCode(pointLocatorVO.getUpdateEvent());

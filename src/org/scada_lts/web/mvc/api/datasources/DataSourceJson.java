@@ -10,6 +10,7 @@ import org.scada_lts.web.mvc.api.datasources.virtual.VirtualDataSourceJson;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "type"
 )
 @JsonSubTypes({

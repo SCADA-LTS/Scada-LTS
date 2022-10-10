@@ -13,9 +13,6 @@ import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
-import org.scada_lts.web.mvc.api.exceptions.NotFoundException;
-import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -24,7 +21,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.scada_lts.permissions.service.GetDataSourcesWithAccess.filteringByAccess;
-import static org.scada_lts.permissions.service.GetDataSourcesWithAccess.hasDataSourceReadPermission;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
@@ -82,13 +78,10 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
     @Override
     public DataSourceJson update(HttpServletRequest request, DataSourceJson dataSource) {
         checkArgsIfEmptyThenBadRequest(request, "Data Source cannot be null.", dataSource);
-        User user = Common.getUser(request);
-        DataSourceVO<?> vo = toDataSourceVO(request, dataSource);
-        if(!hasDataSourceReadPermission(user, vo)) {
-            throw new UnauthorizedException(request.getRequestURI());
-        }
+        getDataSourceFromDatabase(request, dataSource.getXid(), dataSource.getId());
+        DataSourceVO<?> fromRequest = toDataSourceVO(request, dataSource);
         try {
-            dataSourceService.updateAndInitializeDataSource(vo);
+            dataSourceService.updateAndInitializeDataSource(fromRequest);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -96,14 +89,14 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
     }
 
     @Override
-    public void delete(HttpServletRequest request, String xid, Integer id) {
+    public DataSourceJson delete(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", id);
 
+        DataSourceVO<?> toDelete = getDataSourceFromDatabase(request, xid, id);
         try {
-            dataSourceService.deleteDataSource(id);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("Data Source not found, id: " + id, request.getRequestURI());
+            dataSourceService.deleteDataSource(toDelete.getId());
+            return DataSourcePointJsonFactory.getDataSourceJson(toDelete);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -140,17 +133,26 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
     }
 
     public DataSourceJson getDataSource(HttpServletRequest request, String xid, Integer id) {
+        DataSourceVO<?> fromDatabase = getDataSourceFromDatabase(request, xid, id);
+        try {
+            return DataSourcePointJsonFactory.getDataSourceJson(fromDatabase);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+    }
+
+    private DataSourceVO<?> getDataSourceFromDatabase(HttpServletRequest request, String xid, Integer id) {
         checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
         User user = Common.getUser(request);
-        DataSourceJson response;
+        DataSourceVO<?> response;
         if(id != null) {
             response = toObject(id, user, request, dataSourceService::getDataSource,
                     GetDataSourcesWithAccess::hasDataSourceReadPermission,
-                    DataSourcePointJsonFactory::getDataSourceJson);
+                    a -> a);
         } else {
             response = toObject(xid, user, request, dataSourceService::getDataSource,
                     GetDataSourcesWithAccess::hasDataSourceReadPermission,
-                    DataSourcePointJsonFactory::getDataSourceJson);
+                    a -> a);
         }
         return response;
     }

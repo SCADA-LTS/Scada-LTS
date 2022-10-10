@@ -12,7 +12,6 @@ import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.exceptions.*;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,9 +31,11 @@ import static org.scada_lts.utils.ValidationUtils.*;
 public class DataPointApiService implements ObjectApiService<DataPointJson, DataPointIdentifier> {
 
     private final DataPointService dataPointService;
+    private final DataSourceApiService dataSourceApiService;
 
-    public DataPointApiService(DataPointService dataPointService) {
+    public DataPointApiService(DataPointService dataPointService, DataSourceApiService dataSourceApiService) {
         this.dataPointService = dataPointService;
+        this.dataSourceApiService = dataSourceApiService;
     }
 
     @Override
@@ -68,10 +69,11 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     public DataPointJson create(HttpServletRequest request, DataPointJson datapoint) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
-        DataPointVO dataPointVO = toDataPointVO(request, datapoint);
+        DataPointVO fromRequest = toDataPointVO(request, datapoint);
+        dataSourceApiService.getDataSource(request, null, fromRequest.getDataSourceId());
         DataPointJson response;
         try {
-            DataPointVO result = dataPointService.createDataPoint(dataPointVO);
+            DataPointVO result = dataPointService.createDataPoint(fromRequest);
             response = DataSourcePointJsonFactory.getDataPointJson(result);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
@@ -82,14 +84,11 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     @Override
     public DataPointJson update(HttpServletRequest request, DataPointJson datapoint) {
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
-
-        User user = Common.getUser(request);
-        DataPointVO vo = toDataPointVO(request, datapoint);
-        if(!GetDataPointsWithAccess.hasDataPointSetPermission(user, vo)) {
-            throw new UnauthorizedException(request.getRequestURI());
-        }
+        getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
+        DataPointVO fromRequest = toDataPointVO(request, datapoint);
+        dataSourceApiService.getDataSource(request, null, fromRequest.getDataSourceId());
         try {
-            dataPointService.updateDataPointConfiguration(vo);
+            dataPointService.updateDataPointConfiguration(fromRequest);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -97,17 +96,13 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     }
 
     @Override
-    public void delete(HttpServletRequest request, String xid, Integer id) {
+    public DataPointJson delete(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfTwoEmptyThenBadRequest(request, "Data Point id or xid cannot be null.", id, xid);
+        DataPointVO toDelete = getDataPointFromDatabase(request, xid, id);
         try {
-            if(id != null) {
-                dataPointService.deleteDataPoint(id);
-            } else {
-                dataPointService.deleteDataPoint(xid);
-            }
-        } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("Data Point not found, id: " + id + ", xid: " + xid, request.getRequestURI());
+            dataPointService.deleteDataPoint(toDelete.getId());
+            return DataSourcePointJsonFactory.getDataPointJson(toDelete);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -146,7 +141,7 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
         return response;
     }
 
-    public DataPointVO getDataPoint(HttpServletRequest request, String xid, Integer id) {
+    public DataPointVO getDataPointFromDatabase(HttpServletRequest request, String xid, Integer id) {
         checkArgsIfTwoEmptyThenBadRequest(request, "Data Point id or xid cannot be null.", id, xid);
         User user = Common.getUser(request);
 

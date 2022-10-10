@@ -22,15 +22,13 @@ import org.scada_lts.web.mvc.api.datasources.virtual.VirtualPointLocatorJson;
 public class DataPointLocatorJson {
 
     private int dataTypeId;
-    private int dataSourceTypeId;
     private boolean settable;
 
     public DataPointLocatorJson() {}
 
-    public DataPointLocatorJson(PointLocatorVO pointLocatorVO, int dataSourceTypeId) {
+    public DataPointLocatorJson(PointLocatorVO pointLocatorVO) {
         this.dataTypeId = pointLocatorVO.getDataTypeId();
         this.settable = pointLocatorVO.isSettable();
-        this.dataSourceTypeId = dataSourceTypeId;
     }
 
     public PointLocatorVO parsePointLocatorData() {
@@ -51,14 +49,6 @@ public class DataPointLocatorJson {
 
     public void setSettable(boolean settable) {
         this.settable = settable;
-    }
-
-    public int getDataSourceTypeId() {
-        return dataSourceTypeId;
-    }
-
-    public void setDataSourceTypeId(int dataSourceTypeId) {
-        this.dataSourceTypeId = dataSourceTypeId;
     }
 
 }

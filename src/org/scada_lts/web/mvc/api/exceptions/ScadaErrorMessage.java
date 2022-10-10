@@ -14,9 +14,9 @@ public class ScadaErrorMessage implements Serializable {
     private String title;
     private Map<String, String> detail;
     private String instance;
-    private HttpStatus status;
+    private int status;
 
-    private ScadaErrorMessage(String type, String title, HttpStatus status, Map<String, String> detail,
+    private ScadaErrorMessage(String type, String title, int status, Map<String, String> detail,
                               String instance) {
         this.type = type;
         this.title = title;
@@ -41,11 +41,11 @@ public class ScadaErrorMessage implements Serializable {
         this.title = title;
     }
 
-    public HttpStatus getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(HttpStatus status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -70,14 +70,14 @@ public class ScadaErrorMessage implements Serializable {
     }
 
     public static class Builder {
-        private final HttpStatus status;
+        private final int status;
         private final Map<String, String> detail = new HashMap<>();
         private String type;
         private String title;
         private String instance;
 
         public Builder(HttpStatus status) {
-            this.status = status;
+            this.status = status.value();
             this.title = status.getReasonPhrase();
             this.type = "/api/exceptions/" + ScadaApiException.class.getSimpleName();
         }

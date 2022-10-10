@@ -18,8 +18,8 @@ public class VirtualPointLocatorJson extends DataPointLocatorJson {
 
     public VirtualPointLocatorJson() {}
 
-    public VirtualPointLocatorJson(VirtualPointLocatorVO pointLocatorVO, int dataSourceTypeId) {
-        super(pointLocatorVO, dataSourceTypeId);
+    public VirtualPointLocatorJson(VirtualPointLocatorVO pointLocatorVO) {
+        super(pointLocatorVO);
         this.changeTypeId = pointLocatorVO.getChangeTypeId();
         this.alternateBooleanChange = pointLocatorVO.getAlternateBooleanChange();
         this.brownianChange = pointLocatorVO.getBrownianChange();
