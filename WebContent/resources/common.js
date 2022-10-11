@@ -77,37 +77,42 @@ function defaultIfBlank(str, defaultStr) {
 mango.longPoll = {};
 mango.longPoll.pollRequest = {};
 mango.longPoll.pollSessionId = Math.round(Math.random() * 1000000000);
-mango.longPoll.intervalId = -1;
+mango.longPoll.intervalId = null;
 
 window.addEventListener('beforeunload', (event) => {
-  if(mango.longPoll.intervalId != -1) {
+  if(mango.longPoll.intervalId) {
       clearInterval(mango.longPoll.intervalId);
+      mango.longPoll.intervalId = null;
   }
   MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
 });
 
-mango.longPoll.setInterval = function(response) {
-    if(response.watchListStates) {
-        setTimeout(mango.longPoll.poll, 0);
-    } else {
-        setTimeout(mango.longPoll.pollCB(response), 0);
-    }
-    if(response.waitTime < 0) {
-        mango.longPoll.intervalId = setInterval(mango.longPoll.poll, 1000);
-    } else {
-        mango.longPoll.intervalId = setInterval(mango.longPoll.poll, response.waitTime);
+mango.longPoll.stopIntervalAndPoll = function(intervalTime) {
+    console.log('stopInterval: ' + mango.longPoll.intervalId);
+    if(mango.longPoll.intervalId) {
+        clearInterval(mango.longPoll.intervalId);
+        mango.longPoll.intervalId = null;
+        mango.longPoll.poll(intervalTime, 'start');
     }
 }
 
 mango.longPoll.start = function() {
-    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.setInterval);
+    //console.log('start');
+    let pollStartTime = new Date().getTime();
+    MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, function(response) {mango.longPoll.pollCB(response, -1, pollStartTime, "start")});
 };
 
-mango.longPoll.poll = function() {
-    MiscDwr.doLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollCB);
+mango.longPoll.poll = function(intervalTime, from) {
+    //console.log('poll: ' + from + ", intervalId: " + mango.longPoll.intervalId);
+    let pollStartTime = new Date().getTime();
+    let stopIntervalTimeoutId = -1;
+    if(mango.longPoll.intervalId) {
+        stopIntervalTimeoutId = setTimeout(function() {mango.longPoll.stopIntervalAndPoll(intervalTime)}, intervalTime);
+    }
+    MiscDwr.doLongPoll(mango.longPoll.pollSessionId, function(response) {mango.longPoll.pollCB(response, stopIntervalTimeoutId, pollStartTime, from)});
 }
 
-mango.longPoll.pollCB = function(response) {
+mango.longPoll.pollCB = function(response, stopIntervalTimeoutId, pollStartTime, from) {
     if (response.terminated)
         return;
 
@@ -136,19 +141,34 @@ mango.longPoll.pollCB = function(response) {
     }
     if (response.watchListStates)
         mango.view.watchList.setData(response.watchListStates);
-    
+
     if (response.pointDetailsState)
         mango.view.pointDetails.setData(response.pointDetailsState);
-    
+
     if (response.viewStates)
         mango.view.setData(response.viewStates);
-    
+
     if (typeof(response.pendingAlarmsContent) != "undefined")
         updatePendingAlarmsContent(response.pendingAlarmsContent);
-    
+
     if (response.customViewStates)
         mango.view.setData(response.customViewStates);
 
+    if(stopIntervalTimeoutId != -1) {
+        clearTimeout(stopIntervalTimeoutId);
+    }
+    let intervalTime = response.intervalTime < 300 ? 1000 : response.intervalTime;
+    let duration = new Date().getTime() - pollStartTime;
+    if(duration > intervalTime) {
+        if(from === 'fromPollCB' || from === 'start') {
+            mango.longPoll.poll(intervalTime, 'fromPollCB');
+        }
+    } else {
+        if(mango.longPoll.intervalId) {
+            return;
+        }
+        mango.longPoll.intervalId = setInterval(function() {mango.longPoll.poll(intervalTime, 'fromInterval')}, intervalTime);
+    }
     // Poll again immediately.
     //mango.longPoll.poll();
 }

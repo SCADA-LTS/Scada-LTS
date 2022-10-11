@@ -297,9 +297,7 @@ public class MiscDwr extends BaseDwr {
 			LongPollRequest request) {
 		LongPollData data = getLongPollData(pollSessionId, true);
 		data.setRequest(request);
-		Map<String, Object> response = doLongPoll(pollSessionId);
-		response.put("waitTime", SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
-		return response;
+		return doLongPoll(pollSessionId);
 	}
 
 	public Map<String, Object> doLongPoll(int pollSessionId) {
@@ -316,8 +314,16 @@ public class MiscDwr extends BaseDwr {
 
 		long runTime = System.currentTimeMillis();
 		response.put("runtime",runTime);
+		response.put("intervalTime", SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
 		long expireTime = runTime + 60000; // One minute
-		LongPollState state = data.getState();
+		LongPollState raw = data.getState();
+		LongPollState state;
+		try {
+			state = raw.copy();
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage(), ex);
+			state = raw;
+		}
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always
@@ -329,28 +335,27 @@ public class MiscDwr extends BaseDwr {
 				&& System.currentTimeMillis() < expireTime) {
 
 			if (pollRequest.isWatchList() && user != null) {
-				synchronized (state) {
-					List<WatchListState> newStates = watchListDwr
-							.getPointData();
-					List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
-					for (WatchListState newState : newStates) {
-						WatchListState oldState = state
-								.getWatchListState(newState.getId());
-						if (oldState == null)
-							differentStates.add(newState);
-						else {
-							WatchListState copy = newState.clone();
-							copy.removeEqualValue(oldState);
-							if (!copy.isEmpty())
-								differentStates.add(copy);
-						}
-					}
+				List<WatchListState> newStates = watchListDwr
+						.getPointData();
+				List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
-					if (!differentStates.isEmpty()) {
-						response.put("watchListStates", differentStates);
-						state.setWatchListStates(newStates);
+				for (WatchListState newState : newStates) {
+					WatchListState oldState = state
+							.getWatchListState(newState.getId());
+					if (oldState == null)
+						differentStates.add(newState);
+					else {
+						WatchListState copy = newState.clone();
+						copy.removeEqualValue(oldState);
+						if (!copy.isEmpty())
+							differentStates.add(copy);
 					}
+				}
+
+				if (!differentStates.isEmpty()) {
+					response.put("watchListStates", differentStates);
+					state.setWatchListStates(newStates);
 				}
 			}
 
