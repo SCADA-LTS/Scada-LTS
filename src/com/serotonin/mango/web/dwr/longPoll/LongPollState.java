@@ -23,6 +23,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.web.dwr.beans.BasePointState;
 import com.serotonin.mango.web.dwr.beans.CustomComponentState;
@@ -42,6 +44,27 @@ public class LongPollState implements Serializable {
     private List<ViewComponentState> viewComponentStates = new ArrayList<ViewComponentState>();
     private String pendingAlarmsContent;
     private List<CustomComponentState> customViewStates = new ArrayList<CustomComponentState>();
+
+    public LongPollState() {}
+
+    public LongPollState(LongPollState longPollState) {
+        this.maxAlarmLevel = longPollState.getMaxAlarmLevel();
+        this.lastAlarmLevelChange = longPollState.getLastAlarmLevelChange();
+        this.watchListStates = longPollState.getWatchListStates().stream()
+                    .filter(Objects::nonNull)
+                    .map(WatchListState::clone)
+                    .collect(Collectors.toList());
+        this.pointDetailsState = longPollState.getPointDetailsState() != null ? longPollState.getPointDetailsState().clone() : null;
+        this.viewComponentStates = longPollState.getViewComponentStates().stream()
+                .filter(Objects::nonNull)
+                .map(ViewComponentState::clone)
+                .collect(Collectors.toList());
+        this.pendingAlarmsContent = longPollState.getPendingAlarmsContent();
+        this.customViewStates = longPollState.getCustomViewStates().stream()
+                .filter(Objects::nonNull)
+                .map(CustomComponentState::clone)
+                .collect(Collectors.toList());
+    }
 
     public WatchListState getWatchListState(String id) {
         return (WatchListState) getBasePointState(id, watchListStates);
@@ -143,5 +166,9 @@ public class LongPollState implements Serializable {
         viewComponentStates = new ArrayList<ViewComponentState>();
         pendingAlarmsContent = null;
         customViewStates = new ArrayList<CustomComponentState>();
+    }
+
+    public LongPollState copy() {
+        return new LongPollState(this);
     }
 }
