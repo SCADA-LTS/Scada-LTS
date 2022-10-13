@@ -2,10 +2,12 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.*;
+import java.util.stream.Collectors;
 
 public class TestConcurrentUtils {
 
@@ -46,6 +48,14 @@ public class TestConcurrentUtils {
         List<R> result = MultiThreadEngine.execute(executor, numberOfLaunches, action);
         executor.shutdownNow();
         return result;
+    }
+
+    public static <A, R, N> List<N> functionWithResult(int numberOfLaunches, Function<A, R> fun, A key, Function<R, N> converter) {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Callable<R> action = () -> fun.apply(key);
+        List<R> result = MultiThreadEngine.execute(executor, numberOfLaunches, action);
+        executor.shutdownNow();
+        return result.stream().map(converter).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static <A> void consumer(int numberOfLaunches, Consumer<A> fun, A key) {
