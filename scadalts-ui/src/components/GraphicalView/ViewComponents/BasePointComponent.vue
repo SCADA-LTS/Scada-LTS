@@ -185,9 +185,8 @@ export default {
 
 		updatePointValue(data) {
 	        const raw_value = JSON.parse(data.body).value
-			const value = this.textRenderer.render(raw_value)
-			this.$emit('value-update', value)
-			this.$emit('color-update', this.textRenderer.color(raw_value))
+			this.$emit('value-update', this.renderValue(raw_value))
+			this.$emit('color-update', this.renderColor(raw_value))
 		},
 
 		updatePointStatus(data) {
@@ -211,9 +210,8 @@ export default {
 				);
 				this.$emit('status-update', res.enabled);
 				if (res.enabled === true) {
-					const value = this.textRenderer.render(res.value)
-					this.$emit('value-update', res.value)
-					this.$emit('color-update', this.textRenderer.color(res.value))
+					this.$emit('value-update', this.renderValue(res.value))
+					this.$emit('color-update', this.renderColor(res.value))
 				}
 			} catch (e) {
 				console.error(e);
@@ -274,7 +272,7 @@ export default {
 
 				let renderer = dp.textRenderer
 				this.textRenderer = new TextRenderer(renderer)
-				
+
 				switch (dp.type) {
 					case 'BinaryValue':
 						return 1;
@@ -287,12 +285,26 @@ export default {
 					default:
 						return 0;
 				}
-				
+
 			} catch (e) {
 				console.error(e);
 				return -1;
 			}
 		},
+
+		renderValue(value) {
+		    if(this.textRenderer.render instanceof Function) {
+                return this.textRenderer.render(value);
+		    }
+		    return value;
+		},
+
+        renderColor(value) {
+            if(this.textRenderer.color instanceof Function) {
+                return this.textRenderer.color(value);
+            }
+            return value;
+        }
 	},
 };
 </script>
