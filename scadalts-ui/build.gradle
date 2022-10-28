@@ -16,7 +16,7 @@ task bundle(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'build']
 }
 
-task testUi(type: NpmTask) {
+task testUi(type: NpmTask, dependsOn: bundle) {
     args = ['run-script', 'test:unit']
 }
 
