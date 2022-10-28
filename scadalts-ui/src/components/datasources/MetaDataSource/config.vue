@@ -1,6 +1,7 @@
 <template>
 	<DataSourceConfig
 		title="Meta Data Source"
+		:polling="false"
 		:datasource="datasource"
 		:creator="createMode"
 		availablePeriodTypes="1,2,3,8,9,11,26,27"

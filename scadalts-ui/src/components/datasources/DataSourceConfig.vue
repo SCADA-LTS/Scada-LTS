@@ -39,7 +39,7 @@
 						></v-text-field>
 					</v-col>
 				</v-row>
-				<v-row v-if="polling && typeHasUpdatePeriod">
+				<v-row v-if="polling">
 					<v-col cols="6" id="datasource-config--update-periods">
 						<v-text-field
 							v-model="datasource.updatePeriods"
@@ -121,7 +121,7 @@ export default {
 					xid: '',
 				};
 			},
-		},
+		}
 	},
 
 	mounted() {
