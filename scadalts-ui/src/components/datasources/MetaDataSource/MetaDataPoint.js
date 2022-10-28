@@ -5,14 +5,18 @@ export class MetaDataPoint {
         this.xid = "RANDOM";
         this.name = "";
         this.description = "";
-        this.datasourceId = datasourceId;
+        this.dataSourceId = datasourceId;
         this.enabled = false;
         this.pointLocator = {
-            dataTypeId: 3,
-            changeTypeId: 6,
+            dataSourceTypeId: 9,
+            dataTypeId: 1,
             settable: false,
+            context: [],
             script: "",
-            updateEvent: "",
+            updateEvent: "START_OF_WEEK",
+            updateCronPattern: "",
+            executionDelaySeconds: 10,
+            executionDelayPeriodType: "SECONDS"
         }
     }
 

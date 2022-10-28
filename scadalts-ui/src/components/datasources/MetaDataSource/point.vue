@@ -12,18 +12,8 @@
 					v-model="datapoint.pointLocator.dataTypeId"
 					:items="datapointTypes"
 				></v-select>
+				
 			</template>
-
-			<v-row>
-				<v-col>
-					<v-select
-						label="Change Type"
-						v-model="datapoint.pointLocator.changeTypeId"
-						:items="changeTypes"
-					></v-select>
-				</v-col>
-			</v-row>
-
 			<!-- Binary -->
 			<v-row v-if="datapoint.pointLocator.dataTypeId === DataTypes.BINARY">
 				<v-col>
@@ -248,7 +238,7 @@
 					</v-row>
 
 					<v-row v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.NO_CHANGE">
-						<v-col>
+						<v-col cols=6>
 							<v-text-field
 								type="Number"
 								label="Start value"
@@ -257,33 +247,6 @@
 						</v-col>
 					</v-row>
 
-					<v-row
-						v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.RANDOM_ANALOG"
-					>
-						<v-col>
-							<v-text-field
-								type="Number"
-								label="Minimum"
-								v-model="datapoint.pointLocator.randomAnalogChange.min"
-							></v-text-field>
-						</v-col>
-						<v-col>
-							<v-text-field
-								type="Number"
-								label="Maximum"
-								v-model="datapoint.pointLocator.randomAnalogChange.max"
-							></v-text-field>
-						</v-col>
-						<v-col>
-							<v-text-field
-								type="Number"
-								label="Start value"
-								v-model="datapoint.pointLocator.randomAnalogChange.startValue"
-								:rules="[ruleNotNull]"
-							></v-text-field>
-							<!-- TODO: Add rule for not null -->
-						</v-col>
-					</v-row>
 
 					<v-row
 						v-if="
@@ -324,12 +287,79 @@
 			</v-row>
 
 			<!-- Alphanumeric -->
-			<v-row v-if="datapoint.pointLocator.dataTypeId === DataTypes.APLHANUMERIC">
+							<v-row>
+								<v-col cols="6">
+									<v-select
+										item-value="id"
+										:placeholder="$t('scriptList.selectDatapoint')"
+										item-text="name"
+										v-model="selectedDatapointId"
+										@change="addDatapoint"
+										:items="filteredDatapoints"
+									></v-select>
+								</v-col>
+								<v-col cols="6">
+									<table style="width: 100%">
+										<tr v-for="p in datapoint.pointLocator.context">
+											<td style="width: 20%">{{ p.dataPointXid }}</td>
+											<td style="width: 70%">
+												<v-text-field style="width: 100%" v-model="p.value" />
+											</td>
+											<td style="width: 10%">
+												<v-icon
+													color="red"
+													style="cursor: pointer; border: 0"
+													@click="removeDatapoint(p.dataPointXid)"
+													>mdi-close</v-icon
+												>
+											</td>
+										</tr>
+									</table>
+								</v-col>
+							</v-row>
+							 
+							<v-textarea :rules="[ruleNotNull]"
+								style="width: 100%; font-family: monospace"
+								:label="$t('scriptList.script')"
+								v-model="datapoint.pointLocator.script"
+								rows=3
+								ref="scriptBodyTextarea"
+							></v-textarea>
+						<v-row>
+						<v-col :cols="datapoint.pointLocator.updateEvent === 'START_OF_CRON' ? 3 : 6">
+							<v-select
+								label="Update event"
+								v-model="datapoint.pointLocator.updateEvent"
+								item-text="label"
+								item-value="id"
+								
+								:items="eventTypes"
+							>
+							</v-select>
+						</v-col>
+						<v-col cols=3 v-if="datapoint.pointLocator.updateEvent === 'START_OF_CRON'">
+							<v-text-field
+								label="cron pattern"
+								v-model="datapoint.pointLocator.updateCronPattern"
+							></v-text-field>
+						</v-col>
 				<v-col>
 					<v-text-field
-						label="Initial Value"
-						v-model="datapoint.pointLocator.noChange.startValue"
+						v-model="datapoint.pointLocator.executionDelaySeconds"
+						label="Execution delay"
 					></v-text-field>
+				</v-col>
+				<v-col>
+					<v-select
+						v-model="datapoint.pointLocator.executionDelayPeriodType"
+						item-text="label"
+						item-value="id"
+						:items="[
+							{id: 'MILLISECONDS', label:$t('executionDelayPeriodType.8')},
+							{id: 'SECONDS', label:$t('executionDelayPeriodType.1')},
+							{id: 'MINUTES', label:$t('executionDelayPeriodType.2')},
+						]"
+					></v-select>
 				</v-col>
 			</v-row>
 		</DataPointCreation>
@@ -341,6 +371,10 @@ import { DataTypes, DataChangeTypes } from '@/store/dataSource/constants';
 export default {
 	components: {
 		DataPointCreation,
+	},
+	async mounted() {
+		this.fetchScriptList();
+		this.datapoints = await this.$store.dispatch('getAllDatapoints');
 	},
 
 	props: {
@@ -360,6 +394,19 @@ export default {
 
 	data() {
 		return {
+			eventTypes: [
+				{id: 'CONTEXT_UPDATE',label: this.$t("updateEventTypes.CONTEXT_UPDATE")},
+				{id: 'CONTEXT_CHANGE',label: this.$t("updateEventTypes.CONTEXT_CHANGE")},
+				{id: 'START_OF_MINUTE',label: this.$t("updateEventTypes.START_OF_MINUTE")},
+				{id: 'START_OF_HOUR',label: this.$t("updateEventTypes.START_OF_HOUR")},
+				{id: 'START_OF_DAY',label: this.$t("updateEventTypes.START_OF_DAY")},
+				{id: 'START_OF_WEEK',label: this.$t("updateEventTypes.START_OF_WEEK")},
+				{id: 'START_OF_MONTH',label: this.$t("updateEventTypes.START_OF_MONTH")},
+				{id: 'START_OF_YEAR',label: this.$t("updateEventTypes.START_OF_YEAR")},
+				{id: 'START_OF_CRON',label: this.$t("updateEventTypes.START_OF_CRON")},
+			],
+			selectedDatapointId: null,
+			datapoints: [],
 			msValues: ['1', '2'],
 			DataTypes: DataTypes,
 			DataChangeTypes: DataChangeTypes,
@@ -374,11 +421,40 @@ export default {
 					value: true,
 				},
 			],
+			datapoint: {
+				runDelayMinutes: 0,
+				xid: "DP_49512",
+				name: "dp_123",
+				description: "abc",
+				enabled: false,
+				dataSourceTypeId: 9,
+				dataSourceId: 49,
+				deviceName: "meta_ds",
+				pointLocator: {
+					dataSourceTypeId: 9,
+					dataTypeId: 1,
+					settable: false,
+					context: [
+					],
+					script: "",
+					updateEvent: "START_OF_WEEK",
+					updateCronPattern: "",
+					executionDelaySeconds: 10,
+					executionDelayPeriodType: "SECONDS"
+				}
+			},
 			ruleNotNull: (v) => !!v || this.$t('validation.rule.notNull'),
 		};
 	},
 
 	computed: {
+		filteredDatapoints() {
+			const p = this.datapoints.find((x) => x.id === this.selectedDatapointId);
+			return this.datapoints
+			.filter(dp => this.datapoint.pointLocator.context
+				.filter(sp => dp.xid === sp.dataPointXid)
+			.length === 0)
+		},
 		changeTypes() {
 			if (!!this.datapoint) {
 				return this.$store.getters.getVirtualDatapointChangeType(
@@ -400,6 +476,36 @@ export default {
 	},
 
 	methods: {
+		removeDatapoint(dataPointXid) {
+			this.datapoint.pointLocator.context = this.datapoint.pointLocator.context.filter(
+				(p) => p.dataPointXid != dataPointXid,
+			);
+		},
+		addDatapoint() {
+			const p = this.datapoints.find((x) => x.id === this.selectedDatapointId);
+			if (!this.datapoint.pointLocator.context.find((x) => p.xid === x.dataPointXid)) {
+				this.datapoint.pointLocator.context.push({
+					key: p.id,
+					value: `p${p.id}`,
+				});
+				this.selectedDatapointId = null;
+			}
+		},
+		async fetchScriptList() {
+			this.loading = true;
+			this.scriptList = await this.$store.dispatch('searchScripts', this.searchFilters);
+			if (!this.search) {
+				this.scriptListFiltered = this.scriptList;
+			} else {
+				const keywords = this.search.split(' ');
+				this.scriptListFiltered = this.scriptList.filter((x) =>
+					`${x.id} ${x.xid} ${x.name} ${x.script}`
+						.toLowerCase()
+						.includes(keywords[0].toLowerCase()),
+				);
+			}
+			this.totalScripts = this.scriptList.total;
+		},
 		cancel() {
 			console.debug('VirtualDataSource.point.vue::cancel()');
 			this.$emit('canceled');

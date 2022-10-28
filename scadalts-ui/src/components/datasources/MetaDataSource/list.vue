@@ -30,17 +30,7 @@
 						<span>Change: {{ datapoint.pointLocator.incrementAnalogChange.change }}</span>
 					</v-col>
 				</v-row>
-				<v-row
-					v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.RANDOM_ANALOG"
-				>
-					<v-col cols="3"> Random </v-col>
-					<v-col cols="3">
-						<span>Min: {{ datapoint.pointLocator.randomAnalogChange.min }}</span>
-					</v-col>
-					<v-col cols="3">
-						<span>Max: {{ datapoint.pointLocator.randomAnalogChange.max }}</span>
-					</v-col>
-				</v-row>
+				 
 				<v-row v-if="datapoint.pointLocator.changeTypeId === DataChangeTypes.NO_CHANGE">
 					<v-col> No Change </v-col>
 				</v-row>

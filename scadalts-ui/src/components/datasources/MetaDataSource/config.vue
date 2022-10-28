@@ -1,6 +1,6 @@
 <template>
 	<DataSourceConfig
-		title="Virtual Data Source"
+		title="Meta Data Source"
 		:datasource="datasource"
 		:creator="createMode"
 		availablePeriodTypes="1,2,3,8,9,11,26,27"
