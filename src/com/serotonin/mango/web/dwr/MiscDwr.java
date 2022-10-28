@@ -316,14 +316,7 @@ public class MiscDwr extends BaseDwr {
 		response.put("runtime",runTime);
 		response.put("intervalTime", SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
 		long expireTime = runTime + 60000; // One minute
-		LongPollState raw = data.getState();
-		LongPollState state;
-		try {
-			state = raw.copy();
-		} catch (Exception ex) {
-			LOG.warn(ex.getMessage(), ex);
-			state = raw;
-		}
+		LongPollState state = data.getState();
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always

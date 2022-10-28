@@ -45,27 +45,6 @@ public class LongPollState implements Serializable {
     private String pendingAlarmsContent;
     private List<CustomComponentState> customViewStates = new ArrayList<CustomComponentState>();
 
-    public LongPollState() {}
-
-    public LongPollState(LongPollState longPollState) {
-        this.maxAlarmLevel = longPollState.getMaxAlarmLevel();
-        this.lastAlarmLevelChange = longPollState.getLastAlarmLevelChange();
-        this.watchListStates = longPollState.getWatchListStates().stream()
-                    .filter(Objects::nonNull)
-                    .map(WatchListState::clone)
-                    .collect(Collectors.toList());
-        this.pointDetailsState = longPollState.getPointDetailsState() != null ? longPollState.getPointDetailsState().clone() : null;
-        this.viewComponentStates = longPollState.getViewComponentStates().stream()
-                .filter(Objects::nonNull)
-                .map(ViewComponentState::clone)
-                .collect(Collectors.toList());
-        this.pendingAlarmsContent = longPollState.getPendingAlarmsContent();
-        this.customViewStates = longPollState.getCustomViewStates().stream()
-                .filter(Objects::nonNull)
-                .map(CustomComponentState::clone)
-                .collect(Collectors.toList());
-    }
-
     public WatchListState getWatchListState(String id) {
         return (WatchListState) getBasePointState(id, watchListStates);
     }
@@ -166,9 +145,5 @@ public class LongPollState implements Serializable {
         viewComponentStates = new ArrayList<ViewComponentState>();
         pendingAlarmsContent = null;
         customViewStates = new ArrayList<CustomComponentState>();
-    }
-
-    public LongPollState copy() {
-        return new LongPollState(this);
     }
 }
