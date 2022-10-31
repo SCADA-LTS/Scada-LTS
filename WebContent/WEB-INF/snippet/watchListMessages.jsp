@@ -23,7 +23,7 @@
 <c:if test="${!empty disabled}">
   <tag:img png="warn" title="common.pointWarning"/> <fmt:message key="common.pointWarning"/><br/>
 </c:if>
-<c:if test="${pointRT.attributes.UNRELIABLE}">
+<c:if test="${pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
   <tag:img png="exclamation" title="common.valueUnreliable"/> <fmt:message key="common.valueUnreliable"/>
   <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})"/><br/>
 </c:if>

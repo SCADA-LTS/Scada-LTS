@@ -237,6 +237,12 @@
             else
                 updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
         }
+
+        window.addEventListener('beforeunload', (event) => {
+            try {
+                disconnect();
+            } catch(error) {}
+        });
     </c:if>
     </script>
   </c:if>
@@ -358,7 +364,7 @@
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
         <c:choose>
             <c:when test="${!empty sessionUser.firstName}">
-              <span class="userName">${sessionUser.firstName} ${sessionUser.lastName}</span>
+              <span class="userName"><c:out value="${sessionUser.firstName} ${sessionUser.lastName}"/></span>
             </c:when>
             <c:otherwise>
               <span class="userName">${sessionUser.username}</span>

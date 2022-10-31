@@ -20,7 +20,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.DataPointNameComparator;
@@ -33,6 +32,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
 
 public class UsersProfilesDwr {
 
@@ -77,7 +77,7 @@ public class UsersProfilesDwr {
 		List<WatchList> watchlists = watchlistDao.getWatchLists();
 		initData.put("watchlists", watchlists);
 
-		ViewDao viewDao = new ViewDao();
+		ViewService viewDao = new ViewService();
 		List<View> views = viewDao.getSimpleViews().stream()
 				.map(toView())
 				.collect(Collectors.toList());

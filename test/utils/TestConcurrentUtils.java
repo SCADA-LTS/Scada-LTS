@@ -1,10 +1,13 @@
 package utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.*;
+import java.util.stream.Collectors;
 
 public class TestConcurrentUtils {
 
@@ -29,12 +32,30 @@ public class TestConcurrentUtils {
         executor.shutdownNow();
     }
 
+    public static void biConsumer(int numberOfLaunches, List<Action<?, ?>> actions) {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches * actions.size());
+        List<Runnable> runnables = new ArrayList<>();
+        for(Action<?, ?> action: actions) {
+            runnables.add(action::execute);
+        }
+        MultiThreadEngine.execute(executor, numberOfLaunches, runnables);
+        executor.shutdownNow();
+    }
+
     public static <A, R> List<R> functionWithResult(int numberOfLaunches, Function<A, R> fun, A key) {
         ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
         Callable<R> action = () -> fun.apply(key);
         List<R> result = MultiThreadEngine.execute(executor, numberOfLaunches, action);
         executor.shutdownNow();
         return result;
+    }
+
+    public static <A, R, N> List<N> functionWithResult(int numberOfLaunches, Function<A, R> fun, A key, Function<R, N> converter) {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
+        Callable<R> action = () -> fun.apply(key);
+        List<R> result = MultiThreadEngine.execute(executor, numberOfLaunches, action);
+        executor.shutdownNow();
+        return result.stream().map(converter).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static <A> void consumer(int numberOfLaunches, Consumer<A> fun, A key) {
@@ -48,6 +69,7 @@ public class TestConcurrentUtils {
         ExecutorService executor = Executors.newFixedThreadPool(numberOfLaunches);
         Runnable action = fun::get;
         MultiThreadEngine.execute(executor, numberOfLaunches, action);
+        executor.shutdownNow();
     }
 
     public static <R> List<R> supplierWithResult(int numberOfLaunches, Supplier<R> fun) {
@@ -68,5 +90,21 @@ public class TestConcurrentUtils {
     @FunctionalInterface
     public interface SupplierVoid {
         void execute();
+    }
+
+    public static class Action<A, B> {
+        private BiConsumer<A, B> fun;
+        A keyA;
+        B keyB;
+
+        public Action(BiConsumer<A, B> fun, A keyA, B keyB) {
+            this.fun = fun;
+            this.keyA = keyA;
+            this.keyB = keyB;
+        }
+
+        public void execute() {
+            fun.accept(keyA, keyB);
+        }
     }
 }

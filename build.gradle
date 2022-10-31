@@ -83,7 +83,11 @@ task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
 
 task installWebDependency(type: Exec) {
     workingDir "./WebContent/resources"
-    commandLine "npm", "install"
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'npm.cmd', "install"
+    } else {
+        commandLine 'npm', "install"
+    }
 }
 
 task clearTomcat(type: Delete) {
@@ -171,5 +175,7 @@ test {
         includeTestsMatching "org.scada_lts.utils.xml.XmlSecurityTestsSuite"
         includeTestsMatching "org.scada_lts.utils.SystemSettingsUtilsTest"
         includeTestsMatching "br.org.scadabr.view.component.GenerateAlarmListComponentTest"
+        includeTestsMatching "org.scada_lts.ds.messaging.channel.MessagingChannelsTest"
+        includeTestsMatching "com.serotonin.mango.vo.dataSource.CopyDataSourceVOTest"
     }
 }

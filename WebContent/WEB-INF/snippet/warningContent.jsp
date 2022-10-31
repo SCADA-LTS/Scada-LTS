@@ -16,50 +16,42 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%><%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE}">
-	<c:set var="containsAlarm" value="false" />
-	<c:forEach items="${events}" var="event">
-	  <c:if test="${event.alarmLevel>0}">
-	    <c:set var="containsAlarm" value="true" />
-	  </c:if>
-	</c:forEach>
-	<c:if test="${containsAlarm}">
-	  <table width="200" cellspacing="0" cellpadding="0">
-	    <c:choose>
-	      <c:when test="${!empty invalid}">
-	        <tr>
-	          <td valign="top"><tag:img png="warn" title="common.warning"/></td>
-	          <td colspan="3"><fmt:message key="common.pointInvalid"/></td>
-	        </tr>
-	      </c:when>
-	      <c:when test="${!empty disabled}">
-	        <tr>
-	          <td valign="top"><tag:img png="warn" title="common.warning"/></td>
-	          <td colspan="3"><fmt:message key="common.pointWarning"/></td>
-	        </tr>
-	      </c:when>
-	    </c:choose>
-	    <c:if test="${pointRT.attributes.UNRELIABLE}">
-	      <tr>
-	        <td><tag:img png="exclamation" title="common.valueUnreliable"/></td>
-	        <td style="white-space:nowrap;" colspan="3">
-	          <fmt:message key="common.valueUnreliable"/>
-	          <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})" style="display:inline"/>
-	        </td>
-	      </tr>
-	    </c:if>
-	    <c:if test="${!empty events}">
-	      <c:forEach items="${events}" var="event">
-	      	<c:if test="${event.alarmLevel>0}">
-		        <tr>
-		          <td><tag:eventIcon event="${event}"/></td>
-		          <td style="white-space:nowrap;">&nbsp;<tag:alarmAck event="${event}"/></td>
-		          <td>${sst:time(event.activeTimestamp)}</td>
-		          <td style="white-space:nowrap;">&nbsp;<sst:i18n message="${event.message}"/></td>
-		        </tr>
-	        </c:if>
-	      </c:forEach>
-	    </c:if>
-	  </table>
-  </c:if>
+<c:if test="${!empty invalid || !empty disabled || !empty events || pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
+  <table width="200" cellspacing="0" cellpadding="0">
+    <c:choose>
+      <c:when test="${!empty invalid}">
+        <tr>
+          <td valign="top"><tag:img png="warn" title="common.warning"/></td>
+          <td colspan="3"><fmt:message key="common.pointInvalid"/></td>
+        </tr>
+      </c:when>
+      <c:when test="${!empty disabled}">
+        <tr>
+          <td valign="top"><tag:img png="warn" title="common.warning"/></td>
+          <td colspan="3"><fmt:message key="common.pointWarning"/></td>
+        </tr>
+      </c:when>
+    </c:choose>
+    <c:if test="${pointRT.attributes.UNRELIABLE || pointRT.attributes.DP_UPDATE_ERROR}">
+      <tr>
+        <td><tag:img png="exclamation" title="common.valueUnreliable"/></td>
+        <td style="white-space:nowrap;" colspan="3">
+          <fmt:message key="common.valueUnreliable"/>
+          <tag:img png="arrow_refresh" title="common.refresh" onclick="WatchListDwr.forcePointRead(${point.id})" style="display:inline"/>
+        </td>
+      </tr>
+    </c:if>
+    <c:if test="${!empty events}">
+      <c:forEach items="${events}" var="event">
+        <c:if test="${event.alarmLevel>0}">
+            <tr>
+              <td><tag:eventIcon event="${event}"/></td>
+              <td style="white-space:nowrap;">&nbsp;<tag:alarmAck event="${event}"/></td>
+              <td>${sst:time(event.activeTimestamp)}</td>
+              <td style="white-space:nowrap;">&nbsp;<sst:i18n message="${event.message}"/></td>
+            </tr>
+        </c:if>
+      </c:forEach>
+    </c:if>
+  </table>
 </c:if>

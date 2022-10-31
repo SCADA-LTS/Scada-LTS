@@ -36,7 +36,6 @@ import com.serotonin.json.JsonSerializable;
 import com.serotonin.json.JsonValue;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.component.CompoundComponent;
 import com.serotonin.mango.view.component.PointComponent;
@@ -46,6 +45,7 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.web.beans.ApplicationBeans;
 
 @JsonRemoteEntity
@@ -365,7 +365,7 @@ public class View implements Serializable, JsonSerializable {
 		else if (StringUtils.isLengthGreaterThan(xid, 50))
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.notLongerThan", 50));
-		else if (!new ViewDao().isXidUnique(xid, id))
+		else if (!new ViewService().isXidUnique(xid, id))
 			response.addMessage("xid", new LocalizableMessage(
 					"validate.xidUsed"));
 

@@ -26,6 +26,14 @@ public class CommPortProxy {
     private final boolean currentlyOwned;
     private final String currentOwner;
 
+    public CommPortProxy(String name, String portType,
+                         boolean currentlyOwned, String currentOwner) {
+        this.name = name;
+        this.portType = portType;
+        this.currentlyOwned = currentlyOwned;
+        this.currentOwner = currentOwner;
+    }
+
     public CommPortProxy(CommPortIdentifier cpid) {
         name = cpid.getName();
         switch (cpid.getPortType()) {

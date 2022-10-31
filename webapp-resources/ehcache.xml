@@ -35,6 +35,28 @@
         <heap>200</heap>
     </cache-template>
 
+    <cache-template name="integer_list_exp_ttl_heap_max_bytes_cache_template" >
+        <key-type>java.lang.Integer</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="MB">50</heap>
+        </resources>
+    </cache-template>
+
+    <cache-template name="long_list_exp_ttl_heap_max_bytes_cache_template" >
+        <key-type>java.lang.Long</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="MB">50</heap>
+        </resources>
+    </cache-template>
+
     <!-- user -->
     <cache alias="user_list" uses-template="string_list_cache_template"/>
 
@@ -60,4 +82,12 @@
     <cache alias="permission_watchlist_list_by_profile" uses-template="list_cache_template"/>
 
     <cache alias="alarmlevel_highest_by_user" uses-template="integer_alarm_level_template"/>
+
+    <!-- user comment -->
+    <cache alias="comment_list_by_pointid" uses-template="integer_list_exp_ttl_heap_max_bytes_cache_template"/>
+    <cache alias="comment_list_by_eventid" uses-template="long_list_exp_ttl_heap_max_bytes_cache_template"/>
+
+    <!-- view -->
+    <cache alias="view_list" uses-template="string_list_cache_template"/>
+
 </config>

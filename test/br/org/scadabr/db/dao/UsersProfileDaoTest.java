@@ -24,7 +24,6 @@ import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.db.dao.WatchListDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
@@ -34,6 +33,7 @@ import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.scada_lts.mango.service.UsersProfileService;
+import org.scada_lts.mango.service.ViewService;
 
 public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 
@@ -549,7 +549,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 
 		profile.defineViews(views);
 
-		ViewDao mockViewDao = mock(ViewDao.class);
+		ViewService mockViewDao = mock(ViewService.class);
 		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
@@ -589,7 +589,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		profile.setViewPermissions(newPermissions);
 		profile.defineViews(views);
 
-		ViewDao mockViewDao = mock(ViewDao.class);
+		ViewService mockViewDao = mock(ViewService.class);
 		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
@@ -620,7 +620,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		MockViewDao viewDao = new MockViewDao();
 		View view = viewDao.createView("view", 1, user2.getId());
 
-		ViewDao mockViewDao = mock(ViewDao.class);
+		ViewService mockViewDao = mock(ViewService.class);
 		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 
@@ -662,7 +662,7 @@ public class UsersProfileDaoTest extends AbstractMySQLDependentTest {
 		WatchList wl = new MockWatchlistDao().createNewWatchList("wl", 1,
 				user.getId());
 
-		ViewDao mockViewDao = mock(ViewDao.class);
+		ViewService mockViewDao = mock(ViewService.class);
 		//dao.setViewDao(mockViewDao);
 		dao.saveUsersProfile(profile);
 

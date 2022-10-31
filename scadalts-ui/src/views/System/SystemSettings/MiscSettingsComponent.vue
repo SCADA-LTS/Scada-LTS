@@ -46,11 +46,9 @@ export default {
 			miscSettingsStore: undefined,
 			isMiscSettingsEdited: false,
 			uiPerformanceItems: [
+				{ value: 1000, text: this.$t('systemsettings.misc.performance.veryHigh') },
 				{ value: 2000, text: this.$t('systemsettings.misc.performance.high') },
-				{
-					value: 5000,
-					text: this.$t('systemsettings.misc.performance.medium'),
-				},
+				{ value: 5000, text: this.$t('systemsettings.misc.performance.medium') },
 				{ value: 10000, text: this.$t('systemsettings.misc.performance.low') },
 			],
 			dataPointRuntimeValueSynchronized: [
