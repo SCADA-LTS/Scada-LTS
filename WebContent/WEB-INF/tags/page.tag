@@ -367,7 +367,7 @@
               <span class="userName"><c:out value="${sessionUser.firstName} ${sessionUser.lastName}"/></span>
             </c:when>
             <c:otherwise>
-              <span class="userName">${sessionUser.username}</span>
+              <span class="userName"><c:out value="${sessionUser.username}"/></span>
             </c:otherwise>
         </c:choose>
       </c:if>
