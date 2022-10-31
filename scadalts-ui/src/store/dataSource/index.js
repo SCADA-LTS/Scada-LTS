@@ -34,7 +34,8 @@ const ds = {
 		dataSources: new Map()
 			.set(1,"virtualdatasource")
 			.set(3, "modbusdatasource")
-			.set(5, "snmpdatasource"),
+			.set(5, "snmpdatasource")
+			.set(9, "metadatasource"), // 9
 
 		dataSourceList: [],
 	},

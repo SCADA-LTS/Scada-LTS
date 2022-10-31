@@ -93,4 +93,9 @@ public final class OnlyMigrationDataSourceService implements MangoDataSource {
 	public void insertPermissions(User user) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
+		throw new UnsupportedOperationException();
+	}
 }

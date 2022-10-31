@@ -72,6 +72,15 @@ public class DataSourceDAO {
 
 	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
 
+	//dataSourceUsers
+	private static final String COLUMN_NAME_DSU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DSU_ACCESS_TYPE = "permission";
+	private static final String COLUMN_NAME_DSU_DATA_SOURCE_ID = "dataSourceId";
+
+	//userProfile
+	private static final String COLUMN_NAME_UP_DATA_SOURCE_ID = "dataSourceId";
+	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
+
 	// @formatter:off
 	private static final String DATA_SOURCE_SELECT = ""
 			+ "select "
@@ -222,6 +231,12 @@ public class DataSourceDAO {
 			+ DATA_SOURCE_SELECT
 			+ "where "
 			+ COLUMN_NAME_DS_TYPE + "=? ";
+
+	public static final String DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME = ""
+			+ "ds.id in (select dsu."+ COLUMN_NAME_DSU_DATA_SOURCE_ID +" from dataSourceUsers dsu where dsu."+ COLUMN_NAME_DSU_USER_ID +"=?) or "
+			+ "ds.id in (select dsup."+COLUMN_NAME_UP_DATA_SOURCE_ID+" from dataSourceUsersProfiles dsup where dsup."+COLUMN_NAME_UP_USER_PRFILE_ID+"=?) "
+			+ "order by ds." + COLUMN_NAME_NAME;
+
 
 	// @formatter:on
 
@@ -542,5 +557,27 @@ public class DataSourceDAO {
 		}
 		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT_WHERE_TYPE,
 				new Object[]{type}, new DataSourceRowMapper());
+	}
+
+	public List<DataSourceVO<?>> selectDataSourcesWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
+				new Object[] { userId, profileId },
+				new DataSourceDAO.DataSourceRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
+				new Object[] { userId, profileId },
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
+	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 }

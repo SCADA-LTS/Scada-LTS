@@ -17,6 +17,7 @@
  */
 package org.scada_lts.mango.adapter;
 
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 
 import java.util.List;
@@ -47,4 +48,5 @@ public interface MangoDataSource {
 
     List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type);
 
+	List<DataSourceVO<?>> getDataSourcesWithAccess(User user);
 }

@@ -36,6 +36,8 @@ import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.utils.MqttUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
@@ -46,6 +48,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
+
 /**
  * Service for DataSourceDAO
  *
@@ -54,9 +58,21 @@ import java.util.ResourceBundle;
 public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
-	private static final DataSourceDAO dataSourceDAO = new DataSourceDAO();
+	private final DataSourceDAO dataSourceDAO;
+	private final DataPointService dataPointService;
+	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
-	private static final DataPointService dataPointService = new DataPointService();
+	public DataSourceService() {
+		this.dataSourceDAO = new DataSourceDAO();
+		this.dataPointService = new DataPointService();
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO);
+	}
+
+	public DataSourceService(DataSourceDAO dataSourceDAO, DataPointService dataPointService) {
+		this.dataSourceDAO = dataSourceDAO;
+		this.dataPointService = dataPointService;
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO);
+	}
 
 	@Override
 	public List<DataSourceVO<?>> getDataSources() {
@@ -81,6 +97,8 @@ public class DataSourceService implements MangoDataSource {
 	public boolean toggleDataSource(int id) {
 
 		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
+		if(vo == null)
+			return false;
 		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(id);
 		if(vo.isEnabled()) {
 			if(rt != null) {
@@ -223,33 +241,26 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceCopy.getId();
 	}
 
-	@Deprecated
-	public List<Integer> getDataSourceId(int userId) {
-		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
-	}
-
-	@Deprecated
-	public void deleteDataSourceUser(int userId) {
-		dataSourceDAO.deleteDataSourceUser(userId);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePermissions();
-	}
-
-	@Deprecated
-	public void insertPermissions(User user) {
-		dataSourceDAO.insertPermissions(user);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updatePermissions();
-	}
-
 	public DataSourceVO<?> createDataSource(DataSourceVO<?> dataSource) {
 		DataSourceVO<?> created = dataSourceDAO.create(dataSource);
 		Common.ctx.getRuntimeManager().saveDataSource(created);
 		return created;
 	}
 
+	@Deprecated
 	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId) {
 		List<DataPointVO> pointList = dataPointService.getDataPoints(dataSourceId, null);
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
+	}
+
+	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId, User user) {
+		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceId, null));
 		pointList.forEach(point -> {
 			if(!point.isEnabled()) {
 				point.setEnabled(true);
@@ -264,4 +275,8 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceDAO.getDataSources(type.getId());
 	}
 
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
+		return getDataSourcesWithAccess.getObjectsWithAccess(user);
+	}
 }
