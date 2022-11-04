@@ -1,6 +1,8 @@
 package org.scada_lts.web.mvc.api.security;
 
 import com.serotonin.mango.vo.User;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.*;
 import org.scada_lts.permissions.service.*;
 
@@ -9,6 +11,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class HasPermissionOperations {
+
+    private static final Log LOG = LogFactory.getLog(HasPermissionOperations.class);
 
     private final DataPointService dataPointService;
     private final DataSourceService dataSourceService;
@@ -180,11 +184,22 @@ public class HasPermissionOperations {
                                                 Consumer<T> populate) {
         if(user == null)
             return false;
-        T object = getObjectBy.apply(id);
+        T object;
+        try {
+            object = getObjectBy.apply(id);
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+            return false;
+        }
         if(object == null)
             return false;
-        populate.accept(object);
-        return hasPermission.test(user, object);
+        try {
+            populate.accept(object);
+            return hasPermission.test(user, object);
+        } catch (Exception ex) {
+            LOG.warn(ex.getMessage(), ex);
+            return false;
+        }
     }
 
     private static <T, I> boolean hasPermission(User user, Function<I, T> getObjectBy, I id,
