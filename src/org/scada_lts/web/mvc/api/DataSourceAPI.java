@@ -63,7 +63,7 @@ public class DataSourceAPI {
                                                         HttpServletRequest request) {
         LOG.info(  "/api/datasource");
 
-        DataSourceJson response = dataSourceService.getDataSource(request, xid, id);
+        DataSourceJson response = dataSourceService.read(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

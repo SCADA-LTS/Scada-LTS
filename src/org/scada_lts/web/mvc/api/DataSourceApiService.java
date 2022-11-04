@@ -6,8 +6,6 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.dao.model.DataSourceIdentifier;
 import org.scada_lts.mango.service.DataSourceService;
-import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
-import org.scada_lts.utils.DataSourcePointApiUtils;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
@@ -20,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.scada_lts.permissions.service.GetDataSourcesWithAccess.filteringByAccess;
+import static org.scada_lts.utils.ApiUtils.toMapMessages;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
-public class DataSourceApiService implements ObjectApiService<DataSourceJson, DataSourceIdentifier> {
+public class DataSourceApiService implements ObjectApiService<DataSourceJson, DataSourceIdentifier>, GeneratorXid {
 
     private final DataSourceService dataSourceService;
 
@@ -45,6 +43,11 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return response;
+    }
+
+    @Override
+    public Map<String, Object> isUnique(HttpServletRequest request, String object, Integer id) {
+        return isUniqueXid(request, object, id);
     }
 
     @Override
@@ -118,6 +121,11 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         return response;
     }
 
+    @Override
+    public DataSourceJson read(HttpServletRequest request, String xid, Integer id) {
+        return getDataSource(request, xid, id);
+    }
+
     public List<DataSourceJson> getDataSources(HttpServletRequest request) {
         User user = Common.getUser(request);
         List<DataSourceJson> response;
@@ -132,7 +140,7 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         return response;
     }
 
-    public DataSourceJson getDataSource(HttpServletRequest request, String xid, Integer id) {
+    private DataSourceJson getDataSource(HttpServletRequest request, String xid, Integer id) {
         DataSourceVO<?> fromDatabase = getDataSourceFromDatabase(request, xid, id);
         try {
             return DataSourcePointJsonFactory.getDataSourceJson(fromDatabase);
@@ -147,11 +155,11 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         DataSourceVO<?> response;
         if(id != null) {
             response = toObject(id, user, request, dataSourceService::getDataSource,
-                    GetDataSourcesWithAccess::hasDataSourceReadPermission,
+                    dataSourceService::hasDataSourceReadPermission,
                     a -> a);
         } else {
             response = toObject(xid, user, request, dataSourceService::getDataSource,
-                    GetDataSourcesWithAccess::hasDataSourceReadPermission,
+                    dataSourceService::hasDataSourceReadPermission,
                     a -> a);
         }
         return response;
@@ -192,7 +200,7 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         User user = Common.getUser(request);
         List<DataSourceVO<?>> list;
         try {
-            list = filteringByAccess(user, dataSourceService.getDataSourcesPlc());
+            list = dataSourceService.getDataSourcesPlc(user);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
@@ -212,7 +220,7 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         DwrResponseI18n responseI18n = new DwrResponseI18n();
         vo.validate(responseI18n);
         if(responseI18n.getHasMessages()) {
-            throw new BadRequestException(DataSourcePointApiUtils.toMapMessages(responseI18n),
+            throw new BadRequestException(toMapMessages(responseI18n),
                     request.getRequestURI());
         }
         return vo;

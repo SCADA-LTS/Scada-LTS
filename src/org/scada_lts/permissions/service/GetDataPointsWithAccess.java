@@ -32,6 +32,21 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
         return dataPointDAO.selectDataPointIdentifiersWithAccess(object.getId(), object.getUserProfile());
     }
 
+    @Override
+    public boolean hasReadPermission(User user, DataPointVO object) {
+        return GetDataPointsWithAccess.hasDataPointReadPermission(user, object);
+    }
+
+    @Override
+    public boolean hasSetPermission(User user, DataPointVO object) {
+        return GetDataPointsWithAccess.hasDataPointSetPermission(user, object);
+    }
+
+    @Override
+    public boolean hasOwnerPermission(User user, DataPointVO object) {
+        return user.isAdmin();
+    }
+
     public static List<DataPointVO> filteringByAccess(User user, List<DataPointVO> dataPoints) {
         return dataPoints.stream()
                 .filter(point -> Permissions.hasDataPointReadPermission(user, point))

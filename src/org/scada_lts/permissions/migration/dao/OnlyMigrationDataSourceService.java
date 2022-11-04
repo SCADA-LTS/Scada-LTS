@@ -79,23 +79,18 @@ public final class OnlyMigrationDataSourceService implements MangoDataSource {
 		throw new UnsupportedOperationException();
 	}
 
-	@Deprecated
-	public List<Integer> getDataSourceId(int userId) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	public void deleteDataSourceUser(int userId) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	public void insertPermissions(User user) {
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
+	public boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesPlc(User user) {
 		throw new UnsupportedOperationException();
 	}
 }

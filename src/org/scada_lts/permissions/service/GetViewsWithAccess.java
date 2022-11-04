@@ -30,6 +30,21 @@ public class GetViewsWithAccess implements GetObjectsWithAccess<View, User> {
         return viewDAO.selectViewIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 
+    @Override
+    public boolean hasReadPermission(User user, View object) {
+        return GetViewsWithAccess.hasViewReadPermission(user, object);
+    }
+
+    @Override
+    public boolean hasSetPermission(User user, View object) {
+        return GetViewsWithAccess.hasViewSetPermission(user, object);
+    }
+
+    @Override
+    public boolean hasOwnerPermission(User user, View object) {
+        return GetViewsWithAccess.hasViewOwnerPermission(user, object);
+    }
+
     public static boolean hasViewReadPermission(User user, View view) {
         return user.isAdmin() || view.getUserId() == user.getId() || view.getUserAccess(user) >= ShareUser.ACCESS_READ;
     }

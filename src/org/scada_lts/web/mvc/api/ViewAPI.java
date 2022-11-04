@@ -28,6 +28,7 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.view.ViewDTO;
 import org.scada_lts.dao.model.view.ViewDTOValidator;
 import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
 import org.scada_lts.web.mvc.api.dto.view.GraphicalViewDTO;
@@ -115,11 +116,11 @@ public class ViewAPI {
                     }
                 }
 
-                View view = new View();
+                View view;
                 if (user.isAdmin()) {
                     view = viewService.getView(id);
                 } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
 
 
@@ -183,11 +184,11 @@ public class ViewAPI {
                     }
                 }
 
-                View view = new View();
+                View view;
                 if (user.isAdmin()) {
                     view = viewService.getViewByXid(xid);
                 } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
 
 
@@ -197,13 +198,13 @@ public class ViewAPI {
                 ObjectMapper mapper = new ObjectMapper();
                 json = mapper.writeValueAsString(viewJSON);
 
-                return new ResponseEntity<String>(json, HttpStatus.OK);
+                return new ResponseEntity<>(json, HttpStatus.OK);
             }
 
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -550,6 +551,7 @@ public class ViewAPI {
 
     private ResponseEntity<String> findAndUpdateView(GraphicalViewDTO body, User user) {
         return getGraphicalView(body.getId(), viewService)
+                .filter(a -> GetViewsWithAccess.hasViewOwnerPermission(user, a))
                 .map(toUpdate -> updateGraphicalView(toUpdate, body, user)).
                 orElse(new ResponseEntity<>(formatErrorsJson("View not found"), HttpStatus.NOT_FOUND));
     }

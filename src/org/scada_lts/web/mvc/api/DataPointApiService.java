@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
-import static org.scada_lts.utils.DataSourcePointApiUtils.toMapMessages;
+import static org.scada_lts.utils.ApiUtils.toMapMessages;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
-public class DataPointApiService implements ObjectApiService<DataPointJson, DataPointIdentifier> {
+public class DataPointApiService implements ObjectApiService<DataPointJson, DataPointIdentifier>, GeneratorXid {
 
     private final DataPointService dataPointService;
     private final DataSourceApiService dataSourceApiService;
@@ -54,6 +54,11 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     }
 
     @Override
+    public Map<String, Object> isUnique(HttpServletRequest request, String object, Integer id) {
+        return isUniqueXid(request, object, id);
+    }
+
+    @Override
     public String generateUniqueXid(HttpServletRequest request) {
         checkIfNonAdminThenUnauthorized(request);
         String response;
@@ -70,7 +75,7 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
         DataPointVO fromRequest = toDataPointVO(request, datapoint);
-        dataSourceApiService.getDataSource(request, null, fromRequest.getDataSourceId());
+        dataSourceApiService.read(request, null, fromRequest.getDataSourceId());
         DataPointJson response;
         try {
             DataPointVO result = dataPointService.createDataPoint(fromRequest);
@@ -86,7 +91,7 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
         getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
         DataPointVO fromRequest = toDataPointVO(request, datapoint);
-        dataSourceApiService.getDataSource(request, null, fromRequest.getDataSourceId());
+        dataSourceApiService.read(request, null, fromRequest.getDataSourceId());
         try {
             dataPointService.updateDataPointConfiguration(fromRequest);
         } catch (Exception ex) {
@@ -121,6 +126,12 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return response;
+    }
+
+    @Override
+    public DataPointJson read(HttpServletRequest request, String xid, Integer id) {
+        DataPointVO dataPoint = getDataPointFromDatabase(request, xid, id);
+        return new DataPointJson(dataPoint);
     }
 
     public String getConfigurationByXid(HttpServletRequest request, String xid) {

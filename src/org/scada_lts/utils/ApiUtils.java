@@ -5,13 +5,19 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.UserEntry;
 import com.serotonin.util.StringUtils;
+import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public final class ApiUtils {
 
@@ -35,12 +41,10 @@ public final class ApiUtils {
 
     public static boolean usersExist(List<EmailRecipient> entries, UserService userService) {
         for (EmailRecipient recipient : entries) {
-            if (recipient != null) {
-                if (recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
+            if (recipient != null && recipient.getRecipientType() == EmailRecipient.TYPE_USER) {
                     UserEntry userEntry = (UserEntry) recipient;
                     if (!userIdExists(userEntry.getUserId(), userService))
                         return false;
-                }
             }
         }
         return true;
@@ -54,13 +58,39 @@ public final class ApiUtils {
     }
 
     public static boolean validateUserCreate(User userToSave) {
+        DwrResponseI18n response = validate(userToSave);
+        return !response.getHasMessages();
+    }
+
+    public static DwrResponseI18n validate(User userToSave) {
         if(userToSave.getUserProfile() == 0)
             userToSave.setUserProfileId(-1);
         DwrResponseI18n response = new DwrResponseI18n();
         userToSave.validate(response);
-        return !response.getHasMessages();
+        return response;
     }
 
+    public static Map<String, String> toMapMessages(DwrResponseI18n responseI18n) {
+        if(responseI18n.getHasMessages()) {
+            AtomicInteger counter = new AtomicInteger();
+            return responseI18n.getMessages().stream()
+                    .collect(Collectors.toMap(a -> a.getContextKey() == null ? "message" + counter.incrementAndGet() : a.getContextKey(),
+                            ApiUtils::getMessage, (a, b) -> b));
+        }
+        return Collections.emptyMap();
+    }
+
+    private static String getMessage(DwrMessageI18n a) {
+        LocalizableMessage contextualMessage = a.getContextualMessage();
+        if(contextualMessage == null) {
+            LocalizableMessage genericMessage = a.getGenericMessage();
+            if(genericMessage == null)
+                return "unknown";
+            return Common.getMessage(genericMessage.getKey(), genericMessage.getArgs());
+        } else {
+            return Common.getMessage(contextualMessage.getKey(), contextualMessage.getArgs());
+        }
+    }
 
     private static void setPassword(User userToSave, UserService userService) {
         if(StringUtils.isEmpty(userToSave.getPassword())) {

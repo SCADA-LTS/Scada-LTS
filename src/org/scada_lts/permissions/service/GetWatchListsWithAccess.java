@@ -34,6 +34,21 @@ public class GetWatchListsWithAccess implements GetObjectsWithAccess<WatchList, 
         return watchListDAO.selectWatchListIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 
+    @Override
+    public boolean hasReadPermission(User user, WatchList object) {
+        return GetWatchListsWithAccess.hasWatchListReadPermission(user, object);
+    }
+
+    @Override
+    public boolean hasSetPermission(User user, WatchList object) {
+        return GetWatchListsWithAccess.hasWatchListSetPermission(user, object);
+    }
+
+    @Override
+    public boolean hasOwnerPermission(User user, WatchList object) {
+        return GetWatchListsWithAccess.hasWatchListOwnerPermission(user, object);
+    }
+
     public static boolean hasWatchListReadPermission(User user, WatchList watchList) {
         return user.isAdmin() || watchList.getUserId() == user.getId() || watchList.getUserAccess(user) >= ShareUser.ACCESS_READ;
     }

@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface ObjectApiService<T, I> {
-
-    Map<String, Object> isUniqueXid(HttpServletRequest request, String xid, Integer id);
-    String generateUniqueXid(HttpServletRequest request);
+    Map<String, Object> isUnique(HttpServletRequest request, String object, Integer id);
     T create(HttpServletRequest request, T datapoint);
     T update(HttpServletRequest request, T datapoint);
     T delete(HttpServletRequest request, String xid, Integer id);
+    T read(HttpServletRequest request, String xid, Integer id);
     List<I> getIdentifiers(HttpServletRequest request);
 }
