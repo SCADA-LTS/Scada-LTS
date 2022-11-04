@@ -92,7 +92,7 @@ public final class ApiUtils {
         }
     }
 
-    private static void setPassword(User userToSave, UserService userService) {
+    public static void setPassword(User userToSave, UserService userService) {
         if(StringUtils.isEmpty(userToSave.getPassword())) {
             getUser(userToSave.getId(), userService).ifPresent(userFromBase -> {
                 userToSave.setPassword(userFromBase.getPassword());
