@@ -1,11 +1,11 @@
 package org.scada_lts.utils.security;
 
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import static org.scada_lts.utils.PathSecureUtils.validateFilename;
+import static org.scada_lts.utils.PathSecureUtils.validatePath;
 
 public class SafeMultipartFile {
 
@@ -17,19 +17,17 @@ public class SafeMultipartFile {
 
     public static SafeMultipartFile safe(MultipartFile file) throws FileNotSafeException {
         SafeMultipartFile securedMultipartFile = new SafeMultipartFile(file);
-        if(securedMultipartFile.validate())
+        if (securedMultipartFile.validate())
             return securedMultipartFile;
         throw new FileNotSafeException(file.getOriginalFilename());
     }
 
     public String getName() {
-        Path path = Paths.get(multipartFile.getName()).normalize();
-        return path.toString();
+        return multipartFile.getName();
     }
 
     public String getOriginalFilename() {
-        Path path = Paths.get(multipartFile.getOriginalFilename()).normalize();
-        return path.toString();
+        return multipartFile.getOriginalFilename();
     }
 
     public byte[] getBytes() throws IOException {
@@ -41,8 +39,12 @@ public class SafeMultipartFile {
     }
 
     private boolean validate() {
-        return getName().equals(multipartFile.getName())
-                && getOriginalFilename().equals(multipartFile.getOriginalFilename())
-                && getOriginalFilename().split("\\.").length == 2;
+        String name = multipartFile.getName();
+        if (!validatePath(name))
+            return false;
+        String originalName = multipartFile.getOriginalFilename();
+        return validateFilename(originalName);
     }
 }
+
+

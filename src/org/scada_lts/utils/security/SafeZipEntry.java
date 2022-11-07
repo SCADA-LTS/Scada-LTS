@@ -1,8 +1,8 @@
 package org.scada_lts.utils.security;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
+
+import static org.scada_lts.utils.PathSecureUtils.validateFilename;
 
 public class SafeZipEntry {
 
@@ -20,18 +20,15 @@ public class SafeZipEntry {
     }
 
     public String getName() {
-        Path path = Paths.get(zipEntry.getName()).normalize();
-        return path.toString();
+        return zipEntry.getName();
     }
 
     public ZipEntry toZipEntry() {
-        if(validate())
-            return zipEntry;
-        throw new SecurityException();
+        return zipEntry;
     }
 
     private boolean validate() {
-        return getName().equals(zipEntry.getName())
-                && getName().split("\\.").length == 2;
+        String zipEntryName = zipEntry.getName();
+        return validateFilename(zipEntryName);
     }
 }

@@ -2,9 +2,9 @@ package org.scada_lts.utils.security;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.zip.ZipFile;
+
+import static org.scada_lts.utils.PathSecureUtils.validateFilename;
 
 public class SafeZipFile {
     private final ZipFile zipFile;
@@ -25,12 +25,11 @@ public class SafeZipFile {
     }
 
     public String getName() {
-        Path path = Paths.get(zipFile.getName()).normalize();
-        return path.toString();
+        return zipFile.getName();
     }
 
     private boolean validate() {
-        return getName().equals(zipFile.getName())
-                && getName().split("\\.").length == 2;
+        String name = zipFile.getName();
+        return validateFilename(name);
     }
 }

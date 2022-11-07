@@ -1,9 +1,9 @@
 package org.scada_lts.utils.security;
 
-
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import static org.scada_lts.utils.PathSecureUtils.validateFilename;
 
 public class SafeFile {
 
@@ -21,13 +21,7 @@ public class SafeFile {
     }
 
     public String getName() {
-        Path path = Paths.get(file.getName()).normalize();
-        return path.toString();
-    }
-
-    public String getAbsolutePath() {
-        Path path = Paths.get(file.getAbsolutePath()).normalize();
-        return path.toString();
+        return file.getName();
     }
 
     public File toFile() {
@@ -39,8 +33,11 @@ public class SafeFile {
     }
 
     private boolean validate() {
-        return getAbsolutePath().equals(file.getAbsolutePath())
-                && getName().equals(file.getName())
-                && getName().split("\\.").length == 2;
+        String absolutePath = file.getAbsolutePath();
+        String path = file.getPath();
+        String name = file.getName();
+        return validateFilename(absolutePath)
+                && validateFilename(path)
+                && validateFilename(name);
     }
 }

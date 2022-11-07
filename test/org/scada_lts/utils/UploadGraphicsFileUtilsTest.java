@@ -61,6 +61,15 @@ public class UploadGraphicsFileUtilsTest {
         datas.add(new Object[] {"jpgFile.o.jpg", false});
         datas.add(new Object[] {"pngFile.jpg.png", false});
 
+        datas.add(new Object[] {"", false});
+        datas.add(new Object[] {"\\.jpg", false});
+        datas.add(new Object[] {"/.jpg", false});
+        datas.add(new Object[] {".php%00.jpg", false});
+        datas.add(new Object[] {".jpg%00.jpg", false});
+        datas.add(new Object[] {"%00.jpg", false});
+        datas.add(new Object[] {".%00.jpg", false});
+        datas.add(new Object[] {".jpg", false});
+
         datas.add(new Object[] {"txt" + File.separatorChar + "info.txt", false});
         return datas;
     }

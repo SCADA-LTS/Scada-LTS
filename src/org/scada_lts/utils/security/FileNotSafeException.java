@@ -6,15 +6,4 @@ public class FileNotSafeException extends Exception {
         super("The file is not safe: " + message);
     }
 
-    public FileNotSafeException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FileNotSafeException(Throwable cause) {
-        super(cause);
-    }
-
-    public FileNotSafeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

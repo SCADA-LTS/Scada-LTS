@@ -49,7 +49,7 @@ public final class UploadFileUtils {
             return isZipMimeType(Paths.get(securedMultipartFile.getOriginalFilename()))
                     && !isXml(securedMultipartFile) && !isImageBitmap(securedMultipartFile);
         } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
     }
@@ -61,7 +61,7 @@ public final class UploadFileUtils {
         try {
             safeMultipartFile = SafeMultipartFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         String fileName = safeMultipartFile.getOriginalFilename();
@@ -80,7 +80,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         if(isThumbsFile(safeFile))
@@ -96,7 +96,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         if(isThumbsFile(safeFile))
@@ -111,7 +111,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         return isThumbsFile(safeFile);
@@ -122,7 +122,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         return isInfoFile(safeFile);
@@ -133,7 +133,7 @@ public final class UploadFileUtils {
         try {
             safeFile = SafeFile.safe(file);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         return isImageBitmap(safeFile);
@@ -166,14 +166,14 @@ public final class UploadFileUtils {
         try {
             safeZipFile = SafeZipFile.safe(zipFile);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         SafeZipEntry safeZipEntry;
         try {
             safeZipEntry = SafeZipEntry.safe(entry);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         return isToGraphics(safeZipFile, safeZipEntry);
@@ -202,7 +202,7 @@ public final class UploadFileUtils {
         try {
             safeZipEntry = SafeZipEntry.safe(entry);
         } catch (FileNotSafeException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return false;
         }
         return isToUploads(safeZipFile, safeZipEntry);
