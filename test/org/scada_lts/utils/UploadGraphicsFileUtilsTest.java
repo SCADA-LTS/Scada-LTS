@@ -51,6 +51,16 @@ public class UploadGraphicsFileUtilsTest {
         datas.add(new Object[] {"jsAsJpg.jpg", false});
         datas.add(new Object[] {"jsAsPng.png", false});
 
+        datas.add(new Object[] {"/../../jsAsSvg.svg", false});
+        datas.add(new Object[] {"/../jsAsBmp.bmp", false});
+        datas.add(new Object[] {"./jsAsGif.gif", false});
+        datas.add(new Object[] {"../jsAsJpg.jpg", false});
+        datas.add(new Object[] {"././jsAsPng.png", false});
+
+        datas.add(new Object[] {"gifFile.zip.gif", false});
+        datas.add(new Object[] {"jpgFile.o.jpg", false});
+        datas.add(new Object[] {"pngFile.jpg.png", false});
+
         datas.add(new Object[] {"txt" + File.separatorChar + "info.txt", false});
         return datas;
     }
