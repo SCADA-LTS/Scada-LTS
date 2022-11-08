@@ -70,7 +70,7 @@ public class UploadGraphicsFileUtilsTest {
         datas.add(new Object[] {".%00.jpg", false});
         datas.add(new Object[] {".jpg", false});
 
-        datas.add(new Object[] {"txt" + File.separatorChar + "info.txt", false});
+        datas.add(new Object[] {"txt" + File.pathSeparator + "info.txt", false});
         return datas;
     }
 
