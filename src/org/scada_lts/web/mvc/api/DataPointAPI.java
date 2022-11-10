@@ -21,8 +21,6 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.DataPointIdentifier;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 
 import org.springframework.http.HttpStatus;
@@ -32,6 +30,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,10 +45,6 @@ public class DataPointAPI {
     private static final Log LOG = LogFactory.getLog(DataPointAPI.class);
 
     private final DataPointApiService dataPointApiService;
-
-    public DataPointAPI() {
-        dataPointApiService = new DataPointApiService(new DataPointService(), new DataSourceApiService(new DataSourceService()));
-    }
 
     public DataPointAPI(DataPointApiService dataPointApiService) {
         this.dataPointApiService = dataPointApiService;
@@ -80,8 +75,9 @@ public class DataPointAPI {
                                                                     @RequestParam(required = false) Integer id,
                                                                     HttpServletRequest request) {
         LOG.info(  "/api/datapoint/validate");
-
-        Map<String, Object> response = dataPointApiService.isUniqueXid(request, xid, id);
+        Map<String, Object> response = new HashMap<>();
+        boolean isUnique = dataPointApiService.isUniqueXid(request, xid, id);
+        response.put("unique", isUnique);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

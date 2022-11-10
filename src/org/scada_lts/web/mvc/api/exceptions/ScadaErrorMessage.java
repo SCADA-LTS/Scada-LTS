@@ -16,6 +16,15 @@ public class ScadaErrorMessage implements Serializable {
     private String instance;
     private int status;
 
+    private ScadaErrorMessage(String type, String title, HttpStatus status, Map<String, String> detail,
+                              String instance) {
+        this.type = type;
+        this.title = title;
+        this.status = status.value();
+        this.detail = detail;
+        this.instance = instance;
+    }
+
     private ScadaErrorMessage(String type, String title, int status, Map<String, String> detail,
                               String instance) {
         this.type = type;

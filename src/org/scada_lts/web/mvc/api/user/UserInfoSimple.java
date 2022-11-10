@@ -1,12 +1,9 @@
-package org.scada_lts.web.mvc.api.json;
+package org.scada_lts.web.mvc.api.user;
+import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-/**
- * @deprecated (new type UserInfo, UserInfoSimple, UserInfoPassword)
- */
-@Deprecated
-public class JsonUserInfo {
+public class UserInfoSimple {
 
-    private int id;
+    private int id = Common.NEW_ID;
     private String username;
     private String firstName;
     private String lastName;
@@ -15,10 +12,11 @@ public class JsonUserInfo {
     private boolean admin;
     private boolean disabled;
 
-    public JsonUserInfo() {
+    public UserInfoSimple() {
     }
 
-    public JsonUserInfo(int id, String username, String firstName, String lastName, String phone, String email, boolean admin, boolean disabled) {
+    public UserInfoSimple(int id, String username, String firstName, String lastName, String phone, String email,
+                          boolean admin, boolean disabled) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
@@ -29,7 +27,7 @@ public class JsonUserInfo {
         this.disabled = disabled;
     }
 
-    public JsonUserInfo(User user) {
+    public UserInfoSimple(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.firstName = user.getFirstName();

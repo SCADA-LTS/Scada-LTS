@@ -18,10 +18,6 @@
         <!-- Login Form -->
         <intercept-url pattern="/login.htm" access="permitAll" />
 
-        <!-- REST API -->
-        <intercept-url pattern="/api/auth/**" access="permitAll" />
-        <intercept-url pattern="/api/**" access="isAuthenticated()" />
-
         <!-- DWR -->
         <intercept-url pattern="/dwr/*.js" access="permitAll" />
         <intercept-url pattern="/dwr/interface/*.js" access="permitAll" />
@@ -45,7 +41,85 @@
         <!-- Monitoring -->
         <intercept-url pattern="/monitoring" access="permitAll" />
 
-        <intercept-url pattern="/**" access="isAuthenticated()" />
+        <!-- REST API User -->
+
+        <!-- Auth -->
+        <intercept-url pattern="/api/auth/**" access="permitAll" />
+
+        <!-- WatchList POST/PUT/GET -->
+        <intercept-url pattern="/api/watch-lists" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/watch-lists" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/watch-lists/generateXid" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/watch-lists/" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/watch-lists/{id}" access="@guard.hasWatchListReadPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/watch-lists/{id}" access="@guard.hasWatchListOwnerPermission(request,#id,false)" method="DELETE" />
+
+        <!-- View POST/PUT/GET -->
+        <!--intercept-url pattern="/api/view/uploads" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/view" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/view" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/view/generateXid" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" /-->
+        <intercept-url pattern="/api/view/getModificationTime/{id}" access="@guard.hasViewReadPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/view/getAll" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <!--intercept-url pattern="/api/view" access="@guard.hasViewReadPermission(request)" method="GET" /-->
+
+        <!-- Report POST/GET/DELETE -->
+        <intercept-url pattern="/api/reports/save" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/reports/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/reports/sendTestEmails" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/reports/instances" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/reports/instances/{id}" access="@guard.hasReportInstanceOwnerPermission(request,#id,false)" method="DELETE" />
+        <intercept-url pattern="/api/reports/run/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/reports/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="DELETE" />
+
+        <!-- User PUT/GET -->
+        <intercept-url pattern="/api/users/" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/users/password" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/users/{id}" access="@guard.hasUserOwnerPermission(request,#id)" method="GET" />
+
+        <!-- DataPoint GET -->
+        <intercept-url pattern="/api/datapoint/getAll" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/datapoint" access="@guard.hasDataPointReadPermission(request)" method="GET" />
+
+        <!-- DataSource GET -->
+        <intercept-url pattern="/api/datasource" access="@guard.hasDataSourceReadPermission(request)" method="GET" />
+
+        <!-- PointHierarchy GET -->
+        <intercept-url pattern="/api/pointHierarchy/{key}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+
+        <!-- PointValue GET -->
+        <intercept-url pattern="/api/point_value/getValue/id/{id}" access="@guard.hasDataPointReadPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/point_value/getValue/{xid}" access="@guard.hasDataPointReadPermission(request,#xid,true)" method="GET" />
+
+        <!-- Event POST/GET -->
+        <intercept-url pattern="/api/events/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/events/highestUnsilencedLevelAlarm" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/events/datapoint/{id}" access="@guard.hasDataPointReadPermission(request,#id,false)" method="GET" />
+
+        <!-- Alarm GET -->
+        <intercept-url pattern="/api/alarms/live/{offset}/{limit}" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+
+        <!-- Chart GET -->
+        <intercept-url pattern="/api/amcharts/by-id" access="@guard.hasDataPointReadPermission(request,false,'ids')" method="GET" />
+        <intercept-url pattern="/api/amcharts/by-xid" access="@guard.hasDataPointReadPermission(request,true,'ids')" method="GET" />
+
+        <!-- Config GET -->
+        <intercept-url pattern="/api/config/replacealert" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+
+        <!-- REST API Admin -->
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="POST" />
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="GET" />
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="PUT" />
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="PATCH" />
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="OPTIONS" />
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="HEAD" />
+        <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="TRACE" />
+
+        <!-- Only Admin -->
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" method="DELETE" />
+
+        <!-- Other -->
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
 
         <form-login authentication-success-handler-ref="loginAuthenticationSuccessHandler"
                     authentication-failure-url="/login.htm?error" login-page="/login.htm"
@@ -68,8 +142,8 @@
         <authentication-provider>
             <password-encoder ref="scadaPasswordEncoder" />
             <jdbc-user-service data-source-ref="dataSourceForSecurity"
-                               users-by-username-query="select username, password, disabled = 'N' as enabled from users where username = ?"
-                               authorities-by-username-query="select username, 'USER' from users where username = ?"/>
+                               users-by-username-query="SELECT username, password, disabled = 'N' AS enabled FROM users WHERE username = ?"
+                               authorities-by-username-query="SELECT username, IF(admin = 'Y', 'ROLE_ADMIN', 'ROLE_USER') AS role FROM users WHERE username = ?"/>
         </authentication-provider>
     </authentication-manager>
 
@@ -91,4 +165,16 @@
     </b:bean>
 
     <b:bean id="setDataSessionFilter" class="org.scada_lts.session.SetDataSessionFilter"/>
+
+    <b:bean id="hasPermissionOperations" class="org.scada_lts.web.mvc.api.security.HasPermissionOperations" />
+    <b:bean id="withIdentifierGuard" class="org.scada_lts.web.mvc.api.security.WithIdentifierGuard" >
+        <b:constructor-arg ref="hasPermissionOperations"/>
+    </b:bean>
+    <b:bean id="getIdentifierFromHttpParameterGuard" class="org.scada_lts.web.mvc.api.security.GetIdentifierFromHttpParameterGuard" >
+        <b:constructor-arg ref="hasPermissionOperations"/>
+    </b:bean>
+    <b:bean id="guard" class="org.scada_lts.web.mvc.api.security.Guard" >
+        <b:constructor-arg ref="withIdentifierGuard"/>
+        <b:constructor-arg ref="getIdentifierFromHttpParameterGuard"/>
+    </b:bean>
 </b:beans>

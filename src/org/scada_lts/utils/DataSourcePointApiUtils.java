@@ -22,16 +22,6 @@ public final class DataSourcePointApiUtils {
 
     private DataSourcePointApiUtils() {}
 
-    public static Map<String, String> toMapMessages(DwrResponseI18n responseI18n) {
-        if(responseI18n.getHasMessages()) {
-            AtomicInteger counter = new AtomicInteger();
-            return responseI18n.getMessages().stream()
-                    .collect(Collectors.toMap(a -> a.getContextKey() == null ? "message" + counter.incrementAndGet() : a.getContextKey(),
-                            DataSourcePointApiUtils::getMessage, (a, b) -> b));
-        }
-        return Collections.emptyMap();
-    }
-
     public static <I, T, R> R toObject(I id, User user, HttpServletRequest request,
                                        Function<I, T> get, BiPredicate<User, T> checkAccess,
                                        Function<T, R> creator) {
@@ -55,17 +45,5 @@ public final class DataSourcePointApiUtils {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return result;
-    }
-
-    private static String getMessage(DwrMessageI18n a) {
-        LocalizableMessage contextualMessage = a.getContextualMessage();
-        if(contextualMessage == null) {
-            LocalizableMessage genericMessage = a.getGenericMessage();
-            if(genericMessage == null)
-                return "unknown";
-            return Common.getMessage(genericMessage.getKey(), genericMessage.getArgs());
-        } else {
-            return Common.getMessage(contextualMessage.getKey(), contextualMessage.getArgs());
-        }
     }
 }

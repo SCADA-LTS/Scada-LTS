@@ -51,12 +51,6 @@ public class WatchListAPI {
 	private final PointValueService pointValueService;
 	private final DataPointService dataPointService;
 
-	public WatchListAPI() {
-		this.watchListService = new WatchListService();
-		this.pointValueService = new PointValueService();
-		this.dataPointService = new DataPointService();
-	}
-
 	public WatchListAPI(WatchListService watchListService,
 						PointValueService pointValueService,
 						DataPointService dataPointService) {

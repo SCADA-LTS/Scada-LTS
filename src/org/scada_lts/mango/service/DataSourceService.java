@@ -28,6 +28,7 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
@@ -39,7 +40,9 @@ import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.utils.MqttUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 
@@ -55,6 +59,7 @@ import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filterin
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
@@ -63,15 +68,15 @@ public class DataSourceService implements MangoDataSource {
 	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
 	public DataSourceService() {
-		this.dataSourceDAO = new DataSourceDAO();
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
 		this.dataPointService = new DataPointService();
-		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO);
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, new DataPointDAO());
 	}
 
-	public DataSourceService(DataSourceDAO dataSourceDAO, DataPointService dataPointService) {
+	public DataSourceService(DataSourceDAO dataSourceDAO, DataPointService dataPointService, DataPointDAO dataPointDAO) {
 		this.dataSourceDAO = dataSourceDAO;
 		this.dataPointService = dataPointService;
-		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO);
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, dataPointDAO);
 	}
 
 	@Override
@@ -247,18 +252,6 @@ public class DataSourceService implements MangoDataSource {
 		return created;
 	}
 
-	@Deprecated
-	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId) {
-		List<DataPointVO> pointList = dataPointService.getDataPoints(dataSourceId, null);
-		pointList.forEach(point -> {
-			if(!point.isEnabled()) {
-				point.setEnabled(true);
-				Common.ctx.getRuntimeManager().saveDataPoint(point);
-			}
-		});
-		return pointList;
-	}
-
 	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId, User user) {
 		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceId, null));
 		pointList.forEach(point -> {
@@ -278,5 +271,17 @@ public class DataSourceService implements MangoDataSource {
 	@Override
 	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
 		return getDataSourcesWithAccess.getObjectsWithAccess(user);
+	}
+
+	@Override
+	public boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource) {
+		return getDataSourcesWithAccess.hasReadPermission(user, dataSource);
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesPlc(User user) {
+		return getDataSourcesPlc().stream()
+				.filter(a -> getDataSourcesWithAccess.hasReadPermission(user, a))
+				.collect(Collectors.toList());
 	}
 }

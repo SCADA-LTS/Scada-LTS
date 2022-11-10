@@ -20,7 +20,6 @@ package org.scada_lts.web.mvc.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.DataSourceIdentifier;
-import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.springframework.http.HttpStatus;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,21 +39,17 @@ import java.util.Map;
 public class DataSourceAPI {
 
     private static final Log LOG = LogFactory.getLog(DataSourceAPI.class);
-    private final DataSourceApiService dataSourceService;
+    private final DataSourceApiService dataSourceApiService;
 
-    public DataSourceAPI() {
-        this.dataSourceService = new DataSourceApiService(new DataSourceService());
-    }
-
-    public DataSourceAPI(DataSourceApiService dataSourceService) {
-        this.dataSourceService = dataSourceService;
+    public DataSourceAPI(DataSourceApiService dataSourceApiService) {
+        this.dataSourceApiService = dataSourceApiService;
     }
 
     @GetMapping(value = "/api/datasources")
     public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
         LOG.info(  "/api/datasources");
 
-        List<DataSourceJson> response = dataSourceService.getDataSources(request);
+        List<DataSourceJson> response = dataSourceApiService.readAll(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -63,7 +59,7 @@ public class DataSourceAPI {
                                                         HttpServletRequest request) {
         LOG.info(  "/api/datasource");
 
-        DataSourceJson response = dataSourceService.getDataSource(request, xid, id);
+        DataSourceJson response = dataSourceApiService.read(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -73,7 +69,7 @@ public class DataSourceAPI {
                                                                 HttpServletRequest request) {
         LOG.info( "/api/datasource/toggle");
 
-        Map<String, Object> response = dataSourceService.toggleDataSource(request, id);
+        Map<String, Object> response = dataSourceApiService.toggleDataSource(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -82,8 +78,9 @@ public class DataSourceAPI {
                                                            @RequestParam(required = false) String xid,
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource/validate");
-
-        Map<String, Object> response = dataSourceService.isUniqueXid(request, xid, id);
+        Map<String, Object> response = new HashMap<>();
+        boolean isUnique = dataSourceApiService.isUniqueXid(request, xid, id);
+        response.put("unique", isUnique);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -92,7 +89,7 @@ public class DataSourceAPI {
                                                                            HttpServletRequest request) {
         LOG.info("/api/datasource/datapoints/enable");
 
-        List<DataPointJson> response = dataSourceService.enableAllPointsInDataSource(request, id);
+        List<DataPointJson> response = dataSourceApiService.enableAllPointsInDataSource(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -100,7 +97,7 @@ public class DataSourceAPI {
     public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
         LOG.info("/api/datasource/generateUniqueXid");
 
-        String response = dataSourceService.generateUniqueXid(request);
+        String response = dataSourceApiService.generateUniqueXid(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -109,7 +106,7 @@ public class DataSourceAPI {
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource");
 
-        DataSourceJson response = dataSourceService.create(request, dataSource);
+        DataSourceJson response = dataSourceApiService.create(request, dataSource);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -118,7 +115,7 @@ public class DataSourceAPI {
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource");
 
-        DataSourceJson response = dataSourceService.update(request, dataSource);
+        DataSourceJson response = dataSourceApiService.update(request, dataSource);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -127,7 +124,7 @@ public class DataSourceAPI {
                                                            HttpServletRequest request) {
         LOG.info("/api/datasource");
 
-        DataSourceJson response = dataSourceService.delete(request, null, id);
+        DataSourceJson response = dataSourceApiService.delete(request, null, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -135,7 +132,7 @@ public class DataSourceAPI {
     public ResponseEntity<List<DataSourceIdentifier>> getDataSourceIdentifiers(HttpServletRequest request) {
         LOG.info("/api/datasource/getAll");
 
-        List<DataSourceIdentifier> response = dataSourceService.getIdentifiers(request);
+        List<DataSourceIdentifier> response = dataSourceApiService.getIdentifiers(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -143,7 +140,7 @@ public class DataSourceAPI {
     public ResponseEntity<List<DataSourceIdentifier>> getDataSourcesPlcIdentifers(HttpServletRequest request) {
         LOG.info("/api/datasource/getAllPlc");
 
-        List<DataSourceIdentifier> response = dataSourceService.getDataSourcesPlcIdentifers(request);
+        List<DataSourceIdentifier> response = dataSourceApiService.getDataSourcesPlcIdentifers(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

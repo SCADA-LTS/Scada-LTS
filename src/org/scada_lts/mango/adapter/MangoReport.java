@@ -70,4 +70,15 @@ public interface MangoReport {
 
 	List<ReportVO> search(User user, Map<String, String> query);
 
+	boolean hasReportReadPermission(User user, ReportVO report);
+
+	boolean hasReportOwnerPermission(User user, ReportVO report);
+
+	boolean hasReportInstanceReadPermission(User user, ReportInstance report);
+
+	boolean hasReportInstanceOwnerPermission(User user, ReportInstance report);
+
+	boolean hasReportInstanceReadPermission(User user, int reportInstanceId);
+
+	boolean hasReportInstanceOwnerPermission(User user, int reportInstanceId);
 }

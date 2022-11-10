@@ -49,4 +49,8 @@ public interface MangoDataSource {
     List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type);
 
 	List<DataSourceVO<?>> getDataSourcesWithAccess(User user);
+
+	boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource);
+
+	List<DataSourceVO<?>> getDataSourcesPlc(User user);
 }

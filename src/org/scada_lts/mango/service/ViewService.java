@@ -47,7 +47,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -68,8 +67,6 @@ public class ViewService {
 	private Log LOG = LogFactory.getLog(ViewService.class);
 
 	private final IViewDAO viewDAO;
-	@Deprecated
-	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
 	private final GetShareUsers<View> viewGetShareUsers;
 	private final GetObjectsWithAccess<View, User> getViewsWithAccess;
 
@@ -103,19 +100,13 @@ public class ViewService {
 		return views;
 	}
 
+	@Deprecated
 	public List<ScadaObjectIdentifier> getAllViews() {
 		return viewDAO.findIdentifiers();
 	}
 
 	public List<ScadaObjectIdentifier> getAllViewsForUser(User user) {
-		if (user.isAdmin())
-			return viewDAO.findIdentifiers();
-		List<View> views = getViews(user.getId(), user.getUserProfile());
-		List<ScadaObjectIdentifier> simpleList = new ArrayList<>();
-		for (View view : views) {
-			simpleList.add(new ScadaObjectIdentifier(view.getId(),view.getXid(), view.getName()));
-		}
-		return simpleList;
+		return getViewsWithAccess.getObjectIdentifiersWithAccess(user);
 	}
 	
 	public List<IdName> getViewNames(int userId, int userProfileId) {
@@ -124,38 +115,6 @@ public class ViewService {
 	
 	public List<IdName> getAllViewNames() {
 		return toIdNames(viewDAO.findIdentifiers());
-	}
-
-	@Deprecated
-	public List<IdName> getViewNamesWithReadOrWritePermissions(
-			int userId, int userProfileId) {
-		List<IdName> allPermissions = usersPermissions.get(userId);
-		if (allPermissions == null) {
-			allPermissions = updateViewUsersPermissions(userId, userProfileId);
-		}
-		return allPermissions;
-	}
-
-	@Deprecated
-	private List<IdName> updateViewUsersPermissions(int userId,
-			int userProfileId) {
-
-		List<IdName> allPermissions = toIdNames(getViewIdentifiers(userId, userProfileId));
-
-		User user = new UserDao().getUser(userId);
-
-		for (Iterator<IdName> iterator = allPermissions.iterator(); iterator.hasNext();) {
-
-			IdName idDaViewComView = (IdName) iterator.next();
-
-			View view = viewDAO.findById(idDaViewComView.getId());
-
-			if (view.getUserAccess(user) == ShareUser.ACCESS_NONE) {
-				iterator.remove();
-			}
-		}
-		//usersPermissions.put(userId, allPermissions);
-		return allPermissions;
 	}
 
 	public View getView(int id) {
@@ -235,22 +194,6 @@ public class ViewService {
 		viewDAO.delete(viewId);
 		//usersProfileService.updateViewPermissions();
 	}
-
-	@Deprecated
-	private void saveViewUsers(final View view) {
-		// Delete anything that is currently there.
-		viewDAO.deleteViewForUser(view.getId());
-
-		//viewDAO.batchUpdateInfoUsers(view);
-		
-		// Update cache
-		List<ShareUser> shareUsers = view.getViewUsers();
-		for (Iterator<ShareUser> iterator = shareUsers.iterator(); iterator.hasNext();) {
-			ShareUser shareUser = iterator.next();
-			usersPermissions.remove(shareUser.getUserId());
-			// updateViewUsersPermissions(shareUser.getUserId());
-		}
-	}	
 	
 	public void removeUserFromView(int viewId, int userId) {
 		viewDAO.deleteViewForUser(viewId, userId);
