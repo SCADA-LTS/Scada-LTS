@@ -162,7 +162,7 @@ public class Permissions {
         return hasDataPointReadPermission(user, point.getDataSourceId(), point.getId());
     }
 
-    private static boolean hasDataPointReadPermission(User user, int dataSourceId, int dataPointId)
+    public static boolean hasDataPointReadPermission(User user, int dataSourceId, int dataPointId)
             throws PermissionException {
         if(user.isAdmin())
             return true;

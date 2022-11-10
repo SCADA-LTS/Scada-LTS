@@ -13,12 +13,11 @@ import org.scada_lts.web.mvc.api.datasources.DataPointJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.exceptions.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +27,8 @@ import static org.scada_lts.utils.ApiUtils.toMapMessages;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
-public class DataPointApiService implements ObjectApiService<DataPointJson, DataPointIdentifier>, GeneratorXid {
+@Service
+public class DataPointApiService implements CrudService<DataPointJson>, GeneratorXid, GetIdentifiers<DataPointIdentifier> {
 
     private final DataPointService dataPointService;
     private final DataSourceApiService dataSourceApiService;
@@ -39,23 +39,14 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     }
 
     @Override
-    public Map<String, Object> isUniqueXid(HttpServletRequest request, String xid, Integer id) {
+    public boolean isUniqueXid(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Id and xid cannot be null.", id, xid);
-
-        Map<String, Object> response = new HashMap<>();
         try {
-            boolean isUnique = dataPointService.isXidUnique(xid, id);
-            response.put("unique", isUnique);
+            return dataPointService.isXidUnique(xid, id);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        return response;
-    }
-
-    @Override
-    public Map<String, Object> isUnique(HttpServletRequest request, String object, Integer id) {
-        return isUniqueXid(request, object, id);
     }
 
     @Override
@@ -88,6 +79,7 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
 
     @Override
     public DataPointJson update(HttpServletRequest request, DataPointJson datapoint) {
+        checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
         getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
         DataPointVO fromRequest = toDataPointVO(request, datapoint);
@@ -114,6 +106,20 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
     }
 
     @Override
+    public DataPointJson read(HttpServletRequest request, String xid, Integer id) {
+        DataPointVO dataPoint = getDataPointFromDatabase(request, xid, id);
+        return new DataPointJson(dataPoint);
+    }
+
+    @Override
+    public List<DataPointJson> readAll(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        return dataPointService.getDataPointsWithAccess(user).stream()
+                .map(DataPointJson::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<DataPointIdentifier> getIdentifiers(HttpServletRequest request) {
         User user = Common.getUser(request);
         List<DataPointIdentifier> response;
@@ -126,12 +132,6 @@ public class DataPointApiService implements ObjectApiService<DataPointJson, Data
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
         return response;
-    }
-
-    @Override
-    public DataPointJson read(HttpServletRequest request, String xid, Integer id) {
-        DataPointVO dataPoint = getDataPointFromDatabase(request, xid, id);
-        return new DataPointJson(dataPoint);
     }
 
     public String getConfigurationByXid(HttpServletRequest request, String xid) {

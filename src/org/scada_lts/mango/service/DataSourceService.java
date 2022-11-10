@@ -40,7 +40,9 @@ import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
 import org.scada_lts.utils.MqttUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +59,7 @@ import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filterin
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
@@ -65,7 +68,7 @@ public class DataSourceService implements MangoDataSource {
 	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
 	public DataSourceService() {
-		this.dataSourceDAO = new DataSourceDAO();
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
 		this.dataPointService = new DataPointService();
 		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, new DataPointDAO());
 	}

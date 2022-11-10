@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public class ScadaApiException extends RuntimeException {
 
+    protected static final String API_EXCEPTIONS = "/api/exceptions/";
+
     private final ScadaErrorMessage errorMessage;
 
     public ScadaApiException(Exception ex, String instance, HttpStatus httpStatus) {

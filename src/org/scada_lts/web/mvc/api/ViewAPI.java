@@ -63,8 +63,11 @@ public class ViewAPI {
     private static final Log LOG = LogFactory.getLog(ViewAPI.class);
     private static final String NULL_IMAGE_PATH = "null";
 
-    @Resource
-    ViewService viewService;
+    private final ViewService viewService;
+
+    public ViewAPI(ViewService viewService) {
+        this.viewService = viewService;
+    }
 
     @GetMapping(value = "/getAll")
     public ResponseEntity<List<ScadaObjectIdentifier>> getAll(HttpServletRequest request) {
@@ -72,7 +75,7 @@ public class ViewAPI {
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
-                return new ResponseEntity<>(viewService.getAllViews(),HttpStatus.OK);
+                return new ResponseEntity<>(viewService.getAllViewsForUser(user),HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -116,13 +119,7 @@ public class ViewAPI {
                     }
                 }
 
-                View view;
-                if (user.isAdmin()) {
-                    view = viewService.getView(id);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-                }
-
+                View view = viewService.getView(id);
 
                 ViewJSON viewJSON = new ViewJSON(view.getId(), view.getModificationTime());
 
@@ -140,6 +137,7 @@ public class ViewAPI {
         }
     }
 
+    @Deprecated
     @RequestMapping(value = "/getByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getByXid(@PathVariable("xid") String xid, HttpServletRequest request) {
         LOG.info("/api/view/getByXid/{xid} xid:"+xid);
@@ -208,6 +206,7 @@ public class ViewAPI {
         }
     }
 
+    @Deprecated
     @RequestMapping(value = "/createView", method = RequestMethod.POST)
     public ResponseEntity<String> createView(HttpServletRequest request, @RequestBody ViewDTO viewDTO) {
         LOG.info("/api/view/createView");
@@ -323,6 +322,7 @@ public class ViewAPI {
 
     }
 
+    @Deprecated
     @GetMapping(value = "/getAllForUser")
     public ResponseEntity<List<ScadaObjectIdentifier>> getAllForUser(HttpServletRequest request) {
         LOG.info("/api/view/getAllForUser");

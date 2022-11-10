@@ -1,17 +1,20 @@
 package org.scada_lts.permissions.service;
 
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSourceVO<?>, User> {
+
+    private static final Log LOG = LogFactory.getLog(GetDataSourcesWithAccess.class);
 
     private final DataSourceDAO dataSourceDAO;
     private final DataPointDAO dataPointDAO;
@@ -22,29 +25,25 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
     }
 
     @Override
-    public List<DataSourceVO<?>> getObjectsWithAccess(User object) {
-        if(object.isAdmin())
+    public List<DataSourceVO<?>> getObjectsWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        if(user.isAdmin())
             return dataSourceDAO.getDataSources();
-        return filteringByAccess(object, dataSourceDAO.getDataSources(), dataPointDAO);
+        return dataSourceDAO.selectDataSourcesWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
-    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User object) {
-        return getObjectsWithAccess(object).stream()
-                .map(a -> new ScadaObjectIdentifier(a.getId(), a.getXid(), a.getName()))
-                .collect(Collectors.toList());
-    }
-
-    public static List<DataSourceVO<?>> filteringByAccess(User user, List<DataSourceVO<?>> dataSources, DataPointDAO dataPointDAO) {
-        return dataSources.stream()
-                .filter(source -> GetDataSourcesWithAccess.hasDataSourceReadPermission(user, source, dataPointDAO))
-                .collect(Collectors.toList());
-    }
-
-    public static List<DataSourceVO<?>> filteringByNoAccess(User user, List<DataSourceVO<?>> dataSources, DataPointDAO dataPointDAO) {
-        return dataSources.stream()
-                .filter(source -> !GetDataSourcesWithAccess.hasDataSourceReadPermission(user, source, dataPointDAO))
-                .collect(Collectors.toList());
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        if(user.isAdmin())
+            return dataSourceDAO.findIdentifiers();
+        return dataSourceDAO.selectDataSourceIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
@@ -63,9 +62,21 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
     }
 
     public static boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource, DataPointDAO dataPointDAO) {
-        List<DataPointVO> dataPoints = dataPointDAO.getDataPoints(dataSource.getId());
-        for (DataPointVO dataPoint: dataPoints) {
-            if(Permissions.hasDataPointReadPermission(user, dataPoint)) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(dataSource == null) {
+            LOG.warn("dataSource is null");
+            return false;
+        }
+        if(dataPointDAO == null) {
+            LOG.warn("dataPointDAO is null");
+            return false;
+        }
+        List<ScadaObjectIdentifier> dataPoints = dataPointDAO.findIdentifiers(dataSource.getId());
+        for (ScadaObjectIdentifier dataPoint: dataPoints) {
+            if(Permissions.hasDataPointReadPermission(user, dataSource.getId(), dataPoint.getId())) {
                 return true;
             }
         }

@@ -11,6 +11,7 @@ import org.scada_lts.web.mvc.api.datasources.DataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.DataSourcePointJsonFactory;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -22,7 +23,8 @@ import static org.scada_lts.utils.ApiUtils.toMapMessages;
 import static org.scada_lts.utils.DataSourcePointApiUtils.toObject;
 import static org.scada_lts.utils.ValidationUtils.*;
 
-public class DataSourceApiService implements ObjectApiService<DataSourceJson, DataSourceIdentifier>, GeneratorXid {
+@Service
+public class DataSourceApiService implements CrudService<DataSourceJson>, GeneratorXid, GetIdentifiers<DataSourceIdentifier> {
 
     private final DataSourceService dataSourceService;
 
@@ -31,23 +33,14 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
     }
 
     @Override
-    public Map<String, Object> isUniqueXid(HttpServletRequest request, String xid, Integer id) {
+    public boolean isUniqueXid(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Id and xid cannot be null.", id, xid);
-
-        Map<String, Object> response = new HashMap<>();
         try {
-            boolean isUnique = dataSourceService.isXidUnique(xid, id);
-            response.put("unique", isUnique);
+            return dataSourceService.isXidUnique(xid, id);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        return response;
-    }
-
-    @Override
-    public Map<String, Object> isUnique(HttpServletRequest request, String object, Integer id) {
-        return isUniqueXid(request, object, id);
     }
 
     @Override
@@ -80,6 +73,7 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
 
     @Override
     public DataSourceJson update(HttpServletRequest request, DataSourceJson dataSource) {
+        checkIfNonAdminThenUnauthorized(request);
         checkArgsIfEmptyThenBadRequest(request, "Data Source cannot be null.", dataSource);
         getDataSourceFromDatabase(request, dataSource.getXid(), dataSource.getId());
         DataSourceVO<?> fromRequest = toDataSourceVO(request, dataSource);
@@ -123,10 +117,16 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
 
     @Override
     public DataSourceJson read(HttpServletRequest request, String xid, Integer id) {
-        return getDataSource(request, xid, id);
+        DataSourceVO<?> fromDatabase = getDataSourceFromDatabase(request, xid, id);
+        try {
+            return DataSourcePointJsonFactory.getDataSourceJson(fromDatabase);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
     }
 
-    public List<DataSourceJson> getDataSources(HttpServletRequest request) {
+    @Override
+    public List<DataSourceJson> readAll(HttpServletRequest request) {
         User user = Common.getUser(request);
         List<DataSourceJson> response;
         try {
@@ -136,31 +136,6 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
                     .collect(Collectors.toList());
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
-        }
-        return response;
-    }
-
-    private DataSourceJson getDataSource(HttpServletRequest request, String xid, Integer id) {
-        DataSourceVO<?> fromDatabase = getDataSourceFromDatabase(request, xid, id);
-        try {
-            return DataSourcePointJsonFactory.getDataSourceJson(fromDatabase);
-        } catch (Exception ex) {
-            throw new InternalServerErrorException(ex, request.getRequestURI());
-        }
-    }
-
-    private DataSourceVO<?> getDataSourceFromDatabase(HttpServletRequest request, String xid, Integer id) {
-        checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
-        User user = Common.getUser(request);
-        DataSourceVO<?> response;
-        if(id != null) {
-            response = toObject(id, user, request, dataSourceService::getDataSource,
-                    dataSourceService::hasDataSourceReadPermission,
-                    a -> a);
-        } else {
-            response = toObject(xid, user, request, dataSourceService::getDataSource,
-                    dataSourceService::hasDataSourceReadPermission,
-                    a -> a);
         }
         return response;
     }
@@ -207,6 +182,22 @@ public class DataSourceApiService implements ObjectApiService<DataSourceJson, Da
         return list.stream()
                 .map(DataSourceVO::toIdentifier)
                 .collect(Collectors.toList());
+    }
+
+    private DataSourceVO<?> getDataSourceFromDatabase(HttpServletRequest request, String xid, Integer id) {
+        checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
+        User user = Common.getUser(request);
+        DataSourceVO<?> response;
+        if(id != null) {
+            response = toObject(id, user, request, dataSourceService::getDataSource,
+                    dataSourceService::hasDataSourceReadPermission,
+                    a -> a);
+        } else {
+            response = toObject(xid, user, request, dataSourceService::getDataSource,
+                    dataSourceService::hasDataSourceReadPermission,
+                    a -> a);
+        }
+        return response;
     }
 
     private static DataSourceVO<?> toDataSourceVO(HttpServletRequest request, DataSourceJson dataSource) {

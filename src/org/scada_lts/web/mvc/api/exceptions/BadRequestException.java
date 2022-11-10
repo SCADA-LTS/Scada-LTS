@@ -3,13 +3,12 @@ package org.scada_lts.web.mvc.api.exceptions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.scada_lts.utils.ApiUtils.toMapMessages;
 
 public class BadRequestException extends ScadaApiException {
-
-    private static final String API_EXCEPTIONS = "/api/exceptions/";
 
     public BadRequestException(Map<String, String> detail, String instance) {
         super(ScadaErrorMessage.builder(HttpStatus.BAD_REQUEST)

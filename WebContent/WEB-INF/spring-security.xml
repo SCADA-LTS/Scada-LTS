@@ -52,21 +52,25 @@
         <intercept-url pattern="/api/watch-lists/generateXid" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
         <intercept-url pattern="/api/watch-lists/" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
         <intercept-url pattern="/api/watch-lists/{id}" access="@guard.hasWatchListReadPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/watch-lists/{id}" access="@guard.hasWatchListOwnerPermission(request,#id,false)" method="DELETE" />
 
         <!-- View POST/PUT/GET -->
-        <intercept-url pattern="/api/view/createView" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <!--intercept-url pattern="/api/view/uploads" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/view" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/view" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
+        <intercept-url pattern="/api/view/generateXid" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" /-->
         <intercept-url pattern="/api/view/getModificationTime/{id}" access="@guard.hasViewReadPermission(request,#id,false)" method="GET" />
-        <intercept-url pattern="/api/view/getAllForUser" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
-        <intercept-url pattern="/api/view/getByXid/{xid}" access="@guard.hasViewReadPermission(request,#xid,true)" method="GET" />
-        <intercept-url pattern="/api/view" access="@guard.hasViewReadPermission(request)" method="GET" />
+        <intercept-url pattern="/api/view/getAll" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <!--intercept-url pattern="/api/view" access="@guard.hasViewReadPermission(request)" method="GET" /-->
 
-        <!-- Report POST/GET -->
+        <!-- Report POST/GET/DELETE -->
         <intercept-url pattern="/api/reports/save" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/search" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/sendTestEmails" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
         <intercept-url pattern="/api/reports/instances" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/reports/instances/{id}" access="@guard.hasReportInstanceOwnerPermission(request,#id,false)" method="DELETE" />
         <intercept-url pattern="/api/reports/run/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="GET" />
+        <intercept-url pattern="/api/reports/{id}" access="@guard.hasReportOwnerPermission(request,#id,false)" method="DELETE" />
 
         <!-- User PUT/GET -->
         <intercept-url pattern="/api/users/" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="PUT" />
@@ -98,6 +102,9 @@
         <!-- Chart GET -->
         <intercept-url pattern="/api/amcharts/by-id" access="@guard.hasDataPointReadPermission(request,false,'ids')" method="GET" />
         <intercept-url pattern="/api/amcharts/by-xid" access="@guard.hasDataPointReadPermission(request,true,'ids')" method="GET" />
+
+        <!-- Config GET -->
+        <intercept-url pattern="/api/config/replacealert" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
 
         <!-- REST API Admin -->
         <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="POST" />

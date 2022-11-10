@@ -4,13 +4,18 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO, User> {
+
+    private static final Log LOG = LogFactory.getLog(GetDataPointsWithAccess.class);
 
     private final DataPointDAO dataPointDAO;
 
@@ -19,17 +24,25 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     }
 
     @Override
-    public List<DataPointVO> getObjectsWithAccess(User object) {
-        if(object.isAdmin())
+    public List<DataPointVO> getObjectsWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        if(user.isAdmin())
             return dataPointDAO.getDataPoints();
-        return dataPointDAO.selectDataPointsWithAccess(object.getId(), object.getUserProfile());
+        return dataPointDAO.selectDataPointsWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
-    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User object) {
-        if(object.isAdmin())
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        if(user.isAdmin())
             return dataPointDAO.findIdentifiers();
-        return dataPointDAO.selectDataPointIdentifiersWithAccess(object.getId(), object.getUserProfile());
+        return dataPointDAO.selectDataPointIdentifiersWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
@@ -60,10 +73,26 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     }
 
     public static boolean hasDataPointReadPermission(User user, DataPointVO dataPoint) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(dataPoint == null) {
+            LOG.warn("dataPoint is null");
+            return false;
+        }
         return Permissions.getDataPointAccessType(user, dataPoint) > ShareUser.ACCESS_NONE;
     }
 
     public static boolean hasDataPointSetPermission(User user, DataPointVO dataPoint) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(dataPoint == null) {
+            LOG.warn("dataPoint is null");
+            return false;
+        }
         return Permissions.getDataPointAccessType(user, dataPoint) > ShareUser.ACCESS_READ;
     }
 }
