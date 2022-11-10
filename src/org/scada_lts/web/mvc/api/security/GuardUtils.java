@@ -23,6 +23,10 @@ public final class GuardUtils {
                                            String identifier, boolean isXid) {
         User user = Common.getUser(request);
         if(isXid) {
+            if(permissionByXid == null) {
+                LOG.warn("permissionByXid is null");
+                return false;
+            }
             return permissionByXid.test(user, identifier);
         } else {
             int conv = converter(identifier);
