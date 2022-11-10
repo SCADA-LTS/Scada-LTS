@@ -1,22 +1,19 @@
 package org.scada_lts.svg;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import org.scada_lts.utils.security.SafeFile;
+import org.scada_lts.utils.security.SafeMultipartFile;
+import org.scada_lts.utils.security.SafeZipEntry;
+import org.scada_lts.utils.security.SafeZipFile;
+
 
 import static org.scada_lts.svg.SvgProcessingUtils.isValidatorEnabled;
 import static org.scada_lts.utils.xml.XmlUtils.createDocumentXml;
 
 public final class SvgUtils {
 
-    private static final Log LOG = LogFactory.getLog(SvgUtils.class);
-
     private SvgUtils() {}
     
-    public static boolean isSvg(File svg) {
+    public static boolean isSvg(SafeFile svg) {
         if(!isValidatorEnabled())
             return true;
         return createDocumentXml(svg)
@@ -24,7 +21,7 @@ public final class SvgUtils {
                 .isPresent();
     }
 
-    public static boolean isSvg(MultipartFile svg) {
+    public static boolean isSvg(SafeMultipartFile svg) {
         if(!isValidatorEnabled())
             return true;
         return createDocumentXml(svg)
@@ -32,7 +29,7 @@ public final class SvgUtils {
                 .isPresent();
     }
 
-    public static boolean isSvg(ZipFile zipFile, ZipEntry entry) {
+    public static boolean isSvg(SafeZipFile zipFile, SafeZipEntry entry) {
         if(!isValidatorEnabled())
             return true;
         return createDocumentXml(zipFile, entry)

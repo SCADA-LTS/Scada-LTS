@@ -65,7 +65,25 @@ public class UploadBackgroundFileUtilsTest {
         datas.add(new Object[] {"jsAsJpg.jpg", false});
         datas.add(new Object[] {"jsAsPng.png", false});
 
-        datas.add(new Object[] {"txt" + File.separator + "info.txt", false});
+        datas.add(new Object[] {"/../../jsAsSvg.svg", false});
+        datas.add(new Object[] {"/../jsAsBmp.bmp", false});
+        datas.add(new Object[] {"./jsAsGif.gif", false});
+        datas.add(new Object[] {"../jsAsJpg.jpg", false});
+        datas.add(new Object[] {"././jsAsPng.png", false});
+
+        datas.add(new Object[] {"gifFile.zip.gif", false});
+        datas.add(new Object[] {"jpgFile.o.jpg", false});
+        datas.add(new Object[] {"pngFile.jpg.png", false});
+
+        datas.add(new Object[] {"", false});
+        datas.add(new Object[] {"\\.jpg", false});
+        datas.add(new Object[] {"/.jpg", false});
+        datas.add(new Object[] {".php%00.jpg", false});
+        datas.add(new Object[] {".jpg%00.jpg", false});
+        datas.add(new Object[] {"%00.jpg", false});
+        datas.add(new Object[] {".%00.jpg", false});
+        datas.add(new Object[] {".jpg", false});
+        datas.add(new Object[] {"txt" + File.pathSeparator + "info.txt", false});
         return datas;
     }
 
@@ -115,7 +133,7 @@ public class UploadBackgroundFileUtilsTest {
 
     private static MultipartFile toMultipartFile(File file) {
         try(FileInputStream input = new FileInputStream(file)) {
-            return new MockMultipartFile(file.getName(), file.getName(),
+            return new MockMultipartFile("fileUpload", file.getName(),
                     Files.probeContentType(file.toPath()), IOUtils.toByteArray(input));
         } catch (Exception ex) {
             return null;

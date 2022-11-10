@@ -2,6 +2,7 @@ package org.scada_lts.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.security.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -43,51 +44,112 @@ public final class UploadFileUtils {
     }
 
     public static boolean isZip(MultipartFile multipartFile) {
-        return isZipMimeType(Paths.get(multipartFile.getOriginalFilename()))
-                && !isXml(multipartFile) && !isImageBitmap(multipartFile);
+        try {
+            SafeMultipartFile securedMultipartFile = SafeMultipartFile.safe(multipartFile);
+            return isZipMimeType(Paths.get(securedMultipartFile.getOriginalFilename()))
+                    && !isXml(securedMultipartFile) && !isImageBitmap(securedMultipartFile);
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
     }
 
     public static boolean isToUploads(MultipartFile file) {
         if(file == null)
             return false;
-        String fileName = file.getOriginalFilename();
+        SafeMultipartFile safeMultipartFile;
+        try {
+            safeMultipartFile = SafeMultipartFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
+        String fileName = safeMultipartFile.getOriginalFilename();
         if(fileName == null)
             return false;
         if(isThumbsFile(fileName))
             return false;
-        return isImageMimeType(Paths.get(fileName)) && (isImageBitmap(file)
-                || (isSvgMimeType(Paths.get(fileName)) && isSvg(file)));
+        return isImageMimeType(Paths.get(fileName)) && (isImageBitmap(safeMultipartFile)
+                || (isSvgMimeType(Paths.get(fileName)) && isSvg(safeMultipartFile)));
     }
 
     public static boolean isToUploads(File file) {
         if(file == null)
             return false;
-        if(isThumbsFile(file))
+        SafeFile safeFile;
+        try {
+            safeFile = SafeFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
             return false;
-        return isImageMimeType(file.toPath()) && (isImageBitmap(file) || (isSvgMimeType(file.toPath()) && isSvg(file)));
+        }
+        if(isThumbsFile(safeFile))
+            return false;
+        return isImageMimeType(safeFile.toPath()) && (isImageBitmap(safeFile)
+                || (isSvgMimeType(safeFile.toPath()) && isSvg(safeFile)));
     }
 
     public static boolean isToGraphics(File file) {
         if(file == null)
             return false;
-        if(isThumbsFile(file))
+        SafeFile safeFile;
+        try {
+            safeFile = SafeFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
             return false;
-        if(isInfoFile(file) && !isXml(file) && !isImageBitmap(file))
+        }
+        if(isThumbsFile(safeFile))
+            return false;
+        if(isInfoFile(safeFile) && !isXml(safeFile) && !isImageBitmap(safeFile))
             return true;
-        return isImageMimeType(file.toPath()) && isImageBitmap(file);
+        return isImageMimeType(safeFile.toPath()) && isImageBitmap(safeFile);
     }
 
     public static boolean isThumbsFile(File file) {
-        return isThumbsFile(file.getName());
+        SafeFile safeFile;
+        try {
+            safeFile = SafeFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
+        return isThumbsFile(safeFile);
     }
 
     public static boolean isInfoFile(File file) {
-        return isInfoFile(file.toPath());
+        SafeFile safeFile;
+        try {
+            safeFile = SafeFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
+        return isInfoFile(safeFile);
     }
 
     public static boolean isImageBitmap(File file) {
+        SafeFile safeFile;
         try {
-            return ImageIO.read(file) != null;
+            safeFile = SafeFile.safe(file);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
+        return isImageBitmap(safeFile);
+    }
+
+    private static boolean isThumbsFile(SafeFile file) {
+        return isThumbsFile(file.getName());
+    }
+
+    private static boolean isInfoFile(SafeFile file) {
+        return isInfoFile(file.toPath());
+    }
+
+    private static boolean isImageBitmap(SafeFile file) {
+        try {
+            return ImageIO.read(file.toFile()) != null;
         } catch (FileNotFoundException ex) {
             LOG.error(ex.getMessage());
             return false;
@@ -100,24 +162,62 @@ public final class UploadFileUtils {
     private static boolean isToGraphics(ZipFile zipFile, ZipEntry entry) {
         if(zipFile == null || entry == null)
             return true;
-        if(isThumbsFile(entry.getName()))
+        SafeZipFile safeZipFile;
+        try {
+            safeZipFile = SafeZipFile.safe(zipFile);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
             return false;
-        if(isInfoFile(Paths.get(entry.getName())) && !isXml(zipFile, entry)
-                && !isImageBitmap(zipFile, entry))
+        }
+        SafeZipEntry safeZipEntry;
+        try {
+            safeZipEntry = SafeZipEntry.safe(entry);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
+        return isToGraphics(safeZipFile, safeZipEntry);
+    }
+
+    private static boolean isToGraphics(SafeZipFile safeZipFile, SafeZipEntry safeZipEntry) {
+        if(isThumbsFile(safeZipEntry.getName()))
+            return false;
+        if(isInfoFile(Paths.get(safeZipEntry.getName())) && !isXml(safeZipFile, safeZipEntry)
+                && !isImageBitmap(safeZipFile, safeZipEntry))
             return true;
-        return isImageMimeType(Paths.get(entry.getName())) && isImageBitmap(zipFile, entry);
+        return isImageMimeType(Paths.get(safeZipEntry.getName())) && isImageBitmap(safeZipFile, safeZipEntry);
     }
 
     private static boolean isToUploads(ZipFile zipFile, ZipEntry entry) {
         if(zipFile == null || entry == null)
             return true;
-        if(isThumbsFile(entry.getName()))
+        SafeZipFile safeZipFile;
+        try {
+            safeZipFile = SafeZipFile.safe(zipFile);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage(), ex);
             return false;
-        return isImageMimeType(Paths.get(entry.getName())) && (isImageBitmap(zipFile, entry)
-                || (isSvgMimeType(Paths.get(entry.getName())) && isSvg(zipFile, entry)));
+        }
+        SafeZipEntry safeZipEntry;
+        try {
+            safeZipEntry = SafeZipEntry.safe(entry);
+        } catch (FileNotSafeException ex) {
+            LOG.error(ex.getMessage());
+            return false;
+        }
+        return isToUploads(safeZipFile, safeZipEntry);
     }
 
-    private static boolean isImageBitmap(MultipartFile file) {
+    private static boolean isToUploads(SafeZipFile safeZipFile, SafeZipEntry safeZipEntry) {
+        if(isThumbsFile(safeZipFile.getName()))
+            return false;
+        if(isThumbsFile(safeZipEntry.getName()))
+            return false;
+        return isImageMimeType(Paths.get(safeZipEntry.getName())) && (isImageBitmap(safeZipFile, safeZipEntry)
+                || (isSvgMimeType(Paths.get(safeZipEntry.getName())) && isSvg(safeZipFile, safeZipEntry)));
+    }
+
+    private static boolean isImageBitmap(SafeMultipartFile file) {
         try(InputStream inputStream = new ByteArrayInputStream(file.getBytes())) {
             return ImageIO.read(inputStream) != null;
         } catch (FileNotFoundException ex) {
@@ -129,7 +229,7 @@ public final class UploadFileUtils {
         }
     }
 
-    private static boolean isImageBitmap(ZipFile zipFile, ZipEntry entry) {
+    private static boolean isImageBitmap(SafeZipFile zipFile, SafeZipEntry entry) {
         try(InputStream inputStream = zipFile.getInputStream(entry)) {
             return ImageIO.read(inputStream) != null;
         } catch (FileNotFoundException ex) {

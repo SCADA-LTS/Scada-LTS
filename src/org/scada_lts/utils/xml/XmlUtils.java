@@ -2,7 +2,10 @@ package org.scada_lts.utils.xml;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.multipart.MultipartFile;
+import org.scada_lts.utils.security.SafeFile;
+import org.scada_lts.utils.security.SafeMultipartFile;
+import org.scada_lts.utils.security.SafeZipEntry;
+import org.scada_lts.utils.security.SafeZipFile;
 import org.w3c.dom.Document;
 import org.xml.sax.*;
 
@@ -15,8 +18,6 @@ import javax.xml.validation.Validator;
 import java.io.*;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public final class XmlUtils {
 
@@ -83,22 +84,22 @@ public final class XmlUtils {
         return documentBuilderFactory;
     }
 
-    public static boolean isXml(ZipFile zipFile, ZipEntry entry) {
+    public static boolean isXml(SafeZipFile zipFile, SafeZipEntry entry) {
         return createDocumentXml(zipFile, entry)
                 .isPresent();
     }
 
-    public static boolean isXml(File file) {
+    public static boolean isXml(SafeFile file) {
         return createDocumentXml(file)
                 .isPresent();
     }
 
-    public static boolean isXml(MultipartFile file) {
+    public static boolean isXml(SafeMultipartFile file) {
         return createDocumentXml(file)
                 .isPresent();
     }
 
-    public static Optional<Document> createDocumentXml(ZipFile zipFile, ZipEntry entry) {
+    public static Optional<Document> createDocumentXml(SafeZipFile zipFile, SafeZipEntry entry) {
         try(InputStream inputStream = zipFile.getInputStream(entry)) {
             return Optional.of(parseXml(inputStream));
         } catch (FileNotFoundException ex) {
@@ -110,7 +111,7 @@ public final class XmlUtils {
         }
     }
 
-    public static Optional<Document> createDocumentXml(MultipartFile multipartFile) {
+    public static Optional<Document> createDocumentXml(SafeMultipartFile multipartFile) {
         try(InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes())) {
             return Optional.of(parseXml(inputStream));
         } catch (FileNotFoundException ex) {
@@ -122,8 +123,8 @@ public final class XmlUtils {
         }
     }
 
-    public static Optional<Document> createDocumentXml(File svg) {
-        try(InputStream inputStream = new FileInputStream(svg)) {
+    public static Optional<Document> createDocumentXml(SafeFile svg) {
+        try(InputStream inputStream = new FileInputStream(svg.toFile())) {
             return Optional.of(parseXml(inputStream));
         } catch (FileNotFoundException ex) {
             LOG.error(ex.getMessage());
