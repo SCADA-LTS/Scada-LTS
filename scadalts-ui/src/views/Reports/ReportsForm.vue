@@ -514,11 +514,11 @@ export default {
 			if(this.report.relativeDateType === 1) {
 				this.report.previousPeriodCount = this.periodCount*1;
 				this.report.previousPeriodType = this.periodType;
-				this.report.pastPeriodCount = 0;
-				this.report.pastPeriodType = 0;
+				this.report.pastPeriodCount = 1;
+				this.report.pastPeriodType = 2;
 			} else {
-				this.report.previousPeriodCount = 0;
-				this.report.previousPeriodType = 0;
+				this.report.previousPeriodCount = 1;
+				this.report.previousPeriodType = 2;
 				this.report.pastPeriodCount = this.periodCount*1;
 				this.report.pastPeriodType = this.periodType;
 			}

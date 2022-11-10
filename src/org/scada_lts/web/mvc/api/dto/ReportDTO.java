@@ -1,13 +1,11 @@
 package org.scada_lts.web.mvc.api.dto;
 
-import com.serotonin.mango.vo.UserComment;
-import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.vo.report.ReportPointVO;
+import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReportDTO {
 
@@ -79,6 +77,44 @@ public class ReportDTO {
         this.includeData = includeData;
         this.zipData = zipData;
         this.recipients = recipients;
+    }
+
+    public ReportDTO(ReportVO report) {
+        this.id = report.getId();
+        this.name = report.getName();
+        this.points = report.getPoints().stream().map(a -> {
+            HashMap<String, Object> dps = new HashMap<>();
+            dps.put(a.getPointXid(), a);
+            return dps;
+        }).collect(Collectors.toList());
+        this.includeEvents = report.getIncludeEvents();
+        this.includeUserComments = report.isIncludeUserComments();
+        this.dateRangeType = report.getDateRangeType();
+        this.relativeDateType = report.getRelativeDateType();
+        this.previousPeriodCount = report.getPreviousPeriodCount();
+        this.previousPeriodType = report.getPreviousPeriodType();
+        this.pastPeriodCount = report.getPastPeriodCount();
+        this.pastPeriodType = report.getPastPeriodType();
+        this.fromNone = report.isFromNone();
+        this.fromYear = report.getFromYear();
+        this.fromMonth = report.getFromMonth();
+        this.fromDay = report.getFromDay();
+        this.fromHour = report.getFromHour();
+        this.fromMinute = report.getFromMinute();
+        this.toNone = report.isToNone();
+        this.toYear = report.getToYear();
+        this.toMonth = report.getToMonth();
+        this.toDay = report.getToDay();
+        this.toHour = report.getToHour();
+        this.toMinute = report.getToMinute();
+        this.schedule = report.isSchedule();
+        this.schedulePeriod = report.getSchedulePeriod();
+        this.runDelayMinutes = report.getRunDelayMinutes();
+        this.scheduleCron = report.getScheduleCron();
+        this.email = report.isEmail();
+        this.includeData = report.isIncludeData();
+        this.zipData = report.isZipData();
+        this.recipients = report.getRecipients();
     }
 
     public int getId() {

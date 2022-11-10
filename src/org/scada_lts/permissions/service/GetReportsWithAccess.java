@@ -2,13 +2,18 @@ package org.scada_lts.permissions.service;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.ReportVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.report.ReportDAO;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User> {
+
+    private static final Log LOG = LogFactory.getLog(GetReportsWithAccess.class);
 
     private final ReportDAO reportDAO;
 
@@ -18,6 +23,10 @@ public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User
 
     @Override
     public List<ReportVO> getObjectsWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
         if(user.isAdmin())
             return reportDAO.getReports();
         return reportDAO.getReports().stream()
@@ -27,6 +36,10 @@ public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User
 
     @Override
     public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
         return getObjectsWithAccess(user).stream()
                 .map(a -> new ScadaObjectIdentifier(a.getId(), a.getXid(), a.getName()))
                 .collect(Collectors.toList());
@@ -48,14 +61,38 @@ public class GetReportsWithAccess implements GetObjectsWithAccess<ReportVO, User
     }
 
     public static boolean hasReportReadPermission(User user, ReportVO report) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(report == null) {
+            LOG.warn("report is null");
+            return false;
+        }
         return user.isAdmin() || report.getUserId() == user.getId();
     }
 
     public static boolean hasReportSetPermission(User user, ReportVO report) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(report == null) {
+            LOG.warn("report is null");
+            return false;
+        }
         return user.isAdmin() || report.getUserId() == user.getId();
     }
 
     public static boolean hasReportOwnerPermission(User user, ReportVO report) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(report == null) {
+            LOG.warn("report is null");
+            return false;
+        }
         return user.isAdmin() || report.getUserId() == user.getId();
     }
 }
