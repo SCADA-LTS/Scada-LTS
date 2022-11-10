@@ -26,10 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.InvalidArgumentException;
 import com.serotonin.json.*;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import com.serotonin.timer.CronTimerTrigger;
 import com.serotonin.util.StringUtils;
+import com.serotonin.web.dwr.DwrResponseI18n;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -39,7 +42,10 @@ import com.serotonin.mango.util.DateUtils;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.util.SerializationHelper;
 import org.scada_lts.mango.adapter.MangoUser;
+import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.permissions.service.GetDataPointsWithAccess;
+import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.web.mvc.api.dto.ReportDTO;
 
 /**
@@ -833,5 +839,62 @@ public class ReportVO implements Serializable, JsonSerializable {
 
     public static String generateXid() {
         return Common.generateXid("REP_");
+    }
+
+    public void validate(DwrResponseI18n response, User user) {
+        validateRun(response, user);
+        if (schedule) {
+            if (schedulePeriod == ReportVO.SCHEDULE_CRON) {
+                // Check the cron pattern.
+                try {
+                    new CronTimerTrigger(scheduleCron);
+                }
+                catch (Exception e) {
+                    response.addContextualMessage("scheduleCron", "reports.validate.cron", e.getMessage());
+                }
+            }
+            else {
+                if (runDelayMinutes < 0)
+                    response.addContextualMessage("runDelayMinutes", "reports.validate.lessThan0");
+                else if (runDelayMinutes > 59)
+                    response.addContextualMessage("runDelayMinutes", "reports.validate.greaterThan59");
+            }
+        }
+
+        if (schedule && email && recipients.isEmpty())
+            response.addContextualMessage("recipients", "reports.validate.needRecip");
+    }
+
+    public void validateRun(DwrResponseI18n response, User user) {
+        if (StringUtils.isEmpty(name))
+            response.addContextualMessage("name", "reports.validate.required");
+        if (StringUtils.isLengthGreaterThan(name, 100))
+            response.addContextualMessage("name", "reports.validate.longerThan100");
+        if (points.isEmpty())
+            response.addContextualMessage("points", "reports.validate.needPoint");
+        if (dateRangeType != ReportVO.DATE_RANGE_TYPE_RELATIVE && dateRangeType != ReportVO.DATE_RANGE_TYPE_SPECIFIC)
+            response.addGenericMessage("reports.validate.invalidDateRangeType");
+        if (relativeDateType != ReportVO.RELATIVE_DATE_TYPE_PAST
+                && relativeDateType != ReportVO.RELATIVE_DATE_TYPE_PREVIOUS)
+            response.addGenericMessage("reports.validate.invalidRelativeDateType");
+        if (previousPeriodCount < 1)
+            response.addContextualMessage("previousPeriodCount", "reports.validate.periodCountLessThan1");
+        if (pastPeriodCount < 1)
+            response.addContextualMessage("pastPeriodCount", "reports.validate.periodCountLessThan1");
+
+        DataPointService dataPointService = new DataPointService();
+        for (ReportPointVO point : points) {
+
+            if(!GetDataPointsWithAccess.hasDataPointReadPermission(user, dataPointService.getDataPoint(point.getPointId())))
+                response.addContextualMessage("points", "validate.illegalValue");
+
+            try {
+                if (!StringUtils.isEmpty(point.getColour()))
+                    ColorUtils.toColor(point.getColour());
+            }
+            catch (InvalidArgumentException e) {
+                response.addContextualMessage("points", "reports.validate.colour", point.getColour());
+            }
+        }
     }
 }

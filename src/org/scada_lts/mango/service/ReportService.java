@@ -33,6 +33,8 @@ import com.serotonin.web.taglib.Functions;
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.adapter.MangoReport;
+import org.scada_lts.permissions.service.GetReportInstancesWithAccess;
+import org.scada_lts.permissions.service.GetReportsWithAccess;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
@@ -51,19 +53,23 @@ import java.util.ResourceBundle;
 @Service
 public class ReportService implements MangoReport {
 
-	//	@Autowired
-	private ReportDAO reportDAO = new ReportDAO();
+	private ReportDAO reportDAO;
+	private ReportInstanceDAO reportInstanceDAO;
+	private ReportInstanceDataDAO reportInstanceDataDAO;
+	private ReportInstancePointDAO reportInstancePointDAO;
+	private ReportInstanceUserCommentDAO reportInstanceUserCommentDAO;
+	private GetReportsWithAccess getReportsWithAccess;
+	private GetReportInstancesWithAccess getReportInstancesWithAccess;
 
-	//	@Autowired
-	private ReportInstanceDAO reportInstanceDAO = new ReportInstanceDAO();
-
-	//	@Autowired
-	private ReportInstanceDataDAO reportInstanceDataDAO = new ReportInstanceDataDAO();
-
-	//	@Autowired
-	private ReportInstancePointDAO reportInstancePointDAO = new ReportInstancePointDAO();
-
-	private ReportInstanceUserCommentDAO reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
+	public ReportService() {
+		this.reportDAO = new ReportDAO();
+		this.reportInstanceDAO = new ReportInstanceDAO();
+		this.reportInstanceDataDAO = new ReportInstanceDataDAO();
+		this.reportInstancePointDAO = new ReportInstancePointDAO();
+		this.reportInstanceUserCommentDAO = new ReportInstanceUserCommentDAO();
+		this.getReportsWithAccess = new GetReportsWithAccess(reportDAO);
+		this.getReportInstancesWithAccess = new GetReportInstancesWithAccess(reportInstanceDAO);
+	}
 
 	private void setReportDataValue(List<ReportPointInfo> pointInfos, final ReportDataStreamHandler handler) {
 		final ReportDataValue rdv = new ReportDataValue();
@@ -322,6 +328,40 @@ public class ReportService implements MangoReport {
 	@Override
 	public List<ReportUserComment> getReportInstanceUserComments(int instanceId) {
 		return reportInstanceUserCommentDAO.getReportUserComments(instanceId);
+	}
+
+	@Override
+	public boolean hasReportReadPermission(User user, ReportVO report) {
+		return getReportsWithAccess.hasReadPermission(user, report);
+	}
+
+	@Override
+	public boolean hasReportOwnerPermission(User user, ReportVO report) {
+		return getReportsWithAccess.hasOwnerPermission(user, report);
+	}
+
+	@Override
+	public boolean hasReportInstanceReadPermission(User user, ReportInstance report) {
+		return getReportInstancesWithAccess.hasReadPermission(user, report);
+	}
+
+	@Override
+	public boolean hasReportInstanceOwnerPermission(User user, ReportInstance report) {
+		return getReportInstancesWithAccess.hasOwnerPermission(user, report);
+	}
+
+	@Override
+	public boolean hasReportInstanceReadPermission(User user, int reportInstanceId) {
+		ReportInstance reportInstance = new ReportInstance();
+		reportInstance.setId(reportInstanceId);
+		return getReportInstancesWithAccess.hasReadPermission(user, reportInstance);
+	}
+
+	@Override
+	public boolean hasReportInstanceOwnerPermission(User user, int reportInstanceId) {
+		ReportInstance reportInstance = new ReportInstance();
+		reportInstance.setId(reportInstanceId);
+		return getReportInstancesWithAccess.hasOwnerPermission(user, reportInstance);
 	}
 
 	//TODO

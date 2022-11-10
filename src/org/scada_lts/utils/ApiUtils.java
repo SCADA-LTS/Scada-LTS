@@ -80,6 +80,15 @@ public final class ApiUtils {
         return Collections.emptyMap();
     }
 
+    public static Map<String, String> toMapMessages(List<String> messages) {
+        if(!messages.isEmpty()) {
+            AtomicInteger counter = new AtomicInteger();
+            return messages.stream()
+                    .collect(Collectors.toMap(a -> "message" + counter.incrementAndGet(), a -> a, (a, b) -> b));
+        }
+        return Collections.emptyMap();
+    }
+
     private static String getMessage(DwrMessageI18n a) {
         LocalizableMessage contextualMessage = a.getContextualMessage();
         if(contextualMessage == null) {

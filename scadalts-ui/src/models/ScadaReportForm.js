@@ -13,8 +13,8 @@ export default class ScadaReportForm {
 		this.relativeDateType = 1;
 		this.previousPeriodCount = 1;
         this.previousPeriodType = 2;
-		this.pastPeriodCount = 0;
-		this.pastPeriodType = 0;
+		this.pastPeriodCount = 1;
+		this.pastPeriodType = 2;
 		this.fromNone = false;
 		this.fromYear = 0;
         this.fromMonth = 0;
