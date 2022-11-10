@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,10 @@ public class UsersAPI {
 
     @GetMapping(value = "/validate")
     public ResponseEntity<Map<String, Object>> isUsernameUnique(@RequestParam String username, HttpServletRequest request) {
-        Map<String, Object> response = usersApiService.isUnique(request, username, -1);
+        LOG.info(  "/api/datapoint/validate");
+        Map<String, Object> response = new HashMap<>();
+        boolean isUnique = usersApiService.isUnique(request, username);
+        response.put("unique", isUnique);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

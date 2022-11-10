@@ -19,8 +19,9 @@ import java.util.stream.Collectors;
 
 import static org.scada_lts.utils.ApiUtils.setPassword;
 import static org.scada_lts.utils.ApiUtils.validate;
+import static org.scada_lts.utils.ValidationUtils.checkIfNonAdminThenUnauthorized;
 
-public class UsersApiService implements ObjectApiService<UserInfo, UserInfoSimple> {
+public class UsersApiService implements CrudService<UserInfo>, GetIdentifiers<UserInfoSimple> {
 
     private final UserService userService;
 
@@ -28,16 +29,13 @@ public class UsersApiService implements ObjectApiService<UserInfo, UserInfoSimpl
         this.userService = userService;
     }
 
-    @Override
-    public Map<String, Object> isUnique(HttpServletRequest request, String username, Integer id) {
-        Map<String, Object> response = new HashMap<>();
+    public boolean isUnique(HttpServletRequest request, String username) {
+        checkIfNonAdminThenUnauthorized(request);
         try {
-            boolean isUnique = userService.isUsernameUnique(username);
-            response.put("unique", isUnique);
+            return userService.isUsernameUnique(username);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }
-        return response;
     }
 
     @Override
@@ -84,6 +82,7 @@ public class UsersApiService implements ObjectApiService<UserInfo, UserInfoSimpl
 
     @Override
     public UserInfo delete(HttpServletRequest request, String xid, Integer id) {
+        checkIfNonAdminThenUnauthorized(request);
         User user;
         try {
             user = userService.getUser(id);
@@ -102,14 +101,22 @@ public class UsersApiService implements ObjectApiService<UserInfo, UserInfoSimpl
 
     @Override
     public List<UserInfoSimple> getIdentifiers(HttpServletRequest request) {
-        List<User> users = userService.getUsers();
-        return users.stream()
-                .map(UserInfoSimple::new)
-                .collect(Collectors.toList());
+        checkIfNonAdminThenUnauthorized(request);
+        try {
+            List<User> users = userService.getUsers();
+            return users.stream()
+                    .map(UserInfoSimple::new)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
     }
 
     @Override
     public UserInfo read(HttpServletRequest request, String xid, Integer id) {
+        User logged = Common.getUser(request);
+        if(!logged.isAdmin() && logged.getId() != id)
+            throw new UnauthorizedException(request.getRequestURI());
         User user;
         try {
             user = userService.getUser(id);
@@ -120,6 +127,19 @@ public class UsersApiService implements ObjectApiService<UserInfo, UserInfoSimpl
             throw new NotFoundException("User with id not exists: " + id, request.getRequestURI());
         }
         return new UserInfo(user);
+    }
+
+    @Override
+    public List<UserInfo> readAll(HttpServletRequest request) {
+        checkIfNonAdminThenUnauthorized(request);
+        try {
+            List<User> users = userService.getUsers();
+            return users.stream()
+                    .map(UserInfo::new)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
     }
 
     public Map<String, Object> updateUserPassword(HttpServletRequest request, Map<String, Object> jsonBodyRequest) {
