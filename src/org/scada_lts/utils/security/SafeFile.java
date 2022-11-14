@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import static org.scada_lts.utils.PathSecureUtils.validateFilename;
+import static org.scada_lts.utils.PathSecureUtils.validatePath;
 
 public class SafeFile {
 
@@ -36,8 +37,8 @@ public class SafeFile {
         String absolutePath = file.getAbsolutePath();
         String path = file.getPath();
         String name = file.getName();
-        return validateFilename(absolutePath)
-                && validateFilename(path)
+        return validatePath(absolutePath)
+                && validatePath(path)
                 && validateFilename(name);
     }
 }

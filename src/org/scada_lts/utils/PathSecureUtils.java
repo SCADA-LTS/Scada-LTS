@@ -40,7 +40,13 @@ public final class PathSecureUtils {
 
     public static boolean validateFilename(String name) {
         String decoded = URLDecoder.decode(name, StandardCharsets.UTF_8);
+        if(StringUtils.isEmpty(decoded))
+            return false;
+        if(!decoded.equals(name))
+            return false;
         if(!validatePath(decoded))
+            return false;
+        if(!decoded.matches("^[^<>:;?\"*|/\\\\]+$"))
             return false;
         String[] split = decoded.split("\\.");
         return split.length == 2 && !StringUtils.isEmpty(split[0]);
@@ -49,6 +55,8 @@ public final class PathSecureUtils {
     public static boolean validatePath(String name) {
         String decoded = URLDecoder.decode(name, StandardCharsets.UTF_8);
         if(StringUtils.isEmpty(decoded))
+            return false;
+        if(!decoded.equals(name))
             return false;
         try {
             Path path = Paths.get(decoded).normalize();
