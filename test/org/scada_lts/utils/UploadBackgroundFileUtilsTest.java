@@ -3,13 +3,10 @@ package org.scada_lts.utils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.web.ContextWrapper;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.scada_lts.svg.SvgEnvKeys;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import utils.UploadFileTestUtils;
@@ -83,7 +80,20 @@ public class UploadBackgroundFileUtilsTest {
         datas.add(new Object[] {"%00.jpg", false});
         datas.add(new Object[] {".%00.jpg", false});
         datas.add(new Object[] {".jpg", false});
-        datas.add(new Object[] {"txt" + File.pathSeparator + "info.txt", false});
+
+        datas.add(new Object[] {"*.jpg", false});
+        datas.add(new Object[] {":.jpg", false});
+        datas.add(new Object[] {";.jpg", false});
+        datas.add(new Object[] {"/.jpg", false});
+        datas.add(new Object[] {"\".jpg", false});
+        datas.add(new Object[] {"'.jpg", false});
+        datas.add(new Object[] {"<.jpg", false});
+        datas.add(new Object[] {">.jpg", false});
+        datas.add(new Object[] {"|.jpg", false});
+        datas.add(new Object[] {"?.jpg", false});
+        datas.add(new Object[] {"%2F.jpg", false});
+
+        datas.add(new Object[] {"txt" + File.separator + "info.txt", false});
         return datas;
     }
 

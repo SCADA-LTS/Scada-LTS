@@ -9,6 +9,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.utils.MqttUtils;
 
 import java.io.IOException;
@@ -34,8 +35,8 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     private int qos = 0;
     @JsonRemoteProperty
     private String clientId = MqttUtils.generateUniqueClientId();
-
-    private transient String xid;
+    @JsonRemoteProperty
+    private String dataPointXid;
 
     @Override
     public LocalizableMessage getConfigurationDescription() {
@@ -50,18 +51,18 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
     @Override
     public void validate(DwrResponseI18n response) {
 
-        if (clientId.isBlank()) {
+        if (StringUtils.isEmpty(clientId)) {
             response.addContextualMessage("clientId", "validate.invalidValue");
         } else {
             DataSourceService dataSourceService = new DataSourceService();
             DataPointService dataPointService = new DataPointService();
-            boolean existsClientId = MqttUtils.isExistsClientId(clientId, dataPointService, xid, dataSourceService);
+            boolean existsClientId = MqttUtils.isExistsClientId(clientId, dataPointService, dataPointXid, dataSourceService);
             if(existsClientId) {
                 response.addContextualMessage("clientId", "validate.clientIdUsed");
             }
         }
 
-        if(topicFilter.isBlank()) {
+        if(StringUtils.isEmpty(topicFilter)) {
             response.addContextualMessage("topicFilter", "validate.invalidValue");
         }
 
@@ -83,6 +84,7 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.addPropertyMessage(list, "dsEdit.mqtt.retained", retained);
         AuditEventType.addPropertyMessage(list, "dsEdit.qos", qos);
         AuditEventType.addPropertyMessage(list, "dsEdit.mqtt.clientId", clientId);
+        AuditEventType.addPropertyMessage(list, "dsEdit.mqtt.dataPointXid", dataPointXid);
     }
 
     @Override
@@ -94,6 +96,7 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.mqtt.retained", from.retained, retained);
         AuditEventType.maybeAddPropertyChangeMessage(list, "dsEdit.qos", from.qos, qos);
         AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.mqtt.clientId",from.clientId, clientId);
+        AuditEventType.maybeAddPropertyChangeMessage(list,"dsEdit.mqtt.dataPointXid",from.dataPointXid, dataPointXid);
     }
 
     // Getters and Setters //
@@ -155,16 +158,16 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         this.clientId = clientId;
     }
 
-    public String getXid() {
-        return xid;
+    public String getDataPointXid() {
+        return dataPointXid;
     }
 
-    public void setXid(String xid) {
-        this.xid = xid;
+    public void setDataPointXid(String dataPointXid) {
+        this.dataPointXid = dataPointXid;
     }
 
     private static final long serialVersionUID = -1;
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
     // Serialization //
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(VERSION);
@@ -175,6 +178,7 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
         out.writeInt(qos);
         out.writeBoolean(retained);
         SerializationHelper.writeSafeUTF(out, clientId);
+        SerializationHelper.writeSafeUTF(out, dataPointXid);
     }
 
     private void readObject(ObjectInputStream in) throws IOException {
@@ -187,6 +191,15 @@ public class MqttPointLocatorVO extends AbstractPointLocatorVO implements JsonSe
             qos = in.readInt();
             retained = in.readBoolean();
             clientId = SerializationHelper.readSafeUTF(in);
+        } else if(ver == 2) {
+            settable = in.readBoolean();
+            writable = in.readBoolean();
+            dataTypeId = in.readInt();
+            topicFilter = SerializationHelper.readSafeUTF(in);
+            qos = in.readInt();
+            retained = in.readBoolean();
+            clientId = SerializationHelper.readSafeUTF(in);
+            dataPointXid = SerializationHelper.readSafeUTF(in);
         }
     }
 
