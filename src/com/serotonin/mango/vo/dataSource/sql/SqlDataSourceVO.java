@@ -104,6 +104,10 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 	private int updatePeriods = 5;
 	@JsonRemoteProperty
 	private boolean rowBasedQuery = false;
+	@JsonRemoteProperty
+	private String jndiResourceName;
+	@JsonRemoteProperty
+	private boolean jndiResource = true;
 
 	public String getDriverClassname() {
 		return driverClassname;
@@ -169,6 +173,22 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 		this.rowBasedQuery = rowBasedQuery;
 	}
 
+	public String getJndiResourceName() {
+		return jndiResourceName;
+	}
+
+	public void setJndiResourceName(String jndiResourceName) {
+		this.jndiResourceName = jndiResourceName;
+	}
+
+	public boolean isJndiResource() {
+		return jndiResource;
+	}
+
+	public void setJndiResource(boolean jndiResource) {
+		this.jndiResource = jndiResource;
+	}
+
 	@Override
 	public void validate(DwrResponseI18n response) {
 		super.validate(response);
@@ -178,11 +198,16 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 		if (updatePeriods <= 0)
 			response.addContextualMessage("updatePeriods",
 					"validate.greaterThanZero");
-		if (StringUtils.isEmpty(driverClassname))
-			response.addContextualMessage("driverClassname",
-					"validate.required");
-		if (StringUtils.isEmpty(connectionUrl))
-			response.addContextualMessage("connectionUrl", "validate.required");
+		if(!jndiResource) {
+			if (StringUtils.isEmpty(driverClassname))
+				response.addContextualMessage("driverClassname",
+						"validate.required");
+			if (StringUtils.isEmpty(connectionUrl))
+				response.addContextualMessage("connectionUrl", "validate.required");
+		} else {
+			if (StringUtils.isEmpty(jndiResourceName))
+				response.addContextualMessage("jndiResourceName", "validate.required");
+		}
 	}
 
 	@Override
@@ -201,6 +226,10 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 				selectStatement);
 		AuditEventType.addPropertyMessage(list, "dsEdit.sql.rowQuery",
 				rowBasedQuery);
+		AuditEventType.addPropertyMessage(list, "dsEdit.sql.jndiResource",
+				jndiResource);
+		AuditEventType.addPropertyMessage(list, "dsEdit.sql.jndiResourceName",
+				jndiResourceName);
 	}
 
 	@Override
@@ -223,6 +252,10 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 				from.selectStatement, selectStatement);
 		AuditEventType.maybeAddPropertyChangeMessage(list,
 				"dsEdit.sql.rowQuery", from.rowBasedQuery, rowBasedQuery);
+		AuditEventType.maybeAddPropertyChangeMessage(list,
+				"dsEdit.sql.jndiResource", from.jndiResource, jndiResource);
+		AuditEventType.maybeAddPropertyChangeMessage(list,
+				"dsEdit.sql.jndiResourceName", from.jndiResourceName, jndiResourceName);
 	}
 
 	//
@@ -231,7 +264,7 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 	// /
 	//
 	private static final long serialVersionUID = -1;
-	private static final int version = 2;
+	private static final int version = 3;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -243,6 +276,8 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 		out.writeInt(updatePeriodType);
 		out.writeInt(updatePeriods);
 		out.writeBoolean(rowBasedQuery);
+		out.writeBoolean(jndiResource);
+		SerializationHelper.writeSafeUTF(out, jndiResourceName);
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException {
@@ -268,6 +303,17 @@ public class SqlDataSourceVO extends DataSourceVO<SqlDataSourceVO> {
 			updatePeriodType = in.readInt();
 			updatePeriods = in.readInt();
 			rowBasedQuery = in.readBoolean();
+		} else if (ver == 3) {
+			driverClassname = SerializationHelper.readSafeUTF(in);
+			connectionUrl = SerializationHelper.readSafeUTF(in);
+			username = SerializationHelper.readSafeUTF(in);
+			password = SerializationHelper.readSafeUTF(in);
+			selectStatement = SerializationHelper.readSafeUTF(in);
+			updatePeriodType = in.readInt();
+			updatePeriods = in.readInt();
+			rowBasedQuery = in.readBoolean();
+			jndiResource = in.readBoolean();
+			jndiResourceName = SerializationHelper.readSafeUTF(in);
 		}
 	}
 
