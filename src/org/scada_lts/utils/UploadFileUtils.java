@@ -45,9 +45,15 @@ public final class UploadFileUtils {
 
     public static boolean isZip(MultipartFile multipartFile) {
         try {
-            SafeMultipartFile securedMultipartFile = SafeMultipartFile.safe(multipartFile);
-            return isZipMimeType(Paths.get(securedMultipartFile.getOriginalFilename()))
-                    && !isXml(securedMultipartFile) && !isImageBitmap(securedMultipartFile);
+            SafeMultipartFile safeMultipartFile;
+            try {
+                safeMultipartFile = SafeMultipartFile.safe(multipartFile);
+            } catch (FileNotSafeException ex) {
+                LOG.error(ex.getMessage());
+                return false;
+            }
+            return isZipMimeType(Paths.get(safeMultipartFile.getOriginalFilename()))
+                    && !isXml(safeMultipartFile) && !isImageBitmap(safeMultipartFile);
         } catch (Exception ex) {
             LOG.error(ex.getMessage());
             return false;

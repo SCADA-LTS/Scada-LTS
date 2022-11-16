@@ -1,6 +1,7 @@
 package org.scada_lts.utils;
 
 import com.serotonin.mango.Common;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.serorepl.utils.StringUtils;
@@ -46,10 +47,16 @@ public final class PathSecureUtils {
             return false;
         if(!validatePath(decoded))
             return false;
-        if(!decoded.matches("^[^<>:;?\"*|/\\\\]+$"))
+        String withoutExt = FilenameUtils.removeExtension(name);
+        if(withoutExt.isEmpty())
             return false;
-        String[] split = decoded.split("\\.");
-        return split.length == 2 && !StringUtils.isEmpty(split[0]);
+        if(name.equals(withoutExt))
+            return false;
+        if(name.contains("..") || name.contains("\\"))
+            return false;
+        if(name.contains("/"))
+            return false;
+        return name.length() < 256;
     }
 
     public static boolean validatePath(String name) {
