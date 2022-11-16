@@ -3,13 +3,10 @@ package org.scada_lts.utils;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.web.ContextWrapper;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.scada_lts.svg.SvgEnvKeys;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import utils.UploadFileTestUtils;
@@ -65,6 +62,28 @@ public class UploadBackgroundFileUtilsTest {
         datas.add(new Object[] {"jsAsJpg.jpg", false});
         datas.add(new Object[] {"jsAsPng.png", false});
 
+        datas.add(new Object[] {"/../../jsAsSvg.svg", false});
+        datas.add(new Object[] {"/../jsAsBmp.bmp", false});
+        datas.add(new Object[] {"./jsAsGif.gif", false});
+        datas.add(new Object[] {"../jsAsJpg.jpg", false});
+        datas.add(new Object[] {"././jsAsPng.png", false});
+
+        datas.add(new Object[] {"gifFile.zip.gif", true});
+        datas.add(new Object[] {"jpgFile.o.jpg", true});
+        datas.add(new Object[] {"pngFile.jpg.png", true});
+
+        datas.add(new Object[] {"", false});
+        datas.add(new Object[] {".php%00.jpg", false});
+        datas.add(new Object[] {".jpg%00.jpg", false});
+        datas.add(new Object[] {"%00.jpg", false});
+        datas.add(new Object[] {".%00.jpg", false});
+        datas.add(new Object[] {".jpg", false});
+        datas.add(new Object[] {"%2F.jpg", false});
+        datas.add(new Object[] { '\000' + ".jpg", false});
+        datas.add(new Object[] {"v2.7.2.jpg", true});
+        datas.add(new Object[] {"binaryFile.o.jpg", false});
+        datas.add(new Object[] {"classFile.class.jpg", false});
+
         datas.add(new Object[] {"txt" + File.separator + "info.txt", false});
         return datas;
     }
@@ -115,7 +134,7 @@ public class UploadBackgroundFileUtilsTest {
 
     private static MultipartFile toMultipartFile(File file) {
         try(FileInputStream input = new FileInputStream(file)) {
-            return new MockMultipartFile(file.getName(), file.getName(),
+            return new MockMultipartFile("fileUpload", file.getName(),
                     Files.probeContentType(file.toPath()), IOUtils.toByteArray(input));
         } catch (Exception ex) {
             return null;

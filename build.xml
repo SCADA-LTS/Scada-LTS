@@ -301,6 +301,10 @@
 			<test name="com.serotonin.mango.vo.dataSource.CopyDataSourceVOTest"
 				  haltonfailure="yes">
 			</test>
+
+			<test name="org.scada_lts.utils.PathSecureUtilsTest"
+				  haltonfailure="yes">
+			</test>
 		</junit>
 
 		<junitreport todir="${build-project.test.report}">

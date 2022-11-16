@@ -61,6 +61,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
@@ -78,6 +79,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrMessageI18n;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.ReportService;
@@ -206,7 +208,7 @@ public class ImportTask extends ProgressiveTask {
 							vo.setXid(xid);
 							vo.setDataSourceId(dsvo.getId());
 							vo.setDataSourceXid(dsxid);
-							vo.setPointLocator(dsvo.createPointLocator());
+							vo.setPointLocator(createPointLocator(dsvo, xid));
 							vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(
 									0));
 							vo.setTextRenderer(new PlainRenderer());
@@ -527,7 +529,7 @@ public class ImportTask extends ProgressiveTask {
 					vo.setXid(xid);
 					vo.setDataSourceId(dsvo.getId());
 					vo.setDataSourceXid(dsxid);
-					vo.setPointLocator(dsvo.createPointLocator());
+					vo.setPointLocator(createPointLocator(dsvo, xid));
 					vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 					vo.setTextRenderer(new PlainRenderer());
 					vo.setEventTextRenderer(new NoneEventRenderer());
@@ -1177,5 +1179,14 @@ public class ImportTask extends ProgressiveTask {
 
 	public List<JsonValue> getUsers() {
 		return users;
+	}
+
+	private PointLocatorVO createPointLocator(DataSourceVO<?> dataSource, String dataPointXid) {
+		PointLocatorVO pointLocator = dataSource.createPointLocator();
+		if(pointLocator instanceof MqttPointLocatorVO) {
+			MqttPointLocatorVO mqttPointLocator = (MqttPointLocatorVO) pointLocator;
+			mqttPointLocator.setDataPointXid(dataPointXid);
+		}
+		return pointLocator;
 	}
 }
