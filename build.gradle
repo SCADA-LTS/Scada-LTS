@@ -177,5 +177,6 @@ test {
         includeTestsMatching "br.org.scadabr.view.component.GenerateAlarmListComponentTest"
         includeTestsMatching "org.scada_lts.ds.messaging.channel.MessagingChannelsTest"
         includeTestsMatching "com.serotonin.mango.vo.dataSource.CopyDataSourceVOTest"
+        includeTestsMatching "org.scada_lts.utils.PathSecureUtilsTest"
     }
 }
