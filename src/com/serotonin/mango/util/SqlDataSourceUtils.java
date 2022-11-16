@@ -29,7 +29,7 @@ public final class SqlDataSourceUtils {
 
     public static SqlDataSourceVO createSqlDataSourceVO(String driverClassname, String connectionUrl,
                                             String username, String password, String selectStatement,
-                                            boolean rowBasedQuery, boolean jndiSource, String jndiSourceName) {
+                                            boolean rowBasedQuery, boolean jndiResource, String jndiResourceName) {
         SqlDataSourceVO sqlDataSourceVO = new SqlDataSourceVO();
         sqlDataSourceVO.setDriverClassname(driverClassname);
         sqlDataSourceVO.setConnectionUrl(connectionUrl);
@@ -37,8 +37,8 @@ public final class SqlDataSourceUtils {
         sqlDataSourceVO.setPassword(password);
         sqlDataSourceVO.setSelectStatement(selectStatement);
         sqlDataSourceVO.setRowBasedQuery(rowBasedQuery);
-        sqlDataSourceVO.setJndiResource(jndiSource);
-        sqlDataSourceVO.setJndiResourceName(jndiSourceName);
+        sqlDataSourceVO.setJndiResource(jndiResource);
+        sqlDataSourceVO.setJndiResourceName(jndiResourceName);
         return sqlDataSourceVO;
     }
 }
