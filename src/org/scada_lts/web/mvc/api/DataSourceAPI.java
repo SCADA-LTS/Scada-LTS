@@ -47,7 +47,7 @@ public class DataSourceAPI {
 
     @GetMapping(value = "/api/datasources")
     public ResponseEntity<List<DataSourceJson>> getAllDataSources(HttpServletRequest request) {
-        LOG.info(  "/api/datasources");
+        LOG.debug( request.getRequestURI());
 
         List<DataSourceJson> response = dataSourceApiService.readAll(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -57,7 +57,7 @@ public class DataSourceAPI {
     public ResponseEntity<DataSourceJson> getDataSource(@RequestParam(required = false) Integer id,
                                                         @RequestParam(required = false) String xid,
                                                         HttpServletRequest request) {
-        LOG.info(  "/api/datasource");
+        LOG.debug( request.getRequestURI());
 
         DataSourceJson response = dataSourceApiService.read(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -67,9 +67,9 @@ public class DataSourceAPI {
     public ResponseEntity<Map<String, Object>> toggleDataSource(@RequestParam(required = false) Integer id,
                                                                 @RequestParam(required = false) String xid,
                                                                 HttpServletRequest request) {
-        LOG.info( "/api/datasource/toggle");
+        LOG.debug( request.getRequestURI());
 
-        Map<String, Object> response = dataSourceApiService.toggleDataSource(request, id);
+        Map<String, Object> response = dataSourceApiService.toggleDataSource(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -77,7 +77,7 @@ public class DataSourceAPI {
     public ResponseEntity<Map<String, Object>> isUniqueXid(@RequestParam(required = false) Integer id,
                                                            @RequestParam(required = false) String xid,
                                                            HttpServletRequest request) {
-        LOG.info("/api/datasource/validate");
+        LOG.debug( request.getRequestURI());
         Map<String, Object> response = new HashMap<>();
         boolean isUnique = dataSourceApiService.isUniqueXid(request, xid, id);
         response.put("unique", isUnique);
@@ -86,16 +86,17 @@ public class DataSourceAPI {
 
     @GetMapping(value = "/api/datasource/datapoints/enable")
     public ResponseEntity<List<DataPointJson>> enableAllPointsInDataSource(@RequestParam(required = false) Integer id,
+                                                                           @RequestParam(required = false) String xid,
                                                                            HttpServletRequest request) {
-        LOG.info("/api/datasource/datapoints/enable");
+        LOG.debug( request.getRequestURI());
 
-        List<DataPointJson> response = dataSourceApiService.enableAllPointsInDataSource(request, id);
+        List<DataPointJson> response = dataSourceApiService.enableAllPointsInDataSource(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datasource/generateUniqueXid")
     public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
-        LOG.info("/api/datasource/generateUniqueXid");
+        LOG.debug( request.getRequestURI());
 
         String response = dataSourceApiService.generateUniqueXid(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -104,7 +105,7 @@ public class DataSourceAPI {
     @PostMapping(value = "/api/datasource")
     public ResponseEntity<DataSourceJson> createDataSource(@RequestBody(required = false) DataSourceJson dataSource,
                                                            HttpServletRequest request) {
-        LOG.info("/api/datasource");
+        LOG.debug( request.getRequestURI());
 
         DataSourceJson response = dataSourceApiService.create(request, dataSource);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -113,7 +114,7 @@ public class DataSourceAPI {
     @PutMapping(value = "/api/datasource")
     public ResponseEntity<DataSourceJson> updateDataSource(@RequestBody(required = false) DataSourceJson dataSource,
                                                            HttpServletRequest request) {
-        LOG.info("/api/datasource");
+        LOG.debug( request.getRequestURI());
 
         DataSourceJson response = dataSourceApiService.update(request, dataSource);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -121,16 +122,17 @@ public class DataSourceAPI {
 
     @DeleteMapping(value = "/api/datasource")
     public ResponseEntity<DataSourceJson> deleteDataSource(@RequestParam(required = false) Integer id,
+                                                           @RequestParam(required = false) String xid,
                                                            HttpServletRequest request) {
-        LOG.info("/api/datasource");
+        LOG.debug( request.getRequestURI());
 
-        DataSourceJson response = dataSourceApiService.delete(request, null, id);
+        DataSourceJson response = dataSourceApiService.delete(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/datasource/getAll")
     public ResponseEntity<List<DataSourceIdentifier>> getDataSourceIdentifiers(HttpServletRequest request) {
-        LOG.info("/api/datasource/getAll");
+        LOG.debug( request.getRequestURI());
 
         List<DataSourceIdentifier> response = dataSourceApiService.getIdentifiers(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -138,7 +140,7 @@ public class DataSourceAPI {
 
     @GetMapping(value = "/api/datasource/getAllPlc", produces = "application/json")
     public ResponseEntity<List<DataSourceIdentifier>> getDataSourcesPlcIdentifers(HttpServletRequest request) {
-        LOG.info("/api/datasource/getAllPlc");
+        LOG.debug( request.getRequestURI());
 
         List<DataSourceIdentifier> response = dataSourceApiService.getDataSourcesPlcIdentifers(request);
         return new ResponseEntity<>(response, HttpStatus.OK);

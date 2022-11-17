@@ -88,7 +88,7 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
     @Override
     public DataSourceJson delete(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
-        checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", id);
+        checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
 
         DataSourceVO<?> toDelete = getDataSourceFromDatabase(request, xid, id);
         try {
@@ -140,14 +140,20 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         return response;
     }
 
-    public Map<String, Object> toggleDataSource(HttpServletRequest request, Integer id) {
+    public Map<String, Object> toggleDataSource(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
-        checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", id);
+        checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
 
         Map<String, Object> response = new HashMap<>();
         try {
-            boolean state = dataSourceService.toggleDataSource(id);
+            boolean state;
+            if(id != null) {
+                state = dataSourceService.toggleDataSource(id);
+            } else {
+                state = dataSourceService.toggleDataSource(xid);
+            }
             response.put("id", id);
+            response.put("xid", xid);
             response.put("state", state);
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
@@ -155,16 +161,22 @@ public class DataSourceApiService implements CrudService<DataSourceJson>, Genera
         return response;
     }
 
-    public List<DataPointJson> enableAllPointsInDataSource(HttpServletRequest request, Integer id) {
+    public List<DataPointJson> enableAllPointsInDataSource(HttpServletRequest request, String xid, Integer id) {
         checkIfNonAdminThenUnauthorized(request);
-        checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", id);
+        checkArgsIfTwoEmptyThenBadRequest(request, "Id or xid cannot be null.", id, xid);
         User user = Common.getUser(request);
 
         List<DataPointJson> response;
         try {
-            response = dataSourceService.enableAllDataPointsInDS(id, user)
-                    .stream().map(DataPointJson::new)
-                    .collect(Collectors.toList());
+            if(id != null) {
+                response = dataSourceService.enableAllDataPointsInDS(id, user)
+                        .stream().map(DataPointJson::new)
+                        .collect(Collectors.toList());
+            } else {
+                response = dataSourceService.enableAllDataPointsInDS(xid, user)
+                        .stream().map(DataPointJson::new)
+                        .collect(Collectors.toList());
+            }
         } catch (Exception ex) {
             throw new InternalServerErrorException(ex, request.getRequestURI());
         }

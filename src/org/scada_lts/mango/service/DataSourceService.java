@@ -95,32 +95,27 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> getAllDataSources() {
 		return dataSourceDAO.getAllDataSources();
 	}
 
+	@Override
 	public boolean toggleDataSource(int id) {
 
 		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
 		if(vo == null)
 			return false;
-		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(id);
-		if(vo.isEnabled()) {
-			if(rt != null) {
-				rt.terminate();
-			}
-			vo.setEnabled(false);
-		} else {
-			if(rt != null) {
-				rt.initialize();
-			} else {
-				vo.createDataSourceRT();
-			}
-			vo.setEnabled(true);
-		}
-		vo.setState(new UserChangeEnableStateDs());
-		Common.ctx.getRuntimeManager().saveDataSource(vo);
-		return vo.isEnabled();
+		return toggleDataSource(vo);
+	}
+
+	@Override
+	public boolean toggleDataSource(String xid) {
+
+		DataSourceVO<?> vo = dataSourceDAO.getDataSource(xid);
+		if(vo == null)
+			return false;
+		return toggleDataSource(vo);
 	}
 
 	@Override
@@ -263,6 +258,17 @@ public class DataSourceService implements MangoDataSource {
 		return pointList;
 	}
 
+	public List<DataPointVO> enableAllDataPointsInDS(String dataSourceXid, User user) {
+		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceXid, null));
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
+	}
+
 	@Override
 	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
 		return dataSourceDAO.getDataSources(type.getId());
@@ -283,5 +289,25 @@ public class DataSourceService implements MangoDataSource {
 		return getDataSourcesPlc().stream()
 				.filter(a -> getDataSourcesWithAccess.hasReadPermission(user, a))
 				.collect(Collectors.toList());
+	}
+
+	private boolean toggleDataSource(DataSourceVO<?> vo) {
+		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
+		if(vo.isEnabled()) {
+			if(rt != null) {
+				rt.terminate();
+			}
+			vo.setEnabled(false);
+		} else {
+			if(rt != null) {
+				rt.initialize();
+			} else {
+				vo.createDataSourceRT();
+			}
+			vo.setEnabled(true);
+		}
+		vo.setState(new UserChangeEnableStateDs());
+		Common.ctx.getRuntimeManager().saveDataSource(vo);
+		return vo.isEnabled();
 	}
 }

@@ -1,22 +1,14 @@
 package org.scada_lts.utils;
 
-import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
-import com.serotonin.web.dwr.DwrMessageI18n;
-import com.serotonin.web.dwr.DwrResponseI18n;
-import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.scada_lts.web.mvc.api.exceptions.NotFoundException;
 import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class DataSourcePointApiUtils {
 
