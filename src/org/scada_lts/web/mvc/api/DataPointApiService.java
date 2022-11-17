@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -83,7 +84,7 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         checkArgsIfEmptyThenBadRequest(request, "Data Point cannot be null.", datapoint);
         getDataPointFromDatabase(request, datapoint.getXid(), datapoint.getId());
         DataPointVO fromRequest = toDataPointVO(request, datapoint);
-        dataSourceApiService.read(request, null, fromRequest.getDataSourceId());
+        dataSourceApiService.read(request, fromRequest.getDataSourceXid(), fromRequest.getDataSourceId());
         try {
             dataPointService.updateDataPointConfiguration(fromRequest);
         } catch (Exception ex) {
@@ -167,34 +168,20 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
         return response;
     }
 
-    public List<DataPointJson> getDataPointsByDataSourceId(HttpServletRequest request, Integer dataSourceId) {
-        checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", dataSourceId);
-        User user = Common.getUser(request);
-        List<DataPointJson> response;
-        try {
-            response = filteringByAccess(user, dataPointService.getDataPoints(dataSourceId, null))
-                    .stream()
-                    .map(DataSourcePointJsonFactory::getDataPointJson)
-                    .collect(Collectors.toList());
-        } catch (Exception ex) {
-            throw new InternalServerErrorException(ex, request.getRequestURI());
-        }
-        return response;
+    public List<DataPointJson> getDataPointsByDataSource(HttpServletRequest request,
+                                                         String dataSourceXid,
+                                                         Integer dataSourceId) {
+        return getDataPointsBy(request, dataSourceXid, dataSourceId).stream()
+                .map(DataPointJson::new)
+                .collect(Collectors.toList());
     }
 
-    public List<DataPointIdentifier> getDataPointIdentifiersByDataSourceId(HttpServletRequest request, Integer id) {
-        checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", id);
-        User user = Common.getUser(request);
-        List<DataPointIdentifier> response;
-        try {
-            response = filteringByAccess(user, dataPointService.getDataPoints(id, null))
-                    .stream()
-                    .map(DataPointVO::toIdentifier)
-                    .collect(Collectors.toList());
-        } catch (Exception ex) {
-            throw new InternalServerErrorException(ex, request.getRequestURI());
-        }
-        return response;
+    public List<DataPointIdentifier> getDataPointIdentifiersByDataSource(HttpServletRequest request,
+                                                                         String dataSourceXid,
+                                                                         Integer dataSourceId) {
+        return getDataPointsBy(request, dataSourceXid, dataSourceId).stream()
+                .map(DataPointVO::toIdentifier)
+                .collect(Collectors.toList());
     }
 
     public List<DataPointIdentifier> getDataPointIdentifiersByTypes(HttpServletRequest request, Integer[] types) {
@@ -263,5 +250,29 @@ public class DataPointApiService implements CrudService<DataPointJson>, Generato
                     request.getRequestURI());
         }
         return dataPointVO;
+    }
+
+    private List<DataPointVO> getDataPointsBy(HttpServletRequest request, String dataSourceXid, Integer dataSourceId) {
+        checkArgsIfTwoEmptyThenBadRequest(request, "Data Point id or xid cannot be null.", dataSourceId, dataSourceXid);
+        List<DataPointVO> dataPoints;
+        try {
+            if (dataSourceId != null) {
+                dataPoints = dataPointService.getDataPoints(dataSourceId,
+                        Comparator.comparing(DataPointVO::getName));
+            } else {
+                dataPoints = dataPointService.getDataPoints(dataSourceXid,
+                        Comparator.comparing(DataPointVO::getName));
+            }
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+        User user = Common.getUser(request);
+        List<DataPointVO> response;
+        try {
+            response = filteringByAccess(user, dataPoints);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+        return response;
     }
 }
