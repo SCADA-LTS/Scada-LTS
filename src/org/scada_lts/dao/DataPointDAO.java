@@ -505,4 +505,14 @@ public class DataPointDAO {
 						.nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
 						.build());
 	}
+
+	public List<DataPointVO> getDataPoints(String dataSourceXid) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("getDataPoints(String dataSourceXid) dataSourceXid:" + dataSourceXid);
+		}
+
+		String templateSelectWhereXid = DATA_POINT_SELECT + " where ds." + COLUMN_NAME_DS_XID + "=?";
+		return DAO.getInstance().getJdbcTemp().query(templateSelectWhereXid, new Object[] {dataSourceXid}, new DataPointRowMapper());
+	}
 }
