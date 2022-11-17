@@ -74,6 +74,8 @@ public class GetDataSourcesWithAccess implements GetObjectsWithAccess<DataSource
             LOG.warn("dataPointDAO is null");
             return false;
         }
+        if(Permissions.hasDataSourcePermission(user, dataSource.getId()))
+            return true;
         List<ScadaObjectIdentifier> dataPoints = dataPointDAO.findIdentifiers(dataSource.getId());
         for (ScadaObjectIdentifier dataPoint: dataPoints) {
             if(Permissions.hasDataPointReadPermission(user, dataSource.getId(), dataPoint.getId())) {

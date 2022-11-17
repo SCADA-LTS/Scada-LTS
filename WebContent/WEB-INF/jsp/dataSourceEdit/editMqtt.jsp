@@ -55,7 +55,7 @@
     locator.retained = $get("retained");
     locator.qos = $get("qos");
     locator.clientId = $get("clientId");
-    locator.xid = $get("xid");
+    locator.dataPointXid = $get("xid");
 
     DataSourceEditDwr.saveMqttPointLocator(
     currentPoint.id, $get("xid"), $get("name"), locator, savePointCB);

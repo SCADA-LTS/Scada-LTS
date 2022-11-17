@@ -44,6 +44,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.serotonin.mango.util.LoggingUtils.dataSourceInfo;
+
 /**
  * DataSource DAO
  *
@@ -393,7 +395,7 @@ public class DataSourceDAO {
 	public int insert(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(dataSource));
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -438,7 +440,7 @@ public class DataSourceDAO {
 
 	public DataSourceVO<?> create(DataSourceVO<?> entity) {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + entity.toString());
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(entity));
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -475,7 +477,7 @@ public class DataSourceDAO {
 	public int update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
+			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(dataSource));
 		}
 
 		try {

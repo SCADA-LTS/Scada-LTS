@@ -54,7 +54,7 @@ public class DataPointAPI {
     public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) String xid,
                                                     @RequestParam(required = false) Integer id,
                                                     HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         DataPointVO response = dataPointApiService.getDataPointFromDatabase(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -64,7 +64,7 @@ public class DataPointAPI {
     public ResponseEntity<List<DataPointJson>> getDataPointsByDataSource(@RequestParam(required = false) String xid,
                                                                          @RequestParam(required = false) Integer id,
                                                                          HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         List<DataPointJson> response = dataPointApiService.getDataPointsByDataSource(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -74,7 +74,7 @@ public class DataPointAPI {
     public ResponseEntity<Map<String, Object>> isDataPointXidUnique(@RequestParam(required = false) String xid,
                                                                     @RequestParam(required = false) Integer id,
                                                                     HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         Map<String, Object> response = new HashMap<>();
         boolean isUnique = dataPointApiService.isUniqueXid(request, xid, id);
@@ -84,7 +84,7 @@ public class DataPointAPI {
 
     @GetMapping(value = "/api/datapoint/generateUniqueXid")
     public ResponseEntity<String> generateUniqueXid(HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         String response = dataPointApiService.generateUniqueXid(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -93,7 +93,7 @@ public class DataPointAPI {
     @PostMapping(value = "/api/datapoint")
     public ResponseEntity<DataPointJson> createDataPoint(@RequestBody(required = false) DataPointJson datapoint,
                                                          HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         DataPointJson response = dataPointApiService.create(request, datapoint);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -102,7 +102,7 @@ public class DataPointAPI {
     @PutMapping(value = "/api/datapoint")
     public ResponseEntity<DataPointJson> updateDataPoint(@RequestBody(required = false) DataPointJson datapoint,
                                                          HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         DataPointJson response = dataPointApiService.update(request, datapoint);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -112,7 +112,7 @@ public class DataPointAPI {
     public ResponseEntity<DataPointJson> deleteDataPoint(@RequestParam(required = false) String xid,
                                                          @RequestParam(required = false) Integer id,
                                                          HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         DataPointJson response = dataPointApiService.delete(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -122,7 +122,7 @@ public class DataPointAPI {
     public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersByDataSourceId(@RequestParam(required = false) String xid,
                                                                                            @RequestParam(required = false) Integer id,
                                                                                            HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersByDataSource(request, xid, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -131,7 +131,7 @@ public class DataPointAPI {
     @GetMapping(value = "/api/datapoints")
     public ResponseEntity<List<DataPointIdentifier>> searchDataPointIdentifiers(@RequestParam(value="keywordSearch", required = false) String searchText,
                                                                                 HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         List<DataPointIdentifier> response = dataPointApiService.searchDataPointIdentifiers(request, searchText);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -140,7 +140,7 @@ public class DataPointAPI {
     @GetMapping(value = "/api/datapoint/getConfigurationByXid/{xid}")
     public ResponseEntity<String> getConfigurationByXid(@PathVariable(required = false) String xid,
                                                         HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         String response = dataPointApiService.getConfigurationByXid(request, xid);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -149,7 +149,7 @@ public class DataPointAPI {
     @GetMapping(value = "/api/datapoint/getAll")
     public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersByTypes(@RequestParam(value = "types", required = false) Integer[] types,
                                                                                     HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersByTypes(request, types);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -158,7 +158,7 @@ public class DataPointAPI {
     @GetMapping(value = "/api/datapoint/{datasourceId}/getAllPlc", produces = "application/json")
     public ResponseEntity<List<DataPointIdentifier>> getDataPointIdentifiersPlcByDataSourceId(@PathVariable(value = "datasourceId", required = false) Integer datasourceId,
                                                                                               HttpServletRequest request) {
-        LOG.info(request.getRequestURI());
+        LOG.debug(request.getRequestURI());
 
         List<DataPointIdentifier> response = dataPointApiService.getDataPointIdentifiersPlcByDataSourceId(request, datasourceId);
         return new ResponseEntity<>(response, HttpStatus.OK);
