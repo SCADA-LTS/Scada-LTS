@@ -22,6 +22,7 @@
   function initImpl() {
       sqlTestButton(false);
       rowBasedQueryChange();
+      changeJndiResource();
   }
   
   function sqlTest() {
@@ -31,7 +32,8 @@
       hide("sqlTestResults");
       dwr.util.removeAllRows("sqlTestResults");
       DataSourceEditDwr.sqlTestStatement($get("driverClassname"), $get("connectionUrl"), $get("username"), 
-              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), sqlTestCB);
+              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
+              $get("jndiResourceName"), sqlTestCB);
   }
   
   function sqlTestCB() {
@@ -85,7 +87,8 @@
   function saveDataSourceImpl() {
       DataSourceEditDwr.saveSqlDataSource($get("dataSourceName"), $get("dataSourceXid"), $get("updatePeriods"),
               $get("updatePeriodType"), $get("driverClassname"), $get("connectionUrl"), $get("username"),
-              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), saveDataSourceCB);
+              $get("password"), $get("selectStatement"), $get("rowBasedQuery"), $get("jndiResource"),
+              $get("jndiResourceName"), saveDataSourceCB);
   }
   
   function writePointListImpl(points) {
@@ -135,6 +138,16 @@
           show("columnBasedProperties");
       }
   }
+
+  function changeJndiResource() {
+      if ($get("jndiResource")) {
+          show("isJndiResource");
+          hide("isNotJndiResource");
+      } else {
+          hide("isJndiResource");
+          show("isNotJndiResource");
+      }
+  }
 </script>
 
 <c:set var="dsDesc"><fmt:message key="dsEdit.sql.desc"/></c:set>
@@ -149,27 +162,41 @@
             </sst:select>
           </td>
         </tr>
-        
+
         <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.driverClassName"/></td>
-          <td class="formField"><input id="driverClassname" type="text" value="${dataSource.driverClassname}"/></td>
+          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.jndiResource"/></td>
+          <td class="formField">
+            <sst:checkbox id="jndiResource" selectedValue="${dataSource.jndiResource}" onclick="changeJndiResource()"/>
+          </td>
         </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.connectionString"/></td>
-          <td class="formField"><input id="connectionUrl" type="text" value="${dataSource.connectionUrl}"
-                  class="formLong"/></td>
+
+        <tr id="isJndiResource" style="visible:none">
+          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.jndiResourceName"/></td>
+          <td class="formField"><input id="jndiResourceName" type="text" value="${dataSource.jndiResourceName}"/></td>
         </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.username"/></td>
-          <td class="formField"><input id="username" type="text" value="${dataSource.username}"/></td>
-        </tr>
-        
-        <tr>
-          <td class="formLabelRequired"><fmt:message key="dsEdit.sql.password"/></td>
-          <td class="formField"><input id="password" type="text" value="${dataSource.password}"/></td>
-        </tr>
+
+        <tbody id="isNotJndiResource">
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="dsEdit.sql.driverClassName"/></td>
+              <td class="formField"><input id="driverClassname" type="text" value="${dataSource.driverClassname}"/></td>
+            </tr>
+
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="dsEdit.sql.connectionString"/></td>
+              <td class="formField"><input id="connectionUrl" type="text" value="${dataSource.connectionUrl}"
+                      class="formLong"/></td>
+            </tr>
+
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="dsEdit.sql.username"/></td>
+              <td class="formField"><input id="username" type="text" value="${dataSource.username}"/></td>
+            </tr>
+
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="dsEdit.sql.password"/></td>
+              <td class="formField"><input id="password" type="text" value="${dataSource.password}"/></td>
+            </tr>
+        </tbody>
         
         <tr>
           <td class="formLabelRequired"><fmt:message key="dsEdit.sql.select"/></td>

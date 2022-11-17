@@ -18,79 +18,61 @@
  */
 package com.serotonin.mango.web.dwr.beans;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import com.serotonin.mango.util.SqlDataSourceUtils;
+import com.serotonin.mango.vo.dataSource.sql.SqlDataSourceVO;
+import com.serotonin.web.i18n.I18NUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.serotonin.web.i18n.I18NUtils;
-
 /**
  * @author Matthew Lohbihler
  */
-
-@Deprecated
-public class SqlStatementTester extends Thread implements TestingUtility {
+public class JdbcOperationsTester extends Thread implements TestingUtility {
     private static final int MAX_ROWS = 50;
 
     private final ResourceBundle bundle;
-    private final String driverClassname;
-    private final String connectionUrl;
-    private final String username;
-    private final String password;
-    private final String selectStatement;
-    private final boolean rowBasedQuery;
+    private final SqlDataSourceVO vo;
 
     private boolean done;
     private String errorMessage;
-    private final List<List<String>> resultTable = new ArrayList<List<String>>();
+    private List<List<String>> resultTable = new ArrayList<>();
 
-    public SqlStatementTester(ResourceBundle bundle, String driverClassname, String connectionUrl, String username,
-            String password, String selectStatement, boolean rowBasedQuery) {
+    public JdbcOperationsTester(ResourceBundle bundle, SqlDataSourceVO vo) {
         this.bundle = bundle;
-        this.driverClassname = driverClassname;
-        this.connectionUrl = connectionUrl;
-        this.username = username;
-        this.password = password;
-        this.selectStatement = selectStatement;
-        this.rowBasedQuery = rowBasedQuery;
+        this.vo = vo;
         start();
     }
 
     @Override
     public void run() {
-        Connection conn = null;
         try {
-            DriverManager.registerDriver((Driver) Class.forName(driverClassname).newInstance());
-            DriverManager.setLoginTimeout(5000);
-            conn = DriverManager.getConnection(connectionUrl, username, password);
-            PreparedStatement stmt = conn.prepareStatement(selectStatement);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rowBasedQuery)
-                getRowData(rs);
-            else
-                getColumnData(rs);
+            JdbcOperations jdbcOperations = SqlDataSourceUtils.createJdbcOperations(vo);
 
-            rs.close();
+            if (vo.isRowBasedQuery()) {
+                this.resultTable = jdbcOperations.query(vo.getSelectStatement(), new ResultSetExtractor<List<List<String>>>() {
+                    @Override
+                    public List<List<String>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                        return getRowData(resultSet);
+                    }
+                });
+            } else {
+                this.resultTable = jdbcOperations.query(vo.getSelectStatement(), new ResultSetExtractor<List<List<String>>>() {
+                    @Override
+                    public List<List<String>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                        return getColumnData(resultSet);
+                    }
+                });
+            }
         }
         catch (Exception e) {
             errorMessage = e.getClass() + ": " + e.getMessage();
-        }
-        finally {
-            try {
-                if (conn != null)
-                    conn.close();
-            }
-            catch (SQLException e) {
-                // no op
-            }
         }
         done = true;
     }
@@ -111,11 +93,11 @@ public class SqlStatementTester extends Thread implements TestingUtility {
         // no op
     }
 
-    private void getRowData(ResultSet rs) throws SQLException {
+    private List<List<String>> getRowData(ResultSet rs) throws SQLException {
         // Get the column info.
         ResultSetMetaData meta = rs.getMetaData();
         int columns = meta.getColumnCount();
-
+        List<List<String>> resultTable = new ArrayList<>();
         List<String> row = new ArrayList<String>();
         for (int i = 1; i <= columns; i++)
             row.add(meta.getColumnLabel(i) + " (" + meta.getColumnTypeName(i) + ")");
@@ -132,9 +114,10 @@ public class SqlStatementTester extends Thread implements TestingUtility {
                 // Seriously, that ought to be enough
                 break;
         }
+        return resultTable;
     }
 
-    private void getColumnData(ResultSet rs) throws SQLException {
+    private List<List<String>> getColumnData(ResultSet rs) throws SQLException {
         ResultSetMetaData meta = rs.getMetaData();
         int columns = meta.getColumnCount();
 
@@ -142,6 +125,7 @@ public class SqlStatementTester extends Thread implements TestingUtility {
 
         // Add the headers.
         List<String> row = new ArrayList<String>();
+        List<List<String>> resultTable = new ArrayList<>();
         row.add(I18NUtils.getMessage(bundle, "dsEdit.sql.tester.columnName"));
         row.add(I18NUtils.getMessage(bundle, "dsEdit.sql.tester.columnType"));
         row.add(I18NUtils.getMessage(bundle, "dsEdit.sql.tester.value"));
@@ -161,5 +145,6 @@ public class SqlStatementTester extends Thread implements TestingUtility {
             row.add(value);
             resultTable.add(row);
         }
+        return resultTable;
     }
 }
