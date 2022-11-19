@@ -44,6 +44,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.serotonin.mango.util.LoggingUtils.dataSourceInfo;
+
 /**
  * DataSource DAO
  *
@@ -71,6 +73,15 @@ public class DataSourceDAO {
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF = "eventTypeRef1";
 
 	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
+
+	//dataSourceUsers
+	private static final String COLUMN_NAME_DSU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DSU_ACCESS_TYPE = "permission";
+	private static final String COLUMN_NAME_DSU_DATA_SOURCE_ID = "dataSourceId";
+
+	//userProfile
+	private static final String COLUMN_NAME_UP_DATA_SOURCE_ID = "dataSourceId";
+	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
 
 	// @formatter:off
 	private static final String DATA_SOURCE_SELECT = ""
@@ -223,6 +234,40 @@ public class DataSourceDAO {
 			+ "where "
 			+ COLUMN_NAME_DS_TYPE + "=? ";
 
+
+	//dataPointUsers
+	private static final String COLUMN_NAME_DPU_USER_ID = "userId";
+	private static final String COLUMN_NAME_DPU_PERMISSION = "permission";
+	private static final String COLUMN_NAME_DPU_DATA_POINT_ID = "dataPointId";
+
+	//userProfile
+	private static final String COLUMN_NAME_DPUP_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_DPUP_USER_PRFILE_ID = "userProfileId";
+	private static final String COLUMN_NAME_DPUP_PERMISSION = "permission";
+
+	private static final String DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + ", "
+			+ "ds." + COLUMN_NAME_DATA + " "
+			+ "from dataSources ds left join dataPoints dp on ds.id=dp.dataSourceId ";
+
+	private static final String DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP_IDENTIFIER = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + " "
+			+ "from dataSources ds left join dataPoints dp on ds.id=dp.dataSourceId ";
+
+	public static final String DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME = ""
+			+ "ds.id in (select dsu."+ COLUMN_NAME_DSU_DATA_SOURCE_ID +" from dataSourceUsers dsu where dsu."+ COLUMN_NAME_DSU_USER_ID +"=?) or "
+			+ "ds.id in (select dsup."+COLUMN_NAME_UP_DATA_SOURCE_ID+" from dataSourceUsersProfiles dsup where dsup."+COLUMN_NAME_UP_USER_PRFILE_ID+"=?) or "
+			+ "dp.id in (select dpu."+ COLUMN_NAME_DPU_DATA_POINT_ID +" from dataPointUsers dpu where dpu." + COLUMN_NAME_DPU_USER_ID + "=? and dpu." + COLUMN_NAME_DPU_PERMISSION + ">?) or "
+			+ "dp.id in (select dpup." + COLUMN_NAME_DPUP_DATA_POINT_ID + " from dataPointUsersProfiles dpup where dpup." + COLUMN_NAME_DPUP_USER_PRFILE_ID + "=? and dpup." + COLUMN_NAME_DPUP_PERMISSION + ">?) "
+			+ "group by ds.id, ds.xid, ds.name "
+			+ "order by ds." + COLUMN_NAME_NAME;
+
 	// @formatter:on
 
 	private class DataSourceRowMapper implements RowMapper<DataSourceVO<?>> {
@@ -350,7 +395,7 @@ public class DataSourceDAO {
 	public int insert(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(dataSource));
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -395,7 +440,7 @@ public class DataSourceDAO {
 
 	public DataSourceVO<?> create(DataSourceVO<?> entity) {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + entity.toString());
+			LOG.trace("insert(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(entity));
 		}
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -432,7 +477,7 @@ public class DataSourceDAO {
 	public int update(final DataSourceVO<?> dataSource) {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSource.toString());
+			LOG.trace("update(final DataSourceVO<?> dataSource): dataSource" + dataSourceInfo(dataSource));
 		}
 
 		try {
@@ -542,5 +587,27 @@ public class DataSourceDAO {
 		}
 		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_SELECT_WHERE_TYPE,
 				new Object[]{type}, new DataSourceRowMapper());
+	}
+
+	public List<DataSourceVO<?>> selectDataSourcesWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
+				new Object[] { userId, profileId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE },
+				new DataSourceDAO.DataSourceRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> selectDataSourceIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_DS_SELECT_JOIN_LEFT_DATA_POINT_DP_IDENTIFIER + " where " + DATA_SOURCE_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID_ORDER_BY_DS_NAME,
+				new Object[] { userId, profileId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE },
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
+	}
+
+	public List<ScadaObjectIdentifier> findIdentifiers() {
+		ScadaObjectIdentifierRowMapper mapper = ScadaObjectIdentifierRowMapper.withDefaultNames();
+		return DAO.getInstance().getJdbcTemp()
+				.query(mapper.selectScadaObjectIdFrom(TABLE_NAME), mapper);
 	}
 }

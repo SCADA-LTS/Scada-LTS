@@ -3,6 +3,10 @@ import com.serotonin.mango.vo.User;
 
 import com.serotonin.mango.Common;
 
+/**
+ * @deprecated (new type UserInfo, UserInfoSimple, UserInfoPassword)
+ */
+@Deprecated
 public class JsonUser {
 
     private int id = Common.NEW_ID;

@@ -175,6 +175,16 @@ public class DataPointService implements MangoDataPoint {
 		return dpList;
 	}
 
+	@Override
+	public List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator) {
+		List<DataPointVO> dpList = dataPointDAO.getDataPoints(dataSourceXid);
+		setRelationalData(dpList);
+		if (comparator != null) {
+			dpList.sort(comparator);
+		}
+		return dpList;
+	}
+
 	/**
 	 * Get PointList with permission validation
 	 *

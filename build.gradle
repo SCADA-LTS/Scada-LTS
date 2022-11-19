@@ -132,11 +132,11 @@ task buildRun(type: GradleBuild) {
 }
 
 task buildRunDebug(type: GradleBuild) {
-    tasks = ['clearTomcat', 'test', 'warDev', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
 }
 
 task buildRunDebugDev(type: GradleBuild) {
-    tasks = ['clearTomcat', 'installWebDependency', 'test', 'warDev', 'deployTomcat', 'runDebug']
+    tasks = ['clearTomcat', 'installWebDependency', 'test', 'testUi', 'warDev', 'deployTomcat', 'runDebug']
 }
 
 test {

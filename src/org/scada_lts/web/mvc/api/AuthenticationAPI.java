@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
-import org.scada_lts.web.mvc.api.json.JsonUser;
+import org.scada_lts.web.mvc.api.user.UserInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +35,7 @@ public class AuthenticationAPI {
 	
 	private static final Log LOG = LogFactory.getLog(AuthenticationAPI.class);
 	
-	private UserService userService = new UserService();
+	private final UserService userService = new UserService();
 
 	private final AuthenticationManager authenticationManager;
 
@@ -146,17 +146,13 @@ public class AuthenticationAPI {
 	}
 
 	@GetMapping(value = "/api/auth/user")
-	public ResponseEntity<JsonUser> getUserInfo(HttpServletRequest request) {
+	public ResponseEntity<UserInfo> getUserInfo(HttpServletRequest request) {
 		User user = Common.getUser(request);
 
 		if(user != null) {
 			try {
-				JsonUser jsonUser = new JsonUser(
-						user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(),
-						user.getPhone(), user.isAdmin(), user.isDisabled(),
-						user.getHomeUrl(), user.getLastLogin()
-				);
-				return new ResponseEntity<>(jsonUser, HttpStatus.OK);
+				UserInfo userInfo = new UserInfo(user);
+				return new ResponseEntity<>(userInfo, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}

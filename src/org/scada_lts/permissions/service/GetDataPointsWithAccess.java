@@ -1,16 +1,21 @@
 package org.scada_lts.permissions.service;
 
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO, User> {
+
+    private static final Log LOG = LogFactory.getLog(GetDataPointsWithAccess.class);
 
     private final DataPointDAO dataPointDAO;
 
@@ -19,18 +24,40 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     }
 
     @Override
-    public List<DataPointVO> getObjectsWithAccess(User object) {
-        return filteringByAccess(object, dataPointDAO.getDataPoints()).stream()
-                .sorted(Comparator.comparing(DataPointVO::getName))
-                .collect(Collectors.toList());
+    public List<DataPointVO> getObjectsWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        if(user.isAdmin())
+            return dataPointDAO.getDataPoints();
+        return dataPointDAO.selectDataPointsWithAccess(user.getId(), user.getUserProfile());
     }
 
     @Override
-    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User object) {
-        return getObjectsWithAccess(object).stream()
-                .map(DataPointVO::toIdentifier)
-                .sorted(Comparator.comparing(ScadaObjectIdentifier::getName))
-                .collect(Collectors.toList());
+    public List<ScadaObjectIdentifier> getObjectIdentifiersWithAccess(User user) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return Collections.emptyList();
+        }
+        if(user.isAdmin())
+            return dataPointDAO.findIdentifiers();
+        return dataPointDAO.selectDataPointIdentifiersWithAccess(user.getId(), user.getUserProfile());
+    }
+
+    @Override
+    public boolean hasReadPermission(User user, DataPointVO object) {
+        return GetDataPointsWithAccess.hasDataPointReadPermission(user, object);
+    }
+
+    @Override
+    public boolean hasSetPermission(User user, DataPointVO object) {
+        return GetDataPointsWithAccess.hasDataPointSetPermission(user, object);
+    }
+
+    @Override
+    public boolean hasOwnerPermission(User user, DataPointVO object) {
+        return user.isAdmin();
     }
 
     public static List<DataPointVO> filteringByAccess(User user, List<DataPointVO> dataPoints) {
@@ -46,6 +73,26 @@ public class GetDataPointsWithAccess implements GetObjectsWithAccess<DataPointVO
     }
 
     public static boolean hasDataPointReadPermission(User user, DataPointVO dataPoint) {
-        return Permissions.hasDataPointReadPermission(user, dataPoint);
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(dataPoint == null) {
+            LOG.warn("dataPoint is null");
+            return false;
+        }
+        return Permissions.getDataPointAccessType(user, dataPoint) > ShareUser.ACCESS_NONE;
+    }
+
+    public static boolean hasDataPointSetPermission(User user, DataPointVO dataPoint) {
+        if(user == null) {
+            LOG.warn("user is null");
+            return false;
+        }
+        if(dataPoint == null) {
+            LOG.warn("dataPoint is null");
+            return false;
+        }
+        return Permissions.getDataPointAccessType(user, dataPoint) > ShareUser.ACCESS_READ;
     }
 }

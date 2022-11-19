@@ -1,30 +1,17 @@
 package org.scada_lts.web.mvc.api;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.maint.work.AfterWork;
-import com.serotonin.mango.rt.maint.work.ReportWorkItem;
-import com.serotonin.mango.util.SendUtils;
-import com.serotonin.mango.vo.DataPointVO;
-import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.report.ReportInstance;
-import com.serotonin.mango.vo.report.ReportJob;
-import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
-import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.mango.service.DataPointService;
-import org.scada_lts.mango.service.ReportService;
-import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.permissions.service.GetDataPointsWithAccess;
 import org.scada_lts.web.mvc.api.dto.ReportDTO;
+import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -38,13 +25,12 @@ import java.util.*;
 public class ReportsAPI {
 
     private static final Log LOG = LogFactory.getLog(ReportsAPI.class);
-    private DataPointService dataPointService = new DataPointService();
 
-    @Resource
-    private ReportService reportService;
+    private final ReportsApiService reportsApiService;
 
-    @Resource
-    private SystemSettingsService systemSettingsService;
+    public ReportsAPI(ReportsApiService reportsApiService) {
+        this.reportsApiService = reportsApiService;
+    }
 
     /**
      * Get Reports related to user
@@ -55,37 +41,20 @@ public class ReportsAPI {
     @PostMapping(value = "/search")
     public ResponseEntity<List<ReportVO>> search(@RequestParam Map<String, String> query, HttpServletRequest request) {
         LOG.info("GET::/api/reports/search");
+        List<ReportVO> response;
         try {
-            User user = Common.getUser(request);
-            if (user != null) {
-                return new ResponseEntity<>(
-                    reportService.search(user, query),
-                    HttpStatus.OK
-                );
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response = reportsApiService.search(request, query);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity<String> deleteReport(@PathVariable("id") int id, HttpServletRequest request) {
-        try {
-            User user = Common.getUser(request);
-            if(user != null && user.isAdmin()) {
-                reportService.deleteReport(id);
-                return new ResponseEntity<>("DELETED", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<String> deleteReport(@PathVariable("id") Integer id, HttpServletRequest request) {
+        reportsApiService.delete(request, null, id);
+        return new ResponseEntity<>("DELETED", HttpStatus.OK);
     }
-
-
 
     /**
      * Save Reports related to user
@@ -96,59 +65,16 @@ public class ReportsAPI {
     @PostMapping(value = "/save")
     public HttpEntity<String> save(@RequestBody ReportDTO query, HttpServletRequest request) {
         LOG.info("GET::/api/reports/save");
-        try {
-            User user = Common.getUser(request);
-            if(user == null) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-            List<HashMap<String, Object>> points = query.getPoints();
-            List<ReportPointVO> reportPoints = new ArrayList<>();
-            for (HashMap<String, Object> dp : points) {
-                Integer pointId = (Integer)dp.get("pointId");
-                if(pointId != null) {
-                    DataPointVO point = dataPointService.getDataPoint(pointId);
-                    if (point != null && GetDataPointsWithAccess.hasDataPointReadPermission(user, point)) {
-                        reportPoints.add(ReportPointVO.newInstance(dp));
-                    }
-                }
-            }
-            ReportVO report = ReportVO.createReport(query, user, reportPoints);
-            reportService.saveReport(report);
-            ReportJob.scheduleReportJob(report);
-            return new ResponseEntity<>("Ok", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ReportVO report = reportsApiService.toReport(request, query);
+        reportsApiService.create(request, report);
+        return new ResponseEntity<>("Ok", HttpStatus.OK);
     }
 
    @PostMapping(value = "/sendTestEmails", produces = "application/json")
    public ResponseEntity<String> sendTestEmail(@RequestBody Map<String, List<String>> body, HttpServletRequest request) {
        LOG.info("/api/reports/sendTestEmails");
-       try {
-           User user = Common.getUser(request);
-            if (user != null && user.isAdmin()) {
-                List<String> addresses = body.get("emails");
-
-                if (addresses == null || addresses.isEmpty())
-                    return new ResponseEntity<>(LocalizableMessage.getMessage(Common.getBundle(),"js.email.noRecipForEmail"), HttpStatus.BAD_REQUEST);
-                else {
-                    List<String> errors = new ArrayList<>();
-                    SendUtils.sendMsgTestSync(new HashSet<>(addresses), new AfterWork() {
-                        @Override
-                        public void workFail(Exception exception) {
-                            errors.add(LocalizableMessage.getMessage(Common.getBundle(),"common.default", exception.getMessage()));
-                        }
-                    });
-                    if(errors.isEmpty())
-                        return new ResponseEntity<>("OK", HttpStatus.OK);
-                    return new ResponseEntity<>(errors.get(0), HttpStatus.BAD_REQUEST);
-                }
-            } else {
-               return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-       } catch (Exception e) {
-           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-       }
+       reportsApiService.sendTestEmail(request, body);
+       return new ResponseEntity<>("OK", HttpStatus.OK);
    }
 
     /**
@@ -158,26 +84,11 @@ public class ReportsAPI {
      * @return ReportVO List
      */
     @GetMapping(value = "/run/{id}")
-    public ResponseEntity<String> runReport(@PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<String> runReport(@PathVariable("id") Integer id, HttpServletRequest request) {
         LOG.info("GET::/api/reports/run");
-        try {
-            User user = Common.getUser(request);
-
-            if (user != null) {
-                ReportVO report = reportService.getReport(id);
-                ReportWorkItem.queueReport(report);
-                return new ResponseEntity<String>(
-                        "ok",
-                        HttpStatus.OK
-                );
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        reportsApiService.runReport(request, null, id);
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
-
 
     /**
      * Get Report instances related to user
@@ -186,24 +97,10 @@ public class ReportsAPI {
      * List<ReportInstance>
      */
     @GetMapping(value = "/instances")
-    public ResponseEntity<List<ReportInstance>> runReport(HttpServletRequest request) {
+    public ResponseEntity<List<ReportInstance>> getInstances(HttpServletRequest request) {
         LOG.info("GET::/api/reports/instances");
-        try {
-            User user = Common.getUser(request);
-
-            if (user != null) {
-                List<ReportInstance> reportInstances = reportService.getReportInstances(user.getId());
-
-                return new ResponseEntity<List<ReportInstance>>(
-                        reportInstances,
-                        HttpStatus.OK
-                );
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<ReportInstance> reportInstances = reportsApiService.getInstances(request);
+        return new ResponseEntity<>(reportInstances, HttpStatus.OK);
     }
 
     /**
@@ -213,45 +110,16 @@ public class ReportsAPI {
      *
      */
     @DeleteMapping(value = "/instances/{id}")
-    public HttpEntity<Integer> deleteReportInstance(@PathVariable("id") int id, HttpServletRequest request) {
+    public HttpEntity<Integer> deleteReportInstance(@PathVariable("id") Integer id, HttpServletRequest request) {
         LOG.info("GET::/api/reports/instances");
-        try {
-            User user = Common.getUser(request);
-
-            if (user != null) {
-                 reportService.deleteReportInstance(id, user.getId());
-
-                return new ResponseEntity<Integer>(
-                        id,
-                        HttpStatus.OK
-                );
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        reportsApiService.deleteReportInstance(request, id);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
     @GetMapping(value = "/instances/{id}/preventPurge/{preventPurge}")
-    public HttpEntity<Integer> setReportInstancePreventPurge(@PathVariable("id") int id, @PathVariable("preventPurge") boolean preventPurge, HttpServletRequest request) {
+    public HttpEntity<Integer> setReportInstancePreventPurge(@PathVariable("id") Integer id, @PathVariable("preventPurge") Boolean preventPurge, HttpServletRequest request) {
         LOG.info("GET::/api/reports/instances/"+id+"/preventPurge/"+preventPurge);
-        try {
-            User user = Common.getUser(request);
-
-            if (user != null) {
-                reportService.setReportInstancePreventPurge(id, preventPurge, user.getId());
-
-                return new ResponseEntity<Integer>(
-                        id,
-                        HttpStatus.OK
-                );
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        reportsApiService.setReportInstancePreventPurge(request, id, preventPurge);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
-
 }

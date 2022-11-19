@@ -1,5 +1,9 @@
 package org.scada_lts.web.mvc.api.json;
 import com.serotonin.mango.vo.User;
+/**
+ * @deprecated (new type UserInfo, UserInfoSimple, UserInfoPassword)
+ */
+@Deprecated
 public class JsonUserInfo {
 
     private int id;

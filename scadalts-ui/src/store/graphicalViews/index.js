@@ -101,7 +101,7 @@ export const graphicalViewModule = {
 
     actions: {
         fetchGraphicalViewsList({ dispatch }) {
-            return dispatch('requestGet', '/view/getAllForUser');
+            return dispatch('requestGet', '/view/getAll');
         },
 
         getGraphicalViewById({ commit, dispatch }, id) {

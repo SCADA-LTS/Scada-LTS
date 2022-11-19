@@ -2,7 +2,6 @@ package org.scada_lts.web.mvc.api.datasources;
 
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
-import com.serotonin.mango.vo.event.PointEventDetectorVO;
 
 import java.util.ArrayList;
 
@@ -17,6 +16,10 @@ public class DataPointJson {
     private int dataSourceId;
     private String deviceName;
     private DataPointLocatorJson pointLocator;
+    private String datasourceName;
+    private String dataSourceXid;
+    private int typeId;
+    private boolean settable;
 
     public DataPointJson() {}
 
@@ -30,6 +33,10 @@ public class DataPointJson {
         this.dataSourceId = dpVO.getDataSourceId();
         this.deviceName = dpVO.getDeviceName();
         this.pointLocator = DataSourcePointJsonFactory.getDataPointLocatorJson(dpVO.getPointLocator());
+        this.datasourceName = dpVO.getDataSourceName();
+        this.dataSourceXid = dpVO.getDataSourceXid();
+        this.typeId = this.pointLocator.getDataTypeId();
+        this.settable = this.pointLocator.isSettable();
     }
 
     public DataPointVO createDataPointVO() {
@@ -44,6 +51,9 @@ public class DataPointJson {
         dpVO.setDeviceName(this.deviceName);
         dpVO.setPointLocator((PointLocatorVO) this.pointLocator.parsePointLocatorData());
         dpVO.setEventDetectors(new ArrayList<>());
+        dpVO.setDataSourceName(this.datasourceName);
+        dpVO.setDataSourceXid(this.dataSourceXid);
+        dpVO.defaultTextRenderer();
         return dpVO;
     }
 
@@ -117,5 +127,37 @@ public class DataPointJson {
 
     public void setPointLocator(DataPointLocatorJson pointLocator) {
         this.pointLocator = pointLocator;
+    }
+
+    public String getDatasourceName() {
+        return datasourceName;
+    }
+
+    public void setDatasourceName(String datasourceName) {
+        this.datasourceName = datasourceName;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    public boolean isSettable() {
+        return settable;
+    }
+
+    public void setSettable(boolean settable) {
+        this.settable = settable;
+    }
+
+    public String getDataSourceXid() {
+        return dataSourceXid;
+    }
+
+    public void setDataSourceXid(String dataSourceXid) {
+        this.dataSourceXid = dataSourceXid;
     }
 }

@@ -18,7 +18,6 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.ReportWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
@@ -30,13 +29,10 @@ import com.serotonin.mango.vo.report.ReportJob;
 import com.serotonin.mango.vo.report.ReportPointVO;
 import com.serotonin.mango.vo.report.ReportVO;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
-import com.serotonin.timer.CronTimerTrigger;
-import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.*;
-import org.scada_lts.utils.ColorUtils;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -86,35 +82,6 @@ public class ReportsDwr extends BaseDwr {
             String scheduleCron, boolean email, boolean includeData, boolean zipData,
             List<RecipientListEntryBean> recipients) {
 
-        DwrResponseI18n response = new DwrResponseI18n();
-
-        // Basic validation
-        validateData(response, name, points, dateRangeType, relativeDateType, previousPeriodCount, pastPeriodCount);
-
-        if (schedule) {
-            if (schedulePeriod == ReportVO.SCHEDULE_CRON) {
-                // Check the cron pattern.
-                try {
-                    new CronTimerTrigger(scheduleCron);
-                }
-                catch (Exception e) {
-                    response.addContextualMessage("scheduleCron", "reports.validate.cron", e.getMessage());
-                }
-            }
-            else {
-                if (runDelayMinutes < 0)
-                    response.addContextualMessage("runDelayMinutes", "reports.validate.lessThan0");
-                else if (runDelayMinutes > 59)
-                    response.addContextualMessage("runDelayMinutes", "reports.validate.greaterThan59");
-            }
-        }
-
-        if (schedule && email && recipients.isEmpty())
-            response.addContextualMessage("recipients", "reports.validate.needRecip");
-
-        if (response.getHasMessages())
-            return response;
-
         User user = Common.getUser();
         MangoReport reportDao = new ReportService();
         ReportVO report;
@@ -161,6 +128,15 @@ public class ReportsDwr extends BaseDwr {
         report.setZipData(zipData);
         report.setRecipients(recipients);
 
+
+        DwrResponseI18n response = new DwrResponseI18n();
+
+        // Basic validation
+        report.validate(response, user);
+
+        if (response.getHasMessages())
+            return response;
+
         // Save the report
         reportDao.saveReport(report);
 
@@ -178,46 +154,47 @@ public class ReportsDwr extends BaseDwr {
             int fromMonth, int fromDay, int fromHour, int fromMinute, boolean toNone, int toYear, int toMonth,
             int toDay, int toHour, int toMinute, boolean email, boolean includeData, boolean zipData,
             List<RecipientListEntryBean> recipients) {
+
+        User user = Common.getUser();
+
+        ReportVO report = new ReportVO();
+        report.setName(name);
+        report.setUserId(user.getId());
+        report.setUsername(user.getUsername());
+        report.setPoints(points);
+        report.setIncludeEvents(includeEvents);
+        report.setIncludeUserComments(includeUserComments);
+        report.setDateRangeType(dateRangeType);
+        report.setRelativeDateType(relativeDateType);
+        report.setPreviousPeriodCount(previousPeriodCount);
+        report.setPreviousPeriodType(previousPeriodType);
+        report.setPastPeriodCount(pastPeriodCount);
+        report.setPastPeriodType(pastPeriodType);
+        report.setFromNone(fromNone);
+        report.setFromYear(fromYear);
+        report.setFromMonth(fromMonth);
+        report.setFromDay(fromDay);
+        report.setFromHour(fromHour);
+        report.setFromMinute(fromMinute);
+        report.setToNone(toNone);
+        report.setToYear(toYear);
+        report.setToMonth(toMonth);
+        report.setToDay(toDay);
+        report.setToHour(toHour);
+        report.setToMinute(toMinute);
+        report.setEmail(email);
+        report.setIncludeData(includeData);
+        report.setZipData(zipData);
+        report.setRecipients(recipients);
+
         DwrResponseI18n response = new DwrResponseI18n();
 
         // Basic validation
-        validateData(response, name, points, dateRangeType, relativeDateType, previousPeriodCount, pastPeriodCount);
+        report.validateRun(response, user);
 
-        if (!response.getHasMessages()) {
-            User user = Common.getUser();
-
-            ReportVO report = new ReportVO();
-            report.setName(name);
-            report.setUserId(user.getId());
-            report.setUsername(user.getUsername());
-            report.setPoints(points);
-            report.setIncludeEvents(includeEvents);
-            report.setIncludeUserComments(includeUserComments);
-            report.setDateRangeType(dateRangeType);
-            report.setRelativeDateType(relativeDateType);
-            report.setPreviousPeriodCount(previousPeriodCount);
-            report.setPreviousPeriodType(previousPeriodType);
-            report.setPastPeriodCount(pastPeriodCount);
-            report.setPastPeriodType(pastPeriodType);
-            report.setFromNone(fromNone);
-            report.setFromYear(fromYear);
-            report.setFromMonth(fromMonth);
-            report.setFromDay(fromDay);
-            report.setFromHour(fromHour);
-            report.setFromMinute(fromMinute);
-            report.setToNone(toNone);
-            report.setToYear(toYear);
-            report.setToMonth(toMonth);
-            report.setToDay(toDay);
-            report.setToHour(toHour);
-            report.setToMinute(toMinute);
-            report.setEmail(email);
-            report.setIncludeData(includeData);
-            report.setZipData(zipData);
-            report.setRecipients(recipients);
-
-            ReportWorkItem.queueReport(report);
-        }
+        if(response.getHasMessages())
+            return response;
+        ReportWorkItem.queueReport(report);
 
         return response;
     }
@@ -230,39 +207,6 @@ public class ReportsDwr extends BaseDwr {
             Permissions.ensureReportPermission(Common.getUser(), report);
             ReportJob.unscheduleReportJob(report);
             reportDao.deleteReport(id);
-        }
-    }
-
-    private void validateData(DwrResponseI18n response, String name, List<ReportPointVO> points, int dateRangeType,
-            int relativeDateType, int previousPeriodCount, int pastPeriodCount) {
-        if (StringUtils.isEmpty(name))
-            response.addContextualMessage("name", "reports.validate.required");
-        if (StringUtils.isLengthGreaterThan(name, 100))
-            response.addContextualMessage("name", "reports.validate.longerThan100");
-        if (points.isEmpty())
-            response.addContextualMessage("points", "reports.validate.needPoint");
-        if (dateRangeType != ReportVO.DATE_RANGE_TYPE_RELATIVE && dateRangeType != ReportVO.DATE_RANGE_TYPE_SPECIFIC)
-            response.addGenericMessage("reports.validate.invalidDateRangeType");
-        if (relativeDateType != ReportVO.RELATIVE_DATE_TYPE_PAST
-                && relativeDateType != ReportVO.RELATIVE_DATE_TYPE_PREVIOUS)
-            response.addGenericMessage("reports.validate.invalidRelativeDateType");
-        if (previousPeriodCount < 1)
-            response.addContextualMessage("previousPeriodCount", "reports.validate.periodCountLessThan1");
-        if (pastPeriodCount < 1)
-            response.addContextualMessage("pastPeriodCount", "reports.validate.periodCountLessThan1");
-
-        User user = Common.getUser();
-        DataPointService dataPointDao = new DataPointService();
-        for (ReportPointVO point : points) {
-            Permissions.ensureDataPointReadPermission(user, dataPointDao.getDataPoint(point.getPointId()));
-
-            try {
-                if (!StringUtils.isEmpty(point.getColour()))
-                    ColorUtils.toColor(point.getColour());
-            }
-            catch (InvalidArgumentException e) {
-                response.addContextualMessage("points", "reports.validate.colour", point.getColour());
-            }
         }
     }
 

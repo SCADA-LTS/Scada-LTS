@@ -2,6 +2,7 @@ package org.scada_lts.web.mvc.api.json;
 
 import com.serotonin.mango.vo.DataPointVO;
 
+@Deprecated
 public class JsonDataPoint {
 
     private int id;

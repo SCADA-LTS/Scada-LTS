@@ -44,6 +44,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.web.dwr.beans.*;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -182,22 +183,6 @@ import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.dwr.beans.BACnetDiscovery;
-import com.serotonin.mango.web.dwr.beans.BACnetObjectBean;
-import com.serotonin.mango.web.dwr.beans.DataPointDefaulter;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceReader;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceUpdater;
-import com.serotonin.mango.web.dwr.beans.EventInstanceBean;
-import com.serotonin.mango.web.dwr.beans.GalilCommandTester;
-import com.serotonin.mango.web.dwr.beans.HttpReceiverDataListener;
-import com.serotonin.mango.web.dwr.beans.MBusDiscovery;
-import com.serotonin.mango.web.dwr.beans.ModbusNodeScanListener;
-import com.serotonin.mango.web.dwr.beans.NmeaUtilListener;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDataPointBean;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDiscovery;
-import com.serotonin.mango.web.dwr.beans.OpenV4JProtocolBean;
-import com.serotonin.mango.web.dwr.beans.SnmpOidGet;
-import com.serotonin.mango.web.dwr.beans.SqlStatementTester;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.RegisterRange;
@@ -228,6 +213,7 @@ import org.scada_lts.serial.SerialPortService;
 import org.scada_lts.serial.SerialPortWrapperAdapter;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
 import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
 
 /**
@@ -936,7 +922,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveSqlDataSource(String name, String xid,
                                              int updatePeriods, int updatePeriodType, String driverClassname,
                                              String connectionUrl, String username, String password,
-                                             String selectStatement, boolean rowBasedQuery) {
+                                             String selectStatement, boolean rowBasedQuery, boolean jndiResource,
+                                             String jndiResourceName) {
         Permissions.ensureAdmin();
         SqlDataSourceVO ds = (SqlDataSourceVO) Common.getUser()
                 .getEditDataSource();
@@ -951,6 +938,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setPassword(password);
         ds.setSelectStatement(selectStatement);
         ds.setRowBasedQuery(rowBasedQuery);
+        ds.setJndiResource(jndiResource);
+        ds.setJndiResourceName(jndiResourceName);
 
         return tryDataSourceSave(ds);
     }
@@ -964,19 +953,22 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public void sqlTestStatement(String driverClassname, String connectionUrl,
                                  String username, String password, String selectStatement,
-                                 boolean rowBasedQuery) {
+                                 boolean rowBasedQuery, boolean jndiResource,
+                                 String jndiResourceName) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
-        user.setTestingUtility(new SqlStatementTester(getResourceBundle(),
-                driverClassname, connectionUrl, username, password,
-                selectStatement, rowBasedQuery));
+        SqlDataSourceVO sqlDataSourceVO = createSqlDataSourceVO(driverClassname, connectionUrl, username, password,
+                selectStatement, rowBasedQuery, jndiResource, jndiResourceName);
+        JdbcOperationsTester tester = new JdbcOperationsTester(getResourceBundle(), sqlDataSourceVO);
+        tester.start();
+        user.setTestingUtility(tester);
     }
 
     @MethodFilter
     public Map<String, Object> sqlTestStatementUpdate() {
         Map<String, Object> result = new HashMap<String, Object>();
-        SqlStatementTester statementTester = Common.getUser()
-                .getTestingUtility(SqlStatementTester.class);
+        JdbcOperationsTester statementTester = Common.getUser()
+                .getTestingUtility(JdbcOperationsTester.class);
         if (statementTester == null)
             return null;
         if (!statementTester.isDone())
