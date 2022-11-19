@@ -112,6 +112,33 @@ public class ReportsApiService implements CrudService<ReportVO> {
         return report;
     }
 
+    public ReportInstance deleteReportInstance(HttpServletRequest request, Integer id) {
+        ReportInstance report = readInstance(request, id);
+        User user = Common.getUser(request);
+        if(!reportService.hasReportInstanceOwnerPermission(user, report))
+            throw new UnauthorizedException(request.getRequestURI());
+        try {
+            reportService.deleteReportInstance(report.getId(), user.getId());
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+        return report;
+    }
+
+    public ReportInstance readInstance(HttpServletRequest request, Integer id) {
+        checkArgsIfEmptyThenBadRequest(request, "Id cannot be null.", id);
+        ReportInstance report;
+        try {
+            report = reportService.getReportInstance(id);
+        } catch (Exception ex) {
+            throw new InternalServerErrorException(ex, request.getRequestURI());
+        }
+        User user = Common.getUser(request);
+        if(!reportService.hasReportInstanceOwnerPermission(user, report))
+            throw new UnauthorizedException(request.getRequestURI());
+        return report;
+    }
+
     public List<ReportVO> search(HttpServletRequest request, Map<String, String> query) {
         checkArgsIfEmptyThenBadRequest(request, "query cannot be null", query);
         User user = Common.getUser(request);

@@ -112,7 +112,7 @@ public class ReportsAPI {
     @DeleteMapping(value = "/instances/{id}")
     public HttpEntity<Integer> deleteReportInstance(@PathVariable("id") Integer id, HttpServletRequest request) {
         LOG.info("GET::/api/reports/instances");
-        reportsApiService.delete(request, null, id);
+        reportsApiService.deleteReportInstance(request, id);
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
