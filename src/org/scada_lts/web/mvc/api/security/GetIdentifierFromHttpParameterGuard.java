@@ -1,14 +1,20 @@
 package org.scada_lts.web.mvc.api.security;
 
 import com.serotonin.mango.vo.User;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.utils.HttpParameterUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.function.BiPredicate;
 
+import static org.scada_lts.web.mvc.api.security.GuardUtils.ARG_IS_XID_IS_NOT_SUPPORTED;
+import static org.scada_lts.web.mvc.api.security.GuardUtils.doHasPermission;
+
 
 public class GetIdentifierFromHttpParameterGuard {
 
+    private static final Log LOG = LogFactory.getLog(GetIdentifierFromHttpParameterGuard.class);
     private final HasPermissionOperations hasPermissionOperations;
 
     public GetIdentifierFromHttpParameterGuard(HasPermissionOperations hasPermissionOperations) {
@@ -77,17 +83,17 @@ public class GetIdentifierFromHttpParameterGuard {
 
     public boolean hasReportInstanceOwnerPermission(HttpServletRequest request) {
         return hasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission,
-                null, false);
+                (a, b) -> false, false);
     }
 
     public boolean hasReportInstanceReadPermission(HttpServletRequest request) {
         return hasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission,
-                null, false);
+                (a, b) -> false,  false);
     }
 
     public boolean hasReportInstanceSetPermission(HttpServletRequest request) {
         return hasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission,
-                null, false);
+                (a, b) -> false,  false);
     }
 
     public boolean hasWatchListOwnerPermission(HttpServletRequest request, boolean isXid) {
@@ -151,15 +157,27 @@ public class GetIdentifierFromHttpParameterGuard {
     }
 
     public boolean hasReportInstanceOwnerPermission(HttpServletRequest request, boolean isXid) {
-        return hasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, null, false);
+        if(isXid) {
+            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
+            return false;
+        }
+        return hasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, (a, b) -> false, false);
     }
 
     public boolean hasReportInstanceReadPermission(HttpServletRequest request, boolean isXid) {
-        return hasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, null, false);
+        if(isXid) {
+            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
+            return false;
+        }
+        return hasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, (a, b) -> false, false);
     }
 
     public boolean hasReportInstanceSetPermission(HttpServletRequest request, boolean isXid) {
-        return hasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission, null, false);
+        if(isXid) {
+            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
+            return false;
+        }
+        return hasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission, (a, b) -> false, false);
     }
 
     public boolean hasWatchListOwnerPermission(HttpServletRequest request, boolean isXid, String idName) {
@@ -223,31 +241,27 @@ public class GetIdentifierFromHttpParameterGuard {
     }
 
     public boolean hasReportInstanceOwnerPermission(HttpServletRequest request, boolean isXid, String idName) {
-        return hasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, null, false, idName);
+        if(isXid) {
+            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
+            return false;
+        }
+        return hasPermission(request, hasPermissionOperations::hasReportInstanceOwnerPermission, (a, b) -> false, false, idName);
     }
 
     public boolean hasReportInstanceReadPermission(HttpServletRequest request, boolean isXid, String idName) {
-        return hasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, null, false, idName);
+        if(isXid) {
+            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
+            return false;
+        }
+        return hasPermission(request, hasPermissionOperations::hasReportInstanceReadPermission, (a, b) -> false,false, idName);
     }
 
     public boolean hasReportInstanceSetPermission(HttpServletRequest request, boolean isXid, String idName) {
-        return hasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission, null, false, idName);
-    }
-
-    private static boolean hasPermission(HttpServletRequest request,
-                                         BiPredicate<User, Integer> permissionById,
-                                         BiPredicate<User, String> permissionByXid,
-                                         boolean isXid,
-                                         String idName) {
-        String[] ids = HttpParameterUtils.getValueOnlyRequest(idName, request, a -> a.split(",")).orElse(new String[]{});
-        if (ids.length > 0) {
-            for (String id : ids) {
-                if (!GuardUtils.doHasPermission(request, permissionById, permissionByXid, id, isXid))
-                    return false;
-            }
-            return true;
+        if(isXid) {
+            LOG.warn(ARG_IS_XID_IS_NOT_SUPPORTED);
+            return false;
         }
-        return false;
+        return hasPermission(request, hasPermissionOperations::hasReportInstanceSetPermission, (a, b) -> false, false, idName);
     }
 
     private static boolean hasPermission(HttpServletRequest request,
@@ -255,11 +269,9 @@ public class GetIdentifierFromHttpParameterGuard {
                                          BiPredicate<User, String> permissionByXid,
                                          boolean isXid) {
         if(isXid) {
-            return hasPermission(request, permissionById, permissionByXid, isXid, "xid") ||
-                    hasPermission(request, permissionById, permissionByXid, isXid, "ids");
+            return hasPermission(request, permissionById, permissionByXid, true, "xid");
         } else {
-            return hasPermission(request, permissionById, permissionByXid, isXid, "id") ||
-                    hasPermission(request, permissionById, permissionByXid, isXid, "ids");
+            return hasPermission(request, permissionById, permissionByXid, false, "id");
         }
     }
 
@@ -268,5 +280,15 @@ public class GetIdentifierFromHttpParameterGuard {
                                          BiPredicate<User, String> permissionByXid) {
         return hasPermission(request, permissionById, permissionByXid, false) ||
                 hasPermission(request, permissionById, permissionByXid, true);
+    }
+
+    private static boolean hasPermission(HttpServletRequest request,
+                                         BiPredicate<User, Integer> permissionById,
+                                         BiPredicate<User, String> permissionByXid,
+                                         boolean isXid,
+                                         String idName) {
+        return HttpParameterUtils.getValueOnlyRequest(idName, request, identifier ->
+                        doHasPermission(request, permissionById, permissionByXid, identifier, isXid))
+                .orElse(false);
     }
 }
