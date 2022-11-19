@@ -46,7 +46,6 @@ public class JdbcOperationsTester extends Thread implements TestingUtility {
     public JdbcOperationsTester(ResourceBundle bundle, SqlDataSourceVO vo) {
         this.bundle = bundle;
         this.vo = vo;
-        start();
     }
 
     @Override

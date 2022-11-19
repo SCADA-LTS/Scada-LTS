@@ -959,7 +959,9 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         Permissions.ensureDataSourcePermission(user);
         SqlDataSourceVO sqlDataSourceVO = createSqlDataSourceVO(driverClassname, connectionUrl, username, password,
                 selectStatement, rowBasedQuery, jndiResource, jndiResourceName);
-        user.setTestingUtility(new JdbcOperationsTester(getResourceBundle(), sqlDataSourceVO));
+        JdbcOperationsTester tester = new JdbcOperationsTester(getResourceBundle(), sqlDataSourceVO);
+        tester.start();
+        user.setTestingUtility(tester);
     }
 
     @MethodFilter
