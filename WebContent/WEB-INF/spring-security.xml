@@ -2,8 +2,8 @@
 <b:beans xmlns="http://www.springframework.org/schema/security"
          xmlns:b="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
     <http use-expressions="true" disable-url-rewriting="true">
         <headers>
             <cache-control/>
@@ -105,6 +105,18 @@
 
         <!-- Config GET -->
         <intercept-url pattern="/api/config/replacealert" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+
+        <!-- IsAlive POST/GET -->
+        <intercept-url pattern="/api/is_alive/watchdog" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="POST" />
+        <intercept-url pattern="/api/is_alive/time" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+        <intercept-url pattern="/api/is_alive/time2" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
+
+        <!-- Cmp GET -->
+        <intercept-url pattern="/api/cmp/get/{xids}" access="@guard.hasDataPointReadPermission(request,#xids,true)" method="GET" />
+        <intercept-url pattern="/api/cmp/history/{xIdViewAndIdCmp}" access="@guard.hasViewReadPermission(request,@guard.viewIdentifier(#xIdViewAndIdCmp),false)" method="GET" />
+
+        <!-- SystemSettings GET -->
+        <intercept-url pattern="/api/systemSettings/getSystemInfo" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" method="GET" />
 
         <!-- REST API Admin -->
         <intercept-url pattern="/api/**" access="hasRole('ROLE_ADMIN')" method="POST" />

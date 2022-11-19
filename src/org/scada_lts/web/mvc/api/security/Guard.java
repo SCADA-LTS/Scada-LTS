@@ -256,4 +256,14 @@ public class Guard {
     public boolean hasReportInstanceSetPermission(HttpServletRequest request, boolean isXid, String idName) {
         return getIdentifierFromHttpParameterGuard.hasReportInstanceSetPermission(request, isXid, idName);
     }
+
+    public String viewIdentifier(String value) {
+        if(value.contains("-")) {
+            String[] values = value.split("-");
+            if(values.length == 2) {
+                return values[0];
+            }
+        }
+        return value;
+    }
 }
