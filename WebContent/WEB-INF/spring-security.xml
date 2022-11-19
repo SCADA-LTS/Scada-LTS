@@ -6,7 +6,7 @@
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
     <http use-expressions="true" disable-url-rewriting="true">
         <headers>
-            <cache-control/>
+            <cache-control disabled="true"/>
             <content-type-options disabled="true"/>
             <hsts/>
             <frame-options policy="SAMEORIGIN"/>
