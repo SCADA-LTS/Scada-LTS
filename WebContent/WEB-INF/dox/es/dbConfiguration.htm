@@ -1,64 +1,29 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>El Scada-LTS permite actualmente el uso de dos sistemas de gestión de bases de datos (DBMS): <b>Derby</b> y <b>MySQL</b>.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<p>
-  El ScadaBR actualmente permite el uso de dos Manejadores de Sistemas de Bases de Datos (DBMS): <b>Derby</b> y <b>MySQL</b>.
+<p>El <b>Derby</b> es usado por defecto por el sistema. Sin embargo, si necesita modificar su configuración inicial, puede hacerlo haciendo clic en el botón es necesario modificar el archivo ubicado en <b>"Scada-LTS*/WEB-INF/classes/env.properties"</b> y <b>"Scada-LTS*/WEB-INF/classes/env.properties.derby".</b>.
 </p>
 
+<p>Para usar <b>MySQL</b>, es necesario introducir los datos necesarios para su correcto uso. Por lo tanto, el archivo a modificar está en <b>"Scada-LTS*/WEB-INF/classes/env.properties.mysql"</b>. Básicamente, se deben introducir los siguientes parámetros:
 <p>
-  La Base de Datos predefinida del sistema es <b>Derby</b>. En el caso que requiera realizar cambios sobre la configuraci&oacute;n inicial,
-  debe modificar el archivo ubicado en <b>"ScadaBR*/WEB-INF/classes/env.properties"</b> y en <b>"ScadaBR*/WEB-INF/classes/env.properties.derby"</b>.
-</p>
-
-<p>
-  Para utilizar <b>MySQL</b>, es requerido que configure la informaci&oacute;n para su correcto funcionamiento. En este caso debe modificar el contenido de 
-  <b>"ScadaBR*/WEB-INF/classes/env.properties.mysql"</b>. B&aacute;sicamente debe configurar los siguientes par&aacute;metros:
-  	<p>
-	  <b>db.username: </b> Nombre de Usuario.
+	  <b>db.Nombredeusuario: </b> Nombre de usuario.
   	</p>
 	<p>
-	  <b>db.password: </b> Contraseña del Usuario.
+	  <b>db.Contraseña: </b>Contraseña.
   	</p>
   
- Para este cambio es requerido elegir la opci&oacute;n <b>MySQL</b> y posteriormente hacer clic en el icono de guardar. Finalmente debe reiniciar el servidor de aplicaci&oacute;n  web (p.e: Tomcat). 
+ Ha hecho los cambios necesarios, debe elegir <b>MySQL</b> como opción y hacer clic en el icono para guardar. Luego reinicie el servidor de aplicaciones (por ejemplo, Tomcat). 
 </p>
 
 <p>
-  <b>ScadaBR*: </b> La ubicaci&oacute;n del servidor de aplicaci&oacute;n web del ScadaBR (p.e: "Pasta_Tomcat/webapps/ScadaBR"). 
+  <b>Scada-LTS*: </b> Scada-LTS la ubicación en el servidor de aplicaciones (ej: "Pasta_Tomcat/webapps/Scada-LTS"). 
 </p>

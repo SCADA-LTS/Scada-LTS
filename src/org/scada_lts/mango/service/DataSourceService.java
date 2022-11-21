@@ -101,7 +101,7 @@ public class DataSourceService implements MangoDataSource {
 			List<DataPointVO> dataPointList = dataPointService.getDataPoints(dataSource.getId(), null);
 			for (DataPointVO dataPoint : dataPointList) {
 				dataPoint.setDataSourceName(dataPoint.getName());
-				dataPoint.setDeviceName(dataPoint.getName());
+				dataPoint.setDeviceName(dataSource.getName());
 				dataPointService.updateDataPoint(dataPoint);
 			}
 		}
@@ -121,6 +121,8 @@ public class DataSourceService implements MangoDataSource {
 	private void deleteInTransaction(final int dataSourceId) {
 		new MaintenanceEventDAO().deleteMaintenanceEventsForDataSource(dataSourceId);
 		dataSourceDAO.delete(dataSourceId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updatePermissions();
 	}
 
 	private void copyPermissions(final int fromDataSourceId, final int toDataSourceId) {
@@ -173,15 +175,22 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceCopy.getId();
 	}
 
+	@Deprecated
 	public List<Integer> getDataSourceId(int userId) {
 		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
 	}
 
+	@Deprecated
 	public void deleteDataSourceUser(int userId) {
 		dataSourceDAO.deleteDataSourceUser(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataSourcePermissions();
 	}
 
+	@Deprecated
 	public void insertPermissions(User user) {
 		dataSourceDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updatePermissions();
 	}
 }

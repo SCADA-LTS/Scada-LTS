@@ -1,6 +1,7 @@
 package com.serotonin.mango.rt.dataImage;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +15,7 @@ public class PointValueFacadeTest {
     public void fillCacheWithPointValueWhichContainsOneNotEmptySource_Test(){
         final String GIVEN_USERNAME="testName";
         final String DO_THIS_USERNAME_EXIST="testName";
-        DataPointVO dataPointVO = new DataPointVO();
+        DataPointVO dataPointVO = new DataPointVO(LoggingTypes.ON_CHANGE);
         dataPointVO.setId(2);
         dataPointVO.setDefaultCacheSize(10);
 

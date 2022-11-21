@@ -18,19 +18,14 @@
 package org.scada_lts.mango.service;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.logging.LogFactory;
 import org.jfree.util.Log;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.EventDetectorsCache;
@@ -44,13 +39,16 @@ import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.PointLinkDAO;
 import org.scada_lts.dao.UserCommentDAO;
+import org.scada_lts.dao.pointvalues.PointValueAmChartDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO4REST;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoDataPoint;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
 import org.scada_lts.service.pointhierarchy.PointHierarchyService;
+import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.dto.PointValueDTO;
+import org.scada_lts.web.mvc.api.json.JsonBinaryEventTextRenderer;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Service;
@@ -71,6 +69,8 @@ import com.serotonin.mango.vo.link.PointLinkVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.util.Tuple;
 
+import static org.scada_lts.utils.AggregateUtils.*;
+
 /**
  * Service for DataPointDAO
  *
@@ -78,6 +78,8 @@ import com.serotonin.util.Tuple;
  */
 @Service
 public class DataPointService implements MangoDataPoint {
+
+	private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(DataPointService.class);
 
 	private static final DataPointDAO dataPointDAO = new DataPointDAO();
 
@@ -98,6 +100,8 @@ public class DataPointService implements MangoDataPoint {
 	private static final PointLinkDAO pointLinkDAO = new PointLinkDAO();
 
 	private static final PointHierarchyService pointHierarchyService = new PointHierarchyService();
+
+	private static final PointValueAmChartDAO pointValueAmChartDao = new PointValueAmChartDAO();
 
 	@Override
 	public String generateUniqueXid() {
@@ -218,12 +222,16 @@ public class DataPointService implements MangoDataPoint {
 		DataPointVO dpvo = dataPointDAO.getDataPoint(xid);
 		
 		PointValueTime pvt = new PointValueDAO4REST().save(value, typePointValueOfREST, dpvo.getId());
-		
-		DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
-				dpvo.getId());
-		
-		dpRT.updatePointValue(pvt);
-		
+
+		if(dpvo.getDataSourceTypeId() == DataSourceVO.Type.VIRTUAL.getId()) {
+            Common.ctx.getRuntimeManager().setDataPointValue(dpvo.getId(), pvt, null);
+        } else {
+
+			DataPointRT dpRT = Common.ctx.getRuntimeManager().getDataPoint(
+					dpvo.getId());
+
+			dpRT.updatePointValue(pvt);
+		}
 	}
 
 	public void saveAPI(User user, String value, String xid) {
@@ -377,7 +385,9 @@ public class DataPointService implements MangoDataPoint {
 		}
 		watchListDAO.deleteWatchListPoints(dataPointIds);
 		dataPointDAO.deleteWithIn(dataPointIds);
-
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataPointPermissions();
+		usersProfileService.updateWatchlistPermissions();
 		PointHierarchyDAO.cachedPointHierarchy = null;
 		MangoPointHierarchy.getInst().deleteDataPoint(dataPointIds);
 	}
@@ -460,6 +470,10 @@ public class DataPointService implements MangoDataPoint {
 				pointEventDetectorDAO.update(pointEventDetector);
 			}
 		}
+	}
+
+	public void updateEventDetectorWithType(PointEventDetectorVO eventDetector) {
+		pointEventDetectorDAO.updateWithType(eventDetector);
 	}
 
 	public void deleteEventDetector(DataPointVO dataPoint, int id){
@@ -552,16 +566,121 @@ public class DataPointService implements MangoDataPoint {
 		return counts;
 	}
 
+	@Deprecated
 	public List<DataPointAccess> getDataPointAccessList(final int userId) {
 		return dataPointUserDAO.getDataPointAccessList(userId);
 	}
 
+    @Deprecated
 	public void deleteDataPointUser(int userId) {
 		dataPointUserDAO.delete(userId);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataPointPermissions();
 	}
 
+    @Deprecated
 	public void insertPermissions(User user) {
 		dataPointUserDAO.insertPermissions(user);
+		UsersProfileService usersProfileService = new UsersProfileService();
+		usersProfileService.updateDataPointPermissions();
 	}
-	
+
+	public JsonBinaryEventTextRenderer getBinaryEventTextRenderer(DataPointVO dataPointVO, int value) {
+		JsonBinaryEventTextRenderer json = new JsonBinaryEventTextRenderer();
+		if (value == 0) {
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(false));
+		} else if (value == 1) {
+			json.setEventText(dataPointVO.getEventTextRenderer().getText(true));
+		}
+		return json;
+	}
+
+	public List<Map<String, Double>> getPointValuesFromRange(List<DataPointVO> pointIds, long startTs, long endTs,
+															 AggregateSettings aggregateSettings) {
+		if (pointIds.isEmpty())
+			return Collections.emptyList();
+		if (aggregateSettings.isEnabled()) {
+			return pointValueAmChartDao.convertToAmChartDataObject(aggregateValuesFromRange(startTs, endTs, pointIds, aggregateSettings));
+		}
+		return pointValueAmChartDao.getPointValuesFromRange(getPointIds(pointIds), startTs, endTs);
+	}
+
+	public List<Map<String, Double>> getPointValuesToCompareFromRange(List<DataPointVO> dataPoints, long startTs, long endTs,
+																	  AggregateSettings aggregateSettings) {
+		if(dataPoints.isEmpty())
+			return Collections.emptyList();
+		if (aggregateSettings.isEnabled()) {
+			return pointValueAmChartDao.convertToAmChartCompareDataObject(aggregateValuesFromRange(startTs, endTs, dataPoints, aggregateSettings), dataPoints.get(0).getId());
+		}
+		return pointValueAmChartDao.getPointValuesToCompareFromRange(getPointIds(dataPoints), startTs, endTs);
+	}
+
+    public List<DataPointVO> getDataPoints(Set<Integer> pointIds) {
+        return pointIds.stream()
+                .map(a -> getDataPointOpt(a))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.peek(a -> {
+					if(a.getPointLocator() == null) {
+						LOG.warn(PointValueAmChartDAO.dataPointInfo(a));
+					}
+				})
+				.filter(a -> a.getPointLocator() != null)
+                .collect(Collectors.toList());
+    }
+
+	public List<DataPointVO> getDataPointsByXid(Set<String> xids) {
+		List<DataPointVO> pointIds = new ArrayList<>();
+		for(String xid: xids) {
+			DataPointVO dataPoint = getDataPoint(xid);
+			if(dataPoint != null)
+				pointIds.add(dataPoint);
+			else
+				LOG.warn("datapoint does not exist for xid: " + xid);
+		}
+		return pointIds;
+	}
+
+	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateValuesFromRange(long startTs, long endTs,
+																					 List<DataPointVO> pointIds,
+																					 AggregateSettings aggregateSettings) {
+		int limit = aggregateSettings.getValuesLimit();
+		List<PointValueAmChartDAO.DataPointSimpleValue> pvcList = pointValueAmChartDao
+				.getPointValuesFromRangeWithLimit(getPointIds(pointIds), startTs, endTs, limit + 1);
+		if (pvcList.size() > limit) {
+			pvcList.clear();
+			long intervalMs = calculateIntervalMs(startTs, endTs, pointIds.size(), aggregateSettings);
+			int revisedLimit = calculateLimit(aggregateSettings);
+			return aggregateSortValues(startTs, endTs, pointIds, revisedLimit, intervalMs);
+		}
+		return pvcList;
+	}
+
+	private int calculateLimit(AggregateSettings aggregateSettings) {
+		return aggregateSettings.getLimitFactor() > 1.0 ? (int)Math.ceil(aggregateSettings.getValuesLimit() * aggregateSettings.getLimitFactor()) + 1 : aggregateSettings.getValuesLimit() + 1;
+	}
+
+	private int[] getPointIds(List<DataPointVO> pointIds) {
+		return pointIds.stream().mapToInt(DataPointVO::getId).toArray();
+	}
+
+	private List<PointValueAmChartDAO.DataPointSimpleValue> aggregateSortValues(long startTs, long endTs,
+																				List<DataPointVO> dataPoints,
+																				int limit, long intervalMs) {
+		return dataPoints.stream()
+				.flatMap(dataPoint -> pointValueAmChartDao.aggregatePointValues(dataPoint, startTs, endTs, intervalMs, limit).stream())
+				.sorted(Comparator.comparingLong(PointValueAmChartDAO.DataPointSimpleValue::getTimestamp))
+				.collect(Collectors.toList());
+	}
+
+	private Optional<DataPointVO> getDataPointOpt(Integer a) {
+		if(a == null)
+			return Optional.empty();
+		try {
+			return Optional.ofNullable(getDataPoint(a));
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage());
+			return Optional.empty();
+		}
+	}
 }

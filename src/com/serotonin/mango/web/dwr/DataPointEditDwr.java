@@ -29,6 +29,7 @@ import com.serotonin.mango.view.chart.ImageChartRenderer;
 import com.serotonin.mango.view.chart.ImageFlipbookRenderer;
 import com.serotonin.mango.view.chart.StatisticsChartRenderer;
 import com.serotonin.mango.view.chart.TableChartRenderer;
+import com.serotonin.mango.view.event.*;
 import com.serotonin.mango.view.text.AnalogRenderer;
 import com.serotonin.mango.view.text.BinaryTextRenderer;
 import com.serotonin.mango.view.text.MultistateRenderer;
@@ -52,6 +53,36 @@ public class DataPointEditDwr extends BaseDwr {
         DataPointVO dataPoint = user.getEditPoint();
         Permissions.ensureDataSourcePermission(user, dataPoint.getDataSourceId());
         return dataPoint;
+    }
+
+    //
+    // Set event text renderer
+    //
+
+    public void setBinaryEventTextRenderer(String zeroValue, String oneValue) {
+        setEventTextRenderer(new BinaryEventTextRenderer(zeroValue, oneValue));
+    }
+
+    public void setMultistateEventRenderer(List<MultistateEventValue> values) {
+        MultistateEventRenderer r = new MultistateEventRenderer();
+        for (MultistateEventValue v : values)
+            r.addMultistateEventValue(v.getKey(), v.getText());
+        setEventTextRenderer(r);
+    }
+
+    public void setNoneEventRenderer() {
+        setEventTextRenderer(new NoneEventRenderer());
+    }
+
+    public void setRangeEventRenderer(List<RangeEventValue> values) {
+        RangeEventRenderer r = new RangeEventRenderer();
+        for (RangeEventValue v : values)
+            r.addRangeEventValues(v.getFrom(), v.getTo(), v.getText());
+        setEventTextRenderer(r);
+    }
+
+    private void setEventTextRenderer(EventTextRenderer renderer) {
+        getDataPoint().setEventTextRenderer(renderer);
     }
 
     //

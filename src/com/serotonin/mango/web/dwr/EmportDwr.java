@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import br.org.scadabr.db.dao.ScriptDao;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
@@ -63,6 +62,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.UsersProfileService;
 
 /**
  * @author Matthew Lohbihler
@@ -149,7 +149,7 @@ public class EmportDwr extends BaseDwr {
 		if (pointLinks)
 			data.put(POINT_LINKS, new PointLinkDao().getPointLinks());
 		if (users)
-			data.put(USERS, new UserDao().getUsers());
+			data.put(USERS, new UserDao().getUsersWithProfile());
 		if (mailingLists)
 			data.put(MAILING_LISTS, new MailingListDao().getMailingLists());
 		if (publishers)
@@ -190,7 +190,7 @@ public class EmportDwr extends BaseDwr {
 			data.put(SYSTEM_SETTINGS, list);
 		}
 		if (usersProfiles) {
-			data.put(USERS_PROFILES, new UsersProfileDao().getUsersProfiles());
+			data.put(USERS_PROFILES, new UsersProfileService().getUsersProfiles());
 		}
 
 		JsonWriter writer = new JsonWriter();
@@ -209,6 +209,7 @@ public class EmportDwr extends BaseDwr {
 	public DwrResponseI18n importData(String data) {
 		ResourceBundle bundle = getResourceBundle();
 		User user = Common.getUser();
+		Permissions.ensureAdmin(user);
 		DwrResponseI18n response = EmportDwr.importDataImpl(data, bundle, user);
 
 		return response;
@@ -246,6 +247,7 @@ public class EmportDwr extends BaseDwr {
 	public DwrResponseI18n importUpdate() {
 		DwrResponseI18n response;
 		User user = Common.getUser();
+		Permissions.ensureAdmin(user);
 		ImportTask importTask = user.getImportTask();
 		if (importTask != null) {
 			response = importTask.getResponse();
@@ -275,7 +277,7 @@ public class EmportDwr extends BaseDwr {
 		User user = Common.getUser();
 		ZIPProjectManager importer = user.getUploadedProject();
 		try {
-
+			Permissions.ensureAdmin(user);
 			stopRunningDataSources();
 			new SystemSettingsDAO().resetDataBase();
 			importer.importProject();

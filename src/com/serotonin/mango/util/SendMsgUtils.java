@@ -1,34 +1,42 @@
 package com.serotonin.mango.util;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
+import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
 import com.serotonin.mango.rt.event.handlers.NotificationType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
+import com.serotonin.mango.rt.maint.work.EmailNotificationWorkItem;
+import com.serotonin.mango.view.event.NoneEventRenderer;
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
-import com.serotonin.web.email.EmailSender;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.SystemSettingsDAO;
 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
 public final class SendMsgUtils {
 
-    private SendMsgUtils() {}
-
     private static final Log LOG = LogFactory.getLog(SendMsgUtils.class);
 
-    public static boolean sendEmailWithoutQueue(EventInstance evt, NotificationType notificationType,
-                                                Set<String> addresses, String alias) {
+    private SendMsgUtils() {}
+
+    public static boolean sendEmail(EventInstance evt, EmailHandlerRT.EmailNotificationType notificationType,
+                                     Set<String> addresses, String alias, AfterWork afterWork) {
         try {
 
+            SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -38,11 +46,15 @@ public final class SendMsgUtils {
                     return false;
                 }
             }
-            String[] toAddrs = addresses.toArray(new String[0]);
+
             MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
+            String[] toAddrs = addresses.toArray(new String[0]);
+
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+            validateAddresses(evt, notificationType, internetAddresses, alias);
 
             // Send the email.
-            sendEmailWithoutQueue(toAddrs, content);
+            EmailNotificationWorkItem.queueMsg(internetAddresses, content, afterWork, sendEmailConfig);
             return true;
 
         } catch (Exception e) {
@@ -53,10 +65,11 @@ public final class SendMsgUtils {
         }
     }
 
-    public static boolean sendSmsWithoutQueue(EventInstance evt, NotificationType notificationType, Set<String> addresses,
-                                              String alias) {
+    public static boolean sendSms(EventInstance evt, EmailToSmsHandlerRT.SmsNotificationType notificationType,
+                                   Set<String> addresses, String alias, AfterWork afterWork) {
         try {
 
+            SendEmailConfig sendEmailConfig = SendEmailConfig.newConfigFromSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -66,11 +79,14 @@ public final class SendMsgUtils {
                     return false;
                 }
             }
+            MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
-            MangoEmailContent content = EmailContentUtils.createTextContent(evt, notificationType, alias);
+
+            InternetAddress[] internetAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
+            validateAddresses(evt, notificationType, internetAddresses, alias);
 
             // Send the email.
-            sendEmailWithoutQueue(toAddrs, content);
+            EmailNotificationWorkItem.queueMsg(internetAddresses, content, afterWork, sendEmailConfig);
             return true;
 
         } catch (Exception e) {
@@ -85,6 +101,7 @@ public final class SendMsgUtils {
                                  String alias) {
         try {
 
+            SendEmailConfig.validateSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -96,6 +113,8 @@ public final class SendMsgUtils {
             }
             String[] toAddrs = addresses.toArray(new String[0]);
             MangoEmailContent content = EmailContentUtils.createContent(evt, notificationType, alias);
+
+            validateAddresses(evt, notificationType, convertToInternetAddresses(toAddrs), alias);
 
             // Send the email.
             EmailWorkItem.queueEmail(toAddrs, content);
@@ -113,6 +132,7 @@ public final class SendMsgUtils {
                                String alias) {
         try {
 
+            SendEmailConfig.validateSystemSettings();
             validateEmail(evt, notificationType, addresses, alias);
 
             if (evt.getEventType().isSystemMessage()) {
@@ -123,8 +143,10 @@ public final class SendMsgUtils {
                 }
             }
 
-            MangoEmailContent content = EmailContentUtils.createTextContent(evt, notificationType, alias);
+            MangoEmailContent content = EmailContentUtils.createSmsContent(evt, notificationType, alias);
             String[] toAddrs = addresses.toArray(new String[0]);
+
+            validateAddresses(evt, notificationType, convertToInternetAddresses(toAddrs), alias);
 
             EmailWorkItem.queueEmail(toAddrs, content);
             return true;
@@ -137,39 +159,11 @@ public final class SendMsgUtils {
         }
     }
 
-    private static void sendEmailWithoutQueue(String[] toAddrs, MangoEmailContent content)
-            throws Exception {
-        InternetAddress[] toAddresses = new InternetAddress[toAddrs.length];
-        for (int i = 0; i < toAddrs.length; i++)
-            toAddresses[i] = new InternetAddress(toAddrs[i]);
-
-        String addr = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_ADDRESS);
-        String pretty = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_FROM_NAME);
-        String host = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_HOST);
-        int port = SystemSettingsDAO.getIntValue(SystemSettingsDAO.EMAIL_SMTP_PORT);
-        boolean authorization = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_AUTHORIZATION);
-        String username = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_USERNAME);
-        String password = SystemSettingsDAO.getValue(SystemSettingsDAO.EMAIL_SMTP_PASSWORD);
-        boolean tls = SystemSettingsDAO.getBooleanValue(SystemSettingsDAO.EMAIL_TLS);
-
-        validateConfig(SystemSettingsDAO.EMAIL_FROM_ADDRESS, addr);
-        validateConfig(SystemSettingsDAO.EMAIL_SMTP_HOST, host);
-        if(authorization) {
-            validateConfig(SystemSettingsDAO.EMAIL_SMTP_USERNAME, username);
-            validateConfig(SystemSettingsDAO.EMAIL_SMTP_PASSWORD, password);
-        }
-
-        InternetAddress fromAddress = new InternetAddress(addr, pretty);
-        EmailSender emailSender = new EmailSender(host, port, authorization, username, password, tls);
-
-        emailSender.send(fromAddress, toAddresses, content.getSubject(), content);
-    }
-
     private static String getInfoEmail(EventInstance evt, NotificationType notificationType, String alias) {
 
         String messageInfoAlias = MessageFormat.format("Alias: {0} \n", alias);
         String messageInfoEmail = MessageFormat.format("Event: {0} \n", evt.getId());
-        String messageInfoNotyfication = MessageFormat.format("Notyfication: {0} \n", notificationType.getKey());
+        String messageInfoNotification = MessageFormat.format("Notification: {0} \n", notificationType.getKey());
         String subject = "";
         String messageExceptionWhenGetSubjectEmail = "";
         try {
@@ -177,7 +171,7 @@ public final class SendMsgUtils {
             LocalizableMessage notifTypeMsg = new LocalizableMessage(notificationType.getKey());
             if (StringUtils.isEmpty(alias)) {
                 if (evt.getId() == Common.NEW_ID)
-                    subjectMsg = new LocalizableMessage("ftl.subject.default", notifTypeMsg);
+                    subjectMsg = new LocalizableMessage("ftl.subject.default.log", notifTypeMsg);
                 else
                     subjectMsg = new LocalizableMessage("ftl.subject.default.id", notifTypeMsg, evt.getId());
             } else {
@@ -195,7 +189,7 @@ public final class SendMsgUtils {
 
         String messages = new StringBuilder()
                 .append(messageInfoEmail)
-                .append(messageInfoNotyfication)
+                .append(messageInfoNotification)
                 .append(messageInfoAlias)
                 .append(subject)
                 .append(messageExceptionWhenGetSubjectEmail).toString();
@@ -207,8 +201,8 @@ public final class SendMsgUtils {
 
         String messageErrorEventInstance = "Event Instance null \n";
         String messageErrorNotyficationType = "Notification type is null \n";
-        String messageErrorEmails = "Don't have e-mail \n";
-        String messageErrorAlias = "Don't have alias\n";
+        String messageErrorEmails = " Don't have e-mail \n";
+        String messageErrorAlias = " Don't have alias\n";
         String messages = "";
         if (evt == null || evt.getEventType() == null) messages += messageErrorEventInstance;
         if (notificationType == null) messages += messageErrorNotyficationType;
@@ -221,11 +215,37 @@ public final class SendMsgUtils {
 
     }
 
-    private static void validateConfig(String name, Object object) throws Exception {
-        if(object == null)
-            throw new IllegalStateException("Email config properties: " + name + " is null!");
-        if((object instanceof String) && ((String)object).isEmpty())
-            throw new IllegalStateException("Email config properties: " + name + " is empty!");
+    private static void validateAddresses(EventInstance evt, NotificationType notificationType,
+                                          InternetAddress[] internetAddresses, String alias) throws Exception {
+
+        String messageErrorEmails = " Don't have e-mail \n";
+        String messages = "";
+        if (internetAddresses == null || internetAddresses.length == 0) messages += messageErrorEmails;
+
+        if (!messages.isEmpty()) {
+            throw new Exception(getInfoEmail(evt, notificationType, alias) + messages );
+        }
     }
 
+    public static InternetAddress[] convertToInternetAddresses(String[] toAddresses) {
+        Set<InternetAddress> addresses = new HashSet<>();
+        for (int i = 0; i < toAddresses.length; i++) {
+            try {
+                InternetAddress internetAddress = new InternetAddress(toAddresses[i]);
+                addresses.add(internetAddress);
+            } catch (AddressException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+        return addresses.toArray(new InternetAddress[]{});
+    }
+
+    public static String getDataPointMessage(DataPointVO dataPoint, LocalizableMessage shortMsg) {
+        if (shortMsg.getKey().equals("event.detector.shortMessage") && shortMsg.getArgs().length == 2) {
+            return " " + shortMsg.getArgs()[1];
+        } else if (dataPoint.getDescription() != null && !dataPoint.getDescription().equals(""))
+            return " " + dataPoint.getDescription();
+        else
+            return " " + dataPoint.getName();
+    }
 }

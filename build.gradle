@@ -1,8 +1,4 @@
 /*
- *
- * BETA FEATURE (not-stable, still under development)
- * We advise to use ANT build instead of gradle.
- *
  * Scada-LTS gradle build configuration
  * Based on the ANT "build.xml" file. This file provide the information
  * where the source set is located, where are located the java libraries
@@ -14,20 +10,28 @@ plugins {
     id 'java'
 }
 
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+def tomcatVersion = '9.0.53'
+def tomcatDirectory = System.getenv("CATALINA_HOME")
+
 // Environment variables to change
 subprojects {
     ext {
-        buildUi = true
+        buildUi = has("skipUi")&&(skipUi!=null)
     }
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
-    compile fileTree(include: ['*.jar'], dir: System.getenv("CATALINA_HOME") + '/lib')
+    providedCompile fileTree(include: ['*.jar'], dir:'WebContent/WEB-INF/lib')
+    providedCompile fileTree(include: ['*.jar'], dir: 'lib')
+    providedCompile 'org.apache.tomcat:tomcat-catalina:' + tomcatVersion
 }
 sourceSets {
     main {
@@ -42,14 +46,34 @@ sourceSets {
     }
 }
 
+processTestResources {
+    from(sourceSets.test.java.srcDirs) {
+        include '**/*.properties'
+    }
+}
+
 war {
     dependsOn(':scadalts-ui:copyNewUiImages')
     from 'WebContent'
+    webInf {
+        from 'webapp-resources/'
+        into 'classes/'
+    }
+}
+
+task warDev(type: War) {
+    dependsOn(':scadalts-ui:copyNewUiWithSourceMap')
+    from 'WebContent'
+    webInf {
+        from 'webapp-resources/'
+        into 'classes/'
+    }
 }
 
 task clearDockerDir(type: Delete) {
     delete files("docker/volumes/webapps/ScadaBR.war")
 }
+
 task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
     from "build/libs/"
     into "docker/volumes/webapps/"
@@ -60,4 +84,88 @@ task copyWarToDocker(type: Copy, dependsOn: clearDockerDir) {
 task installWebDependency(type: Exec) {
     workingDir "./WebContent/resources"
     commandLine "npm", "install"
+}
+
+task clearTomcat(type: Delete) {
+    delete System.getenv("CATALINA_HOME") + "/work/Catalina/localhost"
+    delete System.getenv("CATALINA_HOME") + "/webapps/ScadaBR"
+    delete file(System.getenv("CATALINA_HOME") + "/webapps/ScadaBR.war")
+}
+
+task deployTomcat(type: Copy) {
+    from "build/libs/"
+    into System.getenv("CATALINA_HOME")+ "/webapps"
+    include('Scada-LTS.war')
+    rename('Scada-LTS.war', "ScadaBR.war")
+}
+
+task deploy(type: GradleBuild) {
+    tasks = ['clearTomcat', 'war', 'deployTomcat']
+}
+
+task run(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'run'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'run'
+    }
+}
+
+task runDebug(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        workingDir tomcatDirectory + '\\bin'
+        commandLine 'cmd', '/c', 'catalina.bat', 'jpda', 'run'
+    } else {
+        workingDir tomcatDirectory + '/bin'
+        commandLine 'sh', './catalina.sh', 'jpda', 'run'
+    }
+}
+
+task buildRun(type: GradleBuild) {
+    tasks = ['clearTomcat', 'test', 'war', 'deployTomcat', 'run']
+}
+
+task buildRunDebug(type: GradleBuild) {
+    tasks = ['clearTomcat', 'test', 'warDev', 'deployTomcat', 'runDebug']
+}
+
+task buildRunDebugDev(type: GradleBuild) {
+    tasks = ['clearTomcat', 'installWebDependency', 'test', 'warDev', 'deployTomcat', 'runDebug']
+}
+
+test {
+    filter {
+        includeTestsMatching "org.scada_lts.cached.DataPointsCacheComposeDataSourcesDataTest"
+        includeTestsMatching "org.scada_lts.cached.DataSourcePointsCacheMockitoTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueCacheTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueFacadeTest"
+        includeTestsMatching "com.serotonin.mango.web.dwr.DataPointDetailsDwrTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.PointValueTimeTest"
+        includeTestsMatching "org.scada_lts.dao.PointValueDAOTest"
+        includeTestsMatching "com.serotonin.mango.view.component.ViewComponentTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataSource.meta.ScriptExecutorTest"
+        includeTestsMatching "com.serotonin.mango.rt.scripting.ContextualizedScriptRTTestsSuite"
+        includeTestsMatching "org.scada_lts.service.ScheduledExecuteInactiveEventServiceTest"
+        includeTestsMatching "com.serotonin.mango.vo.mailingList.MailingListInactive15MinuteIntervalTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRtTest"
+        includeTestsMatching "org.scada_lts.service.CommunicationChannelTest"
+        includeTestsMatching "com.serotonin.mango.rt.event.ScheduledExecuteInactiveEventRtTestsSuite"
+        includeTestsMatching "org.scada_lts.service.InactiveEventsProviderTest"
+        includeTestsMatching "org.scada_lts.utils.UpdateValuePointPropertiesTest"
+        includeTestsMatching "org.scada_lts.permissions.service.util.PermissionsTestsSuite"
+        includeTestsMatching "com.serotonin.mango.util.ViewControllerUtilsTest"
+        includeTestsMatching "org.scada_lts.permissions.migration.MigrationPermissionsTestsSuite"
+        includeTestsMatching "org.scada_lts.dao.pointvalues.PointValueAmChartDAOTest"
+        includeTestsMatching "br.org.scadabr.rt.scripting.context.properties.DataPointLoggingTestsSuite"
+        includeTestsMatching "org.scada_lts.dao.NewInstanceUserTest"
+        includeTestsMatching "org.scada_lts.dao.NewInstanceUsersProfileTest"
+        includeTestsMatching "br.org.scadabr.vo.EqualsHashcodePermissionTest"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.datapointrt.DataPointRtTestsSuite"
+        includeTestsMatching "com.serotonin.mango.rt.dataImage.DataPointSyncModeTest"
+        includeTestsMatching "com.serotonin.mango.rt.RuntimeManagerCreateDataPointRtTest"
+        includeTestsMatching "org.scada_lts.utils.SystemSettingsUtilsTest"
+        includeTestsMatching "br.org.scadabr.view.component.GenerateAlarmListComponentTest"
+    }
 }

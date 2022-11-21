@@ -52,12 +52,16 @@ public interface MangoEvent {
 	List<EventInstance> getEventsForDataPoint(int dataPointId, int userId);
 	
 	List<EventInstance> getPendingEventsForDataPoint(int dataPointId, int userId);
+
+	List<EventInstance> getPendingSimpleEventsForDataSource(int dataSourceId, int userId);
 	
 	List<EventInstance> getPendingEventsForDataSource(int dataSourceId,	int userId);
 	
 	List<EventInstance> getPendingEventsForPublisher(int publisherId, int userId);
 	
 	List<EventInstance> getPendingEvents(int typeId, int typeRef1, int userId);
+
+	List<EventInstance> getPendingSimpleEvents(int typeId, int typeRef1, int userId);
 	
 	List<EventInstance> getPendingEvents(int userId);
 	
@@ -106,6 +110,7 @@ public interface MangoEvent {
 	boolean toggleSilence(int eventId, int userId);
 	
 	int getHighestUnsilencedAlarmLevel(int userId);
-	
+
+	EventInstance getEvent(int eventId);
 
 }

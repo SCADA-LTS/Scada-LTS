@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
@@ -30,6 +31,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersProfilesDwr {
 
@@ -38,7 +41,7 @@ public class UsersProfilesDwr {
 
 		initData.put("admin", true);
 
-		List<UsersProfileVO> profiles = new UsersProfileDao()
+		List<UsersProfileVO> profiles = new UsersProfileService()
 				.getUsersProfiles();
 		initData.put("profiles", profiles);
 
@@ -74,7 +77,9 @@ public class UsersProfilesDwr {
 		initData.put("watchlists", watchlists);
 
 		ViewDao viewDao = new ViewDao();
-		List<View> views = viewDao.getViews();
+		List<View> views = viewDao.getSimpleViews().stream()
+				.map(toView())
+				.collect(Collectors.toList());
 		initData.put("views", views);
 
 		return initData;
@@ -85,7 +90,7 @@ public class UsersProfilesDwr {
 			return new UsersProfileVO();
 		}
 
-		return new UsersProfileDao().getUserProfileById(id);
+		return new UsersProfileService().getUserProfileById(id);
 	}
 
 	public DwrResponseI18n saveUserAdmin(int id, String name,
@@ -98,13 +103,13 @@ public class UsersProfilesDwr {
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 
-		UsersProfileDao userDao = new UsersProfileDao();
+		UsersProfileService usersProfileService = new UsersProfileService();
 
 		UsersProfileVO profile;
 		if (id == Common.NEW_ID)
 			profile = new UsersProfileVO();
 		else
-			profile = userDao.getUserProfileById(id);
+			profile = usersProfileService.getUserProfileById(id);
 
 		profile.setName(name);
 		profile.setDataSourcePermissions(dataSourcePermissions);
@@ -115,10 +120,10 @@ public class UsersProfilesDwr {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		try {
-			userDao.saveUsersProfile(profile);
+			usersProfileService.saveUsersProfile(profile);
 		} catch (DAOException e) {
 			response.addMessage(new LocalizableMessage(
-					"usersProfiles.validate.nameUnique"));
+					"userProfiles.validate.nameUnique"));
 		}
 
 		if (!response.getHasMessages()) {
@@ -131,9 +136,9 @@ public class UsersProfilesDwr {
 	public DwrResponseI18n deleteUsersProfile(int profileId) {
 		Permissions.ensureAdmin();
 		DwrResponseI18n response = new DwrResponseI18n();
-		UsersProfileDao profileDao = new UsersProfileDao();
+		UsersProfileService usersProfileService = new UsersProfileService();
 		try {
-			profileDao.deleteUserProfile(profileId);
+			usersProfileService.deleteUserProfile(profileId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -146,4 +151,13 @@ public class UsersProfilesDwr {
 		return response;
 	}
 
+	private Function<ScadaObjectIdentifier, View> toView() {
+		return a -> {
+			View view = new View();
+			view.setId(a.getId());
+			view.setXid(a.getXid());
+			view.setName(a.getName());
+			return view;
+		};
+	}
 }

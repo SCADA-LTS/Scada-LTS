@@ -10,9 +10,19 @@
 const storeAlarmsNotifications = {
 	state: {
 		pedTemplate: {
+			id: -1,
 			xid: 'PED-PLC',
 			alias: '',
 			alarmLevel: 1,
+			detectorType: 5,
+			limit: 0.0,
+			duration: 0,
+			durationType: 1,
+			binaryState: false,
+			multistateState: 0,
+			changeCount: 2,
+			alphanumericState: null,
+			weight: 0.0
 		},
 		ehTemplate: {
 			id: -1,
@@ -28,6 +38,7 @@ const storeAlarmsNotifications = {
 			inactiveOverride: false,
 			inactiveRecipients: null,
 		},
+		lastPointEventDetector: new Map(),
 	},
 
 	mutations: {},
@@ -75,20 +86,37 @@ const storeAlarmsNotifications = {
 			requestData.xid = requestData.xid + `_${datapointId}`;
 
 			return dispatch('requestPost', {
-				url: `/eventDetector/set/change/${datapointId}`,
+				url: `/eventDetector/set/${datapointId}`,
 				data: requestData,
 			});
 		},
 
-		deleteEventDetector({ dispatch }, payload) {
-			return dispatch(
-				'requestDelete',
-				`/eventDetector/delete/${payload.datapointId}/${payload.pointEventDetectorId}`,
-			);
+		async getPointEventDetector({ state, dispatch }, datapointId) {
+			let template = JSON.parse(JSON.stringify(state.pedTemplate));
+			template.xid = template.xid + `_${datapointId}`;
+
+			let pointData = await dispatch('getDataPointDetails', datapointId);
+			return pointData.eventDetectors.find(ed => ed.xid === template.xid);
 		},
 
 		async createEventHandler({ state, dispatch }, payload) {
-			let pedId = await dispatch('createPointEventDetector', payload.datapointId);
+			let pedId;
+			try {
+				pedId = await dispatch('createPointEventDetector', payload.datapointId);
+				state.lastPointEventDetector.set(payload.datapointId, pedId);
+			} catch (e) {
+				if(e.status === 409) {
+					// Load from cache
+					pedId = state.lastPointEventDetector.get(payload.datapointId);
+					if(!pedId) {
+						// Retrive data from server
+						pedId = await dispatch('getPointEventDetector', payload.datapointId);
+						if(!pedId) {
+							throw 'Event Detector does not exist!';
+						}
+					}
+				}
+			}
 			let edId = pedId.id;
 			let dpId = payload.datapointId;
 			let mlId = payload.mailingListId[0];

@@ -4,84 +4,93 @@
   .labelDiv
     transform: translateX(-$icon_size/2) translateY($icon_size*1.5)
 
-div.content
+.login-container
+  display: flex
+  justify-items: center
+  justify-content: center
+  align-items: center
+  width: 100%
+  height: calc(100vh - 140px)
+  flex-direction: column
+  margin: 0
+  padding: 0
+  border-radius: 0
+  background-size: cover
+  background-image: url("./images/Background.jpg")
 
-  .login-container
-    background-image: url("./images/Background.jpg")
-    background-size: cover
-    height: calc(100vh - 166px)
-    margin: auto
-    text-align: center
+  .login-browser
+    margin-bottom: 15px
+    margin-top: -10vh
+  
+  .login-box
+    display: flex
+    background-color: white
+    width: 45%
+    box-shadow: 1px 2px 7px 0px #00000085
+    border-radius: 10px
 
+    form
+      display: flex
+      flex-direction: column
+      width: 100%
+      padding: 30px
+      margin: 0
 
-    .login-browser
-      display: block
-      position: relative
-      top: 66px
-      left: 50%
-      color: white
-      transform: translateX(-50%)
-      opacity: .85
+      .formError
+          width: 100%
 
-    .login-box
-      position: relative
-      padding: 5rem
-      padding-bottom: 3rem
-      width: 600px
-      top: calc(50vh - 100px)
-      left: 50vw
-      transform: translateY(-50%) translateX(-50%)
-      background-color: rgba(232,234,246, 0.75)
-      box-shadow: 4px 8px 14px 1px rgba(0, 0, 0, 0.5)
-      border: 1px solid black
-      text-align: center
-      opacity: .9
-
-      .formLabelRequired
-        margin-bottom: -0.5rem
-        font-size: 1.2rem
-        font-weight: bolder
-        text-align: left
-        text-transform: uppercase
-
-      .formField
-        width: 100%
-        text-align: left
-        font-size: 1.3rem
-        font-weight: bold
-
-        input
-          text-align: left
-          width: 90%
-      
       .form-box
         width: 100%
+        margin-top: 10px
 
-      .login-button
+        .formLabelRequired
+          width: 100%
+          padding: 0
+          margin: 0
+          text-align: left
+          font-size: 1em
+
+        .formField 
+          width: 100%
+          padding: 0
+          margin: 0
+
+          input
+            width: 100%
+            padding: 0
+            margin: 0
+            height: 30px
+            font-size: 1em
+            user-select: #000000
+    
+    .login-button
+      display: flex
+      flex-direction: column
+      align-items: center
+      width: 100%
+
+      input
+        margin: 0
+        padding: 0
         width: 100%
-        margin: auto
-        
-        input
-          width: 180px
-          margin-top: 3rem
-          padding: 4px 65px
-          font-weight: 700
-          text-align: center
-          text-transform: uppercase
-          background-color: rgba(119,192,85, 0.40)
-          border: 1px solid rgba(0, 0, 0, 0.07)
-          transition: all .3s ease-in-out
+        height: 40px
+        border-radius: 5px
 
-          &:hover
-            box-shadow: 0 2px  5px rgba(0, 0, 0, 0.24)
-            background-color: $primary_color
-            border: 1px solid rgba(0, 0, 0, 0.55)
-            cursor: pointer
+        &:hover
+          box-shadow: 0px 2px 4px #000000a6
+          background-color: white
+          transition: all 0.2s
+      
+      img.ptr[src="images/help.png"]
+        width: 16px !important
+      
 
-    .ptr
-      position: absolute
-      left: 1rem
-      top: 1rem
-      display: none //fixed in future
+@media (min-width: 1024px)
+  .login-container 
+    .login-box
+      width: 30%
 
-
+@media (min-width: 1440px)
+  .login-container 
+    .login-box
+      width: 20%

@@ -1,0 +1,28 @@
+<!--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+ -->
+<p>Anonymous access</p>
+<p>To support anonymous views, a special user "anonymous-user" has been created in which, as for an ordinary user, we can define specific permissions, including the views that we want to make available to an anonymous user. </p>
+<p>To be able to change the value on the settable point, you should:</p>
+<ol type="1">
+    <li>Select "set" permission to the datapoint or permission to the datasource in which the datapoint is located;</li>
+    <li>Select "set" permission to the view;</li>
+    <li>Select "set" permission for an anonymous user on view;</li>
+</ol>
+<p>If the "read" permission is set on any level, it will be possible to read the value of a given point from the view at most.</p>
+<p>If we want to be able to set anonymous access on the view, an admin should be set for this special user.</p>

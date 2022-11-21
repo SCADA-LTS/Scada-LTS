@@ -4,7 +4,6 @@ import com.mysql.jdbc.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
-import org.scada_lts.utils.QueryUtils;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -16,9 +15,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEventDAO {
 
@@ -102,6 +102,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             LOG.trace("select(int mailingListId) mailingListId:" + mailingListId);
         }
 
+        if(limit <= 0)
+            return Collections.emptyList();
+
         return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE
                         + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC"
                         + " LIMIT " + limit, new Object[] {mailingListId},
@@ -112,8 +115,10 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
     public List<ScheduledExecuteInactiveEvent> selectByMailingListId(int mailingListId,
                                                                      List<ScheduledExecuteInactiveEvent> exclude,
                                                                      int limit) {
+        if(limit <= 0)
+            return Collections.emptyList();
         if(!exclude.isEmpty())
-            return selectWithNotIn(mailingListId, exclude, limit);
+            return selectWithNot(mailingListId, exclude, limit);
         return selectByMailingListId(mailingListId, limit);
     }
 
@@ -123,6 +128,9 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
         if (LOG.isTraceEnabled()) {
             LOG.trace("select():");
         }
+
+        if(limit <= 0)
+            return Collections.emptyList();
 
         return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT
                         + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC"
@@ -176,42 +184,72 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
         }
     }
 
-    private List<ScheduledExecuteInactiveEvent> selectWithNotIn(int mailingListId, List<ScheduledExecuteInactiveEvent> exclude, int limit) {
-        Exclude excludeEventHandlers = new Exclude(COLUMN_NAME_EVENT_HANDLER_ID, getEventHandlerIds(exclude));
-        Exclude excludeEvents = new Exclude(COLUMN_NAME_SOURCE_EVENT_ID, getEventIds(exclude));
-
+    private List<ScheduledExecuteInactiveEvent> selectWithNot(int mailingListId, List<ScheduledExecuteInactiveEvent> exclude, int limit) {
+        ExcludePair excludePair = new ExcludePair(COLUMN_NAME_EVENT_HANDLER_ID, COLUMN_NAME_SOURCE_EVENT_ID,
+                toPairs(getEventHandlerIds(exclude), getEventIds(exclude)));
         return jdbcTemplate.query(SCHEDULED_INACTIVE_COMMUNICATION_EVENT_SELECT_WHERE
-                        + " AND " + excludeEventHandlers.toSql()
-                        + " AND " + excludeEvents.toSql()
+                        + excludePair.toSql()
                         + " ORDER BY " + COLUMN_NAME_SOURCE_EVENT_ID + " ASC"
-                        + " LIMIT " + limit, mergeWithOrder(mailingListId,
-                excludeEventHandlers.getArgs(), excludeEvents.getArgs(  )),
+                        + " LIMIT " + limit, mergeWithOrder(mailingListId, excludePair.getArgs()),
                 new ScheduledExecuteInactiveEventRowMapper());
     }
 
-    private static List<Integer> getEventHandlerIds(List<ScheduledExecuteInactiveEvent> exclude) {
-        return exclude.stream().map(ScheduledExecuteInactiveEvent::getEventHandlerId).collect(Collectors.toList());
+    private static Set<Integer> getEventHandlerIds(List<ScheduledExecuteInactiveEvent> exclude) {
+        return exclude.stream().map(ScheduledExecuteInactiveEvent::getEventHandlerId).collect(Collectors.toSet());
     }
 
-    private static List<Integer> getEventIds(List<ScheduledExecuteInactiveEvent> exclude) {
-        return exclude.stream().map(ScheduledExecuteInactiveEvent::getSourceEventId).collect(Collectors.toList());
+    private static Set<Integer> getEventIds(List<ScheduledExecuteInactiveEvent> exclude) {
+        return exclude.stream().map(ScheduledExecuteInactiveEvent::getSourceEventId).collect(Collectors.toSet());
     }
 
-    private static class Exclude {
-        private String columnName;
-        private List<Integer> args;
+    private static class Pair {
+        private Integer value1;
+        private Integer value2;
 
-        public Exclude(String columnName, List<Integer> args) {
-            this.columnName = columnName;
-            this.args = args;
+        public Pair(Integer value1, Integer value2) {
+            this.value1 = value1;
+            this.value2 = value2;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Pair)) return false;
+            Pair pair = (Pair) o;
+            return Objects.equals(value1, pair.value1) &&
+                    Objects.equals(value2, pair.value2);
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(value1, value2);
+        }
+    }
+
+    private static class ExcludePair {
+        private String columnName1;
+        private String columnName2;
+        private List<Pair> pairs;
+
+        public ExcludePair(String columnName1, String columnName2, List<Pair> pairs) {
+            this.columnName1 = columnName1;
+            this.columnName2 = columnName2;
+            this.pairs = pairs;
         }
 
         public String toSql() {
-            return columnName + " NOT IN (" + QueryUtils.getArgsIn(args.size()) + ")";
+            StringBuilder toSql = new StringBuilder();
+            String andNot = MessageFormat.format( " AND NOT ({0}=? AND {1}=?)", columnName1, columnName2);
+            for(int i = 0; i < pairs.size(); i++)
+                toSql.append(andNot);
+            return toSql.toString();
         }
 
         public List<Integer> getArgs() {
-            return args;
+            return pairs.stream()
+                    .flatMap(a -> Stream.of(a.value1, a.value2))
+                    .collect(Collectors.toList());
         }
 
         @Override
@@ -227,5 +265,15 @@ class ScheduledExecuteInactiveEventDAOimpl implements ScheduledExecuteInactiveEv
             result.addAll(list);
         }
         return result.toArray(new Integer[]{});
+    }
+
+    private List<Pair> toPairs(Set<Integer> args1, Set<Integer> args2) {
+        List<Pair> pairs = new ArrayList<>();
+        for(Integer arg1: args1) {
+            for(Integer arg2: args2) {
+                pairs.add(new Pair(arg1, arg2));
+            }
+        }
+        return pairs;
     }
  }

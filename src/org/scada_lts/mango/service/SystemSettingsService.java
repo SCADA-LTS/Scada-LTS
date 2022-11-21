@@ -1,15 +1,14 @@
 package org.scada_lts.mango.service;
 
 import br.org.scadabr.db.configuration.ConfigurationDB;
-import com.serotonin.bacnet4j.type.enumerated.LoggingType;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.work.EmailWorkItem;
-import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.event.EventTypeVO;
@@ -20,6 +19,7 @@ import org.scada_lts.config.ScadaConfig;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.serorepl.utils.DirectoryInfo;
 import org.scada_lts.serorepl.utils.DirectoryUtils;
+import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.scada_lts.web.mvc.api.json.*;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +52,7 @@ public class SystemSettingsService {
         settings.put("auditEventTypes", this.getAuditEventAlarmLevels());
         settings.put("databaseType", this.getDatabaseType());
         settings.put("scadaConfig", this.getScadaConfig());
+        settings.put("aggregateSettings", this.getAggregateSettings());
 
         return settings;
     }
@@ -128,6 +129,7 @@ public class SystemSettingsService {
         json.setFutureDateLimitPeriodType(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE));
         json.setFutureDateLimitPeriods(SystemSettingsDAO.getIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS));
         json.setUiPerformance(SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
+        json.setDataPointRuntimeValueSynchronized(SystemSettingsDAO.getValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED));
         return json;
     }
 
@@ -140,6 +142,7 @@ public class SystemSettingsService {
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE, json.getFutureDateLimitPeriodType());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS, json.getFutureDateLimitPeriods());
         systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, json.getUiPerformance());
+        systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode.getName(json.getDataPointRuntimeValueSynchronized()));
     }
 
     public List<JsonSettingsEventLevels> getAuditEventAlarmLevels() {
@@ -311,4 +314,29 @@ public class SystemSettingsService {
 
     }
 
+    public AggregateSettings getAggregateSettings() {
+        AggregateSettings aggregateSettings = new AggregateSettings();
+        aggregateSettings.setEnabled(SystemSettingsDAO.getBooleanValueOrDefault(SystemSettingsDAO.AGGREGATION_ENABLED));
+        aggregateSettings.setValuesLimit(SystemSettingsDAO.getIntValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT));
+
+        try {
+            double var = Double.parseDouble(SystemSettingsDAO.getValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR));
+            aggregateSettings.setLimitFactor(var);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AggregateSettings defaultValue = AggregateSettings.fromEnvProperties();
+            aggregateSettings.setLimitFactor(defaultValue.getLimitFactor());
+        }
+        return aggregateSettings;
+    }
+
+    public void saveAggregateSettings(AggregateSettings aggregateSettings) {
+        systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_VALUES_LIMIT, String.valueOf(aggregateSettings.getValuesLimit()));
+        systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
+        systemSettingsDAO.setValue(SystemSettingsDAO.AGGREGATION_ENABLED, String.valueOf(aggregateSettings.isEnabled()));
+    }
+
+    public DataPointSyncMode getDataPointRtValueSynchronized() {
+        return SystemSettingsDAO.getObject(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, DataPointSyncMode::typeOf);
+    }
 }

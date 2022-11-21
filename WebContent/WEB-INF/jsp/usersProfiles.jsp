@@ -167,14 +167,24 @@
 	            $set("dp"+ userProfile.dataPointPermissions[i].dataPointId, userProfile.dataPointPermissions[i].permission);
         }
 
-     	// Update the watchlist permissions.
-        for (i=0; i<userProfile.watchlistPermissions.length; i++)
-            $set("wl"+ userProfile.watchlistPermissions[i].id, userProfile.watchlistPermissions[i].permission);
+        if(watchlists != null) {
+            for (i=0; i<watchlists.length; i++) {
+                $set("wl"+ watchlists[i].id, "0");
+            }
 
-     	// Update the view permissions.
-      	for (i=0; i<userProfile.viewPermissions.length; i++)
-            $set("vw"+ userProfile.viewPermissions[i].id, userProfile.viewPermissions[i].permission);
-        
+            // Update the watchlist permissions.
+            for (i=0; i<userProfile.watchlistPermissions.length; i++)
+                $set("wl"+ userProfile.watchlistPermissions[i].id, userProfile.watchlistPermissions[i].permission);
+        }
+
+        if(views != null) {
+            for (i=0; i<views.length; i++) {
+                $set("vw"+ views[i].id, "0");
+            }
+            // Update the view permissions.
+            for (i=0; i<userProfile.viewPermissions.length; i++)
+                $set("vw"+ userProfile.viewPermissions[i].id, userProfile.viewPermissions[i].permission);
+        }
         
         setUserProfileMessage();
         updateUserProfileImg();

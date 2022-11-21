@@ -1,63 +1,20 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>Las expresiones regulares (o RegEx) son una forma poderosa y concisa de analizar los datos textuales. Aunque sus definiciones parecen inicialmente oscuras, con un poco de experiencia, muchos problemas de análisis de textos se resuelven fácilmente. Diferentes implementaciones de RegEx a veces tienen implementaciones ligeramente diferentes de sus funciones. Un tutorial sobre la implementación de Java RegEx se puede encontrar <a href="http://java.sun.com/docs/books/tutorial/essential/regex/" target="_blank">aquí</a>.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<p>Muchos de los modelos RegEx usados en Scada -LTS son similares. En general, la intención es localizar un valor particular en un texto. Como tal, la plantilla consiste en cadenas de prefijos y sufijos que identifican de manera única el valor, y una plantilla de grupo que extrae el valor. Por ejemplo, el texto a analizar podría ser como este: </p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<pre>Este es el texto a analizar con mi valor de 1234 incrustado en el medio</pre>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
+<p>Si el valor deseado es "1234", puede ser un modelo RegEx en funcionamiento:</p>
+<pre>mi valor de (.*?) integrado</pre>
 
-
-<p>
-  Las Expresiones Regulares (o RegEx) son una poderosa y precisa v&iacute;a de an&aacute;lisis textual de datos. Aunque sus definiciones inicialmente
-  parecieran complicadas, con s&oacute;lo un poco de experiencia, un gran n&uacute;mero de problemas de an&aacute;lisis de texto pueden ser f&aacute;cilmente solucionables.
-  Diferentes implementaciones de RegEx algunas veces tienen peque&ntilde;as diferencias de implementaci&oacute;n en sus funciones. Un tutorial de implementaciones en    
-  Java RegEx puede encontrarse <a href="http://java.sun.com/docs/books/tutorial/essential/regex/" target="_blank">aqu&iacute;</a>.
-</p>
-
-<p>
-  Muchos de los patrones RegEx utilizados en el ScadaBR son similares. En general su intenci&oacute;n es el de ubicar un valor espec&iacute;fico en un texto.
-  De esta forma, los patrones consistir&aacute;n en cadenas de caracteres de prefijos y sufijos d&oacute;nde &uacute;nicamente identificar&aacute;n un valor, y un patr&oacute;n se
-  extraer&aacute; del valor. Por ejemplo,el ejemplo a analizar pudiera parecerce a:
-</p>
-
-<pre>Este es el texto para analizar con mi valor de 1234 ubicado en el medio,</pre>
-
-<p>Si el valor deseado es el "1234", un patr&oacute;n de RegEx que puede trabajar ser&iacute;a:</p>
-<pre>mi valor de (.*?) ubicado</pre>
-
-<p>
-  Lo importante es que el prefijo (p.e. "mi valor de ") y el sufijo (" ubicado") nunca se modifiquen para las nuevas ocurrencias del texto,
-  y estas dos cadenas siempre enmarcan la ubicaci&oacute;n de valor deseado. Un ejemplo extremo: Note que el prefijo "e "har&iacute;an el trabajo y el sufijo " u" 
-  tambi&eacute;n har&iacute;an el trabajo para este caso, pero puede traer errores en textos largos, o si hay cambios significativos.
-</p>
+<p>Lo importante es que el prefijo (es decir, "mi valor de") y el sufijo ("incrustado") nunca cambian entre las nuevas instancias del texto, y definen de manera única la ubicación del valor deseado. En el extremo, observe que el prefijo "f" y el sufijo " " también funcionan en este caso, pero funcionan menos bien en textos más grandes, o si el texto cambia significativamente.</p>

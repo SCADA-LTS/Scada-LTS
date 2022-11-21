@@ -1,0 +1,56 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>La fuente de datos SQL se utiliza para recuperar y definir valores en una base de datos SQL. Es una fuente de datos de consulta que leerá valores basados en un período de actualización determinado.</p>
+
+<h1>Connectividad</h1>
+<p>Se puede acceder a cualquier base de datos soportada por el JDBC. Se requiere un controlador específico <a href="http://developers.sun.com/product/jdbc/drivers" target="_blank">JDBC</a> para conectarse a una base de datos en particular, pero tales controladores están fácilmente disponibles para la mayoría de las bases de datos, incluyendo MySQL, MS SQL Server, IBM DB2, Oracle, Sybase y muchas otras. El controlador para MySQL está incluido en este producto. Consulte la documentación de su base de datos particular para saber dónde conseguir el controlador JDBC apropiado.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. El <b>Período de actualización</b> determina la frecuencia con la que se lee la base de datos.</p>
+<p>
+  El <b>Nombre de la clase del conductor</b> especifica la clase Java que implementa la interfaz del conductor JDBC en su conductor JDBC. Este valor se puede encontrar en la documentación del conductor. La siguiente es una lista de nombres de clases de conductores para la base de datos en cuestión, y se proporciona sólo por conveniencia. Tenga en cuenta que la conectividad normalmente requiere que el software del controlador se instale en el servidor Scada-LTS. Si encuentra problemas, por favor consulte la documentación de su base de datos.</p>
+<ul>
+  <li><b>MySQL</b> : com.mysql.jdbc.Driver</li>
+  <li><b>Oracle thin driver</b> : oracle.jdbc.driver.OracleDriver</li>
+</ul>
+<p>La <b>Serie de conexión</b> depende tanto de la base de datos que esté usando como de los detalles de su instalación. La documentación de su controlador JDBC le explicará cómo calcular el valor de su base de datos. Los campos <b>Nombre de usuario</b> y <b>Contraseña</b> proporcionan las credenciales necesarias para que su base de datos acepte conexiones de esta aplicación.</p>
+<p>Su <b>Seleccione la declaración</b> debe ser una declaración válida <a href="http://en.wikipedia.org/wiki/SQL" target="_blank">SQL</a>. Se supone que el SQL es un lenguaje de acceso a datos estandarizado, pero las diferentes bases de datos suelen tener sutiles diferencias de interpretación o proporcionan extensiones de lenguaje. Por lo tanto, debe utilizar la documentación de su base de datos para ayudarle a construir la declaración SQL para sus propósitos.</p>
+
+<p>Utilice la casilla <b>Búsqueda por fila</b> para determinar si la búsqueda se basa en una fila o en una columna. Como esto afecta a los atributos en la configuración de los puntos de datos, esta selección sólo puede modificarse cuando no hay puntos definidos para la fuente de datos. Véase más abajo para obtener más información sobre las consultas por filas o columnas.</p>
+
+<h1>Procesamiento de consultas por línea</h1>
+<p>
+  Las consultas basadas en filas tienen expectativas específicas en cuanto a la estructura del conjunto de resultados de la consulta, pero permiten extraer grandes cantidades de datos similares más fácilmente que con las consultas basadas en columnas. El conjunto de resultados debe tener la siguiente estructura de características.</p>
+<ul>
+  <li>Primera columna: el identificador de fila utilizado para la correspondencia con los puntos de origen de los datos. Los identificadores de línea son insensibles a las mayúsculas y minúsculas. </li>
+  <li>Segunda columna: el valor del punto</li>
+  <li>Tercera columna (opcional): la derogación temporal para el valor del punto. Si no se incluye una tercera columna, el tiempo por defecto es el tiempo de ejecución del DDH. Si se incluye, el valor del campo no puede ser nulo. </li>
+</ul>
+
+<h1>Procesamiento de consultas por columnas</h1>
+<p>Las consultas basadas en columnas utilizan los nombres de las columnas del conjunto de resultados para localizar los valores de los puntos y los tiempos de espera. Es importante reconocer que sólo se utiliza la <b>primera fila </b> del conjunto de resultados en una consulta basada en columnas.</p>
+<p>Puede haber casos en que el uso de una consulta basada en una fila sea deseable, pero no posible porque los tipos de datos son demasiado dispares. En tales casos, puede ser posible construir la declaración SQL para transponer una consulta basada en filas a una consulta basada en columnas. Una declaración típica para recuperar datos en varias filas podría ser así: </p>
+<div><pre style="overflow : auto ; width : 95% ;">seleccionar el estado de la retransmisión</pre></div>
+<p> Para transponer tal tabla con el fin de recuperar los valores en una sola línea, se podría proceder de la siguiente manera (suponiendo 3 relevos):</p>
+<div><pre style="overflow : auto ; width : 95% ;">select
+  r1.status as r1status,
+  r2.status as r2status,
+  r3.status as r3status
+from relays r1, relays r2, relays r3
+where r1.relayId = 'relay1'
+  and r2.relayId = 'relay2'
+  and r3.relayId = 'relay3'
+</pre></div>
+<p>Tenga en cuenta que los ejemplos anteriores se proporcionan sólo a título informativo y de conveniencia. Su base de datos específica puede requerir soluciones muy diferentes.</p>
+
+<h1>Seleccione la declaración test</h1>
+<p>La Sección <b>Prueba de declaración</b> puede ser usada para probar tanto sus valores de configuración como su declaración de selección SQL. Haciendo clic en el botón <b>Ejecutar</b>, se intentará una conexión con su base de datos, y si tiene éxito, se ejecutará el SQL. Cualquier error que ocurra será mostrado. Si la declaración SQL se ejecuta con éxito, los resultados se mostrarán adecuadamente dependiendo de si la declaración se basa en filas o columnas. Las consultas basadas en columnas mostrarán una fila para cada columna, proporcionando el nombre de la columna, el tipo de datos de la columna (entre paréntesis, utilizando la definición de tipo JDBC) y el valor recuperado. Las consultas basadas en filas mostrarán el conjunto de resultados en una tabla con los nombres de las columnas y los tipos de datos como encabezados, y una fila de datos para cada fila del conjunto de resultados (hasta un máximo de 50 filas).</p>

@@ -1,68 +1,18 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-
+<!--
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>La configuración del correo electrónico se utiliza para todos los envíos de Scada-LTS.</p>
 <p>
-  Las configuraciones de correo son utilizadas para todas las actividades de correo electr&oacute;nico en la aplicaci&oacute;n.
-</p>
-
+  <b>El SMTP</b> host es el nombre del servidor en el que se ejecuta el MTA (Agente de Transferencia de Correo). Si el servidor requiere autenticación, marque la casilla <b>autorización de uso</b> y rellene los campos <b>nombre de usuario</b> y <b>contraseña</b>. Haga clic en la casilla <b>Habilitar TLS</b> si el servidor lo requiere.</p>
 <p>
-  El <b>Servidor SMTP</b> es el nombre del servidor donde est&aacute; operando su MTA. Si el servidor requiere autentificaci&oacute;n, 
-active la casilla de <b>Utilice autorizaci&oacute;n</b>, y llene los campos correspondientes con el <b>Nombre de Usuario</b> 
-y su <b>Contrase&ntilde;a</b>. Igualmente, si su servidor requiere seguridad en la capa de trasporte habilite la casilla <b>Habilitar TLS</b>.
-</p>
-
+  El campo <b>dirección</b> es la dirección de envío utilizada para todos los correos. El campo <b>nombre</b> es un campo opcional para especificar un nombre propio o un alias para el remitente.</p>
 <p>
-  La<b> direcci&oacute;n 'De'</b> es la direcci&oacute;n que ser&aacute; utilizada como direcci&oacute;n electr&oacute;nica del remitente de cada correo enviado. El <b>Nombre 'De'</b> 
-  es un campo opcional que le permite especificar un alias&mdash;o un nombre 'personal'&mdash; para ser mostrado en el remitente del correo.
-</p>
-
-<p>
-  Utilice la caja de selecci&oacute;n del <b>Tipo de contenido</b> para cambiar la el tipo de forma en la que se enviar&aacute;n los correos. 
-De forma predefinida se utiliza <b>HTML y texto</b>, por lo que se crea un MIME con partes con el formato "texto/html" y otras con "texto/texto". 
-Cuando selecciona <b>S&oacute;lo HTML</b> el correo estar&aacute; conformado por varias partes cuando tenga adjuntos o contenido en l&iacute;nea, 
-aunque en los dem&aacute;s casos ser&aacute; de una &uacute;nica parte. En el caso que se eligiera <b>S&oacute;lo Texto</b>, el correo siempre estar&aacute; conformado 
-por una parte &uacute;nica. <b>Nota:</b> los correos que son programados para entregar los reportes siempre se enviar&aacute;n como s&oacute;lo HTML 
-sin importar el contenido que tengan.
-</p>
-
-<p>
-  Cuando termine con las configuraciones de correo, puede probarlas haciendo clic en el icono <img src="images/email_go.png"/>. 
-Esto intentar&aacute; enviarle un correo electr&oacute;nico de prueba a la direcci&oacute;n de correo definida utilizando las configuraciones realizadas.
-</p>
+  Utilice el cuadro de selección <b> tipo de contenido </b> que quiere ver en los correos. Por defecto <b>HTML y text</b> está seleccionado. <b>Nota:</b> El envío de informes programados por correo siempre es sólo HTML debido al contenido de estos correos.</p>
+<p> Una vez definidos los parámetros, puede probar su configuración haciendo clic en el icono <img src="images/email_go.png"/>. Esto intentará enviar un correo electrónico con su nueva configuración.</p>

@@ -31,9 +31,12 @@ import com.serotonin.mango.vo.report.ReportInstance;
 import com.serotonin.mango.vo.report.ReportVO;
 import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.PermissionViewACL;
-import org.scada_lts.permissions.PermissionWatchlistACL;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Set;
+
+import static org.scada_lts.permissions.service.util.PermissionsUtils.mergeDataPointAccesses;
 
 /**
  * @author Matthew Lohbihler
@@ -116,14 +119,16 @@ public class Permissions {
         ensureValidUser(user);
         if (user.isAdmin())
             return true;
-        return user.getDataSourcePermissions().contains(dataSourceId);
+        return user.getDataSourcePermissions().contains(dataSourceId)
+                || user.getDataSourceProfilePermissions().contains(dataSourceId);
     }
 
     public static boolean hasDataSourcePermission(User user) throws PermissionException {
         ensureValidUser(user);
         if (user.isAdmin())
             return true;
-        return user.getDataSourcePermissions().size() > 0;
+        return !user.getDataSourcePermissions().isEmpty() ||
+                !user.getDataSourceProfilePermissions().isEmpty();
     }
 
     //
@@ -140,6 +145,8 @@ public class Permissions {
 
     private static boolean hasDataPointReadPermission(User user, int dataSourceId, int dataPointId)
             throws PermissionException {
+        if(user.isAdmin())
+            return true;
         if (hasDataSourcePermission(user, dataSourceId))
             return true;
         DataPointAccess a = getDataPointAccess(user, dataPointId);
@@ -155,7 +162,14 @@ public class Permissions {
             throw new PermissionException("User does not have set permission to point", user);
     }
 
+    public static void ensureDataPointUpdatePermission(User user, DataPointVO point) throws PermissionException {
+        if(!hasDataPointSetPermission(user, point))
+            throw new PermissionException("User does not have set permission to point", user);
+    }
+
     public static boolean hasDataPointSetPermission(User user, DataPointVO point) throws PermissionException {
+        if(user.isAdmin())
+            return true;
         if (hasDataSourcePermission(user, point.getDataSourceId()))
             return true;
         DataPointAccess a = getDataPointAccess(user, point.getId());
@@ -165,11 +179,11 @@ public class Permissions {
     }
 
     private static DataPointAccess getDataPointAccess(User user, int dataPointId) {
-        for (DataPointAccess a : user.getDataPointPermissions()) {
-            if (a.getDataPointId() == dataPointId)
-                return a;
-        }
-        return null;
+        Set<DataPointAccess> merged = mergeDataPointAccesses(user.getDataPointPermissions(),
+                user.getDataPointProfilePermissions(), a -> a.getDataPointId() == dataPointId);
+        if(merged.isEmpty())
+            return null;
+        return merged.iterator().next();
     }
 
     public static int getDataPointAccessType(User user, DataPointVO point) {
@@ -177,7 +191,8 @@ public class Permissions {
             return DataPointAccessTypes.NONE;
         if (user.isAdmin())
             return DataPointAccessTypes.ADMIN;
-        if (user.getDataSourcePermissions().contains(point.getDataSourceId()))
+        if (user.getDataSourcePermissions().contains(point.getDataSourceId())
+                || user.getDataSourceProfilePermissions().contains(point.getDataSourceId()))
             return DataPointAccessTypes.DATA_SOURCE;
         DataPointAccess a = getDataPointAccess(user, point.getId());
         if (a == null)
@@ -219,7 +234,7 @@ public class Permissions {
     }
 
     public static void ensureWatchListEditPermission(User user, WatchList watchList) throws PermissionException {
-            if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER)
+            if (watchList.getUserAccess(user) != ShareUser.ACCESS_OWNER && !user.isAdmin())
                 throw new PermissionException("User does not have permission to edit the watch list", user);
     }
 

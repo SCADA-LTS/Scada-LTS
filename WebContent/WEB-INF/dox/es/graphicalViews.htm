@@ -1,81 +1,26 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-
-<h1>Descripci&oacute;n General</h1>
-<p>Las vistas gr&aacute;ficas son similares a las listas de supervisi&oacute;n, excepto que en estas se provee una representaci&oacute;n gr&aacute;fica 
-de los puntos seleccionados. Los valores de los putos y sus estampas de tiempo son autom&aacute;ticamente actualizados
-&mdash;no es necesario refrescar la p&aacute;gina. (De hecho la aplicaci&oacute;n opera m&aacute;s eficientemente si no hace refrescamientos.)</p>
-
-<h1>Seleccionando una vista gr&aacute;fica</h1>
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Una vista gráfica es similar a una lista de vigilancia, pero en cambio proporciona una representación gráfica de los puntos seleccionados. Los valores de los puntos y los tiempos de los valores se actualizan automáticamente, no es necesario actualizar la página. (De hecho, el sistema funciona más eficientemente si no lo haces).</p>
+<h1>Seleccionando una vista gráfica</h1>
 <p>
-  Un usuario puede tener m&uacute;ltiple vistas gr&aacute;ficas, aunque s&oacute;lo puede ver una por vez. Utilice la lista desplegable 
-  para seleccionar la vista a mostrar. Para crear una nueva vista, haga clic en el icono (<img src="images/icon_view_new.png"/>) 
-  en la secci&oacute;n de Vistas Gr&aacute;ficas. Para editar una vista, haga clic en el icono (<img src="images/icon_view_edit.png"/>). 
-  En ambos casos, la p&aacute;gina de <b>Edici&oacute;n de vista gr&aacute;fica</b> se mostrar&aacute;.
+  Un usuario puede tener múltiples vistas gráficas, pero sólo puede ver una a la vez. Utilice el menú desplegable para seleccionar la vista que desea mostrar. Para crear una nueva vista, haz clic en el icono de añadir (<img src="images/icon_view_new.png"/>) en la esquina superior derecha de la sección de la lista de vigilancia. Para editar una vista existente, haz clic en el icono de edición (<img src="images/icon_view_edit.png"/>). En ambos casos, se mostrará la página de <b>Vista gráfica edit</b>.
 </p>
-
 <p>
-  Es posible que pueda seleccionar en su lista de vistas, alguna que no ha creado. Esto sucede cuando otro usuario le ha "compartido" 
-  una vista. Cuando esto sucede, podr&aacute; ver el contenido de la vista, y podr&aacute; enviar valores a las variables si el usuario que le comparti&oacute; 
-  la vista le di&oacute; el permiso de "Modificar". En el caso que no quiera continuar manteniendo una vista compartida en su lista de vistas, 
-  utilice el icono de eliminar(<img src="images/icon_view_delete.png"/>) para "no compartir" la vista. (Esta acci&oacute;n no elimina la vista 
-  del sistema, s&oacute;lo de su lista de vistas.)
-</p>
-
-<h1>Imagenes de fondo</h1>
-<p>Las vistas gr&aacute;ficas tienen la opci&oacute;n de ser presentada con una imagen de fondo. Las im&aacute;genes de fondo se configuran
-  cuando se est&aacute; en la p&aacute;gina de edici&oacute;n de la vista gr&aacute;fica.</p>
-
-<h1>Puntos en las vistas gr&aacute;ficas</h1>
-<p>Un punto puede pertenecer a m&uacute;ltiples vistas gr&aacute;ficas, esto le permite crear vistas gr&aacute;ficas tan espec&iacute;ficas como requiera.</p>
+  Puedes ver en tu lista de vistas gráficas que no has creado. Si es así, estos puntos de vista han sido "compartidos" con usted por la persona que los creó. Al menos se le permitirá verlos, pero es posible que no pueda establecer valores a través de la vista si no se le ha dado permiso para "establecerlos". Si ya no desea tener la vista en su lista, utilice el icono de eliminación (<img src="images/icon_view_delete.png"/>) para "deshacer" la vista. (La eliminación no elimina la vista).</p>
+<h1>Imágenes de fondo</h1>
+<p>Las vistas gráficas pueden presentarse opcionalmente en imágenes de fondo. Los fondos se pueden definir en la página de edición de las vistas gráficas.</p>
+<h1>Puntos en vistas gráficas</h1>
+<p>Un punto puede pertenecer a varias vistas gráficas, lo que le permite crear vistas tan específicas como desee.</p>
 <p>
-  La representaci&oacute;n de cada punto en una vista gr&aacute;fica depende de la configuraci&oacute;n del punto. Los puntos pueden mostrar simplemente su valor, 
-  o pueden utilizar un conjunto de iconos visuales para representar su valor. Para mostrar los controles de un punto posicione el puntero 
-  del rat&oacute;n sobre un punto (puede configurar el punto para que no se muestren). Los controles mostrados dependen de la configuraci&oacute;n del punto. 
-  Pase el muntero del rat&oacute;n  sobre el icono de informaci&oacute;n (<img src="images/information.png"/>) y se mostrar&aacute; el actual valor del punto 
-  y la estampa de tiempo del &uacute;ltimo cambio. Los puntos que pueden ser ajustados (cambiarles su valor desde la aplicaci&oacute;n) y para los cuales 
-  el permiso de escritura est&eacute; habilitado, mostrar&aacute;n el icono (<img src="images/icon_edit.png"/>). El puntero del rat&oacute;n sobre &eacute;ste icono
-  presentar&aacute; las opciones configuradas del punto. Los puntos configurados para ser graficados mostrar&aacute;n el icono (<img src="images/icon_chart.png"/>). 
-  Haga clic en este icono para mostrar su actual comportamiento gr&aacute;fico. Las representaciones gr&aacute;ficas son autom&aacute;ticamente actualizadas, 
-  esto sucede igualmente con sus valores y sus estampas de tiempo. Al presentarse un nuevo dato, &eacute;ste es autom&aacute;ticamente representado y 
-  actualizado en el gr&aacute;fico. Un icono de advertencia (<img src="images/warn.png"/>) se mostrar&aacute; junto a un punto, cuando este punto est&eacute; inactivo, 
-  ya sea que &eacute;l o su fuente de datos, est&eacute;n deshabilitados. Un indicador de espera (<img src="images/hourglass.png"/>) 
-  indica que el punto actualmente no tiene valor, y que probablemente est&aacute; a la espera de recibirlo.
+  La representación de cada punto desde su punto de vista depende de la configuración de ese punto. Los puntos pueden representarse en forma de un valor actual o de un conjunto de iconos arbitrarios que representan visualmente el valor del punto. Cuando el usuario se desplaza sobre el punto con el ratón, se muestra un conjunto de controles (a menos que se hayan eliminado explícitamente). Los controles reales que se muestran también dependen de la configuración del punto. Al pasar el cursor sobre la información (<img src="images/information.png"/>) se mostrará el valor actual del punto y el tiempo de la última modificación. Los puntos que son configurables (y para los cuales tienes permiso para configurarlos) mostrarán un icono "set" (<img src="images/icon_edit.png"/>). 
+  Si pasas el ratón por encima de este icono, verás las opciones para establecer el punto. Los puntos que están configurados para la cartografía mostrarán un icono de la carta (<img src="images/icon_chart.png"/>). Si pasa el ratón por encima de este icono, se mostrará el gráfico actual. Los gráficos se actualizan automáticamente, como los valores y las horas, de modo que cuando haya nuevos datos disponibles, el gráfico se actualizará por sí mismo. Si un icono de advertencia (<img src="images/warn.png"/>) se muestra junto a un punto, indica que el punto está inactivo, ya sea porque él o su fuente de datos está desactivada. Un indicador de espera (<img src="images/hourglass.png"/>) significa que el punto actualmente no tiene ningún valor, y probablemente está esperando a que se reciba su valor.
 </p>

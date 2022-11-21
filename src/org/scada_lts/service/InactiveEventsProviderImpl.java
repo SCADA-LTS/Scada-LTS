@@ -85,11 +85,13 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
         if(limit <= 0) {
             return Collections.emptyList();
         }
-        if(relations.peek() == null && nonBlockingLock.getAndDecrement() == 0) {
+        if(((relations.peek() == null && blocking.size() < dataFromBaseLimit) || blocking.size() < dataFromBaseLimit) && nonBlockingLock.getAndDecrement() == 0) {
             try {
-                relations.addAll(init(eventDAO, scheduledEventDAO, communicationChannel, blocking, dataFromBaseLimit).stream()
+                List<ScheduledExecuteInactiveEventInstance> events = init(eventDAO, scheduledEventDAO, communicationChannel, blocking, dataFromBaseLimit - blocking.size()).stream()
                         .sorted(Comparator.comparingInt(a -> a.getEvent().getId()))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList());
+                blocking.addAll(events);
+                relations.addAll(events);
             } finally {
                 nonBlockingLock.set(0);
             }
@@ -101,7 +103,6 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
         AtomicInteger oneExecuteLimit = new AtomicInteger(limit);
         ScheduledExecuteInactiveEventInstance poll;
         while((poll = relations.poll()) != null) {
-            blocking.add(poll);
             ScheduledEvent scheduledEvent = poll.toScheduledEvent();
             scheduledEvents.add(scheduledEvent);
             if(oneExecuteLimit.decrementAndGet() < 1)
@@ -112,15 +113,20 @@ class InactiveEventsProviderImpl implements InactiveEventsProvider {
 
     @Override
     public void repeat(ScheduledEvent event) {
-        ScheduledExecuteInactiveEventInstance instance =
-                new ScheduledExecuteInactiveEventInstance(event.getEventHandler(), event.getEvent(),
-                        communicationChannel.getData());
+        ScheduledExecuteInactiveEventInstance instance = event.toScheduledExecuteInactiveEventInstance(communicationChannel);
         relations.add(instance);
     }
 
     @Override
     public void confirm(ScheduledEvent event) {
-        blocking.remove(event.toScheduledExecuteInactiveEventInstance(communicationChannel));
+        ScheduledExecuteInactiveEventInstance instance = event.toScheduledExecuteInactiveEventInstance(communicationChannel);
+        blocking.remove(instance);
+    }
+
+    @Override
+    public void clear() {
+        relations.clear();
+        blocking.clear();
     }
 
     @Override

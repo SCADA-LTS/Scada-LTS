@@ -4,21 +4,25 @@ import Vue from 'vue';
 import App from './apps/App.vue';
 import router from './router';
 import store from './store';
-import * as uiv from 'uiv';
+
 import VueCookie from 'vue-cookie';
 import VueLogger from 'vuejs-logger';
+import VueDayjs from 'vue-dayjs-plugin';
 
 import Test from './components/Test';
 import IsAlive from './components/graphical_views/IsAlive';
+import Watchdog from './components/graphical_views/watchdog';
 import CMP from './components/graphical_views/cmp/CMP';
+import AutoManual from './components/graphical_views/cmp2/AutoManual'
+import AutoManual3 from './components/graphical_views/cmp3/AutoManual3'
 import SimpleComponentSVG from './components/graphical_views/SimpleComponentSVG';
 import ExportImportPointHierarchy from './components/point_hierarchy/ExportImportPointHierarchy';
 import SleepAndReactivationDS from './components/forms/SleepAndReactivationDS';
-import WatchListChartWidget from './components/watch_list/WatchListChartWidget';
+import WatchListJsonChart from './components/watch_list/WatchListJsonChart';
 import VueLodash from 'vue-lodash';
 
-import StepLineChartComponent from './components/amcharts/StepLineChartComponent';
 import LineChartComponent from './components/amcharts/LineChartComponent';
+import RangeChartComponent from './components/amcharts/RangeChartComponent';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -39,6 +43,7 @@ import SMSDomain from '@/components/forms/SMSDomain';
 import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
+import * as uiv from 'uiv';
 
 library.add(
 	faCoffee,
@@ -48,7 +53,7 @@ library.add(
 	faFileMedicalAlt,
 	faInfo,
 	faListAlt,
-	faCogs,
+	faCogs
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
@@ -71,8 +76,8 @@ const optionsLodash = { name: 'lodash' };
 
 Vue.use(VueLodash, optionsLodash);
 
-Vue.use(uiv);
 Vue.use(VueCookie);
+Vue.use(VueDayjs);
 
 Vue.config.devtools = true;
 
@@ -83,6 +88,8 @@ new Vue({
 	vuetify,
 	render: (h) => h(App),
 }).$mount('#app');
+
+Vue.use(uiv);
 
 if (window.document.getElementById('app-test') != undefined) {
 	new Vue({
@@ -96,30 +103,51 @@ if (window.document.getElementById('app-test') != undefined) {
 }
 
 if (window.document.getElementById('app-isalive') != undefined) {
+	const isAliveDom = document.getElementById('app-isalive');
 	new Vue({
 		store,
 		render: (h) =>
 			h(IsAlive, {
 				props: {
-					plabel: window.document.getElementById('app-isalive').getAttribute('plabel'),
-					ptimeWarning: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-warning'),
-					ptimeError: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-error'),
-					ptimeRefresh: window.document
-						.getElementById('app-isalive')
-						.getAttribute('ptime-refresh'),
+					plabel: isAliveDom.getAttribute('plabel'),
+					ptimeWarning: isAliveDom.getAttribute('ptime-warning'),
+					ptimeError: isAliveDom.getAttribute('ptime-error'),
+					ptimeRefresh: isAliveDom.getAttribute('ptime-refresh'),
+					pTextWarning: isAliveDom.getAttribute('ptext-warning'),
+					feedbackUrl: isAliveDom.getAttribute('feedback-url'),
 				},
 			}),
 	}).$mount('#app-isalive');
+}
+
+const watchdogId = "app-isalive2";
+if (!!window.document.getElementById(watchdogId)) {
+	const watchdogEl = document.getElementById(watchdogId);
+	new Vue({
+		store,
+		i18n,
+		vuetify,
+		render: (h) =>
+			h(Watchdog, {
+				props: {
+					name: watchdogEl.getAttribute('name'),
+					interval: watchdogEl.getAttribute('interval') !== null ? Number(watchdogEl.getAttribute('interval')) : 10000,
+					wdHost: watchdogEl.getAttribute('wd-host'),
+					wdPort: watchdogEl.getAttribute('wd-port') !== null ? Number(watchdogEl.getAttribute('wd-port')) : null,
+					wdMessage: watchdogEl.getAttribute('wd-message'),
+					dpValidation: watchdogEl.getAttribute('dp-validation') !== null ? JSON.parse(watchdogEl.getAttribute('dp-validation')) : null,
+					dpBreak: watchdogEl.getAttribute('dp-break') !== null,
+					dpWarnAsFail: watchdogEl.getAttribute('dp-warn-as-fail') !== null,
+				},
+			}),
+	}).$mount(`#${watchdogId}`);
 }
 
 for (let i = 0; i < 20; i++) {
 	const cmpId = `app-cmp-${i}`;
 	if (window.document.getElementById(cmpId) != undefined) {
 		new Vue({
+			vuetify,
 			render: (h) =>
 				h(CMP, {
 					store,
@@ -137,6 +165,61 @@ for (let i = 0; i < 20; i++) {
 		}).$mount('#' + cmpId);
 	}
 }
+
+for (let i = 0; i < 10; i++) {
+	const cmpId = `app-cmp2-${i}`;
+	const el = window.document.getElementById(cmpId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			i18n,
+			vuetify,
+			render: (h) =>
+				h(AutoManual, {
+					props: {
+						pConfig: JSON.parse(el.getAttribute('pconfig')),
+						pLabel: el.getAttribute('plabel'),
+						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null ? el.getAttribute('ptimeRefresh') : 10000,
+						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
+						pZeroState: el.getAttribute('pzeroState') !== null ? el.getAttribute('pzeroState') : 'Auto',
+						pWidth: el.getAttribute('pwidth') !== null ? el.getAttribute('pwidth') : 140,
+						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
+						pHideControls: el.getAttribute('phideControls') !== null,
+						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
+					},
+				})
+		}).$mount('#' + cmpId);
+	}
+}
+
+for (let i = 0; i < 10; i++) {
+	const cmpId = `app-cmp3-${i}`;
+	const el = window.document.getElementById(cmpId);
+	if (el != undefined) {
+		new Vue({
+			store,
+			i18n,
+			vuetify,
+			render: (h) =>
+				h(AutoManual3, {
+					props: {
+						pConfig: JSON.parse(el.getAttribute('pconfig')),
+						pLabel: el.getAttribute('plabel'),
+						pTimeRefresh: el.getAttribute('ptimeRefresh') !== null ? el.getAttribute('ptimeRefresh') : 10000,
+						pxIdViewAndIdCmp: el.getAttribute('pxIdViewAndIdCmp'),
+						pZeroState: el.getAttribute('pzeroState') !== null ? el.getAttribute('pzeroState') : 'Auto',
+						pWidth: el.getAttribute('pwidth') !== null ? el.getAttribute('pwidth') : 140,
+						pRequestTimeout: el.getAttribute('prequestTimeout') !== null ? el.getAttribute('prequestTimeout') : 5000,
+						pHideControls: el.getAttribute('phideControls') !== null,
+						pDebugRequest: el.getAttribute('pdebugRequest') !== null,
+					},
+				})
+		}).$mount('#' + cmpId);
+	}
+}
+
+
+
 
 if (window.document.getElementById('simple-component-svg') != undefined) {
 	new Vue({
@@ -168,6 +251,7 @@ if (window.document.getElementById('sleep-reactivation-ds') != undefined) {
 
 if (window.document.getElementById('sms-domain') != undefined) {
 	new Vue({
+		vuetify,
 		render: (h) => h(SMSDomain),
 	}).$mount('#sms-domain');
 }
@@ -183,49 +267,37 @@ if (window.document.getElementById('example-chart-cmp') != undefined) {
 		store,
 		vuetify,
 		i18n,
-		render: (h) => h(WatchListChartWidget),
+		render: (h) => h(WatchListJsonChart),
 	}).$mount('#example-chart-cmp');
 }
 
 for (let x = 0; x < 10; x++) {
-	const chartId = `chart-step-line-${x}`;
-	if (window.document.getElementById(chartId) != undefined) {
+	const chartId = `chart-line-${x}`;
+	const el = window.document.getElementById(chartId);
+	if (el != undefined) {
 		new Vue({
 			render: (h) =>
-				h(StepLineChartComponent, {
+				h(LineChartComponent, {
 					props: {
-						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
-						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
-						color: window.document.getElementById(chartId).getAttribute('color'),
-						label: window.document.getElementById(chartId).getAttribute('label'),
-						startDate: window.document.getElementById(chartId).getAttribute('start-date'),
-						endDate: window.document.getElementById(chartId).getAttribute('end-date'),
-						refreshRate: window.document
-							.getElementById(chartId)
-							.getAttribute('refresh-rate'),
-						width: window.document.getElementById(chartId).getAttribute('width'),
-						height: window.document.getElementById(chartId).getAttribute('height'),
-						polylineStep: window.document
-							.getElementById(chartId)
-							.getAttribute('polyline-step'),
-						rangeValue: window.document
-							.getElementById(chartId)
-							.getAttribute('range-value'),
-						rangeColor: window.document
-							.getElementById(chartId)
-							.getAttribute('range-color'),
-						rangeLabel: window.document
-							.getElementById(chartId)
-							.getAttribute('range-label'),
-						showScrollbarX: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-x'),
-						showScrollbarY: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-y'),
-						showLegend: window.document
-							.getElementById(chartId)
-							.getAttribute('show-legned'),
+						pointIds: el.getAttribute('point-ids'),
+						useXid: el.getAttribute('use-xid') !== null,
+						separateAxis: el.getAttribute('separate-axes') !== null,
+						stepLine: el.getAttribute('step-line') !== null,
+						startDate: el.getAttribute('start-date'),
+						endDate: el.getAttribute('end-date'),
+						refreshRate: el.getAttribute('refresh-rate'),
+						width: el.getAttribute('width') !== null ? el.getAttribute('width') : '500',
+						height: el.getAttribute('height') !== null ? el.getAttribute('height') : '400',
+						color: el.getAttribute('color'),
+						strokeWidth: Number(el.getAttribute('stroke-width')),
+						aggregation: Number(el.getAttribute('aggregation')),
+						showScrollbar: el.getAttribute('show-scrollbar') !== null,
+						showLegend: el.getAttribute('show-legned') !== null,
+						showBullets: el.getAttribute('show-bullets') !== null,
+						showExportMenu: el.getAttribute('show-export-menu') !== null,
+						smoothLine: Number(el.getAttribute('smooth-line')),
+						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
+						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
 					},
 				}),
 		}).$mount(`#${chartId}`);
@@ -233,44 +305,30 @@ for (let x = 0; x < 10; x++) {
 }
 
 for (let x = 0; x < 10; x++) {
-	const chartId = `chart-line-${x}`;
-	if (window.document.getElementById(chartId) != undefined) {
+	const chartId = `chart-range-${x}`;
+	const el = window.document.getElementById(chartId);
+	if (el != undefined) {
 		new Vue({
+			store,
+			vuetify,
 			render: (h) =>
-				h(LineChartComponent, {
+				h(RangeChartComponent, {
 					props: {
-						pointId: window.document.getElementById(chartId).getAttribute('point-id'),
-						pointXid: window.document.getElementById(chartId).getAttribute('point-xid'),
-						color: window.document.getElementById(chartId).getAttribute('color'),
-						label: window.document.getElementById(chartId).getAttribute('label'),
-						startDate: window.document.getElementById(chartId).getAttribute('start-date'),
-						endDate: window.document.getElementById(chartId).getAttribute('end-date'),
-						refreshRate: window.document
-							.getElementById(chartId)
-							.getAttribute('refresh-rate'),
-						width: window.document.getElementById(chartId).getAttribute('width'),
-						height: window.document.getElementById(chartId).getAttribute('height'),
-						polylineStep: window.document
-							.getElementById(chartId)
-							.getAttribute('polyline-step'),
-						rangeValue: window.document
-							.getElementById(chartId)
-							.getAttribute('range-value'),
-						rangeColor: window.document
-							.getElementById(chartId)
-							.getAttribute('range-color'),
-						rangeLabel: window.document
-							.getElementById(chartId)
-							.getAttribute('range-label'),
-						showScrollbarX: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-x'),
-						showScrollbarY: window.document
-							.getElementById(chartId)
-							.getAttribute('show-scrollbar-y'),
-						showLegend: window.document
-							.getElementById(chartId)
-							.getAttribute('show-legned'),
+						chartId: x,
+						pointIds: el.getAttribute('point-ids'),
+						useXid: el.getAttribute('use-xid') !== null,
+						separateAxis: el.getAttribute('separate-axes') !== null,
+						stepLine: el.getAttribute('step-line') !== null,
+						aggregation: Number(el.getAttribute('aggregation')),
+						strokeWidth: Number(el.getAttribute('stroke-width')),
+						showBullets: el.getAttribute('show-bullets') !== null,
+						showExportMenu: el.getAttribute('show-export-menu') !== null,
+						smoothLine: Number(el.getAttribute('smooth-line')),
+						width: el.getAttribute('width') !== null ? el.getAttribute('width') : '500',
+						height: el.getAttribute('height') !== null ? el.getAttribute('height') : '400',
+						color: el.getAttribute('color'),
+						serverValuesLimit: Number(el.getAttribute('server-values-limit')),
+						serverLimitFactor: Number(el.getAttribute('server-limit-factor')),
 					},
 				}),
 		}).$mount(`#${chartId}`);
@@ -296,11 +354,12 @@ if (window.document.getElementById('live-alarms') != undefined) {
 	console.log(
 		`test+ ${window.document
 			.getElementById('live-alarms')
-			.getAttribute('show-acknowledge-btn')}`,
+			.getAttribute('show-acknowledge-btn')}`
 	);
 
 	new Vue({
 		store,
+		vuetify,
 		render: (h) =>
 			h(LiveAlarms, {
 				props: {

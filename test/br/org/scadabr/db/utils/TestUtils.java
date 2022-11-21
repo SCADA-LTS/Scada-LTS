@@ -26,4 +26,21 @@ public class TestUtils {
 		return user;
 	}
 
+	public static User newUser(int id) {
+		User user = new User();
+		user.setId(id);
+		user.setUsername("anUser");
+		user.setPassword("password");
+		user.setEmail("An email");
+		user.setPhone("phone");
+		user.setAdmin(true);
+		user.setDisabled(false);
+		user.setHomeUrl("url");
+		user.setReceiveAlarmEmails(1);
+		user.setReceiveOwnAuditEvents(true);
+		user.setDataSourcePermissions(new ArrayList<Integer>());
+		user.setDataPointPermissions(new ArrayList<DataPointAccess>());
+		return user;
+	}
+
 }

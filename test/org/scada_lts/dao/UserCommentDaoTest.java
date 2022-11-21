@@ -18,6 +18,7 @@
 package org.scada_lts.dao;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.UserComment;
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class UserCommentDaoTest extends TestDAO {
 		userCommentDAO.update(firstId);
 
 		//Select all objects with TYPE_POINT
-		DataPointVO dataPoint = new DataPointVO();
+		DataPointVO dataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dataPoint.setId(2);
 		List<UserComment> userCommentList = userCommentDAO.getPointComments(dataPoint);
 		//Check list size

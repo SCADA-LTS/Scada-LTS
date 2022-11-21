@@ -19,6 +19,8 @@
 package com.serotonin.mango.rt.event.detectors;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.util.PointEventDetectorUtils;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.web.i18n.LocalizableMessage;
@@ -34,10 +36,28 @@ public class BinaryStateDetectorRT extends StateDetectorRT {
         String prettyText = vo.njbGetDataPoint().getTextRenderer().getText(vo.isBinaryState(),
                 TextRenderer.HINT_SPECIFIC);
         LocalizableMessage durationDescription = getDurationDescription();
+        String description = PointEventDetectorUtils.getDescription(vo);
+        String eventRendererText = (vo.njbGetDataPoint().getEventTextRenderer() == null) ? "" : vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState());
 
         if (durationDescription == null)
-            return new LocalizableMessage("event.detector.state", name, prettyText);
-        return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription);
+            return new LocalizableMessage("event.detector.state", name, prettyText, description,
+                    eventRendererText);
+        return new LocalizableMessage("event.detector.periodState", name, prettyText, durationDescription,
+                description, eventRendererText);
+    }
+
+    @Override
+    protected LocalizableMessage getShortMessage() {
+        if (vo.njbGetDataPoint().getEventTextRenderer() != null &&
+                !vo.njbGetDataPoint().getEventTextRenderer().getTypeName().equals(NoneEventRenderer.TYPE_NAME) &&
+                vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState()) != null &&
+                (!vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState()).equals(""))) {
+            String eventRendererText = vo.njbGetDataPoint().getEventTextRenderer().getText(vo.isBinaryState());
+            return new LocalizableMessage("event.detector.shortMessage", vo.njbGetDataPoint().getName(),
+                    eventRendererText);
+        } else {
+            return getMessage();
+        }
     }
 
     @Override

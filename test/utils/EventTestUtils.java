@@ -64,7 +64,8 @@ public final class EventTestUtils {
 
     public static EventInstance createEventCriticalWithActiveTimeAndDataPointEventType(int id, DateTime activeTime) {
         EventInstance event = new EventInstance(new DataPointEventType(1,3),
-                activeTime.getMillis(), false, AlarmLevels.CRITICAL, new LocalizableMessage("com.test"), Collections.emptyMap());
+                activeTime.getMillis(), false, AlarmLevels.CRITICAL, new LocalizableMessage("com.test"),
+                Collections.emptyMap());
         event.setId(id);
         return event;
     }

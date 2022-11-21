@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.utils.PlcAlarmsUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -67,6 +69,10 @@ public class DataPointDAO {
 	private static final String COLUMN_NAME_EVENT_TYPE_ID = "eventTypeId";
 	private static final String COLUMN_NAME_EVENT_TYPE_REF1 = "eventTypeRef1";
 
+	private static final String COLUMN_NAME_DATA_POINT_ID = "dataPointId";
+	private static final String COLUMN_NAME_PERMISSION = "permission";
+	private static final String COLUMN_NAME_USER_ID = "userId";
+
 	// @formatter:off
 	private static final String DATA_POINT_SELECT = ""
 			+ "select "
@@ -80,6 +86,15 @@ public class DataPointDAO {
 			+ "from dataPoints dp join dataSources ds on "
 				+ "ds." + COLUMN_NAME_DS_ID + "="
 				+ "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
+
+    private static final String DATA_POINT_IDENTIFIER_SELECT = ""
+            + "select "
+            + "dp." + COLUMN_NAME_ID + ", "
+            + "dp." + COLUMN_NAME_XID + ", "
+            + "dp." + COLUMN_NAME_DATAPOINT_NAME + " "
+            + "from dataPoints dp join dataSources ds on "
+            + "ds." + COLUMN_NAME_DS_ID + "="
+            + "dp." + COLUMN_NAME_DATA_SOURCE_ID + " ";
 
 	private static final String DATA_POINT_SELECT_PLC = "" +
 			"SELECT " +
@@ -126,6 +141,10 @@ public class DataPointDAO {
 				+ EventType.EventSources.DATA_POINT + " "
 			+ "and "
 				+ COLUMN_NAME_EVENT_TYPE_REF1;
+
+	private static final String DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
+			+ "dp." + COLUMN_NAME_ID + " in (select dpu."+COLUMN_NAME_DATA_POINT_ID+" from dataPointUsers dpu where dpu."+COLUMN_NAME_USER_ID+"=? and dpu."+COLUMN_NAME_PERMISSION+">0) "
+			+ "order by dp." + COLUMN_NAME_DATAPOINT_NAME;
 
 	// @formatter:on
 
@@ -267,7 +286,7 @@ public class DataPointDAO {
 						dataPoint.getName(),
 						dataPoint.getDataSourceId(),
 						new SerializationData().writeObject(dataPoint),
-						PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName())
+						PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint)
 				}).setValues(ps);
 				return ps;
 			}
@@ -284,7 +303,7 @@ public class DataPointDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(DATA_POINT_UPDATE, new Object[] {
-				PlcAlarmsUtils.getPlcAlarmLevelByDataPointName(dataPoint.getName()),
+				PlcAlarmsUtils.getPlcAlarmLevelByDataPoint(dataPoint),
 				dataPoint.getXid(),
 				dataPoint.getName(),
 				new SerializationData().writeObject(dataPoint),
@@ -338,5 +357,19 @@ public class DataPointDAO {
 		queryBuilder.append(")");
 
 		DAO.getInstance().getJdbcTemp().update(queryBuilder.toString(), (Object[]) parameters);
+	}
+
+	public List<DataPointVO> selectDataPointsWithAccess(final int userId) {
+		return filtered(DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME, new Object[]{userId}, 0);
+	}
+
+	public List<ScadaObjectIdentifier> selectDataPointIdentifiersWithAccess(int userId) {
+		return DAO.getInstance().getJdbcTemp().query(DATA_POINT_IDENTIFIER_SELECT + " where " + DATA_POINT_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME,
+                new Object[] { userId },
+                new ScadaObjectIdentifierRowMapper.Builder()
+                        .idColumnName(COLUMN_NAME_ID)
+                        .xidColumnName(COLUMN_NAME_XID)
+                        .nameColumnName(COLUMN_NAME_DATAPOINT_NAME)
+                        .build());
 	}
 }

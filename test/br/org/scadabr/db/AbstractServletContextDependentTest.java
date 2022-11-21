@@ -1,6 +1,5 @@
 package br.org.scadabr.db;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;

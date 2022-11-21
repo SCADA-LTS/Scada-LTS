@@ -160,7 +160,7 @@
                   </tr>
                   
                   <tr id="points${listParent.parent.id}" class="rowAlt2" style="display:none">
-                    <td colspan="5" style="padding:0px 0px 0px 30px;background-color:#FFFFFF;">
+                    <td colspan="5" class="datasource-row">
                       <table cellspacing="1" cellpadding="0" border="0">
                         <tr class="rowHeader">
                           <td><fmt:message key="dsList.pointName"/></td>

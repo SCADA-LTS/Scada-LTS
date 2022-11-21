@@ -10,7 +10,9 @@ import i18n from '@/i18n';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
-localVue.use(Vuetify);
+const vuetify = Vuetify;
+
+global.requestAnimationFrame = (cb) => cb();
 
 const storeAlarmsNotifications = {
 	state: {},
@@ -75,8 +77,8 @@ describe('PLC Alarms Notification Tests', () => {
 	const wrapper = mount(AlarmNotifications, {
 		store,
 		localVue,
+		vuetify,
 		i18n,
-		stubs: ['VSelect', 'VIcon', 'VSnackbar'],
 	});
 
 	it('Initialize Component', () => {
@@ -96,8 +98,8 @@ describe('PLC Alarms Notification Tests', () => {
 		let configuration = [
 			{
 				id: 1,
-				xid: "EH_MAIL_TEST",
-				alias: "MAIL_TEST_HANDLER",
+				xid: 'EH_MAIL_TEST',
+				alias: 'MAIL_TEST_HANDLER',
 				handlerType: 2,
 				eventTypeId: 1,
 				eventTypeRef1: 1,
@@ -106,14 +108,14 @@ describe('PLC Alarms Notification Tests', () => {
 					{
 						recipientType: 1,
 						referenceId: 1,
-						referenceAddress: null
-					}
-				]
+						referenceAddress: null,
+					},
+				],
 			},
 			{
 				id: 2,
-				xid: "EH_SMS_TEST",
-				alias: "MAIL_SMS_HANDLER",
+				xid: 'EH_SMS_TEST',
+				alias: 'MAIL_SMS_HANDLER',
 				handlerType: 5,
 				eventTypeId: 1,
 				eventTypeRef1: 1,
@@ -122,40 +124,50 @@ describe('PLC Alarms Notification Tests', () => {
 					{
 						recipientType: 1,
 						referenceId: 1,
-						referenceAddress: null
-					}
-				]
-			}
-		]
+						referenceAddress: null,
+					},
+				],
+			},
+		];
 		let x = wrapper.vm.getEventHandler(configuration, 2);
-		expect(x).to.equal(configuration[0])
+		expect(x).to.equal(configuration[0]);
 		x = wrapper.vm.getEventHandler(configuration, 5);
-		expect(x).to.equal(configuration[1])
-		configuration = configuration.filter(e => { return e.id !== 2})
+		expect(x).to.equal(configuration[1]);
+		configuration = configuration.filter((e) => {
+			return e.id !== 2;
+		});
 		x = wrapper.vm.getEventHandler(configuration, 5);
 		expect(x).to.equal(null);
-
-	})
+	});
 
 	it('Test saveDatapoint', () => {
 		wrapper.vm.items = [
-			{id: 1, name: 'DS', children: [
-				{id:1, name: 'DP', configuration: [
-				], mail: [
-					{active: false, config: true, handler: 1, mlId: 1},
-					{active: true, config: true, handler: 1, mlId: 2},
-				], sms:[
-					{active: false, config: false, handler: 2, mlId: 1},
-					{active: true, config: true, handler: 2, mlId: 2},
-				]}
-			]}
-		]
+			{
+				id: 1,
+				name: 'DS',
+				children: [
+					{
+						id: 1,
+						name: 'DP',
+						configuration: [],
+						mail: [
+							{ active: false, config: true, handler: 1, mlId: 1 },
+							{ active: true, config: true, handler: 1, mlId: 2 },
+						],
+						sms: [
+							{ active: false, config: false, handler: 2, mlId: 1 },
+							{ active: true, config: true, handler: 2, mlId: 2 },
+						],
+					},
+				],
+			},
+		];
 
 		const config = [
 			{
 				id: 1,
-				xid: "EH_MAIL_TEST",
-				alias: "MAIL_TEST_HANDLER",
+				xid: 'EH_MAIL_TEST',
+				alias: 'MAIL_TEST_HANDLER',
 				handlerType: 2,
 				eventTypeId: 1,
 				eventTypeRef1: 1,
@@ -164,17 +176,15 @@ describe('PLC Alarms Notification Tests', () => {
 					{
 						recipientType: 1,
 						referenceId: 1,
-						referenceAddress: null
-					}
-				]
-			}]
-		
-		wrapper.vm.saveDatapoint(1, config)
+						referenceAddress: null,
+					},
+				],
+			},
+		];
+
+		wrapper.vm.saveDatapoint(1, config, 2);
 
 		expect(wrapper.vm.items[0].children[0].mail[0].config).to.equal(false);
 		expect(wrapper.vm.items[0].children[0].configuration).to.equal(config);
-
-	})
-
-	
+	});
 });

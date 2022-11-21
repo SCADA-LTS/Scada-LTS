@@ -18,10 +18,7 @@
  */
 package com.serotonin.mango.web.dwr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -78,7 +75,7 @@ public class WatchListDwr extends BaseDwr {
 		data.put("pointFolder", ph.getRoot());
 		data.put("shareUsers", getShareUsers(user));
 		data.put("selectedWatchList", getWatchListData(user, watchList));
-
+		data.put("admin", user.isAdmin());
 		return data;
 	}
 
@@ -162,17 +159,15 @@ public class WatchListDwr extends BaseDwr {
 		if (watchList == null || watchListId != watchList.getId())
 			watchList = watchListDao.getWatchList(watchListId);
 
-		if (watchList == null
-				|| watchListDao.getWatchLists(user.getId(),
-						user.getUserProfile()).size() == 1)
+		if (watchList == null)
 			// Only one watch list left. Leave it.
 			return;
 
 		// Allow the delete.
 		if (watchList.getUserAccess(user) == ShareUser.ACCESS_OWNER
-				|| user.isAdmin())
+				|| user.isAdmin()) {
 			watchListDao.deleteWatchList(watchListId);
-		else
+		} else
 			watchListDao.removeUserFromWatchList(watchListId, user.getId());
 	}
 
@@ -181,6 +176,9 @@ public class WatchListDwr extends BaseDwr {
 
 		WatchListDao watchListDao = new WatchListDao();
 		WatchList watchList = watchListDao.getWatchList(watchListId);
+
+		if(watchList == null)
+			return Collections.emptyMap();
 
 //		if (!user.isAdmin())
 //			Permissions.ensureWatchListPermission(user, watchList);
@@ -214,8 +212,7 @@ public class WatchListDwr extends BaseDwr {
 		// Add it to the watch list.
 		watchList.getPointList().add(point);
 		new WatchListDao().saveWatchList(watchList);
-		updateSetPermission(point, watchList.getUserAccess(user),
-				new UserDao().getUser(watchList.getUserId()));
+		updateSetPermission(point, watchList.getUserAccess(user), user.isAdmin());
 
 		// Return the watch list state for it.
 		return createWatchListState(request, point,
@@ -294,7 +291,7 @@ public class WatchListDwr extends BaseDwr {
 			// Text renderers don't help here. Create a thumbnail.
 			setImageText(request, state, pointVO, model, pointValue);
 		} else
-			setPrettyText(state, pointVO, model, pointValue);
+			setPrettyTextWithoutEqual(state, pointVO, model, pointValue);
 
 		if (pointVO.isSettable())
 			setChange(pointVO, state, point, request, model, user);
@@ -408,23 +405,21 @@ public class WatchListDwr extends BaseDwr {
 			access = ShareUser.ACCESS_OWNER;
 		}
 
-		access = watchList.getUserAccess(user);
-		User owner = new UserDao().getUser(watchList.getUserId());
-		for (DataPointVO point : watchList.getPointList())
-			updateSetPermission(point, access, owner);
+		if(watchList != null) {
+			access = watchList.getUserAccess(user);
+			User owner = new UserDao().getUser(watchList.getUserId());
+			for (DataPointVO point : watchList.getPointList())
+				updateSetPermission(point, access, user.isAdmin());
+		}
 	}
 
-	private void updateSetPermission(DataPointVO point, int access, User owner) {
+	private void updateSetPermission(DataPointVO point, int access, boolean admin) {
 		// Point isn't settable
 		if (!point.getPointLocator().isSettable())
 			return;
 
 		// Read-only access
-		if (access != ShareUser.ACCESS_OWNER && access != ShareUser.ACCESS_SET)
-			return;
-
-		// Watch list owner doesn't have set permission
-		if (!Permissions.hasDataPointSetPermission(owner, point))
+		if (access != ShareUser.ACCESS_OWNER && access != ShareUser.ACCESS_SET && !admin)
 			return;
 
 		// All good.

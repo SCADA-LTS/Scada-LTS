@@ -54,6 +54,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.View;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.view.text.PlainRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
@@ -201,6 +202,7 @@ public class ImportTask extends ProgressiveTask {
 							vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(
 									0));
 							vo.setTextRenderer(new PlainRenderer());
+							vo.setEventTextRenderer(new NoneEventRenderer());
 
 							boolean isnew = vo.isNew();
 
@@ -338,12 +340,6 @@ public class ImportTask extends ProgressiveTask {
 				return;
 			}
 
-			if (pointValuesIndex < pointValues.size()) {
-				importPointValues(pointValues.get(pointValuesIndex++)
-						.toJsonObject());
-				return;
-			}
-
 			if (systemSettingsIndex < systemSettings.size()) {
 				importSystemSettings(systemSettings.get(systemSettingsIndex++)
 						.toJsonObject());
@@ -352,6 +348,12 @@ public class ImportTask extends ProgressiveTask {
 
 			if (userProfilesIndex < usersProfiles.size()) {
 				importUsersProfile(usersProfiles.get(userProfilesIndex++)
+						.toJsonObject());
+				return;
+			}
+
+			if (pointValuesIndex < pointValues.size()) {
+				importPointValues(pointValues.get(pointValuesIndex++)
 						.toJsonObject());
 				return;
 			}
@@ -514,6 +516,7 @@ public class ImportTask extends ProgressiveTask {
 					vo.setPointLocator(dsvo.createPointLocator());
 					vo.setEventDetectors(new ArrayList<PointEventDetectorVO>(0));
 					vo.setTextRenderer(new PlainRenderer());
+					vo.setEventTextRenderer(new NoneEventRenderer());
 
 				}
 			} else
@@ -1087,7 +1090,7 @@ public class ImportTask extends ProgressiveTask {
 					I18NUtils.getMessage(bundle, "emport.saved"));
 	}
 
-	private String getJsonExceptionMessage(JsonException e) {
+	public String getJsonExceptionMessage(JsonException e) {
 		String msg = "'" + e.getMessage() + "'";
 		Throwable t = e;
 		while ((t = t.getCause()) != null) {
@@ -1114,5 +1117,9 @@ public class ImportTask extends ProgressiveTask {
 			throws DAOException, JsonException {
 		UsersProfileImporter profileImporter = new UsersProfileImporter();
 		profileImporter.importUsersProfile(profileJson, response, reader, this);
+	}
+
+	public List<JsonValue> getUsers() {
+		return users;
 	}
 }

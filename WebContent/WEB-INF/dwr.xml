@@ -143,6 +143,7 @@
     <convert converter="bean" match="com.serotonin.mango.view.component.*"/>
     <convert converter="bean" match="br.org.scadabr.view.component.*"/>
     <convert converter="bean" match="com.serotonin.mango.view.text.*"/>
+    <convert converter="bean" match="com.serotonin.mango.view.event.*"/>
     <convert converter="bean" match="com.serotonin.mango.view.DynamicImage"/>
     <convert converter="bean" match="com.serotonin.mango.view.ImageSet"/>
     <convert converter="bean" match="com.serotonin.mango.view.ImplDefinition"/>
@@ -179,7 +180,7 @@
       <param name="include" value="id,xid,name,extendedName,dataSourceId,enabled,dataTypeMessage,pointLocator"/>
     </convert>
     <convert converter="bean" match="com.serotonin.mango.vo.User">
-      <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions, userProfile"/>
+      <param name="include" value="id,username,email,phone,admin,disabled,receiveAlarmEmails,receiveOwnAuditEvents,dataSourcePermissions,dataPointPermissions,userProfile,homeUrl,hideMenu,theme"/>
     </convert>
     <convert converter="bean" match="br.org.scadabr.vo.permission.WatchListAccess">
      	<param name="include" value="id,permission"/>
@@ -222,6 +223,7 @@
     <convert converter="bean" match="com.serotonin.mango.vo.dataSource.mbus.SecondaryAddressingSearch" javascript="SecondaryAddressingSearch"/>
     <convert converter="enum" match="com.serotonin.dataframes.MBusMedium" />
     <convert converter="enum" match="com.serotonin.MBusAddressing" />
+    <convert converter="enum" match="com.serotonin.mango.vo.TimePeriodType" />
     
     <!-- End MBus4J stuff-->
     
@@ -251,10 +253,14 @@
       import com.serotonin.mango.web.dwr.DataPointEditDwr;
       import com.serotonin.mango.view.text.RangeValue;
       import com.serotonin.mango.view.text.MultistateValue;
+      import com.serotonin.mango.view.event.RangeEventValue;
+      import com.serotonin.mango.view.event.MultistateEventValue;
       import com.serotonin.mango.vo.permission.DataPointAccess;
       
       DataPointEditDwr.setRangeRenderer(String, List<RangeValue>);
+      DataPointEditDwr.setRangeEventRenderer(List<RangeEventValue>);
       DataPointEditDwr.setMultistateRenderer(List<MultistateValue>);
+      DataPointEditDwr.setMultistateEventRenderer(List<MultistateEventValue>);
       
       import com.serotonin.mango.web.dwr.MailingListsDwr;
       import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
@@ -266,7 +272,7 @@
       
       import com.serotonin.mango.web.dwr.UsersDwr;
       import br.org.scadabr.web.dwr.UsersProfilesDwr
-      UsersDwr.saveUserAdmin(int, String, String, String, String, boolean, boolean, int, boolean, List<Integer>, List<DataPointAccess>, int usersProfileId);
+      UsersDwr.saveUserAdmin(int, String, String, String, String, boolean, boolean, int, boolean, List<Integer>, List<DataPointAccess>, int usersProfileId, boolean, String, String);
       
       import br.org.scadabr.vo.permission.WatchListAccess;
       import br.org.scadabr.vo.permission.ViewAccess;

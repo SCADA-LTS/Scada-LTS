@@ -26,9 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.serotonin.mango.db.dao.*;
+import com.serotonin.mango.rt.dataImage.*;
 import com.serotonin.mango.rt.event.*;
 import com.serotonin.mango.rt.event.schedule.ResetDailyLimitSendingEventRT;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
@@ -47,11 +49,6 @@ import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.dataImage.DataPointEventMulticaster;
-import com.serotonin.mango.rt.dataImage.DataPointListener;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
-import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
@@ -375,7 +372,7 @@ public class RuntimeManager {
 					.getDataPoints(vo.getId(), null);
 			for (DataPointVO dataPoint : dataSourcePoints) {
 				if (dataPoint.isEnabled())
-					startDataPoint(dataPoint);
+					startDataPointSafe(dataPoint);
 			}
 
 			LOG.info("Data source '" + vo.getName() + "' initialized");
@@ -422,6 +419,12 @@ public class RuntimeManager {
 		// it.
 		int dataType = point.getPointLocator().getDataTypeId();
 
+		// Event text renderer
+		if (point.getEventTextRenderer() != null
+				&& !point.getEventTextRenderer().getDef().supports(dataType))
+			// Return to a default renderer
+			point.setEventTextRenderer(new NoneEventRenderer());
+
 		// Chart renderer
 		if (point.getChartRenderer() != null
 				&& !point.getChartRenderer().getDef().supports(dataType))
@@ -452,7 +455,7 @@ public class RuntimeManager {
 
 	public void deleteDataPoint(DataPointVO point) {
 		if (point.isEnabled())
-			stopDataPoint(point.getId());
+			stopDataPointSafe(point.getId());
 		new DataPointDao().deleteDataPoint(point.getId());
 		Common.ctx.getEventManager().cancelEventsForDataPoint(point.getId());
 	}
@@ -465,8 +468,7 @@ public class RuntimeManager {
 			DataSourceRT ds = getRunningDataSource(vo.getDataSourceId());
 			if (ds != null) {
 				// Change the VO into a data point implementation.
-				DataPointRT dataPoint = new DataPointRT(vo, vo
-						.getPointLocator().createRuntime());
+				DataPointRT dataPoint = createDataPointRT(vo);
 
 				// Add/update it in the data image.
 				dataPoints.put(dataPoint.getId(), dataPoint);
@@ -480,6 +482,25 @@ public class RuntimeManager {
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
 			}
+		}
+	}
+
+	public static DataPointRT createDataPointRT(DataPointVO vo) {
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		DataPointSyncMode mode = systemSettingsService.getDataPointRtValueSynchronized();
+		if(mode == DataPointSyncMode.HIGH)
+			return new DataPointSynchronizedRT(vo, vo.getPointLocator().createRuntime());
+		if(mode == DataPointSyncMode.MEDIUM)
+			return new DataPointNonSyncRT(vo, vo.getPointLocator().createRuntime());
+		return new DataPointRT(vo, vo.getPointLocator().createRuntime());
+	}
+
+	private void startDataPointSafe(DataPointVO vo) {
+		try {
+			startDataPoint(vo);
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage() + ", dataPoint: " + vo.getName() + "(id: " + vo.getId() + ", xid: " + vo.getXid() + "), dataSource: " + vo.getDeviceName() + "(xid: " + vo.getDataSourceXid() + ") : ", ex);
+			stopDataPointSafe(vo.getId());
 		}
 	}
 
@@ -497,6 +518,15 @@ public class RuntimeManager {
 					l.pointTerminated();
 				p.terminate();
 			}
+		}
+	}
+
+	private void stopDataPointSafe(int dataPointId) {
+		try {
+			stopDataPoint(dataPointId);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage() + ", dataPointId : " + dataPointId + " : ", ex);
+			dataPoints.remove(dataPointId);
 		}
 	}
 

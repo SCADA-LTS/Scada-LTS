@@ -18,27 +18,19 @@
  */
 package com.serotonin.mango.vo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
+import br.org.scadabr.vo.permission.ViewAccess;
+import br.org.scadabr.vo.permission.WatchListAccess;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.serotonin.ShouldNeverHappenException;
-import com.serotonin.json.JsonArray;
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonRemoteEntity;
-import com.serotonin.json.JsonRemoteProperty;
-import com.serotonin.json.JsonSerializable;
-import com.serotonin.json.JsonValue;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
@@ -58,10 +50,13 @@ import com.serotonin.mango.web.dwr.beans.TestingUtility;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.dao.UsersProfileDAO;
+import org.scada_lts.mango.service.UsersProfileService;
 
 @JsonRemoteEntity
 public class User implements SetPointSource, HttpSessionBindingListener,
 		JsonSerializable {
+
 	private int id = Common.NEW_ID;
 	@JsonRemoteProperty
 	private String username;
@@ -75,8 +70,15 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private boolean admin;
 	@JsonRemoteProperty
 	private boolean disabled;
-	private List<Integer> dataSourcePermissions;
-	private List<DataPointAccess> dataPointPermissions;
+	private List<Integer> dataSourcePermissions = new ArrayList<>();
+	private List<DataPointAccess> dataPointPermissions = new ArrayList<>();
+
+    private List<Integer> dataSourceProfilePermissions = new ArrayList<>();
+    private List<DataPointAccess> dataPointProfilePermissions = new ArrayList<>();
+    private List<WatchListAccess> watchListProfilePermissions = new ArrayList<>();
+    private List<ViewAccess> viewProfilePermissions = new ArrayList<>();
+
+    @JsonRemoteProperty
 	private int selectedWatchList;
 	@JsonRemoteProperty
 	private String homeUrl;
@@ -84,6 +86,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private int receiveAlarmEmails;
 	@JsonRemoteProperty
 	private boolean receiveOwnAuditEvents;
+
+	@JsonRemoteProperty
+	private String theme;
+	@JsonRemoteProperty
+	private boolean hideMenu;
 
 	//
 	// Session data. The user object is stored in session, and some other
@@ -105,6 +112,56 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
 	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+
+	public User() { }
+
+	public User(int id, String username, String email, String phone, boolean admin, boolean disabled, String homeUrl, long lastLogin) {
+		this.id = id;
+		this.username = username;
+		this.email = email;
+		this.phone = phone;
+		this.admin = admin;
+		this.disabled = disabled;
+		this.homeUrl = homeUrl;
+		this.lastLogin = lastLogin;
+	}
+
+	public User(User user) {
+		this.id = user.id;
+		this.username = user.username;
+		this.password = user.password;
+		this.email = user.email;
+		this.phone = user.phone;
+		this.admin = user.admin;
+		this.disabled = user.disabled;
+		this.dataSourcePermissions = new ArrayList<>(user.dataSourcePermissions);
+		this.dataPointPermissions = new ArrayList<>(user.dataPointPermissions);
+		this.dataSourceProfilePermissions = new ArrayList<>(user.dataSourceProfilePermissions);
+		this.dataPointProfilePermissions = new ArrayList<>(user.dataPointProfilePermissions);
+		this.watchListProfilePermissions = new ArrayList<>(user.watchListProfilePermissions);
+		this.viewProfilePermissions = new ArrayList<>(user.viewProfilePermissions);
+		this.selectedWatchList = user.selectedWatchList;
+		this.homeUrl = user.homeUrl;
+		this.lastLogin = user.lastLogin;
+		this.receiveAlarmEmails = user.receiveAlarmEmails;
+		this.receiveOwnAuditEvents = user.receiveOwnAuditEvents;
+		this.theme = user.theme;
+		this.hideMenu = user.hideMenu;
+		this.userProfile = user.userProfile;
+		this.view = user.view;
+		this.watchList = user.watchList;
+		this.editPoint = user.editPoint;
+		this.editDataSource = user.editDataSource;
+		this.testingUtility = user.testingUtility;
+		this.reportImageData = user.reportImageData;
+		this.editPublisher = user.editPublisher;
+		this.importTask = user.importTask;
+		this.muted = user.muted;
+		this.dataExportDefinition = user.dataExportDefinition;
+		this.eventExportDefinition = user.eventExportDefinition;
+		this.attributes = user.attributes;
+		this.uploadedProject = user.uploadedProject;
+	}
 
 	/**
 	 * Used for various display purposes.
@@ -161,6 +218,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	// Convenience method for JSPs
+	@JsonIgnore
 	public boolean isDataSourcePermission() {
 		return Permissions.hasDataSourcePermission(this);
 	}
@@ -274,10 +332,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<Integer> getDataSourcePermissions() {
-		if (dataSourcePermissions==null) {
-			dataSourcePermissions = new LinkedList<Integer>();
-		}
-		
 		return dataSourcePermissions;
 		
 	}
@@ -287,15 +341,11 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	}
 
 	public List<DataPointAccess> getDataPointPermissions() {
-		if (dataPointPermissions==null) {
-			dataPointPermissions = new LinkedList<DataPointAccess>();
-		} 
 		return dataPointPermissions;
 		
 	}
 
-	public void setDataPointPermissions(
-			List<DataPointAccess> dataPointPermissions) {
+	public void setDataPointPermissions(List<DataPointAccess> dataPointPermissions) {
 		this.dataPointPermissions = dataPointPermissions;
 	}
 
@@ -398,6 +448,22 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.eventExportDefinition = eventExportDefinition;
 	}
 
+	public String getTheme() {
+		return theme;
+	}
+
+	public void setTheme(String theme) {
+		this.theme = theme;
+	}
+
+	public boolean isHideMenu() {
+		return hideMenu;
+	}
+
+	public void setHideMenu(boolean hideMenu) {
+		this.hideMenu = hideMenu;
+	}
+
 	public void setAttribute(String key, Object value) {
 		attributes.put(key, value);
 	}
@@ -490,6 +556,23 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 						dataPointPermissions.add(access);
 				}
 			}
+
+			UsersProfileDAO usersProfileDAO = new UsersProfileDAO();
+			String userProfileXid = json.getString("userProfileXid");
+			Integer userProfileId = json.getInt("userProfile");
+			if (userProfileXid != null && !userProfileXid.isEmpty()) {
+				Optional<UsersProfileVO> usersProfileVO = usersProfileDAO.selectProfileByXid(userProfileXid);
+				if(!usersProfileVO.isPresent()) {
+					throw new LocalizableJsonException("emport.error.missingObject", "profile: " + userProfileXid);
+				}
+				userProfile = usersProfileVO.get().getId();
+			} else if(userProfileId != null && userProfileId != 0 && userProfileId != Common.NEW_ID) {
+				Optional<UsersProfileVO> usersProfileVO = usersProfileDAO.selectProfileById(userProfileId);
+				if(!usersProfileVO.isPresent()) {
+					throw new LocalizableJsonException("emport.error.missingObject", "profile: " + userProfileId);
+				}
+				userProfile = usersProfileVO.get().getId();
+			}
 		}
 	}
 
@@ -501,8 +584,17 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 			for (Integer dsId : getDataSourcePermissions())
 				dsXids.add(dataSourceDao.getDataSource(dsId).getXid());
 			map.put("dataSourcePermissions", dsXids);
-
 			map.put("dataPointPermissions", dataPointPermissions);
+			UsersProfileService usersProfileService = new UsersProfileService();
+			UsersProfileVO profile = usersProfileService.getUserProfileById(userProfile);
+			if(profile != null)
+				map.put("userProfileXid", profile.getXid());
+			else
+				map.put("userProfileXid", "");
+		} else {
+			map.put("dataSourcePermissions", Collections.emptyList());
+			map.put("dataPointPermissions", Collections.emptyList());
+			map.put("userProfileXid", "");
 		}
 	}
 
@@ -542,6 +634,10 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.userProfile = profile.getId();
 	}
 
+	public void setUserProfileId(int userProfileId) {
+		this.userProfile =userProfileId;
+	}
+
 	public int getUserProfile() {
 		return userProfile;
 	}
@@ -554,5 +650,59 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	public void pointSetComplete() {
 		// TODO Auto-generated method stub
 
+	}
+
+    public List<Integer> getDataSourceProfilePermissions() {
+        return dataSourceProfilePermissions;
+    }
+
+    public void setDataSourceProfilePermissions(List<Integer> dataSourceProfilePermissions) {
+        this.dataSourceProfilePermissions = dataSourceProfilePermissions;
+    }
+
+    public List<DataPointAccess> getDataPointProfilePermissions() {
+        return dataPointProfilePermissions;
+    }
+
+    public void setDataPointProfilePermissions(List<DataPointAccess> dataPointProfilePermissions) {
+        this.dataPointProfilePermissions = dataPointProfilePermissions;
+    }
+
+    public List<WatchListAccess> getWatchListProfilePermissions() {
+        return watchListProfilePermissions;
+    }
+
+    public void setWatchListProfilePermissions(List<WatchListAccess> watchListProfilePermissions) {
+        this.watchListProfilePermissions = watchListProfilePermissions;
+    }
+
+    public List<ViewAccess> getViewProfilePermissions() {
+        return viewProfilePermissions;
+    }
+
+    public void setViewProfilePermissions(List<ViewAccess> viewProfilePermissions) {
+        this.viewProfilePermissions = viewProfilePermissions;
+    }
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", email='" + email + '\'' +
+				", phone='" + phone + '\'' +
+				", admin=" + admin +
+				", disabled=" + disabled +
+				", homeUrl='" + homeUrl + '\'' +
+				", lastLogin=" + lastLogin +
+				", receiveAlarmEmails=" + receiveAlarmEmails +
+				", receiveOwnAuditEvents=" + receiveOwnAuditEvents +
+				", theme='" + theme + '\'' +
+				", hideMenu=" + hideMenu +
+				", userProfile=" + userProfile +
+				", muted=" + muted +
+				", attributes=" + attributes +
+				'}';
 	}
 }

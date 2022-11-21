@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,8 +49,10 @@ import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.TimerTask;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.util.ObjectUtils;
+import org.scada_lts.web.ws.ScadaWebSocket;
+import org.scada_lts.web.ws.ScadaWebSocketListener;
 
-public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
+public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, ScadaWebSocket<String> {
 	private static final Log LOG = LogFactory.getLog(DataPointRT.class);
 	private static final PvtTimeComparator pvtTimeComparator = new PvtTimeComparator();
 
@@ -70,6 +73,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	private List<IValueTime> averagingValues;
 	private final Object intervalLoggingLock = new Object();
 	private TimerTask intervalLoggingTask;
+
+	// WebSocket notification
+	private final List<ScadaWebSocketListener<String, Integer>> scadaWebSocketListeners = new CopyOnWriteArrayList<>();
 
 	/**
 	 * This is the value around which tolerance decisions will be made when
@@ -191,7 +197,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 			savePointValue(newValue, source, false);
 	}
 
-	private void savePointValue(PointValueTime newValue, SetPointSource source,
+	protected void savePointValue(PointValueTime newValue, SetPointSource source,
 			boolean async) {
 		// Null values are not very nice, and since they don't have a specific
 		// meaning they are hereby ignored.
@@ -288,8 +294,11 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 			logValue = false;
 		}
 
-		if (saveValue)
+		if (saveValue){
+			this.notifyWebSocketListeners(newValue.getValue().toString());
 			valueCache.savePointValueIntoDaoAndCacheUpdate(newValue, source, logValue, async);
+		}
+
 
 		// Ignore historical values.
 		if (pointValue == null || newValue.getTime() >= pointValue.getTime()) {
@@ -303,7 +312,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	//
 	// / Interval logging
 	//
-	private void initializeIntervalLogging() {
+	protected void initializeIntervalLogging() {
 		synchronized (intervalLoggingLock) {
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
@@ -320,7 +329,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 	}
 
-	private void terminateIntervalLogging() {
+	protected void terminateIntervalLogging() {
 		synchronized (intervalLoggingLock) {
 			if (vo.getLoggingType() != DataPointVO.LoggingTypes.INTERVAL)
 				return;
@@ -329,7 +338,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 		}
 	}
 
-	private void intervalSave(PointValueTime pvt) {
+	protected void intervalSave(PointValueTime pvt) {
 		synchronized (intervalLoggingLock) {
 			if (vo.getIntervalLoggingType() == DataPointVO.IntervalLoggingTypes.MAXIMUM) {
 				if (intervalValue == null)
@@ -461,13 +470,32 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	// / Listeners
 	// /
 	//
-	private void fireEvents(PointValueTime oldValue, PointValueTime newValue,
+	protected void fireEvents(PointValueTime oldValue, PointValueTime newValue,
 			boolean set, boolean backdate) {
 		DataPointListener l = rm.getDataPointListeners(vo.getId());
 		if (l != null)
 			Common.ctx.getBackgroundProcessing().addWorkItem(
 					new EventNotifyWorkItem(l, oldValue, newValue, set,
 							backdate));
+	}
+
+	@Override
+	public void addWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.add(listener);
+	}
+
+	@Override
+	public void removeWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.remove(listener);
+	}
+
+	@Override
+	public void notifyWebSocketListeners(String message) {
+		if(!scadaWebSocketListeners.isEmpty()) {
+			scadaWebSocketListeners.forEach(observer -> {
+				observer.sendWebSocketMessage(message, this.vo.getId());
+			});
+		}
 	}
 
 	class EventNotifyWorkItem implements WorkItem {
@@ -563,4 +591,5 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient {
 	public void terminateHistorical() {
 		terminateIntervalLogging();
 	}
+
 }

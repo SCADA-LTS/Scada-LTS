@@ -2,34 +2,22 @@ package org.scada_lts.web.mvc.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 
-import com.serotonin.mango.DataTypes;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.IDataPoint;
-import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
-import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
-import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
-import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
-import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
@@ -43,6 +31,10 @@ import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.view.text.TextRenderer;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
+
+import static org.scada_lts.dao.model.point.PointValueTypeOfREST.validPointValueType;
+import static org.scada_lts.utils.ValidationUtils.formatErrorsJson;
+import static org.scada_lts.utils.ValidationUtils.msgIfNullOrInvalid;
 
 
 class ValueTime implements Serializable {
@@ -169,6 +161,7 @@ class ValueToJSON implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private int id;
     private String value;
     private String formattedValue;
     private Long ts;
@@ -179,6 +172,7 @@ class ValueToJSON implements Serializable {
     private String chartColour;
 
     void set(PointValueTime pvt, DataPointVO dpvo) {
+        setId(dpvo.getId());
         setValue(pvt.getValue());
         setTs(pvt.getTime());
         setName(dpvo.getName());
@@ -187,6 +181,18 @@ class ValueToJSON implements Serializable {
         setChartColour(dpvo.getChartColour());
         setFormattedValue(textRenderer.getText(pvt, 1) + textRenderer.getMetaText());
     }
+
+    void setDataPoint(DataPointVO dpvo) {
+        setId(dpvo.getId());
+        setName(dpvo.getName());
+        setXid(dpvo.getXid());
+        setTextRenderer(dpvo.getTextRenderer());
+        setChartColour(dpvo.getChartColour());
+    }
+
+    public void setId(int id) { this.id = id; }
+
+    public int getId() { return this.id; }
 
     public String getValue() {
         return value;
@@ -346,7 +352,10 @@ public class PointValueAPI {
                 ObjectMapper mapper = new ObjectMapper();
 
                 ValueToJSON v = new ValueToJSON();
-                v.set(pvt, dpvo);
+                if (pvt != null)
+                    v.set(pvt, dpvo);
+                else
+                    v.setDataPoint(dpvo);
 
                 json = mapper.writeValueAsString(v);
 
@@ -380,7 +389,10 @@ public class PointValueAPI {
                 ObjectMapper mapper = new ObjectMapper();
 
                 ValueToJSON v = new ValueToJSON();
-                v.set(pvt, dpvo);
+                if (pvt != null)
+                    v.set(pvt, dpvo);
+                else
+                    v.setDataPoint(dpvo);
 
                 json = mapper.writeValueAsString(v);
 
@@ -398,11 +410,12 @@ public class PointValueAPI {
 
     /**
      * @param xid
-     * @param type    (0 - binary, 1 - multistate, 2 - double, 3 - string)
+     * @param type    (0 - unknown, 1 - binary, 2 - multistate, 3 - double, 4 - string)
      * @param value   (for binary [0,1]
      * @param request
      * @return
      */
+    @Deprecated
     @RequestMapping(value = "/api/point_value/setValue/{xid}/{type}/{value}", method = RequestMethod.POST)
     public ResponseEntity<String> setValue(
             @PathVariable("xid") String xid,
@@ -428,6 +441,40 @@ public class PointValueAPI {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * @param xid       Data Point Export ID
+     * @param type      Data Point Value Type (0 - unknown, 1 - binary, 2 - multistate, 3 - double, 4 - string)
+     * @param value     Value to be saved (for binary [0,1])
+     * @param request   HTTP Request with user data
+     * @return value
+     */
+    @PostMapping(value = "/api/point_value/setValue/{xid}/{type}")
+    public ResponseEntity<String> setValueV2(
+            @PathVariable("xid") String xid,
+            @PathVariable("type") Integer type,
+            @RequestBody String value,
+            HttpServletRequest request) {
+        LOG.info("/api/point_value/setValue/{xid}/{type}\n - xid:" + xid + " type:" + type + " value:" + value);
+
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                String error = msgIfNullOrInvalid("Correct type", type, a -> !validPointValueType(a));
+                if (!error.isEmpty()) {
+                    return ResponseEntity.badRequest().body(formatErrorsJson(error));
+                }
+                if(type != PointValueTypeOfREST.TYPE_STRING) { value = convertInputValue(value); }
+                dataPointService.save(value, xid, type);
+                return new ResponseEntity<>(value, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            LOG.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     /**
      * @param xid
@@ -540,7 +587,9 @@ public class PointValueAPI {
     }
 
     /**
-     * @param id, sts, ets - id of datapoint, start timestamp, end timestamp
+     * @param xid id of datapoint
+     * @param sts start timestamp
+     * @param ets end timestamp
      * @param request
      * @return
      */
@@ -690,6 +739,25 @@ public class PointValueAPI {
         }
 
         return new ResponseEntity<String>(HttpStatus.OK);
+    }
+
+    /**
+     * Convert Input Value
+     * @param value Input value to be converted
+     * @return converted input string
+     */
+    private String convertInputValue(String value) {
+
+        String inappropriateChars = "[=\\s]";
+        String replaceComma = "%2C";
+
+        value = value.replaceAll(inappropriateChars, "");
+        value = value.replaceAll(replaceComma, ".");
+        String[] result = value.split("\\.");
+        if(result.length > 1) {
+            value = result[0] + "." + result[1];
+        }
+        return value;
     }
 
 }

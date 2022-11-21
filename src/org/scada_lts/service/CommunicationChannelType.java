@@ -3,6 +3,7 @@ package org.scada_lts.service;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.event.handlers.EmailHandlerRT;
 import com.serotonin.mango.rt.event.handlers.EmailToSmsHandlerRT;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 
@@ -17,13 +18,13 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         private String replaceRegex = "\\s";
 
         @Override
-        public boolean sendMsg(EventInstance event, Set<String> addresses, String alias) {
-            return SendMsgUtils.sendEmailWithoutQueue(event,EmailHandlerRT.EmailNotificationType.ACTIVE,addresses,alias);
+        public boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+            return SendMsgUtils.sendEmail(event, EmailHandlerRT.EmailNotificationType.ACTIVE, addresses, alias, afterWork);
         }
 
         @Override
-        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias) {
-            return sendMsg(event, addresses, alias);
+        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+            return sendMsg(event, addresses, alias, afterWork);
         }
 
         @Override
@@ -52,13 +53,13 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         }
 
         @Override
-        public boolean sendMsg(EventInstance event, Set<String> addresses, String alias) {
-            return SendMsgUtils.sendSmsWithoutQueue(event,EmailToSmsHandlerRT.SmsNotificationType.MSG_FROM_EVENT,addresses,alias);
+        public boolean sendMsg(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+            return SendMsgUtils.sendSms(event, EmailToSmsHandlerRT.SmsNotificationType.MSG_FROM_EVENT, addresses, alias, afterWork);
         }
 
         @Override
-        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias) {
-            return SendMsgUtils.sendSmsWithoutQueue(event,EmailToSmsHandlerRT.SmsNotificationType.LIMIT,addresses,alias);
+        public boolean sendLimit(EventInstance event, Set<String> addresses, String alias, AfterWork afterWork) {
+            return SendMsgUtils.sendSms(event, EmailToSmsHandlerRT.SmsNotificationType.LIMIT, addresses, alias, afterWork);
         }
 
         @Override
@@ -103,7 +104,7 @@ public enum CommunicationChannelType implements CommunicationChannelTypable {
         if(address == null || address.isEmpty())
             return false;
         for(String pattern: regexExps) {
-            if(address.matches(pattern))
+            if(address.toLowerCase().matches(pattern))
                 return true;
         }
         return false;

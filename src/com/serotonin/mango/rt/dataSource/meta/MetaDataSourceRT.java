@@ -26,6 +26,8 @@ import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
+import com.serotonin.mango.rt.event.AlarmLevels;
+import com.serotonin.mango.rt.event.type.DataSourceEventType;
 import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
 import com.serotonin.web.i18n.LocalizableMessage;
 
@@ -99,12 +101,23 @@ public class MetaDataSourceRT extends DataSourceRT {
     }
 
     public void raiseScriptError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        if(isNone(EVENT_TYPE_SCRIPT_ERROR))
+            return;
         raiseEvent(EVENT_TYPE_SCRIPT_ERROR, runtime, false, new LocalizableMessage("event.meta.scriptError", dataPoint
                 .getVO().getName(), message));
     }
 
     public void raiseResultTypeError(long runtime, DataPointRT dataPoint, LocalizableMessage message) {
+        if(isNone(EVENT_TYPE_RESULT_TYPE_ERROR))
+            return;
         raiseEvent(EVENT_TYPE_RESULT_TYPE_ERROR, runtime, false, new LocalizableMessage("event.meta.typeError",
                 dataPoint.getVO().getName(), message));
+    }
+
+    private boolean isNone(int type) {
+        DataSourceEventType object = getEventType(type);
+        if(object == null)
+            return true;
+        return object.getAlarmLevel() == AlarmLevels.NONE;
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,9 @@ import java.util.List;
  *         person supporting and coreecting translation Jerzy Piejko
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
-public class UserDAO {
+
+@Repository
+public class UserDAO implements IUserDAO {
 
 	private static final Log LOG = LogFactory.getLog(UserDAO.class);
 
@@ -39,6 +42,8 @@ public class UserDAO {
 	private final static String COLUMN_NAME_LAST_LOGIN = "lastLogin";
 	private final static String COLUMN_NAME_RECEIVE_ALARM_EMAILS = "receiveAlarmEmails";
 	private final static String COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS = "receiveOwnAuditEvents";
+	private final static String COLUMN_NAME_HIDE_MENU = "hideMenu";
+	private final static String COLUMN_NAME_THEME = "theme";
 
 	// @formatter:off
 	private static final String USER_SELECT_ID = ""
@@ -59,7 +64,9 @@ public class UserDAO {
 				+ COLUMN_NAME_HOME_URL + ", "
 				+ COLUMN_NAME_LAST_LOGIN + ", "
 				+ COLUMN_NAME_RECEIVE_ALARM_EMAILS + ", "
-				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + " "
+				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ", "
+				+ COLUMN_NAME_HIDE_MENU + ", "
+				+ COLUMN_NAME_THEME + " "
 			+ "from users ";
 
 	private static final String USER_SELECT_ORDER = ""
@@ -94,6 +101,18 @@ public class UserDAO {
 				+ COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS + ") "
 			+ "values (?,?,?,?,?,?,?,?,?) ";
 
+	private static final String USER_UPDATE_HIDE_MENU = ""
+			+ "update users set "
+				+ COLUMN_NAME_HIDE_MENU + "=? "
+			+ "where "
+				+ COLUMN_NAME_ID + "=? ";
+
+	private static final String USER_UPDATE_SCADA_THEME = ""
+			+ "update users set "
+			+ COLUMN_NAME_THEME + "=? "
+			+ "where "
+			+ COLUMN_NAME_ID + "=? ";
+
 	private static final String USER_UPDATE = ""
 			+ "update users set "
 				+ COLUMN_NAME_USERNAME + "=?, "
@@ -123,6 +142,7 @@ public class UserDAO {
 	private static final String USER_DELETE = ""
 			+ "delete from users where "
 				+ COLUMN_NAME_ID + "=? ";
+
 	// @formatter:on
 
 	private class UserRowMapper implements RowMapper<User> {
@@ -142,10 +162,13 @@ public class UserDAO {
 			user.setLastLogin(rs.getLong(COLUMN_NAME_LAST_LOGIN));
 			user.setReceiveAlarmEmails(rs.getInt(COLUMN_NAME_RECEIVE_ALARM_EMAILS));
 			user.setReceiveOwnAuditEvents(DAO.charToBool(rs.getString(COLUMN_NAME_RECEIVE_OWN_AUDIT_EVENTS)));
+			user.setHideMenu(rs.getBoolean(COLUMN_NAME_HIDE_MENU));
+			user.setTheme(rs.getString(COLUMN_NAME_THEME));
 			return user;
 		}
 	}
 
+	@Override
 	public List<Integer> getAll() {
 
 		if (LOG.isTraceEnabled()) {
@@ -155,6 +178,7 @@ public class UserDAO {
 		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
 	}
 
+	@Override
 	public User getUser(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -170,6 +194,7 @@ public class UserDAO {
 		return user;
 	}
 
+	@Override
 	public User getUser(String username) {
 
 		if (LOG.isTraceEnabled()) {
@@ -185,6 +210,7 @@ public class UserDAO {
 		return user;
 	}
 
+	@Override
 	public List<User> getUsers() {
 
 		if (LOG.isTraceEnabled()) {
@@ -194,6 +220,7 @@ public class UserDAO {
 		return DAO.getInstance().getJdbcTemp().query(USER_SELECT_ORDER, new UserRowMapper());
 	}
 
+	@Override
 	public List<User> getActiveUsers() {
 
 		if (LOG.isTraceEnabled()) {
@@ -203,6 +230,7 @@ public class UserDAO {
 		return DAO.getInstance().getJdbcTemp().query(USER_SELECT_ACTIVE, new Object[]{DAO.boolToChar(false)}, new UserRowMapper());
 	}
 
+	@Override
 	public void updateHomeUrl(int userId, String homeUrl) {
 
 		if (LOG.isTraceEnabled()) {
@@ -212,6 +240,7 @@ public class UserDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HOME_URL, new Object[]{homeUrl, userId});
 	}
 
+	@Override
 	public void updateLogin(int userId) {
 
 		if (LOG.isTraceEnabled()) {
@@ -221,6 +250,7 @@ public class UserDAO {
 		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_LOGIN, new Object[]{System.currentTimeMillis(), userId});
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public int insert(final User user) {
 
@@ -251,6 +281,7 @@ public class UserDAO {
 		return keyHolder.getKey().intValue();
 	}
 
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void update(final User user) {
 
@@ -272,6 +303,35 @@ public class UserDAO {
 		});
 	}
 
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateHideMenu(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateHideMenu(User user) user:" + user);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_HIDE_MENU, new Object[]{
+				user.isHideMenu(),
+				user.getId()
+		});
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
+	public void updateScadaTheme(final User user) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("updateScadaTheme(User user) user:" + user);
+		}
+
+		DAO.getInstance().getJdbcTemp().update(USER_UPDATE_SCADA_THEME, new Object[]{
+				user.getTheme(),
+				user.getId()
+		});
+	}
+
+	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
 	public void delete(int userId) {
 

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.view.event.BaseEventTextRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -84,8 +85,8 @@ public class DataPointEditController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model){
 		LOG.trace("/data_point_edit.shtm");
-		
         User user = Common.getUser(request);
+        Permissions.ensureAdmin(user);
         dataPointDao = new DataPointDao();
         int id;
         String idStr = request.getParameter("dpid");
@@ -107,6 +108,7 @@ public class DataPointEditController {
         ControllerUtils.addPointListDataToModel(user, id, model);
         model.addAttribute("form", dataPoint);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+		model.addAttribute("eventTextRenderers", BaseEventTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
@@ -136,6 +138,7 @@ public class DataPointEditController {
         model.addAttribute("form", dataPoint);
         model.addAttribute("error", errors);
 		model.addAttribute("dataSource", Common.ctx.getRuntimeManager().getDataSource(dataPoint.getDataSourceId()));
+        model.addAttribute("eventTextRenderers", BaseEventTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("textRenderers", BaseTextRenderer.getImplementation(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("chartRenderers", BaseChartRenderer.getImplementations(dataPoint.getPointLocator().getDataTypeId()));
 		model.addAttribute("eventDetectors", PointEventDetectorVO.getImplementations(dataPoint.getPointLocator().getDataTypeId()));

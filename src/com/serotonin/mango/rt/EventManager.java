@@ -41,27 +41,37 @@ import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.ILifecycle;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.web.ws.ScadaWebSocket;
+import org.scada_lts.web.ws.ScadaWebSocketListener;
 
 /**
  * @author Matthew Lohbihler
  */
-public class EventManager implements ILifecycle {
+public class EventManager implements ILifecycle, ScadaWebSocket<String> {
 	private final Log log = LogFactory.getLog(EventManager.class);
 
 	private final List<UserHighestAlarmLevelListener> userHighestAlarmLevelListeners = new CopyOnWriteArrayList<UserHighestAlarmLevelListener>();
+	private final List<ScadaWebSocketListener<String, Object>> scadaWebSocketListeners = new CopyOnWriteArrayList<>();
 	private final List<EventInstance> activeEvents = new CopyOnWriteArrayList<EventInstance>();
 	private EventDao eventDao;
 	private UserDao userDao;
 	private long lastAlarmTimestamp = 0;
 	private int highestActiveAlarmLevel = 0;
+	private static final String WS_MESSAGE = "Event Raised";
 
 	//
 	//
 	// Basic event management.
 	//
 	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
-			int alarmLevel, LocalizableMessage message,
-			Map<String, Object> context) {
+						   int alarmLevel, LocalizableMessage message,
+						   Map<String, Object> context) {
+		raiseEvent(type, time, rtnApplicable, alarmLevel, message, message, context);
+	}
+
+	public void raiseEvent(EventType type, long time, boolean rtnApplicable,
+						   int alarmLevel, LocalizableMessage message, LocalizableMessage shortMessage,
+						   Map<String, Object> context) {
 		// Check if there is an event for this type already active.
 		EventInstance dup = get(type);
 		if (dup != null) {
@@ -96,13 +106,14 @@ public class EventManager implements ILifecycle {
 		boolean suppressed = isSuppressed(type);
 
 		EventInstance evt = new EventInstance(type, time, rtnApplicable,
-				alarmLevel, message, context);
+				alarmLevel, message, shortMessage, context);
 
 		if (!suppressed)
 			setHandlers(evt);
 
 		// Get id from database by inserting event immediately.
 		eventDao.saveEvent(evt);
+		notifyWebSocketListeners(WS_MESSAGE);
 
 		// Create user alarm records for all applicable users
 		List<Integer> eventUserIds = new ArrayList<Integer>();
@@ -116,7 +127,7 @@ public class EventManager implements ILifecycle {
 
 			if (Permissions.hasEventTypePermission(user, type)) {
 				eventUserIds.add(user.getId());
-				if( !suppressed && evt.isAlarm() ) 
+				if( !suppressed && evt.isAlarm() )
 					notifyEventRaise(evt.getId(), user.getId(), evt.getAlarmLevel());
 				if (evt.isAlarm() && user.getReceiveAlarmEmails() > 0
 						&& alarmLevel >= user.getReceiveAlarmEmails())
@@ -446,4 +457,20 @@ public class EventManager implements ILifecycle {
 		}
 	}
 
+	@Override
+	public void addWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.add(listener);
+	}
+
+	@Override
+	public void removeWebSocketListener(ScadaWebSocketListener listener) {
+		scadaWebSocketListeners.remove(listener);
+	}
+
+	@Override
+	public void notifyWebSocketListeners(String message) {
+		scadaWebSocketListeners.forEach(observer -> {
+			observer.sendWebSocketMessage(message);
+		});
+	}
 }

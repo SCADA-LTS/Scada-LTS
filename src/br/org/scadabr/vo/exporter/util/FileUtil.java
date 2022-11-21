@@ -49,19 +49,20 @@ public class FileUtil {
 
 	}
 
-	public static File createTxtTempFile(String nome, String text) {
-		File f = new File(nome);
+	public static File createTxtTempFile(String text) {
+		File file = new File("temp");
 		try {
-			File.createTempFile("temp", "");
-			FileOutputStream fi = new FileOutputStream(f);
-			fi.write(text.getBytes());
-			fi.flush();
-			fi.close();
-			f.deleteOnExit();
+			file = File.createTempFile("temp", "");
+			try (FileOutputStream fi = new FileOutputStream(file)) {
+				fi.write(text.getBytes());
+				fi.flush();
+			}
+			file.deleteOnExit();
+			return file;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return f;
+		return file;
 	}
 
 	public static List<File> getFilesOnDirectory(String directoryName) {

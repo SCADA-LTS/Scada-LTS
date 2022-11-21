@@ -1,48 +1,16 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-
-<h1>Descripci&oacute;n General</h1>
-
-<p>A los publicadores se les puede considerar un opuesto a las fuentes de datos. En lugar recolectar datos en el sistema, los editores distribuyen los datos hacia afuera. Esto es &uacute;til cuando se utiliza Mango para recopilar informaci&oacute;n de sistemas diferentes para modificar, limpiar, o administrarlos, y enviarlos en un &uacute;nico formato a otros sistemas. De esta manera, Mango es m&aacute;s que un simple M2M, es un M2M2M. Los publicadores tienen la capacidad de ser utilizados para enviar datos a otras instancias de Mango, permitiendo la consolidaci&oacute;n de los datos entre las diferentes instancias consiguiendo una administraci&oacute;n desde un servidor central. De hecho, una instancia de Mango puede utilizar publicadores para controlar otras instancias en muchas formas.</p>
-
-<h1>Configuraciones comunes de un Publicador</h1>
-<p>Cada publicador tiene un <b>Nombre</b> que es utilizado para identificarse en su lista. se recomienda que este nombre sea &uacute;nico, pero no es limitante. La casilla <b>Habilitado</b> permite la activaci&oacute;n o desactivaci&oacute;n de un publicador.</p>
-<p>Los publicadores utilizan memorias cach&eacute;s para asegurar que todos los puntos actualizados son entregados a su destino. Cuando el destino no acepta la entrega, por tiempo prolongado, el cach&eacute; aumentar&aacute; su tama&ntilde;o. Un punto sin entregarse nunca ser&aacute; purgado de este cach&eacute; (excepto cuando se deshabilite su publicador). En estos casos una <b>Advertencia por el tama&ntilde;o del cach&eacute;</b> puede definirse, y as&iacute; una alarma se activar&aacute; cuando el tama&ntilde;o exceda lo definido. El estado alarmado regresar&aacute; a normal cuando el cach&eacute; disminuya su tama&ntilde;o y ya no exceda el tama&ntilde;o de advertencia definido, o cuando se deshabilite el publicador.</p>
-<p>El valor del <b>evento de actualizaci&oacute;n</b> determina si los puntos ser&aacute;n entregados al actualizarse, o &uacute;nicamente cuando presenten cambios.</p>
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Los editores pueden ser vistos como lo opuesto a las fuentes de datos. En lugar de recopilar datos en el sistema, los editores los distribuyen. Esto puede ser útil cuando se utiliza el Mango para reunir información de sistemas dispares a fin de modificarla, limpiarla o gestionarla de otra manera, y luego enviarla en un formato común a otros sistemas. De esta manera, el mango no es sólo M2M, sino M2M2M. Los editores pueden incluso utilizarse para enviar datos a otras instancias de Mango, tal vez consolidando los datos de varias instancias sobre el terreno en los datos de gestión de la sede. De hecho, las instancias de Mango pueden utilizar a los editores para controlarse mutuamente de varias maneras.</p>
+<h1>Configuración común del editor</h1>
+<p>Cada editor tiene un <b>Nombre</b> que le permite identificarlo visualmente en las listas. Se recomienda que cada editor tenga un nombre único, pero no es obligatorio. La casilla <b>Activado</b> se utiliza para activar o desactivar el editor.</p>
+<p>Los editores utilizan cachés para asegurar que cada punto actualizado sea entregado en su destino. Si el destino, por cualquier razón, no acepta estas entregas durante un período de tiempo prolongado, este depósito puede llegar a ser muy grande. Las actualizaciones de puntos no entregados nunca se purgan de la caché (a menos que el editor esté desactivado), pero es posible establecer un tamaño de advertencia <b>Cache</b> que dispara una alarma cuando se excede este tamaño. Esta alarma vuelve a la normalidad cuando el tamaño de la caché ya no excede el tamaño de la advertencia, o cuando el editor está desactivado.</p>
+<p>El valor <b>Actualización de eventos</b> determina si se entregan todas las actualizaciones de puntos, o sólo los cambios de puntos.</p>

@@ -25,6 +25,9 @@ import com.serotonin.json.JsonObject;
 import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
+import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Matthew Lohbihler
@@ -33,6 +36,8 @@ import com.serotonin.mango.db.dao.CompoundEventDetectorDao;
 public class CompoundDetectorEventType extends EventType {
     private int compoundDetectorId;
     private int duplicateHandling = EventType.DuplicateHandling.IGNORE;
+
+    private static final Log LOG = LogFactory.getLog(CompoundDetectorEventType.class);
 
     public CompoundDetectorEventType() {
         // Required for reflection.
@@ -110,7 +115,16 @@ public class CompoundDetectorEventType extends EventType {
     @Override
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
-        map.put("XID", new CompoundEventDetectorDao().getCompoundEventDetector(compoundDetectorId).getXid());
+        setCompoundEventDetectorXid(map);
+    }
+
+    private void setCompoundEventDetectorXid(Map<String, Object> map) {
+        CompoundEventDetectorVO eventDetectorVO = new CompoundEventDetectorDao().getCompoundEventDetector(compoundDetectorId);
+        if(eventDetectorVO != null)
+            map.put("XID", eventDetectorVO.getXid());
+        else {
+            LOG.error("CompoundEventDetector for id: " + compoundDetectorId + " does not exist.");
+        }
     }
 
     @Override

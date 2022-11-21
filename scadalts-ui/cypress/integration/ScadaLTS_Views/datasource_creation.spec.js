@@ -2,7 +2,7 @@ import { createVirtualDataSource, addVirtualDataPoint, login } from '../../utils
 
 context('Create Datasource', () => {
 	before(() => {
-		login('admin', 'admin');
+		cy.login('admin', 'admin');
 	});
 
 	describe('Create Test Datasource', function () {

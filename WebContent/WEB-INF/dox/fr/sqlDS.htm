@@ -52,13 +52,13 @@
 <div><pre style="overflow : auto ; width : 95% ;">sélectionner l'état des relais</pre></div>
 <p> Pour transposer un tel tableau afin de récupérer les valeurs sur une seule ligne, on pourrait procéder comme suit (en supposant 3 relais):</p>
 <div><pre style="overflow : auto ; width : 95% ;">select
-  r1.status comme r1status,
-  r2.status comme r2status,
-  r3.status comme r3status
-des relais r1, r2, r3
-où r1.relayId = 'relais1'.
-  et r2.relayId = "relay2".
-  et r3.relayId = "relay3".
+  r1.status as r1status,
+  r2.status as r2status,
+  r3.status as r3status
+from relays r1, relays r2, relays r3
+where r1.relayId = 'relay1'
+  and r2.relayId = 'relay2'
+  and r3.relayId = 'relay3'
 </pre></div>
 <p>Veuillez noter que les exemples ci-dessus sont simplement fournis à titre d'information et de commodité. Votre base de données spécifique peut nécessiter des solutions très différentes.</p>
 

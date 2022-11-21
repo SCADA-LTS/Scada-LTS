@@ -1,9 +1,117 @@
 <b> void enableDataPoint(String xid);</b> <br/>
 <b> void disableDataPoint(String xid);</b> <br/>
 <b> void writeDataPoint(String xid, String value);</b> <br/>
+<br/>
+<b> void setLoggingType(String xid, NativeObject value);</b> <br/>
+<b> void setLoggingTypeAll(String xid); </b> <br/>
+<b> void setLoggingTypeNone(String xid); </b> <br/>
+<b> void setLoggingTypeOnTsChange(String xid); </b> <br/>
+<b> void setLoggingTypeOnChange(String xid, double tolerance); </b> <br/>
+<b> void setLoggingTypeInterval(String xid, String intervalPeriodType, int intervalPeriod, String intervalLoggingType); </b> <br/>
+<br/>
+<b> void setDiscardValues(String xid, NativeObject value); </b> <br/>
+<b> void setDefaultCacheSize(String xid, Integer value); </b> <br/>
+<b> void setPurgeType(String xid, NativeObject object); </b> <br/>
+
+
+<pre>Examples script
+
+1. Set interval type:
+
+    var intervalType =
+    {
+        "loggingType":"interval",
+        "intervalLoggingType":"minimum",
+        "intervalPeriodType":"minutes",
+        "intervalPeriod":15
+    };
+
+    dp.setLoggingType('DP_578141', intervalType);
+
+    OR
+
+    dp.setLoggingTypeInterval('DP_578141', "minutes", 15, "minimum");
+
+2. Set on change type:
+
+    var onChangeType =
+    {
+        "loggingType":"on_change",
+        "tolerance":0.8
+    };
+
+    dp.setLoggingType('DP_578141', onChangeType);
+
+    OR
+
+    dp.setLoggingTypeOnChange('DP_578141', 0.8);
+
+3. Set on ts change type:
+
+    var onTsChangeType =
+    {
+        "loggingType":"on_ts_change"
+    };
+
+    dp.setLoggingType('DP_578141', onTsChangeType);
+
+    OR
+
+    dp.setLoggingTypeOnTsChange('DP_578141');
+
+4. Set none type:
+
+    var noneType =
+    {
+        "loggingType":"none"
+    };
+
+    dp.setLoggingType('DP_578141', noneType);
+
+    OR
+
+    dp.setLoggingTypeNone('DP_578141');
+
+5. Set all logging type:
+
+    var allType =
+    {
+        "loggingType":"all"
+    };
+
+    dp.setLoggingType('DP_578141', allType);
+
+    OR
+
+    dp.setLoggingTypeAll('DP_578141');
+
+6. Set discard values:
+
+    var discardValues =
+    {
+        "discardExtremeValues":true,
+        "discardHighLimit":12,
+        "discardLowLimit":-12
+    };
+
+    dp.setDiscardValues('DP_578141', discardValues);
+
+7. Set default cache size:
+
+    dp.setDefaultCacheSize('DP_578141', 22334455);
+
+8. Set purge type:
+
+    var purgeType =
+    {
+        "purgeType":"weeks",
+        "purgePeriod":3
+    };
+
+    dp.setPurgeType('DP_578141', purgeType);</pre>
 
 <br>
 <p>
-Observação: Estes comandos só terão sucesso na execução se os datapoints adicionados no contexto e seus respectivos datasources
- estiverem habilitados no sistema.
+Note: These commands will only succeed if the data points added to the context 
+and its data sources are enabled in the system.
 </p>

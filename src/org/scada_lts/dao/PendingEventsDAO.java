@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.UserCommentCache;
+import org.scada_lts.utils.ApplicationBeans;
 import org.scada_lts.utils.EventTypeUtil;
 
 
@@ -56,6 +57,7 @@ public class PendingEventsDAO {
 	private final static String  COLUMN_NAME_EVENT_RTN_COUSE = "rtnCause";
 	private final static String  COLUMN_NAME_EVENT_ALARM_LEVEL = "alarmLevel";
 	private final static String  COLUMN_NAME_EVENT_MESSAGE = "message";
+	private final static String  COLUMN_NAME_EVENT_SHORT_MESSAGE = "shortMessage";
 	private final static String  COLUMN_NAME_EVENT_ACK_TS = "ackTs";
 	private final static String  COLUMN_NAME_EVENT_ACK_USER_ID = "ackUserId";
 	private final static String  COLUMN_NAME_EVENT_USERNAME = "username";
@@ -81,6 +83,7 @@ public class PendingEventsDAO {
 				+ "e.rtnCause,   "
 				+ "e.alarmLevel, "
 				+ "e.message, "
+				+ "e.shortMessage, "
 				+ "e.ackTs, "
 				+ "e.ackUserId, "
 				+ "u.username, "
@@ -113,6 +116,15 @@ public class PendingEventsDAO {
 
 	// @formatter:on
 
+	private IUserDAO userDAO;
+
+	public PendingEventsDAO() {
+		this.userDAO = ApplicationBeans.getUserDaoBean();
+	}
+
+	public PendingEventsDAO(IUserDAO userDAO) {
+		this.userDAO = userDAO;
+	}
 
 	@SuppressWarnings("rawtypes")
 	protected  List<UserCommentCache> getUserComents() {
@@ -167,14 +179,21 @@ public class PendingEventsDAO {
 		int alarmLevel = rs.getInt(COLUMN_NAME_EVENT_ALARM_LEVEL);
 
 		LocalizableMessage message;
+		LocalizableMessage shortMessage;
 		try {
 			message = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+			if (rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE) == null)
+				shortMessage = new LocalizableMessage("common.noMessage");
+			else
+				shortMessage = LocalizableMessage.deserialize(rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		} catch (LocalizableMessageParseException e) {
 			message = new LocalizableMessage("common.default",
 				rs.getString(COLUMN_NAME_EVENT_MESSAGE));
+			shortMessage = new LocalizableMessage("common.default",
+					rs.getString(COLUMN_NAME_EVENT_SHORT_MESSAGE));
 		}
 
-		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, null);
+		EventInstance event = new EventInstance(type, activeTS,	rtnApplicable, alarmLevel, message, shortMessage, null);
 
 		event.setId(rs.getInt(COLUMN_NAME_EVENT_ID));
 		long rtnTs = rs.getLong(COLUMN_NAME_EVENT_RTN_TS);
@@ -205,7 +224,7 @@ public class PendingEventsDAO {
 
 	protected Map<Integer, List<EventInstance>> getPendingEvents() {
 
-		List<Integer> users = new UserDAO().getAll();
+		List<Integer> users = userDAO.getAll();
 
 		Map<Integer, List<UserComment>> comments = getCacheUserComments(getUserComents());
 

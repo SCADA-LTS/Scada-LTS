@@ -53,11 +53,14 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
+
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</v-col>
 </template>
 <script>
 import { object } from '@amcharts/amcharts4/core';
-import i18n from '../../i18n';
 
 export default {
 	name: 'HttpSettingsComponent',
@@ -68,6 +71,11 @@ export default {
 			httpSettingsStore: undefined,
 			isHttpSettingsEdited: false,
 			passwordVisible: false,
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
 	},
 
@@ -90,19 +98,19 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.$notify({
-							placement: 'top-right',
-							type: 'success',
-							content: i18n.t('systemsettings.notification.save.http'),
-						});
+						this.response = {
+							status: true,
+							message: this.$t('systemsettings.notification.save.http'),
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
-					this.$notify({
-						placement: 'top-right',
-						type: 'danger',
-						content: i18n.t('systemsettings.notification.fail'),
-					});
+					this.response = {
+						status: true,
+						message: this.$t('systemsettings.notification.fail'),
+						color: 'danger',
+					};
 				});
 		},
 

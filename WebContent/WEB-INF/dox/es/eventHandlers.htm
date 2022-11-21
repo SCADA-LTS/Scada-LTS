@@ -1,131 +1,74 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Tradución para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<h1>Descripci&oacute;n General</h1>
+<!--
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
 <p>
-  Los manejadores de eventos definidos por el usuario permiten comportamientos a realizarse  cuando se produzca un evento en particular.
- Los eventos pueden ocurrir desde varias condiciones del sistema (vea la secci&oacute;n de Eventos en la secci&oacute;n de la p&aacute;gina general de ayuda para m&aacute;s   
- informaci&oacute;n). Cuando esto ocurra, el evento asociado ser&aacute; ejecutado.
+  Los manejadores de eventos proporcionan un comportamiento definido por el usuario que debe ser ejecutado cuando se desencadena un evento particular. Los eventos pueden ser activados debido a varias condiciones del sistema (véase la sección Eventos en la página de ayuda general para más información). Cuando esto sucede, se ejecutan los manejadores de eventos asociados.
 </p>
 <p>
-  Hay tres tipo de de manejadores de eventos:
+  Actualmente hay tres tipos de manejadores de eventos:
 </p>
 <ul>
-  <li><b>Manejadores de Correo</b>: Env&iacute;a un mensaje de correo electr&oacute;nico a listas de destinatarios definidas.</li>
-  <li><b>Manejador de Consignas</b>: Asigna un valor especifico a un punto modificable.</li>
-  <li><b>Manejador de Procesos</b>: Ejecuta procesos especificados del S.O.</li>
+  <li><b>Gerentes de correo electrónico </b>: envío de mensajes de correo electrónico a las listas de correo</li>
+  <li><b>Setpoint managers</b> : permite definir un setpoint con un valor determinado</li>
+  <li><b>Gestores de procesos</b>: hacen que el proceso de O/S dado se ejecute</li>
 </ul>
 
-<h1>Tipos de Eventos</h1>
+<h1>Tipos de eventos</h1>
 <p>
-  La secci&oacute;n de los tipos de eventos organiza todos los tipos de eventos disponibles en un sistema en un &aacute;rbol. La ramificaci&oacute;n de los detectores de
- eventos de punto contiene una lista de todos los puntos en el sistema que tienen detectores definidos (indicados con <img src="images/icon_comp.png"/>). 
- Los detectores de evento se listan bajo las ramas de cada punto.
+  La sección "Tipos de eventos" presenta en forma de árbol todos los tipos de eventos disponibles en el sistema. La rama "Point Event Detectors" contiene una lista de todos los puntos (indicados por <img src="images/icon_comp.png"/>) del sistema que tienen detectores de eventos. Los detectores de eventos están listados bajo sus respectivas ramas puntuales.
 </p>
 <p>
-  Los tipos de eventos para eventos planificados, para detectores de eventos compuestos, y los eventos del sistema son listados bajo sus respectivas ramas. 
- Las ramas de los eventos de las fuentes de datos contienen una lista de las fuentes de datos que pueden levantar eventos. Los eventos son listados bajo    
- sus respectivas fuentes de datos.
+  Los tipos de eventos para los eventos programados, los detectores de eventos compuestos y los eventos del sistema se enumeran bajo sus respectivas ramas. La rama "Eventos de fuentes de datos" contiene una lista de todas las fuentes de datos que pueden desencadenar eventos. Los acontecimientos se enumeran bajo su respectiva fuente de datos.
 </p>
 <p>
-  Para a&ntilde;adir un manejador de evento haga clic en el tipo de evento que desea manejar; luego se mostrar&aacute; la secci&oacute;n de detalles para el evento.
- El actual manejador de eventos no se almacenar&aacute; hasta que haga clic en el icono <img src="images/save_add.png"/>. Para editar un manejador de evento existente, haga clic en su nombre dentro de la rama correspondiente de la lista de eventos.
+  Para agregar un nuevo Administrador de eventos, haga clic en el tipo de evento que desea administrar y se mostrará la sección de detalles del Administrador de eventos. El manejador de eventos reales no se registrará hasta que hagas clic en el icono <img src="images/save_add.png"/>. Para editar un controlador existente, haga clic en el nombre del controlador en la lista de controladores bajo la rama del tipo de evento.
 </p>
 <p>
-  Cuando se a&ntilde;ade un nuevo manejador deber&aacute; seleccionar su <b>Tipo</b>. Luego que haya guardado el manejador, su tipo ya no ser&aacute; editable.
+  Cuando añades un nuevo handler, debes seleccionar el <b>Tipo</b> del handler. Una vez que se ha guardado un controlador, no se puede cambiar su tipo.
 </p>
 
-<h1>Alias</h1>
+<h1>Alias del evento</h1>
 <p>
-  Puede configurarle un alias a un manejador de eventos, como un identificador visual (etiqueta). Este alias tambi&eacute;n es utilizada como
- base para el asunto de los correos enviados por un manejador de eventos.
+  Se puede definir un alias de evento arbitrario, a través del cual se identificará visualmente al manejador del evento. Este alias también se utiliza como base de la línea de asunto de los manejadores de eventos de correo electrónico.
 </p>
 
-<h1>Editando manejadores existentes</h1>
+<h1>Modificar los administradores existentes</h1>
 <p>
-  Para guardar cambios en un Manejador haga clic en el icono <img src="images/save.png"/> en la parte superior derecha de la secci&oacute;n del manejador de eventos. Para eliminar un manejador haga clic en el icono <img src="images/delete.png"/>.
+  Para guardar los cambios realizados en un gestor, haz clic en el icono <img src="images/save.png"/> en la esquina superior derecha de la sección Gestor de Eventos. Para eliminar un controlador, haz clic en el icono <img src="images/delete.png"/>.
 </p>
 
-<h1>Manejador de correo</h1>
+<h1>Edición de los manejadores de correo electrónico</h1>
 <p>
-  Los manejadores de correo mantienen hasta tres listas de acci&oacute;n. La primera es la lista de los destinatarios a los cuales 
- les ser&aacute; enviado el mensaje cuando el evento se levante. La segunda y tercera lista son opcionales y permiten enviar mensajes de escalamiento y 
- mensajes cuando el evento se inactive.
+  Los administradores de correo electrónico mantienen hasta tres listas de correo. La primera es la lista a la que se envía un mensaje cuando el evento se plantea inicialmente. La segunda es una lista opcional a la que se envían las escalas. La tercera es una lista opcional que se envía cuando el evento se vuelve inactivo.
 </p>
 <p>
-  Para adicionar una lista de correos a una lista de destinatarios, selecci&oacute;nela en <b>Agregar lista de correo</b> del grupo desplegable
- de la lista y haga clic en el icono <img src="images/add.png"/> junto a &eacute;sta. Para agregar un usuario del sistema, selecci&oacute;nelo de la lista 
- <b>Agregar Usuario</b> del grupo desplegable y haga clic en el icono <img src="images/add.png"/>  junto a &eacute;sta. Para adicionar una direcci&oacute;n
- de correo libre, ingrese la direcci&oacute;n en la caja de texto <b>Agregar direcci&oacute;n</b> y haga clic en el icono <img src="images/add.png"/> junto a &eacute;sta.
- Para eliminar cualquier destinatario de la lista, haga clic en el icono <img src="images/bullet_delete.png"/> junto al destinatario.
- Para realizar una prueba a la lista de destinatarios, utilice el icono <img src="images/email_go.png"/> de la lista.
+  Para añadir una lista de correo a una lista de destinatarios, selecciónela en la lista desplegable <b>Añadir una lista de correo</b> y pulse el icono <img src="images/add.png"/> junto a la lista desplegable. Para añadir un usuario, selecciónelo de la lista <b>Añadir un usuario</b> y haga clic en el icono <img src="images/add.png"/> junto a la lista desplegable. Para añadir una dirección de correo electrónico gratuita, introduzca la dirección en la casilla <b>Añade una dirección</b> y haga clic en el icono <img src="images/add.png"/> junto a la casilla. Para eliminar un destinatario de una lista, haga clic en el icono <img src="images/add.png"/> junto al destinatario. Para probar una lista de destinatarios, haz clic en el icono <img src="images/email_go.png"/> junto a la lista.
 </p>
 <p>
-  Para enviar correos de escalamiento, active la casilla <b>Enviar escalamiento</b>, y especifique los <b>Destinatarios de escalamiento</b>.
- El correo de escalamiento ser&aacute; enviado si se le ha asociado un evento <b>Escalar si est&aacute; activo durante</b> el per&iacute;odo.
+  Para que se envíen correos electrónicos de escalada, seleccione la casilla de verificación <b>Enviar Escalada</b>, e introduzca el <b>Recipientes de Escalada</b>. El correo electrónico de la escalada sólo se enviará si el evento asociado ha permanecido activo durante el periodo <b>Enviar Escalada si está activo durante el periodo </b>.
 </p>
 <p>
-  Una notificaci&oacute;n por inactividad puede ser enviada activando la casilla <b>Env&iacute;o de notificaciones al inactivar evento</b>. Cuando est&aacute; activada
- ser&aacute; enviado un correo de notificaci&oacute;n a los destinatarios definidos cuando un evento se inactive. Tenga presente que si
- no se ha env&iacute;a un correo de escalamiento, la notificaci&oacute;n de inactivaci&oacute;n igualmente no ser&aacute; enviada a la lista de escalamiento.
- S&oacute;lo los destinatarios que reciben una notificaci&oacute;n de activaci&oacute;n de un evento, recibir&aacute;n la notificaci&oacute;n de inactivaci&oacute;n. Este comportamiento
- puede ser cambiado activando la casilla <b>Modificar destinatarios de notificaci&oacute;n por inactivaci&oacute;n</b>, que permite configurar una lista
- de destinatarios espec&iacute;fico para las inactivaciones. Esto puede ser &uacute;til si hay destinatarios para la notificaci&oacute;n de activaci&oacute;n que no se requieren
- correos posteriores (como un sistema de tickets). 
+  Una notificación de evento inactivo puede ser enviada marcando la casilla de verificación <b>Enviar notificación inactiva</b>. Si esta casilla está marcada, la notificación se enviará a todos los destinatarios del Evento una vez que éste haya quedado inactivo. Tenga en cuenta que si no se ha enviado un correo electrónico de escalada, la notificación inactiva no se enviará a la lista de escalada. Sólo los destinatarios que hayan recibido una notificación activa recibirán una notificación inactiva. Este comportamiento puede ser evitado seleccionando la casilla <b>Override inactive recipients</b>, que permite definir una lista específica de receptores inactivos. Esto puede ser útil si hay destinatarios activos de la notificación que no deben recibir más correos electrónicos (como un sistema de tickets).
 </p>
 
-<h1>Manejador de consigna</h1>
+<h1>Edición de los gestores de puntos de control</h1>
 <p>
-  Este manejador establecer&aacute; un valor en un punto modificable cuando se active, o se desactive un evento definido. El <b>Destino</b> es el punto modificable
- que se le establecer&aacute; el valor. Adicionalmente, puede hacer una asignaci&oacute;n en otro punto modificable manteniendo presente que el tipo de datos corresponde con el valor a asignar. Para configurar un valor en un punto destino, seleccione de la lista desplegable <b>Configurar valor est&aacute;tico</b> y luego introduzca el valor en la casilla utilice habilite la casilla <b>valor a configurar</b>. Si requiere hacerlo en otro punto utilice <b>Configurar valor en punto</b> y fije el valor a asignar.
+  Cuando se plantea un evento, este administrador fijará el valor de un punto de ajuste determinado. El <b>target</b> es el punto de ajuste que se fijará. Opcionalmente, el punto puede fijarse con el valor que desencadenó el evento, pero esto sólo es posible si el evento fue desencadenado por un detector de eventos de punto de "valor modificado" y el tipo de datos del objetivo es el mismo que el de la fuente. Para tener el objetivo definido con el valor de la fuente, seleccione la casilla de verificación <b>Utilizar el valor de la fuente</b>. De lo contrario, introduzca el valor con el que se establece el objetivo en el campo <b>Valor a Establecer.</b>.
 </p>
 
-<h1>Manejador de procesos</h1>
+<h1>Gestión de los procesos de edición</h1>
 <p>
-  Este manejador permite ejecutar procesos localmente utilizando comandos shell, tanto cuando se levanta un evento, como cuando se desactiva. 
- Los comandos deben ser especificados tal y como se utilizar&iacute;an en una l&iacute;nea de comandos del sistema. En el caso de comandos muy complejos
- se recomienda escribirlos en un script en el servidor y hacer su llamado desde el ScadaBR.
+  Este manejador ejecutará un proceso local, o un comando de shell, posiblemente cuando un evento sea disparado o desactivado. Los comandos respectivos pueden ser cualquier comando de shell apropiado para el anfitrión. Los comandos deben ser especificados como si fueran de una terminal de comandos. Para comandos muy complejos, puede ser conveniente escribir un script de shell y luego llamar al script desde Scada-LTS.
 </p>
 
 <p>
-  Cuando por alguna raz&oacute;n un proceso falla, se levantar&aacute; un evento del sistema suministrando la descripci&oacute;n de la falla. 
- Igualmente, se finalizar&aacute; un proceso cuando este deje de ejecutarse por m&aacute;s de 15 segundos. Las salidas fuera de est&aacute;ndar de
- alg&uacute;n proceso, se escribir&aacute; en el log de registro del ScadaBR como una alarma de nivel de "informaci&oacute;n". Un error est&aacute;ndar de
- salida ser&aacute; escrito en el log de registro del Mango como un "error".
+  Si por cualquier motivo no se puede iniciar un procedimiento, se activará un evento del sistema, con una descripción del fallo. Además, los procesos se interrumpirán si duran más de 15 segundos. Los resultados estándar no vacíos del proceso se escribirán en el registro ScadaBR a nivel de "información". Las salidas de error no vacías se registrarán en el registro de Mango a un nivel de error.
 </p>

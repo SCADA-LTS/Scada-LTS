@@ -1,0 +1,197 @@
+export const textRenderesTemplates = [
+	{
+		format: '0.0',
+		suffix: '',
+		typeName: 'textRendererAnalog',
+		metaText: '',
+		def: {
+			id: 0,
+			name: 'textRendererAnalog',
+			exportName: 'ANALOG',
+			nameKey: 'textRenderer.analog',
+			supportedDataTypes: [3],
+		},
+		colour: null,
+	},
+	{
+		zeroLabel: '',
+		zeroColour: '',
+		oneLabel: '',
+		oneColour: '',
+		typeName: 'textRendererBinary',
+		def: {
+			id: 0,
+			name: 'textRendererBinary',
+			exportName: 'BINARY',
+			nameKey: 'textRenderer.binary',
+			supportedDataTypes: [1],
+		},
+		colour: null,
+		metaText: null,
+	},
+	{
+		multistateValues: [],
+		typeName: 'textRendererMultistate',
+		def: {
+			id: 0,
+			name: 'textRendererMultistate',
+			exportName: 'MULTISTATE',
+			nameKey: 'textRenderer.multistate',
+			supportedDataTypes: [2],
+		},
+		colour: null,
+		metaText: null,
+	},
+	{
+		suffix: '',
+		typeName: 'textRendererPlain',
+		metaText: null,
+		def: {
+			id: 0,
+			name: 'textRendererPlain',
+			exportName: 'PLAIN',
+			nameKey: 'textRenderer.plain',
+			supportedDataTypes: [1, 2, 3, 4],
+		},
+		colour: null,
+	},
+	{
+		format: '',
+		rangeValues: [],
+		typeName: 'textRendererRange',
+		def: {
+			id: 0,
+			name: 'textRendererRange',
+			exportName: 'RANGE',
+			nameKey: 'textRenderer.range',
+			supportedDataTypes: [3],
+		},
+		colour: null,
+		metaText: null,
+	},
+	{
+		format: '',
+		conversionExponent: 0,
+		typeName: 'textRendererTime',
+		def: {
+			id: 0,
+			name: 'textRendererTime',
+			exportName: 'TIME',
+			nameKey: 'textRenderer.time',
+			supportedDataTypes: [3],
+		},
+		colour: null,
+		metaText: null,
+	},
+];
+
+export const chartRenderersTemplates = [
+	{
+		limit: 2,
+		typeName: 'chartRendererTable',
+		def: {
+			id: 0,
+			name: 'chartRendererTable',
+			exportName: 'TABLE',
+			nameKey: 'chartRenderer.table',
+			supportedDataTypes: [1, 2, 3, 4],
+		},
+	},
+	{
+		timePeriod: 2,
+		numberOfPeriods: 1,
+		typeName: 'chartRendererImage',
+		def: {
+			id: 0,
+			name: 'chartRendererImage',
+			exportName: 'IMAGE',
+			nameKey: 'chartRenderer.image',
+			supportedDataTypes: [1, 2, 3],
+		},
+		duration: 60000,
+		startTime: undefined,
+	},
+	{
+		timePeriod: 2,
+		numberOfPeriods: 1,
+		includeSum: false,
+		typeName: 'chartRendererStats',
+		def: {
+			id: 0,
+			name: 'chartRendererStats',
+			exportName: 'STATS',
+			nameKey: 'chartRenderer.statistics',
+			supportedDataTypes: [1, 2, 3, 4],
+		},
+		duration: 60000,
+		startTime: undefined,
+	},
+];
+
+export const eventRenderersTemplates = [
+	{
+		typeName: 'eventTextRendererNone',
+		def: {
+			id: 0,
+			name: 'eventTextRendererNone',
+			exportName: 'EVENT_NONE',
+			nameKey: 'textRenderer.none',
+			supportedDataTypes: [1,2,3,4,5],
+		},
+		text: null,
+	},
+	{
+		zeroLabel: '',
+		oneLabel: '',
+		typeName: 'eventTextRendererBinary',
+		def: {
+			id: 0,
+			name: 'eventTextRendererBinary',
+			exportName: 'EVENT_BINARY',
+			nameKey: 'textRenderer.binary',
+			supportedDataTypes: [1],
+		},
+		text: null,
+	},
+	{
+		multistateEventValues: [],
+		typeName: 'eventTextRendererMultistate',
+		def: {
+			id: 0,
+			name: 'eventTextRendererMultistate',
+			exportName: 'EVENT_MULTISTATE',
+			nameKey: 'textRenderer.multistate',
+			supportedDataTypes: [2],
+		},
+		text: null,
+	},
+	{},
+	{
+		rangeEventValues: [],
+		typeName: 'eventTextRendererRange',
+		def: {
+			id: 0,
+			name: 'eventTextRendererRange',
+			exportName: 'EVENT_RANGE',
+			nameKey: 'textRenderer.range',
+			supportedDataTypes: [3],
+		},
+		text: null,
+	},
+];
+
+export const eventDetectorTemplate = {
+	id: -1,
+	xid: '',
+	alias: '',
+	detectorType: 1,
+	alarmLevel: 0,
+	limit: 0.0,
+	duration: 0,
+	durationType: 1,
+	binaryState: false,
+	multistateState: 0,
+	changeCount: 2,
+	alphanumericState: null,
+	weight: 0.0
+};

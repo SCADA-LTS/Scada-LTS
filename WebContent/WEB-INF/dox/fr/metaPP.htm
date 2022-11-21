@@ -125,11 +125,11 @@ return p.value + 1;
 <p>Chaque objet StartAndRuntime a les propriétés suivantes:
 </p>
 <ul>
-  <li><b>valeur</b>: (bouléen pour binaire, entier pour multi-états) Etat du point pour lequel s'applique les propriétés suivantes</li>
-  <li><b>débuts</b>: (entier) Le nombre de fois que l'état a été atteint pendant la période</li>
+  <li><b>value</b>: (bouléen pour binaire, entier pour multi-états) Etat du point pour lequel s'applique les propriétés suivantes</li>
+  <li><b>starts</b>: (entier) Le nombre de fois que l'état a été atteint pendant la période</li>
   <li><b>runtime</b>: (entier) La durée en millisecondes pendant laquelle le point était dans l'état</li>
   <li><b>proportion</b>: (float) La proportion de la périod durant laquelle le point était dans l'état (runtime / real duration)</li>
-  <li><b>pourcentage</b>: (float) proportion * 100</li>
+  <li><b>percentage</b>: (float) proportion * 100</li>
 </ul>
 
 <p>
@@ -151,7 +151,7 @@ return p.value + 1;
 <h1>Exécution de scripts</h1>
 <p>Chaque fois qu'un script est exécuté à partir d'un point, le résultat est affecté au point comme une valeur de mise à jour. Le temps (la date ?) d'exécution d'un script peut être contrôlé avec la valeur <b>Update event</b>. Le paramètre "Context update" déclenche le script à chaque mise à jour d'un point du contexte. Les autres paramètres déclenche l'exécution du script à une date prévue.</p>
 <p>Le paramètre <b>Délai d'exécution</b> peut être renseigné pour empêcher l'exécution multiple et non désirée d'un script. En général plusieurs points interviennent dans un contexte, Si vous utilisez l'option "Mise à jour contexte" l'exécution du script se lancera achaque fois qu'un point du contexte est mis à jour. De même si les déclenchement du script est basé sur le temps, le script risque de s'exécuter avant la mise à jour des points, et retourner des résultats tendancieux. Le retard d'exécution de script peut apporter des résultats plus fiables. Si vous utilsez "Mise à jour contexte" pour l'exécution,  le script se lancera x secondes après la dernière mise à jour d'un point du contexte. Pour une exécution basée sur le temps, le script se lancera x secondes après l'évènement défini.</p>
-
+<p>Le param&egrave;tre <b>Context change</b> entraîne l'ex&egrave;cution du script chaque fois qu'un point dans son contexte est modifi&egrave;. </p>
 <h1>Plus d'exemples</h1>
 <p>Le script suivant calcul la moyenne horaire de roulement des points 'n1' et 'n2':</p>
 <pre>return avg(b1.past(HOUR).average, b2.past(HOUR).average);</pre>

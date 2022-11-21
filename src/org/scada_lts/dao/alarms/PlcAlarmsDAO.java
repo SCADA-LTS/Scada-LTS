@@ -45,6 +45,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
     private static final String COLUMN_NAME_ACKNOWLEDGE_TIME = "acknowledgeTime";
     private static final String COLUMN_NAME_INACTIVE_TIME = "inactiveTime";
     private static final String COLUMN_NAME_ACTIVE_TIME = "activeTime";
+    private static final String COLUMN_NAME_POINT_ID = "dataPointId";
 
     private static final String COLUMN_NAME_ACTIVATION_TIME_VIEW = "activation-time";
     private static final String COLUMN_NAME_INACTIVATION_TIME_VIEW = "inactivation-time";
@@ -57,7 +58,8 @@ class PlcAlarmsDAO implements AlarmsDAO {
             + "la.`" + COLUMN_NAME_ACTIVATION_TIME_VIEW + "`, "
             + "la.`" + COLUMN_NAME_INACTIVATION_TIME_VIEW + "`, "
             + "la." + COLUMN_NAME_LEVEL_VIEW + ", "
-            + "la." + COLUMN_NAME_NAME_VIEW + " "
+            + "la." + COLUMN_NAME_NAME_VIEW + ", "
+            + "la." + COLUMN_NAME_POINT_ID + " "
             + "FROM liveAlarms la LIMIT ? OFFSET ?;";
 
     private static final String SELECT_FROM_HISTORY_ALARMS_VIEW_WHERE_TIME_AND_RLIKE_LIMIT_OFFSET = ""
@@ -152,6 +154,7 @@ class PlcAlarmsDAO implements AlarmsDAO {
             liveAlarm.setInactivationTime(inactivationTime == null ? "" : inactivationTime);
             liveAlarm.setLevel(rs.getString(COLUMN_NAME_LEVEL_VIEW));
             liveAlarm.setName(rs.getString(COLUMN_NAME_NAME_VIEW));
+            liveAlarm.setDataPointId(rs.getInt(COLUMN_NAME_POINT_ID));
 
             return liveAlarm;
         }

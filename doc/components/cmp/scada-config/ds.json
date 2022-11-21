@@ -1,0 +1,12 @@
+{
+    "dataSources":[
+       {
+          "xid":"DS_204576",
+          "type":"VIRTUAL",
+          "updatePeriodType":"MINUTES",
+          "enabled":true,
+          "name":"test_cmp",
+          "updatePeriods":5
+       }
+    ]
+ }

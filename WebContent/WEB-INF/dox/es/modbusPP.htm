@@ -1,0 +1,36 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>
+  Las redes serie e IP utilizan los mismos atributos de punto para localizar los valores. El <b>Identificación del esclavo</b> es el id con el que se ha configurado el nodo Modbus; es un número entre 1 y 240.</p>
+<p>
+  El rango <b>Save range</b> determina en cuál de los cuatro rangos se encuentra el valor. Consulte la documentación de su equipo para determinar lo que se debe usar.</p>
+<ul>
+  <li>
+    El estado de la bobina representa el rango hexadecimal de 0x00000 a 0x0FFFF. Cada registro contiene un solo bit de escritura y los valores en este rango son siempre binarios.</li>
+  <li>
+    El estado de la entrada representa el rango hexadecimal de 0x10000 a 0x1FFFF. Cada registro contiene un bit de sólo lectura. Los valores en este rango son siempre binarios.</li>
+  <li>
+    El registro de espera representa el rango hexadecimal de 0x40000 a 0x4FFFF. Cada registro consta de 2 bytes (o "palabra"), y es escribible. Los valores en este rango pueden ser binarios o numéricos, dependiendo de los ajustes posteriores.</li>
+  <li>
+    El registro de entrada representa el rango hexadecimal de 0x30000 a 0x3FFFF. Cada registro representa 2 bytes (o una "palabra"), y es de sólo lectura. Los valores en este rango pueden ser binarios o numéricos, dependiendo de los ajustes posteriores.</li>
+</ul>
+
+<p>
+  Los valores del estado de la bobina y del estado de la entrada son siempre binarios. Sin embargo, los vendedores de Modbus suelen ser muy creativos en la forma en que utilizan los registros de retención y de entrada. El campo <b>Tipo de datos de Modbus</b> refleja las muchas formas en que los datos pueden ser codificados. Consulte la documentación de su equipo Modbus para determinar la configuración adecuada.
+</p>
+  Los valores específicos se localizan con el parámetro <b>Offset</b>. Se trata de un valor indexado a 0, lo que significa que el recuento comienza desde 0. Algunos proveedores de Modbus proporcionan documentación indexada a 1, donde el recuento comienza desde 1, por lo que a veces es necesario restar uno del índice documentado para determinar el desplazamiento indexado a 0. Cuando los registros incluyen su rango, por ejemplo escrito como 0x30001, la indexación a 1 suele estar implícita. El campo <b>Bit</b> se utiliza cuando los valores binarios se codifican en bits de registro individuales.
+</p>
+<p>
+  El campo <b>Settable</b> puede utilizarse para hacer que un punto que normalmente sería configurable (dependiendo de su alcance) no sea configurable.
+</p>
+<p>
+  Los campos <b>Multiplicador</b> y <b>Aditivo</b> pueden ser utilizados cuando se requieran conversiones de valores triviales. Los valores numéricos leídos de la red se calculan de la siguiente manera : (valor bruto) * multiplicador + aditivo. El inverso se aplica cuando se escribe un valor numérico en la red.
+</p>

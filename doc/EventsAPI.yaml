@@ -4,11 +4,11 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.5.0
+  version: 2.6.0
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. Description contains only a SMS and Email new feature REST API'
   termsOfService: ''
-  contact: 
+  contact:
     name: 'Radek - SoftQ Developer'
     email: 'rjajko@softq.pl'
   license:
@@ -147,33 +147,33 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  targetPointId: 
-                    type: number
-                  activeAction: 
-                    type: number
-                  activeValueToSet: 
-                    type: string
-                  activePointId: 
-                    type: number
-                  inactiveAction: 
-                    type: number
-                  inactiveValueToSet: 
-                    type: string
-                  inactivePointId: 
-                    type: number
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                targetPointId:
+                  type: number
+                activeAction:
+                  type: number
+                activeValueToSet:
+                  type: string
+                activePointId:
+                  type: number
+                inactiveAction:
+                  type: number
+                inactiveValueToSet:
+                  type: string
+                inactivePointId:
+                  type: number
       responses:
         '200':
           description: "Get successful"
           headers: {}
-  
+
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/2:
     post:
       tags:
@@ -208,35 +208,35 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  activeRecipients: 
-                    type: object
-                  sendEscalation: 
-                    type: boolean
-                  escalationDelayType: 
-                    type: number
-                  escalationDelay: 
-                    type: number
-                  escalationRecipients: 
-                    type: object
-                  sendInactive: 
-                    type: boolean
-                  inactiveOverride: 
-                    type: boolean
-                  inactiveRecipients:
-                    type: object
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                activeRecipients:
+                  type: object
+                sendEscalation:
+                  type: boolean
+                escalationDelayType:
+                  type: number
+                escalationDelay:
+                  type: number
+                escalationRecipients:
+                  type: object
+                sendInactive:
+                  type: boolean
+                inactiveOverride:
+                  type: boolean
+                inactiveRecipients:
+                  type: object
       responses:
         '200':
           description: "Get successful"
           headers: {}
-          
+
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/3:
     post:
       tags:
@@ -271,23 +271,23 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  activeProcessCommand: 
-                    type: string
-                  inactiveProcessCommand: 
-                    type: string
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                activeProcessCommand:
+                  type: string
+                inactiveProcessCommand:
+                  type: string
       responses:
         '200':
           description: "Get successful"
           headers: {}
-  
+
   /eventHandler/set/{typeId}/{typeRef1}/{typeRef2}/4:
     post:
       tags:
@@ -322,23 +322,23 @@ paths:
             schema:
               type: object
               properties:
-                  id: 
-                    type: number
-                  xid: 
-                    type: string
-                  alias: 
-                    type: string
-                  disabled: 
-                    type: boolean
-                  activeScriptCommand: 
-                    type: number
-                  inactiveScriptCommand: 
-                    type: number
+                id:
+                  type: number
+                xid:
+                  type: string
+                alias:
+                  type: string
+                disabled:
+                  type: boolean
+                activeScriptCommand:
+                  type: number
+                inactiveScriptCommand:
+                  type: number
       responses:
         '200':
           description: "Get successful"
           headers: {}
-          
+
   /eventHandler/update/{typeId}/{typeRef1}/{typeRef2}:
     put:
       tags:
@@ -457,13 +457,13 @@ paths:
                   $ref: '#/components/schemas/PointEventDetectorVO'
           headers: { }
 
-  /eventDetector/set/binary/state/{datapointId}:
+  /eventDetector/set/{datapointId}:
     post:
       tags:
         - EventDetector API
       summary: 'Create Point Event Detector'
-      description: 'Create a new Event Detector of type State for Binary Point by its ID'
-      operationId: 'eventDetectorCreateBinaryStateEventDetector'
+      description: 'Create a new Event Detector of specific type for DataPoint by its ID'
+      operationId: 'eventDetectorCreateEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
@@ -471,69 +471,28 @@ paths:
           schema:
             type: 'number'
       requestBody:
-        description: Point Event Detector with Binary State properties
+        description: Point Event Detector with properties of one of detector type
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                xid:
-                  type: string
-                alias:
-                  type: string
-                alarmLevel:
-                  type: number
-                duration:
-                  type: number
-                durationType:
-                  type: number
-                binaryState:
-                  type: boolean
+              $ref: '#/components/schemas/JSONPointEventDetectorVO'
       responses:
         '200':
           description: "Post successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JSONPointEventDetectorVO'
           headers: { }
 
-  /eventDetector/set/change/{datapointId}:
-    post:
-      tags:
-        - EventDetector API
-      summary: 'Create Point Event Detector'
-      description: 'Create a new Event Detector of type Change for Binary Point by its ID'
-      operationId: 'eventDetectorCreateChangeEventDetector'
-      parameters:
-        - name: 'datapointId'
-          in: 'path'
-          required: true
-          schema:
-            type: 'number'
-      requestBody:
-        description: Point Event Detector with Change properties
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                xid:
-                  type: string
-                alias:
-                  type: string
-                alarmLevel:
-                  type: number
-      responses:
-        '200':
-          description: "Post successful"
-          headers: { }
-
-  /eventDetector/update/binary/state/{datapointId}/{id}:
+  /eventDetector/update/{datapointId}/{id}:
     put:
       tags:
         - EventDetector API
       summary: 'Update Point Event Detector'
-      description: 'Update an existing Event Detector of given ID for Binary Point'
-      operationId: 'eventDetectorUpdateBinaryStateEventDetector'
+      description: 'Update an existing Event Detector of given ID for Data Point'
+      operationId: 'eventDetectorUpdateEventDetector'
       parameters:
         - name: 'datapointId'
           in: 'path'
@@ -546,62 +505,12 @@ paths:
           schema:
             type: 'number'
       requestBody:
-        description: Point Event Detector with Binary State properties
+        description: Point Event Detector with properties of one of detector type
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                xid:
-                  type: string
-                alias:
-                  type: string
-                alarmLevel:
-                  type: number
-                duration:
-                  type: number
-                durationType:
-                  type: number
-                binaryState:
-                  type: boolean
-      responses:
-        '200':
-          description: "Put successful"
-          headers: { }
-
-  /eventDetector/update/change/{datapointId}/{id}:
-    put:
-      tags:
-        - EventDetector API
-      summary: 'Update Point Change Event Detector'
-      description: 'Update an existing Change Event Detector of given ID for Binary Point'
-      operationId: 'eventDetectorUpdateChangeEventDetector'
-      parameters:
-        - name: 'datapointId'
-          in: 'path'
-          required: true
-          schema:
-            type: 'number'
-        - name: 'id'
-          in: 'path'
-          required: true
-          schema:
-            type: 'number'
-      requestBody:
-        description: Point Event Detector with Change properties
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                xid:
-                  type: string
-                alias:
-                  type: string
-                alarmLevel:
-                  type: number
+              $ref: '#/components/schemas/JSONPointEventDetectorVO'
       responses:
         '200':
           description: "Put successful"
@@ -887,6 +796,35 @@ components:
               type: array
               items:
                 type: object
+    JSONPointEventDetectorVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        alias:
+          type: string
+        detectorType:
+          type: number
+        alarmLevel:
+          type: number
+        limit:
+          type: number
+        duration:
+          type: number
+        durationType:
+          type: number
+        binaryState:
+          type: boolean
+        multistateState:
+          type: number
+        changeCount:
+          type: number
+        alphanumericState:
+          type: number
+        weight:
+          type: number
     MailingList:
       type: object
       properties:

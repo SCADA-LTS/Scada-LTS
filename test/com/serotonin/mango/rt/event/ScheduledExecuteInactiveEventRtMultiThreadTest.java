@@ -1,6 +1,7 @@
 package com.serotonin.mango.rt.event;
 
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -18,35 +19,20 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.service.InactiveEventsProvider;
-import org.scada_lts.service.ScheduledExecuteInactiveEventService;
-import utils.EventDAOMemory;
-import utils.EventTestUtils;
-import utils.MailingListTestUtils;
-import utils.ScheduledExecuteInactiveEventDAOMemory;
-import utils.TestConcurrentUtils;
+import org.scada_lts.service.*;
+import utils.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 import static utils.MailingListTestUtils.createAddressEntry;
 
 @RunWith(Parameterized.class)
@@ -58,12 +44,12 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
             "currentScheduledNumber: {7}")
     public static Collection data() {
         return Arrays.asList(new Object[][] {
-                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 250, 5, 3},
-                { 3, true, CommunicationChannelType.SMS, 3, 1, 250, 5, 3},
-                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 5, 10},
-                { 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 5, 250},
-                { 3, false, CommunicationChannelType.SMS, 250, 0, 250, 5, 250},
-                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 5, 10},
+                { 3, true, CommunicationChannelType.EMAIL, 3, 1, 250, 3, 3},
+                { 3, true, CommunicationChannelType.SMS, 3, 1, 250, 3, 3},
+                { 20, true, CommunicationChannelType.EMAIL, 10, 0, 10, 3, 10},
+                { 3, false, CommunicationChannelType.EMAIL, 250, 0, 250, 3, 250},
+                { 3, false, CommunicationChannelType.SMS, 250, 0, 250, 3, 250},
+                { 20, false, CommunicationChannelType.EMAIL, 10, 0, 10, 3, 10},
         });
     }
 
@@ -176,16 +162,24 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
                 channel, 600);
 
         this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventService, inactiveEventsProvider,
-                dataPointServiceMock, dataSourceServiceMock, 250);
+                dataPointServiceMock, dataSourceServiceMock, 300);
     }
 
     @Test
-    public void when_scheduleTimeout_for_sendMsg_return_true_then_verify_times_sendMsg_limit() {
+    public void when_scheduleTimeout_for_sendMsg_success_then_verify_times_sendLimit() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
-        when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
-        when(channelTypeMock.sendLimit(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
+                anyString(), anyObject());
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendLimit(any(EventInstance.class), anySet(), anyString(), anyObject());
+
 
         //when:
         TestConcurrentUtils.biConsumer(launchesNumber, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
@@ -193,22 +187,26 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //then:
         assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), anySet(),
-                eq("Limit"));
+        verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), anySet(), eq("Limit"), anyObject());
         verify(channelTypeMock, times(communicateLimitTimes)).sendLimit(any(EventInstance.class), eq(addresses),
-                eq("Limit"));
+                eq("Limit"), anyObject());
     }
 
     @Test
-    public void when_scheduleTimeout_for_sendMsg_return_false_then_verify_times_sendMsg_limit() {
+    public void when_scheduleTimeout_for_sendMsg_fail_then_verify_times_sendLimit() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
-        when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(false);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
+                anyString(), anyObject());
 
         //when:
         TestConcurrentUtils.biConsumer(launchesNumber, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
@@ -216,23 +214,27 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //then:
         assertEquals(scheduledEventsNumber, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertTrue(testSubject.getCurrentScheduledNumber() <= invokeSendMsgTimes * launchesNumber);
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), anySet(),
-                eq("Limit"));
+        verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), anySet(), eq("Limit"), anyObject());
         verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), eq(addresses),
-                eq("Limit"));
+                eq("Limit"), anyObject());
     }
 
     @Test
-    public void when_scheduleTimeout_for_sendMsg_return_false_then_verify_times_sendMsg() {
+    public void when_scheduleTimeout_for_sendMsg_fail_then_verify_times_sendMsg() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
         String alias = eventHandler.getAlias();
-        when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(false);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
+                anyString(), anyObject());
 
         //when:
         TestConcurrentUtils.biConsumer(launchesNumber, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
@@ -240,23 +242,28 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //then:
         assertEquals(scheduledEventsNumber, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertTrue(testSubject.getCurrentScheduledNumber() <= invokeSendMsgTimes * launchesNumber);
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(testSubject.getCurrentExecutedNumber())).sendMsg(any(EventInstance.class),
-                anySet(), eq(alias));
-        verify(channelTypeMock, times(testSubject.getCurrentExecutedNumber())).sendMsg(any(EventInstance.class),
-                eq(addresses), eq(alias));
+        verify(channelTypeMock, times((int)testSubject.getCurrentExecutedNumber())).sendMsg(any(EventInstance.class),
+                anySet(), eq(alias), anyObject());
+        verify(channelTypeMock, times((int)testSubject.getCurrentExecutedNumber())).sendMsg(any(EventInstance.class),
+                eq(addresses), eq(alias), anyObject());
     }
 
     @Test
-    public void when_scheduleTimeout_for_sendMsg_return_true_then_verify_times_sendMsg() {
+    public void when_scheduleTimeout_for_sendMsg_success_then_verify_times_sendMsg() {
 
         //given:
         Set<String> addresses = channel.getAllAdresses();
         String alias = eventHandler.getAlias();
-        when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(true);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
+                anyString(), anyObject());
 
         //when:
         TestConcurrentUtils.biConsumer(launchesNumber, testSubject::scheduleTimeout, false, DateTime.now().getMillis());
@@ -264,11 +271,12 @@ public class ScheduledExecuteInactiveEventRtMultiThreadTest {
 
         //then:
         assertEquals(scheduledEventsNumber - invokeSendMsgTimes, result.size());
+        assertEquals(result.size(), new HashSet<>(result).size());
         assertEquals(currentScheduledNumber, testSubject.getCurrentScheduledNumber());
         assertEquals(testSubject.getCurrentScheduledNumber(), testSubject.getCurrentExecutedNumber());
 
         //and then:
-        verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), anySet(), eq(alias));
-        verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), eq(addresses), eq(alias));
+        verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), anySet(), eq(alias), anyObject());
+        verify(channelTypeMock, times(invokeSendMsgTimes)).sendMsg(any(EventInstance.class), eq(addresses), eq(alias), anyObject());
     }
 }

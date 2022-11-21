@@ -35,7 +35,7 @@ import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
 public class RangeRenderer extends BaseTextRenderer {
-    private static ImplDefinition definition = new ImplDefinition("textRendererRange", "RANGE", "textRenderer.range",
+    private static ImplDefinition definition = new ImplDefinition(RangeRenderer.TYPE_NAME, "RANGE", "textRenderer.range",
             new int[] { DataTypes.NUMERIC });
 
     public static ImplDefinition getDefinition() {
@@ -49,6 +49,8 @@ public class RangeRenderer extends BaseTextRenderer {
     public ImplDefinition getDef() {
         return definition;
     }
+
+    public static final String TYPE_NAME = "textRendererRange";
 
     @JsonRemoteProperty
     private String format;

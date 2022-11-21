@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import com.serotonin.mango.rt.dataImage.PointValueTime;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
@@ -94,8 +95,9 @@ public class ContextualizedScriptRT extends ScriptRT {
 				IDataPoint point = context.get(varName);
 				int dt = point.getDataTypeId();
 
+				PointValueTime currentValue = point.getPointValue();
 				LOG.debug("Var: " + varName + ", value: "
-						+ (point.getPointValue() == null ? "null" : point.getPointValue().toString()));
+						+ (currentValue == null ? "null" : currentValue.toString()));
 
 				if (dt == DataTypes.BINARY)
 					scope.put(varName, scope, new BinaryPointWrapper(point, wrapperContext));

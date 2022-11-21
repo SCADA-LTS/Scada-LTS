@@ -22,6 +22,7 @@
 				<p>Refresh time: {{ timeRefresh }} [ms]</p>
 				<p>Time before warning: {{ timeWarningEpoch }} [ms]</p>
 				<p>Time before error: {{ timeErrorEpoch }} [ms]</p>
+				<p>Feedback url: {{ feedbackUrl }}</p>
 			</template>
 		</popover>
 	</div>
@@ -38,7 +39,9 @@ import moment from 'moment';
  *    plabel='Is Alive'
  *    ptime-warning=7000
  *    ptime-refresh=3000
- *    ptime-error=11000/>
+ *    ptime-error=11000
+ *    feedback-url=''
+ * />
  *
  */
 
@@ -48,7 +51,7 @@ const MINIMAL_DATE = 1; // 1 [s] unix time
 
 export default {
 	name: 'is-alive',
-	props: ['plabel', 'ptimeWarning', 'ptimeError', 'ptimeRefresh'],
+	props: ['plabel', 'ptimeWarning', 'ptimeError', 'ptimeRefresh', 'feedbackUrl', 'pTextWarning'],
 	data() {
 		return {
 			label: '',
@@ -58,6 +61,8 @@ export default {
 			timeRefresh: DEFAULT_REFRESH_IS_ALIVE, // default refresh 2 [s]
 			timeWarningEpoch: -1,
 			timeErrorEpoch: -1,
+			feedbackUrl: '',
+			textWarning: 'Server is not responding',
 
 			danger: false,
 			warning: false,
@@ -82,10 +87,18 @@ export default {
 				.catch(() => {
 					this.setData();
 				});
+			if (this.danger) { 
+			   Swal.fire( this.textWarning )
+			} else {
+				Swal.close();
+			}
 		},
 	},
 	created() {
 		this.label = this.plabel;
+		if ( !!this.pTextWarning && this.pTextWarning.length > 0 ) {
+			this.textWarning = this.pTextWarning
+		}
 		if (this.ptimeUpdate < REFRESH_NO_LESS_THEN_IS_ALIVE) {
 			this.timeRefresh = DEFAULT_REFRESH_IS_ALIVE;
 		} else {
@@ -98,10 +111,12 @@ export default {
 			this.timeRefresh = DEFAULT_UPDATE_IS_ALIVE;
 		}
 
+		this.feedbackUrl = this.feedbackUrl || '';
 		this.$store.dispatch('setInitIsAlive', {
 			tw: this.timeWarningEpoch,
 			te: this.timeErrorEpoch,
 			tr: this.timeRefresh,
+			wh: this.feedbackUrl,
 		});
 	},
 	mounted() {
@@ -125,4 +140,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+
+</style>

@@ -112,8 +112,9 @@
     }
     
     function configureComponentContent(content, viewComponent, parent, center) {
-        content.id = "c"+ viewComponent.id;
+        content.id = "c" + viewComponent.id;
         content.viewComponentId = viewComponent.id;
+        content.style.zIndex = viewComponent.z;
         updateNodeIds(content, viewComponent.id);
         parent.appendChild(content);
         
@@ -183,6 +184,30 @@
         closeEditors();
         customEditor.open(cid);
     }
+
+    function moveUpComponent(viewComponentId) {
+        var div = $("c" + viewComponentId);
+        if(div.style.zIndex < 99) {
+           div.style.zIndex = Number(div.style.zIndex) + 1;
+        }
+        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
+    }
+
+    function moveDownComponent(viewComponentId) {
+        var div = $("c" + viewComponentId);
+        if(div.style.zIndex > 1) {
+            div.style.zIndex = div.style.zIndex - 1;
+        }
+        ViewDwr.setViewComponentZIndex(div.viewComponentId, Number(div.style.zIndex));
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
+    }
+
+    function updateZIndexLabel(viewComponentId, value) {
+        var spanIndex = document.getElementById("c" + viewComponentId + "zindex");
+        spanIndex.parentNode.parentNode.style.display = "initial";
+        spanIndex.innerText = Number(value);
+    }
     
     function positionEditor(compId, editorId) {
         // Position and display the renderer editor.
@@ -219,6 +244,7 @@
     }
 
     function updateViewComponentLocation(divId) {
+        updatePositionXY(divId);
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;
@@ -330,6 +356,34 @@
 			   	$("viewBackground").width = 1920;
 			   	$("viewBackground").height = 1080;
 			       break;
+			   case "5":
+                $("viewBackground").width = 1280;
+                $("viewBackground").height = 720;
+                break;
+               case "6":
+                $("viewBackground").width = 1280;
+                $("viewBackground").height = 800;
+                break;
+               case "7":
+                $("viewBackground").width = 1300;
+                $("viewBackground").height = 700;
+                break;
+               case "8":
+                $("viewBackground").width = 1366;
+                $("viewBackground").height = 768;
+                break;
+               case "9":
+                $("viewBackground").width = 1440;
+                $("viewBackground").height = 900;
+                break;
+               case "10":
+                $("viewBackground").width = 1680;
+                $("viewBackground").height = 1050;
+                break;
+               case "11":
+                $("viewBackground").width = 2560;
+                $("viewBackground").height = 1440;
+                break;
 			   default:
 			   	$("viewBackground").width = 1600;
 			   	$("viewBackground").height = 1200;
@@ -339,6 +393,32 @@
         	document.getElementById("sizeLabel").style.visibility = 'hidden';
         }
 
+	}
+  
+  function validateComponentPosition(positionX, positionY) {
+    canvasWidth = document.getElementById("viewBackground").width;
+    canvasHeight = document.getElementById("viewBackground").height;
+    positionX = !!positionX ? positionX : 0;
+    positionX = positionX < 0 ? 0 : positionX;
+    positionX = positionX > canvasWidth ? canvasWidth - 45 : positionX;
+    positionY = !!positionY ? positionY : 0;
+    positionY = positionY < 0 ? 0 : positionY;
+    positionY = positionY > canvasHeight ? canvasHeight - 15 : positionY;
+    return [positionX, positionY];
+  }
+
+  function updatePointPosition(compId, posX, posY, referenceX, referenceY) {
+    var div = document.getElementById("c" + compId);
+    div.style.left = posX + "px";
+    div.style.top = posY + "px";
+    $set(referenceX, posX);
+    $set(referenceY, posY);
+  }
+  
+  function revealPointControls(viewComponentId) {
+        showLayer("c" + viewComponentId + "Controls");
+        var div = $("c" + viewComponentId);
+        updateZIndexLabel(viewComponentId, div.style.zIndex);
 	}
 
 	function deleteConfirm(){
@@ -417,6 +497,7 @@
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.anonymous"/></td>
                   <td class="formField" width="250">
+                  <tag:help id="anonymousView"/>
                     <sst:select name="view.anonymousAccess" value="${status.value}">
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
@@ -435,13 +516,29 @@
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
                       <sst:option value="<%= Integer.toString(1) %>"> 800x600</sst:option>
                       <sst:option value="<%= Integer.toString(2) %>"> 1024x768</sst:option>
+                      <sst:option value="<%= Integer.toString(5) %>"> 1280x720</sst:option>
+                      <sst:option value="<%= Integer.toString(6) %>"> 1280x800</sst:option>
+                      <sst:option value="<%= Integer.toString(7) %>"> 1300x700</sst:option>
+                      <sst:option value="<%= Integer.toString(8) %>"> 1366x768</sst:option>
+                      <sst:option value="<%= Integer.toString(9) %>"> 1440x900</sst:option>
                       <sst:option value="<%= Integer.toString(3) %>"> 1600x1200</sst:option>
-                      <sst:option value="<%= Integer.toString(4) %>"> 1920x1024</sst:option>
+                      <sst:option value="<%= Integer.toString(10) %>"> 1680x1050</sst:option>
+                      <sst:option value="<%= Integer.toString(4) %>"> 1920x1080</sst:option>
+                      <sst:option value="<%= Integer.toString(11) %>"> 2560x1440</sst:option>
                     </sst:select>
                   </td>
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
+
+              <tr><td colspan="2"><hr style="margin: 5px 0;"></td></tr>
+
+              <tr>
+                <td colspan="2" align="center">
+                  <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
+                </td>
+              </tr>
 
             </table>
           </div>
@@ -467,6 +564,12 @@
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
           <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
+        </td>
+
+        <td class="formLabelRequired" width="350"><fmt:message key="viewEdit.viewDelete"/></td>
+        <td class="formField" width="250">
+          <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
+          <input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
         </td>
 
       </tr>
@@ -501,20 +604,9 @@
             </tr>
 
             <tr><td colspan="3">&nbsp;</td></tr>
-
-            <tr>
-              <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
-                <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
-                <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
-                <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
-              </td>
-              <td></td>
-            </tr>
           </table>
         
-          <div id="pointTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="pointTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
@@ -535,6 +627,11 @@
                         title="viewEdit.editGraphicalRenderer"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
             <div style="position:absolute;left:-16px;top:0px;z-index:1;">
@@ -547,7 +644,7 @@
             </div>
           </div>
           
-          <div id="htmlTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="htmlTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"></div>
@@ -557,12 +654,17 @@
                         title="viewEdit.editStaticView"/></td></tr>
                 <tr><td><tag:img png="html_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deleteStaticView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
           
           
-          <div id="imageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="imageChartTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <span id="c_TEMPLATE_Content"></span>
@@ -572,11 +674,16 @@
                         title="viewEdit.editPointView"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
             
-          <div id="enhancedImageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="enhancedImageChartTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content" style="display: none;"></div>
@@ -591,11 +698,16 @@
                         title="viewEdit.editPointView"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>
           
-          <div id="compoundTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="compoundTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <span id="c_TEMPLATE_Content"></span>
@@ -614,6 +726,11 @@
                         title="viewEdit.editPointView"/></td></tr>
                 <tr><td><tag:img png="plugin_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deletePointView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
             
@@ -624,7 +741,7 @@
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
           </div>
           
-          <div id="customTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
+          <div id="customTemplate" onmouseover="revealPointControls(getViewComponentId(this))"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"></div>
@@ -634,6 +751,11 @@
                         title="viewEdit.editStaticView"/></td></tr>
                 <tr><td><tag:img png="html_delete" onclick="deleteViewComponent(getViewComponentId(this))"
                         title="viewEdit.deleteStaticView"/></td></tr>
+                <tr><td><tag:img png="arrow_up_thin" onclick="moveUpComponent(getViewComponentId(this))"
+                        title="viewEdit.moveUpComponent"/></td></tr>
+                <tr style="display:none;"><td style="text-align:center;"><span id="c_TEMPLATE_zindex"></span></td></tr>
+                <tr><td><tag:img png="arrow_down_thin" onclick="moveDownComponent(getViewComponentId(this))"
+                        title="viewEdit.moveDownComponent"/></td></tr>
               </table>
             </div>
           </div>

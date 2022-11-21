@@ -4,7 +4,6 @@ before_install:
 - sudo apt-get update
 - sudo apt-get install tomcat7
 - sudo apt-get install ant-optional
-before_script:
 - mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
 - nvm ls
 - nvm install 12
@@ -16,8 +15,7 @@ before_script:
 - ls -l ./WebContent/WEB-INF/lib/seroUtils.jar
 - sed -i '96s/.*/        return "'$SCADA_LTS_MILESTONE'";/' ./src/com/serotonin/mango/Common.java
 - cd ./scadalts-ui
-- npm install
-- npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH
+- npm run-script build-config -- $SCADA_LTS_MILESTONE $TRAVIS_BUILD_NUMBER $TRAVIS_BRANCH $TRAVIS_COMMIT $TRAVIS_PULL_REQUEST $TRAVIS_PULL_REQUEST_BRANCH
 - cd ../
 language: java
 jdk:
@@ -25,12 +23,18 @@ jdk:
 services:
 - docker
 - mysql
-script: ant war
+install:
+# Skipping tests because it is better to start that as another task on Travis.
+  - ant build-skip-test
+  - ant test-junit
+script:
+  - ant create-war
 branches:
   only:
   - "/^develop.*$/"
   - "/^master.*$/"
-  - "/^release/2.5.2.*$/"
+  - "/^release.*$/"
+  - "/^feature/#1610.*$/"
 notifications:
   email: false
 env:
@@ -53,10 +57,8 @@ after_script:
 - rm -rf ./apache-tomcat-7.0.85
 - cp ../../ScadaBR.war ./webapps
 - ls -l ./webapps/ScadaBR.war
-- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-3.1.8-bin.jar ./lib/
-- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar ./lib/
-- ls -l ./lib/mysql-connector-java-3.1.8-bin.jar
-- ls -l ./lib/mysql-connector-java-5.1.38-bin.jar
+- cp ../../WebContent/WEB-INF/lib/mysql-connector-java-5.1.49.jar ./lib/
+- ls -l ./lib/mysql-connector-java-5.1.49.jar
 - cp -f ../config/context.xml ./conf/
 - cat ./conf/context.xml
 - cd ../
@@ -64,11 +66,7 @@ after_script:
 - ls
 - docker version
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9][0-9]' | head -n1`
-- export TAGOLDISSUE=`echo $TRAVIS_BRANCH | egrep -o '[0-9][0-9][0-9]' | head -n1`
-- echo $TAGISSUE
-- export TAGISSUE=`if [ "$TAGISSUE" == "" ]; then echo $TAGOLDISSUE; else echo $TAGISSUE;
-  fi`
+- export TAGISSUE=`echo $TRAVIS_BRANCH | egrep -o '#[0-9]+' | head -n1 | sed -n 's/^#//p'`
 - echo $TAGISSUE
 - export TAG_DEV_OR_ISSUE=`if [ "$TRAVIS_BRANCH" == "develop" ]; then echo "siv_dev";
   else echo $TAGISSUE ; fi`

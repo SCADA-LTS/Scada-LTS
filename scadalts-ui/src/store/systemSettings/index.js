@@ -8,11 +8,6 @@ import axios from 'axios';
 const storeSystemSettings = {
 	state: {
 		systemSettingsApiUrl: './api/systemSettings',
-		requestOptions: {
-			timeout: 5000,
-			useCredentials: true,
-			credentials: 'same-origin',
-		},
 		databaseType: undefined,
 		databaseInfo: undefined,
 		systemEventTypes: undefined,
@@ -22,6 +17,7 @@ const storeSystemSettings = {
 		httpSettings: undefined,
 		miscSettings: undefined,
 		smsDomainSettings: undefined,
+		amchartsSettings: undefined,
 		systemStartupTime: undefined,
 		schemaVersion: undefined,
 		scadaConfig: undefined,
@@ -56,6 +52,9 @@ const storeSystemSettings = {
 		setSmsDomainSettings(state, smsDomainSettings) {
 			state.smsDomainSettings = smsDomainSettings;
 		},
+		setAmchartsSettings(state, amchartsSettings) {
+			state.amchartsSettings = amchartsSettings;
+		},
 		setSystemStartupTime(state, startupTime) {
 			state.systemStartupTime = new Date(Number(startupTime));
 		},
@@ -70,26 +69,13 @@ const storeSystemSettings = {
 		},
 	},
 	actions: {
-		getDatabaseType(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getDatabaseType`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setDatabaseType', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+		getDatabaseType({ commit, dispatch }) {
+			return dispatch('requestGet', `/systemSettings/getDatabaseType`).then((r) => {
+				commit('setDatabaseType', r);
+				return r;
 			});
 		},
+
 		saveDatabaseType(context, databaseType) {
 			return new Promise((resolve, reject) => {
 				axios
@@ -105,388 +91,170 @@ const storeSystemSettings = {
 					});
 			});
 		},
-		getSchemaVersion(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(`${context.state.systemSettingsApiUrl}/getSchemaVersion`, {
-						timeout: 5000,
-						useCredentials: true,
-						credentials: 'same-origin',
-					})
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setSchemaVersion', response.data.schemaVersion);
-						}
-						resolve(true);
-					})
-					.catch((err) => {
-						reject(err);
-					});
+		getSchemaVersion({ commit, dispatch }) {
+			return dispatch('requestGet', `/systemSettings/getSchemaVersion`).then((r) => {
+				commit('setSchemaVersion', r.schemaVersion);
+				return r;
 			});
 		},
-		getSystemInfoSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getSystemInfo`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setSystemInfoSettings', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		getDatabaseSize({ commit, dispatch }) {
+			return dispatch('requestGet', `/systemSettings/getDatabaseSize`).then((r) => {
+				r.topPoints = r.topPoints.slice(0, 10);
+				commit('setDatabaseInfo', r);
+				return r;
 			});
 		},
-		getSystemStartupTime(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(`${context.state.systemSettingsApiUrl}/getStartupTime`, {
-						timeout: 5000,
-						useCredentials: true,
-						credentials: 'same-origin',
-					})
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setSystemStartupTime', response.data.startupTime);
-						}
-						resolve(true);
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		getSystemInfoSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getSystemInfo').then((r) => {
+				commit('setSystemInfoSettings', r);
+				return r;
 			});
 		},
-		getAllSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(`${context.state.systemSettingsApiUrl}/getSettings`, {
-						timeout: 5000,
-						useCredentials: true,
-						credentials: 'same-origin',
-					})
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setDatabaseType', response.data.databaseType);
-							context.commit('setSystemEventTypes', response.data.systemEventTypes);
-							context.commit('setAuditEventTypes', response.data.auditEventTypes);
-							context.commit('setSystemInfoSettings', response.data.systemInfoSettings);
-							context.commit('setEmailSettings', response.data.emailSettings);
-							context.commit('setHttpSettings', response.data.httpSettings);
-							context.commit('setMiscSettings', response.data.miscSettings);
-							context.commit('setScadaConfig', response.data.scadaConfig);
-						}
-						resolve(true);
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		saveSystemInfoSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveSystemInfo',
+				data: state.systemInfoSettings,
 			});
 		},
-		getAuditEventTypes(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getAuditEventAlarmLevels`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setAuditEventTypes', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		getSystemStartupTime({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getStartupTime').then((r) => {
+				commit('setSystemStartupTime', r.startupTime);
+				return r;
 			});
 		},
-		getSystemEventTypes(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getSystemEventAlarmLevels`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setSystemEventTypes', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		getAuditEventTypes({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getAuditEventAlarmLevels').then(
+				(r) => {
+					commit('setAuditEventTypes', r);
+					return r;
+				}
+			);
+		},
+
+		saveAuditEventTypes({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveAuditEventAlarmLevels',
+				data: state.auditEventTypes,
 			});
 		},
-		getEmailSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getEmail`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setEmailSettings', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		getSystemEventTypes({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getSystemEventAlarmLevels').then(
+				(r) => {
+					commit('setSystemEventTypes', r);
+					return r;
+				}
+			);
+		},
+
+		saveSystemEventTypes({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveSystemEventAlarmLevels',
+				data: state.systemEventTypes,
 			});
 		},
-		getHttpSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getHttp`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setHttpSettings', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		getEmailSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getEmail').then((r) => {
+				commit('setEmailSettings', r);
+				return r;
 			});
 		},
-		getMiscSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getMisc`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setMiscSettings', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		saveEmailSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveEmail',
+				data: state.emailSettings,
 			});
 		},
-		getSmsDomainSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getSMSDomain`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setSmsDomainSettings', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		sendTestEmail({ dispatch }) {
+			return dispatch('requestGet', '/systemSettings/sendTestEmail');
+		},
+
+		getHttpSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getHttp').then((r) => {
+				commit('setHttpSettings', r);
+				return r;
 			});
 		},
-		getScadaConfiguration(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getScadaConfig`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setScadaConfig', response.data);
-							resolve(response.data);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
+
+		saveHttpSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveHttp',
+				data: state.httpSettings,
 			});
 		},
-		getDatabaseSize(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(`${context.state.systemSettingsApiUrl}/getDatabaseSize`, {
-						timeout: 5000,
-						useCredentials: true,
-						credentials: 'same-origin',
-					})
-					.then((response) => {
-						if (response.status == 200) {
-							context.commit('setDatabaseInfo', response.data);
-						}
-						resolve(true);
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		getMiscSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getMisc').then((r) => {
+				commit('setMiscSettings', r);
+				return r;
 			});
 		},
-		saveEmailSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveEmail`,
-						context.state.emailSettings,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		saveMiscSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveMisc',
+				data: state.miscSettings,
 			});
 		},
-		saveMiscSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveMisc`,
-						context.state.miscSettings,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		getSmsDomainSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getSMSDomain').then((r) => {
+				commit('setSmsDomainSettings', r);
+				return r;
 			});
 		},
-		saveSmsDomainSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveSMSDomain/${context.state.smsDomainSettings}`,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		saveSmsDomainSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: `/systemSettings/saveSMSDomain`,
+				data: {'domainName':state.smsDomainSettings},
 			});
 		},
-		saveHttpSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveHttp`,
-						context.state.httpSettings,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		getAmchartsSettings({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getAggregateSettings').then((r) => {
+				commit('setAmchartsSettings', r);
+				return r;
 			});
 		},
-		saveSystemEventTypes(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveSystemEventAlarmLevels`,
-						context.state.systemEventTypes,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		saveAmchartsSettings({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: '/systemSettings/saveAggregateSettings',
+				data: state.amchartsSettings,
 			});
 		},
-		saveAuditEventTypes(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveAuditEventAlarmLevels`,
-						context.state.auditEventTypes,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		getScadaConfiguration({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getScadaConfig').then((r) => {
+				commit('setScadaConfig', r);
+				return r;
 			});
 		},
-		sendTestEmail(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(`${context.state.systemSettingsApiUrl}/sendTestEmail`, {
-						timeout: 5000,
-						useCredentials: true,
-						credentials: 'same-origin',
-					})
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(response.data);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
+
+		getDefaultLoggingType({ commit, dispatch }) {
+			return dispatch('requestGet', '/systemSettings/getDefaultLoggingType').then((r) => {
+				commit('setDefaultLoggingType', r.defaultLoggingType);
+				return r.defaultLoggingType;
+			});
+			
+		},
+
+		saveDefaultLoggingType({ state, dispatch }) {
+			return dispatch('requestPost', {
+				url: `/systemSettings/saveDefaultLoggingType/${state.defaultLoggingType}`,
+				data: null,
 			});
 		},
+
 		purgeData(context) {
 			return new Promise((resolve, reject) => {
 				axios
@@ -507,66 +275,7 @@ const storeSystemSettings = {
 					});
 			});
 		},
-		saveSystemInfoSettings(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveSystemInfo`,
-						context.state.systemInfoSettings,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status == 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
-			});
-		},
-		saveDefaultLoggingType(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.post(
-						`${context.state.systemSettingsApiUrl}/saveDefaultLoggingType/${context.state.defaultLoggingType}`,
-						{ timeout: 5000, useCredentials: true, credentials: 'same-origin' },
-					)
-					.then((response) => {
-						if (response.status === 200) {
-							resolve(true);
-						} else {
-							reject(false);
-						}
-					})
-					.catch((err) => {
-						reject(err);
-					});
-			});
-		},
-		getDefaultLoggingType(context) {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						`${context.state.systemSettingsApiUrl}/getDefaultLoggingType`,
-						context.state.requestOptions,
-					)
-					.then((response) => {
-						if (response.status === 200) {
-							console.debug(response.data);
-							context.commit('setDefaultLoggingType', response.data.defaultLoggingType);
-							resolve(response.data.defaultLoggingType);
-						}
-						reject(false);
-					})
-					.catch((err) => {
-						console.error(err);
-						reject(false);
-					});
-			});
-		},
+
 		configurationEqual(ctx, objects) {
 			return new Promise((resolve, reject) => {
 				const keys1 = Object.keys(objects.object1);

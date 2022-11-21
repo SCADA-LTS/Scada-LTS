@@ -1,59 +1,26 @@
 <!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+    Mango- M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Una lista de vigilancia es el conjunto de elementos que quieres ver juntos. Los valores de los puntos y sus tiempos se actualizan automáticamente - no hay necesidad de refrescar esta página. (De hecho, el sistema es más eficiente si no lo haces).</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+<h1>Nombrar las listas de vigilancia</h1>
+<p>Un usuario puede tener varias listas de vigilancia, pero sólo una puede ser mostrada al mismo tiempo. Para crear una nueva lista, haz clic en el icono <img src="images/add.png"/> en la esquina superior derecha de la sección de listas de vigilancia. Por defecto, las nuevas listas se llaman "(sin nombre)". Para renombrarlo, pasa el cursor sobre el icono <img src="images/pencil.png"/> para que aparezca el panel de edición, introduce el nuevo nombre y haz clic en "guardar". Para borrar una lista de vigilancia, haz clic en el icono <img src="images/delete.png"/> en la esquina superior derecha de la sección de listas de vigilancia. Cada usuario debe tener al menos una lista de vigilancia, por lo que el icono de eliminación sólo aparece si el número de listas de vigilancia es superior a una.</p>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+<h1>Elementos de la lista de vigilancia</h1>
+<p>Un punto puede pertenecer a más de una lista, así que puedes crear tantas listas como necesites.</p>
+<p>Los datos mostrados para cada punto dependen de la configuración de los mismos. Los puntos que son ajustables (aquellos para los que tienes permiso) muestran el icono (<img src="images/icon_edit.png"/>). Al pasar el cursor sobre este icono con el ratón tendrás acceso a los ajustes del punto. Los puntos con parámetros gráficos estarán precedidos por el icono (<img src="images/icon_chart.png"/>). Al pasar el cursor sobre este icono se mostrará el gráfico actual. Los gráficos se actualizan automáticamente, las fechas y los valores, así que tan pronto como un valor está disponible el gráfico se actualiza. El icono de detalles del punto (<img src="images/icon_comp.png"/>) mostrará la página de detalles del punto seleccionado.</p>
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
+<p>Para cambiar el orden de los artículos de la lista, use los iconos <em>move</em>. Haciendo clic en <img src="images/arrow_down_thin.png"/> se moverá el punto hacia abajo una línea en la lista, mientras que haciendo clic en <img src="images/arrow_up_thin.png"/> se moverá hacia arriba una línea.</p>
 
+<p>Para añadir puntos a una lista de vigilancia, haga clic en el nombre del punto en la sección <em>Puntos</em>. Aparecerán al final de la lista. Para eliminar puntos, haz clic en el icono de eliminación (<img src="images/bullet_delete.png"/>) a la derecha de la línea de puntos. Al hacer clic en este icono sólo se elimina el punto de la lista actual, no se elimina el punto del sistema. No confundas el icono <em> eliminar punto</em> con el icono <em> eliminar de la lista de vigilancia</em> en la parte superior de la página.</p>
 
-<h1>Descripci&oacute;n General</h1>
-<p>Una lista de supervisi&oacute;n es un conjunto de tablas conformadas por puntos que se desean ver simultaneamente. Los valores de los puntos y de sus tiempos son actualizados autom&aacute;ticamente (no es necesario actualizar la p&aacute;gina).</p> 
-<p>NOTA: El sistema opera m&aacute;s eficientemente si Ud. no realiza refrescamientos sobre esta p&aacute;gina.</p>
-
-<h1>Lista de Supervisi&oacute;n con Nombre</h1>
-<p>Un usuario puede tener m&uacute;ltiples listas de supervisi&oacute;n diferenciadas por sus nombres, aunque s&oacute;lo podr&aacute; ver una a la vez.</p> 
-
-<p>Para crear una lista de supervisi&oacute;n nueva, haga clic en el icono <img src="images/add.png"/> que est&aacute; en la esquina superior derecha de la secci&oacute;n de Lista de Supervisi&oacute;n. Una nueva lista de supervisi&oacute;n se identificar&aacute; inicialmente como "(sin nombre)". Para nombrarla coloque el cursor sobre el icono <img src="images/pencil.png"/> y se mostrar&aacute; el panel de edici&oacute;n de nombre, introduzca el nombre deseado, y haga clic en "Guardar". Para eliminar una lista de supervisi&oacute;n, haga clic en el icono <img src="images/delete.png"/> en la esquina superior derecha de la secci&oacute;n de lista de supervisi&oacute;n. Cada usuario debe tener al menos una lista de supervisi&oacute;n, por lo que el icono de borrar s&oacute;lo aparecer&aacute; si existe m&aacute;s de una lista declarada.</p>
-
-<h1>Puntos en las Listas de Supervisi&oacute;n</h1>
-<p>Un punto puede estar en varias listas se supervisi&oacute;n, por lo que puede crear listas tan espec&iacute;ficas y detalladas como lo requiera.</p>
-<p>Los datos mostrados para cada punto en la lista dependen de la configuraci&oacute;n del punto. Cuando un punto permita la modificaci&oacute;n de su valor (para el cual tenga permiso de escritura) mostrar&aacute; a su lado un icono de <em>Establecer valor</em> (<img src="images/icon_edit.png"/>). Posicionando el rat&oacute;n sobre este icono, se presentar&aacute;n las opciones de modificaci&oacute;n del punto. Los  puntos que son configurados para graficarse mostrar&aacute;n el  icono de graficable (<img src="images/icon_chart.png"/>). Al presionar este icono se desplegar&aacute; el gr&aacute;fico correspondiente. Los gr&aacute;ficos actualizan autom&aacute;ticamente tanto los valores de puntos como sus tiempos, as&iacute; que cuando un dato nuevo est&aacute; disponible el gr&aacute;fico lo mostrar&aacute; inmediatamente. El icono para detalles del punto  (<img src="images/icon_comp.png"/>) lo llevar&aacute; a la p&aacute;gina de los detalles del punto seleccionado.</p>
-
-<p>Para reordenar los  puntos de su lista, utilice los iconos de <em>Mover</em>. Presionando el icono <img src="images/arrow_down_thin.png"/> mover&aacute; el punto una posici&oacute;n hacia abajo en la lista, mientras que utilizando el icono <img src="images/arrow_up_thin.png"/> lo subir&aacute;.</p>
-
-<p>Para agregar puntos a la actual lista, seleccione el nombre del punto con el rat&oacute;n en la secci&oacute;n de los <em>Puntos</em>. Estos se agregar&aacute;n al final de la lista. Para remover puntos de la lista, haga clic sobre el icono de eliminar (<img src="images/bullet_delete.png"/>) al lado superior derecho de la fila del punto. Haciendo clic en este icono s&oacute;lo se remueve el punto &uacute;nicamente de la lista de supervisi&oacute;n&mdash; esta acci&oacute;n no elimina el punto del sistema. No confunda el icono de <em>Remover Punto</em> con el icono de <em>Eliminar lista de supervisi&oacute;n </em> en la parte superior de la p&aacute;gina.</p>
-
-<h1>Resaltado</h1>
-<p>Los valores y tiempos de las listas de supervisi&oacute;n resaltar&aacute;n brevemente cuando cambien. Esta condici&oacute;n permanecer&aacute; hasta que se complete el siguiente ciclo de actualizaci&oacute;n. Los tiempos generalmente estar&aacute;n resaltados, a diferencia de los valores de los puntos, ya que las lecturas de los puntos siempre implican un cambio de hora, m&aacute;s no necesariamente habr&aacute; un cambio en su valor.</p>
+<h1>Resaltando</h1>
+<p>Los valores y fechas de la lista se resaltan brevemente a medida que cambian. El destaque permanece hasta el final del ciclo de actuarialización. Normalmente el resaltado siempre implica un cambio de fecha, pero no necesariamente un cambio de valor.</p>

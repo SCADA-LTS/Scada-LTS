@@ -12,8 +12,8 @@
 							@change="watchDataChange()"
 							v-model="event.i2"
 							:items="alarmLevels"
-							item-value="value"
-							item-text="text"
+							item-value="id"
+							item-text="label"
 							:label="$t(`${event.translation}`)"
 							dense
 						></v-select>
@@ -47,11 +47,14 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
+
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</v-col>
 </template>
 <script>
 import { object } from '@amcharts/amcharts4/core';
-import i18n from '../../i18n';
 
 export default {
 	name: 'SystemEventTypesComponent',
@@ -61,14 +64,18 @@ export default {
 			systemEventTypes: undefined,
 			systemEventTypesStore: undefined,
 			isSystemEventEdited: false,
-			alarmLevels: [
-				{ text: this.$t('alarmlevels.none'), value: 0 },
-				{ text: this.$t('alarmlevels.information'), value: 1 },
-				{ text: this.$t('alarmlevels.urgent'), value: 2 },
-				{ text: this.$t('alarmlevels.critical'), value: 3 },
-				{ text: this.$t('alarmlevels.lifesafety'), value: 4 },
-			],
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
+	},
+
+	computed: {
+		alarmLevels() {
+			return this.$store.state.alarmLevels;
+		},
 	},
 
 	mounted() {
@@ -90,19 +97,19 @@ export default {
 				.then((resp) => {
 					if (resp) {
 						this.restoreData();
-						this.$notify({
-							placement: 'top-right',
-							type: 'success',
-							content: i18n.t('systemsettings.notification.save.systemevent'),
-						});
+						this.response = {
+							status: true,
+							message: this.$t('systemsettings.notification.save.systemevent'),
+							color: 'success',
+						};
 					}
 				})
 				.catch(() => {
-					this.$notify({
-						placement: 'top-right',
-						type: 'danger',
-						content: i18n.t('systemsettings.notification.fail'),
-					});
+					this.response = {
+						status: true,
+						message: this.$t('systemsettings.notification.fail'),
+						color: 'danger',
+					};
 				});
 		},
 
@@ -162,20 +169,15 @@ export default {
 		convertInfoLevel(value) {
 			switch (Number(value)) {
 				case 0:
-					return i18n.t('alarmlevels.none');
-					break;
+					return this.$t('alarmlevels.none');
 				case 1:
-					return i18n.t('alarmlevels.information');
-					break;
+					return this.$t('alarmlevels.information');
 				case 2:
-					return i18n.t('alarmlevels.urgent');
-					break;
+					return this.$t('alarmlevels.urgent');
 				case 3:
-					return i18n.t('alarmlevels.critical');
-					break;
+					return this.$t('alarmlevels.critical');
 				case 4:
-					return i18n.t('alarmlevels.lifesafety');
-					break;
+					return this.$t('alarmlevels.lifesafety');
 			}
 			return value;
 		},

@@ -1,0 +1,51 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>
+  La fuente de datos Modbus IP se utiliza para recoger datos de los equipos Modbus accesibles en una red I/P. El equipo puede estar ubicado en una red de área local o intranet, o puede estar ubicado en cualquier lugar de la Internet. Es una fuente de datos de encuestas.
+</p>
+
+<h1>Configuración</h1>
+<p>
+  Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. El <b>Período de Actualización</b> determina la frecuencia con la que el dispositivo Modbus es sondeado para obtener datos. La comprobación <b>Cuantificar</b> provoca un retraso en el inicio de la fuente de datos, de modo que el sondeo se produce en un tiempo "redondeado" (por ejemplo, si el sondeo se produce cada 10 segundos, el sondeo se producirá en el décimo segundo, el vigésimo segundo, etc.) ). De lo contrario, la votación comenzará inmediatamente. Los campos <b>Tiempo de espera</b> y <b>Reintentos</b> determinan el comportamiento del sistema en caso de una encuesta fallida. La fuente de datos espera el número de milisegundos de tiempo de espera dado para una respuesta del equipo. Si no se recibe, la solicitud se volverá a intentar el número de veces especificado.
+</p>
+<p>
+  La casilla de verificación <b> Lotes contiguos sólo </b> puede utilizarse para especificar que la implementación del modbus no debe intentar optimizar consultas dispares de valor en una sola consulta. Si marca esta casilla, la implementación sólo realizará consultas de valores múltiples cuando estos valores formen un espacio de registro contiguo.
+</p>
+<p>
+  La casilla <b>Crear puntos de monitorización de esclavos</b> indica si los puntos de monitorización de esclavos deben ser creados automáticamente por la fuente de datos. Un punto de monitorización de esclavo es un punto binario que indica el estado actual de un esclavo. Si una solicitud de votación a un esclavo falla debido a un tiempo de espera o a un error, el esclavo se considera fuera de línea. Estos puntos pueden ser utilizados para la vigilancia al igual que los otros puntos.
+</p>
+<p>
+  Los campos <b>Max read bit count</b>, <b>Max read register count</b>, y <b>Max write register count</b> count controlan el tamaño de las solicitudes de lotes. La especificación de Modbus proporciona valores por defecto para estos valores, pero algunos equipos pueden imponer límites diferentes.
+</p>
+<p>
+  Se admiten tres <b>Tipo de transporte</b>s. Consulte la documentación de su equipo para determinar qué parámetro puede utilizarse.
+</p>
+<ul>
+  <li>
+    El parámetro <b>TCP</b> utiliza un nuevo socket TCP para cada encuesta. (El valor de reintento indicado se aplica cuando se producen excepciones de conexión al abrir el enchufe. El tiempo de espera utilizado para la conexión depende de la pila TCP utilizada). Este ajuste es útil si el dispositivo se encuesta con poca frecuencia.
+  </li>
+  <li>
+    El parámetro <b>TCP con keep-alive</b> crea una conexión TCP en el primer sondeo, que se deja abierta para su reutilización. Si la conexión se cierra por cualquier razón, se crea una nueva conexión si es necesario. El comportamiento de las excepciones de conexión para esta opción es el mismo que para TCP. Este es el ajuste recomendado para la mayoría de los usuarios, ya que permite una comunicación eficiente y robusta a la vez que evita muchos problemas típicos de configuración de UDP.
+  </li>
+  <li>
+    El ajuste <b>UDP</b> utiliza paquetes UDP para la comunicación. Esta configuración ofrece la mayor eficiencia de red, pero generalmente requiere más configuración de red ya que Mango y el equipo deben ser visibles en la red (a diferencia de TCP donde Mango puede estar detrás de un firewall).
+  </li>
+</ul>
+
+<p>
+  Los parámetros <b>Host</b> y <b>Port</b> determinan cómo encontrar el equipo Modbus en la red. El host puede ser un nombre de dominio o una dirección IP.
+</p>
+
+<h1>Nodos de lectura</h1>
+<p>
+  Las redes pueden ser escaneadas en busca de nodos esclavos usando la utilidad de escaneo. Esta función itera desde el ID de esclavo 1 hasta el 240, enviando a cada uno un ReadExceptionStatus (código de función 7). Si se recibe una respuesta (utilizando los parámetros de tiempo de espera y reintento dados), el nodo se considera disponible. Tenga en cuenta que no todos los dispositivos soportan este código de función, por lo que son posibles los falsos negativos.
+</p>

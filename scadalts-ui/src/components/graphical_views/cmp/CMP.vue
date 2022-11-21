@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 <template>
+
+	<!--<v-app>-->
 	<div>
 		<div class="cmp-flex-container">
 			<div id="cmp">
@@ -102,16 +104,17 @@
 
 						<hr />
 						<!--<btn size="xs" type="primary" v-on:click="showFault" class="cmp-small-info" v-bind:class="{cmp_fault: showFaultV }">fault test</btn>-->
-						<p class="cmp-small-info">v0.0.6</p>
-						<btn size="xs" type="primary" @click="openModalWithHistory = true"
-							>History</btn
-						>
-						<modal v-model="openModalWithHistory" title="History" auto-focus>
+						<p class="cmp-small-info">v0.0.9</p>
+						<btn size="xs" type="primary" v-on:click="refreshHistory()" class="cmp-small-info">refresh history</btn>
+			
+						<div>
 							<HistoryCMP
+								ref="refHistoryCMP"
 								v-bind:pxIdViewAndIdCmp="xIdViewAndIdCmp"
-								v-model="openModalWithHistory"
 							></HistoryCMP>
-						</modal>
+						</div>
+					   
+						
 					</section>
 				</div>
 			</collapse>
@@ -128,6 +131,7 @@
 			</collapse>
 		</div>
 	</div>
+	<!--</v-app> -->
 </template>
 
 <script>
@@ -219,7 +223,7 @@ export default {
 	props: ['pConfig', 'pLabel', 'pTimeRefresh', 'pxIdViewAndIdCmp'],
 	data() {
 		return {
-			openModalWithHistory: false,
+			open: false,
 			show: false,
 			errors: [],
 			newErrors: [],
@@ -243,6 +247,9 @@ export default {
 		};
 	},
 	methods: {
+		refreshHistory() {
+			this.$refs.refHistoryCMP.loadData()
+		},
 		endChecking() {
 			this.insideState = this.config.state.analiseInOrder[
 				this.counterForAnaliseInOrder
@@ -298,6 +305,7 @@ export default {
 		},
 		setActionLeve0(action) {
 			// get action by name action
+			
 			let foundLevel = _.findWhere(this.controlsLevel0, { name: action });
 			let runDirectlyBeforeShowSubMenu = !!foundLevel.runDirectlyBeforeShowSubMenu;
 
@@ -317,6 +325,7 @@ export default {
 					new ApiCMP()
 						.set(newData, this.xIdViewAndIdCmp, action)
 						.then((response) => {
+							//refreshHistory()
 							// rxjs
 							let found = _.findWhere(this.controlsLevel0, { name: action });
 							if (found.toChange != undefined) {
@@ -330,6 +339,7 @@ export default {
 						})
 						.catch((er) => {
 							this.setErrorAndNotification(er.message);
+							//refreshHistory()
 						});
 				}
 			} else {
@@ -348,6 +358,7 @@ export default {
 			}
 		},
 		setActionLevel1(action) {
+			//refreshHistory()
 			if (this.selectActionLevel1 == action) {
 				this.selectActionLevel1 = '';
 			} else {
@@ -409,6 +420,9 @@ export default {
 		close() {
 			this.show = false;
 		},
+		callback (msg) {
+        	this.$notify(`Modal dismissed with msg '${msg}'.`)
+      	},
 	},
 	created() {
 		try {

@@ -158,7 +158,7 @@ abstract public class DataSourceRT implements ILifecycle {
         Common.ctx.getEventManager().returnToNormal(type, time);
     }
 
-    private DataSourceEventType getEventType(int eventId) {
+    protected DataSourceEventType getEventType(int eventId) {
         for (DataSourceEventType et : eventTypes) {
             if (et.getDataSourceEventTypeId() == eventId)
                 return et;

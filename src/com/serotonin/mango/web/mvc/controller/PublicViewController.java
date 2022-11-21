@@ -20,17 +20,22 @@ package com.serotonin.mango.web.mvc.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.User;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.mango.service.ViewService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 
 /**
  * @author Matthew Lohbihler
@@ -38,14 +43,31 @@ import com.serotonin.mango.view.View;
 public class PublicViewController extends ParameterizableViewController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
-        ViewDao viewDao = new ViewDao();
+        return getUser(new UserService())
+                .map(user -> getView(request, new ViewService())
+                        .filter(view -> hasPermissions(view, user))
+                        .map(view -> {
+                            applyPermissions(view, user);
+                            Common.addAnonymousView(request, view);
+                            return createModel(view);
+                        }).orElse(new HashMap<>()))
+                .map(model -> new ModelAndView(getViewName(), model))
+                .orElse(new ModelAndView(getViewName(), new HashMap<>()));
+    }
 
+    private Map<String, Object> createModel(View view) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("view", view);
+        return model;
+    }
+
+    private Optional<View> getView(HttpServletRequest request, ViewService viewService) {
         // Get the view by id.
         String vid = request.getParameter("viewId");
         View view = null;
         if (vid != null) {
             try {
-                view = viewDao.getView(Integer.parseInt(vid));
+                view = viewService.getView(Integer.parseInt(vid));
             }
             catch (NumberFormatException e) { /* no op */
             }
@@ -53,26 +75,25 @@ public class PublicViewController extends ParameterizableViewController {
         else {
             String name = request.getParameter("viewName");
             if (name != null)
-                view = viewDao.getView(name);
+                view = viewService.getView(name);
             else {
                 String xid = request.getParameter("viewXid");
                 if (xid != null)
-                    view = viewDao.getViewByXid(xid);
+                    view = viewService.getViewByXid(xid);
             }
         }
+        return Optional.ofNullable(view);
+    }
 
-        Map<String, Object> model = new HashMap<String, Object>();
+    private boolean hasPermissions(View view, User user) {
+        return view.getAnonymousAccess() > ShareUser.ACCESS_NONE
+                && view.getUserAccess(user) > ShareUser.ACCESS_NONE;
+    }
 
-        // Ensure the view has anonymously accessible.
-        if (view != null && view.getAnonymousAccess() == ShareUser.ACCESS_NONE)
-            view = null;
-
-        if (view != null) {
-            model.put("view", view);
-            view.validateViewComponents(view.getAnonymousAccess() == ShareUser.ACCESS_READ);
-            Common.addAnonymousView(request, view);
-        }
-
-        return new ModelAndView(getViewName(), model);
+    private void applyPermissions(View view, User user) {
+        view.validateViewComponentsAnon(user);
+        view.getViewUsers().stream()
+                .filter(a -> a.getAccessType() > view.getAnonymousAccess())
+                .forEach(a -> a.setAccessType(view.getAnonymousAccess()));
     }
 }

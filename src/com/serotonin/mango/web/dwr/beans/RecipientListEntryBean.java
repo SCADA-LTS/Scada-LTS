@@ -35,6 +35,8 @@ import com.serotonin.mango.vo.mailingList.AddressEntry;
 import com.serotonin.mango.vo.mailingList.EmailRecipient;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import com.serotonin.mango.vo.mailingList.UserEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @JsonRemoteEntity
 public class RecipientListEntryBean implements Serializable, JsonSerializable {
@@ -43,6 +45,8 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
     private int recipientType;
     private int referenceId;
     private String referenceAddress;
+
+    private static final Log LOG = LogFactory.getLog(RecipientListEntryBean.class);
 
     public EmailRecipient createEmailRecipient() {
         switch (recipientType) {
@@ -88,12 +92,31 @@ public class RecipientListEntryBean implements Serializable, JsonSerializable {
 
     public void jsonSerialize(Map<String, Object> map) {
         map.put("recipientType", EmailRecipient.TYPE_CODES.getCode(recipientType));
-        if (recipientType == EmailRecipient.TYPE_MAILING_LIST)
-            map.put("mailingList", new MailingListDao().getMailingList(referenceId).getXid());
-        else if (recipientType == EmailRecipient.TYPE_USER)
-            map.put("username", new UserDao().getUser(referenceId).getUsername());
-        else if (recipientType == EmailRecipient.TYPE_ADDRESS)
+        if (recipientType == EmailRecipient.TYPE_MAILING_LIST) {
+            setMailinglistXid(map);
+        } else if (recipientType == EmailRecipient.TYPE_USER) {
+            setUsername(map);
+        } else if (recipientType == EmailRecipient.TYPE_ADDRESS) {
             map.put("address", referenceAddress);
+        }
+    }
+
+    private void setUsername(Map<String, Object> map) {
+        try {
+            User user = new UserDao().getUser(referenceId);
+            map.put("username", user.getUsername());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+    }
+
+    private void setMailinglistXid(Map<String, Object> map) {
+        try {
+            MailingList mailingList = new MailingListDao().getMailingList(referenceId);
+            map.put("mailingList", mailingList.getXid());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {

@@ -21,7 +21,13 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.User;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.utils.SystemSettingsUtils;
+import org.scada_lts.web.mvc.api.AggregateSettings;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * SystemSettings DAO
@@ -109,6 +116,13 @@ public class SystemSettingsDAO {
 	// SMS domain
 	public static final String SMS_DOMAIN = "sms.domain";
 
+	// Aggregation values
+	public static final String AGGREGATION_ENABLED = "aggregationEnabled";
+	public static final String AGGREGATION_VALUES_LIMIT = "aggregationValuesLimit";
+	public static final String AGGREGATION_LIMIT_FACTOR = "aggregationLimitFactor";
+
+	public static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED = "dataPointRtValueSynchronized";
+
 	private static final String DELETE_WATCH_LISTS = "delete from watchLists";
 	private static final String DELETE_MANGO_VIEWS = "delete from mangoViews";
 	private static final String DELETE_POINT_EVENT_DETECTORS = "delete from pointEventDetectors";
@@ -157,8 +171,10 @@ public class SystemSettingsDAO {
 			+ DATABASE_STATEMENT + ";";
 
 	private static final String SELECT_LATEST_SCHEMA_VERSION = ""
-			+ "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1";
+			+ "SELECT version FROM schema_version ORDER BY installed_rank DESC LIMIT 1";
 	// @formatter:on
+
+	private static final Log LOG = LogFactory.getLog(SystemSettingsDAO.class);
 
 	// Value cache
 	private static final Map<String, String> cache = new HashMap<String, String>();
@@ -214,6 +230,13 @@ public class SystemSettingsDAO {
 		if (value == null)
 			return defaultValue;
 		return DAO.charToBool(value);
+	}
+
+	public static boolean getBooleanValueOrDefault(String key) {
+		String value = getValue(key, null);
+		if (value == null)
+			return Boolean.parseBoolean(String.valueOf(DEFAULT_VALUES.get(key)));
+		return Boolean.parseBoolean(value);
 	}
 
 	public void setValue(final String key, final String value) {
@@ -305,7 +328,7 @@ public class SystemSettingsDAO {
 	public static final Map<String, Object> DEFAULT_VALUES = new HashMap<String, Object>();
 
 	static {
-		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "0.7.0");
+		DEFAULT_VALUES.put(DATABASE_SCHEMA_VERSION, "Unknown");
 
 		DEFAULT_VALUES.put(HTTP_CLIENT_PROXY_SERVER, "");
 		DEFAULT_VALUES.put(HTTP_CLIENT_PROXY_PORT, -1);
@@ -338,7 +361,7 @@ public class SystemSettingsDAO {
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIODS, 24);
 		DEFAULT_VALUES.put(FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				Common.TimePeriods.HOURS);
-		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Scada-LTS - 2.5");
+		DEFAULT_VALUES.put(INSTANCE_DESCRIPTION, "Click and set instance description");
 
 		DEFAULT_VALUES.put(CHART_BACKGROUND_COLOUR, "white");
 		DEFAULT_VALUES.put(PLOT_BACKGROUND_COLOUR, "white");
@@ -346,6 +369,12 @@ public class SystemSettingsDAO {
 
 		DEFAULT_VALUES.put(DEFAULT_LOGGING_TYPE, DataPointVO.LoggingTypes.ON_CHANGE);
 		DEFAULT_VALUES.put(SMS_DOMAIN, "localhost");
+
+		AggregateSettings aggregateSettings = AggregateSettings.fromEnvProperties();
+		DEFAULT_VALUES.put(AGGREGATION_ENABLED, aggregateSettings.isEnabled());
+		DEFAULT_VALUES.put(AGGREGATION_LIMIT_FACTOR, String.valueOf(aggregateSettings.getLimitFactor()));
+		DEFAULT_VALUES.put(AGGREGATION_VALUES_LIMIT, aggregateSettings.getValuesLimit());
+		DEFAULT_VALUES.put(DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED, SystemSettingsUtils.getDataPointSynchronizedMode().getName());
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
@@ -364,12 +393,20 @@ public class SystemSettingsDAO {
 		DAO.getInstance().getJdbcTemp().update(DELETE_POINT_VALUES);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAINTENANCE_EVENTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_MAILING_LISTS);
-		DAO.getInstance().getJdbcTemp().update(DELETE_USERS);
+		resetUsers();
 		DAO.getInstance().getJdbcTemp().update(DELETE_PUBLISHERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINT_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCE_USERS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_POINTS);
 		DAO.getInstance().getJdbcTemp().update(DELETE_DATA_SOURCES);
+	}
+
+	private void resetUsers() {
+		IUserDAO userDAO = ApplicationBeans.getUserDaoBean();
+		List<User> users = userDAO.getUsers();
+		for (User user : users) {
+			userDAO.delete(user.getId());
+		}
 	}
 
 	public double getDataBaseSize() {
@@ -397,5 +434,9 @@ public class SystemSettingsDAO {
 		}
 
 		return size.get(0);
+	}
+
+	public static <R> R getObject(String key, Function<String, R> convert) {
+		return convert.apply(getValue(key, String.valueOf(DEFAULT_VALUES.get(key))));
 	}
 }

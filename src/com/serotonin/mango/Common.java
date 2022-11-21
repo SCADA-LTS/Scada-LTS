@@ -47,6 +47,7 @@ import org.joda.time.Period;
 
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.KeyValuePair;
+import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.util.BackgroundContext;
 import com.serotonin.mango.util.CommPortConfigException;
@@ -93,7 +94,7 @@ public class Common {
 	 * the correct version.
 	 */
 	public static final String getVersion() {
-		return "2.5.0";
+		return ScadaVersion.getInstance().getVersionNumber();
 	}
 
 	public static final Long getStartupTime() {

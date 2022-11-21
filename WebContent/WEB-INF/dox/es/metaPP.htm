@@ -1,0 +1,161 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>Los meta puntos se configuran creando un "contexto" de puntos existentes, se hacen accesibles después de ejecutar un guión. Los puntos en este contexto pueden ser cualquier punto existente, incluyendo el punto que se está editando. (El punto actual debe ser guardado para que aparezca en la lista de puntos.</p>
+
+<h1>Configuración de puntos</h1>
+<p><b>Tipo de datos</b> determina el tipo que será devuelto por el guión. </p>
+<p><b>Contexto del guión</b> define los puntos necesarios para la ejecución del guión. A cada punto añadido se le asigna un campo <b>Var</b>, que será el nombre de la variable del punto en el guión.
+ Estos nombres de variables deben ser consistentes con el nombre de la variable ECMAScript: Deben estar con un guión bajo, y no deben contener espacios. Pueden aplicarse otras restricciones. Recibirá una validación de la ejecución del guión o excepciones si las variables no están correctamente definidas. Para añadir un punto al contexto, selecciónelo en la lista y haga clic en el icono <img src="images/add.png"/>. Para eliminar un punto, haga clic en el icono asociado al punto <img src="images/bullet_delete.png"/>. No deben añadirse puntos innecesarios al contexto, ya que ello dará lugar a un consumo adicional de memoria en la preparación de los datos. Las variables innecesarias pueden causar la ejecución involuntaria del guión. (Véase "Ejecución del guión" más adelante). 
+ A veces puede ser útil incluir una variable de guión en el contexto para desencadenar la ejecución de un guión.</p>
+
+<h1>Guiones</h1>
+<p>La ventana <b>Script</b> es el espacio donde se escriben los guiones a ejecutar. Los scripts deben ser compatibles con ECMAScript, y <b> siempre deben devolver un valor</b>. Ejemplo de escritura elemental:</p>
+<pre>return x.value;</pre>
+<p>... x es el nombre de una variable definida en el contexto del guión. El valor devuelto es simplemente el valor actual del punto al que se refiere la "x". Se pueden utilizar las funciones matemáticas típicas. Un ejemplo más complejo:</p>
+<pre>return Math.sqrt(x.value * 3);</pre>
+<p>Esto devuelve la raíz cuadrada del valor 'x' multiplicada por 3. (Nota: el objeto Math está definido por JavaScript. ver la documentación de ECMAScript para más información). Se pueden escribir guiones complejos incluyendo variables locales, bucles y expresiones lógicas. Por ejemplo:</p>
+<pre>var t = x.value + y.value;
+if (b.value) {
+    for (var i=0; i<5; i++) {
+        tmp += x.value - y.value;
+    }
+}
+else {
+    tmp = -tmp;
+}
+return tmp;</pre>
+<p>Lo anterior no tiene por objeto calcular un valor útil sino más bien demostrar el potencial de los guiones complejos.</p>
+<p>Además del contexto ECMAScript, Scada-LTS también puede incluir útiles funciones globales como max(), min(), avg() y sum(). (Estas funciones se implementan en un archivo de script ubicado en WEB-INF/scripts/scriptFunctions.js. Este archivo puede ser modificado o mejorado añadiendo sus propias funciones globales si es necesario. Este archivo se carga cuando se inicia el Scada-LTS, por lo que cada modificación requiere un reinicio para ser tenida en cuenta). Para usarlos, sólo tienes que llamarlos desde tu guión, por ejemplo:</p>
+<pre>return max(x.value, y.value, z.value);</pre>
+<p>Esto devuelve los valores máximos de los valores actuales de "x", "y" y "z". Se puede dar cualquier número de parámetros a estas funciones globales.</p>
+<p>Una vez escrito el guión, haz clic en el icono <img src="images/accept.png"/> para ejecutarlo e intentar calcular el resultado.</p>
+
+<h1>Valores de tiempo</h1>
+<p>También puedes usar la marca de tiempo del último valor del guión. Se pueden utilizar los siguientes campos:</p>
+<dl>
+  <dt>p.time</dt>
+  <dd>devuelve la marca de tiempo del valor en milisegundos a partir de la fecha de referencia 01/01/1970 a 00:00:00</dd>
+  <dt>p.millis</dt>
+  <dd>0-999 milisegundo de p.time</dd>
+  <dt>p.segundo</dt>
+  <dd>0-60</dd>
+  <dt>p.minuto</dt>
+  <dd>0-60</dd>
+  <dt>p.hora</dt>
+  <dd>0-23</dd>
+  <dt>p.día</dt>
+  <dd>1-28,31</dd>
+  <dt>p.díadelasemana</dt>
+  <dd>1-7 o 1 corresponde al domingo</dd>
+  <dt>p.díadelaño</dt>
+  <dd>1-365,366</dd>
+  <dt>p.mes</dt>
+  <dd>1-12</dd>
+  <dt>p.año</dt>
+  <dd>sur 4 digits</dd>
+</dl>
+<p>
+  Para definir explícitamente la marca de tiempo de un valor, declare la variable de contexto TIMESTAMP antes de la declaración de retorno. El valor de esta variable debe ser en milisegundos relativo a la fecha de referencia 01/01/1970 00:00:00 UTC. Por ejemplo, el valor de esta variable debe ser en milisegundos:
+</p>
+<pre>TIMESTAMP = new Date().getTime();
+return p.value + 1;
+</pre>
+
+<h1>Objetos de contexto</h1>
+<p>En la terminología de JavaScript la variable var es en realidad un objeto. Un objeto es un contenedor de valores y funciones que puede ser referenciado por nombres de propiedades. Para obtener descripciones de las propiedades disponibles para su uso en un script, utilice la propiedad de ayuda, por ejemplo:</p>
+<pre>return x.help;</pre>
+<p>Este guión es más eficiente para los datos alfanuméricos, pero no es obligatorio. La propiedad help es idéntica a la función toString(), que está disponible para todos los objetos del contexto y no sólo en las variables del script.</p>
+<p>La propiedad del <b>valor</b> es el valor actual del punto. El tipo del valor de JavaScript es idéntico al tipo de Scada-LT: Binario se convierte en booleano, Numérico se convierte en flotante, Multiestado se convierte en entero, y Alfanumérico se convierte en cadena.</p>
+<p>Cada variable del guión también implementa 4 funciones. Los objetos devueltos por estas funciones dependen del tipo de datos del punto al que se refiere la variable. De nuevo, la propiedad de ayuda puede ser usada para obtener la descripción del objeto devuelto. Para el parámetro "periodType" de todas las funciones a continuación, se pueden utilizar las siguientes variables globales predefinidas: SEGUNDO, MINUTO, HORA, DÍA, SEMANA, MES y AÑO.</p>
+<p>La función <b>ago()</b> devuelve el valor del punto en un momento dado. Por ejemplo, la llamada "x.ago(HOUR, 3)" devuelve el valor que tenía el punto hace exactamente 3 horas.</p>
+<p>La función <b>past()</b> devuelve un objeto que contiene estadísticas sobre un período ahora terminado. A continuación se describen los diversos objetos estadísticos.</p>
+<p>Las funciones <b>prev()</b> y <b>previous()</b> son idénticas; esta última está prevista para la facilidad lingüística. Las funciones devuelven el mismo objeto estadístico que el pasado(), pero en un rango de tiempo diferente. El comienzo y el final de los períodos se definen para que coincidan con el tipo de período. Por ejemplo, si el tipo de período es HORARIO e igual a 1, y la función se ejecuta a las 18:05, el rango de tiempo utilizado será desde las 17:00 (incluido) hasta las 18:00 (excluido). Durante un período de 3, sería de 15:00 a 18:00.
+ Además, el MES comienza a medianoche del primer día del mes anterior y termina el último día del mes anterior (para los períodos = a 1). Los otros períodos funcionan de la misma manera. La semana comienza el lunes a medianoche de acuerdo con las normas ISO.</p>
+
+<h1>Objetos estadísticos</h1>
+<p>Los objetos estadísticos son devueltos por las funciones past(), prev() y previous(). (Ver "Objetos de contexto" más arriba.) Las propiedades de los objetos devueltos dependen del tipo de datos del punto desde el que se generan. Los valores de tiempo de los objetos se almacenan como números enteros, pero representan el número de milisegundos desde el 1 de enero de 1970 a medianoche.</p>
+<p>
+  El objeto <b>Estadísticas analógicas</b> es devuelto por puntos numéricos. Contiene las siguientes propiedades:
+</p>
+<ul>
+  <li><b>minimum</b>: (float) el valor mínimo del punto alcanzado durante el período</li>
+  <li><b>minimum time</b>: (integer) el momento en que se alcanzó el valor mínimo</li>
+  <li><b>maximum</b>: (float) el valor máximo del punto alcanzado durante el período</li>
+  <li><b>maximum time</b>: (integer) l'heure à laquelle la valeur maximale a été atteinte</li>
+  <li><b>average</b>: (float) el valor medio del punto durante el período</li>
+  <li><b>sum</b>: (float) Suma de todas las actualizaciones de valores durante el período (útil para el recuento de pulsos)</li>
+  <li><b>count</b>: (integer) el número de actualizaciones durante el período</li>
+  <li><b>noData</b>: (boolean) Si el período no contiene datos (verdadero si el período precede al primer valor conocido del punto)</li>
+  <li><b>realStart</b>: (integer) La hora de inicio real utilizada en los cálculos (en caso de que la hora de inicio preceda al primer valor conocido del punto)</li>
+  <li><b>end</b>: (integer) El tiempo final utilizado en los cálculos</li>
+</ul>
+<p>
+  Por ejemplo, el siguiente guión devuelve el valor mínimo de 'n' para la última hora:
+</p>
+<pre>return n.past(HOUR).minimum;</pre>
+
+<p>
+  El objeto <b>StartsAndRuntimeList</b> es devuelto por los puntos binarios y multiestatales. Contiene las siguientes propiedades:
+</p>
+<ul>
+  <li><b>realStart</b>: (integer) La hora de inicio real utilizada en los cálculos (en caso de que la hora de inicio preceda al primer valor conocido del punto)</li>
+  <li><b>end</b>: (integer) El tiempo final utilizado en los cálculos</li>
+  <li><b>data</b>: (array) la lista de objetos individuales de StartAndRuntime.</li>
+</ul>
+Cada objeto StartAndRuntime tiene las siguientes propiedades:
+<ul>
+  <li><b>value</b>: (boolean para binario, integer para multiestado) Estado del punto al que se aplican las siguientes propiedades</li>
+  <li><b>starts</b>: (integer) El número de veces que se ha alcanzado el estado durante el período</li>
+  <li><b>runtime</b>: (integer) El tiempo en milisegundos que el punto estuvo en el estado</li>
+  <li><b>proportion</b>: (float) La proporción del período en el que el punto estaba en el estado (runtime / real duration)</li>
+  <li><b>percentage</b>: (float) (float) proportion * 100</li>
+</ul>
+
+<p>
+  Para acceder a un objeto específico de StartAndRuntime en la lista, usa la función get(). Por ejemplo, la siguiente línea devuelve la proporción de tiempo durante la cual 'b' estuvo en el estado 'falso' durante los 2 meses anteriores.
+</p>
+<pre>return b.past(MONTH, 2).get(false).proportion;</pre>
+
+<p>El objeto <b>ValueChangeCounter</b> es devuelto por puntos alfanuméricos. Tiene la propiedad única de <b>cambios</b>, que es el número de cambios del punto durante el período. Por ejemplo, la siguiente línea devuelve el número de cambios 'b' en los últimos 45 minutos número de veces.
+</p>
+<pre>return b.previous(MINUTE, 45);</pre>
+
+<p>Por comodidad, si un objeto de escritura var es devuelto por una escritura, se usará su valor actual. Por lo tanto, el siguiente guión devolverá el valor actual de "x":</p>
+<pre>return x;</pre>
+<p>Sin embargo, el guión no devolverá la suma de "x" e "y":</p>
+<pre>return x + y;</pre>
+<p>... Tendrías que estar para este guión:</p>
+<pre>return x.value + y.value;</pre>
+
+<h1>Ejecución del guión</h1>
+<p>Cada vez que se ejecuta un guión desde un punto, el resultado se asigna al punto como un valor de actualización. La hora (fecha?) de ejecución de un guión puede ser controlada con el valor <b>Actualizar evento</b>. El parámetro "Actualización de contexto" activa el guión cada vez que se actualiza un punto de contexto. Los otros parámetros desencadenan la ejecución del guión en una fecha programada.</p>
+<p>El parámetro <b>Tiempo de ejecución</b> puede ser configurado para prevenir la ejecución múltiple no deseada de un guión. Si utiliza la opción "Actualizar contexto", la ejecución del guión se lanzará cada vez que se actualice un punto del contexto. Además, si los disparadores del guión se basan en el tiempo, el guión puede ejecutarse antes de que se actualicen los puntos y devolver resultados sesgados. El retraso en la ejecución del guión puede llevar a resultados más fiables. Si utiliza "Actualizar contexto" para la ejecución, el guión se ejecutará x segundos después de la última actualización de un punto de contexto. Para la ejecución basada en el tiempo, el guión se ejecutará x segundos después del evento definido.</p>
+<p>La configuraci&oacute;n <b>Context change</b> hace que el script se ejecute cada vez que se cambia un punto dentro de su contexto. </p>
+
+<h1>Más ejemplos</h1>
+<p>El siguiente guión calcula el promedio de rotación horaria de los puntos "n1" y "n2":</p>
+<pre>return avg(b1.past(HOUR).average, b2.past(HOUR).average);</pre>
+
+<p>Este guión calcula el número de pulsos por día a partir de un contador de pulsos incremental (con la opción "Inicio del día"):</p>
+<pre>return pulse.value - pulse.ago(DAY);</pre>
+
+<p>El siguiente guión no es muy útil en la práctica, pero sin embargo es interesante. Devuelve los números 1, 2 y 3 cíclicamente, el cambio aleatorio se produce sólo una vez cada 100 ejecuciones.</p>
+<pre>var r = Math.random();
+if (r &gt; 0.01)
+    return x.value;
+
+if (x.value == 3)
+    return 1;
+return x.value + 1;</pre>
+
+<p>Esta escritura devuelve la suma de los valores enteros de los 2 puntos numéricos 'r' y 't':</p>
+<pre>return parseInt(t.value) + parseInt(r.value);</pre>

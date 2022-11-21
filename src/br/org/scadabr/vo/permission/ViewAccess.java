@@ -8,7 +8,9 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.db.dao.ViewDao;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
+import org.scada_lts.mango.service.ViewService;
 
 @JsonRemoteEntity
 public class ViewAccess extends Permission implements JsonSerializable {
@@ -21,6 +23,10 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		super(id, permission);
 	}
 
+	public static ViewAccess none(int viewId) {
+		return new ViewAccess(viewId, ShareUser.ACCESS_NONE);
+	}
+
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		map.put("viewXid", new ViewDao().getView(id).getXid());
@@ -30,13 +36,29 @@ public class ViewAccess extends Permission implements JsonSerializable {
 	@Override
 	public void jsonDeserialize(JsonReader reader, JsonObject json)
 			throws JsonException {
-		String xid = json.getString("viewXid");
-		int ImportedPermission = ACCESS_CODES.getId(json
-				.getString("permission"));
-		View view = new ViewDao().getViewByXid(xid);
-		int importedId = view.getId();
-		setId(importedId);
-		setPermission(ImportedPermission);
+		ViewService viewService = new ViewService();
+		DeserializePermissionUtils
+				.updatePermission(this, viewService::getViewByXid, View::getId,
+						json, "viewXid", "view: {0}");
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ViewAccess)) return false;
+		return super.equals(o);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "ViewAccess{" +
+				"id=" + id +
+				", permission=" + permission +
+				'}';
+	}
 }

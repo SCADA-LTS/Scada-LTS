@@ -18,17 +18,17 @@
 
 package org.scada_lts.dao;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import br.org.scadabr.vo.permission.ViewAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.model.IdName;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -78,7 +78,8 @@ public class ViewDAO implements GenericDAO<View> {
 	//userProfile
 	private static final String COLUMN_NAME_UP_VIEW_ID = "viewId";
 	private static final String COLUMN_NAME_UP_USER_PRFILE_ID = "userProfileId";
-	
+	private static final String COLUMN_NAME_UP_PERMISSION = "permission";
+
 	// @formatter:off
 	private static final String VIEW_SELECT = ""
 			+"select "
@@ -94,6 +95,14 @@ public class ViewDAO implements GenericDAO<View> {
 				+ COLUMN_NAME_MODIFICATION_TIME+" "
 			+ "from "
 				+ "mangoViews";
+
+    private static final String VIEW_IDENTIFIER_SELECT = ""
+            +"select "
+            + COLUMN_NAME_ID+", "
+            + COLUMN_NAME_XID+", "
+            + COLUMN_NAME_NAME+" "
+            + "from "
+            + "mangoViews";
 	
 	private static final String VIEW_FILTER_BASE_ON_ID=""
 			 +COLUMN_NAME_ID+"=?";
@@ -147,18 +156,33 @@ public class ViewDAO implements GenericDAO<View> {
 	//mangoviewUsers
 	private static final String VIEW_USER_BASE_ON_VIEW_ID = ""
 			+"select "
+				+ COLUMN_NAME_MVU_VIEW_ID+", "
 				+ COLUMN_NAME_MVU_USER_ID+", "
 				+ COLUMN_NAME_MVU_ACCESS_TYPE+" "
 			+ "from "
 				+ "mangoViewUsers "
 			+ "where "
 				+ COLUMN_NAME_MVU_VIEW_ID+"=?";
+
+	private static final String VIEW_USER_BASE_ON_USER_ID = ""
+			+"select "
+			+ COLUMN_NAME_MVU_VIEW_ID+", "
+			+ COLUMN_NAME_MVU_ACCESS_TYPE+" "
+			+ "from "
+			+ "mangoViewUsers "
+			+ "where "
+			+ COLUMN_NAME_MVU_USER_ID+"=?";
 	
 	public static final String VIEW_FILTERED_BASE_ON_ID = ""
 			+ COLUMN_NAME_USER_ID+"=? or "
 			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
 			+ "id in (select "+COLUMN_NAME_UP_VIEW_ID+" from viewUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=?)";
-	
+
+	public static final String VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID = ""
+			+ COLUMN_NAME_USER_ID+"=? or "
+			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
+			+ "id in (select "+COLUMN_NAME_UP_VIEW_ID+" from viewUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=? and "+COLUMN_NAME_UP_PERMISSION+">?)";
+
 	private static final String VIEW_USER_DELETE = ""
 			+ "delete "
 				+ "from "
@@ -173,7 +197,17 @@ public class ViewDAO implements GenericDAO<View> {
 					+ COLUMN_NAME_MVU_USER_ID+", "
 					+ COLUMN_NAME_MVU_ACCESS_TYPE+") "
 				+ "values (?,?,?)";
-	
+
+	private static final String VIEW_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE = ""
+			+"insert "
+			+ "mangoViewUsers ("
+			+ COLUMN_NAME_MVU_VIEW_ID+", "
+			+ COLUMN_NAME_MVU_USER_ID+", "
+			+ COLUMN_NAME_MVU_ACCESS_TYPE+") "
+			+ "values (?,?,?) ON DUPLICATE KEY UPDATE " +
+			COLUMN_NAME_MVU_ACCESS_TYPE + "=?";
+
+
 	private static final String VIEW_USER_DELETE_BASE_ON_VIEW_ID_USER_ID=""
 			+"delete "
 				+ "from "
@@ -181,6 +215,23 @@ public class ViewDAO implements GenericDAO<View> {
 			+ "where "
 				+ COLUMN_NAME_MVU_VIEW_ID+"=? and "
 				+ COLUMN_NAME_MVU_USER_ID+"=?";
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + ", " +
+			"vup." + COLUMN_NAME_UP_PERMISSION + " " +
+			"from " +
+			"usersUsersProfiles uup " +
+			"left join " +
+			"viewUsersProfiles vup " +
+			"on " +
+			"vup." + COLUMN_NAME_UP_USER_PRFILE_ID + "=uup." + COLUMN_NAME_UP_USER_PRFILE_ID + " " +
+			"where " +
+			"vup." + COLUMN_NAME_UP_VIEW_ID + "=?;";
+
+	private static final String VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME = ""
+			+ VIEW_IDENTIFIER_SELECT + " "
+			+ "order by "+COLUMN_NAME_NAME;
 
 	// @formatter:on
 	
@@ -202,8 +253,8 @@ public class ViewDAO implements GenericDAO<View> {
 			v.setBackgroundFilename(rs.getString(COLUMN_NAME_BACKGROUND));
 			v.setUserId(rs.getInt(COLUMN_NAME_USER_ID));
 			v.setAnonymousAccess(rs.getInt(COLUMN_NAME_ANONYMOUS_ACCESS));
-			v.setHeight(rs.getInt(COLUMN_NAME_HEIGHT));
 			v.setWidth(rs.getInt(COLUMN_NAME_WIDTH));
+			v.setHeight(rs.getInt(COLUMN_NAME_HEIGHT));
 			v.setModificationTime(rs.getTimestamp(COLUMN_NAME_MODIFICATION_TIME).getTime());
 			
 			return v;
@@ -323,7 +374,7 @@ public class ViewDAO implements GenericDAO<View> {
 	public void delete(View entity) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });		
 	}
-	
+
 	public List<ShareUser> getShareUsers(int mangoViewId) {
 		return (List<ShareUser>) DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_VIEW_ID, new Object[] {mangoViewId}, new ViewUserRowMapper());
 	}
@@ -372,5 +423,89 @@ public class ViewDAO implements GenericDAO<View> {
 	public void deleteViewForUser(int viewId, int userId) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_USER_DELETE_BASE_ON_VIEW_ID_USER_ID, new Object[]{viewId, userId});
 	}
-	
+
+	public List<ViewAccess> selectViewPermissions(final int userId) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("selectViewPermissions(final int userId) userId:" + userId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_USER_ID, new Object[]{userId}, (rs, rowNum) -> {
+			ViewAccess viewAccess = new ViewAccess();
+			viewAccess.setId(rs.getInt(COLUMN_NAME_MVU_VIEW_ID));
+			viewAccess.setPermission(rs.getInt(COLUMN_NAME_MVU_ACCESS_TYPE));
+			return viewAccess;
+		});
+
+	}
+
+	public int[] insertPermissions(final int userId, final List<ViewAccess> toInsert) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertPermissions(final User user, final List<WatchListAccess> toInsert) user:" + userId + "");
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER };
+
+		List<Object[]> batchArgs = toInsert.stream()
+				.map(a -> new Object[] {a.getId(), userId, a.getPermission(), a.getPermission()})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(VIEW_USER_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+	}
+
+	public int[] deletePermissions(final int userId, final List<ViewAccess> toDelete) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deletePermissions(final int userId, final List<WatchListAccess> toDelete) user:" + userId);
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+		List<Object[]> batchArgs = toDelete.stream()
+				.map(a -> new Object[] {a.getId(), userId})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(VIEW_USER_DELETE_BASE_ON_VIEW_ID_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<View> selectViewWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
+				new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId ,ShareUser.ACCESS_NONE},
+				new ViewRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> selectViewIdentifiersWithAccess(int userId, int profileId) {
+		return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT + " where " + VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID,
+                new Object[] { userId, userId, ShareUser.ACCESS_NONE, profileId, ShareUser.ACCESS_NONE},
+                new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
+	}
+
+    public List<ScadaObjectIdentifier> selectViewIdentifiers() {
+        return DAO.getInstance().getJdbcTemp().query(VIEW_IDENTIFIER_SELECT_ORDER_BY_NAME, new Object[]{},
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
+    }
+
+	public List<ShareUser> selectViewShareUsers(int viewId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectViewShareUsers(int viewId) viewId:" + viewId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_VIEW_ID,
+					new Object[]{viewId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
+	}
 }

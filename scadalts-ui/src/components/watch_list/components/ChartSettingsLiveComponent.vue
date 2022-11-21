@@ -1,45 +1,35 @@
 <template>
-	<div class="col-xs-12">
-		<div class="col-xs-3">
-			<input
-				type="number"
-				id="live-sd"
-				v-model="startTime"
-				:placeholder="$t('modernwatchlist.settings.live.time.label')"
-				class="form-control"
-				min="1"
-				max="31"
-			/>
-		</div>
-		<div class="col-xs-3">
-			<select v-model="startTimeMultiplier" class="form-control" id="live-rrs">
-				<option
-					v-for="option in timeOptions"
-					v-bind:value="option.value"
-					v-bind:key="option.id"
-				>
-					{{ option.text }}
-				</option>
-			</select>
-		</div>
-		<div class="col-xs-6">
-			<select id="live-rr" v-model="refreshRate" class="form-control">
-				<option
-					v-for="option in performanceOptions"
-					v-bind:value="option.value"
-					v-bind:key="option.id"
-				>
-					{{ option.text }}
-				</option>
-			</select>
-		</div>
-	</div>
+<v-row>
+	<v-col xs="3">
+		<v-text-field
+			v-model="startTime"
+			:label="$t('modernwatchlist.settings.live.time.label')"
+			type="number"
+		></v-text-field>
+	</v-col>
+	
+	<v-col xs="3">
+		<v-select
+			v-model="startTimeMultiplier"
+			:items="timeOptions"
+			item-value="value"
+			item-text="text"
+		></v-select>
+	</v-col>
+
+	<v-col xs="6">
+		<v-select
+			v-model="refreshRate"
+			:items="performanceOptions"
+			item-value="value"
+			item-text="text"
+		></v-select>
+	</v-col>
+</v-row>
 </template>
 <script>
 export default {
 	name: 'ChartSettingsLiveComponent',
-
-	props: ['watchListName'],
 
 	data() {
 		return {
@@ -47,6 +37,11 @@ export default {
 			startTime: 1,
 			startTimeMultiplier: 'hour',
 			timeOptions: [
+				{
+					id: 4,
+					text: this.$t('modernwatchlist.settings.live.time.minute'),
+					value: 'minute',
+				},
 				{
 					id: 0,
 					text: this.$t('modernwatchlist.settings.live.time.hour'),
@@ -104,27 +99,9 @@ export default {
 		};
 	},
 
-	mounted() {
-		this.loadSettings();
-	},
-
-	computed: {},
-
 	methods: {
-		applySettings() {
-			let chartProperties = {
-				type: this.CHART_TYPE,
-				refreshRate: this.refreshRate,
-				startDate: `${this.startTime}-${this.startTimeMultiplier}`,
-				endDate: null,
-			};
-			//TODO to może iść do Vuex
-			this.saveSettings();
-			return chartProperties;
-		},
-
-		loadSettings() {
-			let loadedData = JSON.parse(localStorage.getItem(`MWL_${this.watchListName}_P`));
+		loadSettings(watchListId) {
+			let loadedData = JSON.parse(localStorage.getItem(`MWL_${watchListId}_P`));
 			if (!!loadedData) {
 				if (loadedData.type === this.CHART_TYPE) {
 					this.startTime = loadedData.startTime;
@@ -132,16 +109,22 @@ export default {
 					this.refreshRate = loadedData.refreshRate;
 				}
 			}
+			return {
+				type: this.CHART_TYPE,
+				refreshRate: this.refreshRate,
+				startDate: `${this.startTime}-${this.startTimeMultiplier}`,
+				endDate: null,
+			}
 		},
 
-		saveSettings() {
+		saveSettings(watchListId) {
 			let saveData = {
 				type: this.CHART_TYPE,
 				startTime: this.startTime,
 				startTimeMultiplier: this.startTimeMultiplier,
 				refreshRate: this.refreshRate,
 			};
-			localStorage.setItem(`MWL_${this.watchListName}_P`, JSON.stringify(saveData));
+			localStorage.setItem(`MWL_${watchListId}_P`, JSON.stringify(saveData));
 		},
 	},
 };

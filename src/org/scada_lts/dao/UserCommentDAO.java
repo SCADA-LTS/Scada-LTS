@@ -107,6 +107,13 @@ public class UserCommentDAO {
 				+ COLUMN_NAME_COMMENT_TYPE + "=? "
 			+ "and "
 				+ COLUMN_NAME_TYPE_KEY + " ";
+
+	private static final String USER_COMMENT_DELETE_ONE = "" +
+			"DELETE FROM userComments WHERE " +
+			COLUMN_NAME_USER_ID + "=? AND " +
+			COLUMN_NAME_COMMENT_TYPE + "=? AND " +
+			COLUMN_NAME_TYPE_KEY + "=? AND " +
+			COLUMN_NAME_TS + "=?";
 	// @formatter:on
 
 	private class UserCommentRowMapper implements RowMapper<UserComment> {
@@ -186,6 +193,14 @@ public class UserCommentDAO {
 		String templateDeleteTypeEvent = USER_COMMENT_DELETE + "not in (select id from events)";
 
 		DAO.getInstance().getJdbcTemp().update(templateDeleteTypeEvent, new Object[] {UserComment.TYPE_EVENT});
+	}
+
+	public int deleteUserComment(int userId, int typeId, int referenceId, long ts) {
+		if(LOG.isTraceEnabled()) {
+			LOG.trace("deleteUserComment(UserComment::"+userId+"::"+ts);
+		}
+
+		return DAO.getInstance().getJdbcTemp().update(USER_COMMENT_DELETE_ONE, new Object[] {userId, typeId, referenceId, ts});
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

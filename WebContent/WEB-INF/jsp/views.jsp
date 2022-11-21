@@ -24,8 +24,8 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
-  <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
   <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
+  <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
   <link
 	href="resources/node_modules/sweetalert2/dist/sweetalert2.min.css"
 	rel="stylesheet" type="text/css">
@@ -49,16 +49,7 @@
 	jQuery.noConflict();
 	
 	shortcut.add("Ctrl+Shift+F",function() {
-
-		setCookie("fullScreen","no");
-		
-		document.getElementById('mainHeader').style.display = "compact";
-  	  	document.getElementById('subHeader').style.display = "compact";
-  	  	document.getElementById('graphical').style.display = "compact";
-  	  	
-  		location.reload(true);
-
-		
+	    closeFullScreen();
 	});
 	
 	//check replace alert
@@ -183,35 +174,37 @@
   	  	jQuery('#fsOut').fadeOut(10000, function(){});
   	  	
 	}
-	
-	function fullScreen(){
-  	  	
-		document.getElementById('fsOut').style.display = "block";
-		document.getElementById('mainHeader').style.display = "none";
-  	  	document.getElementById('subHeader').style.display = "none";
-  	  	document.getElementById('graphical').style.display = "none";
-		jQuery('#fsOut').fadeOut(10000, function(){});
 
-  	  	setCookie("fullScreen","yes");
-  	  	
+	function fullScreen(){
+		openFullScreen();
 	}
-	
+
 	function checkFullScreen(){
-  	  	
 		var check = getCookie("fullScreen");
-		
 		if(check!=null && check!=""){
-			
 			if(check=="yes"){
-				toggleDisplay();
-// 				document.getElementById('fsOut').style.display = "block";
+				openFullScreen();
 			}
-			
 			if(check=="no"){
 				document.getElementById('fsOut').style.display = "none";
 			}
 		}
-  	  	
+	}
+
+	function openFullScreen() {
+		setCookie("fullScreen","yes");
+		document.getElementById('fsOut').style.display = "block";
+		document.getElementById('mainHeader').style.display = "none";
+		document.getElementById('subHeader').style.display = "none";
+		document.getElementById('graphical').style.display = "none";
+		jQuery('#fsOut').fadeOut(5000, function(){});
+	}
+
+	function closeFullScreen() {
+		setCookie("fullScreen","no");
+		document.getElementById('mainHeader').style.display = "flex";
+		document.getElementById('subHeader').style.display = "flex";
+		document.getElementById('graphical').style.display = "table";
 	}
 		
 	function keyListen(e) {

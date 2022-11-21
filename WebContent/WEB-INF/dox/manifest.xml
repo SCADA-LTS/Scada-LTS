@@ -395,4 +395,10 @@
     <relation id="emailSettings"/>
     <relation id="mailingLists"/>
   </item>
+
+  <item id="eventTextRenderers">
+  </item>
+
+  <item id="anonymousView">
+  </item>
 </doxManifest>

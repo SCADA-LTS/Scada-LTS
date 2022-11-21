@@ -23,6 +23,7 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
+import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -40,6 +41,7 @@ import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.utils.ColorUtils;
 
 import java.io.File;
@@ -143,6 +145,10 @@ public class SystemSettingsDwr extends BaseDwr {
 						.getValue(SystemSettingsDAO.PLOT_BACKGROUND_COLOUR));
 		settings.put(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR, SystemSettingsDAO
 				.getValue(SystemSettingsDAO.PLOT_GRIDLINE_COLOUR));
+
+		SystemSettingsService systemSettingsService = new SystemSettingsService();
+		settings.put(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
+				systemSettingsService.getDataPointRtValueSynchronized().getName());
 
 		return settings;
 	}
@@ -285,31 +291,34 @@ public class SystemSettingsDwr extends BaseDwr {
 
 	@MethodFilter
 	public void saveMiscSettings(int eventPurgePeriodType,
-			int eventPurgePeriods, int reportPurgePeriodType,
-			int reportPurgePeriods, int uiPerformance, boolean groveLogging,
-			int futureDateLimitPeriodType, int futureDateLimitPeriods) {
+								 int eventPurgePeriods, int reportPurgePeriodType,
+								 int reportPurgePeriods, int uiPerformance, boolean groveLogging,
+								 int futureDateLimitPeriodType, int futureDateLimitPeriods,
+								 String dataPointRtValueSynchronized) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		systemSettingsDAO
 				.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE,
 						eventPurgePeriodType);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS,
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.EVENT_PURGE_PERIODS,
 				eventPurgePeriods);
-		SystemSettingsDAO.setIntValue(
+		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE,
 				reportPurgePeriodType);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.REPORT_PURGE_PERIODS,
 				reportPurgePeriods);
-		SystemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
+		systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
 				uiPerformance);
-		SystemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
+		systemSettingsDAO.setBooleanValue(SystemSettingsDAO.GROVE_LOGGING,
 				groveLogging);
-		SystemSettingsDAO.setIntValue(
+		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE,
 				futureDateLimitPeriodType);
-		SystemSettingsDAO.setIntValue(
+		systemSettingsDAO.setIntValue(
 				SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS,
 				futureDateLimitPeriods);
+		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
+				DataPointSyncMode.getName(dataPointRtValueSynchronized));
 	}
 
 	@MethodFilter
@@ -362,11 +371,11 @@ public class SystemSettingsDwr extends BaseDwr {
 	public void saveInfoSettings(String newVersionNotificationLevel,
 			String instanceDescription) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setValue(
+		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
+		systemSettingsDAO.setValue(
 				SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL,
 				newVersionNotificationLevel);
-		SystemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
+		systemSettingsDAO.setValue(SystemSettingsDAO.INSTANCE_DESCRIPTION,
 				instanceDescription);
 	}
 

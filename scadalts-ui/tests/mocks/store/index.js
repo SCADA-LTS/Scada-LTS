@@ -1,15 +1,21 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import systemSettings from './systemSettings';
+export let mainStore = {
+	modules: {},
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
-	modules: {
-		systemSettings,
+	state: {
+		timePeriods: [
+			{ id: 1, label: 'Seconds' },
+			{ id: 2, label: 'Minutes' },
+			{ id: 3, label: 'Hours' },
+			{ id: 4, label: 'Days' },
+			{ id: 5, label: 'Weeks' },
+			{ id: 6, label: 'Months' },
+			{ id: 7, label: 'Years' },
+			{ id: 8, label: 'Miliseconds' },
+		],
 	},
-	state: {},
 	mutations: {},
+
 	actions: {},
-	plugins: [],
-});
+};
+
+export default mainStore;

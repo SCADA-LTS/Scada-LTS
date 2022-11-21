@@ -21,15 +21,15 @@ package com.serotonin.mango.web.dwr;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.util.LoggingScriptUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -90,6 +90,14 @@ import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
+
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import org.scada_lts.mango.service.UserService;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
+
+import static com.serotonin.mango.web.dwr.util.AnonymousUserUtils.getUser;
 
 /**
  * This class is so not threadsafe. Do not use class fields except for the
@@ -105,11 +113,15 @@ public class ViewDwr extends BaseDwr {
 	// /
 	//
 	//
+	private static final Log LOG = LogFactory.getLog(ViewDwr.class);
+
 	public List<ViewComponentState> getViewPointDataAnon(int viewId) {
 		View view = Common.getAnonymousView(viewId);
 		if (view == null)
-			return new ArrayList<ViewComponentState>();
-		return getViewPointData(null, view, false);
+			return new ArrayList<>();
+		return getUser(new UserService())
+				.map(user -> getViewPointData(user, view, false))
+				.orElse(new ArrayList<>());
 	}
 
 	public String setViewPointAnon(int viewId, String viewComponentId, String valueStr) {
@@ -128,12 +140,11 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<IntValuePair> getViews() {
-		ViewDao viewDao = new ViewDao();
+		GetObjectsWithAccess<View, User> viewPermissionsService = new GetViewsWithAccess();
 		User user = Common.getUser();
-
-		List<IntValuePair> views = viewDao.getViewNames(user.getId(), user.getUserProfile());
-
-		return views;
+		return viewPermissionsService.getObjectIdentifiersWithAccess(user).stream()
+				.map(a -> new IntValuePair(a.getId(), a.getName()))
+				.collect(Collectors.toList());
 	}
 
 	@MethodFilter
@@ -234,13 +245,14 @@ public class ViewDwr extends BaseDwr {
 			DataPointRT dataPointRT = null;
 			if (pointComponent.tgetDataPoint() != null)
 				dataPointRT = rtm.getDataPoint(pointComponent.tgetDataPoint().getId());
-
+			model.put(LoggingScriptUtils.VIEW_IDENTIFIER, new ScadaObjectIdentifier(view.getId(), view.getXid(), view.getName()));
 			ViewComponentState state = preparePointComponentState(pointComponent, user, dataPointRT, model, request);
 
 			if (!edit) {
 				if (pointComponent.isSettable()) {
 					int access = view.getUserAccess(user);
-					if (access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+					if ((access == ShareUser.ACCESS_OWNER || access == ShareUser.ACCESS_SET)
+							&& Permissions.hasDataPointSetPermission(user, pointComponent.tgetDataPoint()))
 						setChange(pointComponent.tgetDataPoint(), state, dataPointRT, request, model);
 				}
 
@@ -394,7 +406,7 @@ public class ViewDwr extends BaseDwr {
 		User user = Common.getUser();
 		View view = user.getView();
 		view.addViewComponent(viewComponent);
-		viewComponent.validateDataPoint(user, false);
+		viewComponent.validateDataPoint(user, view.getUserAccess(user) == ShareUser.ACCESS_READ);
 		return viewComponent;
 	}
 
@@ -404,13 +416,23 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
+	public void setViewComponentZIndex(String viewComponentId, int zIndex) {
+		getViewComponent(viewComponentId).setZ(zIndex);
+	}
+
+	@MethodFilter
+	public int getViewComponentZIndex(String viewComponentId) {
+		return getViewComponent(viewComponentId).getZ();
+	}
+
+	@MethodFilter
 	public void deleteViewComponent(String viewComponentId) {
 		View view = Common.getUser().getView();
 		view.removeViewComponent(getViewComponent(view, viewComponentId));
 	}
 
 	@MethodFilter
-	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name, boolean settable, String bkgdColorOverride, boolean displayControls) {
+	public DwrResponseI18n setPointComponentSettings(String pointComponentId, int dataPointId, String name, boolean settable, String bkgdColorOverride, boolean displayControls, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		PointComponent pc = (PointComponent) getViewComponent(pointComponentId);
 		User user = Common.getUser();
@@ -424,6 +446,7 @@ public class ViewDwr extends BaseDwr {
 			pc.setSettableOverride(settable && Permissions.hasDataPointSetPermission(user, dp));
 			pc.setBkgdColorOverride(bkgdColorOverride);
 			pc.setDisplayControls(displayControls);
+			pc.setLocation(positionX, positionY);
 
 			pc.validateDataPoint(user, false);
 		}
@@ -471,13 +494,14 @@ public class ViewDwr extends BaseDwr {
 	// Save view component
 	//
 	@MethodFilter
-	public void saveHtmlComponent(String viewComponentId, String content) {
+	public void saveHtmlComponent(String viewComponentId, String content, int positionX, int positionY) {
 		HtmlComponent c = (HtmlComponent) getViewComponent(viewComponentId);
 		c.setContent(content);
+		c.setLocation(positionX, positionY);
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link) {
+	public DwrResponseI18n saveLinkComponent(String viewComponentId, String text, String link, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
 			response.addContextualMessage("linkText", "validate.required");
@@ -488,13 +512,14 @@ public class ViewDwr extends BaseDwr {
 			LinkComponent c = (LinkComponent) getViewComponent(viewComponentId);
 			c.setText(text);
 			c.setLink(link);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid) {
+	public DwrResponseI18n saveScriptButtonComponent(String viewComponentId, String text, String scriptXid, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		if (StringUtils.isEmpty(text))
 			response.addContextualMessage("scriptButtonText", "validate.required");
@@ -505,6 +530,7 @@ public class ViewDwr extends BaseDwr {
 			ScriptButtonComponent c = (ScriptButtonComponent) getViewComponent(viewComponentId);
 			c.setText(text);
 			c.setScriptXid(scriptXid);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
@@ -650,7 +676,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveSimpleCompoundComponent(String viewComponentId, String name, String backgroundColour, List<KeyValuePair> childPointIds, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -670,6 +696,7 @@ public class ViewDwr extends BaseDwr {
 			SimpleCompoundComponent c = (SimpleCompoundComponent) getViewComponent(viewComponentId);
 			c.setName(name);
 			c.setBackgroundColour(backgroundColour);
+			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
 		}
 
@@ -677,7 +704,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, List<KeyValuePair> childPointIds, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		commonImageChartComponentValidation(name, width, height, durationType, durationPeriods, response);
@@ -689,6 +716,7 @@ public class ViewDwr extends BaseDwr {
 			c.setHeight(height);
 			c.setDurationType(durationType);
 			c.setDurationPeriods(durationPeriods);
+			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
 		}
 
@@ -696,7 +724,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList) {
+	public DwrResponseI18n saveEnhancedImageChartComponent(String viewComponentId, String name, int width, int height, int durationType, int durationPeriods, EnhancedImageChartType chartType, List<KeyValuePair> childPointIds, List<EnhancedPointComponentProperties> pointsPropsList, int positionX, int positionY) {
 
 		DwrResponseI18n response = new DwrResponseI18n();
 
@@ -713,13 +741,14 @@ public class ViewDwr extends BaseDwr {
 			c.setEnhancedImageChartType(chartType);
 			saveCompoundPoints(c, childPointIds);
 			saveEnhancedPoints(c, pointsPropsList);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds) {
+	public DwrResponseI18n saveCompoundComponent(String viewComponentId, String name, List<KeyValuePair> childPointIds, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 
 		validateCompoundComponent(response, name);
@@ -727,6 +756,7 @@ public class ViewDwr extends BaseDwr {
 		if (!response.getHasMessages()) {
 			CompoundComponent c = (CompoundComponent) getViewComponent(viewComponentId);
 			c.setName(name);
+			c.setLocation(positionX, positionY);
 			saveCompoundPoints(c, childPointIds);
 		}
 
@@ -794,7 +824,7 @@ public class ViewDwr extends BaseDwr {
 	// }
 
 	@MethodFilter
-	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height) {
+	public DwrResponseI18n saveChartComparatorComponent(String viewComponentId, int width, int height, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -808,13 +838,14 @@ public class ViewDwr extends BaseDwr {
 			ChartComparatorComponent c = (ChartComparatorComponent) getViewComponent(viewComponentId);
 			c.setWidth(width);
 			c.setHeight(height);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
 	}
 
 	@MethodFilter
-	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined, String projectsSource, int projectId, boolean runtimeMode) {
+	public DwrResponseI18n saveFlexComponent(String viewComponentId, int width, int height, boolean projectDefined, String projectsSource, int projectId, boolean runtimeMode, int positionX, int positionY) {
 		DwrResponseI18n response = new DwrResponseI18n();
 		// Validate
 
@@ -839,6 +870,7 @@ public class ViewDwr extends BaseDwr {
 			c.setProjectSource(projectsSource);
 			c.setProjectId(projectId);
 			c.setRuntimeMode(runtimeMode);
+			c.setLocation(positionX, positionY);
 		}
 
 		return response;
@@ -933,7 +965,7 @@ public class ViewDwr extends BaseDwr {
 			} else
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+		    LOG.warn(infoErrorExecutionScript(e, script), e);
 		}
 
 		return false;
@@ -1031,5 +1063,4 @@ public class ViewDwr extends BaseDwr {
 			}
 		}
 	}
-
 }

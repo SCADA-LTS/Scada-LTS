@@ -1,31 +1,29 @@
 package br.org.scadabr.vo.usersProfiles;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import br.org.scadabr.vo.permission.Permission;
 import br.org.scadabr.vo.permission.ViewAccess;
 import br.org.scadabr.vo.permission.WatchListAccess;
 
-import com.serotonin.json.JsonException;
-import com.serotonin.json.JsonObject;
-import com.serotonin.json.JsonReader;
-import com.serotonin.json.JsonSerializable;
+import com.serotonin.json.*;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
+import org.scada_lts.mango.service.DataSourceService;
 
+@JsonRemoteEntity
 public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	public static final String XID_PREFIX = "UP_";
 
+	@JsonRemoteProperty
 	private String name;
 
+	@JsonRemoteProperty
 	private int id = Common.NEW_ID;
 
 	private List<Integer> dataSourcePermissions;
@@ -36,15 +34,34 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 
 	private List<ViewAccess> viewPermissions;
 
+	@JsonRemoteProperty
 	private String xid;
 
 	private User lastAppliedUser = null;
 
+	@Deprecated
 	private List<WatchList> watchlists;
 
+	@Deprecated
 	private List<Integer> usersIds;
 
+	@Deprecated
 	private List<View> views;
+
+	public UsersProfileVO(UsersProfileVO usersProfile) {
+		this.name = usersProfile.name;
+		this.id = usersProfile.id;
+		this.dataSourcePermissions = new ArrayList<>(usersProfile.dataSourcePermissions);
+		this.dataPointPermissions = new ArrayList<>(usersProfile.dataPointPermissions);
+		this.watchlistPermissions = new ArrayList<>(usersProfile.watchlistPermissions);
+		this.viewPermissions = new ArrayList<>(usersProfile.viewPermissions);
+		this.xid = usersProfile.xid;
+		if(usersProfile.lastAppliedUser != null)
+			this.lastAppliedUser = new User(usersProfile.lastAppliedUser);
+		this.watchlists = new ArrayList<>(usersProfile.watchlists);
+		this.usersIds = new ArrayList<>(usersProfile.usersIds);
+		this.views = new ArrayList<>(usersProfile.views);
+	}
 
 	public UsersProfileVO() {
 		name = "";
@@ -121,155 +138,38 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		return lastAppliedUser;
 	}
 
+    @Deprecated
 	public void defineWatchlists(List<WatchList> watchlists) {
 		this.watchlists = watchlists;
 	}
 
+    @Deprecated
 	public List<WatchList> retrieveWatchlists() {
 		return this.watchlists;
 	}
 
+    @Deprecated
 	public void defineViews(List<View> views) {
 		this.views = views;
 	}
 
+    @Deprecated
 	public List<View> retrieveViews() {
 		return this.views;
 	}
 
+    @Deprecated
 	public void defineUsers(List<Integer> users) {
 		this.usersIds = users;
 	}
 
 	public void apply(User user) {
-		user.setDataSourcePermissions(dataSourcePermissions);
-		user.setDataPointPermissions(dataPointPermissions);
-		applyWatchlistPermissions(user);
-		applyViewPermissions(user);
+		user.setDataSourceProfilePermissions(dataSourcePermissions);
+		user.setDataPointProfilePermissions(dataPointPermissions);
+		user.setWatchListProfilePermissions(watchlistPermissions);
+		user.setViewProfilePermissions(viewPermissions);
 		user.setUserProfile(this);
 		lastAppliedUser = user;
-	}
-
-	private void applyWatchlistPermissions(User user) {
-
-		if (this.watchlistPermissions.isEmpty()) {
-			List<ShareUser> nonePermissions = new ArrayList<ShareUser>();
-			for (Integer userId : this.usersIds) {
-				ShareUser newUserPermissions = new ShareUser();
-				newUserPermissions.setAccessType(ShareUser.ACCESS_NONE);
-				newUserPermissions.setUserId(userId);
-				nonePermissions.add(newUserPermissions);
-			}
-
-			for (WatchList watchList : this.watchlists) {
-				watchList.setWatchListUsers(nonePermissions);
-			}
-		}
-
-		else {
-
-			for (WatchList watchList : this.watchlists) {
-
-				Map<Integer, ShareUser> oldPermissionsByUserId = new HashMap<Integer, ShareUser>();
-				Map<Integer, Permission> newPermissionsByWatchListId = new HashMap<Integer, Permission>();
-
-				for (Permission newPermission : this.watchlistPermissions) {
-					newPermissionsByWatchListId.put(newPermission.getId(),
-							newPermission);
-				}
-
-				if (!newPermissionsByWatchListId.containsKey(watchList.getId())) {
-					WatchListAccess noneAccess = new WatchListAccess(
-							watchList.getId(), ShareUser.ACCESS_NONE);
-					this.watchlistPermissions.add(noneAccess);
-					newPermissionsByWatchListId.put(noneAccess.getId(),
-							noneAccess);
-				}
-
-				for (ShareUser oldPermission : watchList.getWatchListUsers()) {
-					oldPermissionsByUserId.put(oldPermission.getUserId(),
-							oldPermission);
-
-					if ((oldPermission.getUserId() == user.getId() || this.usersIds
-							.contains(oldPermission.getUserId()))
-							&& newPermissionsByWatchListId
-									.containsKey(watchList.getId())) {
-						oldPermission.setAccessType(newPermissionsByWatchListId
-								.get(watchList.getId()).getPermission());
-					}
-				}
-
-				if (!oldPermissionsByUserId.containsKey(user.getId())) {
-					ShareUser newUserPermissions = new ShareUser();
-					newUserPermissions
-							.setAccessType(newPermissionsByWatchListId.get(
-									watchList.getId()).getPermission());
-					newUserPermissions.setUserId(user.getId());
-					watchList.getWatchListUsers().add(newUserPermissions);
-				}
-
-			}
-		}
-
-	}
-
-	private void applyViewPermissions(User user) {
-
-		if (this.viewPermissions.isEmpty()) {
-			List<ShareUser> nonePermissions = new ArrayList<ShareUser>();
-			for (Integer userId : this.usersIds) {
-				ShareUser newUserPermissions = new ShareUser();
-				newUserPermissions.setAccessType(ShareUser.ACCESS_NONE);
-				newUserPermissions.setUserId(userId);
-				nonePermissions.add(newUserPermissions);
-			}
-
-			for (View view : this.views) {
-				view.setViewUsers(nonePermissions);
-			}
-		}
-
-		else {
-
-			for (View view : this.views) {
-
-				Map<Integer, ShareUser> oldPermissionsByUserId = new HashMap<Integer, ShareUser>();
-				Map<Integer, Permission> newPermissionsByViewId = new HashMap<Integer, Permission>();
-
-				for (Permission newPermission : this.viewPermissions) {
-					newPermissionsByViewId.put(newPermission.getId(),
-							newPermission);
-				}
-
-				if (!newPermissionsByViewId.containsKey(view.getId())) {
-					ViewAccess noneAccess = new ViewAccess(view.getId(),
-							ShareUser.ACCESS_NONE);
-					this.viewPermissions.add(noneAccess);
-					newPermissionsByViewId.put(noneAccess.getId(), noneAccess);
-				}
-
-				for (ShareUser oldPermission : view.getViewUsers()) {
-					oldPermissionsByUserId.put(oldPermission.getUserId(),
-							oldPermission);
-
-					if ((oldPermission.getUserId() == user.getId() || this.usersIds
-							.contains(oldPermission.getUserId()))
-							&& newPermissionsByViewId.containsKey(view.getId())) {
-						oldPermission.setAccessType(newPermissionsByViewId.get(
-								view.getId()).getPermission());
-					}
-				}
-
-				if (!oldPermissionsByUserId.containsKey(user.getId())) {
-					ShareUser newUserPermissions = new ShareUser();
-					newUserPermissions.setAccessType(newPermissionsByViewId
-							.get(view.getId()).getPermission());
-					newUserPermissions.setUserId(user.getId());
-					view.getViewUsers().add(newUserPermissions);
-				}
-
-			}
-		}
 	}
 
 	public void jsonDeserialize(JsonReader reader, JsonObject profileJson)
@@ -277,6 +177,16 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		// Note: data source permissions are explicitly deserialized by the
 		// import/export because the data sources and
 		// points need to be certain to exist before we can resolve the xids.
+		DataSourceService dataSourceService = new DataSourceService();
+		dataSourcePermissions.addAll(DeserializeUsersProfileUtils.getDataSourcePermissions(profileJson, dataSourceService));
+		dataPointPermissions.addAll(DeserializeUsersProfileUtils.getDataPointPermissions(profileJson, reader));
+		viewPermissions.addAll(DeserializeUsersProfileUtils.getViewPermissions(profileJson, reader));
+		watchlistPermissions.addAll(DeserializeUsersProfileUtils.getWatchlistPermissions(profileJson, reader));
+
+		usersIds.addAll(DeserializeUsersProfileUtils.getUsersOnProfile(profileJson).stream()
+				.filter(Objects::nonNull)
+				.map(User::getId)
+				.collect(Collectors.toList()));
 	}
 
 	public void jsonSerialize(Map<String, Object> map) {
@@ -285,5 +195,71 @@ public class UsersProfileVO implements Cloneable, JsonSerializable {
 		map.put("viewPermissions", viewPermissions);
 		map.put("watchlistPermissions", watchlistPermissions);
 		map.put("usersIds", usersIds);
+
+		DataSourceService dataSourceService = new DataSourceService();
+		Set<String> datasoureXids = dataSourcePermissions.stream()
+				.filter(Objects::nonNull)
+				.map(dataSourceService::getDataSource)
+				.filter(Objects::nonNull)
+				.map(DataSourceVO::getXid)
+				.collect(Collectors.toSet());
+		map.put("dataSourcePermissionsXid", datasoureXids);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof UsersProfileVO)) return false;
+		UsersProfileVO that = (UsersProfileVO) o;
+		return getId() == that.getId();
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString() {
+		return "\nUsersProfileVO{" +
+				"name='" + name + '\'' +
+				", id=" + id +
+				", dataSourcePermissions=" + dataSourcePermissions +
+				", dataPointPermissions=" + dataPointPermissions +
+				", watchlistPermissions=" + watchlistPermissions +
+				", viewPermissions=" + viewPermissions +
+				", xid='" + xid + '\'' +
+				", lastAppliedUser=" + lastAppliedUserId() +
+				", watchlists=" + watchListsIds(watchlists) +
+				", usersIds=" + usersIds +
+				", views=" + viewsIds(views) +
+				"}";
+	}
+
+    private Object lastAppliedUserId() {
+        return lastAppliedUser == null ?  "null" : lastAppliedUser.getId();
+    }
+
+	@Deprecated
+    private List<String> watchListsIds(List<WatchList> watchLists) {
+		if(watchLists != null && !watchLists.isEmpty()) {
+			return watchLists.stream().filter(Objects::nonNull)
+                    .map(WatchList::getId)
+                    .map(String::valueOf)
+                    .collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+
+	@Deprecated
+	private List<String> viewsIds(List<View> views) {
+		if(views != null && !views.isEmpty()) {
+			return views.stream().filter(Objects::nonNull)
+                    .map(View::getId)
+					.map(String::valueOf)
+					.collect(Collectors.toList());
+		}
+		return Collections.emptyList();
 	}
 }

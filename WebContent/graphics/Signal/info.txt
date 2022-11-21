@@ -1,6 +1,6 @@
 name=Signal
 type=imageSet
-#width=16
-#height=16
+width=16
+height=16
 text.x=14
 text.y=2

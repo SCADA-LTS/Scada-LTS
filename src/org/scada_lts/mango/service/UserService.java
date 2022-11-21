@@ -17,13 +17,20 @@
  */
 package org.scada_lts.mango.service;
 
+
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.UserComment;
+import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.web.taglib.Functions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.UserCommentDAO;
-import org.scada_lts.dao.UserDAO;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.mango.adapter.MangoUser;
+import org.scada_lts.permissions.service.*;
+import org.scada_lts.utils.ApplicationBeans;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,21 +38,51 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.scada_lts.permissions.service.util.PermissionsUtils.*;
+
 /**
  * UserService
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+
+@Service
 public class UserService implements MangoUser {
 
-	private UserDAO userDAO = new UserDAO();
+	private static final Log LOG = LogFactory.getLog(UserService.class);
+
+	private IUserDAO userDAO;
 	private UserCommentDAO userCommentDAO = new UserCommentDAO();
 
-	private DataPointService dataPointService = new DataPointService();
-	private DataSourceService dataSourceService = new DataSourceService();
 	private MailingListService mailingListService = new MailingListService();
 	private EventService eventService = new EventService();
 	private PointValueService pointValueService = new PointValueService();
+	private UsersProfileService usersProfileService;
+
+	private PermissionsService<DataPointAccess, User> dataPointPermissionsService;
+	private PermissionsService<Integer, User> dataSourcePermissionsService;
+
+	public UserService() {
+		userDAO = ApplicationBeans.getUserDaoBean();
+		dataPointPermissionsService = ApplicationBeans.getDataPointUserPermissionsServiceBean();
+		dataSourcePermissionsService = ApplicationBeans.getDataSourceUserPermissionsServiceBean();
+		usersProfileService = ApplicationBeans.getUsersProfileService();
+	}
+
+	public UserService(IUserDAO userDAO, UserCommentDAO userCommentDAO, MailingListService mailingListService,
+					   EventService eventService, PointValueService pointValueService,
+					   UsersProfileService usersProfileService,
+					   PermissionsService<DataPointAccess, User> dataPointPermissionsService,
+					   PermissionsService<Integer, User> dataSourcePermissionsService) {
+		this.userDAO = userDAO;
+		this.userCommentDAO = userCommentDAO;
+		this.mailingListService = mailingListService;
+		this.eventService = eventService;
+		this.pointValueService = pointValueService;
+		this.usersProfileService = usersProfileService;
+		this.dataPointPermissionsService = dataPointPermissionsService;
+		this.dataSourcePermissionsService = dataSourcePermissionsService;
+	}
 
 	@Override
 	public User getUser(int id) {
@@ -67,6 +104,13 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
+	public List<User> getUsersWithProfile() {
+		List<User> users = userDAO.getUsers();
+		populateUserPermissionsWithProfile(users);
+		return users;
+	}
+
+	@Override
 	public List<User> getActiveUsers() {
 		List<User> users = userDAO.getActiveUsers();
 		populateUserPermissions(users);
@@ -79,11 +123,36 @@ public class UserService implements MangoUser {
 		}
 	}
 
+	private void populateUserPermissionsWithProfile(List<User> users) {
+		for (User user : users) {
+			populateUserPermissionsWithProfile(user);
+		}
+	}
+
 	@Override
 	public void populateUserPermissions(User user) {
 		if (user != null) {
-			user.setDataSourcePermissions(dataSourceService.getDataSourceId(user.getId()));
-			user.setDataPointPermissions(dataPointService.getDataPointAccessList(user.getId()));
+			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
+			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
+
+			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
+				user.setUserProfileId(profile.getId());
+				user.setDataPointProfilePermissions(profile.getDataPointPermissions());
+				user.setDataSourcePermissions(profile.getDataSourcePermissions());
+				user.setViewProfilePermissions(profile.getViewPermissions());
+				user.setWatchListProfilePermissions(profile.getWatchlistPermissions());
+			});
+		}
+	}
+
+	public void populateUserPermissionsWithProfile(User user) {
+		if (user != null) {
+			user.setDataSourcePermissions(dataSourcePermissionsService.getPermissions(user));
+			user.setDataPointPermissions(dataPointPermissionsService.getPermissions(user));
+
+			usersProfileService.getProfileByUser(user).ifPresent(profile -> {
+				user.setUserProfileId(profile.getId());
+			});
 		}
 	}
 
@@ -97,13 +166,23 @@ public class UserService implements MangoUser {
 	}
 
 	@Override
+	public void updateHideMenu(User user) {
+		userDAO.updateHideMenu(user);
+	}
+
+	@Override
+	public void updateScadaTheme(User user) {
+		userDAO.updateScadaTheme(user);
+	}
+
+	@Override
 	public void insertUser(User user) {
 		try {
 			int id = userDAO.insert(user);
 			user.setId(id);
-			saveRelationalData(user);
+			updatePermissions(user);
 		} catch (Throwable t) {
-			t.printStackTrace();
+			LOG.error(t.getMessage(), t);
 		}
 	}
 
@@ -117,17 +196,7 @@ public class UserService implements MangoUser {
 		}
 
 		userDAO.update(user);
-		saveRelationalData(user);
-	}
-
-	private void saveRelationalData(User user) {
-		// Delete existing permissions
-		dataSourceService.deleteDataSourceUser(user.getId());
-		dataPointService.deleteDataPointUser(user.getId());
-
-		//Save new
-		dataPointService.insertPermissions(user);
-		dataSourceService.insertPermissions(user);
+		updatePermissions(user);
 	}
 
 	@Override
@@ -139,6 +208,7 @@ public class UserService implements MangoUser {
 		eventService.deleteUserEvent(userId);
 		eventService.updateEventAckUserId(userId);
 		userDAO.delete(userId);
+		usersProfileService.updatePermissions();
 	}
 
 	@Override
@@ -156,5 +226,12 @@ public class UserService implements MangoUser {
 		//TODO seroUtils
 		comment.setComment(Functions.truncate(comment.getComment(), 1024));
 		userCommentDAO.insert(comment, typeId, referenceId);
+	}
+
+	private void updatePermissions(User user) {
+		updateDataSourcePermissions(user, dataSourcePermissionsService);
+		updateDataPointPermissions(user, dataPointPermissionsService);
+		usersProfileService.updateDataPointPermissions();
+		usersProfileService.updateDataSourcePermissions();
 	}
 }

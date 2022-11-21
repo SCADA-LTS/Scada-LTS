@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -18,6 +22,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.vo.permission.Permissions;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.web.mvc.api.json.ExportConfig;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,6 +50,8 @@ public class ZIPProjectManager {
 	private static final String uploadsFolder = "uploads" + FILE_SEPARATOR;
 	private static final String graphicsFolder = "graphics" + FILE_SEPARATOR;
 
+	private static final Log LOG = LogFactory.getLog(ZIPProjectManager.class);
+
 	private ZipFile zipFile;
 
 	private String projectName;
@@ -49,31 +61,55 @@ public class ZIPProjectManager {
 	private boolean includeUploadsFolder;
 	private boolean includeGraphicsFolder;
 
-	public void exportProject(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	public ZIPProjectManager() {}
 
+	public ZIPProjectManager(ExportConfig config) {
+		this.projectName = config.getProjectName();
+		this.projectDescription = config.getProjectDescription();
+		this.includePointValues = config.isIncludePointValues();
+		this.maxPointValues = config.getPointValuesMaxZip();
+		this.includeUploadsFolder = config.isIncludeUploadsFolder();
+		this.includeGraphicsFolder = config.isIncludeGraphicsFolder();
+	}
+
+	public void exportProject(HttpServletRequest request,
+							  HttpServletResponse response) throws Exception {
+
+		Permissions.ensureAdmin(Common.getUser(request));
 		extractExportParametersFromRequest(request);
 
 		response.setHeader("Content-Disposition", "attachment; filename="
 				+ projectName.replaceAll(" ", "") + ".zip");
 
-		List<FileToPack> filesToZip = new ArrayList<FileToPack>();
+		List<FileToPack> tempFiles = new ArrayList<>();
 
-		filesToZip.add(buildProjectDescriptionFile(projectName,
-				projectDescription));
+		tempFiles.add(buildProjectDescriptionFile(projectName, projectDescription));
+		tempFiles.add(buildJSONFile(JSON_FILE_NAME, includePointValues));
 
-		filesToZip.add(buildJSONFile(JSON_FILE_NAME, includePointValues));
-
+		List<FileToPack> filesToZip = new ArrayList<>();
 		if (includeUploadsFolder)
 			filesToZip.addAll(getUploadsFolderFiles());
 
 		if (includeGraphicsFolder)
 			filesToZip.addAll(getGraphicsFolderFiles());
 
+		filesToZip.addAll(tempFiles);
+
 		ServletOutputStream out = response.getOutputStream();
 		FileUtil.compactFiles(out,
 				filesToZip.toArray(new FileToPack[filesToZip.size()]));
 
+		deleteFiles(tempFiles);
+	}
+
+	private void deleteFiles(List<FileToPack> tempFiles) {
+		for(FileToPack file: tempFiles) {
+			try {
+				file.getFile().delete();
+			} catch (Exception ex) {
+				LOG.warn(ex.getMessage(), ex);
+			}
+		}
 	}
 
 	public ModelAndView setupToImportProject(HttpServletRequest request,
@@ -86,7 +122,7 @@ public class ZIPProjectManager {
 		try {
 			extractImportParametersFromRequest(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 			errorList.add(Common.getMessage("emport.uploadError",
 					e.getMessage()));
 			return new ModelAndView("import_result", model);
@@ -95,7 +131,7 @@ public class ZIPProjectManager {
 		try {
 			getProjectDescription(zipFile, model);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 			errorList.add(Common.getMessage("emport.invalidFile",
 					e.getMessage()));
 			return new ModelAndView("import_result", model);
@@ -134,44 +170,42 @@ public class ZIPProjectManager {
 		String appPath = Common.ctx.getServletContext().getRealPath(
 				FILE_SEPARATOR);
 
-		byte[] buf = new byte[1024];
-		try {
-			for (ZipEntry zipEntry : uploadFiles) {
-				InputStream zipinputstream;
-
-				zipinputstream = this.zipFile.getInputStream(zipEntry);
-
-				String entryName = zipEntry.getName();
-
-				int n;
-
-				String fileName = zipEntry.getName();
-
-				File f = new File(appPath + fileName);
-
-				File newFile = new File(entryName);
-
-				String directory = newFile.getParent();
-
-				if (directory != null) {
-					if (newFile.isDirectory()) {
-						break;
-					}
-					File dirFile = new File(appPath + directory);
-					dirFile.mkdir();
-				}
-
-				FileOutputStream out = new FileOutputStream(f);
-
-				while ((n = zipinputstream.read(buf, 0, 1024)) > -1)
-					out.write(buf, 0, n);
-
-				out.close();
-				zipinputstream.close();
+		for (ZipEntry zipEntry : uploadFiles) {
+			String entryName = zipEntry.getName();
+			if(!entryName.isEmpty()) {
+				File file = new File(appPath + entryName);
+				Path path = file.toPath().normalize();
+				if(path.startsWith(appPath))
+					writeToFile(zipEntry, file);
+				else
+					LOG.error("entryName is invalid: " + entryName);
+			} else {
+				LOG.error("entryName is empty");
 			}
+		}
+	}
 
+	private void writeToFile(ZipEntry zipEntry, File file) {
+		try {
+			if(!Files.isDirectory(file.toPath())) {
+				String ext = FilenameUtils.getExtension(file.getName());
+				if (!ext.isEmpty()) {
+					if (file.getParent() != null) {
+						File dir = new File(file.getParent());
+						dir.mkdirs();
+					}
+					try (FileOutputStream out = new FileOutputStream(file)) {
+						try (InputStream zipinputstream = this.zipFile.getInputStream(zipEntry)) {
+							int n;
+							byte[] buf = new byte[1024];
+							while ((n = zipinputstream.read(buf, 0, 1024)) > -1)
+								out.write(buf, 0, n);
+						}
+					}
+				}
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Write error for file: " + file + ", message: " + e.getMessage(), e);
 		}
 	}
 
@@ -203,8 +237,8 @@ public class ZIPProjectManager {
 		String jsonToExport = EmportDwr.createExportJSON(3, true, true, true,
 				true, true, true, true, true, true, true, true, true, true,
 				true, includePointValues, maxPointValues, true, true);
-		FileToPack file = new FileToPack(packAs, FileUtil.createTxtTempFile(
-				packAs, jsonToExport));
+		FileToPack file = new FileToPack(packAs,
+                FileUtil.createTxtTempFile(jsonToExport));
 		return file;
 	}
 
@@ -254,32 +288,39 @@ public class ZIPProjectManager {
 		ZipEntry jsonFile = zipFile
 				.getEntry(ProjectExporterController.PROJECT_DESCRIPTION_FILE_NAME);
 
-		DataInputStream in = new DataInputStream(
-				zipFile.getInputStream(jsonFile));
-
-		model.put("projectName", in.readLine());
-		model.put("projectDescription", in.readLine());
-		model.put("projectServerVersion", in.readLine());
-		model.put("exportDate", in.readLine());
-
-		in.close();
+		try(DataInputStream in = new DataInputStream(zipFile.getInputStream(jsonFile))) {
+			model.put("projectName", in.readLine());
+			model.put("projectDescription", in.readLine());
+			model.put("projectServerVersion", in.readLine());
+			model.put("exportDate", in.readLine());
+		}
 	}
 
 	private void extractExportParametersFromRequest(HttpServletRequest request) {
-		this.projectName = request.getParameter("projectName");
-		this.projectDescription = request.getParameter("projectDescription");
-		this.includePointValues = Boolean.parseBoolean(request
-				.getParameter("includePointValues"));
-		this.maxPointValues = Integer.parseInt(request
-				.getParameter("pointValuesMaxZip"));
+
+		if(this.projectName == null)
+			this.projectName = HttpParameterUtils.getValue("projectName", request, a -> a).orElse("");
+
+		if(this.projectDescription == null)
+			this.projectDescription = HttpParameterUtils.getValue("projectDescription", request, a -> a).orElse("");
+
+		if(this.maxPointValues <= 0)
+			this.maxPointValues = HttpParameterUtils.getValue("pointValuesMaxZip", request, Integer::valueOf)
+				.orElse(100);
 
 		System.out.println(this.maxPointValues);
-		this.includeUploadsFolder = Boolean.parseBoolean(request
-				.getParameter("includeUploadsFolder"));
-		this.includeGraphicsFolder = Boolean.parseBoolean(request
-				.getParameter("includeGraphicsFolder"));
 
+		if(!this.includePointValues)
+			this.includePointValues = HttpParameterUtils.getValue("includePointValues", request, Boolean::valueOf).orElse(false);
+
+		if(!this.includeUploadsFolder)
+			this.includeUploadsFolder = HttpParameterUtils.getValue("includeUploadsFolder", request, Boolean::valueOf).orElse(false);
+
+		if(!this.includeGraphicsFolder)
+			this.includeGraphicsFolder = HttpParameterUtils.getValue("includeGraphicsFolder", request, Boolean::valueOf).orElse(false);
 	}
+
+
 
 	private void extractImportParametersFromRequest(HttpServletRequest request)
 			throws Exception {
@@ -288,17 +329,32 @@ public class ZIPProjectManager {
 		MultipartFile multipartFile = mpRequest.getFile("importFile");
 
 		File projectFile = File.createTempFile("temp", "");
-		FileOutputStream fos = new FileOutputStream(projectFile);
-		fos.write(multipartFile.getBytes());
-		fos.close();
 		projectFile.deleteOnExit();
+		multipartFile.transferTo(projectFile);
 
-		this.zipFile = toZipFile(projectFile);
+		Charset[] charsets = {StandardCharsets.UTF_8, StandardCharsets.UTF_16, StandardCharsets.ISO_8859_1,
+				StandardCharsets.US_ASCII, Charset.forName("windows-1252"), StandardCharsets.UTF_16BE,
+				StandardCharsets.UTF_16LE};
+
+		for (Charset charset: charsets) {
+			if((zipFile = toZipFile(projectFile, charset)) != null) {
+				LOG.info("charset: " + charset);
+				break;
+			}
+		}
+
+		if (zipFile == null) {
+			throw new IllegalStateException("File invalid: " + multipartFile.getOriginalFilename());
+		}
 	}
 
-	private ZipFile toZipFile(File file) throws Exception {
-		ZipFile zipFile = new ZipFile(file);
-		return zipFile;
+	private ZipFile toZipFile(File file, Charset charset) {
+		try {
+			return new ZipFile(file, charset);
+		} catch (Exception ex) {
+			LOG.warn(ex.getMessage() + ", charset: " + charset);
+			return null;
+		}
 	}
 
 	private FileToPack buildProjectDescriptionFile(String projectName,
@@ -309,8 +365,7 @@ public class ZIPProjectManager {
 		projectName += Common.getVersion() + "\n";
 		projectName += new Date().toLocaleString();
 
-		File file = FileUtil.createTxtTempFile("tempprojectdescription",
-				projectName);
+		File file = FileUtil.createTxtTempFile(projectName);
 
 		return new FileToPack(PROJECT_DESCRIPTION_FILE_NAME, file);
 	}
@@ -318,21 +373,21 @@ public class ZIPProjectManager {
 	private String getJsonContent() throws Exception {
 		ZipEntry jsonFile = zipFile
 				.getEntry(ProjectExporterController.JSON_FILE_NAME);
-		zipFile.getInputStream(jsonFile);
-
-		return convertContentToString(zipFile.getInputStream(jsonFile));
+		try(InputStream inputStream = zipFile.getInputStream(jsonFile)) {
+			return convertContentToString(inputStream);
+		}
 	}
 
 	private String convertContentToString(InputStream inputStream)
 			throws Exception {
-		DataInputStream in = new DataInputStream(inputStream);
-		String strLine;
-		String file = "";
+		try(DataInputStream in = new DataInputStream(inputStream)) {
+			String strLine;
 
-		while ((strLine = in.readLine()) != null) {
-			file += strLine + "\n";
+			StringBuilder contentAsString = new StringBuilder();
+			while ((strLine = in.readLine()) != null) {
+				contentAsString.append(strLine).append("\n");
+			}
+			return contentAsString.toString();
 		}
-		in.close();
-		return file;
 	}
 }

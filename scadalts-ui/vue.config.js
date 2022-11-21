@@ -1,3 +1,4 @@
+const { secureCookieProxy } = require('http-proxy-middleware-secure-cookies');
 var webpack = require('webpack');
 const fs = require('fs');
 const packageJson = JSON.parse(fs.readFileSync('./package.json'));
@@ -6,7 +7,11 @@ const version = packageJson.version || 0;
 const milestone = packageJson.milestone || 0;
 const build = packageJson.build || 0;
 const branch = packageJson.branch || 'local';
+const commit = packageJson.commit || 'N/A';
+const pullRequestNumber = packageJson.pullRequestNumber || 'false';
+const pullRequestBranch = packageJson.pullRequestBranch || '';
 module.exports = {
+	publicPath: process.env.NODE_ENV === 'production' ? '/ScadaBR/' : '/',
 	filenameHashing: false,
 	configureWebpack: {
 		devtool: 'source-map',
@@ -18,6 +23,9 @@ module.exports = {
 					SCADA_LTS_MILESTONE: '"' + milestone + '"',
 					SCADA_LTS_BUILD: '"' + build + '"',
 					SCADA_LTS_BRANCH: '"' + branch + '"',
+					SCADA_LTS_COMMIT: '"' + commit + '"',
+					SCADA_LTS_PULLREQUEST_NUMBER: '"' + pullRequestNumber + '"',
+					SCADA_LTS_PULLREQUEST_BRANCH: '"' + pullRequestBranch + '"',
 				},
 			}),
 		],
@@ -33,10 +41,7 @@ module.exports = {
 	transpileDependencies: ['vuetify'],
 	devServer: {
 		proxy: {
-			'^/api': {
-				target: 'http://localhost:8080/ScadaBR',
-				changeOrigin: true,
-			},
+			'^/api/*': secureCookieProxy('http://localhost:8080/ScadaBR'),
 		},
 	},
 };

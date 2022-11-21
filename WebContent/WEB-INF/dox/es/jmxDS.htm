@@ -1,0 +1,23 @@
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Visión general</h1>
+<p>
+  La fuente de datos JMX se utiliza para monitorear los valores expuestos por un servidor JMX, ya sea local a la instancia o remoto. Los valores disponibles varían mucho dependiendo de las aplicaciones que se ejecuten en la instancia de la JVM, pero siempre hay valores comunes, como los asociados a la memoria de la JVM.
+</p>
+
+<h1>Configuración</h1>
+<p>
+  Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. La casilla <b>Utilizar el servidor JMX local</b> indica si se debe utilizar el servidor JMX de la JVM local. De lo contrario, se puede especificar la casilla de verificación <b>Dirección del servidor JMX remoto</b>.
+</p>
+
+<p>
+  El <b>período de actualización</b> determina la frecuencia con la que el servidor JMX es consultado para obtener datos. La verificación <b>Cuantifique</b> causa un retraso en el inicio de la fuente de datos, de modo que los sondeos se producen en un tiempo "redondeado" (por ejemplo, si el sondeo se hace cada 10 segundos, los sondeos se producirán en el décimo segundo, el vigésimo segundo, etc.). De lo contrario, la votación comenzará inmediatamente. 
+</p>

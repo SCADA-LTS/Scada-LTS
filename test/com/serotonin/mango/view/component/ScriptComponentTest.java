@@ -16,11 +16,11 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.util.PropertiesUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.scada_lts.dao.DAO;
@@ -37,6 +37,9 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 @PrepareForTest({DAO.class, PointValueCache.class, Permissions.class,
         ContextualizedScriptRT.class, ScriptContextObject.class,
         ScriptExecutor.class, Common.class, ScriptComponent.class})
+// resources/org/powermock/extensions/configuration.properties is not working
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
+        "javax.activation.*", "javax.management.*"})
 public class ScriptComponentTest {
 
     @BeforeClass

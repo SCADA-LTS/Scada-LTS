@@ -44,7 +44,7 @@
     </td>
 
     <td>
-      <div id="pointDetails" class="borderDiv marB" style="display: none; position:fixed; bottom:0; width:38%;  background-color:white;">
+      <div id="pointDetails" class="borderDiv marB" style="display: none;">
         <table width="100%">
           <tr>
             <td>

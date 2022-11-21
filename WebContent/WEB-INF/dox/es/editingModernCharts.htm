@@ -1,0 +1,111 @@
+<!--
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<h1>Los componentes de los gráficos modernos</h1>
+<h2>Febrero 2020 - Versión 1.0.2</h2>
+<p>Componentes gráficos modernos de Scada-LTS: este es un conjunto de nuevos componentes VueJS v2.0 diseñados para la vista gráfica en Scada-LTS. Está basado en la biblioteca <a href="https://www.amcharts.com/">am4chart</a>. Genera gráficos usando JavaScript en el lado del usuario, lo cual es un nuevo enfoque de los gráficos en Scada (se han generado a través de scripts y bibliotecas del lado del servidor). Es un navegador más cargado que antes, pero la aplicación del servidor se hace más ligera y gana en rendimiento.</p>
+<h2>Tipos de gráficos:</h2>
+<ul>
+    <li><strong>&lt;line-chart&gt;</strong> Tabla de series de líneas</li>
+    <li><strong>&lt;step-line-chart&gt;</strong> Diagrama de la serie de líneas de paso</li>
+</ul>
+<h2>Uso:</h2>
+<p>Se podrían añadir nuevos gráficos a la vista gráfica de Scada-LTS añadiendo un nuevo componente HTML con contenido específico. Cada gráfico debe ser inicializado utilizando las etiquetas HTML extendidas que se indican arriba. Cada una de estas etiquetas toma una propiedad específica necesaria para establecer una tabla específica. El gráfico se genera dentro de esta etiqueta que tiene un tamaño por defecto de 750x500px.</p>
+<hr>
+<h3>Un comienzo rápido:</h3>
+<p>Crear un simple gráfico de líneas para un punto de datos específico [numérico, multiestatal y binario].</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot;/&gt;
+</code></pre>
+<p>o</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot;/&gt;
+</code></pre>
+<p><b>Eso es todo! </b>
+ Presentó un gráfico de líneas para un punto específico en la última hora con ajustes predeterminados. Así que, si quieres monitorear el estado del punto de la última hora, esta es la forma más fácil de hacerlo. Este gráfico se puede ampliar y reducir usando la barra de desplazamiento en la parte inferior del componente. Los valores de los datos en un momento dado están representados por puntos blancos en el gráfico.</p>
+<p>Pero sigue siendo sólo una tabla como esta vieja onesâ¦ ¿Qué pasa si realmente queremos monitorear el estado de este punto <strong> en tiempo real</strong> ? No hay problema, sólo agregue las siguientes propiedades.</p>
+<hr>
+<h3>Datos en vivo</h3>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot; refresh-rate=&quot;10000&quot;/&gt;
+</code></pre>
+<p><strong> Ahora tenemos un gráfico en vivo!</strong> Se refresca cada 10 minutos (10.000 ms) y cuando un punto de datos cambia de estado a otro valor, este nuevo punto se añade al mapa y el más antiguo será eliminado de nuestro mapa. Ahora podemos monitorear el estado del punto de datos en tiempo real con una tasa de actualización elegida por nosotros. Para los datos críticos, podemos monitorear el estado del punto con una alta frecuencia de solicitudes al servidor (más datos en tiempo real pero más recursos) y para los datos no críticos, podemos refrescar el gráfico después de unos segundos.</p>
+<p>¿Pero qué pasa si queremos mostrar mapas para <strong>múltiples puntos de datos ?</strong></p>
+<hr>
+<h3>Múltiples puntos</h3>
+<p>Simplemente añada el siguiente punto de datos después de la coma en <em>‘point-id’</em> propiedad.</p>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dataPointID],[anotherDataPointID],[andNextDataPointID&quot;],[fourthDataPointID&quot;]/&gt;
+</code></pre>
+<p><br> Ahora tenemos un gráfico para 3 puntos de datos con los valores de la última hora. Estos componentes no tienen un límite para el número de puntos que se muestran en un solo gráfico, pero espero que tengas la intuición de que 30 puntos en un solo gráfico no es una buena idea.</p>
+<p>¿Podemos mostrar <strong>valores más antiguos</strong> que durar una hora ?</p>
+<hr>
+<h3>Período especificado</h3>
+<p>¡Sí! Sólo añade una nueva propiedad a nuestro faro.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot; refresh-rate=&quot;10000&quot; start-date=&quot;1-day&quot;/&gt;
+</code></pre>
+<p>Como puedes ver, es pan comido. Simplemente escriba dentro de la propiedad "fecha de inicio", el período del cual quiere ver los datos. Puedes usar cualquier combinación de números con un período de tiempo específico <strong> [hora(s) | día(s) | día(s) bajo(s) | mes(es) ]</strong>. (por ejemplo, a los 2 días, a la 1 semana, a los 3 meses, etc.) ¡Pero eso no es todo! Es un tiempo calculado dinámicamente a partir de ahora, pero también puedes usar una fecha. Si queremos ver los datos de principios del año anterior, sólo tenemos que escribir la fecha <em>(por ejemplo, â2019/02/01â para ver los datos del 1 de febrero de 2019)</em>. Puede ser útil limitar los datos mostrados.</p>
+<p>Para mostrar los valores de un período determinado, simplemente añada el parámetro <strong>‘end-date’</strong>.</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-xid=&quot;[dataPointExportID]&quot; start-date=&quot;2019/02/01&quot; end-date=&quot;2019/03/01&quot;/&gt;
+</code></pre>
+<p>Y todavía funciona con múltiples puntos de datos. ¡Eso es genial! ¿No es así? ¿Pero qué pasa si quiero añadir una línea horizontal al mapa para crear, por ejemplo, un nivel de alerta, que está desactualizado y podría ser peligroso?</p>
+<hr>
+<h3>Línea de nivel</h3>
+<p>Bien, echemos un vistazo a este:</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dataPointID]&quot; range-value=&quot;100&quot; range-color=&quot;#FF0000&quot; range-label=&quot;boiling&quot;/&gt;
+</code></pre>
+<p>Hemos creado una línea horizontal para nuestro mapa que indica el nivel de agua hirviendo. Gracias a esto, podemos observar rápidamente que la temperatura del agua dentro del tanque está hirviendo. Es útil incluso dentro de Scada-LTS.</p>
+<p>¡Espere un momento! Hemos decidido el color de esta línea horizontal. ¿Podríamos hacer lo mismo con las líneas del gráfico?</p>
+<hr>
+<h3>Colores de los gráficos</h3>
+<p>Por ejemplo, tenemos tres sensores. Los colores verdes por defecto son demasiado similares. ¿Podemos establecer un conjunto de colores diferentes para nuestras cartas. Sólo añade este parámetro:</p>
+<pre><code>&lt;div id=&quot;chart-line-0&quot; point-id=&quot;[dpID],[dpID_2],[dpID_3]&quot; color=&quot;#FFFC19, #0971B3, #B31212&quot;/&gt;
+</code></pre>
+<p>Hemos definido 3 colores personalizados para nuestras tarjetas. Podemos dar un solo valor de color y el resto se recuperará de estos valores predeterminados. Lo que es más importante <strong>Utilizar los valores del código de colores hexadecimales</strong><br> Gráficos modernos y bastante coloridos. Pero todavía tenemos el mismo tamaño para el tema Sí, sí, también podría ser modificado.</p>
+<hr>
+<h3>Tamaño de la tabla</h3>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; width=&quot;1080&quot; height=&quot;720&quot;/&gt;
+</code></pre>
+<p>Gráficos HD ? ¿Por qué no? Los valores de los atributos se dan en Pixels (px). Esto es útil cuando hemos definido múltiples instancias de gráficos en una vista de gráficos. Podemos calcular fácilmente la posición del siguiente mapa.</p>
+<h3>Etiquetas</h3>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; label=&quot;Mid season temperature&quot;/&gt;
+</code></pre>
+<p>Eso sería suficiente de abajo hacia arriba. Es hora de pasar a tareas más complejas.</p>
+<hr>
+<h3>Gráficos múltiples</h3>
+<p>Para generar múltiples gráficos en la página Ver, simplemente usa identificadores únicos.</p>
+<pre><code>&lt;div id=&quot;chart-step-line-0&quot; point-id=&quot;[dpID]&quot; label=&quot;Outdoor temperature&quot;/&gt;
+
+&lt;div id=&quot;chart-step-line-1&quot; point-id=&quot;[dpID]&quot; label=&quot;Outdoor humidity&quot;/&gt;
+
+&lt;div id=&quot;chart-step-line-2&quot; point-id=&quot;[dpID]&quot; label=&quot;Indoor pressure&quot;/&gt;
+</code></pre>
+<p></p>
+<h2>Documentación sobre mapas modernos:</h2>
+<p>Propiedades disponibles en un solo lugar para todo tipo de mapas. Los gráficos <em> (excluyendo los gráficos de calibre) </em> pueden ser exportados a un archivo externo en forma gráfica o de texto. Puedes exportar a archivos *.png, *.jpg, *.csv, *.json.</p>
+<p>Propiedades de la línea de paso, diagramas de líneas</p>
+<ul>
+    <li>point-id</li>
+    <li>point-xid</li>
+    <li>label</li>
+    <li>width</li>
+    <li>height</li>
+    <li>color</li>
+    <li>start-date</li>
+    <li>end-date</li>
+    <li>refresh-rate</li>
+    <li>polyline-step</li>
+    <li>range-value</li>
+    <li>range-color</li>
+    <li>range-label</li>
+    <li>show-scrollbar-x</li>
+    <li>show-scrollbar-y</li>
+    <li>show-legned</li>
+</ul>
+<h1>Autor</h1>
+<ul>
+    <li><a href="https://github.com/radek2s">Radosław Jajko</a>: <strong><a href="mailto:rjajko@softq.pl">rjajko@softq.pl</a></strong></li>
+</ul>

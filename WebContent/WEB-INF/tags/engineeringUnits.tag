@@ -119,6 +119,7 @@
   <sst:option value="31"><fmt:message key="engUnit.31"/></sst:option>
   <sst:option value="32"><fmt:message key="engUnit.32"/></sst:option>
   <sst:option value="33"><fmt:message key="engUnit.33"/></sst:option>
+  <sst:option value="190"><fmt:message key="engUnit.190"/></sst:option>
 </optgroup>
 <optgroup label="<fmt:message key="engUnitGroup.light"/>">
   <sst:option value="179"><fmt:message key="engUnit.179"/></sst:option>

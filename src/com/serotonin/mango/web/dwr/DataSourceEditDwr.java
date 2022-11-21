@@ -42,7 +42,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
-import com.serotonin.mango.web.dwr.beans.*;
+import com.serotonin.mango.util.LoggingScriptUtils;
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -91,11 +91,12 @@ import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
-import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
@@ -215,6 +216,8 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
 /**
  * @author Matthew Lohbihler
@@ -356,7 +359,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         DataPointVO dp = getPoint(id, null);
         if (dp != null)
             Common.ctx.getRuntimeManager().deleteDataPoint(dp);
-
+        UsersProfileService usersProfileService = new UsersProfileService();
+        usersProfileService.updateDataPointPermissions();
         return getPoints();
     }
 
@@ -376,8 +380,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public List<EventInstanceBean> getAlarms() {
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
-        List<EventInstance> events = new EventDao()
-                .getPendingEventsForDataSource(ds.getId(), Common.getUser()
+        List<EventInstance> events = new EventService()
+                .getPendingSimpleEventsForDataSource(ds.getId(), Common.getUser()
                         .getId());
         Collections.sort(events, new Comparator<EventInstance>() {
             @Override
@@ -1110,11 +1114,17 @@ public class DataSourceEditDwr extends DataSourceListDwr {
                         DateFunctions.getTime(pvt.getTime()));
         } catch (DataPointStateException e) {
             response.addMessage("context", e.getLocalizableMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (ScriptException e) {
             response.addContextualMessage("script",
                     "dsEdit.meta.test.scriptError", e.getMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
         } catch (ResultTypeException e) {
             response.addMessage("script", e.getLocalizableMessage());
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
+        } catch (Exception e) {
+            LOG.warn(infoErrorExecutionScript(e, "validateScript: " + script));
+            throw e;
         }
 
         return response;

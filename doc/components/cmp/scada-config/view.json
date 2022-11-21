@@ -1,0 +1,21 @@
+{
+    "graphicalViews":[
+       {
+          "user":"admin",
+          "anonymousAccess":"NONE",
+          "viewComponents":[
+             {
+                "type":"HTML",
+                "content":"<div style = \"background-color: white\"> <div id = \"app-cmp-0\" plabel = 'MP01' pxIdViewAndIdCmp = '0-0' ptimerefresh = 3002 pconfig = '{ \"state\": { \"analiseInOrder\": [{ \"name\": \"SPS OFFLINE\", \"toChecked\": [{ \"xid\": \"DP_SPS_OFFLINE\", \"equals\": \"==true\", \"describe\": \"SPS OFFLINE\" }] }, { \"name\": \"Error\", \"toChecked\": [{ \"xid\": \"DP_ER1\", \"equals\": \"==true\", \"describe\": \"Error 1\", \"toNote\": \"true\", \"toNext\": \"true\" }, { \"xid\": \"DP_ER2\", \"equals\": \"==true\", \"describe\": \"Error 2\", \"toNote\": \"true\", \"toNext\": \"true\" }, { \"xid\": \"DP_ER3\", \"equals\": \"==true\", \"describe\": \"Error 3\", \"toNote\": \"true\", \"toNext\": \"true\" }, { \"xid\": \"DP_ER4\", \"equals\": \"==true\", \"describe\": \"Error 4\", \"toNote\": \"true\", \"toNext\": \"true\" }, { \"xid\": \"DP_ER5\", \"equals\": \"==true\", \"describe\": \"Error 5\", \"toNote\": \"true\", \"toNext\": \"true\" } ] }, { \"name\": \"Local Hand\", \"toChecked\": [{ \"xid\": \"DP_LOCAL_HAND\", \"equals\": \"==true\", \"describe\": \"Local hand\" }], \"disable\": \"true\" }, { \"name\": \"UI Hand\", \"toChecked\": [{ \"xid\": \"DP_UI_HAND\", \"equals\": \"==true\", \"describe\": \"UI hand\" }] }, { \"name\": \"PLS Hand\", \"toChecked\": [{ \"xid\": \"DP_PLS_HAND\", \"equals\": \"==true\", \"describe\": \"PLS Hand\" }] }, { \"name\": \"Auto\", \"toChecked\": [{ \"xid\": \"\", \"equals\": \"true==true\", \"describe\": \"Auto My opinion is not correctly in this quals becaouse this is state UNKNOW we need exacly when is mode auto\" }] } ] }, \"control\": { \"label\": \"change to:\", \"definitionPointToSaveValue\": [{ \"xid\": \"DP_AKT\", \"def\": \"AKT\" }, { \"xid\": \"DP_ENABLE\", \"def\": \"E\" }, { \"xid\": \"DP_DISABLE\", \"def\": \"D\" }], \"toChange\": [{ \"name\": \"Auto\", \"save\": [{ \"refDefPoint\": \"AKT\", \"value\": \"0\" }, { \"refDefPoint\": \"D\", \"value\": \"0\" }, { \"refDefPoint\": \"E\", \"value\": \"0\" }] }, { \"name\": \"PLS Hand\", \"save\": [{ \"refDefPoint\": \"AKT\", \"value\": \"105\" }, { \"refDefPoint\": \"D\", \"value\": \"0\" }, { \"refDefPoint\": \"E\", \"value\": \"0\" }], \"toChange\": [{ \"name\": \"Stop\", \"save\": [{ \"refDefPoint\": \"D\", \"value\": \"0\" }, { \"refDefPoint\": \"E\", \"value\": \"0\" }], \"confirmation\": \"true\" }, { \"name\": \"Enable\", \"save\": [{ \"refDefPoint\": \"D\", \"value\": \"0\" }, { \"refDefPoint\": \"E\", \"value\": \"1\" }], \"confirmation\": \"true\" }, { \"name\": \"Disable\", \"save\": [{ \"refDefPoint\": \"D\", \"value\": \"1\" }, { \"refDefPoint\": \"E\", \"value\": \"0\" }], \"confirmation\": \"true\" }, { \"name\": \"Auto\", \"save\": [{ \"refDefPoint\": \"AKT\", \"value\": \"0\" }, { \"refDefPoint\": \"D\", \"value\": \"0\" }, { \"refDefPoint\": \"E\", \"value\": \"0\" }], \"confirmation\": \"true\" }, { \"name\": \"Disable\", \"save\": [], \"confirmation\": \"true\", \"def\": \"disable\" }] }] } }'> <\/div> <\/div>",
+                "x":115,
+                "y":71
+             }
+          ],
+          "sharingUsers":[
+          ],
+          "backgroundFilename":null,
+          "name":"test -cmp",
+          "xid":"GV_628894"
+       }
+    ]
+ }

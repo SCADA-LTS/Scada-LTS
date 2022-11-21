@@ -21,6 +21,7 @@ package com.serotonin.mango.rt.event.handlers;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.rt.event.EventInstance;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.util.SendMsgUtils;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
@@ -100,10 +101,11 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
         // Get the email addresses to send to
         activeRecipients = getActiveRecipients(evt);
 
-        service.scheduleEvent(vo, evt);
+        boolean scheduled = service.scheduleEvent(vo, evt);
 
         // Send an email to the active recipients.
-        sendEmail(evt, activeRecipients);
+        if(!scheduled)
+            sendEmail(evt, activeRecipients);
 
         // If an inactive notification is to be sent, save the active recipients.
         if (vo.isSendInactive()) {

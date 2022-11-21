@@ -130,11 +130,12 @@ public class ScriptExecutor {
 				IDataPoint point = context.get(varName);
 				int dt = point.getDataTypeId();
 
+				PointValueTime currentValue = point.getPointValue();
 				LOG.debug("Var: "
 						+ varName
 						+ ", value: "
-						+ (point.getPointValue() == null ? "null" : point
-								.getPointValue().toString()));
+						+ (currentValue == null ? "null" : currentValue.toString()));
+
 
 				if (dt == DataTypes.BINARY) {
 					scope.put(varName, scope, new BinaryPointWrapper(point,
@@ -187,42 +188,48 @@ public class ScriptExecutor {
 				MangoValue value;
 				String strResult = (String) result;
 
-				if (result == null) {
-					if (dataTypeId == DataTypes.BINARY)
-						value = new BinaryValue(false);
-					else if (dataTypeId == DataTypes.MULTISTATE)
-						value = new MultistateValue(0);
-					else if (dataTypeId == DataTypes.NUMERIC)
-						value = new NumericValue(0);
-					else if (dataTypeId == DataTypes.ALPHANUMERIC)
-						value = new AlphanumericValue("");
-					else
-						value = null;
-				} else if (result instanceof AbstractPointWrapper) {
-					value = ((AbstractPointWrapper) result).getValueImpl();
-					// See if the type matches.
-				} else if (dataTypeId == DataTypes.BINARY) {
-					Boolean b = Boolean.parseBoolean(strResult);
-					value = new BinaryValue(b);
-					LOG.debug("Result: " + value.getBooleanValue());
-				} else if (dataTypeId == DataTypes.MULTISTATE) {
-					Double d = Double.parseDouble(strResult);
-					Integer i = (int) Math.round(d);
-					value = new MultistateValue(((Number) i).intValue());
-					LOG.debug("Result: " + value.getIntegerValue());
-				} else if (dataTypeId == DataTypes.NUMERIC) {
-					Double d = Double.parseDouble(strResult);
-					value = new NumericValue(((Number) d).doubleValue());
-					LOG.debug("Result: " + value.getDoubleValue());
-				} else if (dataTypeId == DataTypes.ALPHANUMERIC) {
-					value = new AlphanumericValue((String) strResult);
-					LOG.debug("Result: " + value.getStringValue());
-				} else
-					// If not, ditch it.
-					throw new ResultTypeException(new LocalizableMessage(
-							"event.script.convertError", result,
-							DataTypes.getDataTypeMessage(dataTypeId)));
+				try {
 
+					if (result == null) {
+						if (dataTypeId == DataTypes.BINARY)
+							value = new BinaryValue(false);
+						else if (dataTypeId == DataTypes.MULTISTATE)
+							value = new MultistateValue(0);
+						else if (dataTypeId == DataTypes.NUMERIC)
+							value = new NumericValue(0);
+						else if (dataTypeId == DataTypes.ALPHANUMERIC)
+							value = new AlphanumericValue("");
+						else
+							value = null;
+					} else if (result instanceof AbstractPointWrapper) {
+						value = ((AbstractPointWrapper) result).getValueImpl();
+						// See if the type matches.
+					} else if (dataTypeId == DataTypes.BINARY) {
+						Boolean b = Boolean.parseBoolean(strResult);
+						value = new BinaryValue(b);
+						LOG.debug("Result: " + value.getBooleanValue());
+					} else if (dataTypeId == DataTypes.MULTISTATE) {
+						Double d = Double.parseDouble(strResult);
+						Integer i = (int) Math.round(d);
+						value = new MultistateValue(((Number) i).intValue());
+						LOG.debug("Result: " + value.getIntegerValue());
+					} else if (dataTypeId == DataTypes.NUMERIC) {
+						Double d = Double.parseDouble(strResult);
+						value = new NumericValue(((Number) d).doubleValue());
+						LOG.debug("Result: " + value.getDoubleValue());
+					} else if (dataTypeId == DataTypes.ALPHANUMERIC) {
+						value = new AlphanumericValue((String) strResult);
+						LOG.debug("Result: " + value.getStringValue());
+					} else
+						// If not, ditch it.
+						throw new ResultTypeException(new LocalizableMessage(
+								"event.script.convertError", result,
+								DataTypes.getDataTypeMessage(dataTypeId)));
+				} catch (Exception ex) {
+					if(ex instanceof ResultTypeException)
+						throw ex;
+					throw new ScriptException(ex);
+				}
 				return new PointValueTime(value, timestamp);
 			} else {
 				script = SCRIPT_PREFIX + script + SCRIPT_SUFFIX + FUNCTIONS;
@@ -242,40 +249,45 @@ public class ScriptExecutor {
 				}
 
 				MangoValue value;
-				if (result == null) {
-					if (dataTypeId == DataTypes.BINARY)
-						value = new BinaryValue(false);
-					else if (dataTypeId == DataTypes.MULTISTATE)
-						value = new MultistateValue(0);
-					else if (dataTypeId == DataTypes.NUMERIC)
-						value = new NumericValue(0);
-					else if (dataTypeId == DataTypes.ALPHANUMERIC)
-						value = new AlphanumericValue("");
-					else
-						value = null;
-				} else if (result instanceof AbstractPointWrapper) {
-					value = ((AbstractPointWrapper) result).getValueImpl();
-				} else if (dataTypeId == DataTypes.BINARY
-						&& result instanceof Boolean) {
-					value = new BinaryValue((Boolean) result);
-					LOG.debug("Result: " + value.getBooleanValue());
-				} else if (dataTypeId == DataTypes.MULTISTATE
-						&& result instanceof Number) {
-					value = new MultistateValue(((Number) result).intValue());
-					LOG.debug("Result: " + value.getIntegerValue());
-				} else if (dataTypeId == DataTypes.NUMERIC
-						&& result instanceof Number) {
-					value = new NumericValue(((Number) result).doubleValue());
-					LOG.debug("Result: " + value.getDoubleValue());
-				} else if (dataTypeId == DataTypes.ALPHANUMERIC
-						&& result instanceof String) {
-					value = new AlphanumericValue((String) result);
-					LOG.debug("Result: " + value.getStringValue());
-				} else
-					throw new ResultTypeException(new LocalizableMessage(
-							"event.script.convertError", result,
-							DataTypes.getDataTypeMessage(dataTypeId)));
-
+				try {
+					if (result == null) {
+						if (dataTypeId == DataTypes.BINARY)
+							value = new BinaryValue(false);
+						else if (dataTypeId == DataTypes.MULTISTATE)
+							value = new MultistateValue(0);
+						else if (dataTypeId == DataTypes.NUMERIC)
+							value = new NumericValue(0);
+						else if (dataTypeId == DataTypes.ALPHANUMERIC)
+							value = new AlphanumericValue("");
+						else
+							value = null;
+					} else if (result instanceof AbstractPointWrapper) {
+						value = ((AbstractPointWrapper) result).getValueImpl();
+					} else if (dataTypeId == DataTypes.BINARY
+							&& result instanceof Boolean) {
+						value = new BinaryValue((Boolean) result);
+						LOG.debug("Result: " + value.getBooleanValue());
+					} else if (dataTypeId == DataTypes.MULTISTATE
+							&& result instanceof Number) {
+						value = new MultistateValue(((Number) result).intValue());
+						LOG.debug("Result: " + value.getIntegerValue());
+					} else if (dataTypeId == DataTypes.NUMERIC
+							&& result instanceof Number) {
+						value = new NumericValue(((Number) result).doubleValue());
+						LOG.debug("Result: " + value.getDoubleValue());
+					} else if (dataTypeId == DataTypes.ALPHANUMERIC
+							&& result instanceof String) {
+						value = new AlphanumericValue((String) result);
+						LOG.debug("Result: " + value.getStringValue());
+					} else
+						throw new ResultTypeException(new LocalizableMessage(
+								"event.script.convertError", result,
+								DataTypes.getDataTypeMessage(dataTypeId)));
+				} catch (Exception ex) {
+					if(ex instanceof ResultTypeException)
+						throw ex;
+					throw new ScriptException(ex);
+				}
 				return new PointValueTime(value, timestamp);
 			}
 		} finally {

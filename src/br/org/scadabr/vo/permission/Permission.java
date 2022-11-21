@@ -1,6 +1,7 @@
 package br.org.scadabr.vo.permission;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.view.ShareUser;
@@ -47,4 +48,25 @@ public class Permission implements Serializable {
 		return permission;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Permission)) return false;
+		Permission that = (Permission) o;
+		return getPermission() == that.getPermission() &&
+				getId() == that.getId();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getPermission(), getId());
+	}
+
+	@Override
+	public String toString() {
+		return "Permission{" +
+				"id=" + id +
+				", permission=" + permission +
+				'}';
+	}
 }

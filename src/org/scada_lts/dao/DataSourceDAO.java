@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
@@ -30,23 +31,23 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DataSource DAO
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Repository
 public class DataSourceDAO {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceDAO.class);
@@ -65,6 +66,7 @@ public class DataSourceDAO {
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_ID = "eventTypeId";
 	private static final String COLUMN_NAME_EH_EVENT_TYPE_REF = "eventTypeRef1";
 
+	private static final String COLUMN_NAME_USER_PROFILE_ID = "userProfileId";
 
 	// @formatter:off
 	private static final String DATA_SOURCE_SELECT = ""
@@ -74,6 +76,21 @@ public class DataSourceDAO {
 				+ COLUMN_NAME_NAME + ", "
 				+ COLUMN_NAME_DATA + " "
 			+ "from dataSources ";
+
+	private static final String DATA_SOURCE_DS_SELECT = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + ", "
+			+ "ds." + COLUMN_NAME_DATA + " "
+			+ "from dataSources ds ";
+
+	private static final String DATA_SOURCE_IDENTIFIER_SELECT = ""
+			+ "select "
+			+ "ds." + COLUMN_NAME_ID + ", "
+			+ "ds." + COLUMN_NAME_XID + ", "
+			+ "ds." + COLUMN_NAME_NAME + " "
+			+ "from dataSources ds ";
 
 	private static final String DATA_SOURCE_PLC_SELECT = "" +
 			"SELECT DISTINCT " +
@@ -155,6 +172,47 @@ public class DataSourceDAO {
 			+ " and "
 				+ COLUMN_NAME_EH_EVENT_TYPE_REF + "=? ";
 
+	private static final String DATA_SOURCE_USERS_DELETE_DATA_SOURCE_ID_AND_USER_ID = ""
+			+"delete "
+			+ "from "
+			+ "dataSourceUsers "
+			+ "where "
+			+ COLUMN_NAME_DS_USER_ID+"=? "
+			+ "and "
+			+ COLUMN_NAME_USER_ID+"=?";
+
+	private static final String DATA_SOURCE_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE=""
+			+"insert dataSourceUsers ("
+			+COLUMN_NAME_DS_USER_ID+","
+			+COLUMN_NAME_USER_ID+")"
+			+ " values (?,?) ON DUPLICATE KEY UPDATE " +
+			COLUMN_NAME_DS_USER_ID + "=?";
+
+	private static final String DATA_SOURCE_USERS_SELECT_BASE_ON_USER_ID = ""
+			+"select "
+			+ COLUMN_NAME_DS_USER_ID+", "
+			+ COLUMN_NAME_USER_ID+" "
+			+ "from "
+			+ "dataSourceUsers "
+			+ "where "
+			+ COLUMN_NAME_USER_ID+"=?";
+
+	private static final String DATA_SOURCE_FILTER_BASE_ON_USER_ID_ORDER_BY_NAME = " "
+			+ "ds." + COLUMN_NAME_ID + " in (select dsu." + COLUMN_NAME_DS_USER_ID +  " from dataSourceUsers dsu where dsu."+COLUMN_NAME_USER_ID+"=?) "
+			+ "order by ds." + COLUMN_NAME_NAME;
+
+
+	private static final String SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID = "" +
+			"select " +
+			"uup." + COLUMN_NAME_USER_ID + " " +
+			"from " +
+			"dataSourceUsersProfiles dsup " +
+			"left join " +
+			"usersUsersProfiles uup " +
+			"on " +
+			"dsup." + COLUMN_NAME_USER_PROFILE_ID + "=uup." + COLUMN_NAME_USER_PROFILE_ID + " " +
+			"where " +
+			"dsup." + COLUMN_NAME_DS_USER_ID + "=?;";
 
 	// @formatter:on
 
@@ -357,5 +415,61 @@ public class DataSourceDAO {
 		}
 
 		DAO.getInstance().getJdbcTemp().update(DATA_SOURCE_USER_DELETE_WHERE_USER_ID, new Object[]{userId});
+	}
+
+	public List<Integer> selectDataSourcePermissions(int userId) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("selectWatchListPermissions(final int userId) userId:" + userId);
+		}
+
+		return DAO.getInstance().getJdbcTemp().query(DATA_SOURCE_USERS_SELECT_BASE_ON_USER_ID,
+				new Object[]{userId}, (rs, rowNum) -> rs.getInt(COLUMN_NAME_DS_USER_ID));
+	}
+
+	public int[] insertPermissions(int userId, List<Integer> toInsert) {
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("insertPermissions(int userId, List<WatchListAccess> toInsert) user:" + userId + "");
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER, Types.INTEGER};
+
+		List<Object[]> batchArgs = toInsert.stream()
+				.map(a -> new Object[] {a, userId, a})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(DATA_SOURCE_USERS_INSERT_ON_DUPLICATE_KEY_UPDATE_ACCESS_TYPE, batchArgs, argTypes);
+	}
+
+	public int[] deletePermissions(int userId, List<Integer> toDelete) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("deletePermissions(int userId, List<Integer> toDelete) user:" + userId);
+		}
+
+		int[] argTypes = {Types.INTEGER, Types.INTEGER };
+
+		List<Object[]> batchArgs = toDelete.stream()
+				.map(a -> new Object[] {a, userId})
+				.collect(Collectors.toList());
+
+		return DAO.getInstance().getJdbcTemp()
+				.batchUpdate(DATA_SOURCE_USERS_DELETE_DATA_SOURCE_ID_AND_USER_ID, batchArgs, argTypes);
+	}
+
+	public List<ShareUser> selectDataSourceShareUsers(int dataSourceId) {
+		if (LOG.isTraceEnabled())
+			LOG.trace("selectDataSourceShareUsers(int dataSourceId) dataSourceId:" + dataSourceId);
+		try {
+			return DAO.getInstance().getJdbcTemp().query(SHARE_USERS_BY_USERS_PROFILE_AND_DATA_SOURCE_ID,
+					new Object[]{dataSourceId},
+					ShareUserRowMapper.defaultName());
+		} catch (EmptyResultDataAccessException ex) {
+			return Collections.emptyList();
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+			return Collections.emptyList();
+		}
 	}
 }

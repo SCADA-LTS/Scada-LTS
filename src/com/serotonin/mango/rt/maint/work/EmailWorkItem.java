@@ -18,10 +18,10 @@
  */
 package com.serotonin.mango.rt.maint.work;
 
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.util.SendMsgUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.config.ScadaConfig;
@@ -33,8 +33,6 @@ import com.serotonin.web.email.EmailSender;
 import com.serotonin.web.i18n.LocalizableMessage;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Matthew Lohbihler
@@ -63,17 +61,7 @@ public class EmailWorkItem implements WorkItem {
     public static void queueEmail(String[] toAddrs, String subject, EmailContent content, Runnable[] postSendExecution) {
         EmailWorkItem item = new EmailWorkItem();
 
-        Set<InternetAddress> addresses = new HashSet<>();
-        for (int i = 0; i < toAddrs.length; i++) {
-            try {
-                InternetAddress internetAddress = new InternetAddress(toAddrs[i]);
-                addresses.add(internetAddress);
-            } catch (AddressException e) {
-                LOG.error(e.getMessage(), e);
-            }
-        }
-
-        item.toAddresses = addresses.toArray(new InternetAddress[]{});
+        item.toAddresses = SendMsgUtils.convertToInternetAddresses(toAddrs);
         item.subject = subject;
         item.content = content;
         item.postSendExecution = postSendExecution;

@@ -38,6 +38,8 @@
                 show("usernameRow");
                 show("administrationRow");
                 show("disabledRow");
+                show("hideMenuRow");
+                show("homeUrlRow");
                 show("deleteImg");
                 show("sendTestEmailImg");
                 
@@ -116,7 +118,7 @@
     }
     
     function showUserCB(user) {
-    	
+
         show($("userDetails"));
         $set("username", user.username);
         $set("password", user.password);
@@ -126,6 +128,9 @@
         $set("disabled", user.disabled);
         $set("receiveAlarmEmails", user.receiveAlarmEmails);
         $set("receiveOwnAuditEvents", user.receiveOwnAuditEvents);
+        $set("hideMenu", user.hideMenu);
+        $set("homeUrl", user.homeUrl);
+        $set("theme", user.theme);
 
     	
         if(user.id != <c:out value="<%= Common.NEW_ID %>"/>) {
@@ -211,27 +216,30 @@
             {
         		setDataSourcesNone();
             }
-            
-            for (i=0; i<dataSources.length; i++) {
-                if ($("ds"+ dataSources[i].id).checked)
-                    dsPermis[dsPermis.length] = dataSources[i].id;
-                else {
-                    for (j=0; j<dataSources[i].points.length; j++) {
-                        dpval = $get("dp"+ dataSources[i].points[j].id);
-                        if (dpval == "1" || dpval == "2")
-                            dpPermis[dpPermis.length] = {dataPointId: dataSources[i].points[j].id, permission: dpval};
+
+            if($get("usersProfileList") != <c:out value="<%= Common.NEW_ID %>"/>) {
+                for (i=0; i<dataSources.length; i++) {
+                    if ($("ds"+ dataSources[i].id).checked)
+                        dsPermis[dsPermis.length] = dataSources[i].id;
+                    else {
+                        for (j=0; j<dataSources[i].points.length; j++) {
+                            dpval = $get("dp"+ dataSources[i].points[j].id);
+                            if (dpval == "1" || dpval == "2")
+                                dpPermis[dpPermis.length] = {dataPointId: dataSources[i].points[j].id, permission: dpval};
+                        }
                     }
                 }
             }
             
-            
             UsersDwr.saveUserAdmin(editingUserId, $get("username"), $get("password"), $get("email"), $get("phone"), 
                     $get("administrator"), $get("disabled"), $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"),
-                    dsPermis, dpPermis, $get("usersProfilesList"), saveUserCB);
+                    dsPermis, dpPermis, $get("usersProfilesList"), $get("hideMenu"), $get("theme"), parseHomeUrl($get("homeUrl")),
+                    saveUserCB);
         }
         else
             UsersDwr.saveUser(editingUserId, $get("password"), $get("email"), $get("phone"),
-                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"), saveUserCB);
+                    $get("receiveAlarmEmails"), $get("receiveOwnAuditEvents"), $get("usersProfilesList"),
+                    $get("theme"), saveUserCB);
      
     }
     
@@ -299,10 +307,12 @@
         if (adminUser) {
             if (admin) {
                 	$("usersProfilesList").disabled = true;
+                    $("hideMenu").disabled = true;
                 	
             }
             else {
 	                $("usersProfilesList").disabled = false;
+                    $("hideMenu").disabled = false;
 	            	
             }
             checkProfile();	
@@ -333,6 +343,13 @@
                 }
             });
         }
+    }
+
+    function parseHomeUrl(homeUrl) {
+      while(homeUrl.charAt(0) === '/') {
+        homeUrl = homeUrl.substring(1);
+      }
+      return homeUrl.endsWith('/') ? homeUrl.slice(0, -1) : homeUrl;
     }
   </script>
   
@@ -413,6 +430,18 @@
             <tr>
               <td class="formLabelRequired"><fmt:message key="users.receiveOwnAuditEvents"/></td>
               <td class="formField"><input id="receiveOwnAuditEvents" type="checkbox"/></td>
+            </tr>
+            <tr id="hideMenuRow" style="display:none;">
+              <td class="formLabelRequired"><fmt:message key="users.hideMenu"/></td>
+              <td class="formField"><input id="hideMenu" type="checkbox"/></td>
+            </tr>
+            <tr id="homeUrlRow" style="display:none;">
+              <td class="formLabel"><fmt:message key="users.homeUrl"/></td>
+              <td class="formField"><input id="homeUrl" type="text"/></td>
+            </tr>
+            <tr>
+              <td class="formLabelRequired"><fmt:message key="users.theme"/></td>
+              <td class="formField"><select id="theme"><tag:ScadaThemeOptions/></select></td>
             </tr>
             <tbody id="usersProfilesListTable" style="display:none;">
             <tr>

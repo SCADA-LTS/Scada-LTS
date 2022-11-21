@@ -158,6 +158,7 @@
         dataPointsCheckboxChanged();
         $set("pointValues", checked);
         $set("systemSettings", checked);
+        $set("usersProfiles", checked);
     }
 
     function dataPointsCheckboxChanged() {
@@ -329,7 +330,7 @@
 			<tr>
 				<td><label for="projectName"><fmt:message
 							key="emport.projectName" />
-				</label> <input type="text" id="projectName" value="${instanceDescription}" /><br />
+				</label> <input type="text" id="projectName" value="${instanceDescriptionHeader}" /><br />
 				</td>
 
 			</tr>

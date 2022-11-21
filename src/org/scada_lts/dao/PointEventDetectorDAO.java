@@ -120,6 +120,23 @@ public class PointEventDetectorDAO {
 			+ "where "
 				+ COLUMN_NAME_ID + "=? ";
 
+	private static final String POINT_EVENT_DETECTOR_WITH_TYPE_UPDATE = ""
+			+ "update pointEventDetectors set "
+			+ COLUMN_NAME_XID + "=?, "
+			+ COLUMN_NAME_ALIAS + "=?, "
+			+ COLUMN_NAME_ALARM_LEVEL + "=?, "
+			+ COLUMN_NAME_STATE_LIMIT + "=?, "
+			+ COLUMN_NAME_DURATION + "=?, "
+			+ COLUMN_NAME_DURATION_TYPE + "=?, "
+			+ COLUMN_NAME_BINARY_STATE + "=?, "
+			+ COLUMN_NAME_MULTISTATE_STATE + "=?, "
+			+ COLUMN_NAME_CHANGE_COUNT + "=?, "
+			+ COLUMN_NAME_ALPHANUMERIC_STATE + "=?, "
+			+ COLUMN_NAME_WEIGHT + "=?, "
+			+ COLUMN_NAME_DETECTOR_TYPE + "=? "
+			+ "where "
+			+ COLUMN_NAME_ID + "=? ";
+
 	private static final String POINT_EVENT_DETECTOR_DELETE = ""
 			+ "delete from pointEventDetectors where ";
 
@@ -312,6 +329,31 @@ public class PointEventDetectorDAO {
 				pointEventDetector.getWeight(),
 				pointEventDetector.getId()
 			}
+		);
+	}
+
+	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
+	public void updateWithType(PointEventDetectorVO pointEventDetector) {
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("update(PointEventDetectorVO pointEventDetector) pointEventDetector:" + pointEventDetector.toString());
+		}
+
+		DAO.getInstance().getJdbcTemp().update(POINT_EVENT_DETECTOR_WITH_TYPE_UPDATE, new Object[] {
+						pointEventDetector.getXid(),
+						pointEventDetector.getAlias(),
+						pointEventDetector.getAlarmLevel(),
+						pointEventDetector.getLimit(),
+						pointEventDetector.getDuration(),
+						pointEventDetector.getDurationType(),
+						DAO.boolToChar(pointEventDetector.isBinaryState()),
+						pointEventDetector.getMultistateState(),
+						pointEventDetector.getChangeCount(),
+						pointEventDetector.getAlphanumericState(),
+						pointEventDetector.getWeight(),
+						pointEventDetector.getDetectorType(),
+						pointEventDetector.getId()
+				}
 		);
 	}
 

@@ -88,16 +88,17 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>);
-            
+            $set("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>", settings.<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>);
+
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
-            
+
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
-    
+    /*
     	SystemSettingsDwr.checkTypeDB(function(msg){
         	
         	if (msg == "derby") {
@@ -107,7 +108,7 @@
         	if (msg == "mysql") {
         		document.getElementById('radioMysql').checked = true;
 			}
-        });
+        });*/
     
     
     }
@@ -260,6 +261,7 @@
                 1,
                 $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>"),
                 $get("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>"),
+                $get("<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>"),
                 function() {
                     stopImageFader("saveMiscSettingsImg");
                     setUserMessage("miscMessage", "<fmt:message key="systemSettings.miscSaved"/>");
@@ -716,12 +718,22 @@
         </td>
       </tr>
       <tr>
+         <td class="formLabelRequired"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized"/></td>
+         <td class="formField">
+           <select id="<c:out value="<%= SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED %>"/>">
+             <option value="NONE"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.none"/></option>
+             <option value="PARTIAL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.partial"/></option>
+             <option value="ALL"><fmt:message key="systemsettings.misc.dataPointRuntimeValueSynchronized.all"/></option>
+           </select>
+         </td>
+      </tr>
+      <tr>
         <td colspan="2" id="miscMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  
-   <div class="borderDiv marB marR" style="float:left">
+
+   <!--div class="borderDiv marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
         <td>
@@ -780,7 +792,7 @@
              </td>
           </tr>
        </table>
-  </div>
+  </div-->
 
   <div class="borderDiv marB marR" style="float:left">
     <div id="sms-domain"></div>

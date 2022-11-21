@@ -33,6 +33,9 @@ import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.view.chart.BaseChartRenderer;
 import com.serotonin.mango.view.chart.ChartRenderer;
+import com.serotonin.mango.view.event.BaseEventTextRenderer;
+import com.serotonin.mango.view.event.EventTextRenderer;
+import com.serotonin.mango.view.event.NoneEventRenderer;
 import com.serotonin.mango.view.text.BaseTextRenderer;
 import com.serotonin.mango.view.text.NoneRenderer;
 import com.serotonin.mango.view.text.PlainRenderer;
@@ -130,6 +133,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private String xid;
     @JsonRemoteProperty
     private String name;
+    @JsonRemoteProperty
+    private String description;
     private int dataSourceId;
     @JsonRemoteProperty
     private String deviceName;
@@ -146,6 +151,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     private int purgeType;
     @JsonRemoteProperty
     private int purgePeriod;
+    @JsonRemoteProperty(typeFactory = BaseEventTextRenderer.Factory.class)
+    private EventTextRenderer eventTextRenderer;
     @JsonRemoteProperty(typeFactory = BaseTextRenderer.Factory.class)
     private TextRenderer textRenderer;
     @JsonRemoteProperty(typeFactory = BaseChartRenderer.Factory.class)
@@ -179,7 +186,26 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         discardLowLimit = -Double.MAX_VALUE;
         discardHighLimit = Double.MAX_VALUE;
         engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        eventTextRenderer = new NoneEventRenderer();
     }
+
+    public DataPointVO(int loggingType) {
+        id = Common.NEW_ID;
+        this.loggingType = loggingType;
+        intervalLoggingPeriodType = Common.TimePeriods.MINUTES;
+        intervalLoggingPeriod = 15;
+        intervalLoggingType = IntervalLoggingTypes.INSTANT;
+        tolerance = 0;
+        purgeType = Common.TimePeriods.YEARS;
+        purgePeriod = 1;
+        defaultCacheSize = 1;
+        discardExtremeValues = false;
+        discardLowLimit = -Double.MAX_VALUE;
+        discardHighLimit = Double.MAX_VALUE;
+        engineeringUnits = ENGINEERING_UNITS_DEFAULT;
+        eventTextRenderer = new NoneEventRenderer();
+    }
+
 
     private PointLocatorVO pointLocator;
 
@@ -221,6 +247,10 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public String getExtendedName() {
+        if (description != null) {
+            if (!description.isEmpty())
+                return deviceName + " - " + name + " - " + description;
+        }
         return deviceName + " - " + name;
     }
 
@@ -364,6 +394,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends PointLocatorVO> T getPointLocator() {
         return (T) pointLocator;
@@ -429,6 +467,14 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     public void setTolerance(double tolerance) {
         this.tolerance = tolerance;
+    }
+
+    public EventTextRenderer getEventTextRenderer() {
+        return eventTextRenderer;
+    }
+
+    public void setEventTextRenderer(EventTextRenderer eventTextRenderer) {
+        this.eventTextRenderer = eventTextRenderer;
     }
 
     public TextRenderer getTextRenderer() {
@@ -546,17 +592,19 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
 
     @Override
     public String toString() {
-        return "DataPointVO [id=" + id + ", xid=" + xid + ", name=" + name + ", dataSourceId=" + dataSourceId
-                + ", deviceName=" + deviceName + ", enabled=" + enabled + ", pointFolderId=" + pointFolderId
-                + ", loggingType=" + loggingType + ", intervalLoggingPeriodType=" + intervalLoggingPeriodType
+        return "DataPointVO [id=" + id + ", xid=" + xid + ", name=" + name + ", description=" + description
+                + ", dataSourceId=" + dataSourceId + ", deviceName=" + deviceName + ", enabled=" + enabled
+                + ", pointFolderId=" + pointFolderId + ", loggingType=" + loggingType
+                + ", intervalLoggingPeriodType=" + intervalLoggingPeriodType
                 + ", intervalLoggingPeriod=" + intervalLoggingPeriod + ", intervalLoggingType=" + intervalLoggingType
                 + ", tolerance=" + tolerance + ", purgeType=" + purgeType + ", purgePeriod=" + purgePeriod
-                + ", textRenderer=" + textRenderer + ", chartRenderer=" + chartRenderer + ", eventDetectors="
-                + eventDetectors + ", comments=" + comments + ", defaultCacheSize=" + defaultCacheSize
-                + ", discardExtremeValues=" + discardExtremeValues + ", discardLowLimit=" + discardLowLimit
-                + ", discardHighLimit=" + discardHighLimit + ", engineeringUnits=" + engineeringUnits
-                + ", chartColour=" + chartColour + ", pointLocator=" + pointLocator + ", dataSourceTypeId="
-                + dataSourceTypeId + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
+                + ", eventTextRenderer=" + eventTextRenderer + ", textRenderer=" + textRenderer
+                + ", chartRenderer=" + chartRenderer + ", eventDetectors=" + eventDetectors + ", comments=" + comments
+                + ", defaultCacheSize=" + defaultCacheSize + ", discardExtremeValues=" + discardExtremeValues
+                + ", discardLowLimit=" + discardLowLimit + ", discardHighLimit=" + discardHighLimit
+                + ", engineeringUnits=" + engineeringUnits + ", chartColour=" + chartColour
+                + ", pointLocator=" + pointLocator + ", dataSourceTypeId=" + dataSourceTypeId
+                + ", dataSourceName=" + dataSourceName + ", dataSourceXid=" + dataSourceXid
                 + ", lastValue=" + lastValue + ", settable=" + settable + "]";
     }
 
@@ -617,13 +665,17 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         // Check chart renderer type
         if (chartRenderer != null && !chartRenderer.getDef().supports(pointLocator.getDataTypeId()))
             response.addGenericMessage("validate.chart.incompatible");
+
+        // Check event renderer type
+        if (eventTextRenderer != null && !eventTextRenderer.getDef().supports(pointLocator.getDataTypeId()))
+            response.addGenericMessage("validate.event.incompatible");
     }
 
     //
     //
     // Serialization
     //
-    private static final int version = 8;
+    private static final int version = 9;
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(version);
@@ -647,6 +699,8 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
         out.writeDouble(discardHighLimit);
         out.writeInt(engineeringUnits);
         SerializationHelper.writeSafeUTF(out, chartColour);
+        SerializationHelper.writeSafeUTF(out, description);
+        out.writeObject(eventTextRenderer);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -841,6 +895,30 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             engineeringUnits = in.readInt();
             chartColour = SerializationHelper.readSafeUTF(in);
         }
+        else if (ver == 9) {
+            name = SerializationHelper.readSafeUTF(in);
+            deviceName = SerializationHelper.readSafeUTF(in);
+            enabled = in.readBoolean();
+            pointFolderId = in.readInt();
+            loggingType = in.readInt();
+            intervalLoggingPeriodType = in.readInt();
+            intervalLoggingPeriod = in.readInt();
+            intervalLoggingType = in.readInt();
+            tolerance = in.readDouble();
+            purgeType = in.readInt();
+            purgePeriod = in.readInt();
+            textRenderer = (TextRenderer) in.readObject();
+            chartRenderer = (ChartRenderer) in.readObject();
+            pointLocator = (PointLocatorVO) in.readObject();
+            defaultCacheSize = in.readInt();
+            discardExtremeValues = in.readBoolean();
+            discardLowLimit = in.readDouble();
+            discardHighLimit = in.readDouble();
+            engineeringUnits = in.readInt();
+            chartColour = SerializationHelper.readSafeUTF(in);
+            description = SerializationHelper.readSafeUTF(in);
+            eventTextRenderer = (EventTextRenderer) in.readObject();
+        }
 
         // Check the purge type. Weird how this could have been set to 0.
         if (purgeType == 0)
@@ -937,5 +1015,33 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
             if (engineeringUnits == -1)
                 engineeringUnits = ENGINEERING_UNITS_DEFAULT;
         }
+    }
+
+    public static boolean validLoggingType(int loggingType) {
+        return LOGGING_TYPE_CODES.isValidId(loggingType);
+    }
+
+    public static boolean validPurgeType(int purgeType) {
+        switch (purgeType) {
+            case PurgeTypes.DAYS:
+            case PurgeTypes.WEEKS:
+            case PurgeTypes.MONTHS:
+            case PurgeTypes.YEARS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean validIntervalLoggingType(int intervalLoggingType) {
+        return INTERVAL_LOGGING_TYPE_CODES.isValidId(intervalLoggingType);
+    }
+
+    public static boolean validEngineeringUnit(int engineeringUnit) {
+        return ENGINEERING_UNITS_CODES.isValidId(engineeringUnit);
+    }
+
+    public static boolean validIntervalLoggingPeriodType(int intervalLoggingPeriodType) {
+        return Common.TIME_PERIOD_CODES.isValidId(intervalLoggingPeriodType);
     }
 }

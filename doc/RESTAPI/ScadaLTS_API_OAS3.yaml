@@ -4,7 +4,7 @@ servers:
     description: 'Scada development Server'
     variables: {}
 info:
-  version: 2.5.0
+  version: 2.6.0
   title: Scada-LTS API
   description: 'Scada-LTS OpenAPI Specification. REST API interface description with examples and request structure. It can be easily imported into Postman or Swagger application.'
   termsOfService: ''
@@ -92,6 +92,20 @@ paths:
         '200':
           description: ''
           headers: {}
+  /auth/user:
+    get:
+      tags:
+        - AuthenticationAPI
+      summary: 'Get basic user info'
+      description: 'Fetch basic user information'
+      operationId: 'getUser'
+      responses:
+        '200':
+          description: 'Simple User Information'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonUser'
   /config/replacealert:
     get:
       tags:
@@ -99,6 +113,45 @@ paths:
       responses:
         '200':
           description: ''
+  /datapoint:
+    get:
+      tags:
+        - DataPointAPI
+      parameters:
+        - name: 'id'
+          description: 'DataPoint ID'
+          in: 'query'
+          required: false
+          schema:
+            type: number
+        - name: 'xid'
+          description: 'DataPoint Export ID'
+          in: 'query'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Get complete Data Point object'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataPointVO'
+  /datapoints:
+    get:
+      tags:
+        - DataPointAPI
+      responses:
+        '200':
+          description: 'Get more detailed Data Point object'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JsonDataPoint'
   /datapoint/getAll:
     get:
       tags:
@@ -119,6 +172,37 @@ paths:
                       type: string
                     xid:
                       type: string
+                    description:
+                      type: string
+  /datapoint/{datasourceId}/getAllPlc:
+    get:
+      tags:
+        - DataPointAPI
+      parameters:
+        - name: 'datasourceId'
+          description: 'DataSource ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    name:
+                      type: string
+                    xid:
+                      type: string
+                    description:
+                      type: string
   /datasource/getAll:
     get:
       tags:
@@ -137,6 +221,50 @@ paths:
                       type: number
                     xid:
                       type: string
+  /events/datapoint/{id}:
+    get:
+      tags:
+        - EventsAPI
+      parameters:
+        - name: 'id'
+          description: 'DataPoint ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'limit'
+          description: 'Limit the result set (DEFAULT 1000)'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'offset'
+          description: 'Offset the result set (DEFAULT 0)'
+          in: 'query'
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventDTO'
+  /events/ack/{id}:
+    get:
+      tags:
+        - EventsAPI
+      parameters:
+        - name: 'id'
+          description: 'Event ID'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
   /view/getAll:
     get:
       tags:
@@ -470,6 +598,7 @@ paths:
     post:
       tags:
         - PointValueAPI
+      deprecated: true
       parameters:
         - name: 'xid'
           in: 'path'
@@ -477,7 +606,7 @@ paths:
           schema:
             type: string
         - name: 'type'
-          description: 'Type 0 -> binary, 1 -> Multistate, 2 -> Double, 3 -> String'
+          description: 'Type 0 -> unknown, 1 -> binary, 2 -> Multistate, 3 -> Double, 4 -> String'
           in: 'path'
           required: true
           schema:
@@ -488,6 +617,32 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: ''
+  /point_value/setValue/{xid}/{type}/:
+    post:
+      tags:
+        - PointValueAPI
+      description: 'New set value method that set up value using request body'
+      parameters:
+        - name: 'xid'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+        - name: 'type'
+          description: 'Type [0|1|2|3|4] maps to DP type: [unknown|binary|multistate|double|string]'
+          in: 'path'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          raw:
+            schema:
+              type: string
       responses:
         '200':
           description: ''
@@ -652,7 +807,7 @@ paths:
                       type: string
                     admin:
                       type: boolean
-  /watchlist/getAll:
+  /watch-lists:
     get:
       tags:
         - WatchListAPI
@@ -672,7 +827,85 @@ paths:
                       type: string
                     name:
                       type: string
-  /watchlist/getNames:
+  /watch-lists/{id}:
+    get:
+      tags:
+        - WatchListAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  xid:
+                    type: string
+                  name:
+                    type: string
+                  userId:
+                    type: number
+                  pointList:
+                    type: array
+                    items:
+                      type: object
+                  watchListUsers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: number
+                        accessType:
+                          type: number
+/watch-lists/xid/{xid}:
+  get:
+    tags:
+      - WatchListAPI
+    parameters:
+      - name: 'xid'
+        in: 'path'
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                xid:
+                  type: string
+                name:
+                  type: string
+                userId:
+                  type: number
+                pointList:
+                  type: array
+                  items:
+                    type: object
+                watchListUsers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      userId:
+                        type: number
+                      accessType:
+                        type: number
+  /watch-lists/getNames:
     get:
       tags:
         - WatchListAPI
@@ -690,7 +923,7 @@ paths:
                       type: number
                     name:
                       type: string
-  /watchlist/getPoints/{xid}:
+  /watch-lists/getPoints/{xid}:
     get:
       tags:
         - WatchListAPI
@@ -714,7 +947,7 @@ paths:
                       type: number
                     name:
                       type: string
-  /watchlist/getChartData/{xid}/{fromData}/{toData}:
+  /watch-lists/getChartData/{xid}/{fromData}/{toData}:
     get:
       tags:
         - WatchListAPI
@@ -765,7 +998,7 @@ paths:
                           type: object
                         chartColour:
                           type: string
-  /api/point_properties/getProperties/{xid}:
+  /point_properties/getProperties/{xid}:
     get:
       tags:
         - PointPropertiesAPI
@@ -782,7 +1015,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
-  /api/point_properties/getPropertiesBaseOnId/{id}:
+  /point_properties/getPropertiesBaseOnId/{id}:
     get:
       tags:
         - PointPropertiesAPI
@@ -799,6 +1032,188 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PointPropertiesJSON'
+  /point_properties/{id}/purge:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'all'
+          in: 'query'
+          schema:
+            type: boolean
+        - name: 'type'
+          in: 'query'
+          schema:
+            type: number
+        - name: 'period'
+          in: 'query'
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: number
+  /point_properties/{id}/clearcache:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /point_properties/{id}/toggle:
+    patch:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled:
+                    type: string
+  /point_properties/updateProperties:
+    put:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'query'
+          required: false
+          schema:
+            type: number
+        - name: 'xid'
+          in: 'query'
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                enabled:
+                  type: boolean
+                loggingtype:
+                  type: number
+                intervalLoggingPeriodType:
+                  type: number
+                intervalLoggingPeriod:
+                  type: number
+                intervalLoggingType:
+                  type: number
+                tolerance:
+                  type: number
+                purgeType:
+                  type: number
+                purgePeriod:
+                  type: number
+                eventTextRenderer:
+                  type: object
+                textRenderer:
+                  type: object
+                chartRenderer:
+                  type: object
+                defaultCacheSize:
+                  type: number
+                discardExtremeValues:
+                  type: boolean
+                discardLowLimit:
+                  type: number
+                discardHighLimit:
+                  type: number
+                engineeringUnits:
+                  type: number
+                chartColour:
+                  type: string
+      responses:
+        '200':
+          description: "Put successful"
+          headers: { }
+  /point_properties/getPointDescription:
+    get:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'query'
+          required: false
+          schema:
+            type: number
+        - name: 'xid'
+          in: 'query'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonDescription'
+  /point_properties/getBinaryEventRenderer:
+    get:
+      tags:
+        - PointPropertiesAPI
+      parameters:
+        - name: 'id'
+          in: 'query'
+          required: false
+          schema:
+            type: number
+        - name: 'xid'
+          in: 'query'
+          required: false
+          schema:
+            type: string
+        - name: 'value'
+          in: 'query'
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 'Get successful'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonBinaryEventTextRenderer'
 
   /check-time-reactivation/{idDs}:
     get:
@@ -1563,10 +1978,170 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SystemScadaConfigJSON'
-                
+
+  /userComment/{typeId}/{refId}:
+    post:
+      tags:
+        - UserCommentAPI
+      parameters:
+        - name: 'typeId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'refId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      requestBody:
+        description: UserComment properties
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserComment'
+      responses:
+        '200':
+          description: ''
+  /userComment/{typeId}/{refId}/{userId}/{ts}:
+    delete:
+      tags:
+        - UserCommentAPI
+      parameters:
+        - name: 'typeId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'refId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'userId'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+        - name: 'ts'
+          in: 'path'
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
 
 components:
   schemas:
+    JsonDataPoint:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        xid:
+          type: string
+        enabled:
+          type: boolean
+        description:
+          type: string
+        datasourceName:
+          type: string
+        typeId:
+          type: number
+    EventDTO:
+      type: object
+      properties:
+        id:
+          type: number
+        typeId:
+          type: number
+        typeRef1:
+          type: number
+        typeRef2:
+          type: number
+        activeTs:
+          type: number
+        rtnApplicable:
+          type: boolean
+        rtnTs:
+          type: number
+        rtnCause:
+          type: number
+        alarmLevel:
+          type: number
+        message:
+          type: string
+        ackTs:
+          type: number
+        username:
+          type: string
+        ackAlternateSource:
+          type: number
+        userComments:
+          type: object
+    DataPointVO:
+      type: object
+      properties:
+        id:
+          type: number
+        xid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        dataSourceId:
+          type: number
+        deviceName:
+          type: string
+        enabled:
+          type: boolean
+        pointFolderId:
+          type: number
+        loggingType:
+          type: number
+        intervalLoggingPeriodType:
+          type: number
+        intervalLoggingPeriod:
+          type: number
+        intervalLoggingType:
+          type: number
+        tolerance:
+          type: number
+        purgeType:
+          type: number
+        purgePeriod:
+          type: number
+        eventTextRenderer:
+          type: object
+        textRenderer:
+          type: object
+        chartRenderer:
+          type: object
+        eventDetectors:
+          type: array
+          items:
+            type: object
+        comments:
+          type: array
+          items:
+            type: object
+        defaultCacheSize:
+          type: number
+        discardExtremeValues:
+          type: boolean
+        discardLowLimit:
+          type: string
+        discardHighLimit:
+          type: number
+        engineeringUnits:
+          type: number
+        chartColour:
+          type: string
     PointValuesJSON:
       type: object
       properties:
@@ -1956,6 +2531,46 @@ components:
         referenceId:
           type: number
         referenceAddress:
+          type: string
+    JsonUser:
+      type: object
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        admin:
+          type: boolean
+        disabled:
+          type: boolean
+        homeUrl:
+          type: string
+        lastLogin:
+          type: number
+    JsonDescription:
+      type: object
+      properties:
+        description:
+          type: string
+    JsonBinaryEventTextRenderer:
+      type: object
+      properties:
+        eventText:
+          type: string
+    UserComment:
+      type: object
+      properties:
+        userId:
+          type: number
+        ts:
+          type: number
+        comment:
+          type: string
+        username:
           type: string
   parameters:
     Authorization:

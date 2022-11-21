@@ -20,21 +20,25 @@ package com.serotonin.mango.web.mvc.controller;
 
 import com.serotonin.db.IntValuePair;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.ViewDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.permissions.PermissionViewACL;
-import org.scada_lts.permissions.model.EntryDto;
+import org.scada_lts.mango.convert.IdNameToIntValuePair;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.permissions.service.GetViewsWithAccess;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
 
 public class ViewsController extends ParameterizableViewController {
 	private Log LOG = LogFactory.getLog(ViewsController.class);
@@ -43,12 +47,12 @@ public class ViewsController extends ParameterizableViewController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		ViewDao viewDao = new ViewDao();
+		ViewService viewService = new ViewService();
 		User user = Common.getUser(request);
 		List<IntValuePair> views;
 
 		if (user.isAdmin()) { // Admin user has access to all views
-			views = viewDao.getAllViewNames();
+			views = IdNameToIntValuePair.convert(viewService.getAllViewNames());
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
 			};
@@ -56,7 +60,10 @@ public class ViewsController extends ParameterizableViewController {
 			if(LOG.isDebugEnabled()) LOG.debug("Views: " + views.size());
 			model.put("views", views);
 		} else {
-			views = viewDao.getViewNamesWithReadOrWritePermissions(user.getId(), user.getUserProfile());
+		    GetObjectsWithAccess<View, User> service = new GetViewsWithAccess();
+			views = service.getObjectIdentifiersWithAccess(user).stream()
+					.map(a -> new IntValuePair(a.getId(), a.getName()))
+					.collect(Collectors.toList());
 
 			/* ** Disable ACL **
 			// ACL start
@@ -81,16 +88,10 @@ public class ViewsController extends ParameterizableViewController {
 		}
 
 		// Set the current view.
-		View currentView = null;
-		String vid = request.getParameter("viewId");
-		try {
-			currentView = viewDao.getView(Integer.parseInt(vid));
-		} catch (NumberFormatException e) {
-			// no op
-		}
+		View currentView = getViewCurrent(request, viewService);
 
-		if (currentView == null && views.size() > 0)
-			currentView = viewDao.getView(views.get(0).getKey());
+		if (currentView == null && !views.isEmpty())
+			currentView = viewService.getView(views.get(0).getKey());
 
 		if (currentView != null) {
 			if (!user.isAdmin())
@@ -99,7 +100,7 @@ public class ViewsController extends ParameterizableViewController {
 			// Make sure the owner still has permission to all of the points in
 			// the view, and that components are
 			// otherwise valid.
-			currentView.validateViewComponents(false);
+			currentView.validateViewComponents(user);
 
 			// Add the view to the session for the dwr access stuff.
 			model.put("currentView", currentView);

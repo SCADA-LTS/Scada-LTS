@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContextFactory;
 
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.vo.usersProfiles.UsersProfileVO;
 
 import com.serotonin.mango.Common;
@@ -51,6 +50,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersDwr extends BaseDwr {
 	public Log LOG = LogFactory.getLog(UsersDwr.class);
@@ -64,7 +64,7 @@ public class UsersDwr extends BaseDwr {
 			initData.put("admin", true);
 			initData.put("users", new UserDao().getUsers());
 			initData.put("usersProfiles",
-					new UsersProfileDao().getUsersProfiles());
+					new UsersProfileService().getUsersProfiles());
 
 			// Data sources
 			List<DataSourceVO<?>> dataSourceVOs = new DataSourceDao()
@@ -107,12 +107,6 @@ public class UsersDwr extends BaseDwr {
 			user.setDataPointPermissions(new ArrayList<DataPointAccess>(0));
 		} else {
 			user = new UserDao().getUser(id);
-
-			UsersProfileDao usersProfileDao = new UsersProfileDao();
-			if (usersProfileDao.getUserProfileByUserId(user.getId()) != null) {
-				user.setUserProfile(usersProfileDao.getUserProfileByUserId(user
-						.getId()));
-			}
 		}
 		return user;
 
@@ -122,7 +116,8 @@ public class UsersDwr extends BaseDwr {
 			String password, String email, String phone, boolean admin,
 			boolean disabled, int receiveAlarmEmails,
 			boolean receiveOwnAuditEvents, List<Integer> dataSourcePermissions,
-			List<DataPointAccess> dataPointPermissions, int usersProfileId) {
+			List<DataPointAccess> dataPointPermissions, int usersProfileId, boolean hideMenu,
+		    String theme, String homeUrl) {
 		Permissions.ensureAdmin();
 
 		// Validate the given information. If there is a problem, return an
@@ -146,8 +141,17 @@ public class UsersDwr extends BaseDwr {
 		user.setDisabled(disabled);
 		user.setReceiveAlarmEmails(receiveAlarmEmails);
 		user.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-		user.setDataSourcePermissions(dataSourcePermissions);
-		user.setDataPointPermissions(dataPointPermissions);
+		user.setHideMenu(hideMenu);
+		user.setTheme(theme);
+		user.setHomeUrl(homeUrl);
+    if(usersProfileId == Common.NEW_ID) {
+        user.setDataSourcePermissions(dataSourcePermissions);
+        user.setDataPointPermissions(dataPointPermissions);
+    } else {
+			user.setDataSourcePermissions(new ArrayList<>());
+			user.setDataPointPermissions(new ArrayList<>());
+		}
+		user.setUserProfileId(usersProfileId);
 
 		DwrResponseI18n response = new DwrResponseI18n();
 		user.validate(response);
@@ -173,18 +177,16 @@ public class UsersDwr extends BaseDwr {
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(user);
+			userDao.updateUserHideMenu(user);
+			userDao.updateUserScadaTheme(user);
 
-			UsersProfileDao profilesDao = new UsersProfileDao();
-			if (usersProfileId != Common.NEW_ID) {
-				// apply profile
-				UsersProfileVO profile = profilesDao
-						.getUserProfileById(usersProfileId);
-				profile.apply(user);
-				userDao.saveUser(user);
-				profilesDao.resetUserProfile(user);
-				profilesDao.updateUsersProfile(profile);
+			UsersProfileService usersProfileService = new UsersProfileService();
+			if (usersProfileId == Common.NEW_ID) {
+				usersProfileService.resetUserProfile(user);
 			} else {
-				profilesDao.resetUserProfile(user);
+				UsersProfileVO profile = usersProfileService.getUserProfileById(usersProfileId);
+				profile.apply(user);
+				usersProfileService.updateUsersProfile(user, profile);
 			}
 
 			// If admin grant permissions to all WL and GViews
@@ -206,7 +208,7 @@ public class UsersDwr extends BaseDwr {
 
 	public DwrResponseI18n saveUser(int id, String password, String email,
 			String phone, int receiveAlarmEmails,
-			boolean receiveOwnAuditEvents, int usersProfileId) {
+			boolean receiveOwnAuditEvents, int usersProfileId, String theme) {
 
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
@@ -223,12 +225,14 @@ public class UsersDwr extends BaseDwr {
 		updateUser.setPhone(phone);
 		updateUser.setReceiveAlarmEmails(receiveAlarmEmails);
 		updateUser.setReceiveOwnAuditEvents(receiveOwnAuditEvents);
-
+		updateUser.setUserProfileId(usersProfileId);
+		updateUser.setTheme(theme);
 		DwrResponseI18n response = new DwrResponseI18n();
 		updateUser.validate(response);
 
 		if (!response.getHasMessages()) {
 			userDao.saveUser(updateUser);
+			userDao.updateUserScadaTheme(updateUser);
 			Common.setUser(request, updateUser);
 		}
 
@@ -264,8 +268,11 @@ public class UsersDwr extends BaseDwr {
 			// You can't delete yourself.
 			response.addMessage(new LocalizableMessage(
 					"users.validate.badDelete"));
-		else
+		else {
 			new UserDao().deleteUser(id);
+			UsersProfileService usersProfileService = new UsersProfileService();
+			usersProfileService.updatePermissions();
+		}
 
 		return response;
 	}

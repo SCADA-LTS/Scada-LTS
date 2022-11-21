@@ -26,8 +26,10 @@
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link id="pagestyle" href="resources/common.css" type="text/css" rel="stylesheet"/>
-  
+  <link id="pagestyle" href="resources/common_deprecated.css" type="text/css" rel="stylesheet"/>
+  <link href="resources/js-ui/app/css/app.css" rel="stylesheet" type="text/css">
+  <link href="resources/js-ui/app/css/chunk-vendors.css" rel="stylesheet" type="text/css">
+
   <!-- Script -->
   <script type="text/javascript">var djConfig = { isDebug: true };</script>
   <!--<script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script> -->
@@ -44,7 +46,7 @@
 
 <body style="background-color:transparent">
   <tag:displayView view="${view}" emptyMessageKey="publicView.notFound"/>
-  
+
   <c:if test="${!empty view}">
     <script type="text/javascript">
       mango.i18n = <sst:convert obj="${clientSideMessages}"/>;
@@ -53,5 +55,7 @@
       dojo.addOnLoad(mango.longPoll.start);
     </script>
   </c:if>
+  <%@ include file="/WEB-INF/jsp/include/vue/vue-app.js.jsp"%>
+  <%@ include file="/WEB-INF/jsp/include/vue/vue-view.js.jsp"%>
 </body>
 </html>

@@ -29,7 +29,7 @@ import com.serotonin.mango.vo.event.CompoundEventDetectorVO;
  * @author Matthew Lohbihler
  * rewrite grzegorz bylica 
  */
-public class CompoundEventDetectorDao extends BaseDao {
+public class CompoundEventDetectorDao {
     
 	private MangoCompoundEventDetector mced;
 	

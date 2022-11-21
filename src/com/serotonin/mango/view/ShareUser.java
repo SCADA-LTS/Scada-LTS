@@ -19,6 +19,7 @@
 package com.serotonin.mango.view;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -50,6 +51,14 @@ public class ShareUser implements JsonSerializable {
 
     private int userId;
     private int accessType;
+
+    public ShareUser() {
+    }
+
+    public ShareUser(int userId, int accessType) {
+        this.userId = userId;
+        this.accessType = accessType;
+    }
 
     public int getUserId() {
         return userId;
@@ -89,7 +98,36 @@ public class ShareUser implements JsonSerializable {
 
     @Override
     public void jsonSerialize(Map<String, Object> map) {
-        map.put("user", new UserDao().getUser(userId).getUsername());
+        User user = new UserDao().getUser(userId);
+        if(user != null) {
+            map.put("user", user.getUsername());
+        } else {
+            map.put("user", "");
+            map.put("userId", userId);
+        }
         map.put("accessType", ACCESS_CODES.getCode(accessType));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShareUser)) return false;
+        ShareUser shareUser = (ShareUser) o;
+        return getUserId() == shareUser.getUserId() &&
+                getAccessType() == shareUser.getAccessType();
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getUserId(), getAccessType());
+    }
+
+    @Override
+    public String toString() {
+        return "ShareUser{" +
+                "userId=" + userId +
+                ", accessType=" + accessType +
+                '}';
     }
 }

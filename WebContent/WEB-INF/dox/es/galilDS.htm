@@ -1,0 +1,20 @@
+<!--
+    Scada-LTS - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+    -->
+<h1>Visión general</h1>
+<p>La fuente de datos de Galil se utiliza para intercambiar datos con el equipo Galil DMC-21x2 accesible a través de una red I/P. El equipo puede estar ubicado en una red de área local o en una intranet, o también puede estar ubicado en cualquier lugar de la Internet. Es una fuente de datos de encuestas.</p>
+
+<h1>Configuración</h1>
+<p>Cada fuente de datos requiere un <b>Nombre</b>, que puede ser cualquier descripción. Los parámetros <b>Anfitrión</b> y <b>Puerto</b> determinan cómo encontrar el equipo en la red. El host puede ser un nombre de dominio o una dirección IP.Los campos <b>Tiempo de espera</b> y <b>Reintentos</b> determinan cómo se comportará el sistema si la consulta falla.  La fuente de datos espera el número de milisegundos de tiempo de espera dado para una respuesta del equipo. Si no se recibe, la solicitud se volverá a intentar el número de veces especificado. El período <b>Actualización</b> determina la frecuencia con la que el equipo es interrogado para obtener datos. </p>
+<p>Una vez que se establece una conexión con el equipo, se mantiene viva durante todo el tiempo que el equipo lo permita. Las conexiones cerradas causan un intento de reapertura automática.</p>
+
+<h1>Ordene la prueba</h1>
+<p>La conectividad y el estado del equipo pueden ser probados usando la sección <b>Test del comando Galil</b>. Esta función abre una nueva conexión a la que enviar el comando, de modo que no entre en conflicto con ninguna fuente de datos en ejecución. Sin embargo, si el dispositivo sólo permite un número limitado de conexiones simultáneas, la conectividad puede fallar.</p>
+<p> El valor <b>Comando</b> puede ser cualquier cadena de comandos válida (excluyendo el terminador CRLF, y posiblemente excluyendo un punto y coma de cierre). El resultado del comando se mostrará bajo el botón Ejecutar. Si la conexión con el equipo ha fallado, se mostrará el mensaje de error. Si no se recibe respuesta, la conexión se terminará después del tiempo de demora dado. Si se recibe una respuesta de error (es decir, si se recibe '?'), se mostrará el mensaje "(respuesta de error)".</p>

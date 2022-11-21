@@ -166,6 +166,8 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	private int x;
 	@JsonRemoteProperty
 	private int y;
+	@JsonRemoteProperty
+	private int z = 2;
 
 	public void setLocation(int x, int y) {
 		this.x = x;
@@ -236,6 +238,14 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		this.y = y;
 	}
 
+	public int getZ() {
+		return z;
+	}
+
+	public void setZ(int z) {
+		this.z = z;
+	}
+
 	public String getStyle() {
 		if (style != null)
 			return style;
@@ -244,6 +254,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		sb.append("position:absolute;");
 		sb.append("left:").append(x).append("px;");
 		sb.append("top:").append(y).append("px;");
+		sb.append("z-index:").append(z).append(";");
 		return sb.toString();
 	}
 
@@ -266,7 +277,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 	// /
 	//
 	private static final long serialVersionUID = -1;
-	private static final int version = 1;
+	private static final int version = 2;
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(version);
@@ -274,6 +285,7 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 		SerializationHelper.writeSafeUTF(out, idSuffix);
 		out.writeInt(x);
 		out.writeInt(y);
+		out.writeInt(z);
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException {
@@ -286,6 +298,12 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			idSuffix = SerializationHelper.readSafeUTF(in);
 			x = in.readInt();
 			y = in.readInt();
+		} else if (ver == 2) {
+			index = in.readInt();
+			idSuffix = SerializationHelper.readSafeUTF(in);
+			x = in.readInt();
+			y = in.readInt();
+			z = in.readInt();
 		}
 	}
 

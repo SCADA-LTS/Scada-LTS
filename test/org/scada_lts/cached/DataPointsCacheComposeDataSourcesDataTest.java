@@ -1,6 +1,8 @@
 package org.scada_lts.cached;
 
+
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,13 +34,13 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		
 		List<DataPointVO> lst = new ArrayList<DataPointVO>();
 		
-		DataPointVO dpvo = new DataPointVO();
+		DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dpvo.setDataSourceId(1);
 		
-		DataPointVO dpvo1 = new DataPointVO();
+		DataPointVO dpvo1 = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dpvo.setDataSourceId(2);
 		
-		DataPointVO dpvo2 = new DataPointVO();
+		DataPointVO dpvo2 = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dpvo.setDataSourceId(2);
 		
 		lst.add(dpvo);
@@ -56,7 +58,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		
 		List<DataPointVO> lst = new ArrayList<DataPointVO>();
 		
-		DataPointVO dpvo = new DataPointVO();
+		DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dpvo.setDataSourceId(1);
 		
 		lst.add(dpvo);
@@ -73,7 +75,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		List<DataPointVO> lst = new ArrayList<DataPointVO>();
 		
 		for (int i=0; i<1000; i++) {
-			DataPointVO dpvo = new DataPointVO();
+			DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
 			dpvo.setDataSourceId(1);
 			
 			lst.add(dpvo);
@@ -92,7 +94,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		
 		int countOne = 0;
 		for (int i=0; i<1000; i++) {
-			DataPointVO dpvo = new DataPointVO();
+			DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
 			dpvo.setDataSourceId(1);
 			
 			lst.add(dpvo);
@@ -100,7 +102,7 @@ public class DataPointsCacheComposeDataSourcesDataTest {
 		}
 		
 		for (int i=0; i<100;i++) {
-			DataPointVO dpvo = new DataPointVO();
+			DataPointVO dpvo = new DataPointVO(LoggingTypes.ON_CHANGE);
 			if (i+1==1) {
 				countOne++;
 			}

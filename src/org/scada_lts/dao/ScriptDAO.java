@@ -190,5 +190,13 @@ public class ScriptDAO  {
 		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_BASE_ON_XID, new Object[]  { 
 				xid }, new ScriptRowMapper());
 	}
+
+	public String generateUniqueXid() {
+		return DAO.getInstance().generateUniqueXid(ScriptVO.XID_PREFIX, "scripts");
+	}
+
+	public boolean isXidUnique(String xid, int excludeId) {
+		return DAO.getInstance().isXidUnique(xid, excludeId, "scripts");
+	}
 	
 }

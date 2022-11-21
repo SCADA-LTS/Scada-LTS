@@ -1,6 +1,7 @@
 package org.scada_lts.cached;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ public class DataSourcePointsCacheMockitoTest {
 	@Test
 	public void dataPoints() {
 		List<DataPointVO> dps = new ArrayList<DataPointVO>();
-		dps.add(new DataPointVO());
+		dps.add(new DataPointVO(LoggingTypes.ON_CHANGE));
 		
 		when(cache.getDataPoints(1L)).thenReturn(dps);
 		

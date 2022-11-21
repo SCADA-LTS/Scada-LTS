@@ -1,56 +1,35 @@
 /**
  * @author Radoslaw Jajko <rjajko@softq.pl>
  */
-import Vuex from 'vuex';
-import Vuetify from '@/plugins/vuetify';
 import { expect } from 'chai';
-import { createLocalVue, mount } from '@vue/test-utils';
+
 import DefaultLoggingTypeSettingsComponent from '@/views/SystemSettings/DefaultLoggingTypeComponent';
-import i18n from '@/i18n';
+import systemSettings from '../../mocks/store/systemSettingsMock';
+import dataPoint from '../../mocks/store/dataPointMock';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
-localVue.use(Vuetify);
-
-const systemSettings = {
-	state: {
-		defaultLoggingType: 1,
-	},
-
-	mutations: {
-		setDefaultLoggingType(state, defaultLoggingType) {
-			state.defaultLoggingType = defaultLoggingType;
-		},
-	},
-
-	actions: {
-		getDefaultLoggingType(context) {
-			return new Promise((resolve) => {
-				context.state.defaultLoggingType = 3;
-				resolve(3);
-			});
-		},
-		saveDefaultLoggingType(context) {
-			return new Promise((resolve) => {
-				resolve(true);
-			});
-		},
-	},
-};
+import { prepareMountWrapper } from '../../utils/testing-utils';
 
 const modules = {
 	systemSettings,
+	dataPoint,
 };
 
-const store = new Vuex.Store({ modules });
+/**
+ * @private
+ * Initialize VueWrapper for local testing
+ * Prepare wrapper wiht all required stubs and props.
+ */
+function initWrapper() {
+	return prepareMountWrapper(
+		DefaultLoggingTypeSettingsComponent, 
+		modules,
+		{},
+		{stubs: ['VSelect', 'VIcon']}
+	);
+}
 
 describe('SystemSettings - LoggingType Settings Tests', () => {
-	const wrapper = mount(DefaultLoggingTypeSettingsComponent, {
-		store,
-		localVue,
-		i18n,
-		stubs: ['VSelect', 'VIcon'],
-	});
+	const wrapper = initWrapper();
 
 	it('Initialize Component', () => {
 		expect(wrapper.name()).to.equal('DefaultLoggingTypeSettingsComponent');

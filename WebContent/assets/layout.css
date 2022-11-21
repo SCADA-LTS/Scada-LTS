@@ -1,0 +1,415 @@
+/*
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* LAYOUT STYLES */
+html > body {
+	margin: 0px;
+	padding: 0px;
+}
+a, a:visited, a:link, .link {
+	text-decoration: underline;
+}
+a.titleLink, a.titleLink:visited, a.titleLink:link {
+	font-weight: bold;
+}
+.titlePadding {
+	padding:1px 1px 0px 1px;
+}
+.ptr {
+	cursor: pointer;
+}
+
+/* --- Headers --- */
+#mainHeader {
+	display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+#mainHeader .logo-section {
+	display: flex;
+	flex-direction: column;
+}
+#mainHeader .logo-section--title,
+#mainHeader .logo-section--details {
+	display: flex;
+}
+#mainHeader .logo-section #logo {
+	max-height: 32px;
+}
+#mainHeader .logo-section #company-container {
+	align-self: end;
+    padding: 5px;
+}
+#mainHeader .logo-section #company-name {
+	font-size: 1.6em;
+	font-weight: bold;
+	color: var(--slts-color-primary);
+}
+#mainHeader .logo-section--details {
+	padding-bottom: 3px;
+}
+
+#mainHeader .logo-section--details > * {
+	padding: 0 5px;
+}
+#mainHeader #powered-by {
+	font-weight: bold;
+	color: #00c9c9;
+}
+#mainHeader #scada-details--version{
+	color: var(--slts-color-secondary);
+}
+#mainHeader #scada-details--github {
+	font-style: italic;
+	opacity: 50%;
+}
+#mainHeader #scada-details--os {
+	opacity: 50%;
+	font-weight: bold;
+}
+
+#eventsRow {
+	align-self: center;
+}
+#subHeader {
+	display: flex;
+    justify-content: space-between;
+	min-width: 500px;
+}
+#navbarUserInfo {
+	margin-right: 30px;
+}
+
+#navbarUserProperties .navbar-dropdown--hidden {
+	visibility:hidden;
+	left:0px;
+	top:15px;
+}
+
+/* --- Tables --- */
+.rowHeader td, .smRowHeader td {
+	text-align: center;
+    white-space: nowrap;
+}
+
+.rowHeader td {
+	padding: 3px 10px 3px 10px;
+}
+.smRowHeader td {
+	padding: 2px 3px 2px 3px;
+}
+a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:hover {
+	text-decoration: underline;
+}
+
+.marR {
+	margin-right: 5px;
+}
+.marB {
+	margin-bottom: 5px;
+}
+
+/* --- Form styles --- */
+.formLabel, .formLabelRequired {
+	white-space: nowrap;
+	vertical-align: top;
+}
+.formLabelRequired, .formError {
+	font-weight: bold;
+}
+.formVeryShort {
+	width: 30px;
+}
+.formShort {
+	width: 50px;
+}
+.formLong {
+	width: 250px;
+}
+input[type="submit"], input[type="button"] {
+	overflow: visible;
+}
+/* --- View Styles --- */
+.controlsDiv {
+    position: absolute;
+    visibility: hidden;
+    left: 0;
+    top: -1px;
+    z-index: 1;
+    margin: 1px 0px 1px 0px;
+    padding: 0;
+}
+.controlsDiv table {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.controlsDiv td {
+    list-style: none;
+    margin: 1px;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+}
+.controlsDiv td div, .controlContent {
+    padding: 1px 5px 1px 5px;
+    margin: 0px;
+    white-space: nowrap;
+    text-align: left;
+	font-weight: normal;
+    position: absolute;
+    visibility:hidden;
+    left: 15px;
+    top: 0px;
+}
+
+.labelDiv, .windowDiv {
+    position:absolute;
+    padding:1px 5px 1px 5px;
+    margin:0px;
+    white-space:nowrap;
+    text-align:left;
+	font-weight: normal;
+	z-index: 20;
+}
+.imageDiv {
+    z-index:10;
+    left:18px;
+    position:absolute;
+    padding:0px;
+    margin:0px;
+    white-space:nowrap;
+}
+
+#viewContent {
+	position:relative;
+	margin: 0px;
+	padding: 0px;
+}
+#viewContent img {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+}
+.componentMin {
+    top:0px;
+    left:0px;
+    margin:0px;
+    padding:0px;
+    width:16px;
+    height:16px;
+}
+
+.simpleRenderer, .simpleRenderer2 {
+    white-space:nowrap;
+    text-align:left;
+	font-weight: normal;
+}
+
+.simpleRenderer {
+	line-height:16px;
+}
+
+/* Absmiddle workaround */
+span.absmiddle img {
+	padding: 0;
+	margin: 0;
+	vertical-align: middle;
+	display: inline;
+}
+
+
+/* Documentation float pane style overrides */
+html > body .dojoFloatingPaneCloseIcon {
+    background-image: url(../images/cross_doc.png);
+    cursor: pointer;
+}
+html > body .dojoFloatingPaneClient p, #help p {
+	padding: 0px;
+	margin: 0px 0px 10px 0px;
+}
+#help h1 {
+	padding: 0px;
+	margin: 20px 0px 10px 0px;
+}
+html > body .dojoFloatingPaneClient h1, #help h2 {
+	padding: 0px;
+	margin: 0px 0px 10px 0px;
+}
+html > body .dojoFloatingPaneClient img, #help img {
+	vertical-align: bottom;
+}
+
+/* --- Styles for weekly 15 minute interval schedules. --- */
+.qoff {
+    background-color: #FF4000;
+}
+.qon {
+    background-color: #B4CE96;
+}
+.qreg {
+    border: 1px solid #699D2E;
+}
+.qhlt {
+    border: 1px solid #FF9D2E;
+}
+
+.hreg {
+    border: 1px solid #FFFFFF;
+}
+.hhlt {
+    border: 1px solid #FF9D2E;
+}
+
+.selectItem {
+	width:100%;
+}
+
+.windowDiv .selectDiv {
+	display:none;
+	max-height:100px;
+	overflow:auto;
+}
+
+/**
+ * Enhanced image chart
+ */
+.enhancedImageChart {
+	background-color: white;
+}
+.enhancedImageChartLegend {
+	position:static !important;
+	background-color: white;
+	padding: 5px;
+	display: inline-block;
+}
+.enhancedImageChartLegend > div {
+	margin-top: 2px;
+}
+.enhancedImageChartConfig {
+	position: absolute !important;
+	top: 0px !important;
+	left: 100% !important;
+	float: right;
+	padding-left: 5px;
+	display: block;
+	background-color: white;
+	width: 240px;
+	border: 1px outset #39B54A;
+	z-index: 1;
+}
+
+.enhancedImageChartConfig > div {
+	width: 100%;
+	display: inline-block;
+}
+.enhancedImageChartConfig div.margin1{
+	margin-top: 15px;
+}
+.enhancedImageChartConfig div.margin2{
+	margin: 5px 0px;
+}
+.enhancedImageChartConfig label.margin{
+	margin: 0px 5px;
+}
+.enhancedImageChartConfig span{
+	font-weight: bold;
+	margin: 5px 0;
+}
+
+/* To fix new css changees */
+.form-box {
+    width: 20px;
+}
+.login-button {
+    width: 165px;
+}
+
+img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"]:not(#viewBackground){
+	height: 16px;
+	width: 16px;
+}
+
+/* *** Main *** */
+#instanceDescription {
+	padding:5px;
+	white-space: nowrap;
+}
+
+/* Login form */
+.login-container {
+	margin: 100px auto 10px auto;
+	background-color: #77c055;
+	width: 290px;
+	border-radius: 10px;
+}
+.login-browser {
+	text-align: center;
+	padding-top: 10px;
+}
+.login-browser #browser {
+	font-weight: bold;
+}
+.login-browser #browserImg {
+	height: 10px;
+	width: auto;
+}
+
+.login-box > form {
+	margin: 0 auto;
+	width:200px;
+}
+
+.login-box .form-box > .formField > input {
+	width: 200px;
+	height: 20px;
+}
+.login-box .login-button > input {
+	padding: 5px 20px;
+	margin-left:30%;
+	margin-top:10px;
+}
+
+/* Fixed styles */
+/* Main Header */
+
+
+.userName {
+	font-weight: bold;
+}
+
+.flex-default {
+	display: flex;
+	align-items: center;
+}
+
+.datasource-row {
+    padding:0px 0px 0px 30px;
+}
+
+#pointDetails {
+	position:fixed;
+	bottom:0;
+	width:38%;
+}
+
+form.view-edit-form {
+    max-width: 100vw;
+    overflow-x: auto;
+}

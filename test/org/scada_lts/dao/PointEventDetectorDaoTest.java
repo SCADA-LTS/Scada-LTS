@@ -18,6 +18,7 @@
 package org.scada_lts.dao;
 
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.junit.Test;
 
@@ -83,7 +84,7 @@ public class PointEventDetectorDaoTest extends TestDAO {
 		//TODO It is necessary to insert DataSource object before insert DataPoint object
 		DAO.getInstance().getJdbcTemp().update("INSERT INTO datasources (xid, name, dataSourceType, data) values ('x1', 'dataName', 1, 0);");
 
-		DataPointVO dataPoint = new DataPointVO();
+		DataPointVO dataPoint = new DataPointVO(LoggingTypes.ON_CHANGE);
 		dataPoint.setXid(DP_XID);
 		dataPoint.setDataSourceId(DP_DATA_SOURCE_ID);
 		dataPoint.setDataSourceName(DP_DATA_SOURCE_NAME);

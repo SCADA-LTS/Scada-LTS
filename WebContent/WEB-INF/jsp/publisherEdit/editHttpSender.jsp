@@ -26,9 +26,10 @@
   
   function init() {
       PublisherEditDwr.initSender(initCB);
+      initInputSelect();
   }
   dojo.addOnLoad(init);
-  
+
   function initCB(response) {
       var i;
       var list = response.data.allPoints;
@@ -71,11 +72,13 @@
       staticHeaderList[staticHeaderList.length] = {key: key, value: value};
       staticHeaderList.sort();
       refreshStaticHeaderList();
+      hideHttpSenderTest();
   }
   
   function removeStaticHeader(index) {
       staticHeaderList.splice(index, 1);
       refreshStaticHeaderList();
+      hideHttpSenderTest();
   }
   
   function refreshStaticHeaderList() {
@@ -113,11 +116,13 @@
       staticParameterList[staticParameterList.length] = {key: key, value: value};
       staticParameterList.sort();
       refreshStaticParameterList();
+      hideHttpSenderTest();
   }
   
   function removeStaticParameter(index) {
       staticParameterList.splice(index, 1);
       refreshStaticParameterList();
+      hideHttpSenderTest();
   }
   
   function refreshStaticParameterList() {
@@ -253,8 +258,7 @@
       showMessage("httpSendTestMessage", "<fmt:message key="publisherEdit.httpSender.sending"/>");
       showMessage("httpSendTestData");
       httpSendTestButtons(true);
-      PublisherEditDwr.httpSenderTest($get("url"), $get("usePost") == "true", staticHeaderList, staticParameterList,
-    		  httpSendTestCB);
+      PublisherEditDwr.httpSenderTest(httpSendTestCB);
   }
   
   function httpSendTestButtons(sending) {
@@ -291,9 +295,45 @@
       httpSendTestButtons(false);
       showMessage("httpSendTestMessage", "<fmt:message key="common.cancelled"/>");
   }
+
+  function initInputSelect() {
+      initHttpSenderTest();
+      var inputs = document.querySelectorAll('#publisherEditor input');
+      var selects = document.querySelectorAll('#publisherEditor select');
+      addChangeEvent(inputs);
+      addChangeEvent(selects);
+  }
+
+  function addChangeEvent(tab) {
+      if(tab && tab.forEach) {
+        tab.forEach(function(currentValue, currentIndex, listObj) {
+            if(currentValue.type && currentValue.type != 'button'
+            && currentValue.id && currentValue.id != 'sheaderKey'
+            && currentValue.id != 'sparamKey'
+            && currentValue.id != 'sheaderValue'
+            && currentValue.id != 'sparamValue')
+              currentValue.addEventListener('change', function() { hideHttpSenderTest(); }, false);
+            }, '');
+      }
+  }
+
+  function initHttpSenderTest() {
+    if(${not empty publisher and publisher.id != -1})
+        showHttpSenderTest();
+    else
+        hideHttpSenderTest();
+  }
+
+  function hideHttpSenderTest() {
+      document.getElementById("httpSenderTest").style.visibility = "hidden";
+  }
+
+  function showHttpSenderTest() {
+      document.getElementById("httpSenderTest").style.visibility = "visible";
+  }
 </script>
 
-<table cellpadding="0" cellspacing="0">
+<table id="publisherEditor" cellpadding="0" cellspacing="0">
   <tr>
     <td valign="top">
       <div class="borderDiv marR marB">
@@ -365,9 +405,9 @@
         </table>
       </div>
     </td>
-    
+
     <td valign="top">
-      <div class="borderDiv marB">
+      <div id="httpSenderTest" class="borderDiv marB">
         <table>
           <tr><td class="smallTitle"><fmt:message key="publisherEdit.httpSender.sendTest"/></td></tr>
           <tr>

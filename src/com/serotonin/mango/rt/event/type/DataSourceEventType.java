@@ -27,6 +27,8 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.event.AlarmLevels;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @JsonRemoteEntity
 public class DataSourceEventType extends EventType {
@@ -34,6 +36,8 @@ public class DataSourceEventType extends EventType {
     private int dataSourceEventTypeId;
     private int alarmLevel;
     private int duplicateHandling;
+
+    private final Log LOG = LogFactory.getLog(DataSourceEventType.class);
 
     public DataSourceEventType() {
         // Required for reflection.
@@ -122,15 +126,21 @@ public class DataSourceEventType extends EventType {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         DataSourceVO<?> ds = new DataSourceDao().getDataSource(dataSourceId);
-        map.put("XID", ds.getXid());
-        map.put("dataSourceEventType", ds.getEventCodes().getCode(dataSourceEventTypeId));
+        if(ds != null) {
+            map.put("XID", ds.getXid());
+            map.put("dataSourceEventType", ds.getEventCodes().getCode(dataSourceEventTypeId));
+        } else {
+            LOG.error("DataSource for id: " + dataSourceId + " does not exist.");
+        }
     }
 
     @Override
     public void jsonDeserialize(JsonReader reader, JsonObject json) throws JsonException {
         super.jsonDeserialize(reader, json);
         DataSourceVO<?> ds = getDataSource(json, "XID");
-        dataSourceId = ds.getId();
-        dataSourceEventTypeId = getInt(json, "dataSourceEventType", ds.getEventCodes());
+        if(ds != null) {
+            dataSourceId = ds.getId();
+            dataSourceEventTypeId = getInt(json, "dataSourceEventType", ds.getEventCodes());
+        }
     }
 }

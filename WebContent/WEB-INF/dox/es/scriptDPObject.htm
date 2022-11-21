@@ -1,51 +1,117 @@
-<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
-
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-
-<h1>Llamadas a Procedimientos</h1>
-<p> Utilizando estos procedimientos podr&aacute; habilitar, deshabilitar o escribir directamente en un punto espec&iacute;fico. </p>
 <b> void enableDataPoint(String xid);</b> <br/>
 <b> void disableDataPoint(String xid);</b> <br/>
 <b> void writeDataPoint(String xid, String value);</b> <br/>
+<br/>
+<b> void setLoggingType(String xid, NativeObject value);</b> <br/>
+<b> void setLoggingTypeAll(String xid); </b> <br/>
+<b> void setLoggingTypeNone(String xid); </b> <br/>
+<b> void setLoggingTypeOnTsChange(String xid); </b> <br/>
+<b> void setLoggingTypeOnChange(String xid, double tolerance); </b> <br/>
+<b> void setLoggingTypeInterval(String xid, String intervalPeriodType, int intervalPeriod, String intervalLoggingType); </b> <br/>
+<br/>
+<b> void setDiscardValues(String xid, NativeObject value); </b> <br/>
+<b> void setDefaultCacheSize(String xid, Integer value); </b> <br/>
+<b> void setPurgeType(String xid, NativeObject object); </b> <br/>
+
+
+<pre>Examples script
+
+1. Set interval type:
+
+    var intervalType =
+    {
+        "loggingType":"interval",
+        "intervalLoggingType":"minimum",
+        "intervalPeriodType":"minutes",
+        "intervalPeriod":15
+    };
+
+    dp.setLoggingType('DP_578141', intervalType);
+
+    OR
+
+    dp.setLoggingTypeInterval('DP_578141', "minutes", 15, "minimum");
+
+2. Set on change type:
+
+    var onChangeType =
+    {
+        "loggingType":"on_change",
+        "tolerance":0.8
+    };
+
+    dp.setLoggingType('DP_578141', onChangeType);
+
+    OR
+
+    dp.setLoggingTypeOnChange('DP_578141', 0.8);
+
+3. Set on ts change type:
+
+    var onTsChangeType =
+    {
+        "loggingType":"on_ts_change"
+    };
+
+    dp.setLoggingType('DP_578141', onTsChangeType);
+
+    OR
+
+    dp.setLoggingTypeOnTsChange('DP_578141');
+
+4. Set none type:
+
+    var noneType =
+    {
+        "loggingType":"none"
+    };
+
+    dp.setLoggingType('DP_578141', noneType);
+
+    OR
+
+    dp.setLoggingTypeNone('DP_578141');
+
+5. Set all logging type:
+
+    var allType =
+    {
+        "loggingType":"all"
+    };
+
+    dp.setLoggingType('DP_578141', allType);
+
+    OR
+
+    dp.setLoggingTypeAll('DP_578141');
+
+6. Set discard values:
+
+    var discardValues =
+    {
+        "discardExtremeValues":true,
+        "discardHighLimit":12,
+        "discardLowLimit":-12
+    };
+
+    dp.setDiscardValues('DP_578141', discardValues);
+
+7. Set default cache size:
+
+    dp.setDefaultCacheSize('DP_578141', 22334455);
+
+8. Set purge type:
+
+    var purgeType =
+    {
+        "purgeType":"weeks",
+        "purgePeriod":3
+    };
+
+    dp.setPurgeType('DP_578141', purgeType);</pre>
 
 <br>
 <p>
-Nota: Estos comandos solamente se realizar&aacute;n de la forma exitosa cuando los puntos referidos 
-y sus fuentes de datos se encuentran habilitados en el sistema.
+Note: These commands will only succeed if the data points added to the context 
+and its data sources are enabled in the system.
 </p>

@@ -21,6 +21,9 @@ package com.serotonin.mango.vo.mailingList;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 
 import com.serotonin.json.JsonException;
@@ -30,13 +33,17 @@ import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.util.LocalizableJsonException;
 import com.serotonin.mango.vo.User;
+import org.scada_lts.serorepl.utils.StringUtils;
 import org.scada_lts.service.CommunicationChannelTypable;
 import org.scada_lts.service.CommunicationChannelType;
 
 @JsonRemoteEntity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserEntry extends EmailRecipient {
     private int userId;
     private User user;
+
+    private static final Log LOG = LogFactory.getLog(UserEntry.class);
 
     public UserEntry() {
     }
@@ -100,9 +107,9 @@ public class UserEntry extends EmailRecipient {
         if (user == null)
             return;
         if (!user.isDisabled()) {
-            if(type == CommunicationChannelType.EMAIL)
+            if(type == CommunicationChannelType.EMAIL && !StringUtils.isEmpty(user.getEmail()))
                 addresses.add(user.getEmail());
-            if(type == CommunicationChannelType.SMS)
+            if(type == CommunicationChannelType.SMS && !StringUtils.isEmpty(user.getPhone()))
                 addresses.add(user.getPhone());
         }
     }
@@ -119,7 +126,16 @@ public class UserEntry extends EmailRecipient {
         super.jsonSerialize(map);
         if (user == null)
             user = new UserDao().getUser(userId);
-        map.put("username", user.getUsername());
+        setUsername(map);
+    }
+
+    private void setUsername(Map<String, Object> map) {
+        try {
+            User user = new UserDao().getUser(userId);
+            map.put("username", user.getUsername());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
     }
 
     @Override

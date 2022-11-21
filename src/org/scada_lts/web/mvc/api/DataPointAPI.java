@@ -25,19 +25,18 @@ import com.serotonin.mango.web.dwr.EmportDwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.scada_lts.web.mvc.api.json.JsonDataPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arkadiusz Parafiniuk
@@ -49,6 +48,66 @@ public class DataPointAPI {
     private static final Log LOG = LogFactory.getLog(DataPointAPI.class);
 
     DataPointService dataPointService = new DataPointService();
+
+    @GetMapping(value = "/api/datapoint")
+    public ResponseEntity<DataPointVO> getDataPoint(@RequestParam(required = false) Integer id,
+                                                    @RequestParam(required = false) String xid,
+                                                    HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                if(id != null) {
+                    return new ResponseEntity<>(dataPointService.getDataPoint(id), HttpStatus.OK);
+                } else if (xid != null){
+                    return new ResponseEntity<>(dataPointService.getDataPoint(xid), HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping(value = "/api/datapoints")
+    public ResponseEntity<List<JsonDataPoint>> getDataPoints(HttpServletRequest request) {
+        try {
+            User user = Common.getUser(request);
+            if(user != null) {
+                List<DataPointVO> lstDP;
+
+                Comparator<DataPointVO> comparator = new Comparator<DataPointVO>() {
+                    @Override
+                    public int compare(DataPointVO o1, DataPointVO o2) {
+                        return 0;
+                    }
+                };
+
+                lstDP = dataPointService.getDataPoints(comparator, false);
+
+                List<JsonDataPoint> result = new ArrayList<>();
+                for (DataPointVO dp:lstDP){
+                    JsonDataPoint jdp = new JsonDataPoint(
+                            dp.getId(),
+                            dp.getName(),
+                            dp.getXid(),
+                            dp.isEnabled(),
+                            dp.getDescription(),
+                            dp.getDataSourceName(),
+                            dp.getPointLocator().getDataTypeId()
+                    );
+                    result.add(jdp);
+                }
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @RequestMapping(value = "/api/datapoint/getConfigurationByXid/{xid}", method = RequestMethod.GET)
     public ResponseEntity<String> getConfigurationByXid(
@@ -111,7 +170,7 @@ public class DataPointAPI {
 
                 List<DatapointJSON> lst = new ArrayList<>();
                 for (DataPointVO dp:lstDP){
-                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid());
+                    DatapointJSON dpJ = new DatapointJSON(dp.getId(), dp.getName(), dp.getXid(), dp.getDescription());
                     lst.add(dpJ);
                 }
 
@@ -140,7 +199,7 @@ public class DataPointAPI {
                 List<DatapointJSON> resultList = new ArrayList<>();
                 List<DataPointVO> datapointList = dataPointService.getPlcDataPoints(datasourceId);
                 for(DataPointVO datapoint: datapointList) {
-                    DatapointJSON dp = new DatapointJSON(datapoint.getId(), datapoint.getName(), datapoint.getXid());
+                    DatapointJSON dp = new DatapointJSON(datapoint.getId(), datapoint.getName(), datapoint.getXid(), datapoint.getDescription());
                     resultList.add(dp);
                 }
                 return new ResponseEntity<>(resultList, HttpStatus.OK);
@@ -153,15 +212,17 @@ public class DataPointAPI {
         }
     }
 
-    private class DatapointJSON implements Serializable {
+    public class DatapointJSON implements Serializable {
         private long id;
         private String name;
         private String xid;
+        private String description;
 
-        DatapointJSON(long id, String name, String xid) {
+        DatapointJSON(long id, String name, String xid, String description) {
             this.setId(id);
             this.setName(name);
             this.setXid(xid);
+            this.setDescription(description);
         }
 
         public long getId() { return id; }
@@ -169,6 +230,7 @@ public class DataPointAPI {
         public String getName() {
             return name;
         }
+        public String getDescription() { return description; }
 
         public void setName(String name) {
             this.name = name;
@@ -179,6 +241,7 @@ public class DataPointAPI {
         public void setXid(String xid) {
             this.xid = xid;
         }
+        public void setDescription(String description) { this.description = description; }
     }
 }
 

@@ -113,11 +113,10 @@ public class InactiveEventsProviderTest {
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(sameEvent,eventHandler1);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(sameEvent,eventHandler2);
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(eventHandler1, sameEvent);
         scheduledInactiveEventService.scheduleEvent(eventHandler2, sameEvent);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailProvider.getScheduledEvents(limit);
 
         //then:
@@ -146,11 +145,10 @@ public class InactiveEventsProviderTest {
         ScheduledEvent scheduledEvent1 = new ScheduledEvent(sameEvent,eventHandler1);
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(sameEvent,eventHandler2);
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(eventHandler1, sameEvent);
         scheduledInactiveEventService.scheduleEvent(eventHandler2, sameEvent);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = smsProvider.getScheduledEvents(limit);
 
         //then:
@@ -173,14 +171,11 @@ public class InactiveEventsProviderTest {
         ScheduledEvent scheduledEvent2 = new ScheduledEvent(eventAsEmail2, emailEventHandler);
         ScheduledEvent scheduledEvent3 = new ScheduledEvent(eventAsSms, emailEventHandler);
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
-
-        //and:
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
 
         //then:
@@ -200,14 +195,11 @@ public class InactiveEventsProviderTest {
         when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
         when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
-
-        //and:
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
 
         //then:
@@ -227,14 +219,11 @@ public class InactiveEventsProviderTest {
 
         ScheduledEvent scheduledEvent = new ScheduledEvent(eventAsSms, smsEventHandler);
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
-
-        //and:
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
 
         //then:
@@ -253,14 +242,11 @@ public class InactiveEventsProviderTest {
         when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(eventAsEmail1, eventAsEmail2, eventAsSms));
         when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler, smsEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, eventAsEmail2);
-
-        //and:
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, eventAsSms);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
 
         //then:
@@ -277,8 +263,9 @@ public class InactiveEventsProviderTest {
         when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event));
         when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(emailEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event);
+
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
 
         //then:
@@ -306,9 +293,9 @@ public class InactiveEventsProviderTest {
 
         when(eventDAOMock.getAllStatusEvents(anySet())).thenReturn(Arrays.asList(event));
         when(eventDAOMock.getEventHandlers(anySet())).thenReturn(Arrays.asList(smsEventHandler));
+        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event);
 
         //when:
-        scheduledInactiveEventService.scheduleEvent(smsEventHandler, event);
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
 
         //then:
@@ -342,13 +329,12 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event3, smsEventHandler));
         eventsExpected.add(new ScheduledEvent(event4, smsEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, event1);
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, event2);
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, event4);
         scheduledInactiveEventService.scheduleEvent(smsEventHandler, event3);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = smsSubject.getScheduledEvents(limit);
 
         //then:
@@ -374,13 +360,12 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event3, emailEventHandler));
         eventsExpected.add(new ScheduledEvent(event4, emailEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(limit);
 
         //then:
@@ -402,13 +387,12 @@ public class InactiveEventsProviderTest {
         List<ScheduledEvent> eventsExpected = new ArrayList<>();
         eventsExpected.add(new ScheduledEvent(event1, emailEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(1);
 
         //then:
@@ -431,13 +415,12 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event1, emailEventHandler));
         eventsExpected.add(new ScheduledEvent(event2, emailEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(2);
 
         //then:
@@ -461,13 +444,12 @@ public class InactiveEventsProviderTest {
         eventsExpected.add(new ScheduledEvent(event2, emailEventHandler));
         eventsExpected.add(new ScheduledEvent(event3, emailEventHandler));
 
-        //when:
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event1);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event2);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event4);
         scheduledInactiveEventService.scheduleEvent(emailEventHandler, event3);
 
-        //and:
+        //when:
         List<ScheduledEvent> events = emailSubject.getScheduledEvents(3);
 
         //then:

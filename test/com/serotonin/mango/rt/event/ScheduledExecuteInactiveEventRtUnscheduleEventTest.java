@@ -3,6 +3,7 @@ package com.serotonin.mango.rt.event;
 import com.serotonin.mango.rt.event.schedule.ScheduledExecuteInactiveEventRT;
 import com.serotonin.mango.rt.event.type.DataPointEventType;
 import com.serotonin.mango.rt.event.type.EventType;
+import com.serotonin.mango.rt.maint.work.AfterWork;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
@@ -13,15 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Matchers;
 import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.SystemSettingsService;
-import org.scada_lts.service.CommunicationChannel;
-import org.scada_lts.service.CommunicationChannelTypable;
-import org.scada_lts.service.CommunicationChannelType;
-import org.scada_lts.service.InactiveEventsProvider;
-import org.scada_lts.service.ScheduledExecuteInactiveEventService;
+import org.scada_lts.service.*;
 import utils.EventTestUtils;
 import utils.MailingListTestUtils;
 import utils.ScheduledInactiveEventTestUtils;
@@ -31,18 +27,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 import static utils.MailingListTestUtils.createAddressEntry;
 
 @RunWith(Parameterized.class)
 public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
 
     @Parameterized.Parameters(name= "{index}: dailyLimitSentEmailsNumber: {0}, " +
-            "isDailyLimitSentEmails: {1}, CommunicationChannelType: {2}, invokeUnscheduleEventTimes: {3}")
+            "isDailyLimitSentEmails: {1}, CommunicationChannelType: {2}, times: {3}")
     public static Collection primeNumbers() {
         return Arrays.asList(new Object[][] {
                 { 1, true, CommunicationChannelType.EMAIL, 1},
@@ -119,8 +117,16 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     public void init() {
 
         this.channelTypeMock = mock(CommunicationChannelTypable.class);
-        when(channelTypeMock.sendMsg(any(), anySet(), anyString())).thenReturn(true);
-        when(channelTypeMock.sendLimit(any(), anySet(), anyString())).thenReturn(true);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(),
+                anyString(), anyObject());
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendLimit(any(EventInstance.class), anySet(),
+                anyString(), anyObject());
         when(channelTypeMock.getEventHandlerType()).thenReturn(channelType.getEventHandlerType());
         when(channelTypeMock.validateAddress(anyString())).thenAnswer(a -> {
             Object[] args = a.getArguments();
@@ -132,21 +138,21 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
                         (String)a.getArguments()[2]));
 
         this.channel = CommunicationChannel.newChannel(mailingList, channelTypeMock, systemSettingsServiceMock);
-        InactiveEventsProvider providerMock = ScheduledInactiveEventTestUtils.createProviderMock(dailyLimitSentEmails,
-                channel, scheduledEvent1, scheduledEvent2);
+        InactiveEventsProvider providerMock = ScheduledInactiveEventTestUtils.createProviderMock(dailyLimitSentEmails, channel,
+                scheduledEvent1, scheduledEvent2);
 
         this.scheduledInactiveEventServiceMock = mock(ScheduledExecuteInactiveEventService.class);
 
-        dataPointServiceMock = mock(DataPointService.class);
+        this.dataPointServiceMock = mock(DataPointService.class);
         DataPointVO dataPointVO = mock(DataPointVO.class);
         when(dataPointServiceMock.getDataPoint(anyInt())).thenReturn(dataPointVO);
 
-        dataSourceServiceMock = mock(DataSourceService.class);
+        this.dataSourceServiceMock = mock(DataSourceService.class);
         DataSourceVO dataSourceVO = mock(DataSourceVO.class);
         when(dataSourceServiceMock.getDataSource(anyInt())).thenReturn(dataSourceVO);
 
-        this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventServiceMock, providerMock,
-                dataPointServiceMock, dataSourceServiceMock, 250);
+        this.testSubject = new ScheduledExecuteInactiveEventRT(scheduledInactiveEventServiceMock, providerMock, dataPointServiceMock,
+                dataSourceServiceMock, 250);
     }
 
     @Test
@@ -233,36 +239,57 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     public void when_scheduleTimeout_and_sendMsg_return_false_for_all_events_then_0_times_unscheduleEvent() {
 
         //given:
-        when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(false);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(), anyString(), anyObject());
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(scheduledInactiveEventServiceMock, times(0)).unscheduleEvent(any(ScheduledEvent.class),
-                same(channel));
+        verify(scheduledInactiveEventServiceMock, times(invokeUnscheduleEventTimes)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
     }
 
     @Test
-    public void when_scheduleTimeout_and_sendMsg_return_false_for_event1_then_verify_times_unscheduleEvent_for_event2() {
+    public void when_scheduleTimeout_and_sendMsg_fail_for_all_events_then_0_times_unscheduleEvent() {
 
         //given:
-        when(channelTypeMock.sendMsg(refEq(event1, "context"), anySet(), anyString())).thenReturn(false);
-        when(channelTypeMock.sendMsg(refEq(event2, "context"), anySet(), anyString())).thenReturn(true);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(), anyString(), anyObject());
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
-        verify(scheduledInactiveEventServiceMock, times(0)).unscheduleEvent(same(scheduledEvent1),
-                same(channel));
+        verify(scheduledInactiveEventServiceMock, times(0)).unscheduleEvent(any(ScheduledEvent.class), eq(channel));
+    }
+
+    @Test
+    public void when_scheduleTimeout_and_sendMsg_fail_for_event1_then_verify_times_unscheduleEvent_for_event2() {
+
+        //given:
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
+            return true;
+        }).when(channelTypeMock).sendMsg(refEq(event1, "context"), anySet(), anyString(), anyObject());
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendMsg(refEq(event2, "context"), anySet(), anyString(), anyObject());
+
+        //when:
+        testSubject.scheduleTimeout(false, DateTime.now().getMillis());
+
+        //then:
+        verify(scheduledInactiveEventServiceMock, times(0)).unscheduleEvent(eq(scheduledEvent1), eq(channel));
         if(invokeUnscheduleEventTimes == 1) {
-            verify(scheduledInactiveEventServiceMock, times(0)).unscheduleEvent(same(scheduledEvent2),
-                    same(channel));
+            verify(scheduledInactiveEventServiceMock, times(0)).unscheduleEvent(eq(scheduledEvent2), eq(channel));
         } else {
             verify(scheduledInactiveEventServiceMock, times(1)).unscheduleEvent(any(), any());
-            verify(scheduledInactiveEventServiceMock, times(1)).unscheduleEvent(same(scheduledEvent2),
-                    same(channel));
+            verify(scheduledInactiveEventServiceMock, times(1)).unscheduleEvent(eq(scheduledEvent2), eq(channel));
         }
     }
 
@@ -271,8 +298,14 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     public void when_scheduleTimeout_and_sendMsg_return_false_for_event2_then_1_times_unscheduleEvent_for_event1() {
 
         //given:
-        when(channelTypeMock.sendMsg(refEq(event1, "context"), anySet(), anyString())).thenReturn(true);
-        when(channelTypeMock.sendMsg(refEq(event2, "context"), anySet(), anyString())).thenReturn(false);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workSuccess();
+            return true;
+        }).when(channelTypeMock).sendMsg(refEq(event1, "context"), anySet(), anyString(), anyObject());
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test execption"));
+            return true;
+        }).when(channelTypeMock).sendMsg(refEq(event2, "context"), anySet(), anyString(), anyObject());
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
@@ -284,16 +317,19 @@ public class ScheduledExecuteInactiveEventRtUnscheduleEventTest {
     }
 
     @Test
-    public void when_scheduleTimeout_and_sendMsg_return_false_for_all_events_then_0_times_sendMsg_limit() {
+    public void when_scheduleTimeout_and_sendMsg_fail_for_all_events_then_0_times_sendLimit() {
 
         //given:
-        when(channelTypeMock.sendMsg(any(EventInstance.class), anySet(), anyString())).thenReturn(false);
+        doAnswer(a -> {
+            ((AfterWork)a.getArguments()[3]).workFail(new Exception("test exception"));
+            return true;
+        }).when(channelTypeMock).sendMsg(any(EventInstance.class), anySet(), anyString(), any(AfterWork.class));
 
         //when:
         testSubject.scheduleTimeout(false, DateTime.now().getMillis());
 
         //then:
         verify(channelTypeMock, times(0)).sendLimit(any(EventInstance.class), anySet(),
-                eq("Limit"));
+                eq("Limit"), anyObject());
     }
 }

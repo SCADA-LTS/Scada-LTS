@@ -1,3 +1,4 @@
 {
-	"baseUrl": "http://localhost:8080/ScadaBR"
+	"baseUrl": "http://localhost:8080/ScadaBR",
+	"watchForFileChanges":false
 }

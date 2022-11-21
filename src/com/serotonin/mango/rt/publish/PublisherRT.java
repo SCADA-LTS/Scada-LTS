@@ -147,10 +147,11 @@ abstract public class PublisherRT<T extends PublishedPointVO> implements Timeout
 
         if (pointDisabledEventActive != foundDisabledPoint) {
             pointDisabledEventActive = foundDisabledPoint;
-            if (pointDisabledEventActive)
-                // A published point has been terminated, was never enabled, or no longer exists.
-                Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
-                        AlarmLevels.URGENT, new LocalizableMessage("event.publish.pointMissing"), createEventContext());
+                if (pointDisabledEventActive) {
+                    // A published point has been terminated, was never enabled, or no longer exists.
+                    Common.ctx.getEventManager().raiseEvent(pointDisabledEventType, System.currentTimeMillis(), true,
+                            AlarmLevels.URGENT, new LocalizableMessage("event.publish.pointMissing"), createEventContext());
+                }
             else
                 // Everything is good
                 Common.ctx.getEventManager().returnToNormal(pointDisabledEventType, System.currentTimeMillis());

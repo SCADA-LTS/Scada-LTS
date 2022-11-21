@@ -80,11 +80,6 @@ const storeSystemSettings = {
 				resolve();
 			});
 		},
-		getAllSettings(context) {
-			return new Promise((resolve, reject) => {
-				resolve();
-			});
-		},
 		getDatabaseSize(context) {
 			return new Promise((resolve, reject) => {
 				resolve();

@@ -47,6 +47,10 @@
 									ref="smsDomainSettingsComponent"
 									@changed="componentChanged"
 								></SmsDomainSettingsComponent>
+								<AmChartSettingsComponent
+									ref="amChartSettingsComponent"
+									@changed="componentChanged"
+								></AmChartSettingsComponent>
 								<ScadaConfigurationComponent></ScadaConfigurationComponent>
 							</v-row>
 						</v-col>
@@ -65,19 +69,19 @@
 					</v-row>
 
 					<v-row v-if="systemRunningTime">
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.systemtime') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ systemRunningTime }}</p>
 						</v-col>
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.milestone') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>
 								{{ $store.getters.appMilestone }} build
 								{{ $store.getters.appBuild }}
@@ -86,33 +90,61 @@
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.branch') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ $store.getters.appBranch }}</p>
 						</v-col>
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
+							<p>{{ $t('systemsettings.info.commit') }}</p>
+						</v-col>
+						<v-col cols="5">
+							<p v-if="!$store.getters.appCommitLink">
+								{{ $store.getters.appCommit }}
+							</p>
+							<a
+								v-if="!!$store.getters.appCommitLink"
+								:href="$store.getters.appCommitLink"
+							>
+								{{ $store.getters.appCommit }}
+							</a>
+						</v-col>
+					</v-row>
+
+					<v-row v-if="$store.getters.appPullRequestNumber !== 'false'">
+						<v-col cols="7">
+							<p>{{ $t('systemsettings.info.pullrequest') }}</p>
+						</v-col>
+						<v-col cols="5">
+							<p>{{ $store.getters.appPullRequestNumber }}</p>
+							<br />
+							<p>{{ $store.getters.appPullRequestBranch }}</p>
+						</v-col>
+					</v-row>
+
+					<v-row>
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.tag') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ $store.getters.appTag }}</p>
 						</v-col>
 					</v-row>
 
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="7">
 							<p>{{ $t('systemsettings.info.uiversion') }}</p>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
 							<p>{{ $store.getters.appVersion }}</p>
 						</v-col>
 					</v-row>
 
-					<v-row>
+					<v-row v-if="!!systemInfoSettings">
 						<v-col cols="12">
 							<v-text-field
 								v-model="systemInfoSettings.instanceDescription"
@@ -121,9 +153,7 @@
 								dense
 							></v-text-field>
 						</v-col>
-					</v-row>
 
-					<v-row>
 						<v-col cols="12">
 							<v-select
 								@change="saveSystemInfoSettings()"
@@ -137,75 +167,8 @@
 						</v-col>
 					</v-row>
 
-					<v-row v-if="databaseType">
-						<v-col cols="12" class="d-flex flex-row justify-space-between">
-							<h2>{{ $t('systemsettings.database.title') }}</h2>
-							<v-spacer></v-spacer>
-							<v-btn fab icon @click="initDatabaseSection()">
-								<v-icon>mdi-refresh</v-icon>
-							</v-btn>
-						</v-col>
+					<data-base-info-component></data-base-info-component>
 
-						<v-col cols="12">
-							<v-row v-if="schemaVersion">
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.schemaVersion') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ schemaVersion }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.size') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.databaseSize }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.file') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.filedataCount }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.total') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.filedataSize }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.histroy') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.historyCount }}</p>
-								</v-col>
-
-								<v-col cols="8">
-									<p>{{ $t('systemsettings.database.event') }}</p>
-								</v-col>
-								<v-col cols="4">
-									<p>{{ databaseInfo.eventCount }}</p>
-								</v-col>
-
-								<v-col cols="12">
-									<p>{{ $t('systemsettings.database.top') }}</p>
-								</v-col>
-								<v-col
-									cols="12"
-									v-for="point in databaseInfo.topPoints"
-									v-bind:key="point.pointId"
-								>
-									<p>
-										{{ point.pointName }}<br />
-										(Point ID: {{ point.pointId }} - count: {{ point.count }})
-									</p>
-								</v-col>
-							</v-row>
-						</v-col>
-					</v-row>
 				</v-col>
 			</v-row>
 		</v-container>
@@ -282,6 +245,10 @@
 			<h2>Not allowed to see that page</h2>
 			<v-spacer></v-spacer>
 		</v-container>
+
+		<v-snackbar v-model="response.status" :color="response.color">
+			{{ response.message }}
+		</v-snackbar>
 	</div>
 </template>
 <script>
@@ -296,7 +263,8 @@ import MiscSettingsComponent from './MiscSettingsComponent';
 import DefaultLoggingTypeSettingsComponent from './DefaultLoggingTypeComponent';
 import SmsDomainSettingsComponent from './SmsDomainSettingsComponent';
 import ScadaConfigurationComponent from './ScadaConfigurationComponent';
-import { keys } from '@amcharts/amcharts4/.internal/core/utils/Object';
+import AmChartSettingsComponent from './AmChartSettingsComponent';
+import DataBaseInfoComponent from './DataBaseInfoComponent';
 
 export default {
 	el: '#systemsettings',
@@ -311,6 +279,8 @@ export default {
 		DefaultLoggingTypeSettingsComponent,
 		SmsDomainSettingsComponent,
 		ScadaConfigurationComponent,
+		AmChartSettingsComponent,
+		DataBaseInfoComponent,
 	},
 	filters: {
 		blank: function (value) {
@@ -338,6 +308,11 @@ export default {
 				{ value: 'de', text: 'Deutsch' },
 				{ value: 'en', text: 'English' },
 			],
+			response: {
+				color: 'success',
+				status: false,
+				message: '',
+			},
 		};
 	},
 	mounted() {
@@ -345,17 +320,11 @@ export default {
 			this.getUserRole();
 		}
 		store.dispatch('getSystemInfoSettings');
-		this.initDatabaseSection();
 		this.loadClock();
 	},
 	methods: {
 		async getUserRole() {
 			this.isUserRoleAdmin = await store.dispatch('getUserRole');
-		},
-		initDatabaseSection() {
-			store.dispatch('getDatabaseType');
-			store.dispatch('getDatabaseSize');
-			store.dispatch('getSchemaVersion');
 		},
 
 		saveSystemInfoSettings() {
@@ -371,24 +340,17 @@ export default {
 				}
 			});
 		},
-		saveDatabase(databaseType) {
-			this.$store.dispatch('saveDatabaseType', databaseType).then((resp) => {
-				if (resp) {
-					this.generateNotification(
-						'success',
-						i18n.t('systemsettings.notification.save.database'),
-					);
-				} else {
-					this.generateNotification('danger', i18n.t('systemsettings.notification.fail'));
-				}
-			});
-		},
 		generateNotification(type, content) {
-			this.$notify({
-				placement: 'bottom-right',
-				type,
-				content,
-			});
+			this.response = {
+				status: true,
+				message: content,
+				color: type,
+			};
+			// this.$notify({
+			// 	placement: 'bottom-right',
+			// 	type,
+			// 	content,
+			// });
 		},
 		async loadClock() {
 			let result = await store.dispatch('getSystemStartupTime');
@@ -455,20 +417,11 @@ export default {
 		},
 	},
 	computed: {
-		databaseType() {
-			return this.$store.state.systemSettings.databaseType;
-		},
-		databaseInfo() {
-			return this.$store.state.systemSettings.databaseInfo;
-		},
 		systemInfoSettings() {
 			return this.$store.state.systemSettings.systemInfoSettings;
 		},
 		systemStartupTime() {
 			return this.$store.state.systemSettings.systemStartupTime;
-		},
-		schemaVersion() {
-			return this.$store.state.systemSettings.schemaVersion;
 		},
 	},
 };

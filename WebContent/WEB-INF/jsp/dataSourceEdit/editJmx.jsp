@@ -92,8 +92,8 @@
                 	  var attr = obj[ai];
                       var attrNode; 
                       if (!attr.items) {
-                    	  var func = "preAddPoint(\""+ name +"\", \""+ attr.name +"\", \"\")";
-                          attrNode = dojo.widget.createWidget("TreeNode", { 
+                    	  var func = "preAddPoint(`"+ name +"`, `"+ attr.name +"`, ``)";
+                          attrNode = dojo.widget.createWidget("TreeNode", {
                               title: attr.name +"("+ attr.type +") "+ writeImageSQuote(null, null,
                                       "icon_comp_add", "<fmt:message key="dsEdit.jmx.addPoint"/>", func),
                               isFolder: false
@@ -101,15 +101,15 @@
                           objNode.addChild(attrNode);
                       }
                       else {
-                          attrNode = dojo.widget.createWidget("TreeNode", { 
+                          attrNode = dojo.widget.createWidget("TreeNode", {
                               title: attr.name +"("+ attr.type +")",
                               isFolder: true
                           });
                           objNode.addChild(attrNode);
-                    	  
+
                           for (var ii=0; ii<attr.items.length; ii++) {
                         	  var item = attr.items[ii];
-                              var func = "preAddPoint(\""+ name +"\", \""+ attr.name +"\", \""+ item.name +"\")";
+                              var func = "preAddPoint(`"+ name +"`, `"+ attr.name +"`, `"+ item.name +"`)";
                               var itemNode = dojo.widget.createWidget("TreeNode", { 
                                   title: item.name +"("+ item.type +") "+ writeImageSQuote(null, null,
                                           "icon_comp_add", "<fmt:message key="dsEdit.jmx.addPoint"/>", func),

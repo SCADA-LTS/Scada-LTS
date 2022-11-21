@@ -1,57 +1,21 @@
-﻿<!--
-  ScadaBR 1.0  - Pacote de Modificações Community Edition
-  http://www.scadabr.org.br
-  Adecuación y Traducion para Español: Copyright (C) 2012 por Mílmero González milmero@gmail.com
-  
-  This file is free software: you may copy, redistribute and/or modify it  
-  under the terms of the GNU General Public License as published by the  
-  Free Software Foundation, either version 3 of the License, or (at your  
-  option) any later version.  
-  
-  This file is distributed in the hope that it will be useful, but  
-  WITHOUT ANY WARRANTY; without even the implied warranty of  
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-  General Public License for more details.  
-  
-  You should have received a copy of the GNU General Public License  
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
-   
-  This file incorporates work covered by the following copyright and  
-  permission notice:
+<!--
+    Mango - M2M de código abierto - http://mango.serotoninsoftware.com 
+    Derechos de autor (C) 2006-2011 Serotonin Software Technologies Inc.
+    El autor Matthew Lohbihler    
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo. bajo los términos de la Licencia Pública General de GNU,
+    publicada por la Fundación de Software Libre, ya sea la versión 3 de la licencia, o (su elección) cualquier versión posterior.
+    Este programa se distribuye con la esperanza de que sea útil,  pero SIN NINGUNA GARANTÍA; sin siquiera la garantía implícita de comerciabilidad o idoneidad para un propósito particular.  
+    Vea el Licencia Pública General de GNU para más detalles.
+    Debería haber recibido una copia de la Licencia Pública General de GNU.Al mismo tiempo que este programa.  Si no, véase http://www.gnu.org/licenses/.
+ -->
+<p>La fuente de datos virtual es una fuente de datos sin ninguna conexión con un sistema externo o físico. Existe completamente dentro del espacio de memoria del sistema. Los datos que produce son aleatorios o deterministas, dependiendo de la configuración de los puntos.</p>
 
-    Mango - Open Source M2M - http://mango.serotoninsoftware.com
-    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
-    @author Matthew Lohbihler
-    
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/.
--->
-
-<h1>Descripci&oacute;n General</h1>
-<p>Una fuente de datos Virtuales una fuente de datos sin conexi&oacute;n a sistemas externos o f&iacute;sicos. Este tipo de fuente de datos s&oacute;lo existe en el espacio 
-de la memoria del servidor. Los datos provienen de generaciones aleatorias, o determin&iacute;sticas, dependiendo de como configure los puntos.</p>
-
-<p>
-  Una fuente de datos virtual puede ser &uacute;til en casos como:
-</p>
+<p>Las fuentes de datos virtuales pueden ser útiles de varias maneras:</p>
 <ul>
-  <li>Es la v&iacute;a m&aacute;s simple de validar que el sistema est&aacute; funcionando.</li>
-  <li>Puede generar datos predictivos con los cuales hacer comparaciones de funcionamiento con sus datos reales.</li>
-  <li>Puede controlar equipos de formas complejas. Por ejemplo, si las luces de una una casa son controladas por el sistema, puede crear 
-  puntos binarios aleatorios para encender y apagar las luces cuando los due&ntilde;os est&eacute;n de vacaciones, creando as&iacute; la impresi&oacute;n que est&aacute;n un en casa.</li>
-  <li>Cualquier aplicaci&oacute;n donde los datos aleatorios o determin&iacute;sticos sean de utilidad.</li>
+  <li>Una forma sencilla de validar que su sistema funciona</li>
+  <li>Puede crear datos predecibles con los que se pueden comparar los datos reales.</li>
+  <li>Puedes controlar el equipo de una manera más compleja. Por ejemplo, si la iluminación de su casa está controlada por el sistema, puede utilizar un punto binario aleatorio para encender y apagar las luces mientras está de vacaciones, haciendo que parezca que siempre está en casa.</li>
+  <li>Cualquier lugar donde los datos deterministas o aleatorios sean útiles</li>
 </ul>
 
-<p>
-  La configuraci&oacute;n de la fuente de datos es simple, s&oacute;lo req1uiere de un nombre, y del intervalo de tiempo entre cada actualizaci&oacute;n. Por ejemplo, si elige "2 minutos", entonces cada dos minutos se cambiar&aacute;n los valores del punto virtual seg&uacute;n su algoritmo.
-</p>
+<p>La configuración de la fuente de datos es simple. Sólo requiere un nombre y el período de tiempo entre cada actualización de los datos. Por ejemplo, si elige "2 minutos", entonces cada dos minutos se ejecutarán los algoritmos que cambian los valores de los puntos virtuales para esta fuente de datos.</p>

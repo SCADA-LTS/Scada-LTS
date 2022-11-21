@@ -1,0 +1,6 @@
+name=Weather
+type=imageSet
+width=60
+height=51
+text.x=0
+text.y=24

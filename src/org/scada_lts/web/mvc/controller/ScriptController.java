@@ -37,6 +37,8 @@ import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 
+import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+
 /**
  * Controller for script.
  * 
@@ -72,6 +74,10 @@ public class ScriptController {
 			} catch (ScriptException e) {
 				response.setStatus(ErrorCode.SCRIPT_NOT_EXECUTED);
 				result = "" + e.getMessage();
+				LOG.warn(infoErrorExecutionScript(e, script));
+			} catch (Exception e) {
+                LOG.warn(infoErrorExecutionScript(e, script));
+				throw e;
 			}
 		}
 

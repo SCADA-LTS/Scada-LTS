@@ -159,15 +159,13 @@ mango.view.hideChart = function(componentId, event, source) {
 		hideLayer('c'+ componentId +'ChartLayer');
 }
 
-function vcOver(base, amt) {
-    if (!amt)
-        amt = 10;
+function vcOver(base, amt = 99) {
     setZIndex(base, amt);
     showLayer(base + 'Controls');
 };
 
-function vcOut(base) {
-    setZIndex(base, 0);
+function vcOut(base, zIndex = 0) {
+    setZIndex(base, zIndex);
     hideLayer(base +'Controls');
 };
 

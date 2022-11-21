@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import br.org.scadabr.api.exception.DAOException;
 import br.org.scadabr.db.AbstractMySQLDependentTest;
-import br.org.scadabr.db.dao.UsersProfileDao;
 import br.org.scadabr.db.dao.mocks.MockDataPointDao;
 import br.org.scadabr.db.dao.mocks.MockDataSourceDao;
 import br.org.scadabr.db.dao.mocks.MockViewDao;
@@ -41,6 +40,7 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.web.dwr.EmportDwr;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
+import org.scada_lts.mango.service.UsersProfileService;
 
 public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 
@@ -53,6 +53,8 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 	private static final String WATCHLIST2_XID = "V_12345";
 	private static final int FIRST = 0;
 	private static final int SECOND = 1;
+
+	private UsersProfileService usersProfileService = new UsersProfileService();
 
 	private String getJson(UsersProfileVO exportedUsersProfile) {
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
@@ -86,13 +88,12 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedUsersProfile = dao
+		UsersProfileVO retrievedUsersProfile = usersProfileService
 				.getUserProfileByXid(exportedUsersProfile.getXid());
 
 		assertEquals(exportedUsersProfile.getXid(),
@@ -122,13 +123,12 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(dsId,
 				retrievedProfile.getDataSourcePermissions().get(FIRST));
 		assertEquals(1, retrievedProfile.getDataSourcePermissions().size());
@@ -162,13 +162,12 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(dp.getId(), retrievedProfile.getDataPointPermissions()
 				.get(FIRST).getDataPointId());
 		assertEquals(DataPointAccess.SET, retrievedProfile
@@ -203,13 +202,12 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(view.getId(),
 				retrievedProfile.getViewPermissions().get(FIRST).getId());
 		assertEquals(ShareUser.ACCESS_READ, retrievedProfile
@@ -245,13 +243,12 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		assertEquals(watchlist.getId(), retrievedProfile
 				.getWatchlistPermissions().get(FIRST).getId());
 		assertEquals(ShareUser.ACCESS_READ, retrievedProfile
@@ -287,13 +284,12 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedProfile = dao.getUserProfileByXid(PROFILE_XID);
+		UsersProfileVO retrievedProfile = usersProfileService.getUserProfileByXid(PROFILE_XID);
 		User retrievedUser = new UserDao().getUser(user.getId());
 
 		assertEquals(profileDataSourcePermissions,
@@ -336,7 +332,6 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		JsonObject profileJson = new JsonObject(reader);
 		DwrResponseI18n response = mock(DwrResponseI18n.class);
 		ImportTask task = mock(ImportTask.class);
-		UsersProfileDao dao = new UsersProfileDao();
 
 		UsersProfileImporter importer = new UsersProfileImporter();
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
@@ -789,11 +784,10 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		viewPermissions.add(new ViewAccess(view.getId(), ViewAccess.SET));
 		viewPermissions.add(new ViewAccess(view2.getId(), ViewAccess.SET));
 		oldProfile.setViewPermissions(viewPermissions);
-		UsersProfileDao profileDao = new UsersProfileDao();
-		profileDao.saveUsersProfile(oldProfile);
+		usersProfileService.saveUsersProfile(oldProfile);
 
 		oldProfile.apply(user);
-		profileDao.updateUsersProfile(oldProfile);
+		usersProfileService.updateUsersProfile(user, oldProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(PROFILE_NAME);
@@ -866,10 +860,9 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		oldUsersProfile.apply(user2);
 
 		UserDao userDao = new UserDao();
-		UsersProfileDao profilesDao = new UsersProfileDao();
 		userDao.saveUser(user);
 		userDao.saveUser(user2);
-		profilesDao.saveUsersProfile(oldUsersProfile);
+		usersProfileService.saveUsersProfile(oldUsersProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(PROFILE_NAME);
@@ -927,7 +920,7 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		View retrievedView = new ViewDao().getViews().get(FIRST);
 		WatchList retrievedWatchlist = mockWatchlistDao.getWatchList(watchlist
 				.getId());
-		UsersProfileVO retrievedProfile = profilesDao
+		UsersProfileVO retrievedProfile = usersProfileService
 				.getUserProfileByXid(PROFILE_XID);
 
 		assertEquals(exportedUsersProfile.getXid(), retrievedProfile.getXid());
@@ -1000,11 +993,10 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		List<ViewAccess> oldViewPermissions = new ArrayList<ViewAccess>();
 		oldViewPermissions.add(new ViewAccess(view.getId(), ViewAccess.SET));
 		oldProfile.setViewPermissions(oldViewPermissions);
-		UsersProfileDao profileDao = new UsersProfileDao();
-		profileDao.saveUsersProfile(oldProfile);
+		usersProfileService.saveUsersProfile(oldProfile);
 
 		oldProfile.apply(user);
-		profileDao.updateUsersProfile(oldProfile);
+		usersProfileService.updateUsersProfile(user, oldProfile);
 
 		UsersProfileVO exportedUsersProfile = new UsersProfileVO();
 		exportedUsersProfile.setName(sameName);
@@ -1031,14 +1023,14 @@ public class UsersProfileImporterTest extends AbstractMySQLDependentTest {
 		importer.importUsersProfile(profileJson.getJsonObject("usersProfiles"),
 				response, reader, task);
 
-		UsersProfileVO retrievedOldProfile = profileDao
+		UsersProfileVO retrievedOldProfile = usersProfileService
 				.getUserProfileByXid(oldProfileXid);
 
-		UsersProfileVO retrievedImportedProfile = profileDao
+		UsersProfileVO retrievedImportedProfile = usersProfileService
 				.getUserProfileByXid(PROFILE_XID);
 
 		assertEquals(retrievedOldProfile.getName(),
 				retrievedImportedProfile.getName());
-		assertEquals(2, profileDao.getUsersProfiles().size());
+		assertEquals(2, usersProfileService.getUsersProfiles().size());
 	}
 }

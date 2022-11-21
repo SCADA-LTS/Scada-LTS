@@ -22,6 +22,7 @@ import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.utils.QueryUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
@@ -129,6 +130,17 @@ public class MailingListDAO {
 		}
 	}
 
+	private class SimpleMailingListRowMapper implements RowMapper<ScadaObjectIdentifier> {
+		@Override
+		public ScadaObjectIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return new ScadaObjectIdentifier(
+					rs.getInt(COLUMN_NAME_ID),
+					rs.getString(COLUMN_NAME_XID),
+					rs.getString(COLUMN_NAME_NAME)
+			);
+		}
+	}
+
 	public MailingList getMailingList(int id) {
 
 		if (LOG.isTraceEnabled()) {
@@ -167,6 +179,11 @@ public class MailingListDAO {
 		String templateSelectOrderBy = MAILING_LIST_SELECT + "order by name";
 
 		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new MailingListRowMapper());
+	}
+
+	public List<ScadaObjectIdentifier> getSimpleMailingLists() {
+		String templateSelectOrderBy = MAILING_LIST_SELECT + "order by name";
+		return DAO.getInstance().getJdbcTemp().query(templateSelectOrderBy, new SimpleMailingListRowMapper());
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)

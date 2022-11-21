@@ -23,6 +23,7 @@ import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
+import org.scada_lts.web.mvc.api.json.JsonUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,87 +42,37 @@ import java.util.List;
 public class UserAPI {
 
     private static final Log LOG = LogFactory.getLog(UserAPI.class);
-    private static final int ID_USER_ADMIN = 1;
 
     UserService userService = new UserService();
 
     @RequestMapping(value = "/api/user/getAll", method = RequestMethod.GET)
-    public ResponseEntity<String> getAll(HttpServletRequest request) {
+    public ResponseEntity<List<JsonUser>> getAll(HttpServletRequest request) {
         LOG.info("/api/user/getAll");
 
         try {
             User user = Common.getUser(request);
 
             if (user != null) {
-                class UserJSON implements Serializable {
-                    private long id;
-                    private String name;
-                    private String password;
-                    private String email;
-                    private Boolean admin;
-
-                    UserJSON(long id, String name, String password, String email, Boolean admin) {
-                        this.setId(id);
-                        this.setName(name);
-                        this.setPassword(password);
-                        this.setEmail(email);
-                        this.setAdmin(admin);
-                    }
-
-                    public long getId() { return id; }
-                    public void setId(long id) { this.id = id; }
-
-                    public String getName() {
-                        return name;
-                    }
-                    public void setName(String xid) {
-                        this.name = xid;
-                    }
-
-                    public String getPassword() {
-                        return password;
-                    }
-                    public void setPassword(String password) {
-                        this.password = password;
-                    }
-
-                    public String getEmail() {
-                        return email;
-                    }
-                    public void setEmail(String email) {
-                        this.email = email;
-                    }
-
-                    public Boolean isAdmin() { return admin; }
-                    public void setAdmin(Boolean admin) { this.admin = admin; }
+                List<User> lstUsers = userService.getUsers();
+                List<JsonUser> response = new ArrayList<>();
+                for(User u:lstUsers) {
+                    response.add(new JsonUser(
+                            u.getId(),
+                            u.getUsername(),
+                            u.getEmail(),
+                            u.getPhone(),
+                            u.isAdmin(),
+                            u.isDisabled(),
+                            u.getHomeUrl(),
+                            u.getLastLogin()
+                    ));
                 }
-
-                int userId = user.getId();
-                List<User> lstUsers;
-                if (userId == ID_USER_ADMIN) {
-                    lstUsers = userService.getUsers();
-                } else {
-                    return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-                }
-
-                List<UserJSON> lst = new ArrayList<UserJSON>();
-                for (User u:lstUsers) {
-                    UserJSON dsU = new UserJSON(u.getId(), u.getUsername(), u.getPassword(), u.getEmail(), u.isAdmin());
-                    lst.add(dsU);
-                }
-
-                String json = null;
-                ObjectMapper mapper = new ObjectMapper();
-                json = mapper.writeValueAsString(lst);
-
-                return new ResponseEntity<String>(json,HttpStatus.OK);
+                return new ResponseEntity<>(response,HttpStatus.OK);
             }
-
-            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
-
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             LOG.error(e);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

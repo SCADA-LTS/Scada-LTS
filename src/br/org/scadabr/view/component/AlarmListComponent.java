@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,9 +47,10 @@ public class AlarmListComponent extends CustomComponent {
 		Map<String, Object> model = new HashMap<String, Object>();
 		WebContext webContext = WebContextFactory.get();
 		HttpServletRequest request = webContext.getHttpServletRequest();
-		List<EventInstance> events = new EventDao().getPendingEvents(Common
+		List<EventInstance> toViewEvents = new EventDao().getPendingEvents(Common
 				.getUser().getId());
 
+		List<EventInstance> events = new ArrayList<>(toViewEvents);
 		filter(events, minAlarmLevel);
 
 		int max = events.size() > maxListSize ? maxListSize : events.size();

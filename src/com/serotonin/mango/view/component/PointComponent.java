@@ -67,14 +67,12 @@ abstract public class PointComponent extends ViewComponent {
         if (dataPoint == null) {
             valid = false;
             visible = false;
-        }
-        else {
+            settableOverride = !makeReadOnly;
+        } else {
             visible = Permissions.hasDataPointReadPermission(user, dataPoint);
             valid = definition().supports(dataPoint.getPointLocator().getDataTypeId());
+            settableOverride = !makeReadOnly && Permissions.hasDataPointSetPermission(user, dataPoint);
         }
-
-        if (makeReadOnly)
-            settableOverride = false;
     }
 
     @Override

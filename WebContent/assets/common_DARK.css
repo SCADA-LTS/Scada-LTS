@@ -1,0 +1,293 @@
+/*
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+:root {
+    --slts-color-primary: #20852e;
+    --slts-color-primary-text: #cdcdcd;
+    --slts-color-secondary: #ffffff;
+    --slts-color-secondary-lighter: #223721;
+    --slts-color-secondary-lighter-alt: #d1cccc;
+    --slts-color-secondary-darker: #acacac;
+    --slts-color-secondary-text: #000000;
+    --slts-color-background: #22272e;
+
+    --slts-font-size--small: 10px;
+    --slts-font-size--default: 11px;
+    --slts-font-size--section-title: 14px;
+    --slts-font-size--subtitle: 16px;
+    --slts-font-size--title: 18px;
+    --slts-font-family: Verdana, Arial, Helvetica, sans-serif;
+
+    --color-success: #39B54A;
+    --color-warning: #FF9D2E;
+    --color-error: #FF0000;
+
+    --navbar-spacer-width: 1px;
+    --padding-default: 3px;
+
+
+}
+html > body {
+	font-family: var(--slts-font-family);
+	font-size: var(--slts-font-size--default);
+	color: var(--slts-color-primary-text);
+	background-color: var(--slts-color-background);
+}
+a, a:visited, a:link, .link {
+	color: var(--slts-color-secondary);
+}
+a:hover {
+	color: var(--slts-color-primary);
+}
+a.titleLink, a.titleLink:visited, a.titleLink:link {
+	font-weight: bold;
+}
+
+/* --- Headers --- */
+#mainHeader {
+	padding-top: 5px;
+	background-color: #d6d5d5;
+}
+
+#subHeader {
+	background-color: var(--slts-color-secondary-lighter);
+	padding: var(--padding-default);
+}
+
+.bigTitle {
+	color: var(--slts-color-secondary-darker);
+	font-size: var(--slts-font-size--title);
+	font-weight: bold;
+}
+/* Sub-header */
+.smallTitle {
+	color: var(--slts-color-secondary);
+	font-size: var(--slts-font-size--subtitle);
+	font-weight: bold;
+}
+/* Navbar instance header */
+.projectTitle {
+	color: var(--slts-color-secondary-text);
+	font-size: var(--slts-font-size--section-title);
+	font-weight: bold;
+}
+/* Navbar user header */
+.copyTitle, .bodyCopy, .footer {
+	color: var(--slts-color-secondary-darker);
+}
+.footer {
+	font-size: var(--slts-font-size--small);
+}
+#__header__alarmLevelText {
+	font-weight: bold;
+	font-size: 14px;
+	color: #25AB9B
+}
+
+/* --- Tables --- */
+.rowHeader td, .smRowHeader td {
+	font-weight: bold;
+	color: var(--slts-color-secondary-text);
+	background-color: var(--slts-color-secondary-darker);
+}
+
+a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:hover {
+	color: var(--slts-color-secondary-text)
+}
+
+.row td, .smRow td, .rowAlt td, .smRowAlt td, .rowAlt2 td {
+	color: var(--slts-color-primary-text);
+}
+
+.row td, .rowAlt td, .rowAlt2 td {
+	padding: var(--padding-default);
+}
+.smRow td, .smRowAlt td {
+	padding: 0 var(--padding-default);
+}
+.row td, .smRow td, .rowAlt2 td {
+	background-color: var(--slts-color-secondary-lighter);
+}
+.rowAlt td, .smRowAlt td {
+	background-color: var(--slts-color-secondary-lighter-alt);
+}
+
+.borderDiv, .borderDivPadded {
+	border: 1px solid var(--slts-color-primary);
+}
+.borderDivPadded {
+	padding: var(--padding-default);
+}
+
+/* --- Form styles --- */
+.formLabel, .formLabelRequired {
+	padding-right: 10px;
+	padding-top: 5px;
+	text-align: right;
+}
+.formField {
+	padding: 2px;
+}
+.formError {
+	color: var(--color-error);
+	padding-left: 10px;
+}
+select, input, textarea {
+	border: 1px solid var(--slts-color-primary);
+	padding: var(--padding-default);
+	background: none;
+	color: var(--slts-color-primary-text);
+}
+input[type="checkbox"], input[type="radio"] {
+	color: var(--slts-color-primary);
+	border: 0;
+}
+.formDisabled {
+	border: 1px solid var(--slts-color-secondary-lighter);
+}
+
+/* --- View Styles --- */
+.controlsDiv, .controlsDiv table, .controlsDiv td, .controlsDiv td div, .controlContent, .labelDiv, .windowDiv, .imageDiv {
+    background-color: var(--slts-color-background);
+}
+.controlsDiv td div, .controlContent, .imageDiv {
+	border: 1px solid var(--slts-color-primary);
+	font-size: var(--slts-font-size--small);
+}
+.componentInput {
+	border: 1px solid var(--slts-color-primary);
+	font-size: var(--slts-font-size--small);
+	padding: 1px;
+}
+.simpleRenderer, .simpleRenderer2 {
+	border: 1px solid var(--slts-color-primary);
+	font-size: var(--slts-font-size--small);
+	padding:1px 5px;
+    margin:0px;
+}
+.labelDiv, .windowDiv, .labelDiv a, .windowDiv a {
+	font-size: var(--slts-font-size--small);
+}
+.labelDiv {
+	border: 1px solid var(--slts-color-primary);
+}
+.windowDiv {
+	border: 1px outset var(--slts-color-primary);
+}
+
+.componentMin {
+    background-color: var(--slts-color-background);
+}
+
+.infoData {
+	color: var(--color-error);
+}
+.horzSeparator {
+	height: 1px;
+	background: var(--slts-color-primary);
+	padding: 0px;
+}
+.viewChangeBkgd {
+	background: #d1cccc26;
+}
+
+/* Documentation float pane style overrides. */
+html > body .dojoFloatingPaneTitleBar {
+    background-color: var(--slts-color-secondary-darker);
+}
+html > body .dojoFloatingPaneClient {
+	font-size: var(--slts-font-size--small);
+	background: var(--slts-color-background);
+}
+#help h1 {
+	color: var(--slts-color-secondary-darker);
+	font-size: var(--slts-font-size--subtitle);
+	font-weight: bold;
+}
+html > body .dojoFloatingPaneClient h1, #help h2 {
+	font-size: var(--slts-font-size--section-title);
+	font-weight: bold;
+}
+
+/* Common tree styling */
+html > body .dojoTreeNodeLabelSelected {
+    background-color: var(--slts-color-primary);
+	color: var(--slts-color-secondary-text);
+    padding: 2px var(--padding-default);
+}
+html > body .dojoTreeNodeLabelTitle {
+	color: var(--slts-color-primary-text)
+}
+
+.selectItem:hover {
+	background-color: var(--slts-color-primary);
+}
+
+.login-box .form-box > .formLabelRequired {
+	color: var(--slts-color-primary-text);
+	font-size: var(--slts-font-size--subtitle);
+}
+
+.spacer > * {
+	padding: 0 var(--navbar-spacer-width);
+}
+
+#sltsContent {
+	padding-top: 10px;
+}
+
+#sltsFooter {
+	text-align:center;
+}
+
+@media screen and (max-width: 730px) {
+	#subHeader {
+		flex-direction: column;
+
+	}
+	#subHeader > div:last-child {
+		align-self: flex-end;
+	}
+
+}
+.qon {
+	background-color: var(--slts-color-secondary-lighter);
+}
+.qoff {
+	background-color: #6d2007;
+}
+.qreg {
+	border: 1px solid var(--slts-color-primary);
+}
+.hreg {
+    border: 1px solid #ffffff3d;
+}
+
+#viewContent select, div[id*=Content] select, div[id*=Content] textarea, td>select, #sltsContent table tr>td>select{
+	background-color: var(--slts-color-background);
+}
+
+#viewContent button {
+  overflow: visible;
+  background: silver;
+  border-width: 3px;
+  border-color: gainsboro gray gray gainsboro;
+  border-style: solid;
+  padding: 1px 5px;
+  color: black;
+}
