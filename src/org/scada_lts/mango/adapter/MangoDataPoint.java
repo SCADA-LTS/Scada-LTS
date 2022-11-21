@@ -92,4 +92,6 @@ public interface MangoDataPoint {
 	List<DataPointVO> searchDataPointsBy(String searchText);
 
 	List<DataPointVO> getDataPointsWithAccess(User user);
+
+	List<DataPointVO> getDataPoints(String dataSourceXid, Comparator<DataPointVO> comparator);
 }

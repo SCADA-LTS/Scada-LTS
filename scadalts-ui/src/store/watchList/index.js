@@ -145,8 +145,10 @@ const watchListModule = {
 
         async [setupWatchList]({dispatch, commit}, watchList) {
             try {
-                let userData = await dispatch('getUserDetails', watchList.userId);
-                let wl = WatchList.create(watchList, userData);
+                //let userData = await dispatch('getUserDetails', watchList.userId);
+                let wl = WatchList.create(watchList, {
+                    'id' : watchList.userId
+                });
                 commit('SET_ACTIVE_WATCHLIST', wl);
                 return wl;
             } catch (e) {

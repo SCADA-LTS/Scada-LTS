@@ -17,7 +17,9 @@
  */
 package org.scada_lts.mango.adapter;
 
+import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
+import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -44,4 +46,18 @@ public interface MangoDataSource {
 	void deleteDataSource(final int dataSourceId);
 
 	int copyDataSource(final int dataSourceId, final ResourceBundle bundle);
+
+    List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type);
+
+	List<DataSourceVO<?>> getDataSourcesWithAccess(User user);
+
+	boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource);
+
+	List<DataSourceVO<?>> getDataSourcesPlc(User user);
+
+	boolean toggleDataSource(int id);
+
+	boolean toggleDataSource(String xid);
+
+	List<ScadaObjectIdentifier> getAllDataSources();
 }

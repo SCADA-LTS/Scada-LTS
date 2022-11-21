@@ -196,6 +196,7 @@
   </td></tr></table>
   
   <script type="text/javascript">
+      var viewId = mango.longPoll.pollRequest.viewId;
     // Script requires
     //  - Drag and Drop library for locating objects and positioning the window.
     //  - DWR utils for using $() prototype.
@@ -217,7 +218,7 @@
             graphicRendererEditor.componentId = compId;
             
             // Set the renderers for the data type of this point view.
-            ViewDwr.getViewComponent(compId, graphicRendererEditor.setViewComponent);
+            ViewDwr.getViewComponent(compId, viewId, graphicRendererEditor.setViewComponent);
         };
 
         this.setViewComponent = function(comp) {
@@ -316,15 +317,15 @@
             if (graphicRendererEditor.typeName == "analogGraphic")
                 ViewDwr.saveAnalogGraphicComponent(graphicRendererEditor.componentId, $get("graphicRendererAnalogMin"),
                         $get("graphicRendererAnalogMax"), $get("graphicRendererAnalogDisplayText"),
-                        $get("graphicRendererAnalogImageSet"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererAnalogImageSet"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "binaryGraphic")
                 ViewDwr.saveBinaryGraphicComponent(graphicRendererEditor.componentId, graphicRendererEditor.zeroImage,
                         graphicRendererEditor.oneImage, $get("graphicRendererBinaryDisplayText"),
-                        $get("graphicRendererBinaryImageSet"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererBinaryImageSet"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "dynamicGraphic")
                 ViewDwr.saveDynamicGraphicComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererDynamicMin"), $get("graphicRendererDynamicMax"),
-                        $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"),
+                        $get("graphicRendererDynamicDisplayText"), $get("graphicRendererDynamicImage"), viewId,
                         graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "multistateGraphic") {
                 var imageSet = $get("graphicRendererMultistateImageSet");
@@ -341,22 +342,22 @@
                 
                 ViewDwr.saveMultistateGraphicComponent(graphicRendererEditor.componentId, imageStates,
                         $get("graphicRendererMultistateDefault"), $get("graphicRendererMultistateDisplayText"),
-                        imageSet, graphicRendererEditor.saveCB);
+                        imageSet, viewId, graphicRendererEditor.saveCB);
             }
             else if (graphicRendererEditor.typeName == "script")
-                ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"),
+                ViewDwr.saveScriptComponent(graphicRendererEditor.componentId, $get("graphicRendererScriptScript"), viewId,
                         graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "simple")
                 ViewDwr.saveSimplePointComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererSimpleDisplayPointName"), 
-                        $get("graphicRendererSimpleStyleAttribute"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererSimpleStyleAttribute"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "thumbnailImage")
                 ViewDwr.saveThumbnailComponent(graphicRendererEditor.componentId,
-                        $get("graphicRendererThumbnailScalePercent"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererThumbnailScalePercent"), viewId, graphicRendererEditor.saveCB);
             else if (graphicRendererEditor.typeName == "button") {
             	ViewDwr.saveButtonComponent(graphicRendererEditor.componentId,
                         $get("graphicRendererButtonWhenOnLabel"), $get("graphicRendererButtonWhenOffLabel"),$get("graphicRendererButtonWidth"),
-                        $get("graphicRendererButtonHeight"), graphicRendererEditor.saveCB);
+                        $get("graphicRendererButtonHeight"), viewId, graphicRendererEditor.saveCB);
             }
             else
                 graphicRendererEditor.close();

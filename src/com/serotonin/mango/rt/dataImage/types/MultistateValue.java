@@ -48,7 +48,7 @@ public class MultistateValue extends MangoValue implements Comparable<Multistate
 
     @Override
     public String getStringValue() {
-        return null;
+        return String.valueOf(value);
     }
 
     @Override

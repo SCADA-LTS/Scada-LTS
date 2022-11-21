@@ -1,8 +1,12 @@
 package com.serotonin.mango.rt.event.handlers;
 
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.util.SendMsgUtils;
+import com.serotonin.mango.rt.maint.work.AfterWork;
+import com.serotonin.mango.util.MsgContentUtils;
+import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
+import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -11,7 +15,11 @@ import org.scada_lts.mango.service.SystemSettingsService;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 
+import java.io.IOException;
 import java.util.Set;
+
+import static com.serotonin.mango.util.LoggingUtils.eventHandlerInfo;
+import static com.serotonin.mango.util.LoggingUtils.eventInfo;
 
 public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
@@ -30,12 +38,19 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
             this.key = key;
         }
 
+        @Override
         public String getFile() {
             return file;
         }
 
+        @Override
         public String getKey() {
             return key;
+        }
+
+        @Override
+        public IMsgSubjectContent createContent(EventInstance evt, String alias) throws TemplateException, IOException {
+            return MsgContentUtils.createSms(evt, this, alias);
         }
     }
 
@@ -72,7 +87,13 @@ public class EmailToSmsHandlerRT extends EmailHandlerRT {
 
     @Override
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        SendMsgUtils.sendSms(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias());
+        SendUtils.sendMsg(evt, SmsNotificationType.MSG_FROM_EVENT, addresses, vo.getAlias(), new AfterWork() {
+            @Override
+            public void workFail(Exception exception) {
+                LOG.error("Failed sending sms for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
+                        + ", error: " + exception.getMessage());
+            }
+        });
     }
 
     private Set<String> formatAddresses(Set<String> addresses) {

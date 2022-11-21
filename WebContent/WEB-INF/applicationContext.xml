@@ -109,12 +109,12 @@
     <constructor-arg ref="watchListGetShareUsers"/>
   </bean>
 
-  <bean id="viewGetShareUsersWithCache" class="org.scada_lts.permissions.cache.ViewGetShareUsersWithCache">
-    <constructor-arg ref="viewGetShareUsers"/>
-  </bean>
-
   <bean id="userCache" class="org.scada_lts.dao.cache.UserCache">
     <constructor-arg ref="userDAO"/>
+  </bean>
+
+  <bean id="viewCache" class="org.scada_lts.dao.cache.ViewCache">
+    <constructor-arg ref="viewDAO"/>
   </bean>
 
   <bean id="usersProfileCache" class="org.scada_lts.dao.cache.UsersProfileCache">
@@ -123,6 +123,10 @@
 
   <bean id="userDaoWithCache" class="org.scada_lts.dao.cache.UserDaoWithCache">
     <constructor-arg ref="userCache"/>
+  </bean>
+
+  <bean id="viewDaoWithCache" class="org.scada_lts.dao.cache.ViewDaoWithCache">
+    <constructor-arg ref="viewCache"/>
   </bean>
 
   <bean id="usersProfileDaoWithCache" class="org.scada_lts.dao.cache.UsersProfileDaoWithCache">
@@ -194,6 +198,27 @@
     <constructor-arg ref="pointHierarchyXidDAO"/>
     <constructor-arg ref="dataPointDAO"/>
     <constructor-arg ref="hierarchyDAO"/>
+  </bean>
+  <!-- -->
+
+  <!-- UserComment Cachable -->
+  <bean id="userCommentDAO" class="org.scada_lts.dao.UserCommentDAO" />
+
+  <bean id="userCommentCache" class="org.scada_lts.dao.cache.UserCommentCache">
+    <constructor-arg ref="userCommentDAO"/>
+  </bean>
+
+  <bean id="userCommentDaoWithCache" class="org.scada_lts.dao.cache.UserCommentDaoWithCache" >
+    <constructor-arg ref="userCommentCache"/>
+    <constructor-arg ref="userCommentDAO"/>
+  </bean>
+
+  <bean id="userCommentService" class="org.scada_lts.mango.service.UserCommentService">
+    <constructor-arg ref="userCommentDAO"/>
+  </bean>
+
+  <bean id="userCommentServiceWithCache" class="org.scada_lts.mango.service.UserCommentService">
+    <constructor-arg ref="userCommentDaoWithCache"/>
   </bean>
   <!-- -->
 </beans>

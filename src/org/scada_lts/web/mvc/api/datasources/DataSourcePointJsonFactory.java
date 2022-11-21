@@ -1,13 +1,18 @@
 package org.scada_lts.web.mvc.api.datasources;
 
+import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaDataSourceVO;
+import com.serotonin.mango.vo.dataSource.meta.MetaPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.snmp.SnmpPointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualDataSourceVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
+import org.scada_lts.web.mvc.api.datasources.meta.MetaDataSourceJson;
+import org.scada_lts.web.mvc.api.datasources.meta.MetaPointLocatorJson;
 import org.scada_lts.web.mvc.api.datasources.modbusip.ModbusIpDataSourceJson;
 import org.scada_lts.web.mvc.api.datasources.modbusip.ModbusIpPointLocatorJson;
 import org.scada_lts.web.mvc.api.datasources.snmp.SnmpDataSourceJson;
@@ -26,8 +31,10 @@ public class DataSourcePointJsonFactory {
             return new SnmpPointLocatorJson((SnmpPointLocatorVO) vo);
         } else if (vo instanceof ModbusPointLocatorVO) {
             return new ModbusIpPointLocatorJson((ModbusPointLocatorVO) vo);
+        } else if (vo instanceof MetaPointLocatorVO) {
+            return new MetaPointLocatorJson((MetaPointLocatorVO) vo);
         }
-        return null;
+        return new DataPointLocatorJson(vo);
     }
 
     public static DataSourceJson getDataSourceJson(DataSourceVO<?> ds) {
@@ -37,7 +44,13 @@ public class DataSourcePointJsonFactory {
             return new SnmpDataSourceJson((SnmpDataSourceVO) ds);
         } else if (ds instanceof ModbusIpDataSourceVO) {
             return new ModbusIpDataSourceJson((ModbusIpDataSourceVO) ds);
+        } else if (ds instanceof MetaDataSourceVO) {
+            return new MetaDataSourceJson((MetaDataSourceVO) ds);
         }
         return new DataSourceJson(ds);
+    }
+
+    public static DataPointJson getDataPointJson(DataPointVO vo) {
+        return new DataPointJson(vo);
     }
 }

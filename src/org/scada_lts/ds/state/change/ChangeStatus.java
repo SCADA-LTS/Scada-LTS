@@ -30,4 +30,7 @@ public class ChangeStatus {
         listener.add(newListener);
     }
 
+    protected void resetListeners() {
+        this.listener = new ArrayList<>();
+    }
 }

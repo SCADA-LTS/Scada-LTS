@@ -28,14 +28,21 @@ import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.MaintenanceEventDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.UserChangeEnableStateDs;
 import org.scada_lts.ds.state.UserCpChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.adapter.MangoPointHierarchy;
+import org.scada_lts.permissions.service.GetDataSourcesWithAccess;
+import org.scada_lts.permissions.service.GetObjectsWithAccess;
+import org.scada_lts.utils.MqttUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,18 +50,34 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import static org.scada_lts.permissions.service.GetDataPointsWithAccess.filteringByAccess;
 
 /**
  * Service for DataSourceDAO
  *
  * @author Mateusz Kaproń Abil'I.T. development team, sdt@abilit.eu
  */
+@Service
 public class DataSourceService implements MangoDataSource {
 
 	//TODO spring
-	private static final DataSourceDAO dataSourceDAO = new DataSourceDAO();
+	private final DataSourceDAO dataSourceDAO;
+	private final DataPointService dataPointService;
+	private final GetObjectsWithAccess<DataSourceVO<?>, User> getDataSourcesWithAccess;
 
-	private static final DataPointService dataPointService = new DataPointService();
+	public DataSourceService() {
+		this.dataSourceDAO = ApplicationBeans.getBean("dataSourceDAO", DataSourceDAO.class);
+		this.dataPointService = new DataPointService();
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, new DataPointDAO());
+	}
+
+	public DataSourceService(DataSourceDAO dataSourceDAO, DataPointService dataPointService, DataPointDAO dataPointDAO) {
+		this.dataSourceDAO = dataSourceDAO;
+		this.dataPointService = dataPointService;
+		this.getDataSourcesWithAccess = new GetDataSourcesWithAccess(dataSourceDAO, dataPointDAO);
+	}
 
 	@Override
 	public List<DataSourceVO<?>> getDataSources() {
@@ -72,30 +95,27 @@ public class DataSourceService implements MangoDataSource {
 		}
 	}
 
+	@Override
 	public List<ScadaObjectIdentifier> getAllDataSources() {
 		return dataSourceDAO.getAllDataSources();
 	}
 
+	@Override
 	public boolean toggleDataSource(int id) {
 
 		DataSourceVO<?> vo = Common.ctx.getRuntimeManager().getDataSource(id);
-		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(id);
-		if(vo.isEnabled()) {
-			if(rt != null) {
-				rt.terminate();
-			}
-			vo.setEnabled(false);
-		} else {
-			if(rt != null) {
-				rt.initialize();
-			} else {
-				vo.createDataSourceRT();
-			}
-			vo.setEnabled(true);
-		}
-		vo.setState(new UserChangeEnableStateDs());
-		Common.ctx.getRuntimeManager().saveDataSource(vo);
-		return vo.isEnabled();
+		if(vo == null)
+			return false;
+		return toggleDataSource(vo);
+	}
+
+	@Override
+	public boolean toggleDataSource(String xid) {
+
+		DataSourceVO<?> vo = dataSourceDAO.getDataSource(xid);
+		if(vo == null)
+			return false;
+		return toggleDataSource(vo);
 	}
 
 	@Override
@@ -203,6 +223,11 @@ public class DataSourceService implements MangoDataSource {
 			dataPointCopy.setEnabled(dataSourceCopy.isEnabled());
 			dataPointCopy.getComments().clear();
 
+			if(dataPointCopy.getPointLocator() instanceof MqttPointLocatorVO) {
+				MqttPointLocatorVO pointLocator = dataPointCopy.getPointLocator();
+				pointLocator.setClientId(MqttUtils.generateUniqueClientId());
+			}
+
 			//Copy event detectors
 			for (PointEventDetectorVO pointEventDetector: dataPointCopy.getEventDetectors()) {
 				pointEventDetector.setId(Common.NEW_ID);
@@ -216,33 +241,14 @@ public class DataSourceService implements MangoDataSource {
 		return dataSourceCopy.getId();
 	}
 
-	@Deprecated
-	public List<Integer> getDataSourceId(int userId) {
-		return dataSourceDAO.getDataSourceIdFromDsUsers(userId);
-	}
-
-	@Deprecated
-	public void deleteDataSourceUser(int userId) {
-		dataSourceDAO.deleteDataSourceUser(userId);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updateDataSourcePermissions();
-	}
-
-	@Deprecated
-	public void insertPermissions(User user) {
-		dataSourceDAO.insertPermissions(user);
-		UsersProfileService usersProfileService = new UsersProfileService();
-		usersProfileService.updatePermissions();
-	}
-
 	public DataSourceVO<?> createDataSource(DataSourceVO<?> dataSource) {
 		DataSourceVO<?> created = dataSourceDAO.create(dataSource);
 		Common.ctx.getRuntimeManager().saveDataSource(created);
 		return created;
 	}
 
-	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId) {
-		List<DataPointVO> pointList = dataPointService.getDataPoints(dataSourceId, null);
+	public List<DataPointVO> enableAllDataPointsInDS(int dataSourceId, User user) {
+		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceId, null));
 		pointList.forEach(point -> {
 			if(!point.isEnabled()) {
 				point.setEnabled(true);
@@ -250,5 +256,58 @@ public class DataSourceService implements MangoDataSource {
 			}
 		});
 		return pointList;
+	}
+
+	public List<DataPointVO> enableAllDataPointsInDS(String dataSourceXid, User user) {
+		List<DataPointVO> pointList = filteringByAccess(user, dataPointService.getDataPoints(dataSourceXid, null));
+		pointList.forEach(point -> {
+			if(!point.isEnabled()) {
+				point.setEnabled(true);
+				Common.ctx.getRuntimeManager().saveDataPoint(point);
+			}
+		});
+		return pointList;
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSources(DataSourceVO.Type type) {
+		return dataSourceDAO.getDataSources(type.getId());
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesWithAccess(User user) {
+		return getDataSourcesWithAccess.getObjectsWithAccess(user);
+	}
+
+	@Override
+	public boolean hasDataSourceReadPermission(User user, DataSourceVO<?> dataSource) {
+		return getDataSourcesWithAccess.hasReadPermission(user, dataSource);
+	}
+
+	@Override
+	public List<DataSourceVO<?>> getDataSourcesPlc(User user) {
+		return getDataSourcesPlc().stream()
+				.filter(a -> getDataSourcesWithAccess.hasReadPermission(user, a))
+				.collect(Collectors.toList());
+	}
+
+	private boolean toggleDataSource(DataSourceVO<?> vo) {
+		DataSourceRT rt = Common.ctx.getRuntimeManager().getRunningDataSource(vo.getId());
+		if(vo.isEnabled()) {
+			if(rt != null) {
+				rt.terminate();
+			}
+			vo.setEnabled(false);
+		} else {
+			if(rt != null) {
+				rt.initialize();
+			} else {
+				vo.createDataSourceRT();
+			}
+			vo.setEnabled(true);
+		}
+		vo.setState(new UserChangeEnableStateDs());
+		Common.ctx.getRuntimeManager().saveDataSource(vo);
+		return vo.isEnabled();
 	}
 }

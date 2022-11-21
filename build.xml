@@ -28,7 +28,11 @@
 		<pathelement location="${env.CATALINA_HOME}/lib/catalina-ant.jar"/>
 	</path>
 
-	<target name="init-core" description="Prepare project before build">
+	<target name="clear" >
+		<delete dir="${web.classes.dir}"/>
+	</target>
+
+	<target name="init-core" description="Prepare project before build" depends="clear">
 		<delete dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.dir}"/>
 		<mkdir dir="${build-project.src.dir}"/>
@@ -283,6 +287,22 @@
 			</test>
 
 			<test name="org.scada_lts.utils.SystemSettingsUtilsTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="br.org.scadabr.view.component.GenerateAlarmListComponentTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.ds.messaging.channel.MessagingChannelsTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="com.serotonin.mango.vo.dataSource.CopyDataSourceVOTest"
+				  haltonfailure="yes">
+			</test>
+
+			<test name="org.scada_lts.utils.PathSecureUtilsTest"
 				  haltonfailure="yes">
 			</test>
 		</junit>
@@ -776,7 +796,7 @@
 		<!-- disruptor is required for that purpose. Set system property: -->
 		<!-- -Dlog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector -->
      	<!-- to make all loggers asynchronous https://logging.apache.org/log4j/2.x/manual/async.html -->
-        <pathelement location="WebContent/WEB-INF/lib/mail.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/javax.mail-1.6.2.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-core-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/mbus4j-master-0.1.4-SNAPSHOT.jar"/>
         <pathelement location="WebContent/WEB-INF/lib/modbus4j-3.0.2.jar"/>
@@ -841,8 +861,12 @@
 		<pathelement location="WebContent/WEB-INF/lib/jboss-rmi-api_1.0_spec-1.0.6.Final.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/jeromq-0.5.1.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/TangORB-9.6.8.jar"/>
-        <pathelement location="WebContent/WEB-INF/classes"/>
-    </path>
+		<pathelement location="WebContent/WEB-INF/lib/jSerialComm-2.9.2.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/amqp-client-5.15.0.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/org.eclipse.paho.client.mqttv3-1.2.5.jar"/>
+		<pathelement location="WebContent/WEB-INF/lib/org.eclipse.paho.mqttv5.client-1.2.5.jar"/>
+		<pathelement location="WebContent/WEB-INF/classes"/>
+  </path>
 	<path id="EAR Libraries.libraryclasspath"/>
 	<path id="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath">
 		<pathelement location="${env.CATALINA_HOME}/lib/annotations-api.jar"/>
@@ -894,7 +918,6 @@
 		<pathelement location="WebContent/WEB-INF/lib/sqljdbc4.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/alpha24j.jar"/>
 		<pathelement location="WebContent/WEB-INF/lib/joda-time-2.3.jar"/>
-		<pathelement location="WebContent/WEB-INF/lib/modbus4j-2.0.2.jar"/>
 		<path refid="Apache Tomcat v7.0 [Apache Tomcat v7.0].libraryclasspath"/>
 	</path>
 </project>

@@ -1,6 +1,11 @@
 package org.scada_lts.utils;
+import com.serotonin.mango.Common;
+import com.serotonin.mango.vo.User;
 import org.scada_lts.serorepl.utils.StringUtils;
+import org.scada_lts.web.mvc.api.exceptions.BadRequestException;
+import org.scada_lts.web.mvc.api.exceptions.UnauthorizedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -62,5 +67,35 @@ public final class ValidationUtils {
 
     public static String formatErrorsJson(String errors) {
         return "{\"errors\": \"" + errors + "\"}";
+    }
+
+    public static void checkArgsIfEmptyThenBadRequest(HttpServletRequest request, String message, Object... args) {
+        for(Object arg: args) {
+            if(arg == null) {
+                throw new BadRequestException(message, request.getRequestURI());
+            }
+            if((arg instanceof String) && StringUtils.isEmpty((String)arg)) {
+                throw new BadRequestException(message, request.getRequestURI());
+            }
+        }
+    }
+
+    public static void checkArgsIfTwoEmptyThenBadRequest(HttpServletRequest request, String message, Object arg1, Object arg2) {
+        if(arg1 == null && arg2 == null) {
+            throw new BadRequestException(message, request.getRequestURI());
+        }
+        if((arg1 instanceof String) && StringUtils.isEmpty((String)arg1)) {
+            throw new BadRequestException(message, request.getRequestURI());
+        }
+        if((arg2 instanceof String) && StringUtils.isEmpty((String)arg2)) {
+            throw new BadRequestException(message, request.getRequestURI());
+        }
+    }
+
+    public static void checkIfNonAdminThenUnauthorized(HttpServletRequest request) {
+        User user = Common.getUser(request);
+        if (!user.isAdmin()) {
+            throw new UnauthorizedException(request.getRequestURI());
+        }
     }
 }

@@ -538,7 +538,7 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 			return Collections.emptyList();
 		}
 	}
-
+  
 	@Deprecated
 	public JsonDataPointOrder getDataPointOrder(Integer watchListId) {
 		if(LOG.isTraceEnabled()) {
@@ -566,6 +566,15 @@ public class WatchListDAO implements GenericDaoCR<WatchList> {
 
 		DAO.getInstance().getJdbcTemp()
 				.batchUpdate(WATCH_LIST_POINTS_INSERT, batchArgs);
+    
+  	}
 
+	public List<ScadaObjectIdentifier> findIdentifiers() {
+		return DAO.getInstance().getJdbcTemp().query(WATCH_LIST_SELECT_ORDER_BY_NAME, new Object[]{},
+				new ScadaObjectIdentifierRowMapper.Builder()
+						.idColumnName(COLUMN_NAME_ID)
+						.xidColumnName(COLUMN_NAME_XID)
+						.nameColumnName(COLUMN_NAME_NAME)
+						.build());
 	}
 }

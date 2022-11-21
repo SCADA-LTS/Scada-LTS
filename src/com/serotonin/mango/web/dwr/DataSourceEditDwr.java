@@ -47,6 +47,8 @@ import com.serotonin.db.KeyValuePair;
 import com.serotonin.mango.util.LoggingScriptUtils;
 import com.serotonin.mango.vo.dataSource.tango.TangoDataSourceVO;
 import com.serotonin.mango.vo.dataSource.tango.TangoPointLocatorVO;
+import com.serotonin.mango.web.dwr.beans.*;
+
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -93,11 +95,16 @@ import com.serotonin.bacnet4j.type.constructed.Address;
 import com.serotonin.bacnet4j.type.enumerated.PropertyIdentifier;
 import com.serotonin.db.IntValuePair;
 import com.serotonin.io.StreamUtils;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpPointLocatorVO;
+import org.scada_lts.ds.messaging.protocol.amqp.ExchangeType;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.model.ReactivationDs;
 import org.scada_lts.ds.reactivation.ReactivationManager;
+import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.UsersProfileService;
-import org.scada_lts.modbus.SerialParameters;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
@@ -180,22 +187,6 @@ import com.serotonin.mango.vo.dataSource.vmstat.VMStatDataSourceVO;
 import com.serotonin.mango.vo.dataSource.vmstat.VMStatPointLocatorVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.dwr.beans.BACnetDiscovery;
-import com.serotonin.mango.web.dwr.beans.BACnetObjectBean;
-import com.serotonin.mango.web.dwr.beans.DataPointDefaulter;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceReader;
-import com.serotonin.mango.web.dwr.beans.EBI25InterfaceUpdater;
-import com.serotonin.mango.web.dwr.beans.EventInstanceBean;
-import com.serotonin.mango.web.dwr.beans.GalilCommandTester;
-import com.serotonin.mango.web.dwr.beans.HttpReceiverDataListener;
-import com.serotonin.mango.web.dwr.beans.MBusDiscovery;
-import com.serotonin.mango.web.dwr.beans.ModbusNodeScanListener;
-import com.serotonin.mango.web.dwr.beans.NmeaUtilListener;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDataPointBean;
-import com.serotonin.mango.web.dwr.beans.OpenV4JDiscovery;
-import com.serotonin.mango.web.dwr.beans.OpenV4JProtocolBean;
-import com.serotonin.mango.web.dwr.beans.SnmpOidGet;
-import com.serotonin.mango.web.dwr.beans.SqlStatementTester;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.code.RegisterRange;
@@ -220,9 +211,15 @@ import com.serotonin.web.dwr.MethodFilter;
 import com.serotonin.web.i18n.LocalizableException;
 import com.serotonin.web.i18n.LocalizableMessage;
 import com.serotonin.web.taglib.DateFunctions;
+import org.scada_lts.utils.AlarmLevelsDwrUtils;
+import org.scada_lts.serial.SerialPortParameters;
+import org.scada_lts.serial.SerialPortService;
+import org.scada_lts.serial.SerialPortWrapperAdapter;
 
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
+import static org.scada_lts.utils.AlarmLevelsDwrUtils.*;
 
 /**
  * @author Matthew Lohbihler
@@ -418,6 +415,7 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         Permissions.ensureAdmin();
         DataSourceVO<?> ds = Common.getUser().getEditDataSource();
         ds.setAlarmLevel(eventId, alarmLevel);
+        putAlarmLevels("AlarmLevels_" + ds.getXid(), eventId, alarmLevel);
     }
 
     //
@@ -450,6 +448,42 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         return validatePoint(id, xid, name, locator, null);
     }
 
+    // AMQP Receiver //
+    @MethodFilter
+    public DwrResponseI18n saveAmqpDataSource(AmqpDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+    @MethodFilter
+    public DwrResponseI18n saveAmqpPointLocator(int id, String xid, String name, AmqpPointLocatorVO locator){
+        if (locator.getExchangeType() == ExchangeType.NONE) {
+            locator.setRoutingKey("");
+            locator.setExchangeName("");
+        }
+        if (locator.getExchangeType() == ExchangeType.FANOUT) {
+            locator.setRoutingKey("");
+        }
+        return validatePoint(id, xid, name, locator, null);
+    }
+
+    // MQTT Receiver //
+    @MethodFilter
+    public DwrResponseI18n saveMqttDataSource(MqttDataSourceVO form) {
+        AlarmLevelsDwrUtils.setAlarmLists(form, new DataSourceService());
+        DwrResponseI18n response = tryDataSourceSave(form);
+        Common.getUser().setEditDataSource(form);
+        return response;
+    }
+
+
+
+    @MethodFilter
+    public DwrResponseI18n saveMqttPointLocator(int id, String xid, String name, MqttPointLocatorVO locator){
+        return validatePoint(id, xid, name, locator, null);
+    }
     //
     //
     // Modbus common stuff
@@ -674,23 +708,18 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         if (StringUtils.isEmpty(commPortId))
             throw new Exception();
 
-        SerialParameters params = new SerialParameters();
-        params.setCommPortId(commPortId);
-        params.setPortOwnerName("Mango Modbus Serial Data Source Scan");
-        params.setBaudRate(baudRate);
-        params.setFlowControlIn(flowControlIn);
-        params.setFlowControlOut(flowControlOut);
-        params.setDataBits(dataBits);
-        params.setStopBits(stopBits);
-        params.setParity(parity);
+        SerialPortParameters serialPortParameters = SerialPortParameters
+                .newParameters("Mango Modbus Serial Data Source Scan", commPortId, baudRate,
+                        flowControlIn, flowControlOut, dataBits, stopBits, parity, timeout);
+        SerialPortService serialPortService = SerialPortService.newService(serialPortParameters);
 
         EncodingType encodingType = EncodingType.valueOf(encoding);
 
         ModbusMaster modbusMaster;
         if (encodingType == EncodingType.ASCII)
-            modbusMaster = new ModbusFactory().createAsciiMaster(params);
+            modbusMaster = new ModbusFactory().createAsciiMaster(new SerialPortWrapperAdapter(serialPortService));
         else
-            modbusMaster = new ModbusFactory().createRtuMaster(params);
+            modbusMaster = new ModbusFactory().createRtuMaster(new SerialPortWrapperAdapter(serialPortService));
         modbusMaster.setTimeout(timeout);
         modbusMaster.setRetries(retries);
 
@@ -898,7 +927,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     public DwrResponseI18n saveSqlDataSource(String name, String xid,
                                              int updatePeriods, int updatePeriodType, String driverClassname,
                                              String connectionUrl, String username, String password,
-                                             String selectStatement, boolean rowBasedQuery) {
+                                             String selectStatement, boolean rowBasedQuery, boolean jndiResource,
+                                             String jndiResourceName) {
         Permissions.ensureAdmin();
         SqlDataSourceVO ds = (SqlDataSourceVO) Common.getUser()
                 .getEditDataSource();
@@ -913,6 +943,8 @@ public class DataSourceEditDwr extends DataSourceListDwr {
         ds.setPassword(password);
         ds.setSelectStatement(selectStatement);
         ds.setRowBasedQuery(rowBasedQuery);
+        ds.setJndiResource(jndiResource);
+        ds.setJndiResourceName(jndiResourceName);
 
         return tryDataSourceSave(ds);
     }
@@ -926,19 +958,22 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public void sqlTestStatement(String driverClassname, String connectionUrl,
                                  String username, String password, String selectStatement,
-                                 boolean rowBasedQuery) {
+                                 boolean rowBasedQuery, boolean jndiResource,
+                                 String jndiResourceName) {
         User user = Common.getUser();
         Permissions.ensureDataSourcePermission(user);
-        user.setTestingUtility(new SqlStatementTester(getResourceBundle(),
-                driverClassname, connectionUrl, username, password,
-                selectStatement, rowBasedQuery));
+        SqlDataSourceVO sqlDataSourceVO = createSqlDataSourceVO(driverClassname, connectionUrl, username, password,
+                selectStatement, rowBasedQuery, jndiResource, jndiResourceName);
+        JdbcOperationsTester tester = new JdbcOperationsTester(getResourceBundle(), sqlDataSourceVO);
+        tester.start();
+        user.setTestingUtility(tester);
     }
 
     @MethodFilter
     public Map<String, Object> sqlTestStatementUpdate() {
         Map<String, Object> result = new HashMap<String, Object>();
-        SqlStatementTester statementTester = Common.getUser()
-                .getTestingUtility(SqlStatementTester.class);
+        JdbcOperationsTester statementTester = Common.getUser()
+                .getTestingUtility(JdbcOperationsTester.class);
         if (statementTester == null)
             return null;
         if (!statementTester.isDone())

@@ -23,18 +23,17 @@ import com.serotonin.InvalidArgumentException;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
-import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
+import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.rt.maint.DataPurge;
 import com.serotonin.mango.rt.maint.VersionCheck;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.bean.PointHistoryCount;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.IntegerPair;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.DirectoryInfo;
 import com.serotonin.util.DirectoryUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
@@ -248,12 +247,11 @@ public class SystemSettingsDwr extends BaseDwr {
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("message", new LocalizableMessage(
 					"systemSettings.testEmail"));
-			MangoEmailContent cnt = new MangoEmailContent("testEmail", model,
+			IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail", model,
 					bundle, I18NUtils.getMessage(bundle, "ftl.testEmail"),
 					Common.UTF8);
-			EmailWorkItem.queueEmail(user.getEmail(), cnt);
-			result.put("message", new LocalizableMessage(
-					"common.testEmailSent", user.getEmail()));
+			SendUtils.sendMsgTestSync(user.getEmail(), cnt, result);
+
 		} catch (Exception e) {
 			result.put("exception", e.getMessage());
 		}
@@ -300,13 +298,19 @@ public class SystemSettingsDwr extends BaseDwr {
 	}
 
 	@MethodFilter
-	public void saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized) {
+	public DwrResponseI18n saveMiscSettings(int uiPerformance, String dataPointRtValueSynchronized) {
 		Permissions.ensureAdmin();
 		SystemSettingsDAO systemSettingsDAO = new SystemSettingsDAO();
-		systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE,
-				uiPerformance);
+        DwrResponseI18n response = new DwrResponseI18n();
+        if(uiPerformance < 0) {
+            response.addContextualMessage(SystemSettingsDAO.UI_PERFORMANCE, "validate.invalidValue");
+            return response;
+        } else {
+            systemSettingsDAO.setIntValue(SystemSettingsDAO.UI_PERFORMANCE, uiPerformance);
+        }
 		systemSettingsDAO.setValue(SystemSettingsDAO.DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED,
 				String.valueOf(dataPointRtValueSynchronized));
+		return response;
 	}
 
 	@MethodFilter

@@ -22,11 +22,14 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.rt.maint.work.AfterWork;
-import com.serotonin.mango.util.SendMsgUtils;
+import com.serotonin.mango.util.MsgContentUtils;
+import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.util.timeout.ModelTimeoutClient;
 import com.serotonin.mango.util.timeout.ModelTimeoutTask;
 import com.serotonin.mango.vo.event.EventHandlerVO;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import com.serotonin.timer.TimerTask;
+import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -34,7 +37,11 @@ import org.scada_lts.mango.service.MailingListService;
 import org.scada_lts.service.CommunicationChannelType;
 import org.scada_lts.service.ScheduledExecuteInactiveEventService;
 
+import java.io.IOException;
 import java.util.Set;
+
+import static com.serotonin.mango.util.LoggingUtils.eventHandlerInfo;
+import static com.serotonin.mango.util.LoggingUtils.eventInfo;
 
 public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient<EventInstance> {
     private static final Log LOG = LogFactory.getLog(EmailHandlerRT.class);
@@ -58,12 +65,19 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
             this.key = key;
         }
 
+        @Override
         public String getFile() {
             return file;
         }
 
+        @Override
         public String getKey() {
             return key;
+        }
+
+        @Override
+        public IMsgSubjectContent createContent(EventInstance evt, String alias) throws TemplateException, IOException {
+            return MsgContentUtils.createEmail(evt, this, alias);
         }
     }
 
@@ -151,7 +165,13 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     public static void sendActiveEmail(EventInstance evt, Set<String> addresses) {
-        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, null);
+        SendUtils.sendMsg(evt, EmailNotificationType.ACTIVE, addresses, null, new AfterWork() {
+            @Override
+            public void workFail(Exception exception) {
+                LOG.error("Failed sending email for " + eventInfo(evt)
+                        + ", error: " + exception.getMessage());
+            }
+        });
     }
 
     protected Set<String> getActiveRecipients(EventInstance evt) {
@@ -173,10 +193,16 @@ public class EmailHandlerRT extends EventHandlerRT implements ModelTimeoutClient
     }
 
     protected void sendEmail(EventInstance evt, Set<String> addresses) {
-        SendMsgUtils.sendEmail(evt, EmailNotificationType.ACTIVE, addresses, vo.getAlias());
+        sendEmail(evt, EmailNotificationType.ACTIVE, addresses);
     }
 
     private void sendEmail(EventInstance evt, NotificationType notificationType, Set<String> addresses) {
-        SendMsgUtils.sendEmail(evt, notificationType, addresses, vo.getAlias());
+        SendUtils.sendMsg(evt, notificationType, addresses, vo.getAlias(), new AfterWork() {
+            @Override
+            public void workFail(Exception exception) {
+                LOG.error("Failed sending email for " + eventHandlerInfo(getVo()) + ", " + eventInfo(evt)
+                        + ", error: " + exception.getMessage());
+            }
+        });
     }
 }

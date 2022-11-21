@@ -40,6 +40,7 @@ import com.serotonin.mango.rt.event.type.EventType;
 import com.serotonin.mango.util.ChangeComparable;
 import com.serotonin.mango.util.ExportCodes;
 import com.serotonin.mango.util.LocalizableJsonException;
+import com.serotonin.mango.vo.PointDataType;
 import com.serotonin.mango.vo.dataSource.bacnet.BACnetIPDataSourceVO;
 import com.serotonin.mango.vo.dataSource.ebro.EBI25DataSourceVO;
 import com.serotonin.mango.vo.dataSource.galil.GalilDataSourceVO;
@@ -68,6 +69,12 @@ import com.serotonin.mango.vo.event.EventTypeVO;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.model.DataPointIdentifier;
+import org.scada_lts.dao.model.DataSourceIdentifier;
+import org.scada_lts.ds.messaging.protocol.amqp.AmqpDataSourceVO;
+import org.scada_lts.ds.messaging.protocol.mqtt.MqttDataSourceVO;
 import org.scada_lts.ds.state.MigrationOrErrorSerializeChangeEnableState;
 import org.scada_lts.ds.state.IStateDs;
 import org.scada_lts.ds.state.change.ChangeStatus;
@@ -76,6 +83,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStatus implements
@@ -303,6 +311,18 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			public DataSourceVO<?> createDataSourceVO() {
 				return new TangoDataSourceVO();
 			}
+		},
+		AMQP(45, "dsEdit.amqp", true) {
+		 	@Override
+			public DataSourceVO<?> createDataSourceVO() {
+		 		return new AmqpDataSourceVO();
+			}
+		},
+		MQTT(47, "dsEdit.mqtt", true) {
+			@Override
+			public DataSourceVO<?> createDataSourceVO() {
+				return new MqttDataSourceVO();
+			}
 		};
 
 		private Type(int id, String key, boolean display) {
@@ -352,6 +372,8 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 			return result;
 		}
 	}
+
+	private static final Log LOG = LogFactory.getLog(DataSourceVO.class);
 
 	public static final String XID_PREFIX = "DS_";
 
@@ -451,6 +473,10 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		return level;
 	}
 
+	public Integer getAlarmLevel(int eventId) {
+		return alarmLevels.get(eventId);
+	}
+
 	public EventTypeVO getEventType(int eventId) {
 		for (EventTypeVO vo : getEventTypes()) {
 			if (vo.getTypeRef2() == eventId)
@@ -495,11 +521,26 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 	}
 
 	public DataSourceVO<?> copy() {
+		DataSourceVO<?> dataSource;
 		try {
-			return (DataSourceVO<?>) super.clone();
+			dataSource = (DataSourceVO<?>) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new ShouldNeverHappenException(e);
 		}
+		dataSource.alarmLevels = new HashMap<>(alarmLevels);
+		dataSource.resetListeners();
+		if(state != null) {
+			try {
+				Constructor<? extends IStateDs> constructor = state.getClass().getConstructor();
+				if(constructor != null) {
+					IStateDs newState = constructor.newInstance();
+					dataSource.setState(newState);
+				}
+			} catch (Exception e) {
+				LOG.warn(e.getMessage(), e);
+			}
+		}
+		return dataSource;
 	}
 
 	@Override
@@ -646,4 +687,7 @@ abstract public class DataSourceVO<T extends DataSourceVO<?>> extends ChangeStat
 		return value;
 	}
 
+	public DataSourceIdentifier toIdentifier() {
+		return new DataSourceIdentifier(getId(), getXid(), getName(), getType(), isEnabled());
+	}
 }

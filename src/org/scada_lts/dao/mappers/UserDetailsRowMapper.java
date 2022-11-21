@@ -1,12 +1,12 @@
 package org.scada_lts.dao.mappers;
 
-import org.scada_lts.web.mvc.api.json.JsonUser;
+import org.scada_lts.web.mvc.api.user.UserInfo;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDetailsRowMapper implements RowMapper<JsonUser> {
+public class UserDetailsRowMapper implements RowMapper<UserInfo> {
 
     private static final String COLUMN_NAME_ID = "id";
     private static final String COLUMN_NAME_USERNAME = "username";
@@ -31,8 +31,8 @@ public class UserDetailsRowMapper implements RowMapper<JsonUser> {
 
 
     @Override
-    public JsonUser mapRow(ResultSet resultSet, int i) throws SQLException {
-        return new JsonUser(
+    public UserInfo mapRow(ResultSet resultSet, int i) throws SQLException {
+        return new UserInfo(
                 resultSet.getInt(COLUMN_NAME_ID),
                 resultSet.getString(COLUMN_NAME_USERNAME),
                 resultSet.getString(COLUMN_NAME_FIRST_NAME),

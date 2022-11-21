@@ -121,7 +121,7 @@ export default {
 					xid: '',
 				};
 			},
-		},
+		}
 	},
 
 	mounted() {

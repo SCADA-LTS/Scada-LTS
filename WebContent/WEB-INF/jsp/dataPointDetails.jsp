@@ -373,10 +373,10 @@
                             ${comment.prettyTime} <fmt:message key="notes.by"/>
                             <c:choose>
                               <c:when test="${empty comment.username}"><fmt:message key="common.deleted"/></c:when>
-                              <c:otherwise>${comment.username}</c:otherwise>
+                              <c:otherwise><c:out value="${comment.username}"/></c:otherwise>
                             </c:choose>
                           </span><br/>
-                          ${comment.comment}
+                          <c:out value="${comment.comment}"/>
                         </td>
                       </tr>
                     </c:forEach>
@@ -449,7 +449,7 @@
               <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
                 <c:set var="user" value="${userData.user}"/>
                 <td><%@ include file="/WEB-INF/snippet/userIcon.jsp" %></td>
-                <td>${user.username}</td>
+                <td><c:out value="${user.username}"/></td>
                 <td>
                   <c:choose>
                     <c:when test="${userData.accessType == applicationScope['constants.Permissions.DataPointAccessTypes.READ']}"><fmt:message key="common.access.read"/></c:when>

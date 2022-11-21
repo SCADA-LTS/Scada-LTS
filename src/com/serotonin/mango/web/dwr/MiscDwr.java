@@ -34,6 +34,10 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.serotonin.mango.view.View;
+import com.serotonin.mango.view.View;
+import com.serotonin.mango.util.SendUtils;
+import com.serotonin.mango.web.email.IMsgSubjectContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
@@ -41,6 +45,11 @@ import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.utils.HttpParameterUtils;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.mango.service.ViewService;
+import org.scada_lts.utils.HttpParameterUtils;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -50,9 +59,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.UserDao;
-import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.maint.work.EmailWorkItem;
 import com.serotonin.mango.util.DocumentationItem;
 import com.serotonin.mango.util.DocumentationManifest;
 import com.serotonin.mango.vo.DataPointVO;
@@ -65,7 +72,6 @@ import com.serotonin.mango.web.dwr.beans.WatchListState;
 import com.serotonin.mango.web.dwr.longPoll.LongPollData;
 import com.serotonin.mango.web.dwr.longPoll.LongPollRequest;
 import com.serotonin.mango.web.dwr.longPoll.LongPollState;
-import com.serotonin.mango.web.email.MangoEmailContent;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.dwr.MethodFilter;
@@ -219,10 +225,10 @@ public class MiscDwr extends BaseDwr {
 				model.put("user", Common.getUser());
 				model.put("message", new LocalizableMessage("common.default",
 						message));
-				MangoEmailContent cnt = new MangoEmailContent("testEmail",
+				IMsgSubjectContent cnt = IMsgSubjectContent.newInstance("testEmail",
 						model, bundle, I18NUtils.getMessage(bundle,
 								"ftl.testEmail"), Common.UTF8);
-				EmailWorkItem.queueEmail(toAddrs, cnt);
+				SendUtils.sendMsgTestSync(toAddrs, cnt, response);
 			} catch (Exception e) {
 				response.addGenericMessage("common.default", e.getMessage());
 			}
@@ -308,10 +314,9 @@ public class MiscDwr extends BaseDwr {
 
 		long runTime = System.currentTimeMillis();
 		response.put("runtime",runTime);
+		response.put("intervalTime", SystemSettingsDAO.getIntValue(SystemSettingsDAO.UI_PERFORMANCE));
 		long expireTime = runTime + 60000; // One minute
 		LongPollState state = data.getState();
-		int waitTime = SystemSettingsDAO
-				.getIntValue(SystemSettingsDAO.UI_PERFORMANCE);
 
 		// For users that log in on multiple machines (or browsers), reset the
 		// last alarm timestamp so that it always
@@ -319,32 +324,31 @@ public class MiscDwr extends BaseDwr {
 		// user-specific event change tracking code.
 		state.setLastAlarmLevelChange(0);
 
-		while (!pollRequest.isTerminated()
+		if (!pollRequest.isTerminated()
 				&& System.currentTimeMillis() < expireTime) {
 
 			if (pollRequest.isWatchList() && user != null) {
-				synchronized (state) {
-					List<WatchListState> newStates = watchListDwr
-							.getPointData();
-					List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
-					for (WatchListState newState : newStates) {
-						WatchListState oldState = state
-								.getWatchListState(newState.getId());
-						if (oldState == null)
-							differentStates.add(newState);
-						else {
-							WatchListState copy = newState.clone();
-							copy.removeEqualValue(oldState);
-							if (!copy.isEmpty())
-								differentStates.add(copy);
-						}
-					}
+				List<WatchListState> newStates = watchListDwr
+						.getPointData();
+				List<WatchListState> differentStates = new ArrayList<WatchListState>();
 
-					if (!differentStates.isEmpty()) {
-						response.put("watchListStates", differentStates);
-						state.setWatchListStates(newStates);
+				for (WatchListState newState : newStates) {
+					WatchListState oldState = state
+							.getWatchListState(newState.getId());
+					if (oldState == null)
+						differentStates.add(newState);
+					else {
+						WatchListState copy = newState.clone();
+						copy.removeEqualValue(oldState);
+						if (!copy.isEmpty())
+							differentStates.add(copy);
 					}
+				}
+
+				if (!differentStates.isEmpty()) {
+					response.put("watchListStates", differentStates);
+					state.setWatchListStates(newStates);
 				}
 			}
 
@@ -369,13 +373,22 @@ public class MiscDwr extends BaseDwr {
 			if ((pollRequest.isView() && user != null)
 					|| (pollRequest.isViewEdit() && user != null)
 					|| pollRequest.getAnonViewId() > 0) {
-				List<ViewComponentState> newStates;
+				List<ViewComponentState> newStates = new ArrayList<>();
 				if (pollRequest.getAnonViewId() > 0)
 					newStates = viewDwr.getViewPointDataAnon(pollRequest
 							.getAnonViewId());
-				else
-					newStates = viewDwr.getViewPointData(pollRequest
-							.isViewEdit());
+				else {
+					int viewId = pollRequest.getViewId();
+					if(viewId == Common.NEW_ID) {
+						viewId = HttpParameterUtils.getValue("mainViewId", httpRequest, Integer::valueOf).orElse(Common.NEW_ID);
+					}
+					if(viewId != Common.NEW_ID) {
+						View view = new ViewService().getView(viewId);
+						view.validateViewComponents(user);
+						newStates = viewDwr.getViewPointData(user, view, pollRequest
+								.isViewEdit());
+					}
+				}
 				List<ViewComponentState> differentStates = new ArrayList<ViewComponentState>();
 
 				for (ViewComponentState newState : newStates) {
@@ -437,18 +450,6 @@ public class MiscDwr extends BaseDwr {
 					state.setPendingAlarmsContent(currentContent);
 				}
 			}
-
-			if (!response.isEmpty())
-				break;
-
-			synchronized (pollRequest) {
-				try {
-					pollRequest.wait(waitTime);
-				} catch (InterruptedException e) {
-					// no op
-				}
-			}
-
 		}
 
 		if (pollRequest.isTerminated())

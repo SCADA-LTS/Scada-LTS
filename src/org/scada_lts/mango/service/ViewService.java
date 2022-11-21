@@ -35,9 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
-import org.scada_lts.permissions.service.GetShareUsers;
-import org.scada_lts.permissions.service.GetViewsWithAccess;
-import org.scada_lts.permissions.service.ViewGetShareUsers;
+import org.scada_lts.permissions.service.*;
 
 import org.scada_lts.web.mvc.api.dto.ImageSetIdentifier;
 import org.scada_lts.web.mvc.api.dto.UploadImage;
@@ -49,7 +47,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.User;
@@ -57,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 
+import static java.util.stream.Collectors.toList;
 import static org.scada_lts.utils.PathSecureUtils.getPartialPath;
 import static org.scada_lts.utils.PathSecureUtils.getRealPath;
 import static org.scada_lts.utils.PathSecureUtils.toSecurePath;
@@ -67,25 +65,25 @@ import static org.scada_lts.utils.UploadFileUtils.isToUploads;
 public class ViewService {
 
 	private Log LOG = LogFactory.getLog(ViewService.class);
-	private ViewDAO viewDAO;
-	private static Map<Integer, List<IdName>> usersPermissions = new HashMap<Integer, List<IdName>>();
-	private GetShareUsers<View> viewGetShareUsers;
-	private UsersProfileService usersProfileService;
 
-	private String fileSeparator = System.getProperty("file.separator");
+	private final IViewDAO viewDAO;
+	private final GetShareUsers<View> viewGetShareUsers;
+	private final GetObjectsWithAccess<View, User> getViewsWithAccess;
+
+	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
 	public ViewService() {
-		this.viewDAO = ApplicationBeans.getBean("viewDAO", ViewDAO.class);
-		this.viewGetShareUsers = ApplicationBeans.getViewGetShareUsersBean();
-		this.usersProfileService = ApplicationBeans.getUsersProfileService();
+		this.viewDAO = ApplicationBeans.getViewDaoBean();
+		this.viewGetShareUsers = new ViewGetShareUsers(this.viewDAO);
+		this.getViewsWithAccess = new GetViewsWithAccess(this.viewDAO);
 	}
 
-	public ViewService(ViewDAO viewDAO, ViewGetShareUsers viewGetShareUsers, UsersProfileService usersProfileService) {
+	public ViewService(IViewDAO viewDAO) {
 		this.viewDAO = viewDAO;
-		this.viewGetShareUsers = viewGetShareUsers;
-		this.usersProfileService = usersProfileService;
+		this.viewGetShareUsers = new ViewGetShareUsers(viewDAO);
+		this.getViewsWithAccess = new GetViewsWithAccess(viewDAO);
 	}
-	
+
 	public List<View> getViews() {
 		List<View> views = viewDAO.findAll();
 		for (View view: views) {
@@ -95,80 +93,43 @@ public class ViewService {
 	}
 
 	public List<View> getViews(int userId, int userProfileId) {
-		List<View> views = viewDAO.filtered(ViewDAO.VIEW_FILTERED_BASE_ON_ID, " order by name ", new Object[]{userId, userId, ShareUser.ACCESS_NONE, userProfileId}, ViewDAO.NO_LIMIT);
+		List<View> views = getViewsWithAccess.getObjectsWithAccess(User.onlyIdAndProfile(userId, userProfileId));
 		for (View view: views) {
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		}
 		return views;
 	}
 
+	@Deprecated
 	public List<ScadaObjectIdentifier> getAllViews() {
-		return viewDAO.getSimpleList();
+		return viewDAO.findIdentifiers();
 	}
 
 	public List<ScadaObjectIdentifier> getAllViewsForUser(User user) {
-		if (user.isAdmin())
-			return viewDAO.getSimpleList();
-		List<View> views = getViews(user.getId(), user.getUserProfile());
-		List<ScadaObjectIdentifier> simpleList = new ArrayList<>();
-		for (View view : views) {
-			simpleList.add(new ScadaObjectIdentifier(view.getId(),view.getXid(), view.getName()));
-		}
-		return simpleList;
+		return getViewsWithAccess.getObjectIdentifiersWithAccess(user);
 	}
 	
 	public List<IdName> getViewNames(int userId, int userProfileId) {
-		return viewDAO.getViewNames(userId, userProfileId);
+		return toIdNames(getViewIdentifiers(userId, userProfileId));
 	}
 	
 	public List<IdName> getAllViewNames() {
-		return viewDAO.getAllViewNames();
+		return toIdNames(viewDAO.findIdentifiers());
 	}
-	
-	public List<IdName> getViewNamesWithReadOrWritePermissions(
-			int userId, int userProfileId) {
-		List<IdName> allPermissions = usersPermissions.get(userId);
-		if (allPermissions == null) {
-			allPermissions = updateViewUsersPermissions(userId, userProfileId);
-		}
-		return allPermissions;
-	}
-	
-	private List<IdName> updateViewUsersPermissions(int userId,
-			int userProfileId) {
-		
-		List<IdName> allPermissions;
-		allPermissions = viewDAO.getViewNames(userId, userProfileId);
 
-		User user = new UserDao().getUser(userId);
-
-		for (Iterator<IdName> iterator = allPermissions.iterator(); iterator.hasNext();) {
-
-			IdName idDaViewComView = (IdName) iterator.next();
-
-			View view = viewDAO.findById(new Object[] {idDaViewComView.getId()});
-
-			if (view.getUserAccess(user) == ShareUser.ACCESS_NONE) {
-				iterator.remove();
-			}
-		}
-		usersPermissions.put(userId, allPermissions);
-		return allPermissions;
-	}
-	
 	public View getView(int id) {
-		View view = viewDAO.findById(new Object[] { id });
+		View view = viewDAO.findById(id);
 		if(view != null)
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
 		return view;
 	}
 	
 	public View getViewByXid(String xid) {
-		return viewDAO.findByXId(new Object[] {xid});
+		return viewDAO.findByXid(xid);
 	}
 	
 	public View getView(String name) {
-		View view = viewDAO.getView(name);
+		View view = viewDAO.findByName(name);
 		
 		if (view == null) {
 			return null;
@@ -192,7 +153,7 @@ public class ViewService {
 	public void saveView(final View view) {
 		LOG.debug("View name: " + view.getName());
 		if (view.getId() == Common.NEW_ID) {
-			viewDAO.create(view);
+			viewDAO.save(view);
 		} else {
 			viewDAO.update(view);
 		}
@@ -201,7 +162,7 @@ public class ViewService {
 		//saveViewUsers(view);
 
 		//TODO why don't update
-		usersPermissions.clear();
+		//usersPermissions.clear();
 	}
 
 	public int saveViewAPI(View view) throws IOException {
@@ -210,12 +171,12 @@ public class ViewService {
 		setWidthAndHeight(view, backgroundFilename);
 		int id = -1;
 		if (view.getId() == Common.NEW_ID) {
-			id = (int) viewDAO.create(view)[0];
+			id = viewDAO.save(view).getId();
 		} else {
 			viewDAO.update(view);
 		}
 
-		usersPermissions.clear();
+		//usersPermissions.clear();
 		return id;
 	}
 
@@ -229,37 +190,19 @@ public class ViewService {
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
 	public void removeView(final int viewId) {
-		viewDAO.deleteViewForUser(viewId);
-		View v = new View();
-		v.setId(viewId);
-		viewDAO.delete(v);
-		usersProfileService.updateViewPermissions();
+		//viewDAO.deleteViewForUser(viewId);
+		viewDAO.delete(viewId);
+		//usersProfileService.updateViewPermissions();
 	}
-
-	
-	private void saveViewUsers(final View view) {
-		// Delete anything that is currently there.
-		viewDAO.deleteViewForUser(view.getId()); 
-
-		viewDAO.batchUpdateInfoUsers(view);
-		
-		// Update cache
-		List<ShareUser> shareUsers = view.getViewUsers();
-		for (Iterator<ShareUser> iterator = shareUsers.iterator(); iterator.hasNext();) {
-			ShareUser shareUser = iterator.next();
-			usersPermissions.remove(shareUser.getUserId());
-			// updateViewUsersPermissions(shareUser.getUserId());
-		}
-	}	
 	
 	public void removeUserFromView(int viewId, int userId) {
 		viewDAO.deleteViewForUser(viewId, userId);
-		usersProfileService.updateViewPermissions();
+		//usersProfileService.updateViewPermissions();
 	}
 
 
 	public List<ScadaObjectIdentifier> getSimpleViews() {
-		return viewDAO.selectViewIdentifiers();
+		return viewDAO.findIdentifiers();
 	}
 
 	public List<ImageSetIdentifier> getImageSets() {
@@ -292,7 +235,7 @@ public class ViewService {
 		if(!isToUploads(multipartFile)) {
 			return Optional.empty();
 		}
-		Path path = Paths.get(getUploadsPath() + fileSeparator + multipartFile.getOriginalFilename());
+		Path path = Paths.get(getUploadsPath() + FILE_SEPARATOR + multipartFile.getOriginalFilename());
 		return toSecurePath(path)
 				.flatMap(dist -> transferTo(multipartFile, dist))
 				.map(this::createUploadImage);
@@ -315,11 +258,11 @@ public class ViewService {
 	}
 
 	private String getUploadsPath() {
-		return getRealPath(fileSeparator) + fileSeparator + "uploads";
+		return getRealPath(FILE_SEPARATOR) + FILE_SEPARATOR + "uploads";
 	}
 
 	private String getBackgroundImagePath(String backgroundFilename) {
-		return getRealPath(fileSeparator) + fileSeparator + backgroundFilename;
+		return getRealPath(FILE_SEPARATOR) + FILE_SEPARATOR + backgroundFilename;
 	}
 
 	public boolean checkUserViewPermissions(User user, View view) {
@@ -333,5 +276,14 @@ public class ViewService {
 		} catch (IOException e) {
 			return Optional.empty();
 		}
+	}
+
+	private List<ScadaObjectIdentifier> getViewIdentifiers(int userId, int userProfileId) {
+		return getViewsWithAccess.getObjectIdentifiersWithAccess(User.onlyIdAndProfile(userId, userProfileId));
+	}
+
+	private List<IdName> toIdNames(List<ScadaObjectIdentifier> identifiers) {
+		return identifiers.stream().map(a -> new IdName(a.getId(), a.getName()))
+				.collect(toList());
 	}
 }

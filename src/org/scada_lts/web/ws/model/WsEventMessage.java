@@ -1,12 +1,8 @@
 package org.scada_lts.web.ws.model;
 
 import com.serotonin.mango.rt.event.EventInstance;
-import com.serotonin.mango.rt.event.handlers.EventHandlerRT;
 import com.serotonin.mango.rt.event.type.EventType;
-import com.serotonin.mango.vo.UserComment;
 import com.serotonin.web.i18n.LocalizableMessage;
-
-import java.util.List;
 
 public class WsEventMessage {
 
@@ -114,16 +110,8 @@ public class WsEventMessage {
         return instance.isRtnApplicable();
     }
 
-    public List<UserComment> getEventComments() {
-        return instance.getEventComments();
-    }
-
     public int getRtnCause() {
         return instance.getRtnCause();
-    }
-
-    public List<EventHandlerRT> getHandlers() {
-        return instance.getHandlers();
     }
 
     public boolean isUserNotified() {

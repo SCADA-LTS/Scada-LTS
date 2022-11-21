@@ -2,7 +2,10 @@ package org.scada_lts.web.mvc.api.json;
 import com.serotonin.mango.vo.User;
 
 import com.serotonin.mango.Common;
-
+/**
+ * @deprecated (new type UserInfo, UserInfoSimple, UserInfoPassword)
+ */
+@Deprecated
 public class JsonUserPassword extends JsonUser {
 
     private String password;
