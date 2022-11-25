@@ -70,7 +70,6 @@ class PlcAlarmsDAO implements AlarmsDAO {
             + "ha." + COLUMN_NAME_ACKNOWLEDGE_TIME + ", "
             + "ha." + COLUMN_NAME_LEVEL_VIEW + " "
             + "FROM historyAlarms ha WHERE "
-            //+ "DATE_FORMAT(ha." + COLUMN_NAME_INACTIVE_TIME + ", '%Y-%m-%d') = ? "
             + "DATE_FORMAT(ha." + COLUMN_NAME_ACTIVE_TIME + ", '%Y-%m-%d') = ? "
             + "AND "
             + "ha." + COLUMN_NAME_NAME_VIEW + " RLIKE ? LIMIT ? OFFSET ?;";
