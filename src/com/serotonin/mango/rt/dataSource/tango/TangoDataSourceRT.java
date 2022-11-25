@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author GP Orcullo
  */
 
-public class TangoDataSourceRT extends EventDataSource implements Runnable {
+public class TangoDataSourceRT extends EventDataSource {
     public static final int DATA_SOURCE_EXCEPTION_EVENT = 1;
     public static final int POINT_READ_EXCEPTION_EVENT = 2;
     public static final int POINT_WRITE_EXCEPTION_EVENT = 3;
@@ -55,6 +55,10 @@ public class TangoDataSourceRT extends EventDataSource implements Runnable {
             deviceProxy = new DeviceProxy(devName);
             LOG.debug(String.format("Connected to device: %s", devName));
 
+            ecb = new EventCallBack();
+
+            attributes.keySet().forEach(this::subscribe);
+
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (Exception e) {
             LOG.error(String.format("Failed to connect to device: %s", devName));
@@ -71,14 +75,6 @@ public class TangoDataSourceRT extends EventDataSource implements Runnable {
 
         if (ecb != null) {
             unsubscribeAll();
-        }
-    }
-
-    @Override
-    public void beginPolling() {
-        if (deviceProxy != null) {
-            LOG.debug("BEGIN-POLLING TangoDataSourceRT");
-            new Thread(this, "TANGO data source").start();
         }
     }
 
@@ -183,15 +179,6 @@ public class TangoDataSourceRT extends EventDataSource implements Runnable {
             LOG.error(String.format("Failed to set attribute: %s", err));
             raiseEvent(POINT_WRITE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
                     new LocalizableMessage("event.tango.setPointValueErr", err));
-        }
-    }
-
-    public void run() {
-        if (deviceProxy != null) {
-            LOG.debug("RUN TangoDataSourceRT");
-            ecb = new EventCallBack();
-
-            attributes.keySet().forEach(this::subscribe);
         }
     }
 
