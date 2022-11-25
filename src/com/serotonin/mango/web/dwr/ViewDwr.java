@@ -92,7 +92,6 @@ import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 
-import org.scada_lts.mango.adapter.MangoScript;
 import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
