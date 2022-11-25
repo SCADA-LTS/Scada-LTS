@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.exporter.ZIPProjectManager;
 import br.org.scadabr.vo.exporter.util.PointValueJSONWrapper;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
@@ -62,6 +61,7 @@ import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.beans.ImportTask;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.ReportService;
+import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.mango.service.ViewService;
 
@@ -173,7 +173,7 @@ public class EmportDwr extends BaseDwr {
 					new MaintenanceEventDao().getMaintenanceEvents());
 
 		if (scripts)
-			data.put(SCRIPTS, new ScriptDao().getScripts());
+			data.put(SCRIPTS, new ScriptService().getScripts());
 		if (pointValues) {
 			List<PointValueJSONWrapper> allWrappedValues = new ArrayList<PointValueJSONWrapper>();
 

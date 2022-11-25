@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import br.org.scadabr.api.exception.DAOException;
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.exporter.util.SystemSettingsJSONWrapper;
 import br.org.scadabr.vo.importer.UsersProfileImporter;
 import br.org.scadabr.vo.scripting.ScriptVO;
@@ -83,6 +82,7 @@ import org.scada_lts.ds.messaging.protocol.mqtt.MqttPointLocatorVO;
 import org.scada_lts.ds.state.ImportChangeEnableStateDs;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.mango.service.ReportService;
+import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.ViewService;
 
 /**
@@ -105,7 +105,7 @@ public class ImportTask extends ProgressiveTask {
 	private final PublisherDao publisherDao = new PublisherDao();
 	private final WatchListDao watchListDao = new WatchListDao();
 	private final MaintenanceEventDao maintenanceEventDao = new MaintenanceEventDao();
-	private final ScriptDao scriptDao = new ScriptDao();
+	private final ScriptService scriptService = new ScriptService();
 
 	private final List<JsonValue> users;
 	private int userIndexPass1;
@@ -1024,7 +1024,7 @@ public class ImportTask extends ProgressiveTask {
 		if (StringUtils.isEmpty(xid))
 			response.addGenericMessage("emport.script.xid");
 		else {
-			ScriptVO vo = scriptDao.getScript(xid);
+			ScriptVO vo = scriptService.getScript(xid);
 			if (vo == null) {
 
 				String typeStr = script.getString("type");
@@ -1047,7 +1047,7 @@ public class ImportTask extends ProgressiveTask {
 				else {
 					// Sweet. Save it.
 					boolean isnew = vo.isNew();
-					scriptDao.saveScript(vo);
+					scriptService.saveScript(vo);
 					addSuccessMessage(isnew, "emport.script.prefix", xid);
 				}
 			} catch (LocalizableJsonException e) {
