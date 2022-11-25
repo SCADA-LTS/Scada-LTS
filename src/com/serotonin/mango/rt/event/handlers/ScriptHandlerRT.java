@@ -2,7 +2,6 @@ package com.serotonin.mango.rt.event.handlers;
 
 import javax.script.ScriptException;
 
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.vo.scripting.ScriptVO;
 
 import com.serotonin.mango.Common;
@@ -10,6 +9,7 @@ import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.mango.service.ScriptService;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.*;
 
@@ -29,7 +29,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 		}
 		ScriptVO<?> script;
 		try {
-			script = new ScriptDao().getScript(vo
+			script = new ScriptService().getScript(vo
 					.getInactiveScriptCommand());
 		} catch (Exception ex) {
 			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
@@ -43,6 +43,8 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			} catch (Exception e) {
 				LOG.warn(infoErrorExecutionScript(e, script));
 			}
+		} else {
+			LOG.warn(infoErrorInitializationScript(null, vo, evt));
 		}
 	}
 
@@ -54,7 +56,7 @@ public class ScriptHandlerRT extends EventHandlerRT {
 		}
 		ScriptVO<?> script;
 		try {
-			script = new ScriptDao().getScript(vo
+			script = new ScriptService().getScript(vo
 					.getActiveScriptCommand());
 		} catch (Exception ex) {
 			LOG.warn(infoErrorInitializationScript(ex, vo, evt));
@@ -68,6 +70,8 @@ public class ScriptHandlerRT extends EventHandlerRT {
 			} catch (Exception e) {
 				LOG.warn(infoErrorExecutionScript(e, script));
 			}
+		} else {
+			LOG.warn(infoErrorInitializationScript(null, vo, evt));
 		}
 	}
 
