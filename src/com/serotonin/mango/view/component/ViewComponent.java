@@ -158,8 +158,9 @@ abstract public class ViewComponent implements Serializable, JsonSerializable {
 			result.add(def.getExportName());
 		return result;
 	}
-
+	@JsonRemoteProperty
 	private int index;
+	@JsonRemoteProperty
 	private String idSuffix;
 	private String style;
 	@JsonRemoteProperty
