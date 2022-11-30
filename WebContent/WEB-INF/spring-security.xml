@@ -17,15 +17,11 @@
         </headers>
         <csrf disabled="true"/>
         <intercept-url pattern="/services/API" access="permitAll" method="GET" />
-        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_SERVICES')" />
 
         <http-basic/>
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="basicAuthFilter" />
-        <session-management session-fixation-protection="newSession"/>
-        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
-        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
-                success-handler-ref="headerWriterLogoutHandler"/>
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true" pattern="/monitoring/**"
@@ -44,10 +40,6 @@
         <http-basic/>
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="basicAuthFilter" />
-        <session-management session-fixation-protection="newSession"/>
-        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
-        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
-                success-handler-ref="headerWriterLogoutHandler" />
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true"
@@ -203,7 +195,12 @@
             <password-encoder ref="scadaPasswordEncoder" />
             <jdbc-user-service data-source-ref="dataSourceForSecurity"
                                users-by-username-query="SELECT username, password, disabled = 'N' AS enabled FROM users WHERE username = ?"
-                               authorities-by-username-query="SELECT username, IF(admin = 'Y', 'ROLE_ADMIN', IF(username = 'monitoring', 'ROLE_MONITORING', 'ROLE_USER')) AS role FROM users WHERE username = ?"/>
+                               authorities-by-username-query="SELECT username,
+                               CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
+                                    WHEN username = 'monitoring' THEN 'ROLE_MONITORING'
+                                    WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
+                                    ELSE 'ROLE_USER'
+                               END AS role FROM users WHERE username = ?"/>
         </authentication-provider>
     </authentication-manager>
 

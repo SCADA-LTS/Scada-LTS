@@ -51,6 +51,7 @@ public final class AuthenticationUtils {
             putLogOnIpAddr(request);
             if(authentication.getAuthorities() != null) {
                 Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
+                user.removeAttribute("roles");
                 user.setAttribute("roles", roles.stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()));
