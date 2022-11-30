@@ -16,6 +16,7 @@ public class LocalBasicAuthFilter extends BasicAuthenticationFilter {
         super(authenticationManager);
     }
 
+    @Override
     protected void onSuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, Authentication authentication) {
         authenticateLocal(request, authentication, new UserService());
