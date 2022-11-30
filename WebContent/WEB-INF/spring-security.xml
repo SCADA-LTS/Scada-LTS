@@ -77,9 +77,6 @@
         <!-- Anonymous -->
         <intercept-url pattern="/public_view.htm" access="permitAll" />
 
-        <!-- Monitoring -->
-        <intercept-url pattern="/monitoring" access="permitAll" />
-
         <!-- REST API User -->
 
         <!-- Auth -->
