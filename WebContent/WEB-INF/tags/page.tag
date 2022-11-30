@@ -45,8 +45,9 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
+  <c:set var="isLoggedUser" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null && !sessionUser.getAttribute('roles').contains('ROLE_MONITORING')}" />
   <c:choose>
-    <c:when test="${!empty sessionUser}">
+    <c:when test="${isLoggedUser}">
       <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
     </c:when>
     <c:otherwise>
@@ -87,7 +88,7 @@
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
-  <c:if test="${!empty sessionUser}">
+  <c:if test="${isLoggedUser}">
       <script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
       <script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>
   </c:if>
@@ -118,7 +119,7 @@
 		};
 
       dwr.util.setEscapeHtml(false);
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
         <c:if test="${sessionUser.hideMenu}">
@@ -146,7 +147,7 @@
         }
       }
 
-    <c:if test="${!empty sessionUser}">
+    <c:if test="${isLoggedUser}">
         var errorCallback = function(error) {
             alert("Connect error:" + error);
         }
@@ -276,7 +277,7 @@
 <div class="navHeader" id="subHeader">
   <div>
     <nav class="flex-default">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedUser}">
         <div class="spacer">
             <c:choose>
                 <c:when test="${sessionUser.hideMenu}">
@@ -360,7 +361,7 @@
 
   <div class="flex-default">
     <div id="navbarUserInfo">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedUser}">
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
         <c:choose>
             <c:when test="${!empty sessionUser.firstName}">
@@ -374,7 +375,7 @@
     </div>
 
     <div id="navbarUserProperties" class="flex-default spacer">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedUser}">
         <c:if test="${!sessionUser.hideMenu}">
             <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
             <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>

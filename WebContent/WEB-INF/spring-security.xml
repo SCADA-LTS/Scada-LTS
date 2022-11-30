@@ -4,7 +4,54 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
-    <http use-expressions="true" disable-url-rewriting="true">
+
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/services/**"
+          authentication-manager-ref="authenticationManager">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+        <intercept-url pattern="/services/API" access="permitAll" method="GET" />
+        <intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')" />
+
+        <http-basic/>
+
+        <custom-filter after="SECURITY_CONTEXT_FILTER" ref="basicAuthFilter" />
+        <session-management session-fixation-protection="newSession"/>
+        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
+        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
+                success-handler-ref="headerWriterLogoutHandler"/>
+    </http>
+
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/monitoring/**"
+          authentication-manager-ref="authenticationManager">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_MONITORING')" />
+
+        <http-basic/>
+
+        <custom-filter after="SECURITY_CONTEXT_FILTER" ref="basicAuthFilter" />
+        <session-management session-fixation-protection="newSession"/>
+        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
+        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
+                success-handler-ref="headerWriterLogoutHandler" />
+    </http>
+
+    <http use-expressions="true" disable-url-rewriting="true"
+          authentication-manager-ref="authenticationManager">
         <headers>
             <cache-control disabled="true"/>
             <content-type-options disabled="true"/>
@@ -140,8 +187,9 @@
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
         <session-management session-fixation-protection="newSession" />
-
-        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID" />
+        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
+        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
+                success-handler-ref="headerWriterLogoutHandler"/>
     </http>
     <http-firewall ref="defaultHttpFirewall"/>
 
@@ -155,7 +203,7 @@
             <password-encoder ref="scadaPasswordEncoder" />
             <jdbc-user-service data-source-ref="dataSourceForSecurity"
                                users-by-username-query="SELECT username, password, disabled = 'N' AS enabled FROM users WHERE username = ?"
-                               authorities-by-username-query="SELECT username, IF(admin = 'Y', 'ROLE_ADMIN', 'ROLE_USER') AS role FROM users WHERE username = ?"/>
+                               authorities-by-username-query="SELECT username, IF(admin = 'Y', 'ROLE_ADMIN', IF(username = 'monitoring', 'ROLE_MONITORING', 'ROLE_USER')) AS role FROM users WHERE username = ?"/>
         </authentication-provider>
     </authentication-manager>
 
@@ -188,5 +236,31 @@
     <b:bean id="guard" class="org.scada_lts.web.mvc.api.security.Guard" >
         <b:constructor-arg ref="withIdentifierGuard"/>
         <b:constructor-arg ref="getIdentifierFromHttpParameterGuard"/>
+    </b:bean>
+
+    <b:bean id="basicAuthFilter" class="org.scada_lts.login.LocalBasicAuthFilter">
+        <b:constructor-arg ref="authenticationManager"/>
+    </b:bean>
+
+    <b:bean id="simpleRedirectInvalidSessionStrategy" class="org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy">
+        <b:constructor-arg value="/logout.htm"/>
+    </b:bean>
+
+    <b:bean id="invalidSessionAccessDeniedHandler" class="org.springframework.security.web.session.InvalidSessionAccessDeniedHandler">
+        <b:constructor-arg ref="simpleRedirectInvalidSessionStrategy" />
+    </b:bean>
+
+    <b:bean id="clearSiteDataHeaderWriter" class="org.scada_lts.login.ScadaClearSiteDataHeaderWriter" >
+        <b:constructor-arg>
+            <b:list>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">CACHE</b:value>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">COOKIES</b:value>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">STORAGE</b:value>
+            </b:list>
+        </b:constructor-arg>
+    </b:bean>
+
+    <b:bean id="headerWriterLogoutHandler" class="org.scada_lts.login.ScadaHeaderWriterLogoutHandler" >
+        <b:constructor-arg ref="clearSiteDataHeaderWriter" />
     </b:bean>
 </b:beans>

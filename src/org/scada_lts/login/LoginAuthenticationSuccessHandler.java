@@ -18,8 +18,6 @@ import static org.scada_lts.login.AuthenticationUtils.authenticateLocal;
 
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private static final Log LOG = LogFactory.getLog(LoginAuthenticationSuccessHandler.class);
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
