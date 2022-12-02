@@ -45,7 +45,7 @@ public final class XmlUtils {
             @Override
             public void warning(SAXParseException exception) throws SAXException {
                 if(isIgnoreWarnMsg.test(exception.getMessage())) {
-                    LOG.trace(exception.getMessage());
+                    LOG.warn(exception.getMessage());
                     return;
                 }
                 throw exception;
@@ -54,7 +54,7 @@ public final class XmlUtils {
             @Override
             public void error(SAXParseException exception) throws SAXException {
                 if(isIgnoreErrorMsg.test(exception.getMessage())) {
-                    LOG.trace(exception.getMessage());
+                    LOG.warn(exception.getMessage());
                     return;
                 }
                 throw exception;
