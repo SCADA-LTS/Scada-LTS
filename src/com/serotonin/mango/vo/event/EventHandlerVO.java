@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import br.org.scadabr.vo.scripting.ScriptVO;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.json.JsonArray;
 import com.serotonin.json.JsonException;
@@ -57,6 +58,7 @@ import com.serotonin.util.SerializationHelper;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
+import org.scada_lts.mango.service.ScriptService;
 
 @JsonRemoteEntity
 public class EventHandlerVO implements Serializable,
@@ -865,6 +867,14 @@ public class EventHandlerVO implements Serializable,
 		} else if (handlerType == TYPE_SCRIPT) {
 			map.put("activeScriptCommand", activeScriptCommand);
 			map.put("inactiveScriptCommand", inactiveScriptCommand);
+			ScriptService service = new ScriptService();
+			ScriptVO<?> activeScript= service.getScript(activeScriptCommand);
+			if(activeScript != null)
+				map.put("activeScriptCommandXid", activeScript.getXid());
+			ScriptVO<?> inactiveScript= service.getScript(inactiveScriptCommand);
+			if(inactiveScript != null) {
+				map.put("inactiveScriptCommandXid", inactiveScript.getXid());
+			}
 		} else if (handlerType == TYPE_SMS) {
 			map.put("activeRecipients", activeRecipients);
 		}
@@ -1006,13 +1016,19 @@ public class EventHandlerVO implements Serializable,
 			if (text != null)
 				inactiveProcessCommand = text;
 		} else if (handlerType == TYPE_SCRIPT) {
-			Integer script = json.getInt("activeScriptCommand");
-			if (text != null)
-				activeScriptCommand = script;
-
-			script = json.getInt("inactiveScriptCommand");
-			if (text != null)
-				inactiveScriptCommand = script;
+			ScriptService service = new ScriptService();
+			String activeScriptCommandXid = json.getString("activeScriptCommandXid");
+			if(activeScriptCommandXid != null) {
+				ScriptVO<?> activeScript = service.getScript(activeScriptCommandXid);
+				if(activeScript != null)
+					activeScriptCommand = activeScript.getId();
+			}
+			String inactiveScriptCommandXid = json.getString("inactiveScriptCommandXid");
+			if(inactiveScriptCommandXid != null) {
+				ScriptVO<?> inactiveScript = service.getScript(inactiveScriptCommandXid);
+				if(inactiveScript != null)
+					inactiveScriptCommand = inactiveScript.getId();
+			}
 		} else if (handlerType == TYPE_SMS) {
 			JsonArray jsonActiveRecipients = json
 					.getJsonArray("activeRecipients");

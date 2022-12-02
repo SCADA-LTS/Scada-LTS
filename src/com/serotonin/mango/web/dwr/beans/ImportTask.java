@@ -232,10 +232,14 @@ public class ImportTask extends ProgressiveTask {
 										dsvo);
 							}
 
-							Common.ctx.getRuntimeManager().saveDataPoint(vo);
-							addSuccessMessage(isnew, "emport.dataPoint.prefix",
-									xid);
-
+							DwrResponseI18n dataPointResponse = new DwrResponseI18n();
+							vo.validate(dataPointResponse);
+							if(dataPointResponse.getHasMessages()) {
+								copyValidationMessages(dataPointResponse, "emport.dataPoint.prefix", xid);
+							} else {
+								Common.ctx.getRuntimeManager().saveDataPoint(vo);
+								addSuccessMessage(isnew, "emport.dataPoint.prefix", xid);
+							}
 						}
 					}
 
@@ -327,12 +331,6 @@ public class ImportTask extends ProgressiveTask {
 				return;
 			}
 
-			if (eventHandlerIndex < eventHandlers.size()) {
-				importEventHandler(eventHandlers.get(eventHandlerIndex++)
-						.toJsonObject());
-				return;
-			}
-
 			if (watchListIndex < watchLists.size()) {
 				importWatchList(watchLists.get(watchListIndex++).toJsonObject());
 				return;
@@ -347,6 +345,12 @@ public class ImportTask extends ProgressiveTask {
 			// wait users
 			if (scriptsIndex < scripts.size()) {
 				importScripts(scripts.get(scriptsIndex++).toJsonObject());
+				return;
+			}
+
+			if (eventHandlerIndex < eventHandlers.size()) {
+				importEventHandler(eventHandlers.get(eventHandlerIndex++)
+						.toJsonObject());
 				return;
 			}
 
