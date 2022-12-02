@@ -99,7 +99,7 @@ public class UsersProfileService {
     public void saveUsersProfile(UsersProfileVO profile) throws DAOException {
         if (profileExistsWithThatName(profile)
                 && profile.getId() == Common.NEW_ID) {
-            throw new DAOException();
+            throw new DAOException("There are profiles with the given name!:" + profile.getName());
         }
 
         saveUsersProfileWithoutNameConstraint(profile);
@@ -109,7 +109,7 @@ public class UsersProfileService {
             throws DAOException {
         if (profile.getName() == null
                 || profile.getName().replaceAll("\\s+", "").isEmpty()) {
-            throw new DAOException();
+            throw new DAOException("The profile name cannot be an empty string!");
         }
 
         if (profile.getXid() == null) {
