@@ -11,6 +11,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.EventHandlerVO;
 import com.serotonin.mango.vo.link.PointLinkVO;
+import org.apache.commons.lang3.StringUtils;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.text.MessageFormat;
@@ -82,8 +83,12 @@ public final class LoggingUtils {
         if(event == null)
             return "";
         String info = "event: {0} (id: {1}, active: {2}, type: {3})";
-        if(event.getMessage() != null)
-            return MessageFormat.format(info, event.getMessage().getLocalizedMessage(Common.getBundle()), event.getId(), event.getActiveTimestamp(), event.getEventType());
+        if(event.getMessage() != null) {
+            String message = event.getMessage().getLocalizedMessage(Common.getBundle());
+            if(message != null) {
+                return MessageFormat.format(info, StringUtils.abbreviate(message.trim(), 160), event.getId(), event.getActiveTimestamp(), event.getEventType());
+            }
+        }
         return MessageFormat.format(info, "no message", event.getId(), event.getActiveTimestamp(), event.getEventType());
     }
 
