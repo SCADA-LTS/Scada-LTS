@@ -1,14 +1,14 @@
 plugins {
-    id "com.moowork.node" version "1.2.0"
+    id "com.github.node-gradle.node" version "3.5.0"
 }
 
 boolean buildVue = false
 
 apply plugin: 'base'
-apply plugin: 'com.moowork.node'
+apply plugin: 'com.github.node-gradle.node'
 
 node {
-    version = "12.19.0"
+    version = "14.20.1"
     download = false
 }
 
