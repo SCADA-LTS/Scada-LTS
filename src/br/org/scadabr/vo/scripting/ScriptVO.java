@@ -16,11 +16,11 @@ import com.serotonin.json.JsonReader;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.json.JsonSerializable;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import org.scada_lts.mango.service.ScriptService;
+import org.scada_lts.mango.service.UserService;
 
 public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 		JsonSerializable {
@@ -164,14 +164,24 @@ public abstract class ScriptVO<T extends ScriptVO<?>> implements Serializable,
 	public void jsonDeserialize(JsonReader reader, JsonObject object)
 			throws JsonException {
 		String username = object.getString("user");
-		User user = new UserDao().getUser(username);
-		this.userId = user.getId();
+		UserService userService = new UserService();
+		User user;
+		if(username == null || (user = userService.getUser(username)) == null) {
+			user = userService.getUser("admin");
+		}
+		if(user != null)
+			this.userId = user.getId();
 	}
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
 		map.put("type", getType().name());
-		map.put("user", new UserDao().getUser(userId).getUsername());
+		User user = new UserService().getUser(userId);
+		if(user != null) {
+			map.put("user", user.getUsername());
+		} else {
+			map.put("user", "admin");
+		}
 	}
 
 	public static ScriptVO<?> createScriptVO(int typeId) {

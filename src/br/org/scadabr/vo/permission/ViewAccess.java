@@ -28,7 +28,12 @@ public class ViewAccess extends Permission implements JsonSerializable {
 
 	@Override
 	public void jsonSerialize(Map<String, Object> map) {
-		map.put("viewXid", new ViewService().getView(id).getXid());
+		View view = new ViewService().getView(id);
+		if(view != null) {
+			map.put("viewXid", view.getXid());
+		} else {
+			map.put("viewXid", null);
+		}
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
 
