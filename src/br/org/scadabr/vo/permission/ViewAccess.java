@@ -32,7 +32,7 @@ public class ViewAccess extends Permission implements JsonSerializable {
 		if(view != null) {
 			map.put("viewXid", view.getXid());
 		} else {
-			map.put("viewXid", null);
+			throw new NullPointerException("viewXid is null!");
 		}
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}

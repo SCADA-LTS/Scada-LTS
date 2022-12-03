@@ -32,7 +32,7 @@ public class WatchListAccess extends Permission implements JsonSerializable {
 		if(watchList != null) {
 			map.put("watchlistXid", watchList.getXid());
 		} else {
-			map.put("watchlistXid", null);
+			throw new NullPointerException("watchlistXid is null!");
 		}
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}
