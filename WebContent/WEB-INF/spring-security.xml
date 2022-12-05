@@ -16,30 +16,13 @@
             <header ref="headersFromSystemSettingsWriter"/>
         </headers>
         <csrf disabled="true"/>
-        <intercept-url pattern="/services/API" access="permitAll" method="GET" />
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_SERVICES')" />
+        <intercept-url pattern="/services/API" access="permitAll" method="GET" requires-channel="https"/>
+        <intercept-url pattern="/**" access="hasRole('ROLE_SERVICES')" requires-channel="https"/>
 
         <http-basic/>
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="basicAuthFilter" />
-    </http>
-
-    <http use-expressions="true" disable-url-rewriting="true" pattern="/monitoring/**"
-          authentication-manager-ref="authenticationManager">
-        <headers>
-            <cache-control disabled="true"/>
-            <content-type-options disabled="true"/>
-            <hsts/>
-            <frame-options policy="SAMEORIGIN"/>
-            <xss-protection/>
-            <header ref="headersFromSystemSettingsWriter"/>
-        </headers>
-        <csrf disabled="true"/>
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_MONITORING')" />
-
-        <http-basic/>
-
-        <custom-filter after="SECURITY_CONTEXT_FILTER" ref="basicAuthFilter" />
+        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true"
@@ -76,6 +59,9 @@
 
         <!-- Anonymous -->
         <intercept-url pattern="/public_view.htm" access="permitAll" />
+
+        <!-- Monitoring -->
+        <intercept-url pattern="/monitoring/**" access="permitAll" />
 
         <!-- REST API User -->
 
@@ -194,7 +180,6 @@
                                users-by-username-query="SELECT username, password, disabled = 'N' AS enabled FROM users WHERE username = ?"
                                authorities-by-username-query="SELECT username,
                                CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
-                                    WHEN username = 'monitoring' THEN 'ROLE_MONITORING'
                                     WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
                                     ELSE 'ROLE_USER'
                                END AS role FROM users WHERE username = ?"/>

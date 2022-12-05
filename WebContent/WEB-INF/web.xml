@@ -44,8 +44,8 @@
     <param-name>com.serotonin.web.taglib.ListSortTag.downImage.altKey</param-name>
     <param-value>pagination.descending</param-value>
   </context-param>
-  <!-- secure javamelody - deprecated 29.11.2022 moved to spring-security.xml Kamil Jarmusik -->
-  <!--login-config>
+  <!-- secure javamelody -->
+  <login-config>
     <auth-method>BASIC</auth-method>
     <realm-name>Monitoring</realm-name>
   </login-config>
@@ -60,7 +60,7 @@
     <auth-constraint>
         <role-name>monitoring</role-name>
     </auth-constraint>
-  </security-constraint-->
+  </security-constraint>
   <!-- end secure javamelody -->
   <filter>  
     <filter-name>encodingFilter</filter-name>  

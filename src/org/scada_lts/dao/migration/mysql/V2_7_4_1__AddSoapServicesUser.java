@@ -12,9 +12,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-public class V2_7_4_0__AddMonitoringAndSoapServicesUser extends BaseJavaMigration {
+public class V2_7_4_1__AddSoapServicesUser extends BaseJavaMigration {
 
-    private static final Log LOG = LogFactory.getLog(V2_7_4_0__AddMonitoringAndSoapServicesUser.class);
+    private static final Log LOG = LogFactory.getLog(V2_7_4_1__AddSoapServicesUser.class);
 
     @Override
     public void migrate(Context context) throws Exception {
@@ -24,33 +24,10 @@ public class V2_7_4_0__AddMonitoringAndSoapServicesUser extends BaseJavaMigratio
 
             String userInsert = "insert into users (username, password, email, phone, admin, disabled, " +
                     "homeUrl, receiveAlarmEmails, receiveOwnAuditEvents) values (?,?,?,?,?,?,?,?,?);";
-
-            addMonitoringUser(jdbcTemplate, userInsert);
             addSoapServicesUser(jdbcTemplate, userInsert);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             throw ex;
-        }
-    }
-
-    private void addMonitoringUser(JdbcTemplate jdbcTmp, String userInsert) {
-        List<Integer> ids = jdbcTmp.queryForList("select id from users where username = ?", new Object[]{"monitoring"}, Integer.class);
-        if(ids.isEmpty()) {
-            jdbcTmp.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(userInsert);
-                new ArgumentPreparedStatementSetter(new Object[]{
-                        "monitoring",
-                        Common.encrypt("monitoring"),
-                        "monitoring@mail.com",
-                        "",
-                        "N",
-                        "N",
-                        "",
-                        0,
-                        "N"
-                }).setValues(preparedStatement);
-                return preparedStatement;
-            });
         }
     }
 
