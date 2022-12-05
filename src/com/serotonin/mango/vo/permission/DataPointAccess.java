@@ -104,7 +104,7 @@ public class DataPointAccess implements JsonSerializable {
 		if(dataPoint != null) {
 			map.put("dataPointXid", dataPoint.getXid());
 		} else {
-			map.put("dataPointXid", null);
+			throw new NullPointerException("dataPointXid is null!");
 		}
 		map.put("permission", ACCESS_CODES.getCode(permission));
 	}

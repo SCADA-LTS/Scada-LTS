@@ -26,7 +26,7 @@ To take your first steps inside Scada-LTS we suggest to get acquainted with vide
 Follow the [Release Section](https://github.com/SCADA-LTS/Scada-LTS/releases) to be up to date with the latest features and see the specific version changelogs.   
 We follow the [Semantic Versioning Guidelines](http://semver.org/) to organize changes in our application.
 
-If you need support for deployment please contact us and find more information on [our website](http://scada-lts.comhttp://scada-lts.com/#support)
+If you need support for deployment please contact us and find more information on [our website](http://scada-lts.com/#support)
 
 ## Issues and ideas
 Have you found a bug? Do you have idea for a new feature? Open a new [Issue](https://github.com/SCADA-LTS/Scada-LTS/issues) on our GitHub project site!
