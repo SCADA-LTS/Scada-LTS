@@ -7,6 +7,7 @@ import org.scada_lts.mango.service.ScriptService;
 
 import br.org.scadabr.vo.scripting.ScriptVO;
 
+@Deprecated
 public class ScriptDao {
 
 	MangoScript scriptService = new ScriptService();

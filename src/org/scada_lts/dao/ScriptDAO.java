@@ -179,7 +179,11 @@ public class ScriptDAO  {
 	}
 
 	public ScriptVO<?> getScript(int id) {
-		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]  { id }, new ScriptRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_ONE, new Object[]{id}, new ScriptRowMapper());
+		} catch (Exception exception) {
+			return null;
+		}
 	}
 	
 	public List<ScriptVO<?>> getScripts() {
@@ -187,9 +191,12 @@ public class ScriptDAO  {
 	}
 		
 	public ScriptVO<?> getScript(String xid) {
-		
-		return (ScriptVO<?>) DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_BASE_ON_XID, new Object[]  { 
-				xid }, new ScriptRowMapper());
+		try {
+			return DAO.getInstance().getJdbcTemp().queryForObject(SCRIPT_SELECT_BASE_ON_XID, new Object[]{
+					xid}, new ScriptRowMapper());
+		} catch (Exception exception) {
+			return null;
+		}
 	}
 
 	public String generateUniqueXid() {

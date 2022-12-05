@@ -59,6 +59,8 @@ public class UsersProfileImporter {
 			response.addGenericMessage("emport.profilePermission.prefix", usersProfileXid, e.getMsg());
 		} catch (JsonException e) {
 			response.addGenericMessage("emport.profilePermission.prefix", usersProfileXid, task.getJsonExceptionMessage(e));
+		} catch (Exception ex) {
+			response.addGenericMessage("emport.profilePermission.prefix", usersProfileXid, ex.getMessage());
 		}
 	}
 }

@@ -35,7 +35,6 @@ import org.directwebremoting.WebContextFactory;
 
 import br.org.scadabr.api.vo.FlexProject;
 import br.org.scadabr.db.dao.FlexProjectDao;
-import br.org.scadabr.db.dao.ScriptDao;
 import br.org.scadabr.rt.scripting.ScriptRT;
 import br.org.scadabr.view.component.AlarmListComponent;
 import br.org.scadabr.view.component.ButtonComponent;
@@ -92,6 +91,8 @@ import com.serotonin.web.dwr.MethodFilter;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
+
+import org.scada_lts.mango.service.ScriptService;
 import org.scada_lts.mango.service.UserService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.permissions.service.GetObjectsWithAccess;
@@ -151,7 +152,7 @@ public class ViewDwr extends BaseDwr {
 
 	@MethodFilter
 	public List<ScriptVO<?>> getScripts() {
-		return new ScriptDao().getScripts();
+		return new ScriptService().getScripts();
 	}
 
 	@MethodFilter
@@ -962,7 +963,7 @@ public class ViewDwr extends BaseDwr {
 	}
 
 	public boolean executeScript(String xid) {
-		ScriptVO<?> script = new ScriptDao().getScript(xid);
+		ScriptVO<?> script = new ScriptService().getScript(xid);
 
 		try {
 			if (script != null) {
