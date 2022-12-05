@@ -45,7 +45,7 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
-  <c:set var="isLoggedToScadaUser" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null && !sessionUser.getAttribute('roles').contains('ROLE_MONITORING') && !sessionUser.getAttribute('roles').contains('ROLE_SERVICES')}" />
+  <c:set var="isLoggedToScadaUser" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null && !sessionUser.getAttribute('roles').contains('ROLE_SERVICES')}" />
   <c:choose>
     <c:when test="${isLoggedToScadaUser}">
       <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
