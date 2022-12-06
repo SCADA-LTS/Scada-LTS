@@ -46,7 +46,7 @@
   </context-param>
   <!-- secure javamelody -->
   <login-config>
-    <auth-method>BASIC</auth-method>
+    <auth-method>DIGEST</auth-method>
     <realm-name>Monitoring</realm-name>
   </login-config>
   <security-role>

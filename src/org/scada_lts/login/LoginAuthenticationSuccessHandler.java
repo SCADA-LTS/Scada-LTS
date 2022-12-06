@@ -2,8 +2,6 @@ package org.scada_lts.login;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
