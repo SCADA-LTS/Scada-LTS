@@ -65,10 +65,11 @@
         <prop key="/webcam_live_feed.htm">webcamLiveFeedController</prop>
         <prop key="/export_project.htm">projectExporterController</prop>
         <prop key="/import_project.htm">projectImporterController</prop>
+        <prop key="/data_sources.shtm">dataSourceListController</prop>
         <!-- Mobile user URLs -->
         <prop key="/mobile_logout.htm">mobileLogoutController</prop>
         <prop key="/mobile_watch_list.shtm">mobileWatchListController</prop>
-        
+
       </props>
     </property>
     
@@ -215,5 +216,9 @@
     <constructor-arg ref="subProtocolWebSocketHandler"/>
     <constructor-arg ref="clientOutboundChannelExecutor"/>
     <constructor-arg ref="userRegistry"/>
+  </bean>
+
+  <bean id="dataSourceListController" class="org.scada_lts.web.mvc.controller.DataSourceListController" >
+    <property name="viewName"><value>dataSourceList</value></property>
   </bean>
 </beans>

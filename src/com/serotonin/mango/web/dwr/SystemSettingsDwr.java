@@ -25,6 +25,7 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.SystemEventType;
@@ -50,6 +51,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import static com.serotonin.mango.web.mvc.controller.ControllerUtils.setLocale;
+
 
 public class SystemSettingsDwr extends BaseDwr {
 	@MethodFilter
@@ -417,9 +421,7 @@ public class SystemSettingsDwr extends BaseDwr {
 	@MethodFilter
 	public void saveLanguageSettings(String language) {
 		Permissions.ensureAdmin();
-		SystemSettingsDAO SystemSettingsDAO = new SystemSettingsDAO();
-		SystemSettingsDAO.setValue(SystemSettingsDAO.LANGUAGE, language);
-		Common.setSystemLanguage(language);
+		ControllerUtils.setLocale(language);
 	}
 
 	@MethodFilter

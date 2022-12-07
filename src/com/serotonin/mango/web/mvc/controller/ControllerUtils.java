@@ -25,7 +25,14 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.Common;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContext;
+import org.directwebremoting.WebContextFactory;
+import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.ui.Model;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -37,11 +44,17 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.web.i18n.Utf8ResourceBundle;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /**
  * @author Matthew Lohbihler
  */
-public class ControllerUtils {
+public final class ControllerUtils {
+
+    private static final Log LOG = LogFactory.getLog(ControllerUtils.class);
+
+    private ControllerUtils() {}
+
     public static ResourceBundle getResourceBundle(HttpServletRequest request) {
         return Utf8ResourceBundle.getBundle("messages", getLocale(request));
     }
@@ -91,5 +104,34 @@ public class ControllerUtils {
         	model.addAttribute("prevId", userPoints.get(pointIndex - 1).getId());
         if (pointIndex < userPoints.size() - 1)
             model.addAttribute("nextId", userPoints.get(pointIndex + 1).getId());
+    }
+
+    public static void setLocale(String locale) {
+
+        Permissions.ensureValidUser();
+        Common.setSystemLanguage(locale);
+
+        WebContext webContext = WebContextFactory.get();
+        if(webContext != null) {
+            HttpServletRequest request = webContext.getHttpServletRequest();
+            HttpServletResponse response = webContext.getHttpServletResponse();
+            setLocale(request, response, locale);
+            Common.setSystemLanguage(locale);
+        } else {
+            LOG.warn("webContext is null");
+        }
+    }
+
+    public static void setLocale(HttpServletRequest request, HttpServletResponse response, String locale) {
+        User user = Common.getUser(request);
+        if(user != null) {
+            LocaleResolver localeResolver = new SessionLocaleResolver();
+            LocaleEditor localeEditor = new LocaleEditor();
+            localeEditor.setAsText(locale);
+            localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
+            Common.setSystemLanguage(locale);
+        } else {
+            LOG.warn("User is logged!");
+        }
     }
 }

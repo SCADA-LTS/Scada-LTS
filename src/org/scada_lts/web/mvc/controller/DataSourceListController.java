@@ -32,12 +32,11 @@ import org.scada_lts.permissions.ACLConfig;
 import org.scada_lts.permissions.model.EntryDto;
 import org.scada_lts.permissions.model.PermissionDataSourceACL;
 import org.scada_lts.web.mvc.comparators.DataSourceComparator;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -46,13 +45,11 @@ import java.util.*;
  * 
  * @author Marcin Gołda
  */
-@Controller
-@RequestMapping("/data_sources.shtm")
-public class DataSourceListController {
-	private static final Log LOG = LogFactory.getLog(SqlController.class);
+public class DataSourceListController extends ParameterizableViewController {
+	private static final Log LOG = LogFactory.getLog(DataSourceListController.class);
 
-	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView showList(HttpServletRequest request){
+    @Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response){
 		LOG.trace("/data_sources.shtm");
         Permissions.ensureAdmin(request);
 		
@@ -64,7 +61,8 @@ public class DataSourceListController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		//model.put("paging", paging);
 		model.put("data", data);
-		return new ModelAndView("dataSourceList", model);
+        model.put("userSession", Common.getUser(request));
+		return new ModelAndView(getViewName(), model);
 	}
 	
     protected List<ListParent<DataSourceVO<?>, DataPointVO>> getData(HttpServletRequest request, final String sortFieldName, boolean desc) {

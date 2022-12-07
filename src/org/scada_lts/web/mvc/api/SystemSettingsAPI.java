@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.SystemSettingsService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -419,12 +421,13 @@ public class SystemSettingsAPI {
     }
 
     @PostMapping(value = "/saveSystemInfo", consumes = "application/json")
-    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
+    public ResponseEntity<String> saveSystemInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody JsonSettingsSystemInfo jsonSettingsSystemInfo) {
         LOG.info("/api/systemSettings/saveSystemInfo");
         try {
             User user = Common.getUser(request);
             if (user != null && user.isAdmin()) {
                 systemSettingsService.saveSystemInfoSettings(jsonSettingsSystemInfo);
+                ControllerUtils.setLocale(request, response, jsonSettingsSystemInfo.getLanguage());
                 return new ResponseEntity<>(SAVED_MSG, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
