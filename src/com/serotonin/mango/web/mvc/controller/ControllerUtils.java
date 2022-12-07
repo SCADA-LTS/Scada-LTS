@@ -109,8 +109,6 @@ public final class ControllerUtils {
     public static void setLocale(String locale) {
 
         Permissions.ensureValidUser();
-        Common.setSystemLanguage(locale);
-
         WebContext webContext = WebContextFactory.get();
         if(webContext != null) {
             HttpServletRequest request = webContext.getHttpServletRequest();
@@ -118,20 +116,28 @@ public final class ControllerUtils {
             setLocale(request, response, locale);
             Common.setSystemLanguage(locale);
         } else {
-            LOG.warn("webContext is null");
+            LOG.warn("webContext is null!");
         }
     }
 
     public static void setLocale(HttpServletRequest request, HttpServletResponse response, String locale) {
         User user = Common.getUser(request);
         if(user != null) {
-            LocaleResolver localeResolver = new SessionLocaleResolver();
-            LocaleEditor localeEditor = new LocaleEditor();
-            localeEditor.setAsText(locale);
-            localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
+            setLocaleSession(request, response, locale);
             Common.setSystemLanguage(locale);
         } else {
-            LOG.warn("User is logged!");
+            LOG.warn("User is not logged!");
         }
+    }
+
+    public static void setLocaleSession(HttpServletRequest request, HttpServletResponse response) {
+        setLocaleSession(request, response, Common.updateLanguage());
+    }
+
+    public static void setLocaleSession(HttpServletRequest request, HttpServletResponse response, String locale) {
+        LocaleResolver localeResolver = new SessionLocaleResolver();
+        LocaleEditor localeEditor = new LocaleEditor();
+        localeEditor.setAsText(locale);
+        localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
     }
 }

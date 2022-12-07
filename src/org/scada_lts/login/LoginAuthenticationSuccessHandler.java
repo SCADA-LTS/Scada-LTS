@@ -19,7 +19,7 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        User user = authenticateLocal(request, authentication, new UserService());
+        User user = authenticateLocal(request, response, authentication, new UserService());
         redirect(request, response, user);
     }
 

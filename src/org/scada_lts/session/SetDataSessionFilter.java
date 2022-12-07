@@ -9,21 +9,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class SetDataSessionFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if(request instanceof HttpServletRequest) {
+        if(request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
             HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletResponse res = (HttpServletResponse) response;
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated()) {
                 User user = Common.getUser(req);
                 if (user == null) {
                     UserService userService = new UserService();
                     user = userService.getUser(authentication.getName());
-                    AuthenticationUtils.authenticateLocal(req, authentication, user);
+                    AuthenticationUtils.authenticateLocal(req, res, authentication, user);
                 }
             }
         }

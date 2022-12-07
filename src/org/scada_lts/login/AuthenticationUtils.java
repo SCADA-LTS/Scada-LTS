@@ -3,6 +3,7 @@ package org.scada_lts.login;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -15,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.Map;
@@ -28,14 +30,15 @@ public final class AuthenticationUtils {
     private static final Log LOG = LogFactory.getLog(AuthenticationUtils.class);
 
     public static Authentication authenticate(String username, String password, HttpServletRequest request,
-                                              AuthenticationManager authenticationManager, MangoUser mangoUser) {
+                                              HttpServletResponse response, AuthenticationManager authenticationManager,
+                                              MangoUser mangoUser) {
         Authentication auth = new UsernamePasswordAuthenticationToken(username, password);
         try {
             logout(request);
             Authentication result = authenticationManager.authenticate(auth);
             if(result.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(result);
-                authenticateLocal(request, result, mangoUser);
+                authenticateLocal(request, response, result, mangoUser);
             }
             return result;
         } catch (Exception ex) {
@@ -45,9 +48,10 @@ public final class AuthenticationUtils {
         }
     }
 
-    public static User authenticateLocal(HttpServletRequest request, Authentication authentication, MangoUser mangoUser) {
+    public static User authenticateLocal(HttpServletRequest request, HttpServletResponse response,
+                                         Authentication authentication, MangoUser mangoUser) {
         getUser(authentication, mangoUser).ifPresent(user -> {
-            authenticateLocal(request, authentication, user);
+            authenticateLocal(request, response, authentication, user);
             mangoUser.recordLogin(user.getId());
         });
         User user = Common.getUser(request);
@@ -57,11 +61,13 @@ public final class AuthenticationUtils {
         return user;
     }
 
-    public static void authenticateLocal(HttpServletRequest request, Authentication authentication, User user) {
+    public static void authenticateLocal(HttpServletRequest request, HttpServletResponse response,
+                                         Authentication authentication, User user) {
         setRoles(authentication, user);
         crowd(user);
         Common.setUser(request, user);
         putLogOnIpAddr(request);
+        ControllerUtils.setLocaleSession(request, response);
     }
 
     private static void setRoles(Authentication authentication, User user) {
