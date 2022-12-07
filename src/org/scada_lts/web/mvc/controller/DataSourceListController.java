@@ -61,7 +61,6 @@ public class DataSourceListController extends ParameterizableViewController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		//model.put("paging", paging);
 		model.put("data", data);
-        model.put("userSession", Common.getUser(request));
 		return new ModelAndView(getViewName(), model);
 	}
 	
