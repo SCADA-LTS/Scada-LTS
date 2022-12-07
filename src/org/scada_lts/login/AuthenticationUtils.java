@@ -49,13 +49,7 @@ public final class AuthenticationUtils {
         getUser(authentication, mangoUser).ifPresent(user -> {
             Common.setUser(request, user);
             putLogOnIpAddr(request);
-            if(authentication.getAuthorities() != null) {
-                Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
-                user.removeAttribute("roles");
-                user.setAttribute("roles", roles.stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()));
-            }
+            setRoles(authentication, user);
             crowd(user);
             mangoUser.recordLogin(user.getId());
         });
@@ -64,6 +58,16 @@ public final class AuthenticationUtils {
             throw new IllegalStateException();
         }
         return user;
+    }
+
+    public static void setRoles(Authentication authentication, User user) {
+        if(authentication.getAuthorities() != null) {
+            Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
+            user.removeAttribute("roles");
+            user.setAttribute("roles", roles.stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList()));
+        }
     }
 
     public static void logout(HttpServletRequest request) {

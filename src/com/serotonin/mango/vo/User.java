@@ -38,7 +38,6 @@ import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.util.LocalizableJsonException;
-import com.serotonin.mango.view.View;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import com.serotonin.mango.vo.permission.Permissions;
@@ -108,7 +107,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	@JsonRemoteProperty
 	private int userProfile = Common.NEW_ID;
 
-	private transient View view;
 	private transient WatchList watchList;
 	private transient DataPointVO editPoint;
 	private transient DataSourceVO<?> editDataSource;
@@ -170,7 +168,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 		this.theme = user.theme;
 		this.hideMenu = user.hideMenu;
 		this.userProfile = user.userProfile;
-		this.view = user.view;
 		this.watchList = user.watchList;
 		this.editPoint = user.editPoint;
 		this.editDataSource = user.editDataSource;
@@ -351,16 +348,6 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	@Deprecated
-	public View getView() {
-		return view;
-	}
-
-	@Deprecated
-	public void setView(View view) {
-		this.view = view;
 	}
 
 	public WatchList getWatchList() {

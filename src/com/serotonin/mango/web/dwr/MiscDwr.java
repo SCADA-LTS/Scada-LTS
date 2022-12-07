@@ -477,8 +477,10 @@ public class MiscDwr extends BaseDwr {
 		synchronized (data.getState()) {
 			data.getState().getWatchListStates().clear();
 			WatchList wl = Common.getUser().getWatchList();
-			for (DataPointVO dp : wl.getPointList())
-				dp.resetLastValue();
+			if(wl != null) {
+				for (DataPointVO dp : wl.getPointList())
+					dp.resetLastValue();
+			}
 		}
 		notifyLongPollImpl(data.getRequest());
 	}
