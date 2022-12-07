@@ -23,8 +23,7 @@ public class SetDataSessionFilter implements Filter {
                 if (user == null) {
                     UserService userService = new UserService();
                     user = userService.getUser(authentication.getName());
-                    AuthenticationUtils.setRoles(authentication, user);
-                    Common.setUser(req, user);
+                    AuthenticationUtils.authenticateLocal(req, authentication, user);
                 }
             }
         }
