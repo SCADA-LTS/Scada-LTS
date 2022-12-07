@@ -405,27 +405,6 @@ public class Common {
 
 	//
 	// Misc
-	@Deprecated
-	public static List<CommPortProxy> getCommPorts()
-			throws CommPortConfigException {
-		try {
-			List<CommPortProxy> ports = new LinkedList<CommPortProxy>();
-			Enumeration<?> portEnum = CommPortIdentifier.getPortIdentifiers();
-			CommPortIdentifier cpid;
-			while (portEnum.hasMoreElements()) {
-				cpid = (CommPortIdentifier) portEnum.nextElement();
-				if (cpid.getPortType() == CommPortIdentifier.PORT_SERIAL)
-					ports.add(new CommPortProxy(cpid));
-			}
-			return ports;
-		} catch (UnsatisfiedLinkError e) {
-			throw new CommPortConfigException(e.getMessage());
-		} catch (NoClassDefFoundError e) {
-			throw new CommPortConfigException(
-					"Comm configuration error. Check that rxtx DLL or libraries have been correctly installed.");
-		}
-	}
-
 	public static List<CommPortProxy> getSerialPorts() throws CommPortConfigException {
 		try {
 			return Arrays.stream(SerialPortUtils.getCommPorts())
@@ -512,7 +491,7 @@ public class Common {
 	//
 	// i18n
 	//
-	private static Object i18nLock = new Object();
+	private static final Object i18nLock = new Object();
 	private static String systemLanguage;
 	private static ResourceBundle systemBundle;
 
@@ -527,16 +506,18 @@ public class Common {
 	}
 
 	private static void ensureI18n() {
-		if (systemLanguage == null) {
+		String localVar = systemLanguage;
+		if (localVar == null) {
 			synchronized (i18nLock) {
-				if (systemLanguage == null) {
-					systemLanguage = SystemSettingsDAO
-							.getValue(SystemSettingsDAO.LANGUAGE);
-					Locale locale = findLocale(systemLanguage);
+				localVar = systemLanguage;
+				if (localVar == null) {
+					localVar = SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE);
+					Locale locale = findLocale(localVar);
 					if (locale == null)
 						throw new IllegalArgumentException(
 								"Locale for given language not found: "
-										+ systemLanguage);
+										+ localVar);
+					systemLanguage = localVar;
 					systemBundle = Utf8ResourceBundle.getBundle("messages",
 							locale);
 				}
@@ -568,7 +549,7 @@ public class Common {
 
 	public static List<KeyValuePair> getLanguages() {
 		List<KeyValuePair> languages = new ArrayList<KeyValuePair>();
-		ResourceBundle i18n = ResourceBundle.getBundle("i18n");
+		ResourceBundle i18n = Utf8ResourceBundle.getBundle("i18n");
 		for (String key : i18n.keySet())
 			languages.add(new KeyValuePair(key, i18n.getString(key)));
 		return languages;

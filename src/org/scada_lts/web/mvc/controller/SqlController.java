@@ -31,6 +31,7 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.serotonin.mango.web.mvc.interceptor.CommonDataInterceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.DAO;
@@ -60,7 +61,7 @@ public class SqlController {
 	private static final Log LOG = LogFactory.getLog(SqlController.class);
 
 	@GetMapping
-	public ModelAndView createForm(HttpServletRequest request)
+	public ModelAndView createForm(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		LOG.trace("/sql.shtm");
 		
@@ -68,6 +69,8 @@ public class SqlController {
 		
 		Map<String, Object> model = new HashMap<>();
 		model.put("form", new SqlForm());
+        CommonDataInterceptor commonDataInterceptor = new CommonDataInterceptor();
+        commonDataInterceptor.preHandle(request, response, null);
 		return new ModelAndView("sql", model);
 	}
 	
