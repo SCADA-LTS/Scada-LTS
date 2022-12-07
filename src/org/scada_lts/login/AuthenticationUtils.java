@@ -11,14 +11,19 @@ import org.scada_lts.session.SessionInfo;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class AuthenticationUtils {
+public final class AuthenticationUtils {
+
+    private AuthenticationUtils(){}
 
     private static final Log LOG = LogFactory.getLog(AuthenticationUtils.class);
 
@@ -44,6 +49,13 @@ public class AuthenticationUtils {
         getUser(authentication, mangoUser).ifPresent(user -> {
             Common.setUser(request, user);
             putLogOnIpAddr(request);
+            if(authentication.getAuthorities() != null) {
+                Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
+                user.removeAttribute("roles");
+                user.setAttribute("roles", roles.stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()));
+            }
             crowd(user);
             mangoUser.recordLogin(user.getId());
         });

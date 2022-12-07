@@ -4,14 +4,6 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-
-  <!-- Is not use Kamil Jarmusik 2021/12/01-->
- <!--resource-ref>
-      <description>DB Connection</description>
-      <res-ref-name>java:comp/env/jdbc/scadabr</res-ref-name>
-      <res-type>javax.sql.DataSource</res-type>
-      <res-auth>Container</res-auth>
-  </resource-ref-->
   <context-param>
     <param-name>com.serotonin.web.taglib.ListSortTag.styleClass</param-name>
     <param-value>rowHeaderLink</param-value>
@@ -52,29 +44,9 @@
     <param-name>com.serotonin.web.taglib.ListSortTag.downImage.altKey</param-name>
     <param-value>pagination.descending</param-value>
   </context-param>
-
-  <!-- Enabled html escape (for example: html that contains URL etc.), gb:2015/04/11
-  <context-param>
-    <param-name>defaultHtmlEscape</param-name>
-    <param-value>true</param-value>
- </context-param>
- -->
-  <!-- Rose disable gb: 2015/04/11 -->
-  <!-- 
-  <context-param>
-    <param-name>org.restlet.application</param-name>
-    <param-value>
-        br.ufsc.edugraf.rose.Rose
-        </param-value>
-  </context-param>
-  <context-param>
-    <param-name>org.restlet.clients</param-name>
-    <param-value>FILE HTTP</param-value>
-  </context-param>
-  -->
   <!-- secure javamelody -->
   <login-config>
-    <auth-method>BASIC</auth-method>
+    <auth-method>DIGEST</auth-method>
     <realm-name>Monitoring</realm-name>
   </login-config>
   <security-role>
@@ -113,17 +85,6 @@
       <param-value>UTF-8</param-value>
     </init-param>
   </filter>
-  <!-- Kamil Jarmusik 2022/07/21-->
-  <!--filter>
-    <filter-name>IsLoggedIn</filter-name>
-    <filter-class>com.serotonin.mango.web.filter.NormalLoggedInFilter</filter-class>
-    <async-supported>true</async-supported>
-    <init-param>
-      <param-name>forwardUrl</param-name>
-      <param-value>/login.htm</param-value>
-    </init-param>
-  </filter-->
-  
   <filter>
     <filter-name>WebContext</filter-name>
     <filter-class>com.serotonin.mango.web.filter.WebContextFilter</filter-class>
@@ -169,7 +130,7 @@
   <filter-mapping>  
     <filter-name>encodingFilter</filter-name>  
     <url-pattern>/*</url-pattern>  
-</filter-mapping> 
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>CharacterSet</filter-name>
@@ -179,11 +140,6 @@
     <filter-name>CharacterSet</filter-name>
     <url-pattern>*.shtm</url-pattern>
   </filter-mapping>
-  <!-- Kamil Jarmusik 2022/07/21-->
-  <!--filter-mapping>
-    <filter-name>IsLoggedIn</filter-name>
-    <url-pattern>*.shtm</url-pattern>
-  </filter-mapping-->
   <filter-mapping>
     <filter-name>WebContext</filter-name>
     <url-pattern>*.shtm</url-pattern>

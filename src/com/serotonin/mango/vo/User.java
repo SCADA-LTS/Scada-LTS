@@ -19,6 +19,7 @@
 package com.serotonin.mango.vo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -118,7 +119,7 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	private transient boolean muted = false;
 	private transient DataExportDefinition dataExportDefinition;
 	private transient EventExportDefinition eventExportDefinition;
-	private transient Map<String, Object> attributes = new HashMap<String, Object>();
+	private transient Map<String, Object> attributes = new ConcurrentHashMap<>();
 	private transient boolean hideHeader = false;
 
 	public User() { }
