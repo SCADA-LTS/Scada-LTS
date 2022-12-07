@@ -47,10 +47,7 @@ public final class AuthenticationUtils {
 
     public static User authenticateLocal(HttpServletRequest request, Authentication authentication, MangoUser mangoUser) {
         getUser(authentication, mangoUser).ifPresent(user -> {
-            Common.setUser(request, user);
-            putLogOnIpAddr(request);
-            setRoles(authentication, user);
-            crowd(user);
+            authenticateLocal(request, authentication, user);
             mangoUser.recordLogin(user.getId());
         });
         User user = Common.getUser(request);
@@ -60,7 +57,14 @@ public final class AuthenticationUtils {
         return user;
     }
 
-    public static void setRoles(Authentication authentication, User user) {
+    public static void authenticateLocal(HttpServletRequest request, Authentication authentication, User user) {
+        setRoles(authentication, user);
+        crowd(user);
+        Common.setUser(request, user);
+        putLogOnIpAddr(request);
+    }
+
+    private static void setRoles(Authentication authentication, User user) {
         if(authentication.getAuthorities() != null) {
             Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
             user.removeAttribute("roles");
