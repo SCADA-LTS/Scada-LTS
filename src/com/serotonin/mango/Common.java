@@ -568,7 +568,7 @@ public class Common {
 
 	public static List<KeyValuePair> getLanguages() {
 		List<KeyValuePair> languages = new ArrayList<KeyValuePair>();
-		ResourceBundle i18n = Utf8ResourceBundle.getBundle("i18n");
+		ResourceBundle i18n = ResourceBundle.getBundle("i18n");
 		for (String key : i18n.keySet())
 			languages.add(new KeyValuePair(key, i18n.getString(key)));
 		return languages;
