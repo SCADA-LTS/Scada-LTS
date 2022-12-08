@@ -22,6 +22,7 @@ public class LocalizableMessageOutTag extends OutTag {
         super.setEscapeXml(escapeDQuotes);
     }
 
+    @Override
     public void setDefault(String def) {
         super.setDefault(def);
     }
