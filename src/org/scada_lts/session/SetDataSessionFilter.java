@@ -20,7 +20,7 @@ public class SetDataSessionFilter implements Filter {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse res = (HttpServletResponse) response;
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication != null && authentication.isAuthenticated() && !isAnonymousUser(authentication)) {
                 User user = Common.getUser(req);
                 if (user == null) {
                     UserService userService = new UserService();
@@ -30,6 +30,10 @@ public class SetDataSessionFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private static boolean isAnonymousUser(Authentication authentication) {
+        return authentication.getAuthorities().stream().anyMatch(a -> "ROLE_ANONYMOUS".equals(a.getAuthority()));
     }
 
 }
