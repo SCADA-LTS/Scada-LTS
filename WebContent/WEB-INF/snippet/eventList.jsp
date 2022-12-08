@@ -49,23 +49,23 @@
   <c:if test="${!empty events && !pendingEvents}">
     <div style="padding:3px; float:left;">
       <c:if test="${displayPagination}">|</c:if>
-      <a href="#" onclick="jumpToDate(this);return false;"><fmt:message key="events.jumpToDate"/></a>
-      | <fmt:message key="events.listed"><fmt:param value="${fn:length(events)}"/></fmt:message>
+      <a href="#" onclick="jumpToDate(this);return false;"><sst:i18n key="events.jumpToDate"/></a>
+      | <sst:i18n message="${sst:message('events.listed',fn:length(events),'')}" />
     </div>
   </c:if>
   <div style="clear:both;"></div>
   
   <table cellspacing="1" cellpadding="0" border="0">
     <tr class="rowHeader">
-      <td><fmt:message key="events.id"/></td>
-      <td><fmt:message key="common.alarmLevel"/></td>
-      <td><fmt:message key="common.time"/></td>
-      <td><fmt:message key="events.msg"/></td>
-      <td><fmt:message key="common.inactiveTime"/></td>
-      <c:if test="${!pendingEvents}"><td><fmt:message key="events.acknowledged"/></td></c:if>
+      <td><sst:i18n key="events.id"/></td>
+      <td><sst:i18n key="common.alarmLevel"/></td>
+      <td><sst:i18n key="common.time"/></td>
+      <td><sst:i18n key="events.msg"/></td>
+      <td><sst:i18n key="common.inactiveTime"/></td>
+      <c:if test="${!pendingEvents}"><td><sst:i18n key="events.acknowledged"/></td></c:if>
       <td></td>
     </tr>
-    <c:if test="${empty events}"><tr><td colspan="6"><b><fmt:message key="events.emptyList"/></b></td></tr></c:if>
+    <c:if test="${empty events}"><tr><td colspan="6"><b><sst:i18n key="events.emptyList"/></b></td></tr></c:if>
     <c:forEach items="${events}" var="event" varStatus="status">
       <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
         <td align="center">${event.id}</td>
@@ -86,10 +86,10 @@
         <td>
           <c:choose>
             <c:when test="${event.active}">
-              <fmt:message key="common.active"/>
+              <sst:i18n key="common.active"/>
               <a href="events.shtm"><tag:img png="flag_white" title="common.active"/></a>
             </c:when>
-            <c:when test="${!event.rtnApplicable}"><fmt:message key="common.nortn"/></c:when>
+            <c:when test="${!event.rtnApplicable}"><sst:i18n key="common.nortn"/></c:when>
             <c:otherwise>
               ${sst:time(event.rtnTimestamp)} - <sst:i18n message="${event.rtnMessage}"/>
             </c:otherwise>
