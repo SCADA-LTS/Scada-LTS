@@ -228,15 +228,15 @@
             if (alarmLevel == 0)
                 updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
             else if (alarmLevel == 1)
-                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visible");
             else if (alarmLevel == 2)
-                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visible");
             else if (alarmLevel == 3)
-                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visible");
             else if (alarmLevel == 4)
-                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visible");
             else
-                updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
+                updateImg(imgNode, "(unknown)", "(unknown)", true, "visible");
         }
 
         window.addEventListener('beforeunload', (event) => {
