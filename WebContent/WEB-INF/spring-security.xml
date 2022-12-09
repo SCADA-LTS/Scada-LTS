@@ -21,7 +21,6 @@
 
         <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
         <session-management session-fixation-protection="newSession" />
-        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
     </http>
 
     <http use-expressions="true" disable-url-rewriting="true"
@@ -161,7 +160,6 @@
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
         <session-management session-fixation-protection="newSession" />
-        <access-denied-handler ref="invalidSessionAccessDeniedHandler"/>
         <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
                 success-handler-ref="headerWriterLogoutHandler"/>
     </http>
@@ -218,14 +216,6 @@
 
     <b:bean id="basicAuthFilter" class="org.scada_lts.login.LocalBasicAuthFilter">
         <b:constructor-arg ref="authenticationManager"/>
-    </b:bean>
-
-    <b:bean id="simpleRedirectInvalidSessionStrategy" class="org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy">
-        <b:constructor-arg value="/logout.htm"/>
-    </b:bean>
-
-    <b:bean id="invalidSessionAccessDeniedHandler" class="org.springframework.security.web.session.InvalidSessionAccessDeniedHandler">
-        <b:constructor-arg ref="simpleRedirectInvalidSessionStrategy" />
     </b:bean>
 
     <b:bean id="clearSiteDataHeaderWriter" class="org.scada_lts.login.ScadaClearSiteDataHeaderWriter" >
