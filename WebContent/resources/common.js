@@ -218,8 +218,10 @@ function isMouseLeaveOrEnter(e, handler) {
 function show(node, styleType) {
     if (!styleType)
         styleType = '';
-    if (node != null)
-        getNodeIfString(node).style.display = styleType;
+    if (node != null) {
+        getNodeIfString(node).style.display = '';
+        getNodeIfString(node).style.visibility = styleType;
+    }
 }
 
 function hide(node) {
