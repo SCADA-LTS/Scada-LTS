@@ -219,7 +219,7 @@ function show(node, styleType) {
     if (!styleType)
         styleType = '';
     if (node != null) {
-        if(styleType === 'visible') {
+        if(styleType !== null && styleType === 'visible') {
             getNodeIfString(node).style.display = '';
             getNodeIfString(node).style.visibility = styleType;
         } else {
