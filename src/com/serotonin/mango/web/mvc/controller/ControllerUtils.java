@@ -114,7 +114,6 @@ public final class ControllerUtils {
             HttpServletRequest request = webContext.getHttpServletRequest();
             HttpServletResponse response = webContext.getHttpServletResponse();
             setLocale(request, response, locale);
-            Common.setSystemLanguage(locale);
         } else {
             LOG.warn("webContext is null!");
         }

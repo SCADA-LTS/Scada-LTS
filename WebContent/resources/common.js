@@ -219,8 +219,12 @@ function show(node, styleType) {
     if (!styleType)
         styleType = '';
     if (node != null) {
-        getNodeIfString(node).style.display = '';
-        getNodeIfString(node).style.visibility = styleType;
+        if(styleType === 'visible') {
+            getNodeIfString(node).style.display = '';
+            getNodeIfString(node).style.visibility = styleType;
+        } else {
+            getNodeIfString(node).style.display = styleType;
+        }
     }
 }
 
