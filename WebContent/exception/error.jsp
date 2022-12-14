@@ -54,7 +54,22 @@ Please provide the following code to the administrator to identify the problem:
 
           document.getElementById("errorTimestamp").innerHTML = date;
     }
+
+  function toggleErrorData() {
+      var ed = document.getElementById("errorData");
+      if (ed.style.display == "none") {
+          ed.style.display = "";
+          document.getElementById("errorDataMessage").innerHTML = "Hide error details";
+      }
+      else {
+          ed.style.display = "none";
+          document.getElementById("errorDataMessage").innerHTML = "Show error details";
+      }
+      return false;
+  }
 </script>
+<!--<a href="#" onclick="return toggleErrorData();"/><div id="errorDataMessage">Show error details</div></a><br/>
+<div id="errorData" style="display:none;"><pre>${stackTrace}</pre></div>-->
 
 <log:error message="${stackTrace}"/>
 

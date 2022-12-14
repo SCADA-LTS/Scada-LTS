@@ -19,18 +19,10 @@
   arkadiusz.parafiniuk@gmail.com
  --%>
 
-<%@page import="org.apache.commons.logging.Log"%>
-<%@page import="org.apache.commons.logging.LogFactory"%>
-<%@page import="java.lang.StringBuilder"%>
-<%@page import="java.util.Enumeration"%>
-
 <%
 // Store the stack trace as a request attribute.
-
-Log log = LogFactory.getLog("log_jsp");
-
-log.error(exception.getMessage(), exception);
-StringBuilder sw = new StringBuilder();
+java.io.StringWriter sw = new java.io.StringWriter();
+exception.printStackTrace(new java.io.PrintWriter(sw));
 
 // Write the request url into the message.
 sw.append("\r\nREQUEST URL\r\n");
@@ -38,7 +30,7 @@ sw.append(request.getRequestURL());
 
 // Write the request parameters.
 sw.append("\r\n\r\nREQUEST PARAMETERS\r\n");
-Enumeration names = request.getParameterNames();
+java.util.Enumeration names = request.getParameterNames();
 while (names.hasMoreElements()) {
     String name = (String) names.nextElement();
     sw.append("   ").append(name).append('=').append(request.getParameter(name)).append("\r\n");
@@ -61,12 +53,12 @@ while (names.hasMoreElements()) {
 //}
 
 // Write the request attributes.
-//sw.append("\r\n\r\nREQUEST ATTRIBUTES\r\n");
-//names = request.getAttributeNames();
-//while (names.hasMoreElements()) {
-//    String name = (String) names.nextElement();
-//    sw.append("   ").append(name).append('=').append(String.valueOf(request.getAttribute(name))).append("\r\n");
-//}
+sw.append("\r\n\r\nREQUEST ATTRIBUTES\r\n");
+names = request.getAttributeNames();
+while (names.hasMoreElements()) {
+    String name = (String) names.nextElement();
+    sw.append("   ").append(name).append('=').append(String.valueOf(request.getAttribute(name))).append("\r\n");
+}
 
 if (request.getSession() != null) {
     // Write the session attributes.
@@ -78,6 +70,5 @@ if (request.getSession() != null) {
     }
 }
 
-log.warn(sw);
-
+request.setAttribute("stackTrace", sw.toString());
 %>

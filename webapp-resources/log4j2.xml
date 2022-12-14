@@ -159,7 +159,6 @@
 
         <!-- Architecture Logging-->
         <!-- Dwr Logging-->
-        <Logger name="log_jsp" level="${dwrLoggingLevel}"/>
         <Logger name="org.directwebremoting" level="${dwrLoggingLevel}"/>
         <Logger name="com.serotonin.mango.web.dwr.DataPointEditDwr" level="${dwrLoggingLevel}"/>
 
