@@ -55,9 +55,6 @@ Please provide the following code to the administrator to identify the problem:
           document.getElementById("errorTimestamp").innerHTML = date;
     }
 </script>
-
-<log:error message="${stackTrace}"/>
-
 </div>
 </tag:page>
 
