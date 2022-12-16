@@ -51,11 +51,7 @@ import static org.scada_lts.web.mvc.api.alarms.Validation.validateNumberFormat;
 public class PlcAlarmsAPI {
 
     private static final Log LOG = LogFactory.getLog(PlcAlarmsAPI.class);
-    private AlarmsService alarmsService;
-
-    public PlcAlarmsAPI() {
-        this.alarmsService = AlarmsService.plcAlarmsService();
-    }
+    private final AlarmsService alarmsService;
 
     public PlcAlarmsAPI(AlarmsService alarmsService) {
         this.alarmsService = alarmsService;

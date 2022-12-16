@@ -19,10 +19,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
@@ -33,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.db.spring.ExtendedJdbcTemplate;
 import com.serotonin.mango.Common;
-import org.scada_lts.web.beans.ApplicationBeans;
 
 /**
  * @author Matthew Lohbihler
@@ -60,11 +61,15 @@ abstract public class BasePooledAccess extends DatabaseAccess
             try
             {
                 log.info("Looking for Datasource: " + Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasourceName"));
-                dataSource = ApplicationBeans.getDatabaseSourceBean();
+                dataSource = (DataSource) new InitialContext().lookup(Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasourceName"));
                 try (Connection conn = dataSource.getConnection()) {
                     log.info("DataSource meta: " + conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion());
                     dataSourceFound = true;
                 }
+            }
+            catch(NamingException e)
+            {
+                log.info("Datasource not found!" + e.getLocalizedMessage());
             }
             catch(SQLException e)
             {
@@ -159,17 +164,8 @@ abstract public class BasePooledAccess extends DatabaseAccess
         log.info("Stopping database");
         try
         {
-            if(dataSourceFound && (dataSource instanceof BasicDataSource)) {
+            if(dataSourceFound)
                 ((BasicDataSource) dataSource).close();
-            }
-            DriverManager.drivers().forEach(driver -> {
-                try {
-                    DriverManager.deregisterDriver(driver);
-                    log.info("Unregistering jdbc driver: " + driver);
-                } catch (SQLException e) {
-                    log.error("Error unregistering jdbc driver: " + driver, e);
-                }
-            });
         }
         catch(SQLException e)
         {

@@ -22,6 +22,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.DataPointService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -33,15 +34,17 @@ import java.util.List;
  *
  */
 
+@Service
 class PlcAlarmsService implements AlarmsService {
 
-    private static final Log LOG = LogFactory.getLog(AlarmsService.class);
+    private static final Log LOG = LogFactory.getLog(PlcAlarmsService.class);
 
     private final AlarmsDAO alarmsDAO;
-    private DataPointService dataPointService = new DataPointService();
+    private final DataPointService dataPointService;
 
-    public PlcAlarmsService(AlarmsDAO alarmsDAO) {
+    public PlcAlarmsService(AlarmsDAO alarmsDAO, DataPointService dataPointService) {
         this.alarmsDAO = alarmsDAO;
+        this.dataPointService = dataPointService;
     }
 
     @Override

@@ -222,4 +222,6 @@
   </bean>
 
   <bean id="mangoContextListener" class="com.serotonin.mango.MangoContextListener" />
+
+  <bean id="alarmsDAO" class="org.scada_lts.dao.alarms.PlcAlarmsDAO" />
 </beans>
