@@ -234,10 +234,12 @@ public class ReportsDwr extends BaseDwr {
     }
 
     public ReportVO createReportFromWatchlist(int watchListId) {
-        WatchList watchList = new WatchListService().getWatchList(watchListId);
+        WatchListService watchListService = new WatchListService();
+        WatchList watchList = watchListService.getWatchList(watchListId);
         if (watchList == null)
             return null;
 
+        watchListService.populateWatchlistData(watchList);
         ReportVO report = new ReportVO();
         report.setName(LocalizableMessage.getMessage(getResourceBundle(), "common.copyPrefix", watchList.getName()));
         for (DataPointVO dp : watchList.getPointList()) {
