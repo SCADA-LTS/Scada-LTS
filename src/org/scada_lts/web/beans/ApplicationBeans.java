@@ -30,6 +30,7 @@ import org.scada_lts.web.ws.services.UserEventServiceWebSocket;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
 public class ApplicationBeans {
@@ -131,6 +132,23 @@ public class ApplicationBeans {
 
     }
 
+    public static DataSource getDatabaseSourceBean() {
+        return getBeanFromContext("databaseSource", DataSource.class);
+    }
+
+    public static UserEventServiceWebSocket getUserEventServiceWebsocketBean() {
+        return getBeanFromContext("userEventServiceWebSocket", UserEventServiceWebSocket.class);
+    }
+
+    public static DataPointServiceWebSocket getDataPointServiceWebSocketBean() {
+        return getBeanFromContext("dataPointServiceWebSocket", DataPointServiceWebSocket.class);
+    }
+
+    public static EventsServiceWebSocket getEventsServiceWebSocketBean() {
+        return getBeanFromContext("eventsServiceWebSocket", EventsServiceWebSocket.class);
+    }
+
+    @Deprecated
     public static class Lazy {
 
         private Lazy() {}
@@ -151,7 +169,7 @@ public class ApplicationBeans {
             try {
                 return Optional.ofNullable(get(beanName, clazz));
             } catch (NoSuchBeanDefinitionException ex) {
-                LOG.debug(ex);
+                LOG.error(ex);
                 return Optional.empty();
             } catch (Exception ex) {
                 LOG.error(ex.getMessage(), ex);

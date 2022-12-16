@@ -1,9 +1,11 @@
 package org.scada_lts.login;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
 import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -53,6 +55,10 @@ public final class AuthenticationUtils {
         getUser(authentication, mangoUser).ifPresent(user -> {
             authenticateLocal(request, response, authentication, user);
             mangoUser.recordLogin(user.getId());
+            SystemEventType.raiseEvent(new SystemEventType(
+                    SystemEventType.TYPE_USER_LOGIN, user.getId()), System
+                    .currentTimeMillis(), true, new LocalizableMessage(
+                    "event.login", user.getUsername()));
         });
         User user = Common.getUser(request);
         if(user == null) {

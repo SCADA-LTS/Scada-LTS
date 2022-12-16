@@ -173,7 +173,7 @@
     <authentication-manager id="authenticationManager">
         <authentication-provider>
             <password-encoder ref="scadaPasswordEncoder" />
-            <jdbc-user-service id="jdbcUserService" data-source-ref="dataSourceForSecurity"
+            <jdbc-user-service id="jdbcUserService" data-source-ref="databaseSource"
                                users-by-username-query="SELECT username, password, disabled = 'N' AS enabled FROM users WHERE username = ?"
                                authorities-by-username-query="SELECT username,
                                CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
@@ -184,11 +184,6 @@
     </authentication-manager>
 
     <b:bean id="loginAuthenticationSuccessHandler" class="org.scada_lts.login.LoginAuthenticationSuccessHandler" />
-
-    <b:bean id="dataSourceForSecurity" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <b:property name="expectedType" value="javax.sql.DataSource"/>
-        <b:property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
-    </b:bean>
 
     <b:bean id="scadaPasswordEncoder" class="org.scada_lts.login.CustomPasswordEncoder" />
 
@@ -236,4 +231,6 @@
     <b:bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
         <b:property name="realmName" value="Basic Auth"/>
     </b:bean>
+
+    <b:bean id="GetSecurityBeans" class="org.scada_lts.web.beans.GetSecurityBeans"/>
 </b:beans>

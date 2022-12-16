@@ -42,7 +42,7 @@ public class RuntimeManagerCreateDataPointRtTest {
         JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
         when(dao.getJdbcTemp()).thenReturn(jdbcTemplate);
         whenNew(DAO.class)
-                .withNoArguments()
+                .withAnyArguments()
                 .thenReturn(dao);
 
         DataSourceVO dataSourceVO = new VirtualDataSourceVO();

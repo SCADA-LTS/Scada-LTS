@@ -1,12 +1,10 @@
 package utils.mock;
 
-import br.org.scadabr.rt.scripting.context.ScriptContextObject;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.util.PropertiesUtils;
 import org.scada_lts.dao.DAO;
@@ -42,7 +40,7 @@ public class MockUtils {
         JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
         when(dao.getJdbcTemp()).thenReturn(jdbcTemplate);
         whenNew(DAO.class)
-                .withNoArguments()
+                .withAnyArguments()
                 .thenReturn(dao);
 
         UserDao userDao = mock(UserDao.class);

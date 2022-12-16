@@ -6,6 +6,7 @@ import br.org.scadabr.rt.scripting.context.ScriptContextObject;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.RuntimeManager;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.scada_lts.web.beans.ApplicationBeans;
 import utils.ScriptTestUtils;
 import com.serotonin.mango.rt.dataImage.DataPointRT;
 import com.serotonin.mango.rt.dataImage.IDataPoint;
@@ -34,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DAO.class, PointValueCache.class, Permissions.class,
         ContextualizedScriptRT.class, ScriptContextObject.class,
-        ScriptExecutor.class, Common.class})
+        ScriptExecutor.class, Common.class, ApplicationBeans.class})
 // resources/org/powermock/extensions/configuration.properties is not working
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})

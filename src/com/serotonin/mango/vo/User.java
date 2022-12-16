@@ -232,24 +232,26 @@ public class User implements SetPointSource, HttpSessionBindingListener,
 	// / HttpSessionBindingListener implementation
 	// /
 	//
+	@Deprecated
 	public void valueBound(HttpSessionBindingEvent evt) {
 		// User is bound to a session when logged in. Notify the event manager.
-		SystemEventType.raiseEvent(new SystemEventType(
+		/*SystemEventType.raiseEvent(new SystemEventType(
 				SystemEventType.TYPE_USER_LOGIN, id), System
 				.currentTimeMillis(), true, new LocalizableMessage(
-				"event.login", username));
+				"event.login", username));*/
 	}
 
+	@Deprecated
 	public void valueUnbound(HttpSessionBindingEvent evt) {
 		// User is unbound from a session when logged out or the session
 		// expires.
-		SystemEventType.returnToNormal(new SystemEventType(
+		/*SystemEventType.returnToNormal(new SystemEventType(
 				SystemEventType.TYPE_USER_LOGIN, id), System
 				.currentTimeMillis());
 
 		// Terminate any testing utility
 		if (testingUtility != null)
-			testingUtility.cancel();
+			testingUtility.cancel();*/
 	}
 
 	// Convenience method for JSPs

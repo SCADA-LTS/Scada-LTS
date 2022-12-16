@@ -7,10 +7,7 @@ import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.rt.EventManager;
 import com.serotonin.mango.rt.RuntimeManager;
-import com.serotonin.mango.rt.dataImage.AnnotatedPointValueTime;
-import com.serotonin.mango.rt.dataImage.DataPointRT;
-import com.serotonin.mango.rt.dataImage.DataPointSyncMode;
-import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.*;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.virtual.VirtualDataSourceRT;
 import com.serotonin.mango.rt.maint.BackgroundProcessing;
@@ -38,6 +35,8 @@ import org.scada_lts.mango.service.DataPointService;
 import org.scada_lts.mango.service.DataSourceService;
 import org.scada_lts.mango.service.PointValueService;
 import org.scada_lts.mango.service.SystemSettingsService;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import org.springframework.jdbc.core.JdbcTemplate;
 import utils.PointValueDAOMemory;
 
@@ -47,14 +46,13 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.clearInvocations;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({DAO.class, Common.class, PointValueDAO.class, PointValueAdnnotationsDAO.class,
         DataPointDao.class, DataSourceDao.class, VirtualDataSourceRT.class, RuntimeManager.class,
-        PointValueService.class, PointValueDAO.class})
+        PointValueService.class, PointValueDAO.class, ApplicationBeans.class})
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "com.sun.org.apache.xalan.*",
         "javax.activation.*", "javax.management.*"})
 public class ConfigDataPointRtTest {
@@ -164,7 +162,7 @@ public class ConfigDataPointRtTest {
         JdbcTemplate jdbcTemplate = mock(JdbcTemplate.class);
         when(dao.getJdbcTemp()).thenReturn(jdbcTemplate);
         whenNew(DAO.class)
-                .withNoArguments()
+                .withAnyArguments()
                 .thenReturn(dao);
 
         dataSourceVO = new VirtualDataSourceVO();
@@ -263,6 +261,10 @@ public class ConfigDataPointRtTest {
         whenNew(SystemSettingsService.class)
                 .withNoArguments()
                 .thenReturn(systemSettingsServiceMock);
+
+        mockStatic(ApplicationBeans.class);
+        DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
+        when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
     }
 
     public void clear() {
