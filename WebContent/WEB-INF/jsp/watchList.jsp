@@ -456,7 +456,8 @@
       //
       function getImageChart() {
     	  isChartLive=false;
-        document.getElementById("chartContainer").style.height = "500px";
+	  document.getElementById("imageChartDiv").style.display = "table-cell";
+          document.getElementById("chartContainer").style.height = "500px";
     	  jQuery("#imageChartLiveImg").attr('src', 'images/control_play_blue.png');
           var width = dojo.html.getContentBox($("imageChartDiv")).width - 20;
           var height = dojo.html.getContentBox($("chartContainer")).height - 80;
