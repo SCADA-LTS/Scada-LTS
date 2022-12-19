@@ -29,10 +29,14 @@ public final class ViewControllerUtils {
             return viewService.getView(viewId);
         }
         String viewXid = getViewXid(request);
-        if(viewXid.isBlank()) {
-            return null;
+        if(!viewXid.isBlank()) {
+            return viewService.getViewByXid(viewXid);
         }
-        return viewService.getViewByXid(viewXid);
+        viewId = getMainViewId(request);
+        if(viewId != Common.NEW_ID) {
+            return viewService.getView(viewId);
+        }
+        return null;
     }
 
     public static View getView(int viewId, HttpServletRequest request, ViewService viewService) {
@@ -47,6 +51,10 @@ public final class ViewControllerUtils {
 
     private static int getViewId(HttpServletRequest request) {
         return HttpParameterUtils.getValueOnlyRequest("viewId", request, Integer::valueOf).orElse(Common.NEW_ID);
+    }
+
+    private static int getMainViewId(HttpServletRequest request) {
+        return HttpParameterUtils.getValue("mainViewId", request, Integer::valueOf).orElse(Common.NEW_ID);
     }
 
     private static String getViewXid(HttpServletRequest request) {

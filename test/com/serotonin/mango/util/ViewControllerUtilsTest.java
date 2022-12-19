@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.scada_lts.mango.service.ViewService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -32,6 +33,8 @@ public class ViewControllerUtilsTest {
         when(viewServiceMock.getView(eq(VIEW_ID))).thenReturn(viewExpected);
         when(viewServiceMock.getViewByXid(eq(VIEW_XID))).thenReturn(viewExpected);
         requestMock = mock(HttpServletRequest.class);
+        HttpSession httpSessionMock = mock(HttpSession.class);
+        when(requestMock.getSession()).thenReturn(httpSessionMock);
     }
 
     @Test
