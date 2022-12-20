@@ -13,16 +13,16 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.PointLocatorVO;
 import com.serotonin.mango.vo.dataSource.virtual.VirtualPointLocatorVO;
 import com.serotonin.mango.vo.permission.Permissions;
+import org.scada_lts.web.beans.ApplicationBeans;
+import org.scada_lts.web.ws.services.DataPointServiceWebSocket;
 import utils.mock.MockUtils;
 
 import java.util.*;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 public class ScriptTestUtils {
 
@@ -66,6 +66,10 @@ public class ScriptTestUtils {
         when(ScriptContextObject.Type.valueOf(anyInt()))
                 .thenReturn(type);
         when(type.createScriptContextObject()).thenReturn(scriptContextObject);
+
+        mockStatic(ApplicationBeans.class);
+        DataPointServiceWebSocket dataPointServiceWebSocket = mock(DataPointServiceWebSocket.class);
+        when(ApplicationBeans.getDataPointServiceWebSocketBean()).thenReturn(dataPointServiceWebSocket);
     }
 
 }

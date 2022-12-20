@@ -1,8 +1,11 @@
 package org.scada_lts.login;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.event.type.SystemEventType;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.web.integration.CrowdUtils;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
+import com.serotonin.web.i18n.LocalizableMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.adapter.MangoUser;
@@ -11,26 +14,33 @@ import org.scada_lts.session.SessionInfo;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class AuthenticationUtils {
+public final class AuthenticationUtils {
+
+    private AuthenticationUtils(){}
 
     private static final Log LOG = LogFactory.getLog(AuthenticationUtils.class);
 
     public static Authentication authenticate(String username, String password, HttpServletRequest request,
-                                              AuthenticationManager authenticationManager, MangoUser mangoUser) {
+                                              HttpServletResponse response, AuthenticationManager authenticationManager,
+                                              MangoUser mangoUser) {
         Authentication auth = new UsernamePasswordAuthenticationToken(username, password);
         try {
             logout(request);
             Authentication result = authenticationManager.authenticate(auth);
             if(result.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(result);
-                authenticateLocal(request, result, mangoUser);
+                authenticateLocal(request, response, result, mangoUser);
             }
             return result;
         } catch (Exception ex) {
@@ -40,18 +50,40 @@ public class AuthenticationUtils {
         }
     }
 
-    public static User authenticateLocal(HttpServletRequest request, Authentication authentication, MangoUser mangoUser) {
+    public static User authenticateLocal(HttpServletRequest request, HttpServletResponse response,
+                                         Authentication authentication, MangoUser mangoUser) {
         getUser(authentication, mangoUser).ifPresent(user -> {
-            Common.setUser(request, user);
-            putLogOnIpAddr(request);
-            crowd(user);
+            authenticateLocal(request, response, authentication, user);
             mangoUser.recordLogin(user.getId());
+            SystemEventType.raiseEvent(new SystemEventType(
+                    SystemEventType.TYPE_USER_LOGIN, user.getId()), System
+                    .currentTimeMillis(), true, new LocalizableMessage(
+                    "event.login", user.getUsername()));
         });
         User user = Common.getUser(request);
         if(user == null) {
             throw new IllegalStateException();
         }
         return user;
+    }
+
+    public static void authenticateLocal(HttpServletRequest request, HttpServletResponse response,
+                                         Authentication authentication, User user) {
+        setRoles(authentication, user);
+        crowd(user);
+        Common.setUser(request, user);
+        putLogOnIpAddr(request);
+        ControllerUtils.setLocaleSession(request, response);
+    }
+
+    private static void setRoles(Authentication authentication, User user) {
+        if(authentication.getAuthorities() != null) {
+            Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
+            user.removeAttribute("roles");
+            user.setAttribute("roles", roles.stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList()));
+        }
     }
 
     public static void logout(HttpServletRequest request) {

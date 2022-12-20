@@ -2,8 +2,6 @@ package org.scada_lts.login;
 
 import com.serotonin.mango.vo.User;
 import com.serotonin.util.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -18,12 +16,10 @@ import static org.scada_lts.login.AuthenticationUtils.authenticateLocal;
 
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private static final Log LOG = LogFactory.getLog(LoginAuthenticationSuccessHandler.class);
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        User user = authenticateLocal(request, authentication, new UserService());
+        User user = authenticateLocal(request, response, authentication, new UserService());
         redirect(request, response, user);
     }
 

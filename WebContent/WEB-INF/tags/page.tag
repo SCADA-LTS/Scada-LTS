@@ -45,8 +45,9 @@
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
+  <c:set var="isLoggedToScadaUser" value="${!empty sessionUser && sessionUser.getAttribute('roles') != null && (sessionUser.getAttribute('roles').size() != 1 || !sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
   <c:choose>
-    <c:when test="${!empty sessionUser}">
+    <c:when test="${isLoggedToScadaUser}">
       <link href="assets/common_${sessionUser.theme}.css" type="text/css" rel="stylesheet"/>
     </c:when>
     <c:otherwise>
@@ -87,7 +88,7 @@
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
   <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
   <script type="text/javascript" src="resources/common.js"></script>
-  <c:if test="${!empty sessionUser}">
+  <c:if test="${isLoggedToScadaUser}">
       <script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
       <script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>
   </c:if>
@@ -118,7 +119,7 @@
 		};
 
       dwr.util.setEscapeHtml(false);
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
         <c:if test="${sessionUser.hideMenu}">
@@ -146,7 +147,7 @@
         }
       }
 
-    <c:if test="${!empty sessionUser}">
+    <c:if test="${isLoggedToScadaUser}">
         var errorCallback = function(error) {
             alert("Connect error:" + error);
         }
@@ -227,15 +228,15 @@
             if (alarmLevel == 0)
                 updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
             else if (alarmLevel == 1)
-                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visible");
             else if (alarmLevel == 2)
-                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visible");
             else if (alarmLevel == 3)
-                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visible");
             else if (alarmLevel == 4)
-                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visisble");
+                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visible");
             else
-                updateImg(imgNode, "(unknown)", "(unknown)", true, "visisble");
+                updateImg(imgNode, "(unknown)", "(unknown)", true, "visible");
         }
 
         window.addEventListener('beforeunload', (event) => {
@@ -276,7 +277,7 @@
 <div class="navHeader" id="subHeader">
   <div>
     <nav class="flex-default">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser}">
         <div class="spacer">
             <c:choose>
                 <c:when test="${sessionUser.hideMenu}">
@@ -360,7 +361,7 @@
 
   <div class="flex-default">
     <div id="navbarUserInfo">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser}">
         <span class="copyTitle"><fmt:message key="header.user"/>:</span>
         <c:choose>
             <c:when test="${!empty sessionUser.firstName}">
@@ -374,7 +375,7 @@
     </div>
 
     <div id="navbarUserProperties" class="flex-default spacer">
-      <c:if test="${!empty sessionUser}">
+      <c:if test="${isLoggedToScadaUser}">
         <c:if test="${!sessionUser.hideMenu}">
             <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
             <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>

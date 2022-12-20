@@ -2,19 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:websocket="http://www.springframework.org/schema/websocket"
-       xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-4.2.xsd
         http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
-        http://www.springframework.org/schema/websocket
-        http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd
-        http://www.springframework.org/schema/security
-        https://www.springframework.org/schema/security/spring-security-4.2.xsd">
+        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
 	<context:component-scan base-package="org.scada_lts" />
     <mvc:annotation-driven />
@@ -65,10 +59,11 @@
         <prop key="/webcam_live_feed.htm">webcamLiveFeedController</prop>
         <prop key="/export_project.htm">projectExporterController</prop>
         <prop key="/import_project.htm">projectImporterController</prop>
+        <prop key="/data_sources.shtm">dataSourceListController</prop>
         <!-- Mobile user URLs -->
         <prop key="/mobile_logout.htm">mobileLogoutController</prop>
         <prop key="/mobile_watch_list.shtm">mobileWatchListController</prop>
-        
+
       </props>
     </property>
     
@@ -215,5 +210,9 @@
     <constructor-arg ref="subProtocolWebSocketHandler"/>
     <constructor-arg ref="clientOutboundChannelExecutor"/>
     <constructor-arg ref="userRegistry"/>
+  </bean>
+
+  <bean id="dataSourceListController" class="org.scada_lts.web.mvc.controller.DataSourceListController" >
+    <property name="viewName"><value>dataSourceList</value></property>
   </bean>
 </beans>

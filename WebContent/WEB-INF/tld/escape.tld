@@ -710,4 +710,9 @@
         <function-signature>java.lang.String urlDecode(java.lang.String)</function-signature>
     </function>
 
+    <function>
+        <name>message</name>
+        <function-class>com.serotonin.web.taglib.LocalizableMessageOutTag</function-class>
+        <function-signature>com.serotonin.web.i18n.LocalizableMessage message(java.lang.String,java.lang.String,java.lang.String)</function-signature>
+    </function>
 </taglib>

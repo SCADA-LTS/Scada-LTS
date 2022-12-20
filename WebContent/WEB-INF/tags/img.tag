@@ -28,7 +28,7 @@
 --%><img class="ptr" <c:if test="${!empty id}"> id="${id}"</c:if><%--
 --%><c:if test="${!empty src}"> src="${src}"</c:if><%--
 --%><c:if test="${!empty png && empty src}"> src="images/${png}.png"</c:if><%--
---%><c:if test="${!empty title}"> alt="<fmt:message key="${title}"/>" title="<fmt:message key="${title}"/>"</c:if><%--
+--%><c:if test="${!empty title}"> alt="<sst:i18n key="${title}"/>" title="<sst:i18n key="${title}"/>"</c:if><%--
 --%><c:if test="${!empty onclick}"> onclick="${onclick}"</c:if><%--
 --%><c:if test="${!empty onmouseover}"> onmouseover="${onmouseover}"</c:if><%--
 --%><c:if test="${!empty onmouseout}"> onmouseout="${onmouseout}"</c:if><%--

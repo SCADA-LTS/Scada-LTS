@@ -4,7 +4,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
-    <http use-expressions="true" disable-url-rewriting="true">
+
+    <http use-expressions="true" disable-url-rewriting="true" pattern="/services/**"
+          authentication-manager-ref="authenticationManager" entry-point-ref="basicAuthenticationEntryPoint">
+        <headers>
+            <cache-control disabled="true"/>
+            <content-type-options disabled="true"/>
+            <hsts/>
+            <frame-options policy="SAMEORIGIN"/>
+            <xss-protection/>
+            <header ref="headersFromSystemSettingsWriter"/>
+        </headers>
+        <csrf disabled="true"/>
+        <intercept-url pattern="/services/API" access="permitAll" method="GET" requires-channel="https"/>
+        <intercept-url pattern="/**" access="hasRole('ROLE_SERVICES')" requires-channel="https"/>
+
+        <custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter"/>
+        <session-management session-fixation-protection="newSession" />
+    </http>
+
+    <http use-expressions="true" disable-url-rewriting="true"
+          authentication-manager-ref="authenticationManager">
         <headers>
             <cache-control disabled="true"/>
             <content-type-options disabled="true"/>
@@ -39,7 +59,7 @@
         <intercept-url pattern="/public_view.htm" access="permitAll" />
 
         <!-- Monitoring -->
-        <intercept-url pattern="/monitoring" access="permitAll" />
+        <intercept-url pattern="/monitoring/**" access="permitAll" />
 
         <!-- REST API User -->
 
@@ -140,8 +160,8 @@
 
         <custom-filter after="SECURITY_CONTEXT_FILTER" ref="setDataSessionFilter" />
         <session-management session-fixation-protection="newSession" />
-
-        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID" />
+        <logout logout-url="/logout.htm" invalidate-session="true" delete-cookies="JSESSIONID"
+                success-handler-ref="headerWriterLogoutHandler"/>
     </http>
     <http-firewall ref="defaultHttpFirewall"/>
 
@@ -153,18 +173,17 @@
     <authentication-manager id="authenticationManager">
         <authentication-provider>
             <password-encoder ref="scadaPasswordEncoder" />
-            <jdbc-user-service data-source-ref="dataSourceForSecurity"
+            <jdbc-user-service id="jdbcUserService" data-source-ref="databaseSource"
                                users-by-username-query="SELECT username, password, disabled = 'N' AS enabled FROM users WHERE username = ?"
-                               authorities-by-username-query="SELECT username, IF(admin = 'Y', 'ROLE_ADMIN', 'ROLE_USER') AS role FROM users WHERE username = ?"/>
+                               authorities-by-username-query="SELECT username,
+                               CASE WHEN admin = 'Y' THEN 'ROLE_ADMIN'
+                                    WHEN username = 'soap-services' THEN 'ROLE_SERVICES'
+                                    ELSE 'ROLE_USER'
+                               END AS role FROM users WHERE username = ?"/>
         </authentication-provider>
     </authentication-manager>
 
     <b:bean id="loginAuthenticationSuccessHandler" class="org.scada_lts.login.LoginAuthenticationSuccessHandler" />
-
-    <b:bean id="dataSourceForSecurity" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <b:property name="expectedType" value="javax.sql.DataSource"/>
-        <b:property name="jndiName" value="java:comp/env/jdbc/scadalts"/>
-    </b:bean>
 
     <b:bean id="scadaPasswordEncoder" class="org.scada_lts.login.CustomPasswordEncoder" />
 
@@ -189,4 +208,29 @@
         <b:constructor-arg ref="withIdentifierGuard"/>
         <b:constructor-arg ref="getIdentifierFromHttpParameterGuard"/>
     </b:bean>
+
+    <b:bean id="basicAuthFilter" class="org.scada_lts.login.LocalBasicAuthFilter">
+        <b:constructor-arg ref="authenticationManager"/>
+    </b:bean>
+
+    <b:bean id="clearSiteDataHeaderWriter" class="org.scada_lts.login.ScadaClearSiteDataHeaderWriter" >
+        <b:constructor-arg>
+            <b:list>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">CACHE</b:value>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">COOKIES</b:value>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">STORAGE</b:value>
+                <b:value type="org.scada_lts.login.ScadaClearSiteDataHeaderWriter.Directive">EXECUTION_CONTEXTS</b:value>
+            </b:list>
+        </b:constructor-arg>
+    </b:bean>
+
+    <b:bean id="headerWriterLogoutHandler" class="org.scada_lts.login.ScadaHeaderWriterLogoutHandler" >
+        <b:constructor-arg ref="clearSiteDataHeaderWriter" />
+    </b:bean>
+
+    <b:bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+        <b:property name="realmName" value="Basic Auth"/>
+    </b:bean>
+
+    <b:bean id="GetSecurityBeans" class="org.scada_lts.web.beans.GetSecurityBeans"/>
 </b:beans>

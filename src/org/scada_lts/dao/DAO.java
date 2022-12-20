@@ -31,7 +31,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import com.serotonin.mango.Common;
 
 
-/** 
+/**
  * Data Abstract Object
  * 
  * @author grzegorz bylica Abil'I.T. development team, sdt@abilit.eu

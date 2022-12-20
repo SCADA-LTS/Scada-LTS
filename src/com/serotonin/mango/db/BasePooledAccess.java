@@ -62,9 +62,10 @@ abstract public class BasePooledAccess extends DatabaseAccess
             {
                 log.info("Looking for Datasource: " + Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasourceName"));
                 dataSource = (DataSource) new InitialContext().lookup(Common.getEnvironmentProfile().getString(propertyPrefix + "db.datasourceName"));
-                Connection conn = dataSource.getConnection();
-                log.info("DataSource meta: " + conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion());
-                dataSourceFound = true;
+                try (Connection conn = dataSource.getConnection()) {
+                    log.info("DataSource meta: " + conn.getMetaData().getDatabaseProductName() + " " + conn.getMetaData().getDatabaseProductVersion());
+                    dataSourceFound = true;
+                }
             }
             catch(NamingException e)
             {
@@ -168,7 +169,7 @@ abstract public class BasePooledAccess extends DatabaseAccess
         }
         catch(SQLException e)
         {
-            log.warn("", e);
+            log.warn(e.getMessage(), e);
         }
     }
 

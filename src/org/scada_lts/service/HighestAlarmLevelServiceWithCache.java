@@ -15,7 +15,6 @@ import org.scada_lts.quartz.CronTriggerScheduler;
 import org.scada_lts.web.ws.model.AlarmLevelMessage;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
@@ -44,8 +43,7 @@ public class HighestAlarmLevelServiceWithCache implements IHighestAlarmLevelServ
         this.userService = new UserService();
     }
 
-    @PostConstruct
-    private void init() {
+    public void init() {
         try {
             boolean resetEnabled = ScadaConfig.getInstance().getBoolean(RESET_ENABLED_KEY, false);
             if(resetEnabled) {

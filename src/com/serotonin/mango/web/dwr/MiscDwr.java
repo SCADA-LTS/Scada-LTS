@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -35,24 +34,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.serotonin.mango.view.View;
-import com.serotonin.mango.view.View;
 import com.serotonin.mango.util.SendUtils;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
+import com.serotonin.mango.web.mvc.controller.ControllerUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 import org.scada_lts.mango.service.ViewService;
 import org.scada_lts.utils.HttpParameterUtils;
-import org.scada_lts.web.beans.ApplicationBeans;
-import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.utils.HttpParameterUtils;
-import org.springframework.beans.propertyeditors.LocaleEditor;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
@@ -240,16 +232,7 @@ public class MiscDwr extends BaseDwr {
 	}
 
 	public void setLocale(String locale) {
-		WebContext webContext = WebContextFactory.get();
-
-		LocaleResolver localeResolver = new SessionLocaleResolver();
-
-		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(locale);
-
-		localeResolver.setLocale(webContext.getHttpServletRequest(),
-				webContext.getHttpServletResponse(),
-				(Locale) localeEditor.getValue());
+		ControllerUtils.setLocale(locale);
 	}
 
 	@MethodFilter
@@ -477,8 +460,10 @@ public class MiscDwr extends BaseDwr {
 		synchronized (data.getState()) {
 			data.getState().getWatchListStates().clear();
 			WatchList wl = Common.getUser().getWatchList();
-			for (DataPointVO dp : wl.getPointList())
-				dp.resetLastValue();
+			if(wl != null) {
+				for (DataPointVO dp : wl.getPointList())
+					dp.resetLastValue();
+			}
 		}
 		notifyLongPollImpl(data.getRequest());
 	}

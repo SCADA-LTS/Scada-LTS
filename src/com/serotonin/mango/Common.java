@@ -18,8 +18,6 @@
  */
 package com.serotonin.mango;
 
-import gnu.io.CommPortIdentifier;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -27,12 +25,11 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -405,27 +402,6 @@ public class Common {
 
 	//
 	// Misc
-	@Deprecated
-	public static List<CommPortProxy> getCommPorts()
-			throws CommPortConfigException {
-		try {
-			List<CommPortProxy> ports = new LinkedList<CommPortProxy>();
-			Enumeration<?> portEnum = CommPortIdentifier.getPortIdentifiers();
-			CommPortIdentifier cpid;
-			while (portEnum.hasMoreElements()) {
-				cpid = (CommPortIdentifier) portEnum.nextElement();
-				if (cpid.getPortType() == CommPortIdentifier.PORT_SERIAL)
-					ports.add(new CommPortProxy(cpid));
-			}
-			return ports;
-		} catch (UnsatisfiedLinkError e) {
-			throw new CommPortConfigException(e.getMessage());
-		} catch (NoClassDefFoundError e) {
-			throw new CommPortConfigException(
-					"Comm configuration error. Check that rxtx DLL or libraries have been correctly installed.");
-		}
-	}
-
 	public static List<CommPortProxy> getSerialPorts() throws CommPortConfigException {
 		try {
 			return Arrays.stream(SerialPortUtils.getCommPorts())
@@ -512,35 +488,64 @@ public class Common {
 	//
 	// i18n
 	//
-	private static Object i18nLock = new Object();
 	private static String systemLanguage;
 	private static ResourceBundle systemBundle;
 
+	private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
 	public static String getMessage(String key) {
 		ensureI18n();
-		return I18NUtils.getMessage(systemBundle, key);
+		return I18NUtils.getMessage(getSystemBundle(), key);
 	}
 
 	public static ResourceBundle getBundle() {
 		ensureI18n();
-		return systemBundle;
+		return getSystemBundle();
 	}
 
 	private static void ensureI18n() {
-		if (systemLanguage == null) {
-			synchronized (i18nLock) {
-				if (systemLanguage == null) {
-					systemLanguage = SystemSettingsDAO
-							.getValue(SystemSettingsDAO.LANGUAGE);
-					Locale locale = findLocale(systemLanguage);
-					if (locale == null)
-						throw new IllegalArgumentException(
-								"Locale for given language not found: "
-										+ systemLanguage);
-					systemBundle = Utf8ResourceBundle.getBundle("messages",
-							locale);
-				}
-			}
+		if(isNull()) {
+			updateLanguage();
+		}
+	}
+
+	public static String updateLanguage() {
+		String language = SystemSettingsDAO.getValue(SystemSettingsDAO.LANGUAGE);
+		Locale locale = findLocale(language);
+		if (locale == null)
+			throw new IllegalArgumentException(
+					"Locale for given language not found: "
+							+ language);
+		ResourceBundle resourceBundle = Utf8ResourceBundle.getBundle("messages", locale);
+		setLanguage(language, resourceBundle);
+		return language;
+	}
+
+	private static void setLanguage(String language, ResourceBundle resourceBundle) {
+		lock.writeLock().lock();
+		try {
+			systemLanguage = language;
+			systemBundle = resourceBundle;
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	private static boolean isNull() {
+		lock.readLock().lock();
+		try {
+			return systemLanguage == null || systemBundle == null;
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	private static ResourceBundle getSystemBundle() {
+		lock.readLock().lock();
+		try {
+			return systemBundle;
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 
@@ -554,8 +559,7 @@ public class Common {
 			throw new IllegalArgumentException(
 					"Locale for given language not found: " + language);
 		new SystemSettingsDAO().setValue(SystemSettingsDAO.LANGUAGE, language);
-		systemLanguage = null;
-		systemBundle = null;
+		setLanguage(null, null);
 	}
 
 	private static Locale findLocale(String language) {

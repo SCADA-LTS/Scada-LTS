@@ -18,6 +18,8 @@
 
 package org.scada_lts.dao.alarms;
 
+import org.scada_lts.mango.service.DataPointService;
+
 import java.util.List;
 
 /**
@@ -36,7 +38,8 @@ public interface AlarmsService {
 
     List<HistoryAlarm> getHistoryAlarms(String dayDate, String dataPointNameFilter, int offset, int limit);
 
+    @Deprecated
     static AlarmsService plcAlarmsService() {
-        return new PlcAlarmsService(AlarmsDAO.getInstance());
+        return new PlcAlarmsService(AlarmsDAO.getInstance(), new DataPointService());
     }
 }

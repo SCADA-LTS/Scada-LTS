@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,9 +45,10 @@ public class AuthenticationAPI {
 	}
 	
 	@RequestMapping(value = "/api/auth/{username}/{password}", method = RequestMethod.GET)
-	public ResponseEntity<String> setAuthentication(@PathVariable("username") String username, @PathVariable("password") String password, HttpServletRequest request) {
+	public ResponseEntity<String> setAuthentication(@PathVariable("username") String username, @PathVariable("password") String password,
+													HttpServletRequest request, HttpServletResponse response) {
 		LOG.info("/api/auth/{username}/{password} username:" + username);
-		Authentication authentication = authenticate(username, password, request, authenticationManager, userService);
+		Authentication authentication = authenticate(username, password, request, response, authenticationManager, userService);
 		return new ResponseEntity<>(String.valueOf(authentication.isAuthenticated()), HttpStatus.OK);
 	}
 

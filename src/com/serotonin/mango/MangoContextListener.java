@@ -66,6 +66,9 @@ import org.scada_lts.config.ScadaVersion;
 import org.scada_lts.dao.SystemSettingsDAO;
 import org.scada_lts.mango.adapter.MangoScadaConfig;
 import org.scada_lts.scripting.SandboxContextFactory;
+import org.scada_lts.service.HighestAlarmLevelServiceWithCache;
+import org.scada_lts.service.IHighestAlarmLevelService;
+import org.scada_lts.web.beans.ApplicationBeans;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -105,6 +108,7 @@ public class MangoContextListener implements ServletContextListener {
 		freemarkerInitialize(ctx);
 		imageSetInitialize(ctx);
 		databaseInitialize(ctx);
+		highestAlarmLevelServiceInitialize();
 		dataPointsNameToIdMapping(ctx);
 
 		// Check if the known servlet context path has changed.
@@ -617,4 +621,16 @@ public class MangoContextListener implements ServletContextListener {
 
 		// MemoryCheck.start();
 	}
+
+	private void highestAlarmLevelServiceInitialize() {
+		try {
+			IHighestAlarmLevelService highestAlarmLevelService = ApplicationBeans.getHighestAlarmLevelServiceBean();
+			if(highestAlarmLevelService instanceof HighestAlarmLevelServiceWithCache) {
+				((HighestAlarmLevelServiceWithCache)highestAlarmLevelService).init();
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+
 }
