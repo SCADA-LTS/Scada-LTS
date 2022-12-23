@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -315,7 +317,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
             Common.ctx.getBackgroundProcessing().addWorkItem(new DevicePoller(d, devicePoints.get(d), time));
     }
 
-    class DevicePoller implements WorkItem {
+    class DevicePoller extends AbstractBeforeAfterWorkItem {
         private final RemoteDevice d;
         private final List<DataPointRT> points;
         private final long time;
@@ -327,7 +329,7 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         }
 
         @Override
-        public void execute() {
+        public void work() {
             synchronized (pollsInProgress) {
                 if (pollsInProgress.contains(d)) {
                     // There is another poll still running for the device, so abort this one.
@@ -350,6 +352,30 @@ public class BACnetIPDataSourceRT extends PollingDataSource implements DeviceEve
         @Override
         public int getPriority() {
             return WorkItem.PRIORITY_HIGH;
+        }
+
+        @Override
+        public String toString() {
+            return "DevicePoller{" +
+                    "points=" + getPoints() +
+                    ", time=" + time +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
+
+        private String getPoints() {
+            if(dataPoints == null) {
+                return "";
+            }
+            StringBuilder info = new StringBuilder();
+            for(DataPointRT dataPoint: dataPoints) {
+                info.append(LoggingUtils.dataPointInfo(dataPoint.getVO())).append("\n");
+            }
+            return info.toString();
         }
     }
 

@@ -36,7 +36,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 /**
  * @author Matthew Lohbihler
  */
-public class ProcessWorkItem implements WorkItem {
+public class ProcessWorkItem extends AbstractBeforeAfterWorkItem {
     static final Log LOG = LogFactory.getLog(ProcessWorkItem.class);
     private static final int TIMEOUT = 15000; // 15 seconds
 
@@ -52,15 +52,21 @@ public class ProcessWorkItem implements WorkItem {
     }
 
     @Override
-    public void execute() {
+    public void work() {
         try {
             executeProcessCommand(command);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        catch (IOException e) {
-            SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_PROCESS_FAILURE),
-                    System.currentTimeMillis(), false,
-                    new LocalizableMessage("event.process.failure", command, e.getMessage()));
-        }
+    }
+
+    @Override
+    public void workFail(Exception e) {
+        Throwable throwable = e.getCause() != null ? e.getCause() : e;
+        LOG.error(throwable.getMessage(), throwable);
+        SystemEventType.raiseEvent(new SystemEventType(SystemEventType.TYPE_PROCESS_FAILURE),
+                System.currentTimeMillis(), false,
+                new LocalizableMessage("event.process.failure", command, throwable.getMessage()));
     }
 
     public static void executeProcessCommand(String command) throws IOException {
@@ -104,7 +110,7 @@ public class ProcessWorkItem implements WorkItem {
         return WorkItem.PRIORITY_HIGH;
     }
 
-    static class ProcessTimeout implements WorkItem {
+    static class ProcessTimeout extends AbstractBeforeAfterWorkItem {
         private final Process process;
         private final String command;
         private volatile boolean interrupted;
@@ -126,7 +132,8 @@ public class ProcessWorkItem implements WorkItem {
             }
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 synchronized (this) {
                     wait(TIMEOUT);
@@ -141,9 +148,21 @@ public class ProcessWorkItem implements WorkItem {
             catch (InterruptedException e) { /* no op */
             }
         }
+
+        @Override
+        public String toString() {
+            return "ProcessTimeout{" +
+                    "command='" + command + '\'' +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
     }
 
-    static class InputReader implements WorkItem {
+    static class InputReader extends AbstractBeforeAfterWorkItem {
         private final InputStreamReader reader;
         private final StringWriter writer = new StringWriter();
         private boolean done;
@@ -174,12 +193,13 @@ public class ProcessWorkItem implements WorkItem {
             return WorkItem.PRIORITY_HIGH;
         }
 
-        public void execute() {
+        @Override
+        public void work() {
             try {
                 StreamUtils.transfer(reader, writer);
             }
             catch (IOException e) {
-                LOG.error("Error in process input reader", e);
+                throw new RuntimeException(e);
             }
             finally {
                 synchronized (this) {
@@ -188,8 +208,38 @@ public class ProcessWorkItem implements WorkItem {
                 }
             }
         }
+
+        @Override
+        public void workFail(Exception e) {
+            LOG.error("Error in process input reader", e);
+        }
+
+        @Override
+        public String toString() {
+            return "InputReader{" +
+                    "done=" + done +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
+        }
     }
-    //    
+
+    @Override
+    public String toString() {
+        return "ProcessWorkItem{" +
+                "command='" + command + '\'' +
+                '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
+    }
+
+    //
     // public static void main(String[] args) throws Exception {
     // // ServletContext ctx = new DummyServletContext();
     // BackgroundProcessing bp = new BackgroundProcessing();

@@ -20,16 +20,16 @@ package com.serotonin.mango.rt.maint;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.concurrent.*;
 
+import com.serotonin.mango.rt.maint.work.WorkItems;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.util.ILifecycle;
-import com.serotonin.mango.rt.maint.work.WorkItems;
+import org.scada_lts.utils.SystemSettingsUtils;
 
 /**
  * A cheesy name for a class, i know, but it pretty much says it like it is.
@@ -47,7 +47,7 @@ public class BackgroundProcessing implements ILifecycle {
 	private ThreadPoolExecutor mediumPriorityService;
 	private ExecutorService lowPriorityService;
 
-	private final WorkItems workItems = new WorkItems(1000);
+	private final WorkItems workItems = new WorkItems(SystemSettingsUtils.getWorkItemsLimit());
 
 	public void addWorkItem(final WorkItem item) {
 		workItems.add(item);
@@ -61,8 +61,6 @@ public class BackgroundProcessing implements ILifecycle {
 					} catch (RuntimeException e) {
 						t.printStackTrace();
 					}
-				} finally {
-					workItems.remove(item);
 				}
 			}
 		};
@@ -89,7 +87,6 @@ public class BackgroundProcessing implements ILifecycle {
 						}
 					} finally {
 						mediumPriorityService.remove(this);
-						workItems.remove(item);
 					}
 				}
 			});

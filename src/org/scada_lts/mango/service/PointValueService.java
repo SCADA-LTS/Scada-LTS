@@ -34,6 +34,7 @@ import com.serotonin.mango.rt.dataImage.types.*;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaPointLocatorRT;
 import com.serotonin.mango.rt.dataSource.meta.ScriptExecutor;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
@@ -482,10 +483,20 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             params[index++] = dvalue;
             params[index++] = time;
         }
+
+        @Override
+        public String toString() {
+            return "BatchWriteBehindEntry{" +
+                    "pointId=" + pointId +
+                    ", dataType=" + dataType +
+                    ", dvalue=" + dvalue +
+                    ", time=" + time +
+                    '}';
+        }
     }
 
     //TODO (gb) In my opinion it must rewrite
-    static class BatchWriteBehind implements WorkItem {
+    static class BatchWriteBehind extends AbstractBeforeAfterWorkItem {
         private static final ObjectQueue<BatchWriteBehindEntry> ENTRIES = new ObjectQueue<PointValueService.BatchWriteBehindEntry>();
         private static final CopyOnWriteArrayList<BatchWriteBehind> instances = new CopyOnWriteArrayList<BatchWriteBehind>();
         private static Log LOG = LogFactory.getLog(BatchWriteBehind.class);
@@ -533,7 +544,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             this.pointValueService = pointValueService;
         }
 
-        public void execute() {
+        public void work() {
             try {
                 BatchWriteBehindEntry[] inserts;
                 while (true) {
@@ -597,6 +608,18 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
 
         public int getPriority() {
             return WorkItem.PRIORITY_HIGH;
+        }
+
+        @Override
+        public String toString() {
+            return "BatchWriteBehind{" +
+                    "ENTRIES=" + ENTRIES +
+                    '}';
+        }
+
+        @Override
+        public String getDetails() {
+            return this.toString();
         }
     }
 

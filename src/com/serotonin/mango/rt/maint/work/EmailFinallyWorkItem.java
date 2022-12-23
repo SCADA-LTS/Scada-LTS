@@ -35,4 +35,14 @@ public class EmailFinallyWorkItem extends EmailAfterWorkItem {
     public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
         this.workFinally.workFinallyFail(finallyException, exceptions);
     }
+
+    @Override
+    public String toString() {
+        return "EmailFinallyWorkItem{" + super.toString() + '}';
+    }
+
+    @Override
+    public String getDetails() {
+        return this.toString();
+    }
 }
