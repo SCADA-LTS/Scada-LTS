@@ -5,14 +5,20 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
+public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
         AfterWork, AfterWork.WorkSuccessFail, AfterWork.WorkFinally {
 
     private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
+    private boolean executed;
+    private boolean success;
+    private int executedMs = 0;
 
     @Override
     public final void execute() {
+        long startMs = System.currentTimeMillis();
+        setFlags(false, false);
         Map<String, Exception> exceptions = new HashMap<>();
         try {
             try {
@@ -60,6 +66,8 @@ abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
                     LOG.error(workFinallyFailException.getMessage(), workFinallyFailException);
                 }
             }
+            setFlags(true, exceptions.isEmpty());
+            this.executedMs = (int)(System.currentTimeMillis() - startMs);
         }
     }
 
@@ -89,5 +97,25 @@ abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
     @Override
     public void workFinallyFail(Exception finallyException, Map<String, Exception> exceptions) {
         LOG.error(finallyException.getMessage(), finallyException);
+    }
+
+    @Override
+    public boolean isExecuted() {
+        return executed;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return success;
+    }
+
+    @Override
+    public int getExecutedMs() {
+        return executedMs;
+    }
+
+    private void setFlags(boolean executed, boolean success) {
+        this.executed = executed;
+        this.success = success;
     }
 }

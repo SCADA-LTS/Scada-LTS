@@ -3,6 +3,7 @@ package com.serotonin.mango.util;
 import com.serotonin.mango.web.email.IMsgSubjectContent;
 
 import javax.mail.internet.InternetAddress;
+import java.util.Arrays;
 
 public class SendEmailData {
 
@@ -26,5 +27,14 @@ public class SendEmailData {
 
     public IMsgSubjectContent getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        return "SendEmailData{" +
+                "fromAddress=" + fromAddress +
+                ", toAddresses=" + Arrays.toString(toAddresses) +
+                ", content=" + content +
+                '}';
     }
 }

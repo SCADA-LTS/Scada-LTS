@@ -18,31 +18,148 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get all work items'
+      description: 'Get work items not executed'
       responses:
         '200':
           description: "Get successful"
           headers: { }
+  /work-items/executed:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/fail:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items fail executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/success:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items success executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/all:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed and not executed'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/longer/{executedMs}:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items not executed longer than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/less/{executedMs}:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items not executed less than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
   /work-items/group-by/:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Grouping work items by class'
+      description: 'Grouping work items not executed by class'
       responses:
         '200':
           description: "Get successful"
           headers: { }
-  /work-items/limit/{limit}/:
+  /work-items/group-by/executed:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Set limit for work items map'
+      description: 'Grouping work items executed by class'
       responses:
         '200':
-          description: 'Get successful'
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/fail:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items fail executed by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/success:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items success executed by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/all:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Grouping work items all by class'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+  /work-items/group-by/longer/{executedMs}:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed longer than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
           headers: { }
       parameters:
-        - name: 'limit'
+        - name: 'executedMs'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+  /work-items/group-by/less/{executedMs}:
+    get:
+      tags:
+        - WorkItemInfoAPI
+      description: 'Get work items executed less than executedMs'
+      responses:
+        '200':
+          description: "Get successful"
+          headers: { }
+      parameters:
+        - name: 'executedMs'
           in: 'path'
           required: true
           schema:

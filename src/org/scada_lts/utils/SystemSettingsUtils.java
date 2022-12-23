@@ -20,6 +20,8 @@ public final class SystemSettingsUtils {
     private static final String DATAPOINT_RUNTIME_VALUE_SYNCHRONIZED_KEY = "datapoint.runtime.value.synchronized";
     private static final String HTTP_RESPONSE_HEADERS_KEY = "systemsettings.http.response.headers";
     private static final String EMAIL_TIMEOUT_KEY = "systemsettings.email.timeout";
+    private static final String BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY = "bp.workitems.limit";
+
     private static final org.apache.commons.logging.Log LOG = LogFactory.getLog(SystemSettingsUtils.class);
 
     public static DataPointSyncMode getDataPointSynchronizedMode() {
@@ -66,6 +68,16 @@ public final class SystemSettingsUtils {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return -1;
+        }
+    }
+
+    public static int getWorkItemsLimit() {
+        try {
+            String limit = ScadaConfig.getInstance().getConf().getProperty(BACKGROUND_PROCESSING_WORK_ITEMS_LIMIT_KEY, "100");
+            return Integer.parseInt(limit);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return 100;
         }
     }
 }

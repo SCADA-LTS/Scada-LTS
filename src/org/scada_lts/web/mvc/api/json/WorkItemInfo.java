@@ -1,30 +1,15 @@
 package org.scada_lts.web.mvc.api.json;
 
-import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.rt.maint.work.WorkItems;
 
 public class WorkItemInfo {
+    private final WorkItems.Execute workItem;
 
-    private int priority;
-    private String className;
-
-    public WorkItemInfo(WorkItem workItem) {
-        this.priority = workItem.getPriority();
-        this.className = workItem.getClass().getName();
+    public WorkItemInfo(WorkItems.Execute workItem) {
+        this.workItem = workItem;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
+    public WorkItems.Execute getWorkItemExecute() {
+        return workItem;
     }
 }

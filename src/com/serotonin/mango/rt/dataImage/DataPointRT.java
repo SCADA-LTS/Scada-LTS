@@ -26,6 +26,7 @@ import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataImage.types.NumericValue;
 import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
+import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItem;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
@@ -496,7 +497,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		dataPointServiceWebSocket.notifyStateSubscribers(enabled, this.vo.getId());
 	}
 
-	class EventNotifyWorkItem implements WorkItem {
+	class EventNotifyWorkItem extends AbstractBeforeAfterWorkItem {
 		private final DataPointListener listener;
 		private final PointValueTime oldValue;
 		private final PointValueTime newValue;
@@ -514,7 +515,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		}
 
 		@Override
-		public void execute() {
+		public void work() {
 			if (backdate)
 				listener.pointBackdated(newValue);
 			else {
@@ -534,6 +535,22 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		@Override
 		public int getPriority() {
 			return WorkItem.PRIORITY_MEDIUM;
+		}
+
+		@Override
+		public String toString() {
+			return "EventNotifyWorkItem{" +
+					"listener=" + listener +
+					", oldValue=" + oldValue +
+					", newValue=" + newValue +
+					", set=" + set +
+					", backdate=" + backdate +
+					'}';
+		}
+
+		@Override
+		public String getDetails() {
+			return this.toString();
 		}
 	}
 
