@@ -3,6 +3,7 @@ package com.serotonin.mango.rt.maint.work;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -73,11 +74,24 @@ public class WorkItems {
 
         @Override
         public int compareTo(Execute o) {
-            long diff = this.serial - o.serial;
+            long diff = getSerial() - o.getSerial();
             if (diff == 0) {
                 return 0;
             }
             return diff < 0 ? -1 : 1;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Execute)) return false;
+            Execute execute = (Execute) o;
+            return getSerial() == execute.getSerial();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getSerial());
         }
 
         @Override
