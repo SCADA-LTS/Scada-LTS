@@ -5,25 +5,29 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWork,
         AfterWork, AfterWork.WorkSuccessFail, AfterWork.WorkFinally {
 
     private static final Log LOG = LogFactory.getLog(AbstractBeforeAfterWorkItem.class);
-    private boolean executed;
-    private boolean success;
-    private int executedMs = 0;
+    private volatile boolean executed = false;
+    private volatile boolean success = false;
+    private volatile boolean workSuccess = false;
+    private volatile boolean beforeWorkSuccess = false;
+    private volatile boolean afterWorkSuccess = false;
+    private volatile boolean finallyWorkSuccess = false;
+    private volatile int executedMs = 0;
 
     @Override
     public final void execute() {
+        this.executed = false;
         long startMs = System.currentTimeMillis();
-        setFlags(false, false);
         Map<String, Exception> exceptions = new HashMap<>();
         try {
             try {
                 beforeWork();
             } catch (Exception beforeWorkException) {
+                this.beforeWorkSuccess = false;
                 exceptions.put("beforeWork", beforeWorkException);
                 try {
                     beforeWorkFail(beforeWorkException);
@@ -33,9 +37,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
                 return;
             }
+            this.beforeWorkSuccess = true;
             try {
                 work();
             } catch (Exception workException) {
+                this.workSuccess = false;
                 exceptions.put("work", workException);
                 try {
                     workFail(workException);
@@ -45,9 +51,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                 }
                 return;
             }
+            this.workSuccess = true;
             try {
                 workSuccess();
             } catch (Exception workSuccessException) {
+                this.afterWorkSuccess = false;
                 exceptions.put("workSuccess", workSuccessException);
                 try {
                     workSuccessFail(workSuccessException);
@@ -56,18 +64,24 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                     exceptions.put("workSuccessFail", workSuccessFailException);
                 }
             }
+            this.afterWorkSuccess = true;
         } finally {
             try {
                 workFinally(exceptions);
             } catch (Exception workFinallyException) {
+                this.finallyWorkSuccess = false;
+                exceptions.put("workFinally", workFinallyException);
                 try {
                     workFinallyFail(workFinallyException, exceptions);
                 } catch (Exception workFinallyFailException) {
                     LOG.error(workFinallyFailException.getMessage(), workFinallyFailException);
+                    exceptions.put("workFinallyFail", workFinallyFailException);
                 }
             }
-            setFlags(true, exceptions.isEmpty());
+            this.executed = true;
+            this.success = exceptions.isEmpty();
             this.executedMs = (int)(System.currentTimeMillis() - startMs);
+            this.finallyWorkSuccess = true;
         }
     }
 
@@ -110,12 +124,28 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     }
 
     @Override
+    public boolean isWorkSuccess() {
+        return workSuccess;
+    }
+
+    @Override
+    public boolean isBeforeWorkSuccess() {
+        return beforeWorkSuccess;
+    }
+
+    @Override
+    public boolean isAfterWorkSuccess() {
+        return afterWorkSuccess;
+    }
+
+    @Override
+    public boolean isFinallyWorkSuccess() {
+        return finallyWorkSuccess;
+    }
+
+    @Override
     public int getExecutedMs() {
         return executedMs;
     }
 
-    private void setFlags(boolean executed, boolean success) {
-        this.executed = executed;
-        this.success = success;
-    }
 }
