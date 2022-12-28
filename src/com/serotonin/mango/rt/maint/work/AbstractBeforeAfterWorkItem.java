@@ -16,11 +16,13 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     private volatile boolean beforeWorkSuccess = false;
     private volatile boolean afterWorkSuccess = false;
     private volatile boolean finallyWorkSuccess = false;
+    private volatile boolean running = false;
     private volatile int executedMs = 0;
 
     @Override
     public final void execute() {
         this.executed = false;
+        this.running = true;
         long startMs = System.currentTimeMillis();
         Map<String, Exception> exceptions = new HashMap<>();
         try {
@@ -82,6 +84,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
             this.success = exceptions.isEmpty();
             this.executedMs = (int)(System.currentTimeMillis() - startMs);
             this.finallyWorkSuccess = true;
+            this.running = false;
         }
     }
 
@@ -141,6 +144,11 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     @Override
     public boolean isFinallyWorkSuccess() {
         return finallyWorkSuccess;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 
     @Override
