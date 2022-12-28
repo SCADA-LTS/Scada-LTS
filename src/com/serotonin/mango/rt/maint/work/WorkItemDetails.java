@@ -8,5 +8,6 @@ public interface WorkItemDetails {
     boolean isBeforeWorkSuccess();
     boolean isAfterWorkSuccess();
     boolean isFinallyWorkSuccess();
+    boolean isRunning();
     int getExecutedMs();
 }
