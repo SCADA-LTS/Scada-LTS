@@ -23,7 +23,7 @@ public class WorkItems {
     public void add(WorkItem item) {
         Execute execute = new Execute(item);
         int index = counter.incrementAndGet();
-        if(index > limit) {
+        if(index > limit || index < 0) {
             counter.set(0);
             items.remove(0);
             items.put(0, execute);
@@ -91,7 +91,13 @@ public class WorkItems {
 
         public Execute(WorkItem workItem) {
             this.className = workItem.getClass().getName();
-            this.serial = counter.incrementAndGet();
+            long newSerial = counter.incrementAndGet();
+            if(newSerial < 0) {
+                counter.set(0);
+                this.serial = 0;
+            } else {
+                this.serial = newSerial;
+            }
             this.workItem = workItem;
         }
 
