@@ -3,6 +3,7 @@ package com.serotonin.mango.rt.maint.work;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,7 +24,7 @@ public class WorkItems {
     public void add(WorkItem item) {
         Execute execute = new Execute(item);
         int index = counter.incrementAndGet();
-        if(index > limit || index < 0) {
+        if(index == limit) {
             counter.set(0);
             items.remove(0);
             items.put(0, execute);
@@ -91,13 +92,7 @@ public class WorkItems {
 
         public Execute(WorkItem workItem) {
             this.className = workItem.getClass().getName();
-            long newSerial = counter.incrementAndGet();
-            if(newSerial < 0) {
-                counter.set(0);
-                this.serial = 0;
-            } else {
-                this.serial = newSerial;
-            }
+            this.serial = counter.incrementAndGet();
             this.workItem = workItem;
         }
 
@@ -114,8 +109,21 @@ public class WorkItems {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Execute)) return false;
+            Execute execute = (Execute) o;
+            return getSerial() == execute.getSerial();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getSerial());
+        }
+
+        @Override
         public int compareTo(Execute o) {
-            long diff = this.serial - o.serial;
+            long diff = this.getSerial() - o.getSerial();
             if (diff == 0) {
                 return 0;
             }
