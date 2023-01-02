@@ -17,7 +17,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
     private volatile boolean afterWorkSuccess = false;
     private volatile boolean finallyWorkSuccess = false;
     private volatile boolean running = false;
-    private volatile int executedMs = 0;
+    private volatile int executedMs = -1;
 
     @Override
     public final void execute() {
@@ -65,6 +65,7 @@ public abstract class AbstractBeforeAfterWorkItem implements WorkItem, BeforeWor
                     LOG.error(workSuccessFailException.getMessage(), workSuccessFailException);
                     exceptions.put("workSuccessFail", workSuccessFailException);
                 }
+                return;
             }
             this.afterWorkSuccess = true;
         } finally {

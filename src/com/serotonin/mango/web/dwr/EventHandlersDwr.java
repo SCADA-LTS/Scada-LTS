@@ -353,7 +353,7 @@ public class EventHandlersDwr extends BaseDwr {
 			return null;
 
 		try {
-			ProcessWorkItem.executeProcessCommand(command);
+			ProcessWorkItem.executeProcessCommand(command, null);
 			return new LocalizableMessage("eventHandlers.commandTest.result");
 		} catch (IOException e) {
 			LOG.warn("Process error", e);

@@ -34,7 +34,7 @@ public class SendEmailData {
         return "SendEmailData{" +
                 "fromAddress=" + fromAddress +
                 ", toAddresses=" + Arrays.toString(toAddresses) +
-                ", content=" + content +
+                ", subject=" + content.getSubject() +
                 '}';
     }
 }

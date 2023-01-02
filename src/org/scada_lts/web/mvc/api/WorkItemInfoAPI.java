@@ -1,9 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
-import com.serotonin.mango.Common;
-import com.serotonin.mango.rt.maint.work.WorkItems;
-import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.scada_lts.web.mvc.api.json.WorkItemInfo;
+import org.scada_lts.web.mvc.api.json.WorkItemInfoList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,47 +21,47 @@ public class WorkItemInfoAPI {
     }
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<WorkItemInfo>> getNotExecutedWorkItems(HttpServletRequest request) {
+    public ResponseEntity<WorkItemInfoList> getNotExecutedWorkItems(HttpServletRequest request) {
         List<WorkItemInfo> response = workItemInfoApiService.getNotExecutedWorkItems(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/executed")
-    public ResponseEntity<List<WorkItemInfo>> getExecutedWorkItems(HttpServletRequest request) {
+    public ResponseEntity<WorkItemInfoList> getExecutedWorkItems(HttpServletRequest request) {
         List<WorkItemInfo> response = workItemInfoApiService.getExecutedWorkItems(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/success")
-    public ResponseEntity<List<WorkItemInfo>> getExecutedSuccessWorkItems(HttpServletRequest request) {
+    public ResponseEntity<WorkItemInfoList> getExecutedSuccessWorkItems(HttpServletRequest request) {
         List<WorkItemInfo> response = workItemInfoApiService.getExecutedSuccessWorkItems(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/fail")
-    public ResponseEntity<List<WorkItemInfo>> getExecutedFailWorkItems(HttpServletRequest request) {
+    public ResponseEntity<WorkItemInfoList> getExecutedFailWorkItems(HttpServletRequest request) {
         List<WorkItemInfo> response = workItemInfoApiService.getExecutedFailWorkItems(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<WorkItemInfo>> getWorkItems(HttpServletRequest request) {
+    public ResponseEntity<WorkItemInfoList> getWorkItems(HttpServletRequest request) {
         List<WorkItemInfo> response = workItemInfoApiService.getWorkItems(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/longer/{executedMs}")
-    public ResponseEntity<List<WorkItemInfo>> getExecutedLongerWorkItems(HttpServletRequest request,
+    public ResponseEntity<WorkItemInfoList> getExecutedLongerWorkItems(HttpServletRequest request,
                                                                          @PathVariable("executedMs") int executedMs) {
         List<WorkItemInfo> response = workItemInfoApiService.getExecutedLongerWorkItems(request, executedMs);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/less/{executedMs}")
-    public ResponseEntity<List<WorkItemInfo>> getExecutedLessWorkItems(HttpServletRequest request,
-                                                                       @PathVariable("executedMs") int executedMs) {
+    public ResponseEntity<WorkItemInfoList> getExecutedLessWorkItems(HttpServletRequest request,
+                                                                     @PathVariable("executedMs") int executedMs) {
         List<WorkItemInfo> response = workItemInfoApiService.getExecutedLessWorkItems(request, executedMs);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new WorkItemInfoList(response), HttpStatus.OK);
     }
 
     @GetMapping(value = "/group-by/")
