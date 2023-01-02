@@ -91,13 +91,7 @@ public class WorkItems {
         public Execute(WorkItem workItem) {
             this.className = workItem.getClass().getName();
             this.workItem = workItem;
-            long newSerial = counter.incrementAndGet();
-            if(newSerial < 0) {
-                counter.set(0);
-                this.serial = 0;
-            } else {
-                this.serial = newSerial;
-            }
+            this.serial = counter.incrementAndGet();
         }
 
         public WorkItem getWorkItem() {
