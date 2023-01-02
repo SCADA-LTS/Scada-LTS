@@ -28,6 +28,7 @@ import com.serotonin.mango.rt.dataSource.PointLocatorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
 import com.serotonin.mango.rt.maint.work.AbstractBeforeAfterWorkItem;
 import com.serotonin.mango.rt.maint.work.WorkItem;
+import com.serotonin.mango.util.LoggingUtils;
 import com.serotonin.mango.util.timeout.TimeoutClient;
 import com.serotonin.mango.util.timeout.TimeoutTask;
 import com.serotonin.mango.view.stats.AnalogStatistics;
@@ -485,7 +486,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		if (l != null)
 			Common.ctx.getBackgroundProcessing().addWorkItem(
 					new EventNotifyWorkItem(l, oldValue, newValue, set,
-							backdate));
+							backdate, vo));
 	}
 
 	@Override
@@ -503,7 +504,9 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		private final PointValueTime newValue;
 		private final boolean set;
 		private final boolean backdate;
+		private final DataPointVO dataPointVO;
 
+		@Deprecated
 		EventNotifyWorkItem(DataPointListener listener,
 				PointValueTime oldValue, PointValueTime newValue, boolean set,
 				boolean backdate) {
@@ -512,6 +515,18 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 			this.newValue = newValue;
 			this.set = set;
 			this.backdate = backdate;
+			this.dataPointVO = null;
+		}
+
+		EventNotifyWorkItem(DataPointListener listener,
+							PointValueTime oldValue, PointValueTime newValue, boolean set,
+							boolean backdate, DataPointVO dataPointVO) {
+			this.listener = listener;
+			this.oldValue = oldValue;
+			this.newValue = newValue;
+			this.set = set;
+			this.backdate = backdate;
+			this.dataPointVO = dataPointVO;
 		}
 
 		@Override
@@ -545,6 +560,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 					", newValue=" + newValue +
 					", set=" + set +
 					", backdate=" + backdate +
+					", " + LoggingUtils.dataPointInfo(dataPointVO) +
 					'}';
 		}
 
