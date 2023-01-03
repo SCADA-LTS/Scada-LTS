@@ -34,7 +34,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.impl.HierarchyDAO;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyComparator;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;

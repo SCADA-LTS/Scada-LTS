@@ -21,6 +21,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.UserComment;
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
 
 import java.util.List;
 

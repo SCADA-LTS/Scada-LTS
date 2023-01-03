@@ -30,7 +30,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;
 import org.scada_lts.dao.pointvalues.PointValueDAO;
@@ -47,7 +47,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.clearInvocations;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)

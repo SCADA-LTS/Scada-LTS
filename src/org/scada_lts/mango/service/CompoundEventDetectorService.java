@@ -20,7 +20,7 @@ package org.scada_lts.mango.service;
 import java.util.List;
 
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.event.CompoundEventDetectorDAO;
 import org.scada_lts.mango.adapter.MangoCompoundEventDetector;
 

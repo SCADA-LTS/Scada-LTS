@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.rt.event.type.EventType;
@@ -24,6 +24,8 @@ import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.SerializationData;
+import org.scada_lts.dao.ShareUserRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;

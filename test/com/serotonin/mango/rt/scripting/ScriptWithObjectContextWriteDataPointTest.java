@@ -22,7 +22,7 @@ import org.junit.runners.Parameterized;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

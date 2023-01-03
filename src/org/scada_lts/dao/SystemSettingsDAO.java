@@ -24,6 +24,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.ColorUtils;
 import org.scada_lts.utils.SystemSettingsUtils;

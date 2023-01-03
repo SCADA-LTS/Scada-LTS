@@ -31,7 +31,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.PendingEventsDAO;
+import org.scada_lts.dao.impl.PendingEventsDAO;
 import org.scada_lts.quartz.UpdatePendingEvents;
 
 import com.serotonin.mango.rt.event.EventInstance;

@@ -9,8 +9,8 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.impl.DataPointDAO;
+import org.scada_lts.dao.impl.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
 
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.scada_lts.permissions.migration.MigrationPermissionsUtils.generateDataPointAccess;
-import static org.scada_lts.utils.PointHierarchyUtils.sort;
 
 public class GetPointHierarchyByKeyTest {
 

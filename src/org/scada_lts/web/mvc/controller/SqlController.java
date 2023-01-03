@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.web.mvc.form.SqlForm;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;

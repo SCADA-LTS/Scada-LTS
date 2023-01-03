@@ -3,7 +3,7 @@ package org.scada_lts.dao.event;
 import com.mysql.jdbc.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;

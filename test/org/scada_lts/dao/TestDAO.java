@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.scada_lts.dao.impl.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;

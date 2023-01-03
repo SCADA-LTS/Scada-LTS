@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.mango.adapter.MangoEvent;
 import org.scada_lts.mango.service.EventService;
 

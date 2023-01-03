@@ -19,7 +19,7 @@ package org.scada_lts.mango.service;
 
 import br.org.scadabr.api.vo.FlexProject;
 import com.serotonin.mango.Common;
-import org.scada_lts.dao.FlexProjectDAO;
+import org.scada_lts.dao.impl.FlexProjectDAO;
 import org.scada_lts.mango.adapter.MangoFlexProject;
 
 import java.util.List;

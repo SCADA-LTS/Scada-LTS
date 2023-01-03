@@ -9,11 +9,10 @@ import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.impl.DataPointDAO;
+import org.scada_lts.dao.impl.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 import org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO;
-import org.scada_lts.utils.PointHierarchyUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

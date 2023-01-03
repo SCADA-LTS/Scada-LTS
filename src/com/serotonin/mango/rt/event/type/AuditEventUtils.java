@@ -7,7 +7,7 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.impl.PointEventDetectorDAO;
 
 import java.util.List;
 import java.util.Optional;

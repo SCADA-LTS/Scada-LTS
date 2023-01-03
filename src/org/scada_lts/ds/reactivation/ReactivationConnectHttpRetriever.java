@@ -10,7 +10,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.quartz.utils.Key;
-import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.impl.DataSourceDAO;
 import org.scada_lts.ds.StartStopDsRT;
 import org.scada_lts.ds.state.StartSleepStateDs;
 

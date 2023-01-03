@@ -1,7 +1,8 @@
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.MultiChangesHistory;
 import org.scada_lts.dao.model.multichangehistory.MultiChangeHistoryValues;
 import org.springframework.stereotype.Repository;
 

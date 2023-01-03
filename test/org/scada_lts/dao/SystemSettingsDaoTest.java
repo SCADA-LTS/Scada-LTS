@@ -18,8 +18,8 @@
 package org.scada_lts.dao;
 
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.report.ReportInstanceDAO;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import static org.junit.Assert.assertTrue;
 

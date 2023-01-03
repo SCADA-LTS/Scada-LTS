@@ -20,6 +20,8 @@ package org.scada_lts.dao;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
+import org.scada_lts.dao.impl.DataPointDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;

@@ -21,6 +21,9 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.DataPointVO.LoggingTypes;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
+import org.scada_lts.dao.impl.DataPointDAO;
+import org.scada_lts.dao.impl.PointEventDetectorDAO;
 
 import java.util.List;
 

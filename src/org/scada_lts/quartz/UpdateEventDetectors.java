@@ -29,7 +29,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.EventDetectorsCache;
-import org.scada_lts.dao.EventDetectorsCacheDAO;
+import org.scada_lts.dao.impl.EventDetectorsCacheDAO;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 
 import com.serotonin.mango.vo.event.PointEventDetectorVO;

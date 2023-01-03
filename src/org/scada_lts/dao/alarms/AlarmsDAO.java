@@ -18,7 +18,7 @@
 
 package org.scada_lts.dao.alarms;
 
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;

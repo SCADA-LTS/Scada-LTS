@@ -19,7 +19,6 @@ package org.scada_lts.dao.watchlist;
 
 import java.sql.*;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 import br.org.scadabr.vo.permission.WatchListAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.ShareUserRowMapper;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;

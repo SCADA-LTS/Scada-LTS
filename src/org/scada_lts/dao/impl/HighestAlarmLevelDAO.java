@@ -1,14 +1,12 @@
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import com.serotonin.mango.vo.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IHighestAlarmLevelDAO;
 import org.scada_lts.dao.model.UserAlarmLevel;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

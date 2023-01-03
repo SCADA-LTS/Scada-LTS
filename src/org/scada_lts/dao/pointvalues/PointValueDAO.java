@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.GenericDaoCR;
 import org.scada_lts.dao.model.point.PointValue;
 import org.springframework.dao.EmptyResultDataAccessException;

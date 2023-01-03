@@ -22,7 +22,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.model.point.PointValueTypeOfREST;
 import org.springframework.stereotype.Repository;

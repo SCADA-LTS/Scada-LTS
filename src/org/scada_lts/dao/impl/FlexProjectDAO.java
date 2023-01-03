@@ -1,4 +1,4 @@
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

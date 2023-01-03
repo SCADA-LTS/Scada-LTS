@@ -2,7 +2,7 @@ package org.scada_lts.dao.migration.mysql;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class V2_5__ScheduledExecuteInactiveEvent extends BaseJavaMigration {

@@ -21,10 +21,9 @@ package org.scada_lts.dao;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.mango.adapter.MangoPointValues;
 import org.scada_lts.mango.service.PointValueService;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.AlphanumericValue;

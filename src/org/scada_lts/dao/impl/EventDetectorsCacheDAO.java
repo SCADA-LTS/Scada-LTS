@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

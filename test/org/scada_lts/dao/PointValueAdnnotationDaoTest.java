@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.model.point.PointValue;
 import org.scada_lts.dao.model.point.PointValueAdnnotation;
 import org.scada_lts.dao.pointvalues.PointValueAdnnotationsDAO;

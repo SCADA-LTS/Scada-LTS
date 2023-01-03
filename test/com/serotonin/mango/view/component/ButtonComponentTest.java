@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import utils.ScriptTestUtils;
 
 import java.util.HashMap;

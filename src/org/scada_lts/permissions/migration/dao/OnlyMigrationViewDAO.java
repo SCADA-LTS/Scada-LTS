@@ -24,6 +24,7 @@ import com.serotonin.mango.view.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.dao.*;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;

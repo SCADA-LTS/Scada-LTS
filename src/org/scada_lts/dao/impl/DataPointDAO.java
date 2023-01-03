@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,6 +27,8 @@ import java.util.List;
 import com.serotonin.mango.view.ShareUser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.GenericDaoCR;
+import org.scada_lts.dao.SerializationData;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;
 import org.scada_lts.utils.PlcAlarmsUtils;

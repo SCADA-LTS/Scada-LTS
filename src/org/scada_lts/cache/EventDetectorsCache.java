@@ -31,7 +31,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.EventDetectorsCacheDAO;
+import org.scada_lts.dao.impl.EventDetectorsCacheDAO;
 import org.scada_lts.dao.model.PointEventDetectorCache;
 import org.scada_lts.quartz.UpdateEventDetectors;
 

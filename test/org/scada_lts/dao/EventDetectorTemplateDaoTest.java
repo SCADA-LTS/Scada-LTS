@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
 import br.org.scadabr.vo.eventDetectorTemplate.EventDetectorTemplateVO;
+import org.scada_lts.dao.impl.EventDetectorTemplateDAO;
 
 /** 
  * Test EventDetectorTemplateDAO

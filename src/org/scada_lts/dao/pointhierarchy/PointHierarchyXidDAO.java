@@ -19,9 +19,8 @@ package org.scada_lts.dao.pointhierarchy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.web.mvc.api.dto.FolderPointHierarchy;
-import org.scada_lts.web.mvc.api.dto.FolderPointHierarchyExport;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

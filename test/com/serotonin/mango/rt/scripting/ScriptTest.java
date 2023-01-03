@@ -19,7 +19,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import utils.IntValuePairPrinted;
 import utils.ScriptTestUtils;
 

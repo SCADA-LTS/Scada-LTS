@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
-import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.impl.DataPointDAO;
 
 import java.util.List;
 import java.util.Map;

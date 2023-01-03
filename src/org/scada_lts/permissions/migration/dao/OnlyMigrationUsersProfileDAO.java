@@ -7,7 +7,7 @@ import com.serotonin.mango.view.ShareUser;
 import com.serotonin.mango.vo.permission.DataPointAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.UsersProfileDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

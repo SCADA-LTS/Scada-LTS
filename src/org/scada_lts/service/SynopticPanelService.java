@@ -1,6 +1,6 @@
 package org.scada_lts.service;
 
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.SynopticPanelDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.service.model.SynopticPanel;

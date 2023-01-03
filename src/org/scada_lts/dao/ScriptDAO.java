@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.web.mvc.api.json.JsonScript;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -158,7 +159,7 @@ public class ScriptDAO  {
 				LOG.trace(vo);
 			}
 			
-			DAO.getInstance().getJdbcTemp().update(SCRIPT_UPDATE, new Object[]  { 
+			DAO.getInstance().getJdbcTemp().update(SCRIPT_UPDATE, new Object[]  {
 					vo.getXid(),
 					vo.getName(), 
 					vo.getScript(), 

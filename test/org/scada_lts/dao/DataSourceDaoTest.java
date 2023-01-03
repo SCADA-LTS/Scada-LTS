@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
+import org.scada_lts.dao.impl.DataSourceDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.serotonin.mango.vo.dataSource.DataSourceVO;

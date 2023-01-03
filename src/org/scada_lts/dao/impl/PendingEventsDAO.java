@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.IUserDAO;
 import org.scada_lts.dao.model.UserCommentCache;
 import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.utils.EventTypeUtil;

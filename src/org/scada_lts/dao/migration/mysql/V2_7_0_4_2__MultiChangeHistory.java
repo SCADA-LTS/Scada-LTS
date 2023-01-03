@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class V2_7_0_4_2__MultiChangeHistory extends BaseJavaMigration {

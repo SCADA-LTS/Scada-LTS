@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.serotonin.mango.vo.User;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.scada_lts.mango.adapter.MangoWatchList;

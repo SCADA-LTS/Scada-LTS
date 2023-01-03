@@ -25,7 +25,7 @@ import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.mailingList.MailingListDAO;
 import org.scada_lts.dao.mailingList.MailingListInactiveDAO;
 import org.scada_lts.dao.mailingList.MailingListMemberDAO;

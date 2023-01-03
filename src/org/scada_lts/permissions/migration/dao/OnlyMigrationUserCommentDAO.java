@@ -23,7 +23,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.UserComment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.IUserCommentDAO;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCreator;

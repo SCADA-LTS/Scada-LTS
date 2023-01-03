@@ -19,6 +19,7 @@ package org.scada_lts.dao;
 
 import br.org.scadabr.api.vo.FlexProject;
 import org.junit.Test;
+import org.scada_lts.dao.impl.FlexProjectDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;

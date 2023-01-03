@@ -30,7 +30,7 @@ import com.serotonin.mango.vo.report.*;
 import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import com.serotonin.web.taglib.Functions;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.report.*;
 import org.scada_lts.mango.adapter.MangoReport;
 import org.scada_lts.permissions.service.GetReportInstancesWithAccess;

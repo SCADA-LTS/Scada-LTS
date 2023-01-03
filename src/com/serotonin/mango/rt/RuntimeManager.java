@@ -33,7 +33,7 @@ import com.serotonin.mango.vo.dataSource.http.ICheckReactivation;
 import com.serotonin.mango.vo.mailingList.MailingList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.impl.PointEventDetectorDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.ScheduledExecuteInactiveEventDAO;
 import org.scada_lts.mango.service.*;

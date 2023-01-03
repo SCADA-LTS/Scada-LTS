@@ -27,7 +27,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.quartz.StatefulJob;
 import org.scada_lts.cache.PendingEventsCache;
-import org.scada_lts.dao.PendingEventsDAO;
+import org.scada_lts.dao.impl.PendingEventsDAO;
 
 /** 
  * Update data job for pending events in cache.

@@ -28,7 +28,7 @@ import com.serotonin.mango.vo.hierarchy.PointFolder;
 import com.serotonin.mango.vo.hierarchy.PointHierarchy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.SerializationData;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyDataSource;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;

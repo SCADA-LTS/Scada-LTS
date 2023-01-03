@@ -81,10 +81,10 @@
   <bean id="applicationBeans" class="org.scada_lts.web.beans.GetApplicationBeans"/>
 
   <bean id="usersProfileDAO" class="org.scada_lts.dao.UsersProfileDAO" />
-  <bean id="dataPointUserDAO" class="org.scada_lts.dao.DataPointUserDAO"/>
+  <bean id="dataPointUserDAO" class="org.scada_lts.dao.impl.DataPointUserDAO"/>
   <bean id="viewDAO" class="org.scada_lts.dao.ViewDAO"/>
   <bean id="watchListDAO" class="org.scada_lts.dao.watchlist.WatchListDAO"/>
-  <bean id="dataSourceDAO" class="org.scada_lts.dao.DataSourceDAO"/>
+  <bean id="dataSourceDAO" class="org.scada_lts.dao.impl.DataSourceDAO"/>
   <bean id="userDAO" class="org.scada_lts.dao.UserDAO"/>
 
   <bean id="watchListGetShareUsers" class="org.scada_lts.permissions.service.WatchListGetShareUsers">
@@ -144,7 +144,7 @@
   <!-- -->
 
   <!-- Highest Alarm Level -->
-  <bean id="highestAlarmLevelDAO" class="org.scada_lts.dao.HighestAlarmLevelDAO" />
+  <bean id="highestAlarmLevelDAO" class="org.scada_lts.dao.impl.HighestAlarmLevelDAO" />
 
   <bean id="highestAlarmLevelCache" class="org.scada_lts.dao.cache.HighestAlarmLevelCache">
     <constructor-arg ref="highestAlarmLevelDAO"/>
@@ -183,8 +183,8 @@
   <!-- -->
 
   <!-- Point Hierarchy -->
-  <bean id="dataPointDAO" class="org.scada_lts.dao.DataPointDAO"/>
-  <bean id="hierarchyDAO" class="org.scada_lts.dao.HierarchyDAO"/>
+  <bean id="dataPointDAO" class="org.scada_lts.dao.impl.DataPointDAO"/>
+  <bean id="hierarchyDAO" class="org.scada_lts.dao.impl.HierarchyDAO"/>
   <bean id="pointHierarchyXidDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyXidDAO" />
   <bean id="pointHierarchyDAO" class="org.scada_lts.dao.pointhierarchy.PointHierarchyDAO" />
 

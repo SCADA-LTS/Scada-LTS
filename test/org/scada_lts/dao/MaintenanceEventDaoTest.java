@@ -19,6 +19,8 @@ package org.scada_lts.dao;
 
 import com.serotonin.mango.vo.event.MaintenanceEventVO;
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
+import org.scada_lts.dao.impl.MaintenanceEventDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;

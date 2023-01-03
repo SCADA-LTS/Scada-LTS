@@ -25,11 +25,11 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.i18n.I18NUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.report.ReportInstanceDAO;
 import org.scada_lts.dao.report.ReportInstanceDataDAO;
 import org.scada_lts.dao.report.ReportInstancePointDAO;
 import org.scada_lts.dao.report.ReportInstanceUserCommentDAO;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 import java.util.ResourceBundle;

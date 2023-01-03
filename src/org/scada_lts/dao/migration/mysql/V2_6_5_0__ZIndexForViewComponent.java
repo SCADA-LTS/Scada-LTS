@@ -3,7 +3,7 @@ package org.scada_lts.dao.migration.mysql;
 import com.serotonin.mango.view.View;
 import com.serotonin.mango.view.component.ViewComponent;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.SerializationData;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.apache.commons.logging.Log;

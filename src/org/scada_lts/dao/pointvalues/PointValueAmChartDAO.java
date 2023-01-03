@@ -4,7 +4,7 @@ import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.vo.DataPointVO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.QueryArgs;
 import org.springframework.jdbc.core.RowMapper;
 

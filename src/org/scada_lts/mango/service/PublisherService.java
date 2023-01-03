@@ -20,7 +20,7 @@ package org.scada_lts.mango.service;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.vo.publish.PublishedPointVO;
 import com.serotonin.mango.vo.publish.PublisherVO;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.PublisherDAO;
 import org.scada_lts.mango.adapter.MangoPublisher;
 

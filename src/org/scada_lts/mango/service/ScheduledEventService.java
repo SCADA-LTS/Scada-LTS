@@ -21,7 +21,7 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.rt.event.type.AuditEventType;
 import com.serotonin.mango.rt.event.type.AuditEventUtils;
 import com.serotonin.mango.vo.event.ScheduledEventVO;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.ScheduledEventDAO;
 import org.scada_lts.mango.adapter.MangoScheduledEvent;
 

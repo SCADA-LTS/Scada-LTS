@@ -27,7 +27,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.mango.adapter.MangoDataSource;
 import org.scada_lts.mango.service.DataSourceService;
 import org.springframework.dao.DataAccessException;

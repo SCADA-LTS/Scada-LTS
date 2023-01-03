@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import br.org.scadabr.vo.permission.ViewAccess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.model.IdName;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 import org.scada_lts.dao.model.ScadaObjectIdentifierRowMapper;

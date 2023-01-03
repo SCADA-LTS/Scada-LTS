@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.scada_lts.cache.PendingEventsCache;
 import org.scada_lts.config.ScadaConfig;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.event.UserEventDAO;
 import org.scada_lts.mango.adapter.MangoEvent;

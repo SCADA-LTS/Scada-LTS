@@ -3,8 +3,8 @@ package org.scada_lts.utils;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.permission.Permissions;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.HierarchyDAO;
+import org.scada_lts.dao.impl.DataPointDAO;
+import org.scada_lts.dao.impl.HierarchyDAO;
 import org.scada_lts.dao.model.pointhierarchy.PointHierarchyNode;
 
 import java.util.ArrayList;

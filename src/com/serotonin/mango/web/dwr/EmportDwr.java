@@ -48,7 +48,7 @@ import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.PublisherDao;
 import com.serotonin.mango.db.dao.ScheduledEventDao;
 import com.serotonin.mango.vo.event.PointEventDetectorVO;
-import org.scada_lts.dao.PointEventDetectorDAO;
+import org.scada_lts.dao.impl.PointEventDetectorDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.db.dao.WatchListDao;

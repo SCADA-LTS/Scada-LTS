@@ -5,8 +5,8 @@ import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scada_lts.dao.DataPointDAO;
-import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.impl.DataPointDAO;
+import org.scada_lts.dao.impl.DataSourceDAO;
 import org.scada_lts.dao.model.ScadaObjectIdentifier;
 
 import java.util.Collections;

@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.scada_lts.dao;
+package org.scada_lts.dao.impl;
 
 import com.mysql.jdbc.Statement;
 import com.serotonin.mango.vo.link.PointLinkVO;

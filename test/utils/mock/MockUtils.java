@@ -1,15 +1,13 @@
 package utils.mock;
 
-import br.org.scadabr.rt.scripting.context.ScriptContextObject;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.PointValueDao;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.RuntimeManager;
 import com.serotonin.mango.vo.User;
-import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.ContextWrapper;
 import com.serotonin.util.PropertiesUtils;
-import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.impl.DAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import utils.ServletContextMock;
 
