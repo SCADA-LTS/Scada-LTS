@@ -279,16 +279,6 @@ public final class OnlyMigrationUserDAO implements IUserDAO {
 	}
 
 	@Override
-	public void updateHideMenu(User user) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void updateScadaTheme(User user) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void updateUserPassword(int userId, String newPassword) {
 		throw new UnsupportedOperationException();
 	}
