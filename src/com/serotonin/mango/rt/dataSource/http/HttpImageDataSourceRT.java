@@ -139,7 +139,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
     }
 
-    class ImageRetriever extends AbstractBeforeAfterWorkItem {
+    static class ImageRetriever extends AbstractBeforeAfterWorkItem {
         private final ImageRetrieverMonitor monitor;
         private final DataPointRT dp;
         private final long time;
@@ -152,6 +152,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
             this.time = time;
         }
 
+        @Override
         public void work() {
             try {
                 executeImpl();
