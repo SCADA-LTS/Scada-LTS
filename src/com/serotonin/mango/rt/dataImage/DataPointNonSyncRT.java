@@ -155,6 +155,9 @@ public class DataPointNonSyncRT extends DataPointRT implements IDataPointRT {
             case DataPointVO.LoggingTypes.INTERVAL:
                 if (!backdated)
                     intervalSave(newValue);
+                //Always is 'logValue = false' because in INTERVAL Logging Mode individual values are not saved before aggregation
+                logValue = false;
+                break;
             default:
                 logValue = false;
         }
