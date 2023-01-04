@@ -498,7 +498,7 @@ public class DataPointRT implements IDataPoint, ILifecycle, TimeoutClient, Scada
 		dataPointServiceWebSocket.notifyStateSubscribers(enabled, this.vo.getId());
 	}
 
-	class EventNotifyWorkItem extends AbstractBeforeAfterWorkItem {
+	static class EventNotifyWorkItem extends AbstractBeforeAfterWorkItem {
 		private final DataPointListener listener;
 		private final PointValueTime oldValue;
 		private final PointValueTime newValue;

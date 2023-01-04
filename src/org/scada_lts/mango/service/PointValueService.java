@@ -544,6 +544,7 @@ public class PointValueService implements MangoPointValues, MangoPointValuesWith
             this.pointValueService = pointValueService;
         }
 
+        @Override
         public void work() {
             try {
                 BatchWriteBehindEntry[] inserts;
