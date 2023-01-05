@@ -75,7 +75,7 @@
     });
 	
 	<c:if test="${!empty currentView}">
-      mango.view.initNormalView();
+      mango.view.initNormalView(${currentView.id});
     </c:if>
     
     var nVer = navigator.appVersion;

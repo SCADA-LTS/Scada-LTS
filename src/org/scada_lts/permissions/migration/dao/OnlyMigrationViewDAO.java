@@ -98,27 +98,6 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
             + "from "
             + "mangoViews";
 	
-	private static final String VIEW_FILTER_BASE_ON_ID=""
-			 +COLUMN_NAME_ID+"=?";
-	
-	private static final String VIEW_FILTER_BASE_ON_XID=""
-			 +COLUMN_NAME_XID+"=?";
-	
-	private static final String VIEW_FILTER_BASE_ON_NAME=""
-			 +COLUMN_NAME_NAME+"=?";
-	
-	private static final String VIEW_INSERT = ""
-			+"insert mangoViews ("
-				+ COLUMN_NAME_XID+", "
-				+ COLUMN_NAME_NAME+", "
-				+ COLUMN_NAME_BACKGROUND+", "
-				+ COLUMN_NAME_USER_ID+", "
-				+ COLUMN_NAME_ANONYMOUS_ACCESS+", "
-				+ COLUMN_NAME_DATA+","
-				+ COLUMN_NAME_HEIGHT+", "
-				+ COLUMN_NAME_WIDTH+") "
-			+ "values (?,?,?,?,?,?,?,?)";
-	
 	private static final String VIEW_UPDATE = ""
 			+"update mangoViews set "
 				+ COLUMN_NAME_XID+"=?, "
@@ -139,25 +118,8 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 			+ "where "
 				+ COLUMN_NAME_ID+"=?";
 	
-	private static final String VIEW_SELECT_ID_NAME = ""
-			+ "select "
-				+ COLUMN_NAME_ID+", "
-				+ COLUMN_NAME_NAME+" "
-			+ "from "
-				+ "mangoViews";
-	
 	
 	//mangoviewUsers
-	private static final String VIEW_USER_BASE_ON_VIEW_ID = ""
-			+"select "
-				+ COLUMN_NAME_MVU_VIEW_ID+", "
-				+ COLUMN_NAME_MVU_USER_ID+", "
-				+ COLUMN_NAME_MVU_ACCESS_TYPE+" "
-			+ "from "
-				+ "mangoViewUsers "
-			+ "where "
-				+ COLUMN_NAME_MVU_VIEW_ID+"=?";
-
 	private static final String VIEW_USER_BASE_ON_USER_ID = ""
 			+"select "
 			+ COLUMN_NAME_MVU_VIEW_ID+", "
@@ -166,11 +128,6 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 			+ "mangoViewUsers "
 			+ "where "
 			+ COLUMN_NAME_MVU_USER_ID+"=?";
-	
-	public static final String VIEW_FILTERED_BASE_ON_ID = ""
-			+ COLUMN_NAME_USER_ID+"=? or "
-			+ "id in (select "+COLUMN_NAME_MVU_VIEW_ID+" from mangoViewUsers where "+COLUMN_NAME_MVU_USER_ID+"=? and "+COLUMN_NAME_MVU_ACCESS_TYPE+">?) or "
-			+ "id in (select "+COLUMN_NAME_UP_VIEW_ID+" from viewUsersProfiles where "+COLUMN_NAME_UP_USER_PRFILE_ID+"=?)";
 
 	public static final String VIEW_FILTERED_BASE_ON_USER_ID_USERS_PROFILE_ID = ""
 			+ COLUMN_NAME_USER_ID+"=? or "
@@ -267,29 +224,9 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 		}
 	}
 
-	public List<View> findAllWithUserName(){
-		return null;
-	}
 	@Override
 	public List<View> findAll() {
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT, new Object[]{}, new ViewRowMapper() );
-	}
-
-
-	public View findById(Object[] pk) {
-		try {
-			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_ID, pk , new ViewRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
-	}
-	
-	public View findByXId(Object[] pk) {
-		try { 
-			return (View) DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT+ " where " + VIEW_FILTER_BASE_ON_XID, pk , new ViewRowMapper());
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
 	}
 
 	//TO rewrite order for example Object[] with column to order.
@@ -305,37 +242,6 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 		}
 	
 		return (List<View>) DAO.getInstance().getJdbcTemp().query(VIEW_SELECT+" where "+ filter + order + myLimit, args, new ViewRowMapper());
-	}
-
-	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
-	public Object[] create(final View entity) {
-		
-		if (LOG.isTraceEnabled()) {
-			  LOG.trace(entity);
-		}
-			
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-					
-		DAO.getInstance().getJdbcTemp().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-				PreparedStatement ps = connection.prepareStatement(VIEW_INSERT, Statement.RETURN_GENERATED_KEYS);
-						 				new ArgumentPreparedStatementSetter( new Object[] { 
-						 						entity.getXid(),
-						 						entity.getName(),
-						 						entity.getBackgroundFilename(),
-						 						entity.getUserId(),
-						 						entity.getAnonymousAccess(),
-						 						new SerializationData().writeObject(entity),
-						 						entity.getHeight(),
-						 						entity.getWidth()
-						 				}).setValues(ps);
-						 				return ps;
-						 			}
-					}, keyHolder);
-					
-			entity.setId(keyHolder.getKey().intValue());		
-			return new Object[] {keyHolder.getKey().intValue()};
 	}
 
 	@Transactional(readOnly = false,propagation= Propagation.REQUIRES_NEW,isolation= Isolation.READ_COMMITTED,rollbackFor=SQLException.class)
@@ -356,28 +262,6 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 
 	public void delete(View entity) {
 		DAO.getInstance().getJdbcTemp().update(VIEW_DELETE, new Object[] { entity.getId() });
-	}
-
-	public List<ShareUser> getShareUsers(int mangoViewId) {
-		return (List<ShareUser>) DAO.getInstance().getJdbcTemp().query(VIEW_USER_BASE_ON_VIEW_ID, new Object[] {mangoViewId}, new ViewUserRowMapper());
-	}
-	
-	public List<IdName> getViewNames(int userId, int userProfileId) {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME + " where " + VIEW_FILTERED_BASE_ON_ID, new Object[] { userId, userId, ShareUser.ACCESS_NONE, userProfileId },new IdNameRowMapper());
-	}
-	
-	public List<IdName> getAllViewNames() {
-		return DAO.getInstance().getJdbcTemp().query(VIEW_SELECT_ID_NAME , new Object[] {  },new IdNameRowMapper());
-	}
-	
-	public View getView(String name) {
-		return DAO.getInstance().getJdbcTemp().queryForObject(VIEW_SELECT + " where " + VIEW_FILTER_BASE_ON_NAME, new Object[] {name}, new ViewRowMapper());
-	}
-
-	//TODO rewrite
-	public List<View> filtered(String filter, Object[] argsFilter, long limit) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public void deleteViewForUser(int viewId) {
@@ -521,6 +405,16 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 
 	@Override
 	public View findByName(String name) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findByXid(String xid, boolean forceFromDatabase) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public View findById(int id, boolean forceFromDatabase) {
 		throw new UnsupportedOperationException();
 	}
 }

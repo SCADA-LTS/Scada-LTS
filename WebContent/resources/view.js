@@ -198,15 +198,13 @@ mango.view.anon.setPoint = function(pointId, viewComponentId, value) {
 
 //
 // Normal views
-mango.view.initNormalView = function() {
+mango.view.initNormalView = function(viewId) {
     mango.view.setPoint = mango.view.norm.setPoint;
     // Tell the long poll request that we're interested in view data.
     mango.longPoll.pollRequest.view = true;
 
     // Specify view Id
-    mango.longPoll.pollRequest.viewId = -1;
-    if (window.location.href.includes("viewId="))
-        mango.longPoll.pollRequest.viewId = parseInt(window.location.href.match(/viewId=(\d*)[^\d]?/)[1]);
+    mango.longPoll.pollRequest.viewId = viewId;
 };
 
 mango.view.norm = {};
@@ -223,14 +221,12 @@ mango.view.norm.setPoint = function(pointId, viewComponentId, value) {
 
 //
 // View editing
-mango.view.initEditView = function() {
+mango.view.initEditView = function(viewId) {
     // Tell the long poll request that we're interested in view editing data.
     mango.longPoll.pollRequest.viewEdit = true;
     mango.view.setData = mango.view.edit.setData;
 
-    mango.longPoll.pollRequest.viewId = -1;
-    if (window.location.href.includes("viewId="))
-        mango.longPoll.pollRequest.viewId = parseInt(window.location.href.match(/viewId=(\d*)[^\d]?/)[1]);
+    mango.longPoll.pollRequest.viewId = viewId;
 };
 
 mango.view.edit = {};

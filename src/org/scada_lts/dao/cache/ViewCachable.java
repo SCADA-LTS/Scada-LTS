@@ -43,6 +43,7 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId"),
             @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId")
     })
+    @Deprecated
     void deleteViewForUser(int viewId);
 
     @Caching(evict = {
@@ -73,4 +74,20 @@ public interface ViewCachable {
 
     @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId", condition = "#viewId != 0")
     List<ShareUser> selectShareUsersFromProfile(int viewId);
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "view_list", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #viewId"),
+            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #viewId")
+    })
+    default void reset(int viewId){}
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "view_list", allEntries = true),
+            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
+            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
+    })
+    default void resetAll(){}
 }

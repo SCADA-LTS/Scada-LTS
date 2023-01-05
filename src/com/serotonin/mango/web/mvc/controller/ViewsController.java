@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.serotonin.mango.util.ViewControllerUtils.getViewCurrent;
+import static com.serotonin.mango.util.ViewControllerUtils.*;
 
 @Controller
 public class ViewsController extends ParameterizableViewController {
@@ -58,6 +58,7 @@ public class ViewsController extends ParameterizableViewController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
+		request.getSession().removeAttribute("emptyView");
 		ViewService viewService = new ViewService();
 		User user = Common.getUser(request);
 		List<IntValuePair> views;
@@ -75,20 +76,6 @@ public class ViewsController extends ParameterizableViewController {
 			views = service.getObjectIdentifiersWithAccess(user).stream()
 					.map(a -> new IntValuePair(a.getId(), a.getName()))
 					.collect(Collectors.toList());
-
-			/* ** Disable ACL **
-			// ACL start
-			views = viewDao.getAllViewNames();
-			Map<Integer, EntryDto> mapToCheckId = PermissionViewACL.getInstance().filter(user.getId());
-			List<IntValuePair> vviews = new ArrayList<IntValuePair>();
-			for (IntValuePair vp: views) {
-				if (mapToCheckId.get(vp.getKey())!=null) {
-					vviews.add(vp);
-				}
-			}
-			//views.stream().filter(view -> mapToCheckId.get(view.getKey()) != null );
-			// ACL end;
-			*/
 
 			Comparator<IntValuePair> comp = (IntValuePair prev, IntValuePair next) -> {
 			    return prev.getValue().compareTo(next.getValue());
@@ -117,15 +104,6 @@ public class ViewsController extends ParameterizableViewController {
 			model.put("currentView", currentView);
 			model.put("owner",
 					currentView.getUserAccess(user) == ShareUser.ACCESS_OWNER);
-			//user.setView(currentView);
-		}
-		int viewId = HttpParameterUtils.getValueOnlyRequest("viewId", request, Integer::valueOf).orElse(Common.NEW_ID);
-		if(viewId == Common.NEW_ID) {
-			if (currentView == null) {
-				request.getSession().setAttribute("mainViewId", viewId);
-			} else {
-				request.getSession().setAttribute("mainViewId", currentView.getId());
-			}
 		}
 		return new ModelAndView(getViewName(), model);
 	}
