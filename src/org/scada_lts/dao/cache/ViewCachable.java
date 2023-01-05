@@ -96,14 +96,13 @@ public interface ViewCachable {
             @CacheEvict(cacheNames = "view_by_id", allEntries = true),
             @CacheEvict(cacheNames = "view_by_xid", key = "#viewXid"),
             @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true),
             @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
     })
     default void resetViewByXid(String viewXid){}
 
-    @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#viewId != 0")
+    @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#viewId != 0", unless = "#result == null")
     View findById(int viewId);
 
-    @Cacheable(cacheNames = "view_by_xid", key = "#viewXid", condition = "#viewXid != null")
+    @Cacheable(cacheNames = "view_by_xid", key = "#viewXid", condition = "#viewXid != null", unless = "#result == null")
     View findByXid(String viewXid);
 }
