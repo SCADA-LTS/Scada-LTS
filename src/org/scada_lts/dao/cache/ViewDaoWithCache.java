@@ -102,8 +102,25 @@ public class ViewDaoWithCache implements IViewDAO {
     }
 
     @Override
+    @Deprecated
     public void deleteViewForUser(int viewId) {}
 
     @Override
-    public void deleteViewForUser(int viewId, int userId) {}
+    public void deleteViewForUser(int viewId, int userId) {
+        viewCache.deleteViewForUser(viewId, userId);
+    }
+
+    @Override
+    public View findByXid(String xid, boolean forceFromDatabase) {
+        if(forceFromDatabase)
+            viewCache.resetAll();
+        return findByXid(xid);
+    }
+
+    @Override
+    public View findById(int id, boolean forceFromDatabase) {
+        if(forceFromDatabase)
+            viewCache.reset(id);
+        return findById(id);
+    }
 }

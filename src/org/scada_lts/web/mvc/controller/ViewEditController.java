@@ -34,11 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scada_lts.mango.service.UsersProfileService;
 import org.scada_lts.mango.service.ViewService;
-import org.scada_lts.utils.HttpParameterUtils;
-import org.scada_lts.web.beans.ApplicationBeans;
 import org.scada_lts.web.mvc.form.ViewEditForm;
 import org.scada_lts.web.mvc.validator.ViewEditValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -74,6 +71,7 @@ public class ViewEditController {
     private static final String FORM_OBJECT_NAME = "form";
     private static final String IMAGE_SETS_ATTRIBUTE = "imageSets";
     private static final String DYNAMIC_IMAGES_ATTRIBUTE = "dynamicImages";
+    public static final String EMPTY_VIEW_KEY = "emptyView";
 
 
     // TODO: these two shall be injected by Spring
@@ -83,13 +81,11 @@ public class ViewEditController {
     private int nextImageId = -1;
 
     private final ViewService viewService;
+    private final ViewEditValidator validator;
 
-    @Autowired
-    private ViewEditValidator validator;
-
-    public ViewEditController() {
-        this.viewService = new ViewService();
-        //this.validator = ApplicationBeans.getBean("viewEditValidator", ViewEditValidator.class);
+    public ViewEditController(ViewService viewService, ViewEditValidator validator) {
+        this.viewService = viewService;
+        this.validator = validator;
     }
 
     public void setSuccessUrl(String successUrl) {
@@ -114,10 +110,8 @@ public class ViewEditController {
             view.setId(Common.NEW_ID);
             view.setUserId(user.getId());
             view.setXid(new ViewService().generateUniqueXid());
-            request.getSession().setAttribute("emptyView", view);
-            //TODO view.setHeight(?) and view.setWidth(?)
+            request.getSession().setAttribute(EMPTY_VIEW_KEY, view);
         }
-        //user.setView(view);
         view.validateViewComponents(false);
 
         ViewEditForm form = new ViewEditForm();
@@ -126,6 +120,7 @@ public class ViewEditController {
         model.put(FORM_OBJECT_NAME, form);
         model.put(IMAGE_SETS_ATTRIBUTE, Common.ctx.getImageSets());
         model.put(DYNAMIC_IMAGES_ATTRIBUTE, Common.ctx.getDynamicImages());
+        model.put("currentView", view);
         return new ModelAndView(FORM_VIEW, model);
     }
 
@@ -183,6 +178,7 @@ public class ViewEditController {
 
         view.setUserId(Common.getUser(request).getId());
         new ViewService().saveView(view);
+        request.getSession().removeAttribute(EMPTY_VIEW_KEY);
         return getSuccessRedirectView("viewId=" + view.getId());
     }
 
@@ -190,10 +186,10 @@ public class ViewEditController {
     protected ModelAndView cancel(HttpServletRequest request, @ModelAttribute(FORM_OBJECT_NAME) ViewEditForm form) {
         LOG.debug("ViewEditController:cancel");
         User user = Common.getUser(request);
-        View view = getOrEmptyView(request, viewService);
+        View view = getOrEmptyView(request, viewService, true);
         Permissions.ensureViewPermission(user, view);
         form.setView(view);
-
+        request.getSession().removeAttribute(EMPTY_VIEW_KEY);
         return getSuccessRedirectView("viewId=" + view.getId());
     }
 
@@ -209,6 +205,7 @@ public class ViewEditController {
 
         UsersProfileService usersProfileService = new UsersProfileService();
         usersProfileService.updateViewPermissions();
+        request.getSession().removeAttribute(EMPTY_VIEW_KEY);
         return getSuccessRedirectView(null);
     }
 

@@ -29,7 +29,7 @@
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
   <script type="text/javascript">
 
-    mango.view.initEditView();
+    mango.view.initEditView(${currentView.id});
     mango.share.dwr = ViewDwr;
     var viewId = mango.longPoll.pollRequest.viewId;
 
