@@ -61,6 +61,16 @@ public class ViewCache implements ViewCachable {
     }
 
     @Override
+    public View findById(int viewId) {
+        return viewDAO.findById(viewId);
+    }
+
+    @Override
+    public View findByXid(String viewXid) {
+        return viewDAO.findByXid(viewXid);
+    }
+
+    @Override
     public void deleteViewForUser(int viewId) {}
 
     @Override
