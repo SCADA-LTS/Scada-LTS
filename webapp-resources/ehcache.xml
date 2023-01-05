@@ -57,6 +57,24 @@
         </resources>
     </cache-template>
 
+    <cache-template name="integer_view_template">
+        <key-type>java.lang.Integer</key-type>
+        <value-type>com.serotonin.mango.view.View</value-type>
+        <expiry>
+            <none/>
+        </expiry>
+        <heap>200</heap>
+    </cache-template>
+
+    <cache-template name="string_view_template">
+        <key-type>java.lang.String</key-type>
+        <value-type>com.serotonin.mango.view.View</value-type>
+        <expiry>
+            <none/>
+        </expiry>
+        <heap>200</heap>
+    </cache-template>
+
     <!-- user -->
     <cache alias="user_list" uses-template="string_list_cache_template"/>
 
@@ -90,4 +108,6 @@
     <!-- view -->
     <cache alias="view_list" uses-template="string_list_cache_template"/>
 
+    <cache alias="view_by_id" uses-template="integer_view_template"/>
+    <cache alias="view_by_xid" uses-template="string_view_template"/>
 </config>
