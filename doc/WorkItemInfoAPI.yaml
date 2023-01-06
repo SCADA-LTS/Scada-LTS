@@ -63,7 +63,7 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items not executed longer than executedMs'
+      description: 'Get work items executed longer than executedMs'
       responses:
         '200':
           description: "Get successful"
@@ -78,7 +78,7 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items not executed less than executedMs'
+      description: 'Get work items executed less than executedMs'
       responses:
         '200':
           description: "Get successful"
@@ -138,7 +138,7 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items executed longer than executedMs'
+      description: 'Get work items executed longer than executedMs by class'
       responses:
         '200':
           description: "Get successful"
@@ -153,7 +153,7 @@ paths:
     get:
       tags:
         - WorkItemInfoAPI
-      description: 'Get work items executed less than executedMs'
+      description: 'Get work items executed less than executedMs by class'
       responses:
         '200':
           description: "Get successful"
