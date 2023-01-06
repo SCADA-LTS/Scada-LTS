@@ -180,11 +180,6 @@ public class UserDAO implements IUserDAO {
 		}
 	}
 
-	@Deprecated
-	public User create(User entity) {
-		return getUser(insert(entity));
-	}
-
 	@Override
 	public List<Integer> getAll() {
 
@@ -193,11 +188,6 @@ public class UserDAO implements IUserDAO {
 		}
 
 		return DAO.getInstance().getJdbcTemp().queryForList(USER_SELECT_ID, Integer.class);
-	}
-
-	@Deprecated
-	public User getById(int id) throws EmptyResultDataAccessException {
-		return getUser(id);
 	}
 
 	@Override
@@ -329,18 +319,6 @@ public class UserDAO implements IUserDAO {
 				user.isHideMenu(),
 				user.getTheme(),
 				user.getId());
-	}
-
-	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void updateHideMenu(final User user) {
-		update(user);
-	}
-
-	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = SQLException.class)
-	public void updateScadaTheme(final User user) {
-		update(user);
 	}
 
 	@Override
