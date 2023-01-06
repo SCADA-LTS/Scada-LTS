@@ -1,6 +1,7 @@
 package org.scada_lts.web.mvc.api;
 
 import com.serotonin.mango.Common;
+import com.serotonin.mango.rt.maint.work.WorkItemPriority;
 import com.serotonin.mango.rt.maint.work.WorkItems;
 import org.scada_lts.web.mvc.api.exceptions.InternalServerErrorException;
 import org.scada_lts.web.mvc.api.json.WorkItemInfo;
@@ -71,6 +72,16 @@ public class WorkItemInfoApiService {
         checkIfNonAdminThenUnauthorized(request);
         try {
             List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecutedLongerThan(executedMs);
+            return getWorkItemInfos(workItems, byExecuteMsComparator());
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e, request.getRequestURI());
+        }
+    }
+
+    public List<WorkItemInfo> getExecutedWorkItemsByPriority(HttpServletRequest request, WorkItemPriority priority) {
+        checkIfNonAdminThenUnauthorized(request);
+        try {
+            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByPriority(priority);
             return getWorkItemInfos(workItems, byExecuteMsComparator());
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
@@ -151,6 +162,16 @@ public class WorkItemInfoApiService {
         checkIfNonAdminThenUnauthorized(request);
         try {
             List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByExecutedLessThan(executedMs);
+            return groupByClassName(workItems, byExecuteMsComparator());
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e, request.getRequestURI());
+        }
+    }
+
+    public Map<String, Long> getExecutedLessWorkItemsGroupByPriority(HttpServletRequest request, WorkItemPriority priority) {
+        checkIfNonAdminThenUnauthorized(request);
+        try {
+            List<WorkItems.Execute> workItems = Common.ctx.getBackgroundProcessing().getWorkItems().getByPriority(priority);
             return groupByClassName(workItems, byExecuteMsComparator());
         } catch (Exception e) {
             throw new InternalServerErrorException(e, request.getRequestURI());
