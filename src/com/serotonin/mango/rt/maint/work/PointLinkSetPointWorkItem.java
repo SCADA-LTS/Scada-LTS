@@ -35,6 +35,6 @@ public class PointLinkSetPointWorkItem extends SetPointWorkItem {
 
 	@Override
 	public String getDetails() {
-		return super.toString();
+		return this.toString();
 	}
 }

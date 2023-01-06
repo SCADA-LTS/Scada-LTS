@@ -74,6 +74,12 @@ public class WorkItems {
                 .collect(Collectors.toList());
     }
 
+    public List<Execute> getByPriority(WorkItemPriority priority) {
+        return get().stream()
+                .filter(a -> a.getWorkItem().isExecuted() && a.getPriority() == priority)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
         return "ExecuteItems{" +
@@ -87,11 +93,13 @@ public class WorkItems {
         private final String className;
         private final long serial;
         private final WorkItem workItem;
+        private final WorkItemPriority priority;
 
         public Execute(WorkItem workItem) {
             this.className = workItem.getClass().getName();
             this.workItem = workItem;
             this.serial = counter.incrementAndGet();
+            this.priority = WorkItemPriority.priorityOf(workItem.getPriority());
         }
 
         public WorkItem getWorkItem() {
@@ -104,6 +112,10 @@ public class WorkItems {
 
         public String getClassName() {
             return className;
+        }
+
+        public WorkItemPriority getPriority() {
+            return priority;
         }
 
         @Override

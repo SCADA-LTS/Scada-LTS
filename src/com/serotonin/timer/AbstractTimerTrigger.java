@@ -23,4 +23,12 @@ abstract public class AbstractTimerTrigger extends TimerTrigger {
             return timer.currentTimeMillis() + first;
         return first;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractTimerTrigger{" +
+                "delayed=" + delayed +
+                ", first=" + first +
+                ", " + super.toString() + '}';
+    }
 }

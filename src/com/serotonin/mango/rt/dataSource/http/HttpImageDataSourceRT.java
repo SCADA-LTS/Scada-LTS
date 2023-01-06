@@ -232,7 +232,7 @@ public class HttpImageDataSourceRT extends PollingDataSource {
         }
         @Override
         public String getDetails() {
-            return super.toString();
+            return this.toString();
         }
 
     }

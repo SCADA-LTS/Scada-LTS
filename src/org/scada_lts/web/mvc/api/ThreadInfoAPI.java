@@ -4,6 +4,7 @@ import org.scada_lts.web.mvc.api.json.ThreadInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -87,5 +88,74 @@ public class ThreadInfoAPI {
     public ResponseEntity<Map<List<Value>, Long>> getThreadsGroupByStackThreadCount(HttpServletRequest request) {
         Map<List<Value>, Long> response = threadInfoApiService.getThreadsGroupByStackThreadCount(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @RestController
+    @RequestMapping(path = "/api/threads/states/")
+    public static class StateThreadInfoAPI {
+
+        private final StateThreadInfoApiService stateThreadInfoApiService;
+
+        public StateThreadInfoAPI(StateThreadInfoApiService stateThreadInfoApiService) {
+            this.stateThreadInfoApiService = stateThreadInfoApiService;
+        }
+
+        @GetMapping(value = "/")
+        public ResponseEntity<List<Value>> getStates(HttpServletRequest request) {
+            List<Value> response = stateThreadInfoApiService.getStates(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/state/{state}/")
+        public ResponseEntity<List<ThreadInfo>> getThreadsForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                                   HttpServletRequest request) {
+            List<ThreadInfo> response = stateThreadInfoApiService.getThreadsForState(state, request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/state/{state}/count/")
+        public ResponseEntity<Long> getThreadsCountForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                            HttpServletRequest request) {
+            Long response = stateThreadInfoApiService.getThreadsCountForState(state, request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/state/{state}/classes/")
+        public ResponseEntity<List<Value>> getThreadClassesForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                                    HttpServletRequest request) {
+            List<Value> response = stateThreadInfoApiService.getThreadClassesForState(state, request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/state/{state}/names/")
+        public ResponseEntity<List<Value>> getThreadNamesForState(@PathVariable(value = "state", required = true) Thread.State state,
+                                                                  HttpServletRequest request) {
+            List<Value> response = stateThreadInfoApiService.getThreadNamesForState(state, request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/group-by/")
+        public ResponseEntity<Map<Value, List<ThreadInfo>>> getThreadsGroupByState(HttpServletRequest request) {
+            Map<Value, List<ThreadInfo>> response = stateThreadInfoApiService.getThreadsGroupByState(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/group-by/classes/")
+        public ResponseEntity<Map<Value, List<Value>>> getThreadClassesGroupByState(HttpServletRequest request) {
+            Map<Value, List<Value>> response = stateThreadInfoApiService.getThreadClassesGroupByState(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/group-by/names/")
+        public ResponseEntity<Map<Value, List<Value>>> getThreadNamesGroupByState(HttpServletRequest request) {
+            Map<Value, List<Value>> response = stateThreadInfoApiService.getThreadNamesGroupByState(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        @GetMapping(value = "/group-by/count/")
+        public ResponseEntity<Map<Value, Long>> getThreadsCountGroupByState(HttpServletRequest request) {
+            Map<Value, Long> response = stateThreadInfoApiService.getThreadsCountGroupByState(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 }

@@ -295,16 +295,16 @@ public class ReportWorkItem extends AbstractBeforeAfterWorkItem {
 	}
 
 	@Override
-	public String getDetails() {
-		return this.toString();
-	}
-
-	@Override
 	public String toString() {
 		return "ReportWorkItem{" +
 				"reportConfig=" + reportConfig +
 				", user=" + user +
 				", reportInstance=" + reportInstance +
 				'}';
+	}
+
+	@Override
+	public String getDetails() {
+		return this.toString();
 	}
 }

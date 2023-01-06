@@ -25,4 +25,11 @@ public class OneTimeTrigger extends AbstractTimerTrigger {
     final public long mostRecentExecutionTime() {
         return nextExecutionTime;
     }
+
+    @Override
+    public String toString() {
+        return "OneTimeTrigger{" +
+                super.toString() +
+                '}';
+    }
 }
