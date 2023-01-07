@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.script.ScriptException;
 
@@ -59,6 +60,13 @@ public class ScriptComponent extends PointComponent {
 	@JsonRemoteProperty
 	private String script;
 
+	public ScriptComponent() {}
+
+	protected ScriptComponent(ScriptComponent scriptComponent) {
+		super(scriptComponent);
+		this.script = scriptComponent.getScript();
+	}
+
 	private static final Log LOG = LogFactory.getLog(ScriptComponent.class);
 
 	@Override
@@ -72,6 +80,11 @@ public class ScriptComponent extends PointComponent {
 
 	public void setScript(String script) {
 		this.script = script;
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new ScriptComponent(this);
 	}
 
 	@Override
@@ -165,5 +178,26 @@ public class ScriptComponent extends PointComponent {
 		// elegantly handled.
 		if (ver == 1)
 			script = SerializationHelper.readSafeUTF(in);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ScriptComponent)) return false;
+		if (!super.equals(o)) return false;
+		ScriptComponent that = (ScriptComponent) o;
+		return Objects.equals(getScript(), that.getScript());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getScript());
+	}
+
+	@Override
+	public String toString() {
+		return "ScriptComponent{" +
+				"script='" + script + '\'' +
+				"} " + super.toString();
 	}
 }

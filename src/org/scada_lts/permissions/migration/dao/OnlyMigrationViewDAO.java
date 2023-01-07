@@ -407,14 +407,4 @@ public final class OnlyMigrationViewDAO implements IViewDAO {
 	public View findByName(String name) {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public View findByXid(String xid, boolean forceFromDatabase) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public View findById(int id, boolean forceFromDatabase) {
-		throw new UnsupportedOperationException();
-	}
 }

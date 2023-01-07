@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonException;
 import com.serotonin.json.JsonObject;
@@ -53,6 +54,20 @@ abstract public class PointComponent extends ViewComponent {
     // Runtime attributes
     private boolean valid;
     private boolean visible;
+
+    protected PointComponent() {
+    }
+
+    protected PointComponent(PointComponent viewComponent) {
+        super(viewComponent);
+        this.dataPoint = viewComponent.tgetDataPoint();
+        this.nameOverride = viewComponent.getNameOverride();
+        this.settableOverride = viewComponent.isSettableOverride();
+        this.bkgdColorOverride = viewComponent.getBkgdColorOverride();
+        this.displayControls = viewComponent.isDisplayControls();
+        this.valid = viewComponent.isValid();
+        this.visible = viewComponent.isVisible();
+    }
 
     @Override
     public boolean isPointComponent() {
@@ -221,5 +236,32 @@ abstract public class PointComponent extends ViewComponent {
     public void jsonSerialize(Map<String, Object> map) {
         super.jsonSerialize(map);
         jsonSerializeDataPoint(map, "dataPointXid", this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PointComponent)) return false;
+        if (!super.equals(o)) return false;
+        PointComponent that = (PointComponent) o;
+        return isSettableOverride() == that.isSettableOverride() && isDisplayControls() == that.isDisplayControls() && isValid() == that.isValid() && isVisible() == that.isVisible() && Objects.equals(dataPoint, that.dataPoint) && Objects.equals(getNameOverride(), that.getNameOverride()) && Objects.equals(getBkgdColorOverride(), that.getBkgdColorOverride());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), dataPoint, getNameOverride(), isSettableOverride(), getBkgdColorOverride(), isDisplayControls(), isValid(), isVisible());
+    }
+
+    @Override
+    public String toString() {
+        return "PointComponent{" +
+                "dataPoint=" + dataPoint +
+                ", nameOverride='" + nameOverride + '\'' +
+                ", settableOverride=" + settableOverride +
+                ", bkgdColorOverride='" + bkgdColorOverride + '\'' +
+                ", displayControls=" + displayControls +
+                ", valid=" + valid +
+                ", visible=" + visible +
+                "} " + super.toString();
     }
 }

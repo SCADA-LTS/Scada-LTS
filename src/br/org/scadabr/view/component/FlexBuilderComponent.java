@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
@@ -39,6 +41,23 @@ public class FlexBuilderComponent extends HtmlComponent {
 
 	@JsonRemoteProperty
 	private int height = 768;
+
+	public FlexBuilderComponent() {}
+
+	private FlexBuilderComponent(FlexBuilderComponent flexBuilderComponent) {
+		super(flexBuilderComponent);
+		this.projectDefined = flexBuilderComponent.isProjectDefined();
+		this.projectSource = flexBuilderComponent.getProjectSource();
+		this.projectId = flexBuilderComponent.getProjectId();
+		this.runtimeMode = flexBuilderComponent.isRuntimeMode();
+		this.width = flexBuilderComponent.getWidth();
+		this.height = flexBuilderComponent.getHeight();
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new FlexBuilderComponent(this);
+	}
 
 	@Override
 	public ImplDefinition definition() {
@@ -184,4 +203,29 @@ public class FlexBuilderComponent extends HtmlComponent {
 		return height;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof FlexBuilderComponent)) return false;
+		if (!super.equals(o)) return false;
+		FlexBuilderComponent that = (FlexBuilderComponent) o;
+		return isProjectDefined() == that.isProjectDefined() && getProjectId() == that.getProjectId() && isRuntimeMode() == that.isRuntimeMode() && getWidth() == that.getWidth() && getHeight() == that.getHeight() && Objects.equals(getProjectSource(), that.getProjectSource());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), isProjectDefined(), getProjectSource(), getProjectId(), isRuntimeMode(), getWidth(), getHeight());
+	}
+
+	@Override
+	public String toString() {
+		return "FlexBuilderComponent{" +
+				"projectDefined=" + projectDefined +
+				", projectSource='" + projectSource + '\'' +
+				", projectId=" + projectId +
+				", runtimeMode=" + runtimeMode +
+				", width=" + width +
+				", height=" + height +
+				"} " + super.toString();
+	}
 }

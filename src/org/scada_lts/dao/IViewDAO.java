@@ -29,8 +29,4 @@ public interface IViewDAO extends ScadaRepository<View, Integer> {
     List<ShareUser> selectShareUsers(int viewId);
 
     List<ShareUser> selectShareUsersFromProfile(int viewId);
-
-    View findByXid(String xid, boolean forceFromDatabase);
-
-    View findById(int id, boolean forceFromDatabase);
 }

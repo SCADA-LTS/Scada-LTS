@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.serotonin.json.JsonException;
@@ -47,6 +48,15 @@ abstract public class CompoundComponent extends ViewComponent {
 
     // Runtime attributes
     private boolean visible;
+
+    protected CompoundComponent() {}
+
+    protected CompoundComponent(CompoundComponent compoundComponent) {
+        super(compoundComponent);
+        this.name = compoundComponent.getName();
+        this.children = compoundComponent.getChildComponents().stream().map(CompoundChild::copy).collect(Collectors.toList());
+        this.visible = compoundComponent.isVisible();
+    }
 
     abstract protected void initialize();
 
@@ -313,5 +323,28 @@ abstract public class CompoundComponent extends ViewComponent {
 
     public Map<String, Object> getChildren() {
         return getSerializedChildren();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompoundComponent)) return false;
+        if (!super.equals(o)) return false;
+        CompoundComponent that = (CompoundComponent) o;
+        return isVisible() == that.isVisible() && Objects.equals(getName(), that.getName()) && Objects.equals(getChildren(), that.getChildren());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getName(), getChildren(), isVisible());
+    }
+
+    @Override
+    public String toString() {
+        return "CompoundComponent{" +
+                "name='" + name + '\'' +
+                ", children=" + children +
+                ", visible=" + visible +
+                "} " + super.toString();
     }
 }

@@ -503,14 +503,4 @@ public class ViewDAO implements IViewDAO {
 			return Collections.emptyList();
 		}
 	}
-
-	@Override
-	public View findByXid(String xid, boolean forceFromDatabase) {
-		return findByXid(xid);
-	}
-
-	@Override
-	public View findById(int id, boolean forceFromDatabase) {
-		return findById(id);
-	}
 }

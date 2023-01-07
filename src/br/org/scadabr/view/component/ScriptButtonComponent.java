@@ -3,11 +3,13 @@ package br.org.scadabr.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
@@ -20,6 +22,19 @@ public class ScriptButtonComponent extends HtmlComponent {
 
 	@JsonRemoteProperty
 	private String text;
+
+	public ScriptButtonComponent() {}
+
+	public ScriptButtonComponent(ScriptButtonComponent scriptButtonComponent) {
+		super(scriptButtonComponent);
+		this.scriptXid = scriptButtonComponent.getScriptXid();
+		this.text = scriptButtonComponent.getText();
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new ScriptButtonComponent(this);
+	}
 
 	@Override
 	public ImplDefinition definition() {
@@ -84,5 +99,27 @@ public class ScriptButtonComponent extends HtmlComponent {
 
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ScriptButtonComponent)) return false;
+		if (!super.equals(o)) return false;
+		ScriptButtonComponent that = (ScriptButtonComponent) o;
+		return Objects.equals(getScriptXid(), that.getScriptXid()) && Objects.equals(getText(), that.getText());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getScriptXid(), getText());
+	}
+
+	@Override
+	public String toString() {
+		return "ScriptButtonComponent{" +
+				"scriptXid='" + scriptXid + '\'' +
+				", text='" + text + '\'' +
+				"} " + super.toString();
 	}
 }

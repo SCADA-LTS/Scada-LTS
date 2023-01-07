@@ -21,6 +21,7 @@ package com.serotonin.mango.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -44,6 +45,14 @@ public class BinaryGraphicComponent extends ImageSetComponent {
     @JsonRemoteProperty(alias = "oneImageIndex")
     private int oneImage;
 
+    public BinaryGraphicComponent() {}
+
+    private BinaryGraphicComponent(BinaryGraphicComponent binaryGraphicComponent) {
+        super(binaryGraphicComponent);
+        this.zeroImage = binaryGraphicComponent.getZeroImage();
+        this.oneImage = binaryGraphicComponent.getOneImage();
+    }
+
     public int getZeroImage() {
         return zeroImage;
     }
@@ -58,6 +67,11 @@ public class BinaryGraphicComponent extends ImageSetComponent {
 
     public void setOneImage(int oneImage) {
         this.oneImage = oneImage;
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new BinaryGraphicComponent(this);
     }
 
     @Override
@@ -120,5 +134,27 @@ public class BinaryGraphicComponent extends ImageSetComponent {
             zeroImage = in.readInt();
             oneImage = in.readInt();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BinaryGraphicComponent)) return false;
+        if (!super.equals(o)) return false;
+        BinaryGraphicComponent that = (BinaryGraphicComponent) o;
+        return getZeroImage() == that.getZeroImage() && getOneImage() == that.getOneImage();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getZeroImage(), getOneImage());
+    }
+
+    @Override
+    public String toString() {
+        return "BinaryGraphicComponent{" +
+                "zeroImage=" + zeroImage +
+                ", oneImage=" + oneImage +
+                "} " + super.toString();
     }
 }

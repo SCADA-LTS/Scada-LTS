@@ -3,11 +3,13 @@ package br.org.scadabr.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.util.SerializationHelper;
 
 @JsonRemoteEntity
@@ -20,6 +22,19 @@ public class LinkComponent extends HtmlComponent {
 
 	@JsonRemoteProperty
 	private String text;
+
+	public LinkComponent() {}
+
+	private LinkComponent(LinkComponent linkComponent) {
+		super(linkComponent);
+		this.link = linkComponent.getLink();
+		this.text = linkComponent.getText();
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new LinkComponent(this);
+	}
 
 	@Override
 	public ImplDefinition definition() {
@@ -83,5 +98,27 @@ public class LinkComponent extends HtmlComponent {
 
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof LinkComponent)) return false;
+		if (!super.equals(o)) return false;
+		LinkComponent that = (LinkComponent) o;
+		return Objects.equals(getLink(), that.getLink()) && Objects.equals(getText(), that.getText());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getLink(), getText());
+	}
+
+	@Override
+	public String toString() {
+		return "LinkComponent{" +
+				"link='" + link + '\'' +
+				", text='" + text + '\'' +
+				"} " + super.toString();
 	}
 }
