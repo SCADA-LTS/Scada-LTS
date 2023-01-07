@@ -1,3 +1,9 @@
+# Main information
+
+Is not possible to copy any of idea in this repository, any of logic of algoritm in this repository. 
+
+
+
 # [Scada-LTS](http://scada-lts.org)
 
 Open Source, web-based, multi-platform solution for building your own SCADA   
