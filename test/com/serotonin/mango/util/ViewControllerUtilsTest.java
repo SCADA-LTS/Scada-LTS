@@ -32,8 +32,6 @@ public class ViewControllerUtilsTest {
         viewServiceMock = mock(ViewService.class);
         when(viewServiceMock.getView(eq(VIEW_ID))).thenReturn(viewExpected);
         when(viewServiceMock.getViewByXid(eq(VIEW_XID))).thenReturn(viewExpected);
-        when(viewServiceMock.getView(eq(VIEW_ID), anyBoolean())).thenReturn(viewExpected);
-        when(viewServiceMock.getViewByXid(eq(VIEW_XID), anyBoolean())).thenReturn(viewExpected);
         requestMock = mock(HttpServletRequest.class);
         HttpSession httpSessionMock = mock(HttpSession.class);
         when(requestMock.getSession()).thenReturn(httpSessionMock);

@@ -8,6 +8,10 @@
         <jsr107:defaults jsr-107-compliant-atomics="true" enable-management="true" enable-statistics="true"/>
     </service>
 
+    <!--default-copiers>
+        <copier type="com.serotonin.mango.view.View">org.scada_lts.dao.cache.ViewCopier</copier>
+    </default-copiers-->
+
     <cache-template name="list_cache_template">
         <key-type>java.lang.Integer</key-type>
         <value-type>java.util.List</value-type>

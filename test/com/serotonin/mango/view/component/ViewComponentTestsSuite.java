@@ -11,7 +11,9 @@ import org.junit.runners.Suite;
         MultistateGraphicComponentTest.class,
         DynamicGraphicComponentTest.class,
         AnalogGraphicComponentTest.class,
-        BinaryGraphicComponentTest.class
+        BinaryGraphicComponentTest.class,
+        CopyViewComponentTest.class,
+        CopyCompoundChildTest.class
 })
 public class ViewComponentTestsSuite {
 }

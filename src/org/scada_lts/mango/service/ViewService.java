@@ -114,25 +114,18 @@ public class ViewService {
 
 	public View getView(int id) {
 		View view = viewDAO.findById(id);
-		if(view != null)
+		if(view != null) {
 			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
+		}
 		return view;
 	}
-
-	public View getView(int id, boolean forceFromDatabase) {
-		View view = viewDAO.findById(id, forceFromDatabase);
-		if(view != null)
-			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
-		return view;
-	}
-
 
 	public View getViewByXid(String xid) {
-		return viewDAO.findByXid(xid);
-	}
-
-	public View getViewByXid(String xid, boolean forceFromDatabase) {
-		return viewDAO.findByXid(xid, forceFromDatabase);
+		View view = viewDAO.findByXid(xid);
+		if(view != null) {
+			view.setViewUsers(viewGetShareUsers.getShareUsersWithProfile(view));
+		}
+		return view;
 	}
 	
 	public View getView(String name) {

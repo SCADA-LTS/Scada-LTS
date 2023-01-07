@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -49,6 +50,15 @@ public class EnhancedPointComponent extends SimplePointComponent {
 		this.color = color;
 		this.strokeWidth = strokeWidth;
 		this.lineType = lineType;
+	}
+
+	private EnhancedPointComponent(EnhancedPointComponent enhancedPointComponent) {
+		super(enhancedPointComponent);
+		this.alias = enhancedPointComponent.getAlias();
+		this.color = enhancedPointComponent.getColor();
+		this.strokeWidth = enhancedPointComponent.getStrokeWidth();
+		this.lineType = enhancedPointComponent.getLineType();
+		this.showPoints = enhancedPointComponent.isShowPoints();
 	}
 
 	public String getAlias() {
@@ -97,6 +107,11 @@ public class EnhancedPointComponent extends SimplePointComponent {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new EnhancedPointComponent(this);
 	}
 
 	@Override
@@ -157,4 +172,28 @@ public class EnhancedPointComponent extends SimplePointComponent {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof EnhancedPointComponent)) return false;
+		if (!super.equals(o)) return false;
+		EnhancedPointComponent that = (EnhancedPointComponent) o;
+		return Float.compare(that.getStrokeWidth(), getStrokeWidth()) == 0 && isShowPoints() == that.isShowPoints() && Objects.equals(getAlias(), that.getAlias()) && Objects.equals(getColor(), that.getColor()) && getLineType() == that.getLineType();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getAlias(), getColor(), getStrokeWidth(), getLineType(), isShowPoints());
+	}
+
+	@Override
+	public String toString() {
+		return "EnhancedPointComponent{" +
+				"alias='" + alias + '\'' +
+				", color='" + color + '\'' +
+				", strokeWidth=" + strokeWidth +
+				", lineType=" + lineType +
+				", showPoints=" + showPoints +
+				"} " + super.toString();
+	}
 }

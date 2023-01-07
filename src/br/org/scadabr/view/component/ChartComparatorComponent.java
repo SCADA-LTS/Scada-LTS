@@ -8,12 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.view.ImplDefinition;
 import com.serotonin.mango.view.component.HtmlComponent;
+import com.serotonin.mango.view.component.ViewComponent;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.util.SerializationHelper;
 
@@ -28,6 +30,19 @@ public class ChartComparatorComponent extends HtmlComponent {
 
 	@JsonRemoteProperty
 	private int height = 320;
+
+	public ChartComparatorComponent() {}
+
+	public ChartComparatorComponent(ChartComparatorComponent chartComparatorComponent) {
+		super(chartComparatorComponent);
+		this.width = chartComparatorComponent.getWidth();
+		this.height = chartComparatorComponent.getHeight();
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new ChartComparatorComponent(this);
+	}
 
 	@Override
 	public ImplDefinition definition() {
@@ -169,4 +184,25 @@ public class ChartComparatorComponent extends HtmlComponent {
 		this.height = height;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ChartComparatorComponent)) return false;
+		if (!super.equals(o)) return false;
+		ChartComparatorComponent that = (ChartComparatorComponent) o;
+		return getWidth() == that.getWidth() && getHeight() == that.getHeight();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getWidth(), getHeight());
+	}
+
+	@Override
+	public String toString() {
+		return "ChartComparatorComponent{" +
+				"width=" + width +
+				", height=" + height +
+				"} " + super.toString();
+	}
 }

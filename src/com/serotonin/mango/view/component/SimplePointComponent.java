@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import com.serotonin.json.JsonRemoteEntity;
 import com.serotonin.json.JsonRemoteProperty;
@@ -46,6 +47,14 @@ public class SimplePointComponent extends PointComponent {
 	@JsonRemoteProperty
 	protected String styleAttribute;
 
+	public SimplePointComponent() {}
+
+	protected SimplePointComponent(SimplePointComponent simplePointComponent) {
+		super(simplePointComponent);
+		this.displayPointName = simplePointComponent.isDisplayPointName();
+		this.styleAttribute = simplePointComponent.getStyleAttribute();
+	}
+
 	public boolean isDisplayPointName() {
 		return displayPointName;
 	}
@@ -60,6 +69,11 @@ public class SimplePointComponent extends PointComponent {
 
 	public void setStyleAttribute(String styleAttribute) {
 		this.styleAttribute = styleAttribute;
+	}
+
+	@Override
+	public ViewComponent copy() {
+		return new SimplePointComponent(this);
 	}
 
 	@Override
@@ -109,5 +123,27 @@ public class SimplePointComponent extends PointComponent {
 			displayPointName = in.readBoolean();
 			styleAttribute = SerializationHelper.readSafeUTF(in);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof SimplePointComponent)) return false;
+		if (!super.equals(o)) return false;
+		SimplePointComponent that = (SimplePointComponent) o;
+		return isDisplayPointName() == that.isDisplayPointName() && Objects.equals(getStyleAttribute(), that.getStyleAttribute());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), isDisplayPointName(), getStyleAttribute());
+	}
+
+	@Override
+	public String toString() {
+		return "SimplePointComponent{" +
+				"displayPointName=" + displayPointName +
+				", styleAttribute='" + styleAttribute + '\'' +
+				"} " + super.toString();
 	}
 }

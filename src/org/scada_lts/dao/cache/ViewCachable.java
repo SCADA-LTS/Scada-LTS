@@ -81,25 +81,6 @@ public interface ViewCachable {
     @Cacheable(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0", condition = "#viewId != 0")
     List<ShareUser> selectShareUsersFromProfile(int viewId);
 
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "view_list", allEntries = true),
-            @CacheEvict(cacheNames = "view_by_id", key = "#p0"),
-            @CacheEvict(cacheNames = "view_by_xid", allEntries = true),
-            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsersFromProfile' + #p0"),
-            @CacheEvict(cacheNames = "share_user_list_by_view", key = "'shareUsers' + #p0")
-    })
-    default void resetViewById(int viewId){}
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "view_list", allEntries = true),
-            @CacheEvict(cacheNames = "view_by_id", allEntries = true),
-            @CacheEvict(cacheNames = "view_by_xid", key = "#viewXid"),
-            @CacheEvict(cacheNames = "permission_view_list_by_user", allEntries = true),
-            @CacheEvict(cacheNames = "share_user_list_by_view", allEntries = true)
-    })
-    default void resetViewByXid(String viewXid){}
-
     @Cacheable(cacheNames = "view_by_id", key = "#p0", condition = "#viewId != 0", unless = "#result == null")
     View findById(int viewId);
 

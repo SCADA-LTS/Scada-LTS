@@ -3,14 +3,11 @@ package br.org.scadabr.view.component;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.serotonin.mango.view.component.ViewComponent;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
@@ -41,6 +38,20 @@ public class AlarmListComponent extends CustomComponent {
 	private boolean hideTimestampColumn = false;
 	private boolean hideInactivityColumn = true;
 	private boolean hideAckColumn = false;
+
+	public AlarmListComponent() {}
+
+	private AlarmListComponent(AlarmListComponent alarmListComponent) {
+		super(alarmListComponent);
+		this.minAlarmLevel = alarmListComponent.getMinAlarmLevel();
+		this.maxListSize = alarmListComponent.getMaxListSize();
+		this.width = alarmListComponent.getWidth();
+		this.hideIdColumn = alarmListComponent.isHideIdColumn();
+		this.hideAlarmLevelColumn = alarmListComponent.isHideAlarmLevelColumn();
+		this.hideTimestampColumn = alarmListComponent.isHideTimestampColumn();
+		this.hideInactivityColumn = alarmListComponent.isHideInactivityColumn();
+		this.hideAckColumn = alarmListComponent.isHideAckColumn();
+	}
 
 	@Override
 	public String generateContent() {
@@ -166,6 +177,11 @@ public class AlarmListComponent extends CustomComponent {
 		this.hideInactivityColumn = hideInactivityColumn;
 	}
 
+	@Override
+	public ViewComponent copy() {
+		return new AlarmListComponent(this);
+	}
+
 	private static final long serialVersionUID = -1;
 	private static final int version = 1;
 
@@ -215,4 +231,32 @@ public class AlarmListComponent extends CustomComponent {
 		return minAlarmLevel;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof AlarmListComponent)) return false;
+		if (!super.equals(o)) return false;
+		AlarmListComponent that = (AlarmListComponent) o;
+		return getMinAlarmLevel() == that.getMinAlarmLevel() && getMaxListSize() == that.getMaxListSize() && getWidth() == that.getWidth() && isHideIdColumn() == that.isHideIdColumn() && isHideAlarmLevelColumn() == that.isHideAlarmLevelColumn() && isHideTimestampColumn() == that.isHideTimestampColumn() && isHideInactivityColumn() == that.isHideInactivityColumn() && isHideAckColumn() == that.isHideAckColumn();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), getMinAlarmLevel(), getMaxListSize(), getWidth(), isHideIdColumn(), isHideAlarmLevelColumn(), isHideTimestampColumn(), isHideInactivityColumn(), isHideAckColumn());
+	}
+
+
+	@Override
+	public String toString() {
+		return "AlarmListComponent{" +
+				"minAlarmLevel=" + minAlarmLevel +
+				", maxListSize=" + maxListSize +
+				", width=" + width +
+				", hideIdColumn=" + hideIdColumn +
+				", hideAlarmLevelColumn=" + hideAlarmLevelColumn +
+				", hideTimestampColumn=" + hideTimestampColumn +
+				", hideInactivityColumn=" + hideInactivityColumn +
+				", hideAckColumn=" + hideAckColumn +
+				"} " + super.toString();
+	}
 }

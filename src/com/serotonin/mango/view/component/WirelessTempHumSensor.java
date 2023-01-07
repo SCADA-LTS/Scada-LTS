@@ -39,8 +39,15 @@ public class WirelessTempHumSensor extends CompoundComponent {
     public static final String TEMPERATURE = "temperature";
     public static final String HUMIDITY = "humidity";
 
-    public WirelessTempHumSensor() {
-        initialize();
+    public WirelessTempHumSensor() {}
+
+    private WirelessTempHumSensor(WirelessTempHumSensor wirelessTempHumSensor) {
+        super(wirelessTempHumSensor);
+    }
+
+    @Override
+    public ViewComponent copy() {
+        return new WirelessTempHumSensor(this);
     }
 
     @Override
@@ -107,5 +114,10 @@ public class WirelessTempHumSensor extends CompoundComponent {
     @Override
     public String getImageChartData(ResourceBundle bundle) {
         return generateImageChartData(bundle, 1000 * 60 * 60, TEMPERATURE, HUMIDITY);
+    }
+
+    @Override
+    public String toString() {
+        return "WirelessTempHumSensor{} " + super.toString();
     }
 }
