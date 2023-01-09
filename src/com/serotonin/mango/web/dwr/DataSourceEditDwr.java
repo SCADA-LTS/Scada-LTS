@@ -44,7 +44,11 @@ import javax.management.remote.JMXServiceURL;
 import javax.script.ScriptException;
 
 import com.serotonin.db.KeyValuePair;
+import com.serotonin.mango.util.LoggingScriptUtils;
+import com.serotonin.mango.vo.dataSource.tango.TangoDataSourceVO;
+import com.serotonin.mango.vo.dataSource.tango.TangoPointLocatorVO;
 import com.serotonin.mango.web.dwr.beans.*;
+
 import net.sf.mbus4j.Connection;
 import net.sf.mbus4j.MBusAddressing;
 import net.sf.mbus4j.TcpIpConnection;
@@ -211,6 +215,7 @@ import org.scada_lts.utils.AlarmLevelsDwrUtils;
 import org.scada_lts.serial.SerialPortParameters;
 import org.scada_lts.serial.SerialPortService;
 import org.scada_lts.serial.SerialPortWrapperAdapter;
+
 
 import static com.serotonin.mango.util.LoggingScriptUtils.infoErrorExecutionScript;
 import static com.serotonin.mango.util.SqlDataSourceUtils.createSqlDataSourceVO;
@@ -2971,6 +2976,29 @@ public class DataSourceEditDwr extends DataSourceListDwr {
     @MethodFilter
     public DwrResponseI18n saveRadiuinoPointLocator(int id, String xid,
                                                     String name, RadiuinoPointLocatorVO locator) {
+        return validatePoint(id, xid, name, locator, null);
+    }
+
+    //
+    //
+    // TANGO stuff
+    //
+    @MethodFilter
+    public DwrResponseI18n saveTangoDataSource(String name, String xid, String deviceID, String hostName, int port) {
+        TangoDataSourceVO ds = (TangoDataSourceVO) Common.getUser().getEditDataSource();
+
+        ds.setXid(xid);
+        ds.setName(name);
+        ds.setDeviceID(deviceID);
+        ds.setHostName(hostName);
+        ds.setPort(port);
+
+        return tryDataSourceSave(ds);
+    }
+
+    @MethodFilter
+    public DwrResponseI18n saveTangoPointLocator(int id, String xid, String name,
+                                                 TangoPointLocatorVO locator) {
         return validatePoint(id, xid, name, locator, null);
     }
 }

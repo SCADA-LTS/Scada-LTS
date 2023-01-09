@@ -307,6 +307,8 @@ public class MangoContextListener implements ServletContextListener {
 				DataSourceVO.Type.INTERNAL.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.JMX",
 				DataSourceVO.Type.JMX.getId());
+		ctx.setAttribute("constants.DataSourceVO.Types.TANGO",
+				DataSourceVO.Type.TANGO.getId());
 		ctx.setAttribute("constants.DataSourceVO.Types.MQTT",
 				DataSourceVO.Type.MQTT.getId());
 		ctx.setAttribute("constants.Permissions.DataPointAccessTypes.NONE",

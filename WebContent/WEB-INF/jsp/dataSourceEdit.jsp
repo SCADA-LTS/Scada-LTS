@@ -502,5 +502,9 @@
 			test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.RADIUINO']}">
 			<jsp:include page="dataSourceEdit/editRadiuino.jsp" />
 		</c:when>
+        <c:when
+            test="${dataSource.type.id == applicationScope['constants.DataSourceVO.Types.TANGO']}">
+            <jsp:include page="dataSourceEdit/editTango.jsp" />
+        </c:when>
 	</c:choose>
 </tag:page>
